@@ -44,7 +44,7 @@ if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 ```
 ## Important Settings
 - Under Solution Properties -> General -> C++ Language Standard, is set to "Preview – Features from the Latest C++ Working Draft (/std:c++latest)".
-- Under Solution Properties -> Linker -> System -> Stack Reserved Size is set to 4194304.
+- Under Solution Properties -> Linker -> System -> Stack Reserved Size is set to 2097152.
 
 ## Dependencies
 - [WinRT](https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/intro-to-using-cpp-with-winrt)
