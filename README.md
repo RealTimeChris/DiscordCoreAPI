@@ -1,6 +1,6 @@
 # DiscordCoreAPI
 <p align="center">
- <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/TheLogo.png?raw=true"  width="400">
+ <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/TheLogo.png?raw=true"  width="500">
 </p>
  
  
