@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 				currentRole.roleName = role.data.name;
 
 				discordGuild.data.guildShop.roles.push_back(currentRole);
-				discordGuild.writeDataToDB().get();
+				discordGuild.writeDataToDB();
 				string msgString = "";
 				msgString = "Nicely done! You've added a new role to the store's inventory, giving the server access to it!\nIt is as follows:\n------\n__**Role:**__ <@&" + currentRole.roleId + "> __**Cost**__ : " + to_string(roleCost) + " "
 					+  args->eventData.discordCoreClient->discordUser->data.currencyName + "\n------";

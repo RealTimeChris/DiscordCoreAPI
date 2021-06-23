@@ -18,16 +18,27 @@ namespace DiscordCoreAPI {
 	public:
 		InputEventManager() {}
 
-		static void initialize(MessageManager* messagesNew, DiscordCoreClient* discordCoreClientNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, DiscordCoreInternal::ThreadContext threadContextNew) {
+		static void initialize(MessageManager* messagesNew, DiscordCoreClient* discordCoreClientNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
 			InputEventManager::messages = messagesNew;
 			InputEventManager::agentResources = agentResourcesNew;
 			InputEventManager::discordCoreClient = discordCoreClientNew;
 			InputEventManager::threadContext = threadContextNew;
+			InputEventManager::groupId = InputEventManager::threadContext->createGroup();
+		}
+
+		static void cleanup() {
+			InputEventManager::threadContext->releaseGroup(InputEventManager::groupId);
 		}
 
 		static task<InputEventData> respondToEvent(CreateFollowUpMessageData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			MessageData messageData = InputEventManager::interactions->createFollowUpMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -37,13 +48,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<InputEventData> respondToEvent(EditFollowUpMessageData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			MessageData messageData = InputEventManager::interactions->editFollowUpMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -54,13 +71,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<InputEventData> respondToEvent(CreateInteractionResponseData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			InputEventManager::interactions->createInteractionResponseAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -71,13 +94,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<InputEventData> respondToEvent(CreateDeferredInteractionResponseData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			InputEventManager::interactions->createDeferredInteractionResponseAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -87,13 +116,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<InputEventData> respondToEvent(EditInteractionResponseData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			MessageData messageData = InputEventManager::interactions->editInteractionResponseAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -104,13 +139,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<InputEventData> respondToEvent(CreateEphemeralInteractionResponseData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			InteractionPackageData interactionPackage;
 			interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
@@ -128,13 +169,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<InputEventData> respondToEvent(ReplyMessageData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			Message message = InputEventManager::messages->replyAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
@@ -142,13 +189,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.messageData = message.data;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<InputEventData> respondToEvent(EditMessageData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			Message message = InputEventManager::messages->editMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
@@ -156,13 +209,19 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_EDIT;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return dataPackageNewer;
 		}
 
 		static task<void> respondToEvent(DeferButtonResponseData dataPackage) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			ButtonInteractionData newData;
 			newData.token = dataPackage.interactionPackage.interactionToken;
 			newData.id = dataPackage.interactionPackage.interactionId;
@@ -174,13 +233,19 @@ namespace DiscordCoreAPI {
 			dataPackageNew.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 			dataPackageNew.type = InteractionCallbackType::DeferredUpdateMessage;
 			InputEventManager::interactions->createInteractionResponseAsync(dataPackageNew).get();
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		static task<void> deleteInputEventResponse(InputEventData dataPackage, unsigned int timeDelayNew = 0) {
-			unsigned int groupId = InputEventManager::threadContext.createGroup();
-			co_await resume_foreground(*InputEventManager::threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (InputEventManager::threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = InputEventManager::threadContext->createGroup();
+			}
+			else {
+				groupIdNew = InputEventManager::threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*InputEventManager::threadContext->dispatcherQueue.get());
 			if ((dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE)|| (dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT)) {
 				DeleteMessageData deleteData(dataPackage);
 				deleteData.timeDelay = timeDelayNew;
@@ -197,7 +262,7 @@ namespace DiscordCoreAPI {
 				dataPackageNewer.timeDelay = timeDelayNew;
 				InputEventManager::interactions->deleteInteractionResponseAsync(dataPackageNewer).get();
 			}
-			InputEventManager::threadContext.releaseGroup(groupId);
+			InputEventManager::threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
@@ -206,13 +271,15 @@ namespace DiscordCoreAPI {
 		static InteractionManager* interactions;
 		static DiscordCoreClient* discordCoreClient;
 		static DiscordCoreInternal::HttpAgentResources agentResources;
-		static DiscordCoreInternal::ThreadContext threadContext;
+		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		static unsigned int groupId;
 	};
 	MessageManager* InputEventManager::messages;
 	InteractionManager* InputEventManager::interactions;
 	DiscordCoreClient* InputEventManager::discordCoreClient;
 	DiscordCoreInternal::HttpAgentResources InputEventManager::agentResources;
-	DiscordCoreInternal::ThreadContext InputEventManager::threadContext;
+	shared_ptr<DiscordCoreInternal::ThreadContext> InputEventManager::threadContext;
+	unsigned int InputEventManager::groupId;
 
 
 }

@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 					unsigned int amountEarned = (unsigned int)trunc(((float)rand() / (float)RAND_MAX) * 5000.0f);
 
 					discordGuildMember.data.currency.wallet += amountEarned;
-					discordGuildMember.writeDataToDB().get();
+					discordGuildMember.writeDataToDB();
 
 					string msgString = "";
 					msgString += "You've been busy dealing drugs... and you've earned " + to_string(amountEarned) + " " + args->eventData.discordCoreClient->discordUser->data.currencyName + "\nNice job and watch out for cops!\nYour new wallet balance is: ";
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 					}
 
 					discordGuildMember.data.lastTimeWorked = (unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					discordGuildMember.writeDataToDB().get();
+					discordGuildMember.writeDataToDB();
 				}
 				else {
 					unsigned int timeLeft = msPerWorkCycle - timeDifference;

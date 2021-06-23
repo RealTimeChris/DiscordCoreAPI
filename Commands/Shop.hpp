@@ -232,11 +232,11 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			discordGuild.writeDataToDB().get();
+			discordGuild.writeDataToDB();
 
 			unsigned int currentPageIndex = 0;
 			string userID = args->eventData.getAuthorId();
-			recurseThroughMessagePages(userID, args->eventData, currentPageIndex, finalMsgEmbedsArray, true);
+			recurseThroughMessagePages(userID, args->eventData, currentPageIndex, finalMsgEmbedsArray, true, 120000).get();
 
 			co_return;
 		}

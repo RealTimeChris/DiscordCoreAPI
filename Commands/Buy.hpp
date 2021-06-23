@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 					InventoryRole newRole = discordGuild.data.guildShop.roles.at(objectShopIndex);
 					discordGuildMember.data.roles.push_back(newRole);
 					discordGuildMember.data.currency.wallet -= roleCost;
-					discordGuildMember.writeDataToDB().get();
+					discordGuildMember.writeDataToDB();
 
 					unsigned int newBalance = discordGuildMember.data.currency.wallet;
 
@@ -269,7 +269,7 @@ namespace DiscordCoreAPI {
 						discordGuildMember.data.roles.at(x) = discordGuildMember.data.roles.at(maxIdx);
 						discordGuildMember.data.roles.at(maxIdx) = tempItem;
 					}
-					discordGuildMember.writeDataToDB().get();
+					discordGuildMember.writeDataToDB();
 					co_return;
 				}
 				else if (objectType ==  "item") {
@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 					InventoryItem newItem = discordGuild.data.guildShop.items.at(objectShopIndex);
 					discordGuildMember.data.items.push_back(newItem);
 					discordGuildMember.data.currency.wallet -= itemCost;
-					discordGuildMember.writeDataToDB().get();
+					discordGuildMember.writeDataToDB();
 
 					string itemEmoji = discordGuild.data.guildShop.items.at(objectShopIndex).emoji;
 					string itemName = discordGuild.data.guildShop.items.at(objectShopIndex).itemName;
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 						discordGuildMember.data.items.at(x) = discordGuildMember.data.items.at(maxIdx);
 						discordGuildMember.data.items.at(maxIdx) = tempItem;
 					}
-					discordGuildMember.writeDataToDB().get();
+					discordGuildMember.writeDataToDB();
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setDescription(msgString);
 					msgEmbed.setAuthor(currentUser.data.username, currentUser.data.avatar);

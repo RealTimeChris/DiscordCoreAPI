@@ -16,19 +16,17 @@ namespace DiscordCoreInternal {
 	class HttpRequestAgent : public agent {
 	public:
 
-		static void initialize(ThreadManager* threadManagerNew) {
-			HttpRequestAgent::threadManager = threadManagerNew;
-			HttpRequestAgent::threadContext = HttpRequestAgent::threadManager->getThreadContext().get();
+		static void initialize() {
+			HttpRequestAgent::threadContext = ThreadManager::getThreadContext().get();
 		};
-		static ThreadManager* threadManager;
-		static ThreadContext threadContext;
+		static shared_ptr<ThreadContext> threadContext;
 		unbounded_buffer<HttpData> workReturnBuffer;
 		unbounded_buffer<HttpWorkload> workSubmissionBuffer;
 		HttpRequestAgent(HttpAgentResources agentResources) 
-			: agent(*HttpRequestAgent::threadContext.scheduler)
+			: agent(*HttpRequestAgent::threadContext->scheduler)
 		{
 			try {
-				this->groupId = HttpRequestAgent::threadContext.createGroup(HttpRequestAgent::threadManager->getThreadContext().get());
+				this->groupId = HttpRequestAgent::threadContext->createGroup(*ThreadManager::getThreadContext().get());
 				this->baseURL = agentResources.baseURL;
 				this->botToken = agentResources.botToken;
 				Filters::HttpBaseProtocolFilter filter;
@@ -72,7 +70,7 @@ namespace DiscordCoreInternal {
 		}
 
 		~HttpRequestAgent() {
-			HttpRequestAgent::threadContext.releaseGroup(this->groupId);
+			HttpRequestAgent::threadContext->releaseGroup(this->groupId);
 		}
 
 	protected:
@@ -516,7 +514,6 @@ namespace DiscordCoreInternal {
 	};
 	concurrent_unordered_map<HttpWorkloadType, string> HttpRequestAgent::rateLimitDataBucketValues;
 	concurrent_unordered_map<string, RateLimitData> HttpRequestAgent::rateLimitData;
-	ThreadContext HttpRequestAgent::threadContext;
-	ThreadManager* HttpRequestAgent::threadManager;
+	shared_ptr<ThreadContext> HttpRequestAgent::threadContext;
 }
 #endif

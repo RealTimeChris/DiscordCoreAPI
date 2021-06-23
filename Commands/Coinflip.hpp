@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 			EmbedData msgEmbed4;
 			if (button2.getButtonId() == "Heads" && number > 0.50 || button2.getButtonId() == "Tails" && number < 0.50) {
 				discordGuildMember.data.currency.wallet += betAmount;
-				discordGuildMember.writeDataToDB().get();
+				discordGuildMember.writeDataToDB();
 				discordGuild.data.casinoStats.totalCoinFlipPayout += betAmount;
 				discordGuild.data.casinoStats.totalPayout += betAmount;
 				if (betAmount > discordGuild.data.casinoStats.largestCoinFlipPayout.amount) {

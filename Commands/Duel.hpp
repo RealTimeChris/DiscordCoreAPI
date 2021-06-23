@@ -12,9 +12,9 @@
 
 void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, DiscordCoreAPI::DiscordGuildMember* discordToGuildMember,DiscordCoreAPI::DiscordGuild* discordGuild,  DiscordCoreAPI::InputEventData* newEvent, int* betAmount, 
 	string* msgEmbedString,  string* fromUserIDNew, string* toUserIDNew) {
-	discordFromGuildMember->getDataFromDB().get();
+	discordFromGuildMember->getDataFromDB();
 	int fromUserCurrency = discordFromGuildMember->data.currency.wallet;
-	discordToGuildMember->getDataFromDB().get();
+	discordToGuildMember->getDataFromDB();
 	int toUserCurrency = discordToGuildMember->data.currency.wallet;
 	string toUserID = ""; *toUserIDNew;
 	string fromUserID = ""; *fromUserIDNew;
@@ -86,7 +86,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 			fromUserSelfMod += value.selfMod;
 		}
 		if (value.oppMod < 0) {
-			string currentString = to_string(value.oppMod);
+			string currentString = "-" + to_string(value.oppMod);
 			currentString += " of base roll from <@!" + fromUserID + ">'s " + value.emoji + value.itemName + "\n";
 			toUserLossStrings.push_back(currentString);
 			toUserOppMod += value.oppMod;
@@ -101,7 +101,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 			toUserSelfMod += value.selfMod;
 		}
 		if (value.oppMod < 0) {
-			string currentString = to_string(value.oppMod);
+			string currentString = "-" + to_string(value.oppMod);
 			currentString += " of base roll from <@!" + toUserID + ">'s " + value.emoji + value.itemName + "\n";
 			fromUserLossStrings.push_back(currentString);
 			fromUserOppMod += value.oppMod;
@@ -125,8 +125,8 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 	if (finalFromUserRoll > finalToUserRoll) {
 		discordFromGuildMember->data.currency.wallet += *betAmount;
 		discordToGuildMember->data.currency.wallet -= *betAmount;
-		discordFromGuildMember->writeDataToDB().get();
-		discordToGuildMember->writeDataToDB().get();
+		discordFromGuildMember->writeDataToDB();
+		discordToGuildMember->writeDataToDB();
 
 		unsigned int currentPage = 0;
 
@@ -134,8 +134,6 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		fromUserVicHeaderString = "<@!" + fromUserID + "> has defeated <@!" + toUserID + ">!\n__Your rolls were__:\n";
 
 		finalStrings.push_back(fromUserVicHeaderString);
-
-		cout << "FROM USER ID: " << fromUserID << endl;
 
 		string midFooter1 = "__**<@!" + fromUserID + ">:**__ " + to_string(fromUserRoll) + "\n";
 		string midFooter2 = "__**<@!" + toUserID + ">:**__ " + to_string(toUserRoll) + "\n";
@@ -202,8 +200,8 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 	else if (finalToUserRoll > finalFromUserRoll) {
 		discordToGuildMember->data.currency.wallet += *betAmount;
 		discordFromGuildMember->data.currency.wallet -= *betAmount;
-		discordToGuildMember->writeDataToDB().get();
-		discordFromGuildMember->writeDataToDB().get();
+		discordToGuildMember->writeDataToDB();
+		discordFromGuildMember->writeDataToDB();
 
 		unsigned int currentPage = 0;
 
@@ -211,8 +209,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		toUserVicHeaderString = "<@!" + toUserID + "> has defeated <@!" + fromUserID + "> !!\n__Your rolls were__:\n";
 
 		finalStrings.push_back(toUserVicHeaderString);
-		cout << "TO USER ID: " << toUserID << endl;
-		cout << "TO USER ROLL: " << to_string(toUserRoll) << endl;
+
 		string midFooter1 = "__**<@!" + toUserID + ">:**__ " + to_string(toUserRoll) + "\n";
 		string midFooter2 = "__**<@!" + fromUserID + ">:**__ " + to_string(fromUserRoll) + "\n";
 
@@ -294,14 +291,13 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 	if (newEvent->eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 		DiscordCoreAPI::ReplyMessageData dataPackage(*newEvent);
 		dataPackage.embeds.push_back(messageEmbeds[currentPageIndex]);
-		*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
 	}
 	else {
 		DiscordCoreAPI::CreateInteractionResponseData dataPackage(*newEvent);
 		dataPackage.data.embeds.push_back(messageEmbeds[currentPageIndex]);
 		*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
 	}
-	recurseThroughMessagePages(fromUserID, *newEvent, currentPageIndex, messageEmbeds, false).get();
+	recurseThroughMessagePages(fromUserID, *newEvent, currentPageIndex, messageEmbeds, false, 120000).get();
 }
 
 void executeExit(string fromUserID, string toUserID, DiscordCoreAPI::DiscordGuild discordGuild, DiscordCoreAPI::InputEventData originalEvent) {
@@ -402,7 +398,6 @@ namespace DiscordCoreAPI {
 			int betAmount = (int)stoll(matchResults.str());
 			regex_search(args->argumentsArray.at(1).c_str(), matchResults, idRegExp);
 			string toUserID = matchResults.str();
-			cout << "TO USER ID: " << toUserID << endl;
 			string fromUserID = args->eventData.getAuthorId();
 
 			GuildMember fromGuildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ args->eventData.getGuildId(),args->eventData.getAuthorId() }).get();

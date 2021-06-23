@@ -71,7 +71,7 @@ void checkAndSetAceValues(vector<DiscordCoreAPI::Card>* playerHand, vector<unsig
 
 void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMember, unsigned int* betAmount, DiscordCoreAPI::GuildMember* guildMember, DiscordCoreAPI::DiscordGuild* discordGuild, DiscordCoreAPI::InputEventData* newEvent,
 	 vector<DiscordCoreAPI::Card>* userHand, vector<unsigned int>* dealerAceIndices, string* userID, vector<DiscordCoreAPI::Card>* dealerHand) {
-	discordGuildMember->getDataFromDB().get();
+	discordGuildMember->getDataFromDB();
 	unsigned int fineAmount = 0;
 	fineAmount = 1 * *betAmount;
 	if (fineAmount > discordGuildMember->data.currency.wallet){
@@ -110,9 +110,9 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		if (newDealerHandScore >= 17) {
 			break;
 		}
-		discordGuild->getDataFromDB().get();
+		discordGuild->getDataFromDB();
 		dealerHand->push_back(drawNextBlackjackCard(&discordGuild->data.blackjackStack));
-		discordGuild->writeDataToDB().get();
+		discordGuild->writeDataToDB();
 
 		checkAndSetAceValues(dealerHand, dealerAceIndices);
 	}
@@ -136,7 +136,7 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		&& newUserHandScore > newDealerHandScore) || (newUserHandScore < 21
 			&& newDealerHandScore > 21)) {
 		int payAmount = *betAmount;
-		discordGuild->getDataFromDB().get();
+		discordGuild->getDataFromDB();
 		if (payAmount > discordGuild->data.casinoStats.largestBlackjackPayout.amount) {
 			discordGuild->data.casinoStats.largestBlackjackPayout.amount = payAmount;
 			discordGuild->data.casinoStats.largestBlackjackPayout.timeStamp = DiscordCoreAPI::getTimeAndDate();
@@ -145,11 +145,11 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		}
 		discordGuild->data.casinoStats.totalBlackjackPayout += payAmount;
 		discordGuild->data.casinoStats.totalPayout += payAmount;
-		discordGuild->writeDataToDB().get();
+		discordGuild->writeDataToDB();
 
-		discordGuildMember->getDataFromDB().get();
+		discordGuildMember->getDataFromDB();
 		discordGuildMember->data.currency.wallet += payAmount;
-		discordGuildMember->writeDataToDB().get();
+		discordGuildMember->writeDataToDB();
 
 		string winFooterString = "------\n__**Payout Amount:**__ " + to_string(payAmount) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n__**Your New Wallet Balance:**__ " + to_string(discordGuildMember->data.currency.wallet) + " " +
 			newEvent->discordCoreClient->discordUser->data.currencyName + "\n------";
@@ -215,10 +215,10 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 	}
 	else {
 		int payAmount = -1 * *betAmount;
-		discordGuildMember->getDataFromDB().get();
+		discordGuildMember->getDataFromDB();
 		discordGuildMember->data.currency.wallet += payAmount;
-		discordGuildMember->writeDataToDB().get();
-		discordGuild->getDataFromDB().get();
+		discordGuildMember->writeDataToDB();
+		discordGuild->getDataFromDB();
 		if (payAmount > discordGuild->data.casinoStats.largestBlackjackPayout.amount) {
 			discordGuild->data.casinoStats.largestBlackjackPayout.amount = payAmount;
 			discordGuild->data.casinoStats.largestBlackjackPayout.timeStamp = DiscordCoreAPI::getTimeAndDate();
@@ -227,7 +227,7 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		}
 		discordGuild->data.casinoStats.totalBlackjackPayout += payAmount;
 		discordGuild->data.casinoStats.totalPayout += payAmount;
-		discordGuild->writeDataToDB().get();
+		discordGuild->writeDataToDB();
 		string bustFooterString = "------\n__**Your New Wallet Balance:**__ " + to_string(discordGuildMember->data.currency.wallet) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n------";
 
 		DiscordCoreAPI::EmbedData msgEmbed;
@@ -262,7 +262,7 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember, unsigned int* betAmount, DiscordCoreAPI::GuildMember* guildMember, DiscordCoreAPI::DiscordGuild* discordGuild, DiscordCoreAPI::InputEventData* newEvent,
 	unsigned int* newCardCount, vector<DiscordCoreAPI::Card>* userHand, vector<unsigned int>* userAceIndices, vector<unsigned int>* dealerAceIndices, string* userID, vector<DiscordCoreAPI::Card>* dealerHand) {
 
-	discordGuildMember->getDataFromDB().get();
+	discordGuildMember->getDataFromDB();
 	DiscordCoreAPI::User currentUser = newEvent->discordCoreClient->users->getUserAsync({ newEvent->getRequesterId() }).get();	
 
 	unsigned int fineAmount = 0;
@@ -296,9 +296,9 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 	}
 
 	newCardCount += 1;
-	discordGuild->getDataFromDB().get();
+	discordGuild->getDataFromDB();
 	userHand->push_back(drawNextBlackjackCard(&discordGuild->data.blackjackStack));
-	discordGuild->writeDataToDB().get();
+	discordGuild->writeDataToDB();
 
 	checkAndSetAceValues(userHand, userAceIndices);
 
@@ -309,10 +309,10 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 
 	if (newUserHandScore > 21) {
 		int payAmount = (int)((float)*betAmount * -1.0);
-		discordGuildMember->getDataFromDB().get();
+		discordGuildMember->getDataFromDB();
 		discordGuildMember->data.currency.wallet += payAmount;
-		discordGuildMember->writeDataToDB().get();
-		discordGuild->getDataFromDB().get();
+		discordGuildMember->writeDataToDB();
+		discordGuild->getDataFromDB();
 		if (payAmount > discordGuild->data.casinoStats.largestBlackjackPayout.amount) {
 			discordGuild->data.casinoStats.largestBlackjackPayout.amount = payAmount;
 			discordGuild->data.casinoStats.largestBlackjackPayout.timeStamp = DiscordCoreAPI::getTimeAndDate();
@@ -321,7 +321,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 		}
 		discordGuild->data.casinoStats.totalBlackjackPayout += payAmount;
 		discordGuild->data.casinoStats.totalPayout += payAmount;
-		discordGuild->writeDataToDB().get();
+		discordGuild->writeDataToDB();
 
 		unsigned int newDealerHandScore = 0;
 		for (auto x = 0; x < dealerHand->size(); x += 1) {
@@ -376,9 +376,9 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 			if (newDealerHandScore >= 17) {
 				break;
 			}
-			discordGuild->getDataFromDB().get();
+			discordGuild->getDataFromDB();
 			dealerHand->push_back(drawNextBlackjackCard(&discordGuild->data.blackjackStack));
-			discordGuild->writeDataToDB().get();
+			discordGuild->writeDataToDB();
 
 			checkAndSetAceValues(dealerHand, dealerAceIndices);
 		}
@@ -431,10 +431,10 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 		}
 		else {
 			int payAmount = *betAmount;
-			discordGuildMember->getDataFromDB().get();
+			discordGuildMember->getDataFromDB();
 			discordGuildMember->data.currency.wallet += payAmount;
-			discordGuildMember->writeDataToDB().get();
-			discordGuild->getDataFromDB().get();
+			discordGuildMember->writeDataToDB();
+			discordGuild->getDataFromDB();
 			if (payAmount > discordGuild->data.casinoStats.largestBlackjackPayout.amount) {
 				discordGuild->data.casinoStats.largestBlackjackPayout.amount = payAmount;
 				discordGuild->data.casinoStats.largestBlackjackPayout.timeStamp = DiscordCoreAPI::getTimeAndDate();
@@ -443,7 +443,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 			}
 			discordGuild->data.casinoStats.totalBlackjackPayout += payAmount;
 			discordGuild->data.casinoStats.totalPayout += payAmount;
-			discordGuild->writeDataToDB().get();
+			discordGuild->writeDataToDB();
 
 			string dealerHandString;
 			for (auto x = 0; x < dealerHand->size(); x += 1) {
@@ -581,7 +581,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 	unsigned int fineAmount = 2 * *betAmount;
 	if (fineAmount > discordGuildMember->data.currency.wallet || *newCardCount > 2) {
 		string failedFooterString;
-		discordGuildMember->getDataFromDB().get();
+		discordGuildMember->getDataFromDB();
 		if ((newEvent->getEmbeds()[0].fields[2].value.find("⏬") == string::npos) || *newCardCount > 2) {
 			failedFooterString = "__***Sorry, but you do not have the option to double down!***__\n------\n✅ to Hit, ❎ to Stand.\n------";
 		}
@@ -655,9 +655,9 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 	};
 
 	newCardCount += 1;
-	discordGuild->getDataFromDB().get();
+	discordGuild->getDataFromDB();
 	userHand->push_back(drawNextBlackjackCard(&discordGuild->data.blackjackStack));
-	discordGuild->writeDataToDB().get();
+	discordGuild->writeDataToDB();
 
 	checkAndSetAceValues(userHand, userAceIndices);
 
@@ -673,9 +673,9 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		if (newDealerHandScore >= 17) {
 			break;
 		}
-		discordGuild->getDataFromDB().get();
+		discordGuild->getDataFromDB();
 		dealerHand->push_back(drawNextBlackjackCard(&discordGuild->data.blackjackStack));
-		discordGuild->writeDataToDB().get();
+		discordGuild->writeDataToDB();
 
 		checkAndSetAceValues(dealerHand, dealerAceIndices);
 	}
@@ -701,8 +701,8 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		int payAmount = 2 * *betAmount;
 
 		discordGuildMember->data.currency.wallet += payAmount;
-		discordGuildMember->writeDataToDB().get();
-		discordGuild->getDataFromDB().get();
+		discordGuildMember->writeDataToDB();
+		discordGuild->getDataFromDB();
 		if (payAmount > discordGuild->data.casinoStats.largestBlackjackPayout.amount) {
 			discordGuild->data.casinoStats.largestBlackjackPayout.amount = payAmount;
 			discordGuild->data.casinoStats.largestBlackjackPayout.timeStamp = DiscordCoreAPI::getTimeAndDate();
@@ -711,7 +711,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		}
 		discordGuild->data.casinoStats.totalBlackjackPayout += payAmount;
 		discordGuild->data.casinoStats.totalPayout += payAmount;
-		discordGuild->writeDataToDB().get();
+		discordGuild->writeDataToDB();
 
 		string winFooterString = "------\n__**Payout Amount:**__ " + to_string(payAmount) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n__**Your New Wallet Balance:**__ " + to_string(discordGuildMember->data.currency.wallet) + " "
 			+ newEvent->discordCoreClient->currentUser->discordCoreClient->discordUser->data.currencyName + "\n------";
@@ -781,8 +781,8 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		int payAmount = -2 * *betAmount;
 
 		discordGuildMember->data.currency.wallet += payAmount;
-		discordGuildMember->writeDataToDB().get();
-		discordGuild->getDataFromDB().get();
+		discordGuildMember->writeDataToDB();
+		discordGuild->getDataFromDB();
 		if (payAmount > discordGuild->data.casinoStats.largestBlackjackPayout.amount) {
 			discordGuild->data.casinoStats.largestBlackjackPayout.amount = payAmount;
 			discordGuild->data.casinoStats.largestBlackjackPayout.timeStamp = DiscordCoreAPI::getTimeAndDate();
@@ -791,7 +791,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 		}
 		discordGuild->data.casinoStats.totalBlackjackPayout += payAmount;
 		discordGuild->data.casinoStats.totalPayout += payAmount;
-		discordGuild->writeDataToDB().get();
+		discordGuild->writeDataToDB();
 
 		string bustFooterString = "------\n__**Your New Wallet Balance:**__ " + to_string(discordGuildMember->data.currency.wallet) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n------";
 
@@ -948,7 +948,7 @@ namespace DiscordCoreAPI {
 
 				string footerMsgStringOld = "------\n------";
 
-				discordGuild.getDataFromDB().get();
+				discordGuild.getDataFromDB();
 				vector<Card> userHand;
 				vector<unsigned int> userAceIndices;
 				userHand.push_back(drawNextBlackjackCard(&discordGuild.data.blackjackStack));
@@ -956,7 +956,7 @@ namespace DiscordCoreAPI {
 				userHand.push_back(drawNextBlackjackCard(&discordGuild.data.blackjackStack));
 				checkAndSetAceValues(&userHand, &userAceIndices);
 				unsigned int userHandScore = userHand.at(0).value + userHand.at(1).value;
-				discordGuild.writeDataToDB().get();
+				discordGuild.writeDataToDB();
 
 				vector<Card> dealerHand;
 				vector<unsigned int> dealerAceIndices;
@@ -965,7 +965,7 @@ namespace DiscordCoreAPI {
 				dealerHand.push_back(drawNextBlackjackCard(&discordGuild.data.blackjackStack));
 				checkAndSetAceValues(&dealerHand, &dealerAceIndices);
 				unsigned int newDealerHandScore = dealerHand[0].value;
-				discordGuild.writeDataToDB().get();
+				discordGuild.writeDataToDB();
 				string footerMsgString = footerMsgStringOld;
 
 				if (userHandScore == 21) {
@@ -1005,11 +1005,11 @@ namespace DiscordCoreAPI {
 						co_return;
 					}
 
-					discordGuildMember.getDataFromDB().get();
+					discordGuildMember.getDataFromDB();
 					int payAmount = (unsigned int)trunc(1.5 * betAmount);
 					discordGuildMember.data.currency.wallet += payAmount;
-					discordGuildMember.writeDataToDB().get();
-					discordGuild.getDataFromDB().get();
+					discordGuildMember.writeDataToDB();
+					discordGuild.getDataFromDB();
 					if (payAmount > discordGuild.data.casinoStats.largestBlackjackPayout.amount) {
 						discordGuild.data.casinoStats.largestBlackjackPayout.amount = payAmount;
 						discordGuild.data.casinoStats.largestBlackjackPayout.timeStamp = getTimeAndDate();
@@ -1018,7 +1018,7 @@ namespace DiscordCoreAPI {
 					}
 					discordGuild.data.casinoStats.totalBlackjackPayout += payAmount;
 					discordGuild.data.casinoStats.totalPayout += payAmount;
-					discordGuild.writeDataToDB().get();
+					discordGuild.writeDataToDB();
 
 					footerMsgString2 = "\n------\n__**Payout Amount:**__ " + to_string(payAmount) + " " + args->eventData.discordCoreClient->discordUser->data.currencyName + "\n__**Your New Wallet Balance:**__ " +
 						to_string(discordGuildMember.data.currency.wallet) + " " + args->eventData.discordCoreClient->discordUser->data.currencyName + "\n------";

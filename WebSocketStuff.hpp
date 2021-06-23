@@ -55,14 +55,13 @@ namespace DiscordCoreInternal {
 	public:
 		bool doWeQuit = false;
 
-		WebSocketReceiverAgent(ISource<json>& pWorkloadSource, ITarget<WebSocketWorkload>& pWorkloadTarget,  ThreadContext threadContextNew, ThreadManager* threadManagerNew)
+		WebSocketReceiverAgent(ISource<json>& pWorkloadSource, ITarget<WebSocketWorkload>& pWorkloadTarget,  shared_ptr<ThreadContext> threadContextNew)
 			:workloadSource(pWorkloadSource),
 			workloadTarget(pWorkloadTarget),
-			agent(*threadContextNew.scheduler)
+			agent(*threadContextNew->scheduler)
 		{
 			this->threadContext = threadContextNew;
-			this->threadManager = threadManagerNew;
-			this->groupId = this->threadContext.createGroup(this->threadManager->getThreadContext().get());
+			this->groupId = this->threadContext->createGroup(*this->threadManager->getThreadContext().get());
 		}
 
 		bool getError(exception& error) {
@@ -74,7 +73,7 @@ namespace DiscordCoreInternal {
 
 		void terminate() {
 			this->doWeQuit = true;
-			this->threadContext.releaseGroup(this->groupId);
+			this->threadContext->releaseGroup(this->groupId);
 		}
 
 		~WebSocketReceiverAgent(){
@@ -82,7 +81,7 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		ThreadContext threadContext;
+		shared_ptr<ThreadContext> threadContext{ nullptr };
 		ISource<json>& workloadSource;
 		ThreadManager* threadManager{ nullptr };
 		ITarget<WebSocketWorkload>& workloadTarget;
@@ -274,13 +273,11 @@ namespace DiscordCoreInternal {
 	class WebSocketConnectionAgent :public agent {
 	public:
 
-		WebSocketConnectionAgent(ITarget<json>& target,  hstring botTokenNew, ThreadContext threadContextNew, ThreadManager* threadManagerNew)
-			:
-			agent(*threadContextNew.scheduler),
+		WebSocketConnectionAgent(ITarget<json>& target,  hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
+			: agent(*threadContextNew->scheduler),
 			webSocketMessageTarget(target) {
 			this->threadContext = threadContextNew;
-			this->threadManager = threadManagerNew;
-			this->groupId = this->threadContext.createGroup(this->threadManager->getThreadContext().get());
+			this->groupId = this->threadContext->createGroup(*ThreadManager::getThreadContext().get());
 			this->botToken = botTokenNew;
 		}
 
@@ -304,7 +301,7 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		ThreadContext threadContext;
+		shared_ptr<ThreadContext> threadContext{ nullptr };
 		event_token messageReceivedToken;
 		event_token closedToken;
 		MessageWebSocket webSocket{ nullptr };
@@ -321,7 +318,6 @@ namespace DiscordCoreInternal {
 		DispatcherQueueTimer heartbeatTimer{ nullptr };
 		ITarget<json>& webSocketMessageTarget;
 		unbounded_buffer<exception> errorBuffer;
-		ThreadManager* threadManager{ nullptr };
 		unsigned int groupId;
 
 		void run() {
@@ -372,7 +368,7 @@ namespace DiscordCoreInternal {
 				this->dispatchQueueController = nullptr;
 			}
 			
-			this->threadContext.releaseGroup(this->groupId);
+			this->threadContext->releaseGroup(this->groupId);
 		}
 
 		void connect() {
@@ -437,7 +433,7 @@ namespace DiscordCoreInternal {
 				if (this->didWeReceiveHeartbeatAck == false) {
 					this->cleanup();
 					this->connect();
-					this->groupId = this->threadContext.createGroup(this->threadManager->getThreadContext().get());
+					this->groupId = this->threadContext->createGroup(*ThreadManager::getThreadContext().get());
 					this->didWeReceiveHeartbeatAck = true;
 					return;
 				}

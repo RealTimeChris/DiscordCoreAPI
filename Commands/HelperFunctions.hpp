@@ -431,7 +431,7 @@ namespace DiscordCoreAPI {
     }
 
     // Recurses through a succession of messages.
-    task<void> recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter) {
+    task<void> recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned int waitForMaxMs) {
         apartment_context mainThread;
         co_await resume_background();
         unsigned int newCurrentPageIndex = currentPageIndex;
@@ -462,7 +462,7 @@ namespace DiscordCoreAPI {
             while (doWeQuit == false) {
                 Button button(event01);
 
-                ButtonInteractionData buttonIntData = button.getOurButtonData(false, 60000);
+                ButtonInteractionData buttonIntData = button.getOurButtonData(false, waitForMaxMs);
                 if (button.getButtonId() == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
@@ -595,11 +595,11 @@ namespace DiscordCoreAPI {
         if (newInputModValue <= 0) {
             float newInputValue = newInputModValue * -1;
 
-            finalModValue = -1 * (float)trunc((pow(ceiling * newInputValue, 3)) / (pow(newInputValue, 3) + horizontalStretch * newInputValue));
+            finalModValue = -1 * (float)trunc((ceiling * pow(newInputValue, 3)) / ((pow(newInputValue, 3) + horizontalStretch * newInputValue)));
             return finalModValue;
         }
 
-        finalModValue = (float)trunc((pow(ceiling * newInputModValue, 3)) / (pow(newInputModValue, 3) + horizontalStretch * newInputModValue));
+        finalModValue = (float)trunc((ceiling * pow(newInputModValue, 3)) / ((pow(newInputModValue, 3) + horizontalStretch * newInputModValue)));
 
         return finalModValue;
     }

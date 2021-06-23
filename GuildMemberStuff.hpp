@@ -80,12 +80,12 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<exception> errorBuffer;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		DiscordCoreInternal::ThreadContext threadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		string guildId;
 
-		GuildMemberManagerAgent(DiscordCoreInternal::ThreadContext threadContextNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, DiscordCoreClient* discordCoreClientNew, string guildIdNew)
-			:agent(*threadContextNew.scheduler) {
+		GuildMemberManagerAgent(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, DiscordCoreClient* discordCoreClientNew, string guildIdNew)
+			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -182,8 +182,14 @@ namespace DiscordCoreAPI {
 	public:
 
 		task<GuildMember> fetchAsync(FetchGuildMemberData dataPackage) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetGuildMemberData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -199,13 +205,19 @@ namespace DiscordCoreAPI {
 			GuildMemberData guildMemberData;
 			GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(GuildMemberManagerAgent::outGuildMemberBuffer, guildMember);
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return guildMember;
 		}
 
 		task<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetGuildMemberData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -221,13 +233,19 @@ namespace DiscordCoreAPI {
 			GuildMemberData guildMemberData;
 			GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(GuildMemberManagerAgent::outGuildMemberBuffer, guildMember);
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return guildMember;
 		}
 
 		task<void> insertGuildMemberAsync(GuildMember guildMember, string guildId) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GuildMemberManagerAgent requestAgent(this->threadContext, this->agentResources, this->discordCoreClient, guildId);
 			GuildMemberManagerAgent::guildMembersToInsert.push(guildMember);
 			requestAgent.start();
@@ -236,13 +254,19 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "GuildMemberManager::getGuildMemberAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<void> removeGuildMemberAsync(string guildId, string guildMemberId) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			map<string, GuildMember> cache2;
 			try_receive(GuildMemberManagerAgent::cache2, cache2);
 			if (cache2.contains(guildId + guildMemberId)) {
@@ -250,7 +274,7 @@ namespace DiscordCoreAPI {
 				cache2.erase(guildId + guildMemberId);
 			}
 			asend(GuildMemberManagerAgent::cache2, cache2);
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
@@ -259,13 +283,19 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class DiscordCoreClientBase;
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		DiscordCoreInternal::ThreadContext threadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreClient* discordCoreClient{ nullptr };
+		unsigned int groupId;
 
-		GuildMemberManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, DiscordCoreInternal::ThreadContext threadContextNew, DiscordCoreClient* discordCoreClientNew) {
+		GuildMemberManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->groupId = this->threadContext->createGroup();
+		}
+
+		~GuildMemberManager() {
+			this->threadContext->releaseGroup(this->groupId);
 		}
 	};
 	unbounded_buffer<DiscordCoreInternal::GetGuildMemberData>* GuildMemberManagerAgent::requestFetchGuildMemberBuffer;

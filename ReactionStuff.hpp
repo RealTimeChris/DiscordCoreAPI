@@ -89,11 +89,11 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<exception> errorBuffer;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		DiscordCoreInternal::ThreadContext threadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreClient* discordCoreClient{ nullptr };
 
-		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, DiscordCoreInternal::ThreadContext threadContextNew, DiscordCoreClient* coreClientNew)
-			:agent(*threadContextNew.scheduler) {
+		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* coreClientNew)
+			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = coreClientNew;
@@ -221,8 +221,14 @@ namespace DiscordCoreAPI {
 	public:
 
 		task<Reaction> createReactionAsync(CreateReactionData dataPackage){
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::PutReactionData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
@@ -251,13 +257,19 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::ReactionData reactionData;
 			Reaction reaction(reactionData, this->discordCoreClient);
 			try_receive(ReactionManagerAgent::outReactionBuffer, reaction);
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return reaction;
 		}
 
 		task<Reaction> getReactionAsync(GetReactionData dataPackage) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetReactionData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
@@ -274,13 +286,19 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::ReactionData reactionData;
 			Reaction reaction(reactionData, this->discordCoreClient);
 			try_receive(ReactionManagerAgent::outReactionBuffer, reaction);
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return reaction;
 		}
 
 		task<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
@@ -309,13 +327,19 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "ReactionManager::deleteUserReactionAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
@@ -342,13 +366,19 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "ReactionManager::deleteOwnReactionAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
@@ -375,13 +405,19 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "ReactionManager::deleteReactionsByEmojiAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -395,13 +431,19 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "ReactionManager::deleteAllReactionsAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<void> insertReactionAsync(Reaction reaction) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			ReactionManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient);
 			ReactionManagerAgent::reactionsToInsert.push(reaction);
 			requestAgent.start();
@@ -410,20 +452,26 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "ReactionManager::insertReactionAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<void> removeReactionAsync(string messageId, string userId, string emojiName) {
-			unsigned int groupId = this->threadContext.createGroup();
-			co_await resume_foreground(*this->threadContext.dispatcherQueue.get());
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			map<string, Reaction> cache;
 			try_receive(ReactionManagerAgent::cache, cache);
 			if (cache.contains(messageId + userId +emojiName)) {
 				cache.erase(messageId + userId + emojiName);
 			}
 			asend(ReactionManagerAgent::cache, cache);
-			this->threadContext.releaseGroup(groupId);
+			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
@@ -432,15 +480,22 @@ namespace DiscordCoreAPI {
 		friend class ReactionManagerAgent;
 		friend class DiscordCoreClient;
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		DiscordCoreInternal::ThreadContext threadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreClient* discordCoreClient{ nullptr };
+		unsigned int groupId;
 
-		ReactionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, DiscordCoreInternal::ThreadContext threadContextNew, DiscordCoreClient* discordCoreClientNew) {
+		ReactionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->groupId = this->threadContext->createGroup();
+		}
+
+		~ReactionManager() {
+			this->threadContext->releaseGroup(this->groupId);
 		}
 	};
+
 	unbounded_buffer<DiscordCoreInternal::PutReactionData>* ReactionManagerAgent::requestPutReactionBuffer;
 	unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll>* ReactionManagerAgent::requestDeleteReactionBuffer;
 	unbounded_buffer<DiscordCoreInternal::GetReactionData>* ReactionManagerAgent::requestGetReactionBuffer;

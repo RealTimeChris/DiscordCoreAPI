@@ -166,8 +166,8 @@ namespace DiscordCoreAPI {
     }
 
     shared_ptr<DiscordCoreClient> DiscordCoreClient::finalSetup(string botToken) {
-        DiscordCoreInternal::ThreadManager::initialize();
         try {
+            DiscordCoreInternal::ThreadManager::initialize();
             DiscordCoreAPI::pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
             pDiscordCoreClient->login();
             pDiscordCoreClient->eventManager->onChannelCreation(onChannelCreation);

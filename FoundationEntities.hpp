@@ -504,9 +504,7 @@ namespace  DiscordCoreInternal {
         }
 
         unsigned int createGroup(ThreadContext threadContextNew) {
-            while (testForThreadFreedom(threadContextNew)) {
-
-            }
+            while (testForThreadFreedom(threadContextNew)) {}
             ScheduleGroup* newGroup = this->scheduler->CreateScheduleGroup();
             unsigned int returnValue = newGroup->Id();
             schedulerGroups.push_back(newGroup);
@@ -521,9 +519,10 @@ namespace  DiscordCoreInternal {
         }
 
         void releaseGroup(unsigned int schedulerGroupId) {
-            for (auto value : this->schedulerGroups) {
-                if (value->Id() == schedulerGroupId) {
-                    value->Release();
+            for (unsigned int x = 0; x < this->schedulerGroups.size(); x +=1 ) {
+                if (this->schedulerGroups.at(x)->Id() == schedulerGroupId) {
+                    this->schedulerGroups.at(x)->Release();
+                    this->schedulerGroups.erase(this->schedulerGroups.begin() + x);
                 }
             }
         };

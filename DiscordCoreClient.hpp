@@ -44,10 +44,9 @@ namespace DiscordCoreAPI {
 		MessageManager* messages{ nullptr };
 		SlashCommandManager* slashCommands{ nullptr };
 		EventManager* eventManager{ nullptr };
-		DiscordCoreInternal::ThreadManager* threadManager{ nullptr };
 		DiscordUser* discordUser{ nullptr };
 
-		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get().scheduler){
+		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler){
 			this->botToken = botTokenNew;
 		}
 
@@ -56,11 +55,11 @@ namespace DiscordCoreAPI {
 			if (guildCursor == DiscordCoreClient::guildMap.end()) {
 				DiscordGuild discordGuild(guildData);
 				DiscordCoreClient::guildMap.insert(make_pair(guildData.id, discordGuild));
-				discordGuild.getDataFromDB().get();
+				discordGuild.getDataFromDB();
 				return discordGuild;
 			}
 			else {
-				guildCursor->second.getDataFromDB().get();
+				guildCursor->second.getDataFromDB();
 				return guildCursor->second;
 			}
 		}
@@ -70,11 +69,11 @@ namespace DiscordCoreAPI {
 			if (guildMemberCursor == DiscordCoreClient::guildMemberMap.end()){
 				DiscordGuildMember discordGuildMember(guildMemberData);
 				DiscordCoreClient::guildMemberMap.insert(make_pair(guildMemberData.guildId + guildMemberData.user.id, discordGuildMember));
-				discordGuildMember.getDataFromDB().get();
+				discordGuildMember.getDataFromDB();
 				return discordGuildMember;
 			}
 			else {
-				guildMemberCursor->second.getDataFromDB().get();
+				guildMemberCursor->second.getDataFromDB();
 				return guildMemberCursor->second;
 			}
 		}
@@ -89,6 +88,9 @@ namespace DiscordCoreAPI {
 		}
 
 		void terminate() {
+			InteractionManager::cleanup();
+			DatabaseManagerAgent::cleanup();
+			InputEventManager::cleanup();
 			this->pWebSocketReceiverAgent->terminate();
 			agent::wait(this->pWebSocketReceiverAgent);
 			exception error;
@@ -110,7 +112,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<json> webSocketIncWorkloadBuffer;
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
 		unbounded_buffer<exception> errorBuffer;
-		DiscordCoreInternal::ThreadContext mainThreadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext;
 
 		void login() {
 			this->initialize(this->botToken).get();
@@ -122,17 +124,17 @@ namespace DiscordCoreAPI {
 
 		task<void> initialize(hstring botTokenNew) {
 			_set_purecall_handler(myPurecallHandler);
-			this->threadManager = new DiscordCoreInternal::ThreadManager();
 			apartment_context mainThread;
-			this->mainThreadContext = this->threadManager->getThreadContext().get();
-			co_await resume_foreground(*this->mainThreadContext.dispatcherQueue.get());
+			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
+			this->mainThreadContext->createGroup();
+			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = new DiscordCoreAPI::EventManager();
 			this->botToken = botTokenNew;
-			this->pWebSocketConnectionAgent = new DiscordCoreInternal::WebSocketConnectionAgent(this->webSocketIncWorkloadBuffer, this->botToken, this->threadManager->getThreadContext().get(), this->threadManager);
+			this->pWebSocketConnectionAgent = new DiscordCoreInternal::WebSocketConnectionAgent(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::HttpAgentResources agentResources;
 			agentResources.baseURL = this->baseURL;
 			agentResources.botToken = this->botToken;
-			DiscordCoreInternal::HttpRequestAgent::initialize(this->threadManager);
+			DiscordCoreInternal::HttpRequestAgent::initialize();
 			DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
@@ -148,7 +150,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
-			this->pWebSocketReceiverAgent = new DiscordCoreInternal::WebSocketReceiverAgent(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, this->threadManager->getThreadContext().get(), this->threadManager);
+			this->pWebSocketReceiverAgent = new DiscordCoreInternal::WebSocketReceiverAgent(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			ReactionManagerAgent::initialize();
 			UserManagerAgent::initialize();
 			MessageManagerAgent::initialize();
@@ -156,23 +158,23 @@ namespace DiscordCoreAPI {
 			GuildMemberManagerAgent::initialize();
 			GuildManagerAgent::initialize();
 			ChannelManagerAgent::initialize();
-			InteractionManager::initialize(agentResources, this->threadManager->getThreadContext().get());
-			InteractionManagerAgent::initialize(this->threadManager->getThreadContext().get(), this->threadManager);
-			this->reactions = new ReactionManager(agentResources, this->threadManager->getThreadContext().get(), this);
-			this->users = new UserManager(agentResources, this->threadManager->getThreadContext().get(), this);
-			this->messages = new MessageManager(agentResources, this->threadManager->getThreadContext().get(), this);
-			this->roles = new RoleManager(agentResources, this->threadManager->getThreadContext().get(), this);
-			this->guildMembers = new GuildMemberManager(agentResources, this->threadManager->getThreadContext().get(), this);
-			this->channels = new ChannelManager(agentResources, this->threadManager->getThreadContext().get(), this);
-			this->guilds = new GuildManager(agentResources, this->threadManager->getThreadContext().get(), (DiscordCoreClient*)this, this);
+			InteractionManager::initialize(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			InteractionManagerAgent::initialize();
+			this->reactions = new ReactionManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
+			this->users = new UserManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
+			this->messages = new MessageManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
+			this->roles = new RoleManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
+			this->guildMembers = new GuildMemberManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
+			this->channels = new ChannelManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
+			this->guilds = new GuildManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (DiscordCoreClient*)this, this);
 			this->currentUser = new User(this->users->fetchCurrentUserAsync().get().data, this);
-			this->slashCommands = new SlashCommandManager(agentResources, this->threadManager->getThreadContext().get(), this->currentUser->data.id);
-			DatabaseManagerAgent::initialize(this->currentUser->data.id, this->threadManager->getThreadContext().get());
-			Button::initialize(this->threadManager, this);
+			this->slashCommands = new SlashCommandManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
+			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			Button::initialize(this);
 			this->discordUser = new DiscordUser(this->currentUser->data.username, this->currentUser->data.id);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
-			InputEventManager::initialize(this->messages, this, agentResources, this->threadManager->getThreadContext().get());
-			this->discordUser->writeDataToDB().get();
+			InputEventManager::initialize(this->messages, this, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->discordUser->writeDataToDB();
 			co_await mainThread;
 		}
 
@@ -182,15 +184,15 @@ namespace DiscordCoreAPI {
 			agentResources.botToken = this->botToken;
 			Guild guild(agentResources, guildData, (DiscordCoreClient*)this, this);
 			DiscordGuild discordGuild(guild.data);
-			discordGuild.writeDataToDB().get();
+			discordGuild.writeDataToDB();
 			if (DiscordCoreClient::guildMap.contains(guild.data.id)) {
 				DiscordCoreClient::guildMap.erase(guild.data.id);
 				this->discordUser->data.guildCount -= 1;
-				this->discordUser->writeDataToDB().get();
+				this->discordUser->writeDataToDB();
 			}
 			else {
 				this->discordUser->data.guildCount += 1;
-				this->discordUser->writeDataToDB().get();
+				this->discordUser->writeDataToDB();
 				DiscordCoreClient::guildMap.insert(make_pair(guild.data.id, discordGuild));
 			}
 			return guild;
