@@ -30,13 +30,14 @@ namespace DiscordCoreAPI {
 		friend class UserManagerAgent;
 
 		Channel(ChannelData dataNew, DiscordCoreClient* discordCoreClientNew) {
-			this->initialize(dataNew, discordCoreClientNew).get();
+			this->initialize(dataNew, discordCoreClientNew);
+			return;
 		}
 
-		task<void> initialize(ChannelData dataNew, DiscordCoreClient* discordCoreClientNew) {
+		void initialize(ChannelData dataNew, DiscordCoreClient* discordCoreClientNew) {
 			this->data = dataNew;
 			this->discordCoreClient = discordCoreClientNew;
-			co_return;
+			return;
 		}
 	};
 
@@ -78,18 +79,18 @@ namespace DiscordCoreAPI {
 		static unbounded_buffer<DiscordCoreInternal::DeleteChannelPermissionOverwritesData>* requestDeleteChannelPermOWsBuffer;
 		static unbounded_buffer<Channel>* outChannelBuffer;
 		static concurrent_queue<Channel> channelsToInsert;
-		static overwrite_buffer<map<string, Channel>> cache2;
+		static overwrite_buffer<map<string, Channel>> cache;
 		unbounded_buffer<exception> errorBuffer;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;;
+		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		DiscordCoreClient* discordCoreClient;
 
-		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew)
+		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* coreClientNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
-			this->discordCoreClient = discordCoreClientNew;
+			this->discordCoreClient = coreClientNew;
 		}
 
 		static void initialize() {
@@ -219,7 +220,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::GetChannelData dataPackage01;
 				if (try_receive(ChannelManagerAgent::requestGetChannelBuffer, dataPackage01)) {
 					map<string, Channel> cacheTemp;
-					if (try_receive(ChannelManagerAgent::cache2, cacheTemp)) {
+					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage01.channelId)) {
 							Channel channel = cacheTemp.at(dataPackage01.channelId);
 							send(ChannelManagerAgent::outChannelBuffer, channel);
@@ -229,7 +230,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::FetchChannelData dataPackage02;
 				if (try_receive(ChannelManagerAgent::requestFetchChannelBuffer, dataPackage02)) {
 					map<string, Channel> cacheTemp;
-					if (try_receive(ChannelManagerAgent::cache2, cacheTemp)) {
+					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage02.channelId)) {
 							cacheTemp.erase(dataPackage02.channelId);
 						}
@@ -237,7 +238,7 @@ namespace DiscordCoreAPI {
 					Channel channel = getObjectData (dataPackage02);
 					cacheTemp.insert(make_pair(dataPackage02.channelId, channel));
 					send(ChannelManagerAgent::outChannelBuffer, channel);
-					asend(cache2, cacheTemp);
+					asend(cache, cacheTemp);
 				}
 				DiscordCoreInternal::EditChannelPermissionOverwritesData dataPackage03;
 				if (try_receive(ChannelManagerAgent::requestPutChannelPermOWsBuffer, dataPackage03)) {
@@ -251,36 +252,36 @@ namespace DiscordCoreAPI {
 				if (try_receive(ChannelManagerAgent::requestGetDMChannelBuffer, dataPackage05)) {
 					Channel channel = postObjectData (dataPackage05);
 					map<string, Channel> cacheTemp;
-					if (try_receive(ChannelManagerAgent::cache2, cacheTemp)) {
+					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(channel.data.id)) {
 							cacheTemp.erase(channel.data.id);
 							cacheTemp.insert(make_pair(channel.data.id, channel));
 							send(ChannelManagerAgent::outChannelBuffer, channel);
-							asend(cache2, cacheTemp);
+							asend(cache, cacheTemp);
 						}
 	 					else {
 							cacheTemp.insert(make_pair(channel.data.id, channel));
 							send(ChannelManagerAgent::outChannelBuffer, channel);
-							asend(cache2, cacheTemp);
+							asend(cache, cacheTemp);
 						}
 					}
 					else {
 						cacheTemp.insert(make_pair(channel.data.id, channel));
 						send(ChannelManagerAgent::outChannelBuffer, channel);
-						asend(cache2, cacheTemp);
+						asend(cache, cacheTemp);
 					}
 				}
 				ChannelData dataPackage06;
 				Channel channelNew(dataPackage06, this->discordCoreClient);
 				while (ChannelManagerAgent::channelsToInsert.try_pop(channelNew)) {
 					map<string, Channel> cacheTemp;
-					if (try_receive(ChannelManagerAgent::cache2, cacheTemp)) {
+					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(channelNew.data.id)) {
 							cacheTemp.erase(channelNew.data.id);
 						}
 					}
 					cacheTemp.insert(make_pair(channelNew.data.id, channelNew));
-					asend(ChannelManagerAgent::cache2, cacheTemp);
+					asend(ChannelManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (const exception& e) {
@@ -459,18 +460,17 @@ namespace DiscordCoreAPI {
 				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
 			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			map<string, Channel> cache2;
-			try_receive(ChannelManagerAgent::cache2, cache2);
-			if (cache2.contains(channelId)) {
-				cache2.erase(channelId);
+			map<string, Channel> cache;
+			try_receive(ChannelManagerAgent::cache, cache);
+			if (cache.contains(channelId)) {
+				cache.erase(channelId);
 			}
-			asend(ChannelManagerAgent::cache2, cache2);
+			asend(ChannelManagerAgent::cache, cache);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 	protected:
-
 		friend class Guild;
 		friend class ChannelManagerAgent;
 		friend class DiscordCoreClient;
@@ -489,10 +489,14 @@ namespace DiscordCoreAPI {
 		}
 
 		~ChannelManager() {
-			this->threadContext->releaseGroup(this->groupId);
+			for (auto value : this->threadContext->schedulerGroups) {
+				if (value->Id() == this->groupId) {
+					value->Release();
+				}
+			}
 		}
 	};
-	overwrite_buffer<map<string, Channel>> ChannelManagerAgent::cache2;
+	overwrite_buffer<map<string, Channel>> ChannelManagerAgent::cache;
 	unbounded_buffer<DiscordCoreInternal::FetchChannelData>* ChannelManagerAgent::requestFetchChannelBuffer;
 	unbounded_buffer<DiscordCoreInternal::GetChannelData>* ChannelManagerAgent::requestGetChannelBuffer;
 	unbounded_buffer<DiscordCoreInternal::GetDMChannelData>* ChannelManagerAgent::requestGetDMChannelBuffer;

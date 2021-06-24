@@ -21,6 +21,12 @@ namespace DiscordCoreAPI {
 
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
+			Channel channel = args->eventData.discordCoreClient->channels->getChannelAsync({ .channelId = args->eventData.getChannelId() }).get();
+
+			if (channel.data.type != ChannelType::DM && args->eventData.eventType != InputEventType::SLASH_COMMAND_INTERACTION) {
+				InputEventManager::deleteInputEventResponse(args->eventData);
+			}
+
 			unsigned int currentCount = 0;
 			map<string, Guild> theCache = receive(GuildManagerAgent::cache, 10000);
 			InputEventData inputEvent = args->eventData;
@@ -43,21 +49,21 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(inputEvent);
 					dataPackage.embeds.push_back(messageEmbed);
-					InputEventManager::respondToEvent(dataPackage).get();
+					InputEventManager::respondToEvent(dataPackage);
 				}
 				else if(args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 					if (currentCount == 0) {
 						CreateInteractionResponseData dataPackage(inputEvent);
 						dataPackage.data.embeds.push_back(messageEmbed);
-						inputEvent = InputEventManager::respondToEvent(dataPackage).get();
+						inputEvent = InputEventManager::respondToEvent(dataPackage);
 						EditInteractionResponseData editData(inputEvent);
 						editData.embeds.push_back(messageEmbed);
-						inputEvent = InputEventManager::respondToEvent(editData).get();
+						inputEvent = InputEventManager::respondToEvent(editData);
 					}
 					else {
 						ReplyMessageData dataPackage(inputEvent);
 						dataPackage.embeds.push_back(messageEmbed);
-						InputEventManager::respondToEvent(dataPackage).get();
+						InputEventManager::respondToEvent(dataPackage);
 					}
 					
 				}

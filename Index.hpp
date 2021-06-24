@@ -202,8 +202,12 @@ namespace DiscordCoreAPI {
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::deposit);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::displayGuildsData);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::duel);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::gamehouseOptions);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::help);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::inventory);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::leaderboard);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::registerSlashCommands);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::removeObject);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::shop);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::sellDrugs);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::test);

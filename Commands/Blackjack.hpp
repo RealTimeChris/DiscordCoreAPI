@@ -87,13 +87,13 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditMessageData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		return;
 	}
@@ -170,7 +170,7 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 				msgEmbed.setDescription(newEvent->getEmbeds()[0].description);
 			}
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
@@ -179,7 +179,7 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 				msgEmbed.setDescription(newEvent->getEmbeds()[0].description);
 			}
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 
 		return;
@@ -202,14 +202,14 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			msgEmbed.setDescription(newEvent->getEmbeds()[0].description);
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			msgEmbed.setDescription(newEvent->getEmbeds()[0].description);
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		return;
 	}
@@ -244,7 +244,7 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			msgEmbed.setDescription(newEvent->getEmbeds()[0].description);
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
@@ -253,7 +253,7 @@ void executeCrossResponse( DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 				msgEmbed.setDescription(newEvent->getEmbeds()[0].description);
 			}			
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		return;
 	}
@@ -263,7 +263,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 	unsigned int* newCardCount, vector<DiscordCoreAPI::Card>* userHand, vector<unsigned int>* userAceIndices, vector<unsigned int>* dealerAceIndices, string* userID, vector<DiscordCoreAPI::Card>* dealerHand) {
 
 	discordGuildMember->getDataFromDB();
-	DiscordCoreAPI::User currentUser = newEvent->discordCoreClient->users->getUserAsync({ newEvent->getRequesterId() }).get();	
+	DiscordCoreAPI::User currentUser = newEvent->discordCoreClient->users->getUserAsync({ newEvent->getRequesterId() }).get();
 
 	unsigned int fineAmount = 0;
 	fineAmount = 1 * *betAmount;
@@ -282,14 +282,14 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 			DiscordCoreAPI::EditMessageData* editData = new DiscordCoreAPI::EditMessageData(*newEvent);
 			editData->components.push_back(newEvent->getComponents().at(0));
 			editData->embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 			delete editData;
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			DiscordCoreAPI::EditInteractionResponseData* editData = new DiscordCoreAPI::EditInteractionResponseData(*newEvent);
 			editData->components.push_back(newEvent->getComponents().at(0));
 			editData->embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 			delete editData;
 		}
 		return;
@@ -354,7 +354,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 			msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 			editData->components = vector<DiscordCoreAPI::ActionRowData>();
 			editData->embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 			delete editData;
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
@@ -362,7 +362,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 			editData->components = vector<DiscordCoreAPI::ActionRowData>();
 			msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 			editData->embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 			delete editData;
 		}
 		return;
@@ -416,7 +416,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 				msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 				editData->components = vector<DiscordCoreAPI::ActionRowData>();
 				editData->embeds.push_back(msgEmbed);
-				DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 				delete editData;
 			}
 			else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
@@ -424,7 +424,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 				editData->components = vector<DiscordCoreAPI::ActionRowData>();
 				msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 				editData->embeds.push_back(msgEmbed);
-				DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 				delete editData;
 			}
 			return;
@@ -474,7 +474,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 				msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 				editData->components = vector<DiscordCoreAPI::ActionRowData>();
 				editData->embeds.push_back(msgEmbed);
-				DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 				delete editData;
 			}
 			else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
@@ -482,7 +482,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 				editData->components = vector<DiscordCoreAPI::ActionRowData>();
 				msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 				editData->embeds.push_back(msgEmbed);
-				DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 				delete editData;
 			}
 			return;
@@ -517,7 +517,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 			msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 			editData->components.push_back(newEvent->getComponents().at(0));
 			editData->embeds.push_back(msgEmbed);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 			delete editData;
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
@@ -525,7 +525,7 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 			editData->components.push_back(newEvent->getComponents().at(0));
 			msgEmbed.setDescription(newEvent->getMessageData().embeds.at(0).description);
 			editData->embeds.push_back(msgEmbed);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 			delete editData;
 		}
 		DiscordCoreAPI::Button* button = new DiscordCoreAPI::Button(*newEvent);
@@ -545,21 +545,21 @@ void executeCheckResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMember
 				DiscordCoreAPI::EditMessageData* editData = new DiscordCoreAPI::EditMessageData(*newEvent);
 				editData->components = vector<DiscordCoreAPI::ActionRowData>();
 				editData->embeds.push_back(msgEmbed2);
-				*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+				*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 				delete editData;
 			}
 			else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 				DiscordCoreAPI::EditInteractionResponseData* editData = new DiscordCoreAPI::EditInteractionResponseData(*newEvent);
 				editData->components = vector<DiscordCoreAPI::ActionRowData>();
 				editData->embeds = embeds;
-				*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData).get();
+				*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(*editData);
 				delete editData;
 			}
 			return;
 		}
 		else {
 			DiscordCoreAPI::DeferButtonResponseData deferButtonData(*buttonInteractionData);
-			DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData);
 		}
 
 		if (button->getButtonId() == "check") {
@@ -606,7 +606,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditMessageData editData(*newEvent);
 			editData.components = newEvent->getComponents();
 			editData.embeds.push_back(msgEmbed);
-			eventData002 = DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			eventData002 = DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			if (newEvent->getEmbeds().at(0).description[0] != (int)0x40) {
@@ -618,13 +618,13 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
 			editData.components = newEvent->getComponents();
 			editData.embeds.push_back(msgEmbed);
-			eventData002 = DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			eventData002 = DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		DiscordCoreAPI::Button button(eventData002);
 		DiscordCoreAPI::ButtonInteractionData buttonIntData = button.getOurButtonData(false, 60000);
 		if (button.getButtonId() == "check") {
 			DiscordCoreAPI::DeferButtonResponseData deferButtonData(buttonIntData);
-			DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData);
 			executeCheckResponse(discordGuildMember, betAmount, guildMember, discordGuild, &eventData002, newCardCount, userHand, userAceIndices, dealerAceIndices, userID, dealerHand);
 		}
 		else if (button.getButtonId() == "cross") {
@@ -642,13 +642,13 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 				DiscordCoreAPI::EditMessageData editMessageData(*newEvent);
 				editMessageData.embeds.push_back(msgEmbed2);
 				editMessageData.components = vector<DiscordCoreAPI::ActionRowData>();
-				DiscordCoreAPI::InputEventManager::respondToEvent(editMessageData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(editMessageData);
 			}
 			else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 				DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
 				editData.components = vector<DiscordCoreAPI::ActionRowData>();
 				editData.embeds.push_back(msgEmbed2);
-				DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 			}
 		}
 		return;
@@ -732,7 +732,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditMessageData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			if (newEvent->getEmbeds().at(0).description[0] != (int)0x40) {
@@ -741,7 +741,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		return;
 	}
@@ -764,7 +764,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditMessageData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			if (newEvent->getEmbeds().at(0).description[0] != (int)0x40) {
@@ -773,7 +773,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		return;
 	}
@@ -811,7 +811,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditMessageData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		else if (newEvent->eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 			if (newEvent->getEmbeds().at(0).description[0] != (int)0x40) {
@@ -820,7 +820,7 @@ void executeDoubleResponse(DiscordCoreAPI::DiscordGuildMember* discordGuildMembe
 			DiscordCoreAPI::EditInteractionResponseData editData(*newEvent);
 			editData.components = vector<DiscordCoreAPI::ActionRowData>();
 			editData.embeds.push_back(msgEmbed);
-			DiscordCoreAPI::InputEventManager::respondToEvent(editData).get();
+			DiscordCoreAPI::InputEventManager::respondToEvent(editData);
 		}
 		return;
 	}
@@ -848,7 +848,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (args->eventData.eventType != InputEventType::SLASH_COMMAND_INTERACTION) {
-					InputEventManager::deleteInputEventResponse(args->eventData).get();
+					InputEventManager::deleteInputEventResponse(args->eventData);
 				}
 
 				Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
@@ -873,14 +873,14 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					co_return;
 				}
@@ -897,14 +897,14 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					co_await mainThread;
 					co_return;
@@ -930,14 +930,14 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					co_await mainThread;
 					co_return;
@@ -994,12 +994,12 @@ namespace DiscordCoreAPI {
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 							ReplyMessageData responseData(args->eventData);
 							responseData.embeds.push_back(finalMessageEmbed);
-							InputEventManager::respondToEvent(responseData).get();
+							InputEventManager::respondToEvent(responseData);
 						}
 						else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 							CreateInteractionResponseData responseData(args->eventData);
 							responseData.data.embeds.push_back(finalMessageEmbed);
-							InputEventManager::respondToEvent(responseData).get();
+							InputEventManager::respondToEvent(responseData);
 						}
 						co_await mainThread;
 						co_return;
@@ -1036,12 +1036,12 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(finalMessageEmbed);
-						InputEventManager::respondToEvent(responseData).get();
+						InputEventManager::respondToEvent(responseData);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(finalMessageEmbed);
-						InputEventManager::respondToEvent(responseData).get();
+						InputEventManager::respondToEvent(responseData);
 					}
 					co_await mainThread;
 					co_return;
@@ -1081,7 +1081,7 @@ namespace DiscordCoreAPI {
 					if (canWeDoubleDown) {
 						replyMessageData.addButton(false, "double", "Double-Down", "⏬", ButtonStyle::Primary);
 					}
-					event001 = InputEventManager::respondToEvent(replyMessageData).get();
+					event001 = InputEventManager::respondToEvent(replyMessageData);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 					CreateInteractionResponseData replyInteractionData(args->eventData);
@@ -1091,11 +1091,11 @@ namespace DiscordCoreAPI {
 					if (canWeDoubleDown) {
 						replyInteractionData.addButton(false, "double", "Double-Down", "⏬", ButtonStyle::Primary);
 					}
-					event001 = InputEventManager::respondToEvent(replyInteractionData).get();
+					event001 = InputEventManager::respondToEvent(replyInteractionData);
 					EditInteractionResponseData editData(event001);
 					editData.embeds.push_back(finalMessageEmbed);
 					editData.components = event001.getComponents();
-					event001 = InputEventManager::respondToEvent(editData).get();
+					event001 = InputEventManager::respondToEvent(editData);
 				}
 				DiscordCoreAPI::Button button(event001);
 				ButtonInteractionData buttonIntData = button.getOurButtonData(false, 120000);
@@ -1111,20 +1111,20 @@ namespace DiscordCoreAPI {
 						EditMessageData editMessageData(event001);
 						editMessageData.embeds.push_back(msgEmbed2);
 						editMessageData.components = vector<DiscordCoreAPI::ActionRowData>();
-						InputEventManager::respondToEvent(editMessageData).get();
+						InputEventManager::respondToEvent(editMessageData);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						EditInteractionResponseData editData(event001);
 						editData.components = vector<DiscordCoreAPI::ActionRowData>();
 						editData.embeds.push_back(msgEmbed2);
-						InputEventManager::respondToEvent(editData).get();
+						InputEventManager::respondToEvent(editData);
 					}
 					co_await mainThread;
 					co_return;
 				}
 				else {
 					DiscordCoreAPI::DeferButtonResponseData deferButtonData(buttonIntData);
-					DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData).get();
+					DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData);
 				}
 
 				if (event001.eventType== InputEventType::REGULAR_MESSAGE) {
@@ -1135,7 +1135,7 @@ namespace DiscordCoreAPI {
 						editData.components.at(0).components.erase(editData.components.at(0).components.begin() + 2);
 					}					
 					editData.embeds.push_back(finalMessageEmbed);
-					event001 = InputEventManager::respondToEvent(editData).get();
+					event001 = InputEventManager::respondToEvent(editData);
 				}
 				else if (event001.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 					EditInteractionResponseData editData(event001);
@@ -1145,7 +1145,7 @@ namespace DiscordCoreAPI {
 					}
 					finalMessageEmbed.fields.at(2).value = footerMsgStringOld;
 					editData.embeds.push_back(finalMessageEmbed);
-					event001 = InputEventManager::respondToEvent(editData).get();
+					event001 = InputEventManager::respondToEvent(editData);
 				}
 				unsigned int newCardCount = 0;
 				if (button.getButtonId() == "check") {

@@ -28,9 +28,7 @@ namespace DiscordCoreAPI {
 					co_return;
 				}
 
-				if (args->eventData.eventType!= DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
-					InputEventManager::deleteInputEventResponse(args->eventData).get();
-				}
+				InputEventManager::deleteInputEventResponse(args->eventData);
 
 				Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild.data);
@@ -73,12 +71,12 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(messageEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(messageEmbed);
-						InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
+						InputEventData event01 = InputEventManager::respondToEvent(responseData);
 					}
 
 					discordGuildMember.data.lastTimeWorked = (unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -109,12 +107,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData responseData(args->eventData);
 					responseData.embeds.push_back(messageEmbed);
-					InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
+					InputEventData event01 = InputEventManager::respondToEvent(responseData);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
 					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(messageEmbed);
-					InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
+					InputEventData event01 = InputEventManager::respondToEvent(responseData);
 				}
 				}
 			}

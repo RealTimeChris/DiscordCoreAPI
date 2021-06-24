@@ -28,6 +28,8 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
+			InputEventManager::deleteInputEventResponse(args->eventData);
+
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
 
@@ -94,12 +96,12 @@ namespace DiscordCoreAPI {
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 				ReplyMessageData dataPackage(args->eventData);
 				dataPackage.embeds.push_back(msgEmbed);
-				InputEventManager::respondToEvent(dataPackage).get();
+				InputEventManager::respondToEvent(dataPackage);
 			}
 			else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				CreateInteractionResponseData dataPackage(args->eventData);
 				dataPackage.data.embeds.push_back(msgEmbed);
-				InputEventManager::respondToEvent(dataPackage).get();
+				InputEventManager::respondToEvent(dataPackage);
 			}
 			co_return;
 		};

@@ -45,6 +45,7 @@ namespace DiscordCoreAPI {
 		SlashCommandManager* slashCommands{ nullptr };
 		EventManager* eventManager{ nullptr };
 		DiscordUser* discordUser{ nullptr };
+		InteractionManager* interactions{ nullptr };
 
 		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler){
 			this->botToken = botTokenNew;
@@ -88,7 +89,6 @@ namespace DiscordCoreAPI {
 		}
 
 		void terminate() {
-			InteractionManager::cleanup();
 			DatabaseManagerAgent::cleanup();
 			InputEventManager::cleanup();
 			this->pWebSocketReceiverAgent->terminate();
@@ -158,8 +158,8 @@ namespace DiscordCoreAPI {
 			GuildMemberManagerAgent::initialize();
 			GuildManagerAgent::initialize();
 			ChannelManagerAgent::initialize();
-			InteractionManager::initialize(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			InteractionManagerAgent::initialize();
+			this->interactions = new InteractionManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->reactions = new ReactionManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
 			this->users = new UserManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
 			this->messages = new MessageManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
@@ -170,10 +170,10 @@ namespace DiscordCoreAPI {
 			this->currentUser = new User(this->users->fetchCurrentUserAsync().get().data, this);
 			this->slashCommands = new SlashCommandManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			Button::initialize(this);
+			Button::initialize(this->interactions);
 			this->discordUser = new DiscordUser(this->currentUser->data.username, this->currentUser->data.id);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
-			InputEventManager::initialize(this->messages, this, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			InputEventManager::initialize(this->messages, this, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
 			this->discordUser->writeDataToDB();
 			co_await mainThread;
 		}

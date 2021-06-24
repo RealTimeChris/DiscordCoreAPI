@@ -21,18 +21,18 @@ namespace DiscordCoreAPI {
 			this->helpDescription = "__**Register Slash Commands Usage:**__ !registerslashcommands or /registerslashcommands!";
 		}
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
-			try{
+			
 				/*
 			CreateApplicationCommandData createSellDrugsCommandData;
 			createSellDrugsCommandData.defaultPermission = true;
 			createSellDrugsCommandData.description = "Sell drugs in exchange for some currency!";
 			createSellDrugsCommandData.name = "selldrugs";
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createSellDrugsCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createSellDrugsCommandData);
 			CreateApplicationCommandData registerSlashCommandsCommandData;
 			registerSlashCommandsCommandData.defaultPermission = true;
 			registerSlashCommandsCommandData.description = "Register the programmatically designated slash commands.";
 			registerSlashCommandsCommandData.name = "registerslashcommands";
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(registerSlashCommandsCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(registerSlashCommandsCommandData);
 
 			CreateApplicationCommandData createBalanceCommandData;
 			createBalanceCommandData.defaultPermission = true;
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 			applicationCommandOptionOne.type = ApplicationCommandOptionType::USER;
 			applicationCommandOptionOne.description = "The person who's balances you would like to check.";
 			createBalanceCommandData.options.push_back(applicationCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBalanceCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBalanceCommandData);
 
 			CreateApplicationCommandData createAddShopItemCommandData;
 			createAddShopItemCommandData.defaultPermission = true;
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 			addShopItemCommandOptionFive.type = ApplicationCommandOptionType::STRING;
 			addShopItemCommandOptionFive.description = "The emoji/icon to use for the item.";
 			createAddShopItemCommandData.options.push_back(addShopItemCommandOptionFive);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopItemCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopItemCommandData);
 
 			CreateApplicationCommandData createAddShopRoleCommandData;
 			createAddShopRoleCommandData.defaultPermission = true;
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 			addShopRoleCommandOptionThree.type = ApplicationCommandOptionType::INTEGER;
 			addShopRoleCommandOptionThree.description = "The value/cost of the role.";
 			createAddShopRoleCommandData.options.push_back(addShopRoleCommandOptionThree);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopRoleCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopRoleCommandData);
 
 			CreateApplicationCommandData createCoinflipRoleCommandData;
 			createCoinflipRoleCommandData.defaultPermission = true;
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 			coinflipCommandOptionOne.type = ApplicationCommandOptionType::INTEGER;
 			coinflipCommandOptionOne.description = "The wager you would like to place.";
 			createCoinflipRoleCommandData.options.push_back(coinflipCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createCoinflipRoleCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createCoinflipRoleCommandData);
 
 			CreateApplicationCommandData createBotInfoCommandData;
 			createBotInfoCommandData.defaultPermission = true;
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 			botInfoChoiceOne.valueString = "gamehouse";
 			botInfoCommandOptionOne.choices.push_back(botInfoChoiceOne);
 			createBotInfoCommandData.options.push_back(botInfoCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBotInfoCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBotInfoCommandData);
 
 			CreateApplicationCommandData createBlackjackCommandData;
 			createBlackjackCommandData.defaultPermission = true;
@@ -144,19 +144,19 @@ namespace DiscordCoreAPI {
 			blackJackCommandOptionOne.type = ApplicationCommandOptionType::INTEGER;
 			blackJackCommandOptionOne.description = "The amount which you would like to wager.";
 			createBlackjackCommandData.options.push_back(blackJackCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBlackjackCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBlackjackCommandData);
 
 			CreateApplicationCommandData createButtonsCommandData;
 			createButtonsCommandData.defaultPermission = true;
 			createButtonsCommandData.description = "Test the buttons.";
 			createButtonsCommandData.name = "buttons";
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createButtonsCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createButtonsCommandData);
 
 			CreateApplicationCommandData createShopCommandData;
 			createShopCommandData.defaultPermission = true;
 			createShopCommandData.description = "Check out the server's shop!";
 			createShopCommandData.name = "shop";
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createShopCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createShopCommandData);
 
 			CreateApplicationCommandData createBuyCommandData;
 			createBuyCommandData.defaultPermission = true;
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 			buyCommandOptionOne.type = ApplicationCommandOptionType::STRING;
 			buyCommandOptionOne.description = "The item or role which you would like to purchase.";
 			createBuyCommandData.options.push_back(buyCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBuyCommandData).get();
+			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBuyCommandData);
 			
 			DiscordCoreAPI::CreateApplicationCommandData createTestCommandData;
 			createTestCommandData.defaultPermission = true;
@@ -180,25 +180,25 @@ namespace DiscordCoreAPI {
 			testCommandOptionOne.type = ApplicationCommandOptionType::STRING;
 			testCommandOptionOne.description = "The first argument to be entered.";
 			createTestCommandData.options.push_back(testCommandOptionOne);
-			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createTestCommandData).get();
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createTestCommandData);
 			
 			DiscordCoreAPI::CreateApplicationCommandData createBotInfoCommandData;
 			createBotInfoCommandData.defaultPermission = true;
 			createBotInfoCommandData.description = "Displays info about the current bot.";
 			createBotInfoCommandData.name = "botinfo";
-			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createBotInfoCommandData).get();
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createBotInfoCommandData);
 			
 			DiscordCoreAPI::CreateApplicationCommandData createCasinoStatsCommandData;
 			createCasinoStatsCommandData.defaultPermission = true;
 			createCasinoStatsCommandData.description = "View the server's casino stats.";
 			createCasinoStatsCommandData.name = "casinostats";
-			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createCasinoStatsCommandData).get();
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createCasinoStatsCommandData);
 			
 			DiscordCoreAPI::CreateApplicationCommandData createDisplayGuildsDataCommandData;
 			createDisplayGuildsDataCommandData.defaultPermission = true;
 			createDisplayGuildsDataCommandData.description = "View the list of servers that this bot is in.";
 			createDisplayGuildsDataCommandData.name = "displayguildsdata";
-			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createDisplayGuildsDataCommandData).get();
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createDisplayGuildsDataCommandData);
 			
 			DiscordCoreAPI::CreateApplicationCommandData createDuelCommandData;
 			createDuelCommandData.defaultPermission = true;
@@ -216,9 +216,28 @@ namespace DiscordCoreAPI {
 			duelCommandOptionTwo.type = ApplicationCommandOptionType::USER;
 			duelCommandOptionTwo.description = "The individual you are challenging to a duel.";
 			createDuelCommandData.options.push_back(duelCommandOptionTwo);
-			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createDuelCommandData).get();
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createDuelCommandData);
+			
+			DiscordCoreAPI::CreateApplicationCommandData createGamehouseOptionsCommandData;
+			createGamehouseOptionsCommandData.defaultPermission = true;
+			createGamehouseOptionsCommandData.description = "View the options of this bot.";
+			createGamehouseOptionsCommandData.name = "gamehouseoptions";
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createGamehouseOptionsCommandData).get();
+			
+			DiscordCoreAPI::CreateApplicationCommandData createInventoryCommandData;
+			createInventoryCommandData.defaultPermission = true;
+			createInventoryCommandData.description = "Observe your inventory of items and roles.";
+			createInventoryCommandData.name = "inventory";
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createInventoryCommandData).get();
 			*/
-			InputEventManager::deleteInputEventResponse(args->eventData).get();
+			DiscordCoreAPI::CreateApplicationCommandData createLeaderboardCommandData;
+			createLeaderboardCommandData.defaultPermission = true;
+			createLeaderboardCommandData.description = "View the server's currency leaderboard.";
+			createLeaderboardCommandData.name = "leaderboard";
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createLeaderboardCommandData).get();
+
+
+			InputEventManager::deleteInputEventResponse(args->eventData);
 			
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -231,19 +250,16 @@ namespace DiscordCoreAPI {
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 				ReplyMessageData responseData(args->eventData);
 				responseData.embeds.push_back(msgEmbed);
-				InputEventData  event01 = InputEventManager::respondToEvent(responseData).get();
+				InputEventData  event01 = InputEventManager::respondToEvent(responseData);
 			}
 			else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				CreateInteractionResponseData responseData(args->eventData);
 				responseData.data.embeds.push_back(msgEmbed);
 				InputEventData event;
-				event = InputEventManager::respondToEvent(responseData).get();
+				event = InputEventManager::respondToEvent(responseData);
 			}
 			co_return;
-			}
-			catch (exception& e) {
-				cout << "RegisterSlashCommands::execute() Error: " << e.what() << endl << endl;
-			}
+			
 		}
 	};
 	RegisterSlashCommands registerSlashCommands{};

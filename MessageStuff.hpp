@@ -987,7 +987,11 @@ namespace DiscordCoreAPI {
 		}
 
 		~MessageManager() {
-			this->threadContext->releaseGroup(this->groupId);
+			for (auto value : this->threadContext->schedulerGroups) {
+				if (value->Id() == this->groupId) {
+					value->Release();
+				}
+			}
 		}
 	};
 	overwrite_buffer<map<string, Message>> MessageManagerAgent::cache2;

@@ -16,8 +16,8 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 	int fromUserCurrency = discordFromGuildMember->data.currency.wallet;
 	discordToGuildMember->getDataFromDB();
 	int toUserCurrency = discordToGuildMember->data.currency.wallet;
-	string toUserID = ""; *toUserIDNew;
-	string fromUserID = ""; *fromUserIDNew;
+	 ;
+	*fromUserIDNew;
 	
 	if (*betAmount > fromUserCurrency) {
 		string msgString;
@@ -31,12 +31,12 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		if (newEvent->eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 			DiscordCoreAPI::EditMessageData dataPackage(*newEvent);
 			dataPackage.embeds.push_back(messageEmbed3);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 		}
 		else {
 			DiscordCoreAPI::EditInteractionResponseData dataPackage(*newEvent);
 			dataPackage.embeds.push_back(messageEmbed3);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 		}
 		return;
 	}
@@ -51,12 +51,12 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		if (newEvent->eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 			DiscordCoreAPI::EditMessageData dataPackage(*newEvent);
 			dataPackage.embeds.push_back(messageEmbed4);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 		}
 		else {
 			DiscordCoreAPI::EditInteractionResponseData dataPackage(*newEvent);
 			dataPackage.embeds.push_back(messageEmbed4);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 		}
 		return;
 	}
@@ -80,14 +80,14 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 	
 	for (auto value : discordFromGuildMember->data.items) {
 		if (value.selfMod > 0) {
-			string currentString = "+" + value.selfMod;
-			currentString += " of base roll from <@!" + fromUserID + ">'s " + value.emoji + value.itemName + "\n";
+			string currentString = "+" + to_string(value.selfMod);
+			currentString += " of base roll from <@!" + *fromUserIDNew + ">'s " + value.emoji + value.itemName + "\n";
 			fromUserGainStrings.push_back(currentString);
 			fromUserSelfMod += value.selfMod;
 		}
 		if (value.oppMod < 0) {
-			string currentString = "-" + to_string(value.oppMod);
-			currentString += " of base roll from <@!" + fromUserID + ">'s " + value.emoji + value.itemName + "\n";
+			string currentString = to_string(value.oppMod);
+			currentString += " of base roll from <@!" + *fromUserIDNew + ">'s " + value.emoji + value.itemName + "\n";
 			toUserLossStrings.push_back(currentString);
 			toUserOppMod += value.oppMod;
 		}
@@ -95,14 +95,14 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 
 	for (auto value : discordToGuildMember->data.items) {
 		if (value.selfMod > 0) {
-			string currentString = "+" + value.selfMod;
-			currentString += " of base roll from <@!" + toUserID + ">'s " + value.emoji + value.itemName + "\n";
+			string currentString = "+" + to_string(value.selfMod);
+			currentString += " of base roll from <@!" + *toUserIDNew + ">'s " + value.emoji + value.itemName + "\n";
 			toUserGainStrings.push_back(currentString);
 			toUserSelfMod += value.selfMod;
 		}
 		if (value.oppMod < 0) {
-			string currentString = "-" + to_string(value.oppMod);
-			currentString += " of base roll from <@!" + toUserID + ">'s " + value.emoji + value.itemName + "\n";
+			string currentString = to_string(value.oppMod);
+			currentString += " of base roll from <@!" + *toUserIDNew + ">'s " + value.emoji + value.itemName + "\n";
 			fromUserLossStrings.push_back(currentString);
 			fromUserOppMod += value.oppMod;
 		}
@@ -131,19 +131,20 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		unsigned int currentPage = 0;
 
 		string fromUserVicHeaderString;
-		fromUserVicHeaderString = "<@!" + fromUserID + "> has defeated <@!" + toUserID + ">!\n__Your rolls were__:\n";
+		fromUserVicHeaderString = "<@!" + *fromUserIDNew + "> has defeated <@!" + *toUserIDNew + ">!\n__Your rolls were__:\n";
 
-		finalStrings.push_back(fromUserVicHeaderString);
+		finalStrings.resize(1);
+		finalStrings[currentPage] += fromUserVicHeaderString;
 
-		string midFooter1 = "__**<@!" + fromUserID + ">:**__ " + to_string(fromUserRoll) + "\n";
-		string midFooter2 = "__**<@!" + toUserID + ">:**__ " + to_string(toUserRoll) + "\n";
+		string midFooter1 = "__**<@!" + *fromUserIDNew + ">:**__ " + to_string(fromUserRoll) + "\n";
+		string midFooter2 = "__**<@!" + *toUserIDNew + ">:**__ " + to_string(toUserRoll) + "\n";
 
-		finalStrings.push_back(midFooter1);
+		finalStrings[currentPage] += midFooter1;
 
 		string finalFooterString;
 		finalFooterString = "------\n__Your new wallet balances are:__\n";
 		
-		finalFooterString += "<@!" + fromUserID + ">: " + to_string(discordFromGuildMember->data.currency.wallet) + newEvent->discordCoreClient->discordUser->data.currencyName + "\n" + "<@!" + toUserID + ">: " +
+		finalFooterString += "<@!" + *fromUserIDNew + ">: " + to_string(discordFromGuildMember->data.currency.wallet) + newEvent->discordCoreClient->discordUser->data.currencyName + "\n" + "<@!" + *toUserIDNew + ">: " +
 			to_string(discordToGuildMember->data.currency.wallet) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n------";
 			
 		vector<string> fromUserModStrings;
@@ -165,7 +166,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 			}
 		}
 
-		finalStrings.push_back(midFooter2);
+		finalStrings[currentPage] += midFooter2;
 
 		vector<string> toUserModStrings;
 		for (auto value : toUserLossStrings) {
@@ -174,8 +175,8 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		toUserModStrings = toUserGainStrings;
 
 		for (auto value : toUserModStrings) {
-			if ((finalStrings[currentPage].length() + value.length()
-				+ midFooter1.length() + toUserFooterString.length()) >= 2048) {
+			if ((finalStrings[currentPage].size()+ value.size()
+				+ midFooter1.size() + toUserFooterString.size()) >= 2048) {
 				finalStrings.resize(finalStrings.size() + 1);
 				currentPage += 1;
 				finalStrings[currentPage] = fromUserVicHeaderString;
@@ -185,14 +186,14 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 				finalStrings[currentPage] += toUserFooterString;
 			}
 		}
-		finalStrings.push_back(finalFooterString);
+		finalStrings[currentPage] += finalFooterString;
 
-		messageEmbeds.resize(finalStrings.size());
+		messageEmbeds.resize(currentPage + 1);
 		for (unsigned int x = 0; x < finalStrings.size(); x += 1) {
 			messageEmbeds[x] = DiscordCoreAPI::EmbedData();
 			messageEmbeds[x].setColor("00FE00");
 			messageEmbeds[x].setTimeStamp(DiscordCoreAPI::getTimeAndDate());
-			messageEmbeds[x].setTitle("__**DUEL RESULTS! " + to_string(x + 1) + " of " + to_string(finalStrings.size()) + "**__");
+			messageEmbeds[x].setTitle("__**Duel Results: " + to_string(x + 1) + " of " + to_string(finalStrings.size()) + "**__");
 			messageEmbeds[x].setDescription(finalStrings[x]);
 		}
 	}
@@ -206,17 +207,18 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		unsigned int currentPage = 0;
 
 		string toUserVicHeaderString;
-		toUserVicHeaderString = "<@!" + toUserID + "> has defeated <@!" + fromUserID + "> !!\n__Your rolls were__:\n";
+		toUserVicHeaderString = "<@!" + *toUserIDNew + "> has defeated <@!" + *fromUserIDNew + "> !!\n__Your rolls were__:\n";
 
-		finalStrings.push_back(toUserVicHeaderString);
+		finalStrings.resize(1);
+		finalStrings[currentPage] += toUserVicHeaderString;
 
-		string midFooter1 = "__**<@!" + toUserID + ">:**__ " + to_string(toUserRoll) + "\n";
-		string midFooter2 = "__**<@!" + fromUserID + ">:**__ " + to_string(fromUserRoll) + "\n";
+		string midFooter1 = "__**<@!" + *toUserIDNew + ">:**__ " + to_string(toUserRoll) + "\n";
+		string midFooter2 = "__**<@!" + *fromUserIDNew + ">:**__ " + to_string(fromUserRoll) + "\n";
 
-		finalStrings.push_back(midFooter1);
+		finalStrings[currentPage] += midFooter1;
 		
-		string finalFooterString = "-----\n__Your new wallet balances are: __\n<@!" + toUserID + ">:" + to_string(discordToGuildMember->data.currency.wallet) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n<@!" +
-			fromUserID + ">: " + to_string(discordFromGuildMember->data.currency.wallet) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n------";
+		string finalFooterString = "-----\n__Your new wallet balances are: __\n<@!" + *toUserIDNew + ">:" + to_string(discordToGuildMember->data.currency.wallet) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n<@!" +
+			*fromUserIDNew + ">: " + to_string(discordFromGuildMember->data.currency.wallet) + " " + newEvent->discordCoreClient->discordUser->data.currencyName + "\n------";
 			
 		vector<string> toUserModStrings;
 		for (auto value : toUserLossStrings) {
@@ -237,7 +239,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 			}
 		}
 
-		finalStrings.push_back(midFooter2);
+		finalStrings[currentPage] += midFooter2;
 
 		vector<string> fromUserModStrings;
 		for (auto value : fromUserLossStrings) {
@@ -246,8 +248,8 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		fromUserModStrings = fromUserGainStrings;
 
 		for (auto value : fromUserModStrings) {
-			if ((finalStrings[currentPage].length() + value.length()
-				+ fromUserFooterString.length()) >= 2048) {
+			if ((finalStrings[currentPage].size() + value.size()
+				+ fromUserFooterString.size()) >= 2048) {
 				finalStrings.resize(finalStrings.size() + 1);
 				currentPage += 1;
 				finalStrings[currentPage] = toUserVicHeaderString;
@@ -257,14 +259,14 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 				finalStrings[currentPage] += fromUserFooterString;
 			}
 		}
-		finalStrings.push_back(finalFooterString);
+		finalStrings[currentPage] += finalFooterString;
 
-		messageEmbeds.resize(finalStrings.size());
+		messageEmbeds.resize(currentPage + 1);
 		for (unsigned int x = 0; x < finalStrings.size(); x += 1) {
 			messageEmbeds[x] = DiscordCoreAPI::EmbedData();
-			messageEmbeds[x].setColor("00FE00");
+			messageEmbeds[x].setColor("FE0000");
 			messageEmbeds[x].setTimeStamp(DiscordCoreAPI::getTimeAndDate());
-			messageEmbeds[x].setTitle("__**DUEL RESULTS! " + to_string(x + 1) + " of " + to_string(finalStrings.size()) + "**__");
+			messageEmbeds[x].setTitle("__**Duel Results: " + to_string(x + 1) + " of " + to_string(finalStrings.size()) + "**__");
 			messageEmbeds[x].setDescription(finalStrings[x]);
 		}
 	}
@@ -274,30 +276,29 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		finalStrings[0] = "__**Looks like it was a draw! Nicely done!**__";
 		messageEmbeds[0].setColor("FEFEFE");
 		messageEmbeds[0].setTimeStamp(DiscordCoreAPI::getTimeAndDate());
-		messageEmbeds[0].setTitle("__**DUEL RESULTS! " + to_string(0 + 1) + " of " + to_string(finalStrings.size()) + "**__");
+		messageEmbeds[0].setTitle("__**Duel Results: " + to_string(0 + 1) + " of " + to_string(finalStrings.size()) + "**__");
 		messageEmbeds[0].setDescription(finalStrings[0]);
 		if (newEvent->eventType== DiscordCoreAPI::InputEventType::REGULAR_MESSAGE){
 			DiscordCoreAPI::ReplyMessageData dataPackage(*newEvent);
 			dataPackage.embeds.push_back(messageEmbeds[0]);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 		}
 		else {
 			DiscordCoreAPI::CreateInteractionResponseData dataPackage(*newEvent);
 			dataPackage.data.embeds.push_back(messageEmbeds[0]);
-			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+			*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 		}
 	}
 	unsigned int currentPageIndex = 0;
 	if (newEvent->eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
-		DiscordCoreAPI::ReplyMessageData dataPackage(*newEvent);
-		dataPackage.embeds.push_back(messageEmbeds[currentPageIndex]);
+		DiscordCoreAPI::InputEventManager::deleteInputEventResponse(*newEvent);
 	}
 	else {
 		DiscordCoreAPI::CreateInteractionResponseData dataPackage(*newEvent);
 		dataPackage.data.embeds.push_back(messageEmbeds[currentPageIndex]);
-		*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+		*newEvent = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 	}
-	recurseThroughMessagePages(fromUserID, *newEvent, currentPageIndex, messageEmbeds, false, 120000).get();
+	recurseThroughMessagePages(*fromUserIDNew, *newEvent, currentPageIndex, messageEmbeds, false, 120000);
 }
 
 void executeExit(string fromUserID, string toUserID, DiscordCoreAPI::DiscordGuild discordGuild, DiscordCoreAPI::InputEventData originalEvent) {
@@ -311,12 +312,12 @@ void executeExit(string fromUserID, string toUserID, DiscordCoreAPI::DiscordGuil
 	if (originalEvent.eventType== DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 		DiscordCoreAPI::ReplyMessageData dataPackage(originalEvent);
 		dataPackage.embeds.push_back(messageEmbed2);
-		DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+		DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 	}
 	else {
 		DiscordCoreAPI::CreateInteractionResponseData dataPackage(originalEvent);
 		dataPackage.data.embeds.push_back(messageEmbed2);
-		DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage).get();
+		DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 	}
 }
 
@@ -336,7 +337,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			InputEventManager::deleteInputEventResponse(args->eventData).get();
+			InputEventManager::deleteInputEventResponse(args->eventData);
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -359,14 +360,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(args->eventData);
 					dataPackage.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -381,14 +382,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(args->eventData);
 					dataPackage.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -417,14 +418,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(args->eventData);
 					dataPackage.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -443,14 +444,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(args->eventData);
 					dataPackage.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -465,14 +466,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(args->eventData);
 					dataPackage.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(dataPackage).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -491,7 +492,7 @@ namespace DiscordCoreAPI {
 				dataPackage.embeds.push_back(messageEmbed);
 				dataPackage.addButton(false, "check", "Accept", "✅", ButtonStyle::Success);
 				dataPackage.addButton(false, "cross", "Reject", "❌", ButtonStyle::Success);
-				newEvent = InputEventManager::respondToEvent(dataPackage).get();
+				newEvent = InputEventManager::respondToEvent(dataPackage);
 			}
 			else {
 				CreateInteractionResponseData dataPackage(args->eventData);
@@ -499,28 +500,28 @@ namespace DiscordCoreAPI {
 				dataPackage.data.content = "<@!" + toUserID + ">";
 				dataPackage.addButton(false, "check", "Accept", "✅", ButtonStyle::Success);
 				dataPackage.addButton(false, "cross", "Reject", "❌", ButtonStyle::Success);
-				newEvent = InputEventManager::respondToEvent(dataPackage).get();
+				newEvent = InputEventManager::respondToEvent(dataPackage);
 				EditInteractionResponseData dataPackage2(newEvent);
 				dataPackage2.components = dataPackage.data.components;
 				dataPackage2.content = dataPackage.data.content;
 				dataPackage2.embeds = dataPackage.data.embeds;
-				newEvent = InputEventManager::respondToEvent(dataPackage2).get();
+				newEvent = InputEventManager::respondToEvent(dataPackage2);
 			}
 			Button button(newEvent);
 			ButtonInteractionData buttonInteractionData = button.getOurButtonData(false, 120000, toUserID);
 			if (button.getButtonId() == "exit") {
 				DiscordCoreAPI::DeferButtonResponseData deferButtonData(buttonInteractionData);
-				DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData);
 				executeExit(fromUserID, toUserID, discordGuild, newEvent);
 			}
 			else if (button.getButtonId() == "check") {
 				DiscordCoreAPI::DeferButtonResponseData deferButtonData(buttonInteractionData);
-				DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData);
 				executeCheck(&discordFromGuildMember, &discordToGuildMember, &discordGuild, &newEvent, &betAmount, &msgEmbedString, &fromUserID, &toUserID);
 			}
 			else if (button.getButtonId() == "cross") {
 				DiscordCoreAPI::DeferButtonResponseData deferButtonData(buttonInteractionData);
-				DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData).get();
+				DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData);
 				string rejectedString;
 
 				rejectedString = "Sorry, <@!" + fromUserID + ">, but <@!" + toUserID + "> has rejected your duel offer!";
@@ -534,13 +535,13 @@ namespace DiscordCoreAPI {
 					EditMessageData dataPackage(newEvent);
 					dataPackage.embeds.push_back(messageEmbed5);
 					dataPackage.content = "<@!" + fromUserID + ">";
-					newEvent = InputEventManager::respondToEvent(dataPackage).get();
+					newEvent = InputEventManager::respondToEvent(dataPackage);
 				}
 				else {
 					EditInteractionResponseData dataPackage(newEvent);
 					dataPackage.embeds.push_back(messageEmbed5);
 					dataPackage.content = "<@!" + fromUserID + ">";
-					newEvent = InputEventManager::respondToEvent(dataPackage).get();
+					newEvent = InputEventManager::respondToEvent(dataPackage);
 				}
 			}
 			co_return;

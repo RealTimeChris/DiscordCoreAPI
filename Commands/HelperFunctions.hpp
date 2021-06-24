@@ -41,14 +41,14 @@ namespace DiscordCoreAPI {
             if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 ReplyMessageData responseData(eventData);
                 responseData.embeds.push_back(msgEmbed);
-                event01 = InputEventManager::respondToEvent(responseData).get();
-                InputEventManager::deleteInputEventResponse(event01, 20000).get();
+                event01 = InputEventManager::respondToEvent(responseData);
+                InputEventManager::deleteInputEventResponse(event01, 20000);
             }
             else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                 CreateInteractionResponseData responseData(eventData);
                 responseData.data.embeds.push_back(msgEmbed);
-                event01 = InputEventManager::respondToEvent(responseData).get();
-                InputEventManager::deleteInputEventResponse(event01, 20000).get();
+                event01 = InputEventManager::respondToEvent(responseData);
+                InputEventManager::deleteInputEventResponse(event01, 20000);
             }
             return true;
         }
@@ -79,14 +79,14 @@ namespace DiscordCoreAPI {
                 if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                     ReplyMessageData replyMessageData(eventData);
                     replyMessageData.embeds.push_back(msgEmbed);
-                    InputEventData event01 = InputEventManager::respondToEvent(replyMessageData).get();
-                    InputEventManager::deleteInputEventResponse(event01, 20000).get();
+                    InputEventData event01 = InputEventManager::respondToEvent(replyMessageData);
+                    InputEventManager::deleteInputEventResponse(event01, 20000);
                 }
                 else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                     CreateInteractionResponseData responseData(eventData);
                     responseData.data.embeds.push_back(msgEmbed);
-                    InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-                    InputEventManager::deleteInputEventResponse(event01, 20000).get();
+                    InputEventData event01 = InputEventManager::respondToEvent(responseData);
+                    InputEventManager::deleteInputEventResponse(event01, 20000);
                 }
             }
             
@@ -418,14 +418,14 @@ namespace DiscordCoreAPI {
         if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
             ReplyMessageData responseData(eventData);
             responseData.embeds.push_back(msgEmbed);
-            InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-            InputEventManager::deleteInputEventResponse(event01, 20000).get();
+            InputEventData event01 = InputEventManager::respondToEvent(responseData);
+            InputEventManager::deleteInputEventResponse(event01, 20000);
         }
         else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
             CreateInteractionResponseData responseData(eventData);
             responseData.data.embeds.push_back(msgEmbed);
-            InputEventData event = InputEventManager::respondToEvent(responseData).get();
-            InputEventManager::deleteInputEventResponse(event, 20000).get();
+            InputEventData event = InputEventManager::respondToEvent(responseData);
+            InputEventManager::deleteInputEventResponse(event, 20000);
         }
         return false;
     }
@@ -444,7 +444,7 @@ namespace DiscordCoreAPI {
                 responseDataRegularMessage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 responseDataRegularMessage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
                 responseDataRegularMessage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Primary);
-                event01 = InputEventManager::respondToEvent(responseDataRegularMessage).get();
+                event01 = InputEventManager::respondToEvent(responseDataRegularMessage);
             }
             else if (originalEvent.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                 CreateInteractionResponseData responseDataInteraction(originalEvent);
@@ -452,11 +452,11 @@ namespace DiscordCoreAPI {
                 responseDataInteraction.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 responseDataInteraction.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
                 responseDataInteraction.addButton(false, "exit", "Exit", "❌", ButtonStyle::Primary);
-                event01 = InputEventManager::respondToEvent(responseDataInteraction).get();
+                event01 = InputEventManager::respondToEvent(responseDataInteraction);
                 EditInteractionResponseData editResponseData(event01);
                 editResponseData.embeds = responseDataInteraction.data.embeds;
                 editResponseData.components = responseDataInteraction.data.components;
-                event01 = InputEventManager::respondToEvent(editResponseData).get();
+                event01 = InputEventManager::respondToEvent(editResponseData);
             }
 
             while (doWeQuit == false) {
@@ -468,21 +468,21 @@ namespace DiscordCoreAPI {
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData).get();
+                        event01 = InputEventManager::respondToEvent(editMessageData);
                     }
                     else {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData).get();
+                        event01 = InputEventManager::respondToEvent(responseData);
                     }
                 }
                 else if (button.getButtonId() == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
@@ -490,22 +490,22 @@ namespace DiscordCoreAPI {
                    EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData).get();
+                        event01 = InputEventManager::respondToEvent(editMessageData);
 
                     }
                     else {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData).get();
+                        event01 = InputEventManager::respondToEvent(responseData);
                     }
                 }
                 else if (button.getButtonId() == "backwards" && (newCurrentPageIndex > 0)) {
@@ -513,21 +513,21 @@ namespace DiscordCoreAPI {
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData).get();
+                        event01 = InputEventManager::respondToEvent(editMessageData);
                     }
                     else {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData).get();
+                        event01 = InputEventManager::respondToEvent(responseData);
                     }
                 }
                 else if (button.getButtonId() == "backwards" && (newCurrentPageIndex == 0)) {
@@ -535,21 +535,21 @@ namespace DiscordCoreAPI {
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData).get();
+                        event01 = InputEventManager::respondToEvent(editMessageData);
                     }
                     else {
                         DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData).get();
+                        InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData).get();
+                        event01 = InputEventManager::respondToEvent(responseData);
                     }
                 }
                 else if (button.getButtonId() == "exit" || button.getButtonId() == "") {
@@ -560,21 +560,18 @@ namespace DiscordCoreAPI {
                         if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
                             EditMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
-                            dataPackage.embeds.at(0).setColor("00FE00");
-                            InputEventManager::respondToEvent(dataPackage).get();
+                            dataPackage.embeds.at(0).setColor(event01.discordCoreClient->getDiscordGuild(event01.discordCoreClient->guilds->getGuildAsync({ event01.getGuildId() }).get().data).data.borderColor);
+                            InputEventManager::respondToEvent(dataPackage);
                         }
                         else {
                             EditInteractionResponseData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
-                            cout << dataPackage.embeds.at(0).hexColorValue << endl;
-                            dataPackage.embeds.at(0).setColor("00FE00");
-                            InputEventManager::respondToEvent(dataPackage).get();
+                            dataPackage.embeds.at(0).setColor(event01.discordCoreClient->getDiscordGuild(event01.discordCoreClient->guilds->getGuildAsync({ event01.getGuildId() }).get().data).data.borderColor);
+                            InputEventManager::respondToEvent(dataPackage);
                         }
                     }
                     doWeQuit = true;
-
                 }
-                
             }
             co_await mainThread;
             co_return;
@@ -583,9 +580,8 @@ namespace DiscordCoreAPI {
             cout << "recurseThroughMessagePages() Error: " << e.what() << endl << endl;
             co_return;
         }
-        
     };
-    
+
     float applyAsymptoticTransform(float inputModValue, float horizontalStretch, float ceiling ){
         float finalModValue = 0;
         float newInputModValue = inputModValue;

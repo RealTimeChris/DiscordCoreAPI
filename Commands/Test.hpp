@@ -34,22 +34,22 @@ namespace DiscordCoreAPI {
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 							ReplyMessageData responseData01(args->eventData);
 							responseData01.embeds.push_back(msgEmbed);
-							InputEventData event01 = InputEventManager::respondToEvent(responseData01).get();
+							InputEventData event01 = InputEventManager::respondToEvent(responseData01);
 							EditMessageData responseData(event01);
 							msgEmbed.setDescription("Empty Description");
 							responseData.embeds.push_back(msgEmbed);
-							InputEventData event03 = InputEventManager::respondToEvent(responseData).get();
-							InputEventManager::deleteInputEventResponse(event03, 5000).get();
+							InputEventData event03 = InputEventManager::respondToEvent(responseData);
+							InputEventManager::deleteInputEventResponse(event03, 5000);
 						}
 						else {
 							CreateEphemeralInteractionResponseData newData(args->eventData);
 							newData.data.embeds.push_back(msgEmbed);
-							auto eventNew = InputEventManager::respondToEvent(newData).get();
+							auto eventNew = InputEventManager::respondToEvent(newData);
 							EditInteractionResponseData editData(eventNew);
 							msgEmbed.setDescription("EDITED DESCRIPTION!");
 							editData.embeds.push_back(msgEmbed);
-							auto eventNew02 = InputEventManager::respondToEvent(editData).get();
-							InputEventManager::deleteInputEventResponse(eventNew02, 5000).get();
+							auto eventNew02 = InputEventManager::respondToEvent(editData);
+							InputEventManager::deleteInputEventResponse(eventNew02, 5000);
 						}
 					}
 					else if (regex_search(args->argumentsArray.at(0), userIDRegExp)){
@@ -64,24 +64,24 @@ namespace DiscordCoreAPI {
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 							ReplyMessageData responseData01(args->eventData);
 							responseData01.embeds.push_back(msgEmbed);
-							InputEventData event01 = InputEventManager::respondToEvent(responseData01).get();
+							InputEventData event01 = InputEventManager::respondToEvent(responseData01);
 							EditMessageData responseData(event01);
 							msgEmbed.setDescription("Edited description!");
 							responseData.embeds.push_back(msgEmbed);
 							responseData.embeds.at(0).setDescription(userID);
-							InputEventData event03 = InputEventManager::respondToEvent(responseData).get();
-							InputEventManager::deleteInputEventResponse(event03, 5000).get();
+							InputEventData event03 = InputEventManager::respondToEvent(responseData);
+							InputEventManager::deleteInputEventResponse(event03, 5000);
 						}
 						else {
 							CreateInteractionResponseData newData(args->eventData);
 							newData.data.embeds.push_back(msgEmbed);
-							auto eventNew = InputEventManager::respondToEvent(newData).get();
+							auto eventNew = InputEventManager::respondToEvent(newData);
 							EditInteractionResponseData editData(eventNew);
 							msgEmbed.setColor("00FEFE");
 							msgEmbed.setDescription(userID);
 							editData.embeds.push_back(msgEmbed);
-							auto eventNew02 = InputEventManager::respondToEvent(editData).get();
-							InputEventManager::deleteInputEventResponse(eventNew02, 5000).get();
+							auto eventNew02 = InputEventManager::respondToEvent(editData);
+							InputEventManager::deleteInputEventResponse(eventNew02, 5000);
 						}
 					}
 					else if(args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
@@ -91,17 +91,17 @@ namespace DiscordCoreAPI {
 						msgEmbed.setTimeStamp(getTimeAndDate());
 						msgEmbed.setTitle("__**Welcome to &:**__");
 						CreateDeferredInteractionResponseData newData01(args->eventData);
-						auto newEvent = InputEventManager::respondToEvent(newData01).get();
+						auto newEvent = InputEventManager::respondToEvent(newData01);
 						CreateFollowUpMessageData newData(newEvent);
 						newData.embeds.push_back(msgEmbed);
-						newEvent = InputEventManager::respondToEvent(newData).get();
+						newEvent = InputEventManager::respondToEvent(newData);
 						vector<EmbedData> embeds;
 						EditFollowUpMessageData newData02(newEvent);
 						msgEmbed.setColor("000000");
 						embeds.push_back(msgEmbed);
 						newData02.embeds = embeds;
-						//newEvent = InputEventManager::respondToEvent(newData02).get();
-						///InputEventManager::deleteInputEventResponse(newEvent, 5000).get();
+						//newEvent = InputEventManager::respondToEvent(newData02);
+						///InputEventManager::deleteInputEventResponse(newEvent, 5000);
 					}
 					else if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -111,11 +111,11 @@ namespace DiscordCoreAPI {
 						msgEmbed.setTitle("__**Welcome to &:**__");
 						ReplyMessageData newData01(args->eventData);
 						newData01.embeds.push_back(msgEmbed);
-						auto newEvent = InputEventManager::respondToEvent(newData01).get();
+						auto newEvent = InputEventManager::respondToEvent(newData01);
 						/*
 						CreateFollowUpMessageData newData(newEvent);
 						newData.embeds.push_back(msgEmbed);
-						newEvent = InputEventManager::respondToEvent(newData).get();
+						newEvent = InputEventManager::respondToEvent(newData);
 						vector<EmbedData> embeds;
 						EditFollowUpMessageData newData02(newEvent);
 						msgEmbed.setColor("000000");
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 				deleteData.channelId = args->eventData.getChannelId();
 				deleteData.limit = 100;
 				deleteData.deletePinned = false;
-				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(deleteData).get();
+				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(deleteData);
 
 				co_return;
 			}

@@ -28,9 +28,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				InputEventManager::deleteInputEventResponse(args->eventData).get();
-			}
+			InputEventManager::deleteInputEventResponse(args->eventData);
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -61,14 +59,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(replyData).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(replyData);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(responseData).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -87,14 +85,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(replyData).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(replyData);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(responseData).get();
-					InputEventManager::deleteInputEventResponse(newEvent, 20000).get();
+					auto newEvent = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -145,12 +143,12 @@ namespace DiscordCoreAPI {
 			if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 				ReplyMessageData replyData(args->eventData);
 				replyData.embeds.push_back(messageEmbed);
-				auto newEvent = InputEventManager::respondToEvent(replyData).get();;
+				auto newEvent = InputEventManager::respondToEvent(replyData);;
 			}
 			else {
 				CreateEphemeralInteractionResponseData responseData(args->eventData);
 				responseData.data.embeds.push_back(messageEmbed);
-				auto newEvent = InputEventManager::respondToEvent(responseData).get();
+				auto newEvent = InputEventManager::respondToEvent(responseData);
 			}
 			co_return;
 		}

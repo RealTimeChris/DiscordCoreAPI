@@ -28,9 +28,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				InputEventManager::deleteInputEventResponse(args->eventData).get();
-			}
+			InputEventManager::deleteInputEventResponse(args->eventData);
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -53,14 +51,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData responseData(args->eventData);
 					responseData.embeds.push_back(msgEmbed);
-					InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-					InputEventManager::deleteInputEventResponse(event01, 20000).get();
+					InputEventData event01 = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(event01, 20000);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventData event = InputEventManager::respondToEvent(responseData).get();
-					InputEventManager::deleteInputEventResponse(event, 20000).get();
+					InputEventData event = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(event, 20000);
 				}
 				co_return;
 			}
@@ -93,16 +91,16 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
-						event02 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event02, 20000).get();
+						event02 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event02, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateDeferredInteractionResponseData responseData(args->eventData);
-						event02 = InputEventManager::respondToEvent(responseData).get();
+						event02 = InputEventManager::respondToEvent(responseData);
 						CreateFollowUpMessageData responseData2(args->eventData);
 						responseData2.embeds.push_back(msgEmbed);
-						event02 = InputEventManager::respondToEvent(responseData2).get();
-						InputEventManager::deleteInputEventResponse(event02, 20000).get();
+						event02 = InputEventManager::respondToEvent(responseData2);
+						InputEventManager::deleteInputEventResponse(event02, 20000);
 					}
 				}
 			}
@@ -220,14 +218,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData responseData(args->eventData);
 					responseData.embeds.push_back(messageEmbed);
-					InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-					InputEventManager::deleteInputEventResponse(event01, 20000).get();
+					InputEventData event01 = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(event01, 20000);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(messageEmbed);
-					InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-					InputEventManager::deleteInputEventResponse(event01, 20000).get();
+					InputEventData event01 = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(event01, 20000);
 				}
 				co_return;
 			}
@@ -236,7 +234,7 @@ namespace DiscordCoreAPI {
 
 			unsigned int currentPageIndex = 0;
 			string userID = args->eventData.getAuthorId();
-			recurseThroughMessagePages(userID, args->eventData, currentPageIndex, finalMsgEmbedsArray, true, 120000).get();
+			recurseThroughMessagePages(userID, args->eventData, currentPageIndex, finalMsgEmbedsArray, true, 120000);
 
 			co_return;
 		}

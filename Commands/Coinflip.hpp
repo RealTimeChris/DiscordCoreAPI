@@ -23,14 +23,12 @@ namespace DiscordCoreAPI {
 			Channel channel = args->eventData.discordCoreClient->channels->getChannelAsync({ args->eventData.getChannelId() }).get();
 
 			bool areWeInADm = areWeInADM(args->eventData, channel);
-				
+			
 			if (areWeInADm == true) {
 				co_return;
 			}
 
-			if (args->eventData.eventType != DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
-				InputEventManager::deleteInputEventResponse(args->eventData).get();
-			}
+			InputEventManager::deleteInputEventResponse(args->eventData);
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -55,12 +53,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(replyData).get();
+					InputEventManager::respondToEvent(replyData);
 				}
 				else {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}
@@ -78,12 +76,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(replyData).get();
+					InputEventManager::respondToEvent(replyData);
 				}
 				else {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}
@@ -106,12 +104,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(replyData).get();
+					InputEventManager::respondToEvent(replyData);
 				}
 				else {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}
@@ -131,19 +129,19 @@ namespace DiscordCoreAPI {
 				replyData.addButton(false, "Heads", "Heads", "🤯", ButtonStyle::Success);
 				replyData.addButton(false, "Tails", "Tails", "🐍", ButtonStyle::Success);
 				replyData.embeds.push_back(msgEmbed);
-				inputData = InputEventManager::respondToEvent(replyData).get();
+				inputData = InputEventManager::respondToEvent(replyData);
 			}
 			else {
 				CreateInteractionResponseData responseData(args->eventData);
 				responseData.addButton(false, "Heads", "Heads", "🤯", ButtonStyle::Success);
 				responseData.addButton(false, "Tails", "Tails", "🐍", ButtonStyle::Success);
 				responseData.data.embeds.push_back(msgEmbed);
-				inputData = InputEventManager::respondToEvent(responseData).get();
+				inputData = InputEventManager::respondToEvent(responseData);
 				EditInteractionResponseData responseData2(inputData);
 				responseData2.embeds.push_back(msgEmbed);
 				responseData2.addButton(false, "Heads", "Heads", "🤯", ButtonStyle::Success);
 				responseData2.addButton(false, "Tails", "Tails", "🐍", ButtonStyle::Success);
-				inputData = InputEventManager::respondToEvent(responseData2).get();
+				inputData = InputEventManager::respondToEvent(responseData2);
 			}
 			Button button2(inputData);
 			ButtonInteractionData buttonInteractionData = button2.getOurButtonData(false, 60000);
@@ -158,12 +156,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed2);
-					InputEventManager::respondToEvent(replyData).get();
+					InputEventManager::respondToEvent(replyData);
 				}
 				else {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed2);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}
@@ -186,12 +184,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed3);
-					InputEventManager::respondToEvent(replyData).get();
+					InputEventManager::respondToEvent(replyData);
 				}
 				else {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed3);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}
@@ -219,12 +217,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					EditMessageData editData(inputData);
 					editData.embeds.push_back(msgEmbed4);
-					InputEventManager::respondToEvent(editData).get();
+					InputEventManager::respondToEvent(editData);
 				}
 				else if(args->eventData.eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION){
 					EditInteractionResponseData responseData(inputData);
 					responseData.embeds.push_back(msgEmbed4);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 			}
 			else if (button2.getButtonId() == "Heads" && number <= 0.50 || button2.getButtonId() == "Tails" && number >= 0.50) {
@@ -243,12 +241,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					EditMessageData editData(inputData);
 					editData.embeds.push_back(msgEmbed4);
-					InputEventManager::respondToEvent(editData).get();
+					InputEventManager::respondToEvent(editData);
 				}
 				else if (args->eventData.eventType == DiscordCoreAPI::InputEventType::SLASH_COMMAND_INTERACTION) {
 					EditInteractionResponseData responseData(inputData);
 					responseData.embeds.push_back(msgEmbed4);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 			}
 			co_return;

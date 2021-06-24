@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 					co_return;
 				}
 
-				InputEventManager::deleteInputEventResponse(args->eventData).get();
+				InputEventManager::deleteInputEventResponse(args->eventData);
 
 				Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild.data);
@@ -62,15 +62,15 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
-						event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						InputEventData event;
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
-						event = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event, 20000).get();
+						event = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event, 20000);
 					}
 					co_return;
 				}
@@ -85,15 +85,15 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
-						event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						InputEventData event;
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
-						event = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event, 20000).get();
+						event = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event, 20000);
 					}
 					co_return;
 				}
@@ -108,15 +108,15 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
-						event01 = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event01, 20000).get();
+						event01 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						InputEventData event;
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
-						event = InputEventManager::respondToEvent(responseData).get();
-						InputEventManager::deleteInputEventResponse(event, 20000).get();
+						event = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event, 20000);
 					}
 					co_return;
 				}
@@ -142,15 +142,15 @@ namespace DiscordCoreAPI {
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 							ReplyMessageData responseData(args->eventData);
 							responseData.embeds.push_back(msgEmbed);
-							event01 = InputEventManager::respondToEvent(responseData).get();
-							InputEventManager::deleteInputEventResponse(event01, 20000).get();
+							event01 = InputEventManager::respondToEvent(responseData);
+							InputEventManager::deleteInputEventResponse(event01, 20000);
 						}
 						else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 							InputEventData event;
 							CreateInteractionResponseData responseData(args->eventData);
 							responseData.data.embeds.push_back(msgEmbed);
-							event = InputEventManager::respondToEvent(responseData).get();
-							InputEventManager::deleteInputEventResponse(event, 20000).get();
+							event = InputEventManager::respondToEvent(responseData);
+							InputEventManager::deleteInputEventResponse(event, 20000);
 						}
 						
 						co_return;
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 				createRoleData.mentionable = true;
 				createRoleData.name = roleName;
 				createRoleData.permissions = rolePermsString;
-				Role role =  args->eventData.discordCoreClient->roles->createRoleAsync(createRoleData).get();
+				Role role = args->eventData.discordCoreClient->roles->createRoleAsync(createRoleData).get();
 				if (role.data.id == "") {
 					throw exception("Role not initialized!");
 				}
@@ -209,12 +209,12 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData responseData(args->eventData);
 					responseData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 					CreateInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}
