@@ -456,7 +456,9 @@ namespace DiscordCoreAPI {
 						OnMessageDeletionData messageDeletionData;
 						messageDeletionData.messageId = workload.payLoad.at("id");
 						messageDeletionData.channelId = workload.payLoad.at("channel_id");
-						messageDeletionData.guildId = workload.payLoad.at("guild_id");
+						if (workload.payLoad.contains("guild_id")) {
+							messageDeletionData.guildId = workload.payLoad.at("guild_id");
+						}						
 						messageDeletionData.discordCoreClient = this;
 						this->eventManager->onMessageDeletionEvent(messageDeletionData);
 						break;

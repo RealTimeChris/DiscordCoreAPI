@@ -64,6 +64,11 @@ namespace DiscordCoreAPI {
 		string roleId;
 	};
 
+	struct DeleteGuildRoleData {
+		string guildId;
+		string roleId;
+	};
+
 	struct GetGuildMemberRolesData {
 		string guildId;
 		GuildMember guildMember;
@@ -96,7 +101,8 @@ namespace DiscordCoreAPI {
 		static unbounded_buffer<DiscordCoreInternal::PatchRoleData>* requestPatchRoleBuffer;
 		static unbounded_buffer<DiscordCoreInternal::PutRoleData>* requestPutRoleBuffer;
 		static unbounded_buffer<DiscordCoreInternal::PostRoleData>* requestPostRoleBuffer;
-		static unbounded_buffer<DiscordCoreInternal::DeleteRoleData>* requestDeleteRoleBuffer;
+		static unbounded_buffer<DiscordCoreInternal::DeleteGuildMemberRoleData>* requestDeleteRoleBuffer;
+		static unbounded_buffer<DiscordCoreInternal::DeleteGuildRoleData>* requestDeleteGuildRoleBuffer;
 		static unbounded_buffer<Role>* outRoleBuffer;
 		static unbounded_buffer<vector<Role>>* outRolesBuffer;
 		static concurrent_queue<Role>* rolesToInsert;
@@ -118,10 +124,11 @@ namespace DiscordCoreAPI {
 			RoleManagerAgent::requestGetRoleBuffer = new unbounded_buffer<DiscordCoreInternal::GetRoleData>;
 			RoleManagerAgent::requestPatchRoleBuffer = new unbounded_buffer<DiscordCoreInternal::PatchRoleData>;
 			RoleManagerAgent::requestPostRoleBuffer = new unbounded_buffer<DiscordCoreInternal::PostRoleData>;
-			RoleManagerAgent::requestDeleteRoleBuffer = new unbounded_buffer<DiscordCoreInternal::DeleteRoleData>;
+			RoleManagerAgent::requestDeleteRoleBuffer = new unbounded_buffer<DiscordCoreInternal::DeleteGuildMemberRoleData>;
 			RoleManagerAgent::requestFetchRolesBuffer = new unbounded_buffer<DiscordCoreInternal::FetchRolesData>;
 			RoleManagerAgent::requestFetchRoleBuffer = new unbounded_buffer<DiscordCoreInternal::FetchRoleData>;
 			RoleManagerAgent::requestPutRoleBuffer = new unbounded_buffer<DiscordCoreInternal::PutRoleData>;
+			RoleManagerAgent::requestDeleteGuildRoleBuffer = new unbounded_buffer<DiscordCoreInternal::DeleteGuildRoleData>;
 			RoleManagerAgent::rolesToInsert = new concurrent_queue<Role>;
 			RoleManagerAgent::outRolesBuffer = new unbounded_buffer<vector<Role>>;
 			RoleManagerAgent::outRoleBuffer = new unbounded_buffer<Role>;
@@ -285,11 +292,35 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		void deleteObjectData(DiscordCoreInternal::DeleteRoleData dataPackage) {
+		void deleteObjectData(DiscordCoreInternal::DeleteGuildMemberRoleData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_GUILD_MEMBER_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId + "/roles/" + dataPackage.roleId;
+			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			send(requestAgent.workSubmissionBuffer, workload);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			while (requestAgent.getError(error)) {
+				cout << "RoleManagerAgent::deleteObject() Error: " << error.what() << endl << endl;
+			}
+			DiscordCoreInternal::HttpData returnData;
+			try_receive(requestAgent.workReturnBuffer, returnData);
+			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+				cout << "RoleManagerAgent::deleteObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			else {
+				cout << "RoleManagerAgent::deleteObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			return;
+		}
+
+		void deleteObjectData(DiscordCoreInternal::DeleteGuildRoleData dataPackage) {
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_GUILD_ROLE;
+			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
 			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
@@ -351,30 +382,34 @@ namespace DiscordCoreAPI {
 				if (try_receive(RoleManagerAgent::requestPutRoleBuffer, dataPackage04)) {
 					putObjectData(dataPackage04);
 				}
-				DiscordCoreInternal::DeleteRoleData dataPackage05;
+				DiscordCoreInternal::DeleteGuildMemberRoleData dataPackage05;
 				if (try_receive(RoleManagerAgent::requestDeleteRoleBuffer, dataPackage05)) {
 					deleteObjectData(dataPackage05);
 				}
-				DiscordCoreInternal::FetchRolesData dataPackage06;
-				if (try_receive(RoleManagerAgent::requestFetchRolesBuffer, dataPackage06)) {
-					vector<Role> roles = getObjectData(dataPackage06);
+				DiscordCoreInternal::DeleteGuildRoleData dataPackage06;
+				if (try_receive(RoleManagerAgent::requestDeleteGuildRoleBuffer, dataPackage06)) {
+					deleteObjectData(dataPackage06);
+				}
+				DiscordCoreInternal::FetchRolesData dataPackage07;
+				if (try_receive(RoleManagerAgent::requestFetchRolesBuffer, dataPackage07)) {
+					vector<Role> roles = getObjectData(dataPackage07);
 					send(RoleManagerAgent::outRolesBuffer, roles);
 				}
-				DiscordCoreInternal::PostRoleData dataPacakge07;
-				if (try_receive(RoleManagerAgent::requestPostRoleBuffer, dataPacakge07)) {
-					Role role = postObjectData(dataPacakge07);
+				DiscordCoreInternal::PostRoleData dataPacakge08;
+				if (try_receive(RoleManagerAgent::requestPostRoleBuffer, dataPacakge08)) {
+					Role role = postObjectData(dataPacakge08);
 					map<string, Role> cacheTemp;
 					if (try_receive(RoleManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(role.data.id)) {
 							cacheTemp.erase(role.data.id);
 						}
 					}
-					cacheTemp.insert(make_pair(dataPacakge07.roleId, role));
+					cacheTemp.insert(make_pair(dataPacakge08.roleId, role));
 					send(RoleManagerAgent::outRoleBuffer, role);
 					asend(cache, cacheTemp);
 				}
-				RoleData dataPackage08;
-				Role roleNew(dataPackage08, this->discordCoreClient);
+				RoleData dataPackage09;
+				Role roleNew(dataPackage09, this->discordCoreClient);
 				while (RoleManagerAgent::rolesToInsert->try_pop(roleNew)) {
 					map<string, Role> cacheTemp;
 					if (try_receive(RoleManagerAgent::cache, cacheTemp)) {
@@ -590,7 +625,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "RoleManager::createRoleAsync() Error: " << error.what() << endl << endl;
+				cout << "RoleManager::addRoleToGuildMemberAsync() Error: " << error.what() << endl << endl;
 			}
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
@@ -605,7 +640,7 @@ namespace DiscordCoreAPI {
 				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
 			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::DeleteRoleData dataPackageNew;
+			DiscordCoreInternal::DeleteGuildMemberRoleData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.userId = dataPackage.userId;
@@ -616,7 +651,32 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "RoleManager::createRoleAsync() Error: " << error.what() << endl << endl;
+				cout << "RoleManager::removeRoleFromGuildMemberAsync() Error: " << error.what() << endl << endl;
+			}
+			this->threadContext->releaseGroup(groupIdNew);
+			co_return;
+		}
+
+		task<void> removeRoleFromGuildAsync(DeleteGuildRoleData dataPackage) {
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			DiscordCoreInternal::DeleteGuildRoleData dataPackageNew;
+			dataPackageNew.agentResources = this->agentResources;
+			dataPackageNew.guildId = dataPackage.guildId;
+			dataPackageNew.roleId = dataPackage.roleId;
+			RoleManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient);
+			send(RoleManagerAgent::requestDeleteGuildRoleBuffer, dataPackageNew);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			while (requestAgent.getError(error)) {
+				cout << "RoleManager::removeRoleFromGuildAsync() Error: " << error.what() << endl << endl;
 			}
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
@@ -689,8 +749,9 @@ namespace DiscordCoreAPI {
 	unbounded_buffer<DiscordCoreInternal::PatchRoleData>* RoleManagerAgent::requestPatchRoleBuffer;
 	unbounded_buffer<DiscordCoreInternal::PutRoleData>* RoleManagerAgent::requestPutRoleBuffer;
 	unbounded_buffer<DiscordCoreInternal::PostRoleData>* RoleManagerAgent::requestPostRoleBuffer;
-	unbounded_buffer<DiscordCoreInternal::DeleteRoleData>* RoleManagerAgent::requestDeleteRoleBuffer;
+	unbounded_buffer<DiscordCoreInternal::DeleteGuildMemberRoleData>* RoleManagerAgent::requestDeleteRoleBuffer;
 	unbounded_buffer<DiscordCoreInternal::FetchRoleData>* RoleManagerAgent::requestFetchRoleBuffer;
+	unbounded_buffer<DiscordCoreInternal::DeleteGuildRoleData>* RoleManagerAgent::requestDeleteGuildRoleBuffer;
 	unbounded_buffer<vector<Role>>* RoleManagerAgent::outRolesBuffer;
 	unbounded_buffer<Role>* RoleManagerAgent::outRoleBuffer;
 	concurrent_queue<Role>* RoleManagerAgent::rolesToInsert;

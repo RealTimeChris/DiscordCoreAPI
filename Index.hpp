@@ -208,6 +208,10 @@ namespace DiscordCoreAPI {
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::leaderboard);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::registerSlashCommands);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::removeObject);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::removeShopItem);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::removeShopRole);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::rob);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::roulette);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::shop);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::sellDrugs);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::test);

@@ -855,7 +855,6 @@ namespace DiscordCoreAPI {
     class Button : public agent {
     public:
         static map<string, unbounded_buffer<ButtonInteractionData>*> buttonInteractioinBufferMap;
-        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 
         Button() {};
 
@@ -907,6 +906,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
+        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static InteractionManager* interactions;
         unsigned int maxTimeInMs;
         bool getButtonDataForAll;

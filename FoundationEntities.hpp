@@ -748,7 +748,8 @@ namespace  DiscordCoreInternal {
         GET_MESSAGES = 38,
         DELETE_MESSAGES_BULK = 39,
         GET_AUDIT_LOG = 40,
-        DELETE_FOLLOW_UP_MESSAGE = 41
+        DELETE_FOLLOW_UP_MESSAGE = 41,
+        DELETE_GUILD_ROLE = 42
     };
 
     struct GetApplicationData {
@@ -1059,10 +1060,16 @@ namespace  DiscordCoreInternal {
         string roleId;
     };
 
-    struct DeleteRoleData {
+    struct DeleteGuildMemberRoleData {
         HttpAgentResources agentResources;
         string guildId;
         string userId;
+        string roleId;
+    };
+
+    struct DeleteGuildRoleData {
+        HttpAgentResources agentResources;
+        string guildId;
         string roleId;
     };
 
@@ -1862,47 +1869,47 @@ namespace DiscordCoreAPI {
             newData.video = this->video;
             return newData;
         };
-        EmbedData setTitle(string titleNew) {
+        EmbedData* setTitle(string titleNew) {
             this->title = titleNew;
-            return *this;
+            return this;
         }
-        EmbedData setAuthor(string authorName, string authorAvatarURL = "") {
+        EmbedData* setAuthor(string authorName, string authorAvatarURL = "") {
             this->author.name = authorName;
             this->author.iconUrl = authorAvatarURL;
-            return *this;
+            return this;
         }
-        EmbedData setImage(string imageURL) {
+        EmbedData* setImage(string imageURL) {
             this->image.url = imageURL;
-            return *this;
+            return this;
         }
-        EmbedData setThumbnail(string thumbnailURL) {
+        EmbedData* setThumbnail(string thumbnailURL) {
             this->thumbnail.url = thumbnailURL;
-            return *this;
+            return this;
         }
-        EmbedData setColor(string hexColorValueNew) {
+        EmbedData* setColor(string hexColorValueNew) {
             this->hexColorValue = hexColorValueNew;
-            return *this;
+            return this;
         }
-        EmbedData setDescription(string descriptionNew) {
+        EmbedData* setDescription(string descriptionNew) {
             this->description = descriptionNew;
-            return *this;
+            return this;
         }
-        EmbedData setFooter(string footerText, string footerIconURLText = "") {
+        EmbedData* setFooter(string footerText, string footerIconURLText = "") {
             this->footer.text = footerText;
             this->footer.iconUrl = footerIconURLText;
-            return *this;
+            return this;
         }
-        EmbedData setTimeStamp(string timeStamp) {
+        EmbedData* setTimeStamp(string timeStamp) {
             this->timestamp = timeStamp;
-            return *this;
+            return this;
         }
-        EmbedData addField(string name, string value, bool Inline = true) {
+        EmbedData* addField(string name, string value, bool Inline = true) {
             EmbedFieldData embedFieldData;
             embedFieldData.name = name;
             embedFieldData.Inline = Inline;
             embedFieldData.value = value;
             this->fields.push_back(embedFieldData);
-            return *this;
+            return this;
         }
         string title;
         string type;
