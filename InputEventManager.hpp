@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
 	public:
 		InputEventManager() {}
 
-		static void initialize(MessageManager* messagesNew, DiscordCoreClient* discordCoreClientNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, InteractionManager* interactionsNew) {
+		static void initialize(shared_ptr<MessageManager> messagesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<InteractionManager> interactionsNew) {
 			InputEventManager::messages = messagesNew;
 			InputEventManager::agentResources = agentResourcesNew;
 			InputEventManager::discordCoreClient = discordCoreClientNew;
@@ -179,16 +179,16 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		static MessageManager* messages;
-		static InteractionManager* interactions;
-		static DiscordCoreClient* discordCoreClient;
+		static shared_ptr<MessageManager> messages;
+		static shared_ptr<InteractionManager> interactions;
+		static shared_ptr<DiscordCoreClient> discordCoreClient;
 		static DiscordCoreInternal::HttpAgentResources agentResources;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		static unsigned int groupId;
 	};
-	MessageManager* InputEventManager::messages;
-	InteractionManager* InputEventManager::interactions;
-	DiscordCoreClient* InputEventManager::discordCoreClient;
+	shared_ptr<MessageManager> InputEventManager::messages;
+	shared_ptr<InteractionManager> InputEventManager::interactions;
+	shared_ptr< DiscordCoreClient> InputEventManager::discordCoreClient;
 	DiscordCoreInternal::HttpAgentResources InputEventManager::agentResources;
 	shared_ptr<DiscordCoreInternal::ThreadContext> InputEventManager::threadContext;
 	unsigned int InputEventManager::groupId;

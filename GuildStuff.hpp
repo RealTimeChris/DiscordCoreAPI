@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
 	class Guild {
 	public:
 		GuildData data;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 	protected:
 		friend class GuildManagerAgent;
@@ -31,16 +31,16 @@ namespace DiscordCoreAPI {
 		friend class GuildManager;
 		friend class concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreClientBase;
+		friend class DiscordCoreClientNew;
 		friend struct OnGuildCreationData;
 		friend struct OnGuildUpdateData;
 		friend struct OnGuildDeletionData;
-		friend class DiscordCoreClientNew;
 
-		DiscordCoreClientBase* discordCoreClientBase{ nullptr };
+		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 
 		Guild() {};
 
-		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew,  DiscordCoreClient* discordCoreClientNew, DiscordCoreClientBase* discordCoreClientBaseNew) {
+		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) {
 			this->discordCoreClient = discordCoreClientNew;
 			this->discordCoreClientBase = discordCoreClientBaseNew;
 			this->data = dataNew;
@@ -66,7 +66,6 @@ namespace DiscordCoreAPI {
 							if (this->data.id + " + " +guildMemberData.user.id == value.data.guildId + " + " + value.data.user.id) {
 								doWeContinue = true;
 								this->data.members.erase(this->data.members.begin() + x);
-								cout << "REMOVING MEMEBER: " << value.data.user.username << endl;
 								x -= 1;
 								break;
 							}
@@ -135,10 +134,10 @@ namespace DiscordCoreAPI {
 		
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClientBase* discordCoreClientBase{ nullptr };
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		GuildManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew,  DiscordCoreClient* coreClientNew, DiscordCoreClientBase* coreClientBaseNew)
+		GuildManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew,  shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreClientBase> coreClientBaseNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
@@ -411,6 +410,14 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
+		GuildManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreClientBase> coreClientBaseNew) {
+			this->threadContext = threadContextNew;
+			this->agentResources = agentResourcesNew;
+			this->discordCoreClient = coreClientNew;
+			this->discordCoreClientBase = coreClientBaseNew;
+			this->groupId = this->threadContext->createGroup();
+		}
+
 		~GuildManager() {
 			this->threadContext->releaseGroup(this->groupId);
 		}
@@ -419,17 +426,9 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		DiscordCoreClient* discordCoreClient{ nullptr };
-		DiscordCoreClientBase* discordCoreClientBase{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		unsigned int groupId;
-
-		GuildManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* coreClientNew, DiscordCoreClientBase* coreClientBaseNew) {
-			this->threadContext = threadContextNew;
-			this->agentResources = agentResourcesNew;
-			this->discordCoreClient = coreClientNew;
-			this->discordCoreClientBase = coreClientBaseNew;
-			this->groupId = this->threadContext->createGroup();
-		}
 	};
 	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache;
 	unbounded_buffer<DiscordCoreInternal::FetchGuildData>* GuildManagerAgent::requestFetchGuildBuffer;

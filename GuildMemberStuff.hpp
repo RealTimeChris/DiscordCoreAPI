@@ -22,10 +22,11 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClientBase {
 	public:
-		ChannelManager* channels{ nullptr };
-		GuildMemberManager* guildMembers{ nullptr };
-		RoleManager* roles{ nullptr };
-		UserManager* users{ nullptr };
+		shared_ptr<ChannelManager> channels{ nullptr };
+		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
+		shared_ptr<RoleManager> roles{ nullptr };
+		shared_ptr<UserManager> users{ nullptr };
+		shared_ptr<DiscordCoreClientBase> thisPointer{ this };
 	protected:
 		friend class Guild;
 		friend class WebSocketConnectionAgent;
@@ -37,21 +38,21 @@ namespace DiscordCoreAPI {
 	class GuildMember {
 	public:
 		GuildMemberData data;
-		DiscordCoreClient* discordCoreClient;
+		shared_ptr<DiscordCoreClient> discordCoreClient;
 
 		GuildMember() {};
-
-		GuildMember(GuildMemberData guildMemberData, string guildIdNew, DiscordCoreClient* discordCoreClientNew) {
-			this->data = guildMemberData;
-			this->data.guildId = guildIdNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
 
 	protected:
 		friend class DiscordCoreClient;
 		friend class GuildMemberManager;
 		friend class GuildMemberManagerAgent;
 		friend class Guild;
+
+		GuildMember(GuildMemberData guildMemberData, string guildIdNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->data = guildMemberData;
+			this->data.guildId = guildIdNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
 	};
 
 	struct FetchGuildMemberData {
@@ -65,8 +66,6 @@ namespace DiscordCoreAPI {
 	};
 
 	class GuildMemberManagerAgent :agent {
-	public:
-		static overwrite_buffer<map<string, GuildMember>> cache;
 	protected:
 		friend class DiscordCoreClient;
 		friend class Guild;
@@ -77,14 +76,15 @@ namespace DiscordCoreAPI {
 		static unbounded_buffer<DiscordCoreInternal::GetGuildMemberRolesData>* requestGetRolesBuffer;
 		static unbounded_buffer<GuildMember>* outGuildMemberBuffer;
 		static concurrent_queue<GuildMember> guildMembersToInsert;
+		static overwrite_buffer<map<string, GuildMember>> cache;
 		unbounded_buffer<exception> errorBuffer;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string guildId;
 
-		GuildMemberManagerAgent(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, DiscordCoreClient* discordCoreClientNew, string guildIdNew)
+		GuildMemberManagerAgent(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, string guildIdNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
@@ -278,16 +278,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-	protected:
-		friend class Guild;
-		friend class DiscordCoreClient;
-		friend class DiscordCoreClientBase;
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
-		unsigned int groupId;
-
-		GuildMemberManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
+		GuildMemberManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -297,6 +288,15 @@ namespace DiscordCoreAPI {
 		~GuildMemberManager() {
 			this->threadContext->releaseGroup(this->groupId);
 		}
+
+	protected:
+		friend class Guild;
+		friend class DiscordCoreClient;
+		friend class DiscordCoreClientBase;
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		unsigned int groupId;
 	};
 	unbounded_buffer<DiscordCoreInternal::GetGuildMemberData>* GuildMemberManagerAgent::requestFetchGuildMemberBuffer;
 	unbounded_buffer<DiscordCoreInternal::GetGuildMemberData>* GuildMemberManagerAgent::requestGetGuildMemberBuffer;

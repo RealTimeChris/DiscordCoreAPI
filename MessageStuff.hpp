@@ -19,7 +19,7 @@ namespace DiscordCoreAPI {
 	class Message {
 	public:
 		MessageData data;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		Message() {};
 
@@ -29,16 +29,10 @@ namespace DiscordCoreAPI {
 		friend class MessageManagerAgent;
 		friend class InteractionManager;
 
-		Message(MessageData dataNew, DiscordCoreClient* discordCoreClientNew) {
-			this->initialize(dataNew, discordCoreClientNew).get();
-		}
-
-		task<void> initialize(MessageData dataNew, DiscordCoreClient* discordCoreClientNew) {
+		Message(MessageData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = dataNew;
 			this->discordCoreClient = discordCoreClientNew;
-			co_return;
 		}
-
 	};
 
 	struct EditMessageData {
@@ -227,9 +221,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* coreClientNew)
+		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
@@ -969,17 +963,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-	protected:
-		friend class Channel;
-		friend class Guild;
-		friend class DiscordCoreClient;
-		unsigned int groupId;
-
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
-
-		MessageManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
+		MessageManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -993,6 +977,16 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+
+	protected:
+		friend class Channel;
+		friend class Guild;
+		friend class DiscordCoreClient;
+		unsigned int groupId;
+
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 	};
 	overwrite_buffer<map<string, Message>> MessageManagerAgent::cache;
 	unbounded_buffer<DiscordCoreInternal::GetMessageData>* MessageManagerAgent::requestFetchMessageBuffer;

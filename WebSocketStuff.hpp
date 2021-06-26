@@ -402,8 +402,8 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			//cout << "Sending Message: ";
-			//cout << message << endl;
+			cout << "Sending Message: ";
+			cout << message << endl;
 
 			// Buffer any data we want to send.
 			if (this->messageWriter != nullptr) {

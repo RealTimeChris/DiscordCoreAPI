@@ -33,9 +33,14 @@ namespace DiscordCoreAPI {
 	public:
 
 		DiscordCoreInternal::UserData data;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		User() {};
+
+		User(DiscordCoreInternal::UserData dataNew, shared_ptr<DiscordCoreClient> coreClientNew) {
+			this->data = dataNew;
+			this->discordCoreClient = coreClientNew;
+		}
 
 	protected:
 		friend class DiscordCoreClient;
@@ -43,17 +48,6 @@ namespace DiscordCoreAPI {
 		friend class UserManager;
 		friend class Guild;
 		friend class GuildManager;
-
-		User(DiscordCoreInternal::UserData dataNew,   DiscordCoreClient* coreClientNew) {
-			this->initialize(dataNew, coreClientNew).get();
-		}
-
-		task<void> initialize(DiscordCoreInternal::UserData dataNew, DiscordCoreClient* coreClientNew) {
-			this->data = dataNew;
-			this->discordCoreClient = coreClientNew;
-			co_return;
-		}
-
 	};
 
 	struct GetUserData {
@@ -79,9 +73,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* coreClientNew)
+		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
 			:agent(*threadContextNew->scheduler)
 		{
 			this->agentResources = agentResourcesNew;
@@ -129,7 +123,7 @@ namespace DiscordCoreAPI {
 				cout << "UserManagerAgent::getObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				//cout << "UserManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "UserManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			UserData userData;
 			DiscordCoreInternal::parseObject(returnData.data, &userData);
@@ -346,16 +340,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-	protected:
-		friend class DiscordCoreClient;
-		friend class DiscordCoreClientBase;
-
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
-		unsigned int groupId;
-
-		UserManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
+		UserManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -365,6 +350,15 @@ namespace DiscordCoreAPI {
 		~UserManager() {
 			this->threadContext->releaseGroup(this->groupId);
 		}
+
+	protected:
+		friend class DiscordCoreClient;
+		friend class DiscordCoreClientBase;
+
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		unsigned int groupId;
 	};
 	overwrite_buffer<map<string, User>> UserManagerAgent::cache2;
 	unbounded_buffer<DiscordCoreInternal::FetchUserData>* UserManagerAgent::requestFetchUserBuffer;

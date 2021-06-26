@@ -869,6 +869,17 @@ namespace DiscordCoreAPI {
             this->threadContext->releaseGroup(groupIdNew);
             co_return;
         }
+
+        InteractionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+            this->agentResources = agentResourcesNew;
+            this->threadContext = threadContextNew;
+            this->groupId = this->threadContext->createGroup();
+        }
+
+        ~InteractionManager() {
+            this->threadContext->releaseGroup(this->groupId);
+        }
+
         protected:
             friend class InteractionManagerAgent;
             friend class DiscordCoreClient;
@@ -876,16 +887,6 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpAgentResources agentResources;
             shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
             unsigned int groupId;
-
-            InteractionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
-                this->agentResources = agentResourcesNew;
-                this->threadContext = threadContextNew;
-                this->groupId = this->threadContext->createGroup();
-            }
-
-            ~InteractionManager() {
-                this->threadContext->releaseGroup(this->groupId);
-            }
     };
     unbounded_buffer<DiscordCoreInternal::CreateDeferredInteractionResponseData>* InteractionManagerAgent::requestPostDeferredInteractionResponseBuffer;
     unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData>* InteractionManagerAgent::requestDeleteInteractionResponseBuffer;
@@ -923,7 +924,7 @@ namespace DiscordCoreAPI {
             Button::buttonInteractioinBufferMap.insert(make_pair(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer));
         }
 
-        static void initialize(InteractionManager* interactionsNew) {
+        static void initialize(shared_ptr<InteractionManager> interactionsNew) {
             Button::interactions = interactionsNew;
             Button::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
             Button::threadContext->createGroup(*Button::threadContext);
@@ -952,7 +953,7 @@ namespace DiscordCoreAPI {
 
     protected:
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-        static InteractionManager* interactions;
+        static shared_ptr<InteractionManager> interactions;
         unsigned int maxTimeInMs;
         bool getButtonDataForAll;
         ButtonInteractionData interactionData;
@@ -1005,7 +1006,7 @@ namespace DiscordCoreAPI {
         }
     };
     map<string, unbounded_buffer<ButtonInteractionData>*>Button::buttonInteractioinBufferMap;
-    InteractionManager* Button::interactions;
+    shared_ptr<InteractionManager> Button::interactions;
     shared_ptr<DiscordCoreInternal::ThreadContext> Button::threadContext;
 };
 #endif

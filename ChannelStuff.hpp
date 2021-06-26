@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
 	class Channel {
 	public:
 		ChannelData data;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		Channel() {};
 
@@ -29,12 +29,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class UserManagerAgent;
 
-		Channel(ChannelData dataNew, DiscordCoreClient* discordCoreClientNew) {
-			this->initialize(dataNew, discordCoreClientNew);
-			return;
-		}
-
-		void initialize(ChannelData dataNew, DiscordCoreClient* discordCoreClientNew) {
+		Channel(ChannelData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = dataNew;
 			this->discordCoreClient = discordCoreClientNew;
 			return;
@@ -84,9 +79,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient;
+		shared_ptr<DiscordCoreClient> discordCoreClient;
 
-		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* coreClientNew)
+		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
@@ -470,18 +465,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-	protected:
-		friend class Guild;
-		friend class ChannelManagerAgent;
-		friend class DiscordCoreClient;
-		friend class DiscordCoreClientBase;
-
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		DiscordCoreClient* discordCoreClient{ nullptr };
-		unsigned int groupId;
-		
-		ChannelManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
+		ChannelManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -495,6 +479,18 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+
+	protected:
+		friend class Guild;
+		friend class ChannelManagerAgent;
+		friend class DiscordCoreClient;
+		friend class DiscordCoreClientBase;
+
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		unsigned int groupId;
+				
 	};
 	overwrite_buffer<map<string, Channel>> ChannelManagerAgent::cache;
 	unbounded_buffer<DiscordCoreInternal::FetchChannelData>* ChannelManagerAgent::requestFetchChannelBuffer;

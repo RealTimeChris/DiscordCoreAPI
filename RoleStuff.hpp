@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
 	class Role {
 	public:
 		RoleData data;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		Role() {};
 
@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		friend class RoleManagerAgent;
 		friend class Guild;
 
-		Role(RoleData roleData,  DiscordCoreClient* discordCoreClientNew) {
+		Role(RoleData roleData,  shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = roleData;
 			this->discordCoreClient = discordCoreClientNew;
 		}
@@ -118,9 +118,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		RoleManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew)
+		RoleManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
@@ -809,6 +809,13 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
+		RoleManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
+			this->threadContext = threadContextNew;
+			this->discordCoreClient = discordCoreClientNew;
+			this->groupId = this->threadContext->createGroup();
+		}
+
 		~RoleManager() {
 			this->threadContext->releaseGroup(this->groupId);
 		}
@@ -819,15 +826,8 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClientBase;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		unsigned int groupId;
-
-		RoleManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-			this->discordCoreClient = discordCoreClientNew;
-			this->groupId = this->threadContext->createGroup();
-		}
 
 	};
 	unbounded_buffer<DiscordCoreInternal::FetchRolesData>* RoleManagerAgent::requestFetchRolesBuffer;

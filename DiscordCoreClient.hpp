@@ -38,14 +38,15 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClient :public DiscordCoreClientBase,  protected agent {
 	public:
-		User* currentUser{ nullptr };
-		GuildManager* guilds{ nullptr };
-		ReactionManager* reactions{ nullptr };
-		MessageManager* messages{ nullptr };
-		SlashCommandManager* slashCommands{ nullptr };
-		EventManager* eventManager{ nullptr };
-		DiscordUser* discordUser{ nullptr };
-		InteractionManager* interactions{ nullptr };
+		shared_ptr<User> currentUser{ nullptr };
+		shared_ptr<GuildManager> guilds{ nullptr };
+		shared_ptr<ReactionManager> reactions{ nullptr };
+		shared_ptr<MessageManager> messages{ nullptr };
+		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
+		shared_ptr<EventManager> eventManager{ nullptr };
+		shared_ptr<DiscordUser> discordUser{ nullptr };
+		shared_ptr<InteractionManager> interactions{ nullptr };
+		shared_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources;
 
 		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler){
@@ -93,7 +94,7 @@ namespace DiscordCoreAPI {
 			DatabaseManagerAgent::cleanup();
 			InputEventManager::cleanup();
 			this->pWebSocketReceiverAgent->terminate();
-			agent::wait(this->pWebSocketReceiverAgent);
+			agent::wait(this->pWebSocketReceiverAgent.get());
 			exception error;
 			while (this->pWebSocketReceiverAgent->getError(error)) {
 				cout << "DiscordCoreClient::terminate() Error 01: " << error.what() << endl << endl;
@@ -108,8 +109,8 @@ namespace DiscordCoreAPI {
 		bool doWeQuit = false;
 		hstring botToken;
 		hstring baseURL = L"https://discord.com/api/v9";
-		DiscordCoreInternal::WebSocketConnectionAgent* pWebSocketConnectionAgent{ nullptr };
-		DiscordCoreInternal::WebSocketReceiverAgent* pWebSocketReceiverAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
 		unbounded_buffer<json> webSocketIncWorkloadBuffer;
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
 		unbounded_buffer<exception> errorBuffer;
@@ -124,14 +125,15 @@ namespace DiscordCoreAPI {
 		}
 
 		task<void> initialize(hstring botTokenNew) {
+			thisPointer.reset(this);
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
 			this->mainThreadContext->createGroup();
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
-			this->eventManager = new DiscordCoreAPI::EventManager();
+			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			this->botToken = botTokenNew;
-			this->pWebSocketConnectionAgent = new DiscordCoreInternal::WebSocketConnectionAgent(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->agentResources.baseURL = this->baseURL;
 			this->agentResources.botToken = this->botToken;
 			DiscordCoreInternal::HttpRequestAgent::initialize();
@@ -150,7 +152,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
-			this->pWebSocketReceiverAgent = new DiscordCoreInternal::WebSocketReceiverAgent(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			ReactionManagerAgent::initialize();
 			UserManagerAgent::initialize();
 			MessageManagerAgent::initialize();
@@ -159,21 +161,21 @@ namespace DiscordCoreAPI {
 			GuildManagerAgent::initialize();
 			ChannelManagerAgent::initialize();
 			InteractionManagerAgent::initialize();
-			this->interactions = new InteractionManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			this->reactions = new ReactionManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
-			this->users = new UserManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
-			this->messages = new MessageManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
-			this->roles = new RoleManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
-			this->guildMembers = new GuildMemberManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
-			this->channels = new ChannelManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this);
-			this->guilds = new GuildManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (DiscordCoreClient*)this, this);
-			this->currentUser = new User(this->users->fetchCurrentUserAsync().get().data, this);
-			this->slashCommands = new SlashCommandManager(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
+			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->reactions = make_shared<ReactionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->users = make_shared<UserManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->messages = make_shared<MessageManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->roles = make_shared<RoleManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->guildMembers = make_shared<GuildMemberManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->channels = make_shared<ChannelManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->guilds = make_shared<GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)this->thisPointer, (shared_ptr<DiscordCoreClientBase>)this->thisPointer);
+			this->currentUser = make_shared<User>(this->users->fetchCurrentUserAsync().get().data, this->thisPointer);
+			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			Button::initialize(this->interactions);
-			this->discordUser = new DiscordUser(this->currentUser->data.username, this->currentUser->data.id);
+			this->discordUser = make_shared<DiscordUser>(this->currentUser->data.username, this->currentUser->data.id);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
-			InputEventManager::initialize(this->messages, this, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
+			InputEventManager::initialize(this->messages, this->thisPointer, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
 			this->discordUser->writeDataToDB();
 			co_await mainThread;
 		}
@@ -182,7 +184,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpAgentResources agentResources;
 			agentResources.baseURL = this->baseURL;
 			agentResources.botToken = this->botToken;
-			Guild guild(agentResources, guildData, (DiscordCoreClient*)this, this);
+			Guild guild(agentResources, guildData, (shared_ptr<DiscordCoreClient>)this->thisPointer, this->thisPointer);
 			DiscordGuild discordGuild(guild.data);
 			discordGuild.data.rouletteGame.currentlySpinning = false;
 			discordGuild.writeDataToDB();
@@ -208,7 +210,7 @@ namespace DiscordCoreAPI {
 					{
 						ChannelData channelData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &channelData);
-						Channel channel(channelData, this);
+						Channel channel(channelData, this->thisPointer);
 						OnChannelCreationData channelCreationData;
 						channelCreationData.channel = channel;
 						this->eventManager->onChannelCreationEvent(channelCreationData);
@@ -228,7 +230,7 @@ namespace DiscordCoreAPI {
 					{
 						ChannelData channelData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &channelData);
-						Channel channel(channelData, this);
+						Channel channel(channelData, this->thisPointer);
 						OnChannelDeletionData channelDeleteData;
 						channelDeleteData.channel = channel;
 						this->eventManager->onChannelDeletionEvent(channelDeleteData);
@@ -269,7 +271,7 @@ namespace DiscordCoreAPI {
 					{
 						UserData userData;
 						DiscordCoreInternal::parseObject(workload.payLoad.at("user"), &userData);
-						User user(userData, this);
+						User user(userData, this->thisPointer);
 						DiscordCoreAPI::OnGuildBanAddData guildBanAddData;
 						guildBanAddData.user = user;
 						guildBanAddData.guildId = workload.payLoad.at("guild_id");
@@ -280,7 +282,7 @@ namespace DiscordCoreAPI {
 					{
 						UserData userData;
 						DiscordCoreInternal::parseObject(workload.payLoad.at("user"), &userData);
-						User user(userData, this);
+						User user(userData, this->thisPointer);
 						DiscordCoreAPI::OnGuildBanRemoveData guildBanRemoveData;
 						guildBanRemoveData.user = user;
 						guildBanRemoveData.guildId = workload.payLoad.at("guild_id");
@@ -291,7 +293,7 @@ namespace DiscordCoreAPI {
 					{
 						GuildMemberData guildMemberData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &guildMemberData);
-						GuildMember guildMember(guildMemberData, workload.payLoad.at("guild_id").get<string>(), this);
+						GuildMember guildMember(guildMemberData, workload.payLoad.at("guild_id").get<string>(), this->thisPointer);
 						DiscordCoreAPI::OnGuildMemberAddData guildMemberAddData;
 						guildMemberAddData.guildMember = guildMember;
 						this->eventManager->onGuildMemberAddEvent(guildMemberAddData);
@@ -301,7 +303,7 @@ namespace DiscordCoreAPI {
 					{
 						UserData userData;
 						DiscordCoreInternal::parseObject(workload.payLoad.at("user"), &userData);
-						User user(userData, this);
+						User user(userData, this->thisPointer);
 						DiscordCoreAPI::OnGuildMemberRemoveData guildMemberRemoveData;
 						guildMemberRemoveData.user = user;
 						guildMemberRemoveData.guildId = workload.payLoad.at("guild_id");
@@ -322,7 +324,7 @@ namespace DiscordCoreAPI {
 					{
 						RoleData roleData;
 						DiscordCoreInternal::parseObject(workload.payLoad.at("role"), &roleData);
-						Role role(roleData, this);
+						Role role(roleData, this->thisPointer);
 						DiscordCoreAPI::OnRoleCreationData roleCreationData;
 						roleCreationData.role = role;
 						roleCreationData.guildId = workload.payLoad.at("guild_id");
@@ -379,7 +381,7 @@ namespace DiscordCoreAPI {
 								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.interactionData = interactionData;
-								eventData.discordCoreClient = this;
+								eventData.discordCoreClient = this->thisPointer;
 								eventData.requesterId = interactionData.requesterId;
 								OnInteractionCreationData eventCreationData;
 								eventCreationData.eventData = eventData;
@@ -389,7 +391,7 @@ namespace DiscordCoreAPI {
 								eventData.eventType = InputEventType::BUTTON_INTERACTION;
 								eventData.inputEventResponseType = InputEventResponseType::DEFER_BUTTON_RESPONSE;
 								eventData.interactionData = interactionData;
-								eventData.discordCoreClient = this;
+								eventData.discordCoreClient = this->thisPointer;
 								eventData.requesterId = interactionData.requesterId;
 								OnInteractionCreationData eventCreationData;
 								eventCreationData.eventData = eventData;
@@ -405,7 +407,7 @@ namespace DiscordCoreAPI {
 								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.interactionData = interactionData;
-								eventData.discordCoreClient = this;
+								eventData.discordCoreClient = this->thisPointer;
 								eventData.requesterId = interactionData.requesterId;
 								OnInteractionCreationData eventCreationData;
 								eventCreationData.eventData = eventData;
@@ -415,7 +417,7 @@ namespace DiscordCoreAPI {
 								eventData.eventType = InputEventType::BUTTON_INTERACTION;
 								eventData.inputEventResponseType = InputEventResponseType::DEFER_BUTTON_RESPONSE;
 								eventData.interactionData = interactionData;
-								eventData.discordCoreClient = this;
+								eventData.discordCoreClient = this->thisPointer;
 								eventData.requesterId = interactionData.requesterId;
 								OnInteractionCreationData eventCreationData;
 								eventCreationData.eventData = eventData;
@@ -428,7 +430,7 @@ namespace DiscordCoreAPI {
 					{
 						MessageData messageData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &messageData);
-						Message message(messageData, this);
+						Message message(messageData, this->thisPointer);
 						OnMessageCreationData messageCreationData;
 						messageCreationData.message = message;
 						this->eventManager->onMessageCreationEvent(messageCreationData);
@@ -437,7 +439,7 @@ namespace DiscordCoreAPI {
 						eventData.messageData = messageData;
 						eventData.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
 						eventData.requesterId = messageData.author.id;
-						eventData.discordCoreClient = this;
+						eventData.discordCoreClient = this->thisPointer;
 						OnInteractionCreationData eventCreationData;
 						eventCreationData.eventData = eventData;
 						this->eventManager->onInteractionCreationEvent(eventCreationData);
@@ -488,7 +490,7 @@ namespace DiscordCoreAPI {
 						reactionData.member = reactionAddDataNew.member;
 						reactionData.messageId = reactionAddDataNew.messageId;
 						reactionData.userId = reactionAddDataNew.userId;
-						Reaction reaction(reactionData, this);
+						Reaction reaction(reactionData, this->thisPointer);
 						OnReactionAddData reactionAddData;
 						reactionAddData.discordCoreClient = this;
 						reactionAddData.reaction = reaction;
@@ -552,7 +554,7 @@ namespace DiscordCoreAPI {
 						UserData newData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &newData);
 						User userOld = this->users->getUserAsync({ .userId = newData.id }).get();
-						User userNew(newData, this);
+						User userNew(newData, this->thisPointer);
 						this->users->insertUserAsync(userNew).get();
 						userUpdateData.userNew = userNew;
 						userUpdateData.userOld = userOld;

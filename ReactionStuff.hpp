@@ -18,19 +18,19 @@ namespace DiscordCoreAPI {
 	public:
 
 		DiscordCoreInternal::ReactionData data;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		Reaction() {};
-
-		Reaction(DiscordCoreInternal::ReactionData reactionData, DiscordCoreClient* discordCoreClientNew) {
-			this->data = reactionData;
-			this->discordCoreClient = discordCoreClientNew;
-		}
 
 	protected:
 		friend class DiscordCoreClient;
 		friend class ReactionManager;
 		friend class  ReactionManagerAgent;
+
+		Reaction(DiscordCoreInternal::ReactionData reactionData, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->data = reactionData;
+			this->discordCoreClient = discordCoreClientNew;
+		}
 	};
 
 	struct CreateReactionData {
@@ -75,24 +75,24 @@ namespace DiscordCoreAPI {
 	};
 
 	class ReactionManagerAgent : public agent {
-	public:
-		static overwrite_buffer<map<string, Reaction>> cache;
 	protected:
 		friend class DiscordCoreClient;
 		friend class ReactionManager;
+		friend class DiscordCoreClientNew;
 
 		static unbounded_buffer<DiscordCoreInternal::PutReactionData>* requestPutReactionBuffer;
 		static unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll>* requestDeleteReactionBuffer;
 		static unbounded_buffer<DiscordCoreInternal::GetReactionData>* requestGetReactionBuffer;
 		static unbounded_buffer<Reaction>* outReactionBuffer;
-		static concurrent_queue<Reaction> reactionsToInsert;
+		static concurrent_queue<Reaction>* reactionsToInsert;
+		static overwrite_buffer<map<string, Reaction>> cache;
 		unbounded_buffer<exception> errorBuffer;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* coreClientNew)
+		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
@@ -104,6 +104,7 @@ namespace DiscordCoreAPI {
 			ReactionManagerAgent::requestGetReactionBuffer = new unbounded_buffer<DiscordCoreInternal::GetReactionData>;
 			ReactionManagerAgent::requestPutReactionBuffer = new unbounded_buffer<DiscordCoreInternal::PutReactionData>;
 			ReactionManagerAgent::outReactionBuffer = new unbounded_buffer<Reaction>;
+			ReactionManagerAgent::reactionsToInsert = new concurrent_queue<Reaction>;
 			return;
 		}
 
@@ -199,7 +200,7 @@ namespace DiscordCoreAPI {
 				}
 				DiscordCoreInternal::ReactionData dataPackage04;
 				Reaction reaction(dataPackage04, this->discordCoreClient);
-				while (ReactionManagerAgent::reactionsToInsert.try_pop(reaction)) {
+				while (ReactionManagerAgent::reactionsToInsert->try_pop(reaction)) {
 					map<string, Reaction> cacheTemp;
 					if (try_receive(ReactionManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(reaction.data.messageId + reaction.data.userId + reaction.data.emoji.name)) {
@@ -445,7 +446,7 @@ namespace DiscordCoreAPI {
 			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			ReactionManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient);
-			ReactionManagerAgent::reactionsToInsert.push(reaction);
+			ReactionManagerAgent::reactionsToInsert->push(reaction);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -475,16 +476,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-	protected:
-		friend class Message;
-		friend class ReactionManagerAgent;
-		friend class DiscordCoreClient;
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreClient* discordCoreClient{ nullptr };
-		unsigned int groupId;
-
-		ReactionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreClient* discordCoreClientNew) {
+		ReactionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -494,13 +486,22 @@ namespace DiscordCoreAPI {
 		~ReactionManager() {
 			this->threadContext->releaseGroup(this->groupId);
 		}
+
+	protected:
+		friend class Message;
+		friend class ReactionManagerAgent;
+		friend class DiscordCoreClient;
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		unsigned int groupId;
 	};
 
 	unbounded_buffer<DiscordCoreInternal::PutReactionData>* ReactionManagerAgent::requestPutReactionBuffer;
 	unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll>* ReactionManagerAgent::requestDeleteReactionBuffer;
 	unbounded_buffer<DiscordCoreInternal::GetReactionData>* ReactionManagerAgent::requestGetReactionBuffer;
 	unbounded_buffer<Reaction>* ReactionManagerAgent::outReactionBuffer;
-	concurrent_queue<Reaction> ReactionManagerAgent::reactionsToInsert;
+	concurrent_queue<Reaction>* ReactionManagerAgent::reactionsToInsert;
 	overwrite_buffer<map<string, Reaction>> ReactionManagerAgent::cache;
 }
 #endif

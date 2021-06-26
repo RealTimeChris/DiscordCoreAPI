@@ -2864,7 +2864,7 @@ namespace DiscordCoreAPI {
                 this->requesterId = this->interactionData.requesterId;
             }
         }
-        DiscordCoreClient* discordCoreClient{ nullptr };
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         InputEventType eventType;
         InputEventResponseType inputEventResponseType;
         InteractionData getInteractionData() {
