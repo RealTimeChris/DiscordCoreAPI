@@ -44,7 +44,6 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(DiscordCoreAPI::BaseFunctionArguments* args) {
 			try {
-
 				EmbedData msgEmbed;
 				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				msgEmbed.setColor("000000");
