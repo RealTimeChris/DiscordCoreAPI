@@ -35,7 +35,7 @@
 
 namespace DiscordCoreAPI {
 
-	class Test : public  BaseFunction {
+	class Test : public BaseFunction {
 	public:
 		Test() {
 			this->commandName = "test";
