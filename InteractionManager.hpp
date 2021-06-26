@@ -237,6 +237,30 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->requesterId = dataPackage.getRequesterId();
         }
+        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.name = emojiName;
+                    component.emoji.id = emojiId;
+                    component.label = buttonLabel;
+                    component.style = buttonStyle;
+                    component.url = url;
+                    component.type = ComponentType::Button;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+        }
         string content;
         string username;
         string avatarUrl;
@@ -244,7 +268,7 @@ namespace DiscordCoreAPI {
         vector<EmbedData> embeds;
         DiscordCoreInternal::AllowedMentionsData allowedMentions;
         vector<ActionRowData> components;
-        int flags;
+        int flags = 0;
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
@@ -259,10 +283,31 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->messagePackage.messageId = dataPackage.getMessageId();
-            this->components = dataPackage.getComponents();
-            this->content = dataPackage.getMessageContent();
-            this->embeds = dataPackage.getEmbeds();
             this->requesterId = dataPackage.getRequesterId();
+        }
+        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.name = emojiName;
+                    component.emoji.id = emojiId;
+                    component.label = buttonLabel;
+                    component.style = buttonStyle;
+                    component.url = url;
+                    component.type = ComponentType::Button;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
         }
         string content;
         string username;

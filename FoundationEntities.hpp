@@ -749,7 +749,8 @@ namespace  DiscordCoreInternal {
         DELETE_MESSAGES_BULK = 39,
         GET_AUDIT_LOG = 40,
         DELETE_FOLLOW_UP_MESSAGE = 41,
-        DELETE_GUILD_ROLE = 42
+        DELETE_GUILD_ROLE = 42,
+        PATCH_GUILD_ROLES = 43
     };
 
     struct GetApplicationData {
@@ -1071,6 +1072,18 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources;
         string guildId;
         string roleId;
+    };
+
+    struct RolePositionData {
+        string roleId;
+        unsigned int rolePosition;
+    };
+
+    struct UpdateRolePositionData {
+        HttpAgentResources agentResources;
+        string guildId;
+        vector<RolePositionData> rolePositions;
+        string content;
     };
 
     struct FetchRoleData {

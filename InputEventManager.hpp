@@ -37,6 +37,7 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 			dataPackageNewer.messageData = messageData;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE;
+			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
@@ -168,8 +169,8 @@ namespace DiscordCoreAPI {
 				dataPackageNewer.timeDelay = timeDelayNew;
 				InputEventManager::interactions->deleteFollowUpMessageAsync(dataPackageNewer).get();
 			}
-			else if (dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE || dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT ||
-				dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL || dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED) {
+			else if (dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE || dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT 
+				|| dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED) {
 				DeleteInteractionResponseData dataPackageNewer(dataPackage);
 				dataPackageNewer.timeDelay = timeDelayNew;
 				InputEventManager::interactions->deleteInteractionResponseAsync(dataPackageNewer).get();

@@ -394,7 +394,7 @@ namespace DiscordCoreInternal {
 			wcout << L"WebSocket_Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
 		}
 
-		void send(string& text) {
+		void sendMessage(string& text) {
 
 			string message = text;
 			if (message.empty()) {
@@ -402,8 +402,8 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			cout << "Sending Message: ";
-			cout << message << endl;
+			//cout << "Sending Message: ";
+			//cout << message << endl;
 
 			// Buffer any data we want to send.
 			if (this->messageWriter != nullptr) {
@@ -438,7 +438,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				string heartbeat = getHeartbeatPayload(this->lastNumberReceived);
-				this->send(heartbeat);
+				this->sendMessage(heartbeat);
 				this->didWeReceiveHeartbeatAck = false;
 			}
 			catch (hresult_error error) {
@@ -488,19 +488,19 @@ namespace DiscordCoreInternal {
 
 				if (payload.at("op") == 6) {
 					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-					this->send(resume);
+					this->sendMessage(resume);
 				}
 
 				if (payload.at("op") == 7) {
 					this->cleanup();
 					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-					this->send(resume);
+					this->sendMessage(resume);
 					this->connect();
 				}
 
 				if (payload.at("op") == 9) {
 					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-					this->send(resume);
+					this->sendMessage(resume);
 					this->connect();
 				}
 
@@ -510,7 +510,7 @@ namespace DiscordCoreInternal {
 					this->heartbeatTimer.Tick({ this, &WebSocketConnectionAgent::OnHeartbeat });
 					this->heartbeatTimer.Start();
 					std::string identity = getIdentifyPayload(to_string(this->botToken), this->intentsValue);
-					this->send(identity);
+					this->sendMessage(identity);
 				}
 
 				if (payload.at("op") == 11) {

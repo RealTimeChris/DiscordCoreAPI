@@ -46,6 +46,7 @@ namespace DiscordCoreAPI {
 		EventManager* eventManager{ nullptr };
 		DiscordUser* discordUser{ nullptr };
 		InteractionManager* interactions{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources;
 
 		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler){
 			this->botToken = botTokenNew;
@@ -66,10 +67,10 @@ namespace DiscordCoreAPI {
 		}
 
 		DiscordGuildMember getDiscordGuildMember(DiscordCoreInternal::GuildMemberData guildMemberData) {
-			auto guildMemberCursor = DiscordCoreClient::guildMemberMap.find(guildMemberData.guildId + guildMemberData.user.id);
+			auto guildMemberCursor = DiscordCoreClient::guildMemberMap.find(guildMemberData.guildId + " + " + guildMemberData.user.id);
 			if (guildMemberCursor == DiscordCoreClient::guildMemberMap.end()){
 				DiscordGuildMember discordGuildMember(guildMemberData);
-				DiscordCoreClient::guildMemberMap.insert(make_pair(guildMemberData.guildId + guildMemberData.user.id, discordGuildMember));
+				DiscordCoreClient::guildMemberMap.insert(make_pair(guildMemberData.guildId + " + " + guildMemberData.user.id, discordGuildMember));
 				discordGuildMember.getDataFromDB();
 				return discordGuildMember;
 			}
@@ -131,11 +132,10 @@ namespace DiscordCoreAPI {
 			this->eventManager = new DiscordCoreAPI::EventManager();
 			this->botToken = botTokenNew;
 			this->pWebSocketConnectionAgent = new DiscordCoreInternal::WebSocketConnectionAgent(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::HttpAgentResources agentResources;
-			agentResources.baseURL = this->baseURL;
-			agentResources.botToken = this->botToken;
+			this->agentResources.baseURL = this->baseURL;
+			this->agentResources.botToken = this->botToken;
 			DiscordCoreInternal::HttpRequestAgent::initialize();
-			DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
+			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
@@ -184,6 +184,7 @@ namespace DiscordCoreAPI {
 			agentResources.botToken = this->botToken;
 			Guild guild(agentResources, guildData, (DiscordCoreClient*)this, this);
 			DiscordGuild discordGuild(guild.data);
+			discordGuild.data.rouletteGame.currentlySpinning = false;
 			discordGuild.writeDataToDB();
 			if (DiscordCoreClient::guildMap.contains(guild.data.id)) {
 				DiscordCoreClient::guildMap.erase(guild.data.id);
@@ -245,6 +246,7 @@ namespace DiscordCoreAPI {
 					}
 					case DiscordCoreInternal::WebSocketEventType::GUILD_UPDATE:
 					{
+						GuildData guildData;
 						DiscordCoreAPI::OnGuildUpdateData guildUpdateData;
 						Guild guild = this->guilds->getGuildAsync({ .guildId = workload.payLoad.at("id") }).get();
 						guildUpdateData.guildOld = guild;

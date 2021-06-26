@@ -751,8 +751,8 @@ namespace DiscordCoreInternal {
 	}
 
 	string getModifyRolePayload(PatchRoleData dataPackage) {
-		unsigned int roleColorInt = stol(dataPackage.hexColorValue, 0, 16);
 		stringstream stream;
+		unsigned int roleColorInt = stol(dataPackage.hexColorValue, 0, 16);
 		stream << setbase(10) << roleColorInt;
 		string roleColorReal = stream.str();
 
@@ -771,8 +771,10 @@ namespace DiscordCoreInternal {
 		json newOption;
 		newOption.emplace(make_pair("description", dataPackage.description));
 		newOption.emplace(make_pair("name", dataPackage.name));
-		newOption.emplace(make_pair("required", dataPackage.required));
 		newOption.emplace(make_pair("type", dataPackage.type));
+		if (dataPackage.type != ApplicationCommandOptionType::SUB_COMMAND && dataPackage.type != ApplicationCommandOptionType::SUB_COMMAND_GROUP){
+			newOption.emplace(make_pair("required", dataPackage.required));
+		}		
 		json dataArray;
 		newOption.emplace(make_pair("options", dataArray));
 		newOption.emplace(make_pair("choices", dataArray));
@@ -793,7 +795,9 @@ namespace DiscordCoreInternal {
 			}
 		}
 		if (dataPackage.options.size() > 0) {
-			addOptionsData(dataPackage.options.at(0), &newOption.at("options"));
+			for (auto value : dataPackage.options) {
+				addOptionsData(value, &newOption.at("options"));
+			}			
 		}
 		pJSONData->emplace_back(newOption);
 	}
@@ -1238,7 +1242,7 @@ namespace DiscordCoreInternal {
 				componentsActionRow.push_back(componentActionRow);
 			}
 
-			if (dataPackage.content == "") {
+			if (dataPackage.data.content == "") {
 				json data = { {"type", dataPackage.type},
 					{"data",{{"embeds", embedsArray},
 					{"flags", dataPackage.data.flags },
@@ -1283,6 +1287,16 @@ namespace DiscordCoreInternal {
 				 {"name", dataPackage.name }
 			 };
 			 return data.dump();
+		 };
+
+		 string getUpdateRolePositionsPayload(UpdateRolePositionData dataPackage) {
+			 json dataArray = json::array();
+
+			 for (auto value : dataPackage.rolePositions) {
+				 json data = { {"id", value.roleId },{"position", value.rolePosition} };
+				 dataArray.push_back(data);
+			 }
+			 return dataArray.dump();
 		 };
 
 		 string getEditChannelPermissionOverwritesPayload(EditChannelPermissionOverwritesData dataPackage) {

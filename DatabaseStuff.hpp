@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
         string betType = "";
         unsigned int payoutAmount = 0;
         string userId = "";
-        vector<string> winningNumbers = { 0 };
+        vector<string> winningNumbers;
     };
 
     struct Roulette {
@@ -421,6 +421,7 @@ namespace DiscordCoreAPI {
                                 subDoc2.append(kvp("betOptions", value.betOptions));
                                 subDoc2.append(kvp("betType", value.betType));
                                 subDoc2.append(kvp("userId", value.userId));
+                                subDoc2.append(kvp("payoutAmount", bsoncxx::types::b_int32(value.payoutAmount)));
                                 subDoc2.append(kvp("winningNumbers", [value](bsoncxx::builder::basic::sub_array subArray2) {
                                     for (auto& value2 : value.winningNumbers) {
                                         subArray2.append(value2);
@@ -495,7 +496,7 @@ namespace DiscordCoreAPI {
                 guildData.casinoStats.totalPayout = docValue.view()["casinoStats"].get_document().value["totalPayout"].get_int32().value;
                 guildData.rouletteGame.currentlySpinning = docValue.view()["rouletteGame"].get_document().value["currentlySpinning"].get_bool().value;
                 for (auto& value : docValue.view()["rouletteGame"].get_document().value["rouletteBets"].get_array().value) {
-                    RouletteBet rouletteBet;
+                    RouletteBet rouletteBet{};
                     rouletteBet.betAmount = value.get_document().value["betAmount"].get_int32().value;
                     rouletteBet.betOptions = value.get_document().value["betOptions"].get_utf8().value.to_string();
                     rouletteBet.betType = value.get_document().value["betType"].get_utf8().value.to_string();

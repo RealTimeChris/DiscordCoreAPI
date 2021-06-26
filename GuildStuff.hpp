@@ -23,20 +23,24 @@ namespace DiscordCoreAPI {
 	class Guild {
 	public:
 		GuildData data;
-		DiscordCoreClientBase* discordCoreClientBase{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
-
-		Guild() {};
 
 	protected:
 		friend class GuildManagerAgent;
 		friend class DiscordCoreClient;
 		friend class GuildManager;
+		friend class concurrency::details::_ResultHolder<Guild>;
+		friend class DiscordCoreClientBase;
+		friend struct OnGuildCreationData;
+		friend struct OnGuildUpdateData;
+		friend struct OnGuildDeletionData;
+		friend class DiscordCoreClientNew;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
+		DiscordCoreClientBase* discordCoreClientBase{ nullptr };
+
+		Guild() {};
 
 		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew,  DiscordCoreClient* discordCoreClientNew, DiscordCoreClientBase* discordCoreClientBaseNew) {
-			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
 			this->discordCoreClientBase = discordCoreClientBaseNew;
 			this->data = dataNew;
@@ -53,12 +57,29 @@ namespace DiscordCoreAPI {
 					this->discordCoreClientBase->channels->insertChannelAsync(channel).get();
 				}
 				cout << "Caching guild members for guild: " << this->data.name << endl;
-				for (auto value:data.members) {
-					GuildMemberData guildMemberData = value;
+				for (unsigned int x = 0;x< this->data.members.size(); x+=1) {
+					GuildMemberData guildMemberData = data.members.at(x);
+					if (x >= 1) {
+						bool doWeContinue = false;
+						map<string, GuildMember> guildMemberMap = receive(GuildMemberManagerAgent::cache);
+						for (auto [key, value] : guildMemberMap) {
+							if (this->data.id + " + " +guildMemberData.user.id == value.data.guildId + " + " + value.data.user.id) {
+								doWeContinue = true;
+								this->data.members.erase(this->data.members.begin() + x);
+								cout << "REMOVING MEMEBER: " << value.data.user.username << endl;
+								x -= 1;
+								break;
+							}
+						}
+						if (doWeContinue == true) {
+							continue;
+						}
+						asend(GuildMemberManagerAgent::cache, guildMemberMap);
+					}
 					guildMemberData.guildId = this->data.id;
 					DiscordGuildMember discordGuildMember(guildMemberData);
 					discordGuildMember.writeDataToDB();
-					DiscordCoreClientBase::guildMemberMap.insert(make_pair(guildMemberData.guildId + guildMemberData.user.id, discordGuildMember));
+					DiscordCoreClientBase::guildMemberMap.insert(make_pair(guildMemberData.guildId + " + " + guildMemberData.user.id, discordGuildMember));
 					GuildMember guildMember(guildMemberData, this->data.id, this->discordCoreClient);
 					this->discordCoreClientBase->guildMembers->insertGuildMemberAsync(guildMember, this->data.id).get();
 				}

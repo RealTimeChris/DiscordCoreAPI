@@ -1197,8 +1197,9 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("color") && !jsonObjectData.at("color").is_null()) {
+            unsigned int colorValInt = (unsigned int)jsonObjectData.at("color").get<int>();
             stringstream stream;
-            stream << jsonObjectData.at("color");
+            stream << setbase(16) << colorValInt;
             embedData.hexColorValue = stream.str();
         }
 
@@ -2094,6 +2095,9 @@ namespace DiscordCoreInternal {
 
         if (jsonObjectData.contains("options") && !jsonObjectData.at("options").is_null()) {
             for (auto newValue : jsonObjectData.at("options")) {
+                if (newValue.contains("options")) {
+                    parseObject(newValue, &commandData);
+                }
                 if (newValue.contains("value") && !newValue.at("value").is_null()) {
                     auto newValueNew = newValue.at("value");
                     if (newValueNew.is_string()) {

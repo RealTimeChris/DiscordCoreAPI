@@ -65,6 +65,8 @@ namespace DiscordCoreAPI {
 	};
 
 	class GuildMemberManagerAgent :agent {
+	public:
+		static overwrite_buffer<map<string, GuildMember>> cache;
 	protected:
 		friend class DiscordCoreClient;
 		friend class Guild;
@@ -75,7 +77,6 @@ namespace DiscordCoreAPI {
 		static unbounded_buffer<DiscordCoreInternal::GetGuildMemberRolesData>* requestGetRolesBuffer;
 		static unbounded_buffer<GuildMember>* outGuildMemberBuffer;
 		static concurrent_queue<GuildMember> guildMembersToInsert;
-		static overwrite_buffer<map<string, GuildMember>> cache;
 		unbounded_buffer<exception> errorBuffer;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
@@ -163,8 +164,8 @@ namespace DiscordCoreAPI {
 				while (GuildMemberManagerAgent::guildMembersToInsert.try_pop(guildMember)) {
 					map<string, GuildMember> cacheTemp;
 					try_receive(GuildMemberManagerAgent::cache, cacheTemp);
-					if (cacheTemp.contains(guildMember.data.guildId + guildMember.data.user.id)) {
-						cacheTemp.erase(guildMember.data.guildId + guildMember.data.user.id);
+					if (cacheTemp.contains(guildMember.data.guildId +" + "+ guildMember.data.user.id)) {
+						cacheTemp.erase(guildMember.data.guildId + " + " + guildMember.data.user.id);
 					}
 					cacheTemp.insert(make_pair(guildMember.data.guildId + guildMember.data.user.id, guildMember));
 					asend(GuildMemberManagerAgent::cache, cacheTemp);

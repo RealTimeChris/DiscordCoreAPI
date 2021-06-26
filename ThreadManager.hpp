@@ -36,19 +36,19 @@ namespace DiscordCoreInternal {
                 DQTAT_COM_ASTA
             };
 
-            DispatcherQueueController threadQueueController = DispatcherQueueController::CreateOnDedicatedThread();
             ABI::Windows::System::IDispatcherQueueController* ptrNew2{ nullptr };
             check_hresult(CreateDispatcherQueueController(options, &ptrNew2));
             DispatcherQueueController queueController2 = { ptrNew2, take_ownership_from_abi };
             DispatcherQueue threadQueue = queueController2.DispatcherQueue();
             co_await resume_foreground(threadQueue);
             SchedulerPolicy policy;
-            policy.SetConcurrencyLimits(thread::hardware_concurrency(), thread::hardware_concurrency());
+            policy.SetConcurrencyLimits(concurrency::MaxExecutionResources, concurrency::MaxExecutionResources);
             policy.SetPolicyValue(PolicyElementKey::ContextPriority, THREAD_PRIORITY_ABOVE_NORMAL);
+            policy.SetPolicyValue(PolicyElementKey::ContextStackSize, 0);
             policy.SetPolicyValue(PolicyElementKey::DynamicProgressFeedback, ProgressFeedbackEnabled);
             policy.SetPolicyValue(PolicyElementKey::LocalContextCacheSize, 0);
             policy.SetPolicyValue(PolicyElementKey::SchedulerKind, ThreadScheduler);
-            policy.SetPolicyValue(PolicyElementKey::SchedulingProtocol, EnhanceForwardProgress);
+            policy.SetPolicyValue(PolicyElementKey::SchedulingProtocol, EnhanceScheduleGroupLocality);
             policy.SetPolicyValue(PolicyElementKey::TargetOversubscriptionFactor, 1);
             policy.SetPolicyValue(PolicyElementKey::WinRTInitialization, InitializeWinRTAsMTA);
             Scheduler* newScheduler = Scheduler::Create(policy);

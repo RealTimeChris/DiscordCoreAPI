@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 				cout << "UserManagerAgent::getObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "UserManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				//cout << "UserManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			UserData userData;
 			DiscordCoreInternal::parseObject(returnData.data, &userData);
