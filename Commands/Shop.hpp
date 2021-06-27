@@ -55,9 +55,9 @@ namespace DiscordCoreAPI {
 					InputEventManager::deleteInputEventResponse(event01, 20000);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-					CreateInteractionResponseData responseData(args->eventData);
-					responseData.data.embeds.push_back(msgEmbed);
-					InputEventData event = InputEventManager::respondToEvent(responseData);
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					dataPackage.data.embeds.push_back(msgEmbed);
+					InputEventData event = InputEventManager::respondToEvent(dataPackage);
 					InputEventManager::deleteInputEventResponse(event, 20000);
 				}
 				co_return;
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
-				
+			
 			unsigned int maxIdx = 0;
 			InventoryItem tempItem;
 			unsigned int len = (unsigned int)discordGuild.data.guildShop.items.size();
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 					firstLoop = false;
 				}
 				string itemsMsgStringTemp;
-				itemsMsgStringTemp = "| __**Item:**__ " + value.emoji + " " + value.itemName + " **| Cost**: " + to_string(value.itemCost) + " **| Self-Mod**: " + to_string(value.selfMod) + "**| Opp-Mod**: " + to_string(value.oppMod) + "\n";
+				itemsMsgStringTemp = "**| __Item:__** " + value.emoji + " " + value.itemName + " **| __Cost:__** " + to_string(value.itemCost) + " **| __Self-Mod:__** " + to_string(value.selfMod) + " **| __Opp-Mod:__** " + to_string(value.oppMod) + "\n";
 					if (itemsMsgStringTemp.length() + itemsMsgStrings.at(currentPage).length() >= 2048) {
 						currentPage += 1;
 						itemsMsgStrings.resize(currentPage);
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 					firstLoop2 = false;
 				}
 				string rolesMsgStringTemp;
-				rolesMsgStringTemp = "| __**Role:**__ <@&" + value.roleId + ">**| Cost : **" + to_string(value.roleCost) + "\n";
+				rolesMsgStringTemp = "**| __Role:__** <@&" + value.roleId + "> **| __Cost:__** " + to_string(value.roleCost) + "\n";
 					if (rolesMsgStringTemp.length() + rolesMsgStrings[currentPage2].length() > 2048) {
 						currentPage2 += 1;
 						rolesMsgStrings.resize(currentPage2);
@@ -222,19 +222,30 @@ namespace DiscordCoreAPI {
 					InputEventManager::deleteInputEventResponse(event01, 20000);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-					CreateInteractionResponseData responseData(args->eventData);
-					responseData.data.embeds.push_back(messageEmbed);
-					InputEventData event01 = InputEventManager::respondToEvent(responseData);
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					dataPackage.data.embeds.push_back(messageEmbed);
+					InputEventData event01 = InputEventManager::respondToEvent(dataPackage);
 					InputEventManager::deleteInputEventResponse(event01, 20000);
 				}
 				co_return;
 			}
 
-			discordGuild.writeDataToDB();
-
 			unsigned int currentPageIndex = 0;
+			InputEventData newEvent;
+			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+				ReplyMessageData responseData(args->eventData);
+				responseData.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
+				newEvent = InputEventManager::respondToEvent(responseData);
+			}
+			else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+				CreateInteractionResponseData responseData(args->eventData);
+				responseData.data.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
+				newEvent = InputEventManager::respondToEvent(responseData);
+			}
+
+			discordGuild.writeDataToDB();
 			string userID = args->eventData.getAuthorId();
-			recurseThroughMessagePages(userID, args->eventData, currentPageIndex, finalMsgEmbedsArray, true, 120000);
+			recurseThroughMessagePages(userID, newEvent, currentPageIndex, finalMsgEmbedsArray, true, 120000);
 
 			co_return;
 		}

@@ -45,9 +45,9 @@ namespace DiscordCoreAPI {
                     InputEventManager::deleteInputEventResponse(eventNew, 20000);
                 }
                 else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                    CreateInteractionResponseData dataPackage(args->eventData);
-                    dataPackage.data.embeds.push_back(msgEmbed);
-                    auto eventNew = InputEventManager::respondToEvent(dataPackage);
+                    CreateEphemeralInteractionResponseData responseData(args->eventData);
+                    responseData.data.embeds.push_back(msgEmbed);
+                    auto eventNew = InputEventManager::respondToEvent(responseData);
                     InputEventManager::deleteInputEventResponse(eventNew, 20000);
                 }
                 co_return;

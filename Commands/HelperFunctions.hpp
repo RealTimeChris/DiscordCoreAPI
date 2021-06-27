@@ -45,10 +45,9 @@ namespace DiscordCoreAPI {
                 InputEventManager::deleteInputEventResponse(event01, 20000);
             }
             else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                CreateInteractionResponseData responseData(eventData);
+                CreateEphemeralInteractionResponseData responseData(eventData);
                 responseData.data.embeds.push_back(msgEmbed);
                 event01 = InputEventManager::respondToEvent(responseData);
-                InputEventManager::deleteInputEventResponse(event01, 20000);
             }
             return true;
         }
@@ -72,7 +71,7 @@ namespace DiscordCoreAPI {
             }
             msgString += "------";
             if (isItFound == false) {
-                msgEmbed.setAuthor(eventData.getMessageData().author.username, eventData.getAvatarURL());
+                msgEmbed.setAuthor(eventData.getUserName(), eventData.getAvatarURL());
                 msgEmbed.setColor(discordGuild.data.borderColor);
                 msgEmbed.setDescription(msgString);
                 msgEmbed.setTitle("__**Permissions Issue:**__");
@@ -83,10 +82,9 @@ namespace DiscordCoreAPI {
                     InputEventManager::deleteInputEventResponse(event01, 20000);
                 }
                 else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                    CreateInteractionResponseData responseData(eventData);
+                    CreateEphemeralInteractionResponseData responseData(eventData);
                     responseData.data.embeds.push_back(msgEmbed);
                     InputEventData event01 = InputEventManager::respondToEvent(responseData);
-                    InputEventManager::deleteInputEventResponse(event01, 20000);
                 }
             }
             
@@ -436,27 +434,32 @@ namespace DiscordCoreAPI {
         co_await resume_background();
         unsigned int newCurrentPageIndex = currentPageIndex;
         try {
-            InputEventData event01;
+            InputEventData event01 = originalEvent;
             bool doWeQuit = false;
-            if (originalEvent.eventType == InputEventType::REGULAR_MESSAGE) {
-                ReplyMessageData responseDataRegularMessage(originalEvent);
+            if (originalEvent.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || originalEvent.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
+                EditMessageData responseDataRegularMessage(event01);
                 responseDataRegularMessage.embeds.push_back(messageEmbeds[currentPageIndex]);
                 responseDataRegularMessage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 responseDataRegularMessage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
-                responseDataRegularMessage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Primary);
+                responseDataRegularMessage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
                 event01 = InputEventManager::respondToEvent(responseDataRegularMessage);
             }
-            else if (originalEvent.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                CreateInteractionResponseData responseDataInteraction(originalEvent);
-                responseDataInteraction.data.embeds.push_back(messageEmbeds[currentPageIndex]);
-                responseDataInteraction.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
-                responseDataInteraction.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
-                responseDataInteraction.addButton(false, "exit", "Exit", "❌", ButtonStyle::Primary);
-                event01 = InputEventManager::respondToEvent(responseDataInteraction);
+            else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE 
+                || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT|| originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                 EditInteractionResponseData editResponseData(event01);
-                editResponseData.embeds = responseDataInteraction.data.embeds;
-                editResponseData.components = responseDataInteraction.data.components;
+                editResponseData.embeds.push_back(messageEmbeds[currentPageIndex]);
+                editResponseData.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
+                editResponseData.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
+                editResponseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
                 event01 = InputEventManager::respondToEvent(editResponseData);
+            }
+            else if(originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+                EditFollowUpMessageData dataPackage(event01);
+                dataPackage.embeds.push_back(messageEmbeds[currentPageIndex]);
+                dataPackage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
+                dataPackage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
+                dataPackage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
+                event01 = InputEventManager::respondToEvent(dataPackage);
             }
 
             while (doWeQuit == false) {
@@ -466,7 +469,7 @@ namespace DiscordCoreAPI {
                 if (button.getButtonId() == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
-                    if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
+                    if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT){
                         DeferButtonResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
@@ -474,7 +477,8 @@ namespace DiscordCoreAPI {
                         editMessageData.embeds.push_back(messageEmbed);
                         event01 = InputEventManager::respondToEvent(editMessageData);
                     }
-                    else {
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                        || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                         DeferButtonResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
@@ -483,35 +487,55 @@ namespace DiscordCoreAPI {
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
                         event01 = InputEventManager::respondToEvent(responseData);
+                    }
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+                        DeferButtonResponseData newData(buttonIntData);
+                        InputEventManager::respondToEvent(newData);
+                        EditFollowUpMessageData dataPackage(event01);
+                        vector<EmbedData> embeds;
+                        embeds.push_back(messageEmbed);
+                        dataPackage.components = event01.getComponents();
+                        dataPackage.embeds = embeds;
+                        event01 = InputEventManager::respondToEvent(dataPackage);
                     }
                 }
                 else if (button.getButtonId() == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
                     newCurrentPageIndex += 1;
                    EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
-                    if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
-                        DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
-                        EditMessageData editMessageData(event01);
-                        editMessageData.components = event01.getComponents();
-                        editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData);
-
-                    }
-                    else {
-                        DeferButtonResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
-                        EditInteractionResponseData responseData(event01);
-                        vector<EmbedData> embeds;
-                        embeds.push_back(messageEmbed);
-                        responseData.components = event01.getComponents();
-                        responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData);
-                    }
+                   if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
+                       DeferButtonResponseData newData(buttonIntData);
+                       InputEventManager::respondToEvent(newData);
+                       EditMessageData editMessageData(event01);
+                       editMessageData.components = event01.getComponents();
+                       editMessageData.embeds.push_back(messageEmbed);
+                       event01 = InputEventManager::respondToEvent(editMessageData);
+                   }
+                   else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                       || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
+                       DeferButtonResponseData newData(buttonIntData);
+                       InputEventManager::respondToEvent(newData);
+                       EditInteractionResponseData responseData(event01);
+                       vector<EmbedData> embeds;
+                       embeds.push_back(messageEmbed);
+                       responseData.components = event01.getComponents();
+                       responseData.embeds = embeds;
+                       event01 = InputEventManager::respondToEvent(responseData);
+                   }
+                   else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+                       DeferButtonResponseData newData(buttonIntData);
+                       InputEventManager::respondToEvent(newData);
+                       EditFollowUpMessageData dataPackage(event01);
+                       vector<EmbedData> embeds;
+                       embeds.push_back(messageEmbed);
+                       dataPackage.components = event01.getComponents();
+                       dataPackage.embeds = embeds;
+                       event01 = InputEventManager::respondToEvent(dataPackage);
+                   }
                 }
                 else if (button.getButtonId() == "backwards" && (newCurrentPageIndex > 0)) {
                     newCurrentPageIndex -= 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
-                    if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
+                    if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                         DeferButtonResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
@@ -519,7 +543,8 @@ namespace DiscordCoreAPI {
                         editMessageData.embeds.push_back(messageEmbed);
                         event01 = InputEventManager::respondToEvent(editMessageData);
                     }
-                    else {
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                        || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                         DeferButtonResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
@@ -528,12 +553,22 @@ namespace DiscordCoreAPI {
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
                         event01 = InputEventManager::respondToEvent(responseData);
+                    }
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+                        DeferButtonResponseData newData(buttonIntData);
+                        InputEventManager::respondToEvent(newData);
+                        EditFollowUpMessageData dataPackage(event01);
+                        vector<EmbedData> embeds;
+                        embeds.push_back(messageEmbed);
+                        dataPackage.components = event01.getComponents();
+                        dataPackage.embeds = embeds;
+                        event01 = InputEventManager::respondToEvent(dataPackage);
                     }
                 }
                 else if (button.getButtonId() == "backwards" && (newCurrentPageIndex == 0)) {
                     newCurrentPageIndex = (unsigned int)messageEmbeds.size() - 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
-                    if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
+                    if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                         DeferButtonResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
@@ -541,7 +576,8 @@ namespace DiscordCoreAPI {
                         editMessageData.embeds.push_back(messageEmbed);
                         event01 = InputEventManager::respondToEvent(editMessageData);
                     }
-                    else {
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                        || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                         DeferButtonResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
@@ -550,6 +586,16 @@ namespace DiscordCoreAPI {
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
                         event01 = InputEventManager::respondToEvent(responseData);
+                    }
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+                        DeferButtonResponseData newData(buttonIntData);
+                        InputEventManager::respondToEvent(newData);
+                        EditFollowUpMessageData dataPackage(event01);
+                        vector<EmbedData> embeds;
+                        embeds.push_back(messageEmbed);
+                        dataPackage.components = event01.getComponents();
+                        dataPackage.embeds = embeds;
+                        event01 = InputEventManager::respondToEvent(dataPackage);
                     }
                 }
                 else if (button.getButtonId() == "exit" || button.getButtonId() == "") {
@@ -557,16 +603,22 @@ namespace DiscordCoreAPI {
                         InputEventManager::deleteInputEventResponse(event01);
                     }
                     else {
-                        if (event01.eventType == InputEventType::REGULAR_MESSAGE) {
+                        if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                             EditMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
-                            dataPackage.embeds.at(0).setColor(event01.discordCoreClient->getDiscordGuild(event01.discordCoreClient->guilds->getGuildAsync({ event01.getGuildId() }).get().data).data.borderColor);
                             InputEventManager::respondToEvent(dataPackage);
                         }
-                        else {
+                        else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                            || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                             EditInteractionResponseData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
-                            dataPackage.embeds.at(0).setColor(event01.discordCoreClient->getDiscordGuild(event01.discordCoreClient->guilds->getGuildAsync({ event01.getGuildId() }).get().data).data.borderColor);
+                            InputEventManager::respondToEvent(dataPackage);
+                        }
+                        else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+                            EditFollowUpMessageData dataPackage(event01);
+                            dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
+                            dataPackage.content = "";
                             InputEventManager::respondToEvent(dataPackage);
                         }
                     }

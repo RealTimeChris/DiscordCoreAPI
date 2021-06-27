@@ -53,12 +53,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(replyData);
+					auto newEvent = InputEventManager::respondToEvent(replyData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				else {
-					CreateInteractionResponseData responseData(args->eventData);
+					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData);
+					auto newEvent = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				co_return;
 			}
@@ -76,12 +78,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(replyData);
+					auto newEvent = InputEventManager::respondToEvent(replyData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				else {
-					CreateInteractionResponseData responseData(args->eventData);
+					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData);
+					auto newEvent = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				co_return;
 			}
@@ -104,12 +108,14 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(replyData);
+					auto newEvent = InputEventManager::respondToEvent(replyData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				else {
-					CreateInteractionResponseData responseData(args->eventData);
+					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData);
+					auto newEvent = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				co_return;
 			}
@@ -148,24 +154,24 @@ namespace DiscordCoreAPI {
 			if (buttonInteractionData.customId == ""){
 				string timeOutString = "------\nSorry, but you ran out of time to select an option.\n------";
 				EmbedData msgEmbed2;
-				msgEmbed2.setColor("00FF00");
+				msgEmbed2.setColor("FF0000");
 				msgEmbed2.setTimeStamp(getTimeAndDate());
 				msgEmbed2.setTitle("__**Heads, or Tails?:**__");
-				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+				msgEmbed2.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				msgEmbed2.setDescription(timeOutString);
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData replyData(args->eventData);
+					EditMessageData replyData(inputData);
 					replyData.embeds.push_back(msgEmbed2);
 					InputEventManager::respondToEvent(replyData);
 				}
 				else {
-					CreateInteractionResponseData responseData(args->eventData);
-					responseData.data.embeds.push_back(msgEmbed2);
+					EditInteractionResponseData responseData(inputData);
+					responseData.embeds.push_back(msgEmbed2);
 					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}
-				
+			
 			std::srand((unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			float number = ((float)rand() / (float)RAND_MAX);
 			unsigned int newBalance = 0;
@@ -183,13 +189,15 @@ namespace DiscordCoreAPI {
 				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyData(args->eventData);
-					replyData.embeds.push_back(msgEmbed3);
-					InputEventManager::respondToEvent(replyData);
+					replyData.embeds.push_back(msgEmbed);
+					auto newEvent = InputEventManager::respondToEvent(replyData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				else {
-					CreateInteractionResponseData responseData(args->eventData);
-					responseData.data.embeds.push_back(msgEmbed3);
-					InputEventManager::respondToEvent(responseData);
+					CreateEphemeralInteractionResponseData responseData(args->eventData);
+					responseData.data.embeds.push_back(msgEmbed);
+					auto newEvent = InputEventManager::respondToEvent(responseData);
+					InputEventManager::deleteInputEventResponse(newEvent);
 				}
 				co_return;
 			}

@@ -28,6 +28,12 @@ namespace DiscordCoreAPI {
 			}
 
 			InputEventManager::deleteInputEventResponse(args->eventData);
+			InputEventData newEvent = args->eventData;
+			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+				CreateDeferredInteractionResponseData dataPackage(args->eventData);
+				dataPackage.requesterId = args->eventData.getAuthorId();
+				newEvent = InputEventManager::respondToEvent(dataPackage);
+			}
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -42,28 +48,27 @@ namespace DiscordCoreAPI {
 
 			vector<DiscordGuildMember> membersArray;
 			for (auto value : guild.data.members) {
-				DiscordGuildMember guildMemberNew = args->eventData.discordCoreClient->getDiscordGuildMember(value);
+				GuildMember guildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ args->eventData.getGuildId(), value.user.id }).get();
+				DiscordGuildMember guildMemberNew(guildMember.data);
+				membersArray.push_back(guildMemberNew);
 				if (guildMemberNew.data.userName != "") {
-					membersArray.push_back(guildMemberNew);
+					
 				}
 			}
-
-			unsigned int len = guild.data.memberCount;
+			
+			unsigned int len = (unsigned int)membersArray.size();
 			for (unsigned int x = 0; x < len; x += 1) {
 				minIdx = x;
-				for (unsigned int y = x + 1 ; y < len; y += 1) {
+				for (unsigned int y = x + 1; y < len; y += 1) {
 					if (membersArray[y].data.currency.wallet > membersArray[minIdx].data.currency.wallet) {
 						minIdx = y;
 					}
 				}
 				DiscordGuildMember temp = membersArray[x];
-				if (temp.data.userName == "") {
-					continue;
-				}
 				membersArray[x] = membersArray[minIdx];
 				membersArray[minIdx] = temp;
 			}
-
+			
 			unsigned int membersPerPage = 20;
 			unsigned int totalPageCount = 0;
 			if (membersArray.size() % membersPerPage > 0) {
@@ -83,9 +88,9 @@ namespace DiscordCoreAPI {
 				}			
 
 				string msgString = "";
-				msgString += "__**#" + to_string(currentPage * membersPerPage + ((x % membersPerPage) + 1)) + " | Name:**__ " + membersArray[x].data.userName + "__** | " + args->eventData.discordCoreClient->discordUser->data.currencyName +
-					": **__ " + to_string(membersArray[x].data.currency.wallet) + "\n";
-
+				msgString += "__**#" + to_string(currentPage * membersPerPage + ((x % membersPerPage) + 1)) + " | Name:**__ <@!" + membersArray[x].data.guildMemberId + ">** | __" + args->eventData.discordCoreClient->discordUser->data.currencyName +
+					":__** " + to_string(membersArray[x].data.currency.wallet) + "\n";
+				 
 					pageStrings[currentPage] += msgString;
 				if (x% membersPerPage ==  membersPerPage - 1 || x ==  (unsigned int)membersArray.size() - 1) {
 					pageEmbeds[currentPage].setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -97,20 +102,21 @@ namespace DiscordCoreAPI {
 				}
 			}
 
-		unsigned int currentPageIndex = 0;
-		string userID = args->eventData.getAuthorId();
-		InputEventData newEvent;
-		if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-			newEvent = args->eventData;
-		}
-		else {
-			CreateInteractionResponseData dataPackage(args->eventData);
-			dataPackage.data.embeds.push_back(pageEmbeds[currentPageIndex]);
-			newEvent = InputEventManager::respondToEvent(dataPackage);
-		}
-		recurseThroughMessagePages(userID, newEvent, currentPageIndex, pageEmbeds, true, 120000);
-		discordGuild.writeDataToDB();
-		co_return;
+			unsigned int currentPageIndex = 0;
+			string userID = args->eventData.getAuthorId();
+			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+				ReplyMessageData dataPackage(newEvent);
+				dataPackage.embeds.push_back(pageEmbeds[currentPageIndex]);
+				newEvent = InputEventManager::respondToEvent(dataPackage);
+			}
+			else {
+				EditInteractionResponseData dataPackage(newEvent);
+				dataPackage.embeds.push_back(pageEmbeds[currentPageIndex]);
+				newEvent = InputEventManager::respondToEvent(dataPackage);
+			}
+			recurseThroughMessagePages(userID, newEvent, currentPageIndex, pageEmbeds, true, 120000);
+			discordGuild.writeDataToDB();
+			co_return;
 
 		}
 	};

@@ -22,6 +22,12 @@ namespace DiscordCoreAPI {
 		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 			try {
 
+				vector<Role> roles = args->eventData.discordCoreClient->roles->updateRolePositions({ .guildId = args->eventData.getGuildId(), .roleId = "858057991760904303", .newPosition = 07 });
+
+				for (auto value : roles) {
+					cout << value.data.id << endl;
+				}
+
 				EmbedData msgEmbed;
 				regex userIDRegExp("<@!\\d{1,18}>");
 				if (args->argumentsArray.size() > 0) {

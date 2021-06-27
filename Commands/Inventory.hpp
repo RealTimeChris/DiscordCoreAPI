@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 			string userID;
 
-			regex userIDRegExp(".{2,3}\d{18}>");
+			regex userIDRegExp(".{2,3}\\d{18}>");
 			regex idRegExp("\\d{18}");
 			if (args->argumentsArray.size() == 0) {
 				userID = args->eventData.getAuthorId();
@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(dataPackage);
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 				userID = userIDOne;
 			}
 
-			GuildMember currentGuildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
+			GuildMember currentGuildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = userID }).get();
 
 			if (currentGuildMember.data.user.username == "") {
 				string msgString = "-------\n**Sorry, but that user could not be found!**\n------";
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(dataPackage);
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(dataPackage);
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 						InputEventManager::deleteInputEventResponse(newEvent, 20000);
 					}
 					else {
-						CreateInteractionResponseData dataPackage(args->eventData);
+						CreateEphemeralInteractionResponseData dataPackage(args->eventData);
 						dataPackage.data.embeds.push_back(msgEmbed);
 						auto newEvent = InputEventManager::respondToEvent(dataPackage);
 						InputEventManager::deleteInputEventResponse(newEvent, 20000);
@@ -170,8 +170,8 @@ namespace DiscordCoreAPI {
 					itemsMsgString.push_back(""); 
 				}
 				string itemsMsgStringTemp = "";
-				itemsMsgStringTemp = "__**| Item:**__ " + discordGuildMember.data.items[x].emoji + discordGuildMember.data.items[x].itemName + " **| Value**: " + to_string(discordGuildMember.data.items[x].itemCost) + " **| Self-Mod**: " +
-					to_string(discordGuildMember.data.items[x].selfMod) + " **| Opp-Mod**: " + to_string(discordGuildMember.data.items[x].oppMod) + "\n";
+				itemsMsgStringTemp = "**| __Item:__** " + discordGuildMember.data.items[x].emoji + discordGuildMember.data.items[x].itemName + " **| __Value:__** " + to_string(discordGuildMember.data.items[x].itemCost) + " **| __Self-Mod:__** " +
+					to_string(discordGuildMember.data.items[x].selfMod) + " **| __Opp-Mod:__** " + to_string(discordGuildMember.data.items[x].oppMod) + "\n";
 				if (itemsMsgStringTemp.length() + itemsMsgString[currentPage].length() >= 2048) {
 					currentPage += 1;
 					itemsMsgString.push_back("");
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 					rolesMsgStrings.push_back("");
 				}
 				string rolesMsgStringTemp = "";
-				rolesMsgStringTemp = "__**| Role:**__ <@&" + discordGuildMember.data.roles.at(x).roleId + "> **| Value:** " + to_string(discordGuildMember.data.roles.at(x).roleCost) + "\n";
+				rolesMsgStringTemp = "**| __Role:__** <@&" + discordGuildMember.data.roles.at(x).roleId + "> **| __Value:__** " + to_string(discordGuildMember.data.roles.at(x).roleCost) + "\n";
 				if (rolesMsgStringTemp.length() + rolesMsgStrings[currentPage2].length() > 2048) {
 					currentPage2 += 1;
 					rolesMsgStrings.push_back("");
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 			for (unsigned int x = 0; x < itemsMsgString.size(); x += 1) {
 				EmbedData newEmbed;
 				newEmbed.setTimeStamp(getTimeAndDate());
-				newEmbed.setTitle("__**" + userName + "'s Inventory (Items) Page " + to_string(x + 1) + " of " + to_string(itemsMsgString.size() + rolesMsgStrings.size()) + "**__:");
+				newEmbed.setTitle("__**" + userName + "'s Inventory (Items) Page " + to_string(x + 1) + " of " + to_string(itemsMsgString.size() + rolesMsgStrings.size()) + ":**__");
 				newEmbed.setDescription(itemsMsgString[x]);
 				newEmbed.setColor(discordGuild.data.borderColor);
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 			for (unsigned int x = 0; x < rolesMsgStrings.size(); x += 1) {
 				EmbedData newEmbed;
 				newEmbed.setTimeStamp(getTimeAndDate());
-				newEmbed.setTitle("__**" + userName + "'s Inventory (Roles) Page " + to_string(itemsMessageEmbeds.size() + x + 1) + " of " + to_string(itemsMsgString.size() + rolesMsgStrings.size()) + "**__:");
+				newEmbed.setTitle("__**" + userName + "'s Inventory (Roles) Page " + to_string(itemsMessageEmbeds.size() + x + 1) + " of " + to_string(itemsMsgString.size() + rolesMsgStrings.size()) + ":**__");
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				newEmbed.setDescription(rolesMsgStrings[x]);
 				newEmbed.setColor(discordGuild.data.borderColor);
@@ -240,17 +240,32 @@ namespace DiscordCoreAPI {
 					ReplyMessageData dataPackage(args->eventData);
 					dataPackage.embeds.push_back(messageEmbed);
 					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(messageEmbed);
 					auto newEvent = InputEventManager::respondToEvent(dataPackage);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
 			
 			unsigned int currentPageIndex = 0;
-			recurseThroughMessagePages(userID, args->eventData, currentPageIndex, finalMsgEmbedsArray, false, 120000);
+			InputEventData newEvent;
+			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+				ReplyMessageData dataPackage(args->eventData);
+				dataPackage.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
+				newEvent = InputEventManager::respondToEvent(dataPackage);
+			}
+			else {
+				CreateInteractionResponseData dataPackage(args->eventData);
+				dataPackage.data.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
+				newEvent = InputEventManager::respondToEvent(dataPackage);
+			}
+
+			
+			recurseThroughMessagePages(userID, newEvent, currentPageIndex, finalMsgEmbedsArray, true, 120000);
 			co_return;
 		}
 	};

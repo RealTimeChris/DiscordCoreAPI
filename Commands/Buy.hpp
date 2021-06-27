@@ -57,26 +57,21 @@ namespace DiscordCoreAPI {
 						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						CreateInteractionResponseData responseData(args->eventData);
+						CreateEphemeralInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						event01 = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					co_return;
 				}
-				cout << "TESTING HERE 01 01 01 01 01 01" << endl;
+
 				string objectName = args->argumentsArray.at(0);
 				unsigned int objectShopIndex = 0;
 				string objectType;
-				cout << "TESTING HERE 01 01 01 01 01 01" << endl;
 				GuildMember guildMember = args->eventData.discordCoreClient->guildMembers->fetchAsync({ .guildId = args->eventData.getGuildId(),.guildMemberId = currentUser.data.id }).get();
 				DiscordGuildMember discordGuildMember(guildMember.data);
-				cout << "TESTING HERE 01 01 01 01 01 01" << endl;
-				vector<Role> rolesArray = args->eventData.discordCoreClient->roles->getGuildMemberRolesAsync({ .guildId = args->eventData.getGuildId(),.guildMember = guildMember });
-				for (unsigned int x = 0; x < rolesArray.size(); x += 1) {
-					cout << rolesArray.at(x).data.name << endl;
-				}
-				cout << "TESTING HERE 01 01 01 01 01 01" << endl;
+				vector<Role> rolesArray = args->eventData.discordCoreClient->roles->getGuildMemberRoles({ .guildId = args->eventData.getGuildId(),.guildMember = guildMember });
+
 				for (unsigned int x = 0; x < discordGuildMember.data.roles.size(); x += 1) {
 					bool isRoleFound = false;
 					InventoryRole shopRole = discordGuildMember.data.roles.at(x);
@@ -106,7 +101,7 @@ namespace DiscordCoreAPI {
 							InputEventManager::deleteInputEventResponse(event01, 20000);
 						}
 						else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-							CreateInteractionResponseData responseData(args->eventData);
+							CreateEphemeralInteractionResponseData responseData(args->eventData);
 							responseData.data.embeds.push_back(msgEmbed);
 							InputEventData event01 = InputEventManager::respondToEvent(responseData);
 							InputEventManager::deleteInputEventResponse(event01, 20000);
@@ -133,7 +128,6 @@ namespace DiscordCoreAPI {
 						break;
 					}
 				}
-				cout << "TESTING HERE TESTING HERE TESTING HERRE" << endl;
 				if (isFoundInShop == false) {
 					string msgString = "------\n**Sorry, but we could not find that object in the shop!**\n------";
 					EmbedData msgEmbed;
@@ -149,7 +143,7 @@ namespace DiscordCoreAPI {
 						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						CreateInteractionResponseData responseData(args->eventData);
+						CreateEphemeralInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event01, 20000);
@@ -188,7 +182,7 @@ namespace DiscordCoreAPI {
 						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						CreateInteractionResponseData responseData(args->eventData);
+						CreateEphemeralInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event01, 20000);
@@ -215,7 +209,7 @@ namespace DiscordCoreAPI {
 							InputEventManager::deleteInputEventResponse(event01, 20000);
 						}
 						else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-							CreateInteractionResponseData responseData(args->eventData);
+							CreateEphemeralInteractionResponseData responseData(args->eventData);
 							responseData.data.embeds.push_back(msgEmbed);
 							InputEventData event01 = InputEventManager::respondToEvent(responseData);
 							InputEventManager::deleteInputEventResponse(event01, 20000);
@@ -245,13 +239,11 @@ namespace DiscordCoreAPI {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
-						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
-						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					
 					unsigned int maxIdx = 0;
@@ -291,7 +283,7 @@ namespace DiscordCoreAPI {
 							InputEventManager::deleteInputEventResponse(event01, 20000);
 						}
 						else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-							CreateInteractionResponseData responseData(args->eventData);
+							CreateEphemeralInteractionResponseData responseData(args->eventData);
 							responseData.data.embeds.push_back(msgEmbed);
 							InputEventData event01 = InputEventManager::respondToEvent(responseData);
 							InputEventManager::deleteInputEventResponse(event01, 20000);
@@ -335,13 +327,11 @@ namespace DiscordCoreAPI {
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
-						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 						CreateInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
-						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					co_return;
 				}

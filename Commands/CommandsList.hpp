@@ -26,7 +26,12 @@
 #include "Leaderboard.hpp"
 #include "RegisterSlashCommands.hpp"
 #include "RemoveObject.hpp"
+#include "RemoveShopItem.hpp"
+#include "RemoveShopRole.hpp"
+#include "Rob.hpp"
+#include "Roulette.hpp"
 #include "SellDrugs.hpp"
+#include "SetGameChannel.hpp"
 #include "Shop.hpp"
 #include "Test.hpp"
 

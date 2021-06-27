@@ -877,7 +877,7 @@ namespace DiscordCoreAPI {
 						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						CreateInteractionResponseData responseData(args->eventData);
+						CreateEphemeralInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event01, 20000);
@@ -901,7 +901,7 @@ namespace DiscordCoreAPI {
 						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						CreateInteractionResponseData responseData(args->eventData);
+						CreateEphemeralInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event01, 20000);
@@ -934,7 +934,7 @@ namespace DiscordCoreAPI {
 						InputEventManager::deleteInputEventResponse(event01, 20000);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						CreateInteractionResponseData responseData(args->eventData);
+						CreateEphemeralInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(msgEmbed);
 						InputEventData event01 = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event01, 20000);

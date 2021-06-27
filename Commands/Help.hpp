@@ -40,17 +40,15 @@ namespace DiscordCoreAPI {
 					errorMsgEmbed.setDescription(msgString);
 					errorMsgEmbed.setTitle("__**Missing Or Invalid Arguments:**__");
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						InputEventData event;
 						ReplyMessageData responseData(args->eventData);
 						responseData.embeds.push_back(errorMsgEmbed);
-						event = InputEventManager::respondToEvent(responseData);
+						auto event = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event, 20000);
 					}
-					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						InputEventData event;
-						CreateInteractionResponseData responseData(args->eventData);
+					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
+						CreateEphemeralInteractionResponseData responseData(args->eventData);
 						responseData.data.embeds.push_back(errorMsgEmbed);
-						event = InputEventManager::respondToEvent(responseData);
+						auto event = InputEventManager::respondToEvent(responseData);
 						InputEventManager::deleteInputEventResponse(event, 20000);
 					}
 					co_return;
