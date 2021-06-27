@@ -131,16 +131,17 @@ namespace DiscordCoreAPI {
 
 			for (unsigned int x = 0; x < discordGuildMember.data.roles.size(); x += 1) {
 				bool isRoleFound = false;
-				for (auto value2 :rolesArray) {
-					if (discordGuildMember.data.roles.at(x).roleId== value2.data.id) {
+				InventoryRole userRole = discordGuildMember.data.roles[x];
+				for (auto value2 : rolesArray) {
+					if (value2.data.id == userRole.roleId) {
 						isRoleFound = true;
 						break;
 					}
 				}
-				if (isRoleFound ==  false) {
-					string msgString = "Removing role " + discordGuildMember.data.roles.at(x).roleName + " from user cache!";
+				if (isRoleFound == false) {
 					discordGuildMember.data.roles.erase(discordGuildMember.data.roles.begin() + x);
 					discordGuildMember.writeDataToDB();
+					string msgString = "------\n**Removing role " + userRole.roleName + " from user cache!**\n------";
 					EmbedData msgEmbed;
 					msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 					msgEmbed.setColor(discordGuild.data.borderColor);
@@ -148,17 +149,20 @@ namespace DiscordCoreAPI {
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setTitle("__**Role Issue:**__");
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(args->eventData);
-						dataPackage.embeds.push_back(msgEmbed);
-						auto newEvent = InputEventManager::respondToEvent(dataPackage);
-						InputEventManager::deleteInputEventResponse(newEvent, 20000);
+						ReplyMessageData responseData(args->eventData);
+						responseData.embeds.push_back(msgEmbed);
+						auto event02 = InputEventManager::respondToEvent(responseData);
+						InputEventManager::deleteInputEventResponse(event02, 20000);
 					}
-					else {
-						CreateEphemeralInteractionResponseData dataPackage(args->eventData);
-						dataPackage.data.embeds.push_back(msgEmbed);
-						auto newEvent = InputEventManager::respondToEvent(dataPackage);
-						InputEventManager::deleteInputEventResponse(newEvent, 20000);
+					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+						CreateDeferredInteractionResponseData responseData(args->eventData);
+						auto event02 = InputEventManager::respondToEvent(responseData);
+						CreateFollowUpMessageData responseData2(args->eventData);
+						responseData2.embeds.push_back(msgEmbed);
+						event02 = InputEventManager::respondToEvent(responseData2);
+						InputEventManager::deleteInputEventResponse(event02, 20000);
 					}
+					x -= 1;
 				}
 			}
 
@@ -243,7 +247,7 @@ namespace DiscordCoreAPI {
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
 					dataPackage.data.embeds.push_back(messageEmbed);
 					auto newEvent = InputEventManager::respondToEvent(dataPackage);
 					InputEventManager::deleteInputEventResponse(newEvent, 20000);
@@ -259,9 +263,11 @@ namespace DiscordCoreAPI {
 				newEvent = InputEventManager::respondToEvent(dataPackage);
 			}
 			else {
-				CreateInteractionResponseData dataPackage(args->eventData);
-				dataPackage.data.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
-				newEvent = InputEventManager::respondToEvent(dataPackage);
+				CreateDeferredInteractionResponseData responseData01(args->eventData);
+				newEvent = InputEventManager::respondToEvent(responseData01);
+				CreateFollowUpMessageData responseData(newEvent);
+				responseData.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
+				newEvent = InputEventManager::respondToEvent(responseData);
 			}
 
 			

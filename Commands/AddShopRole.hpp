@@ -48,8 +48,8 @@ namespace DiscordCoreAPI {
 				}
 
 				InputEventData event01;
-				regex nameRegExp("\.{1,36}");
-				regex hexColorRegExp("\.{1,24}");
+				regex nameRegExp(".{1,36}");
+				regex hexColorRegExp(".{1,24}");
 				regex costRegExp("\\d{1,8}");
 				if (args->argumentsArray.size() == 0 || !regex_search(args->argumentsArray.at(0), nameRegExp)) {
 					string msgString = "------\n**Please enter a proper role name! (!addshoprole = NAME, HEXCOLORVALIE, COST)**\n------";

@@ -1098,7 +1098,7 @@ namespace DiscordCoreAPI {
 					event001 = InputEventManager::respondToEvent(editData);
 				}
 				DiscordCoreAPI::Button button(event001);
-				ButtonInteractionData buttonIntData = button.getOurButtonData(false, 120000);
+				ButtonInteractionData buttonIntData = button.getOurButtonData(false, 480000);
 				if (button.getButtonId() == "exit"){
 					string timeOutString = "------\nSorry, but you ran out of time to select an option.\n------";
 					EmbedData msgEmbed2;

@@ -64,10 +64,11 @@ namespace DiscordCoreAPI {
 			}
 
 			vector<Role> rolesArray = args->eventData.discordCoreClient->roles->getGuildRolesAsync({ .guildId = args->eventData.getGuildId() }).get();
-			InputEventData event02;
-			for (auto value:discordGuild.data.guildShop.roles) {
+			InputEventData event02 = args->eventData;
+			
+			for (unsigned int x = 0; x < discordGuild.data.guildShop.roles.size(); x+=1) {
 				bool isRoleFound = false;
-				InventoryRole shopRole = value;
+				InventoryRole shopRole = discordGuild.data.guildShop.roles[x];
 				for (auto value2:rolesArray) {
 					if (value2.data.id == shopRole.roleId) {
 						isRoleFound = true;
@@ -75,12 +76,8 @@ namespace DiscordCoreAPI {
 					}
 				}
 				if (isRoleFound == false) {
-					for (unsigned int z = 0; z < discordGuild.data.guildShop.roles.size(); z += 1) {
-						if (shopRole.roleId == discordGuild.data.guildShop.roles.at(z).roleId) {
-							discordGuild.data.guildShop.roles.erase(discordGuild.data.guildShop.roles.begin() + z);
-							discordGuild.writeDataToDB();
-						}
-					}
+					discordGuild.data.guildShop.roles.erase(discordGuild.data.guildShop.roles.begin() + x);
+					discordGuild.writeDataToDB();
 					string msgString = "------\n**Removing guild role " + shopRole.roleName + " from guild cache!**\n------";
 					EmbedData msgEmbed;
 					msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -102,9 +99,9 @@ namespace DiscordCoreAPI {
 						event02 = InputEventManager::respondToEvent(responseData2);
 						InputEventManager::deleteInputEventResponse(event02, 20000);
 					}
+					x -= 1;
 				}
 			}
-			
 			unsigned int maxIdx = 0;
 			InventoryItem tempItem;
 			unsigned int len = (unsigned int)discordGuild.data.guildShop.items.size();
@@ -238,8 +235,10 @@ namespace DiscordCoreAPI {
 				newEvent = InputEventManager::respondToEvent(responseData);
 			}
 			else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-				CreateInteractionResponseData responseData(args->eventData);
-				responseData.data.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
+				CreateDeferredInteractionResponseData responseData01(event02);
+				newEvent = InputEventManager::respondToEvent(responseData01);
+				CreateFollowUpMessageData responseData(newEvent);
+				responseData.embeds.push_back(finalMsgEmbedsArray[currentPageIndex]);
 				newEvent = InputEventManager::respondToEvent(responseData);
 			}
 

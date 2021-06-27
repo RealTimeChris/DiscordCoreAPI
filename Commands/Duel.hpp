@@ -16,7 +16,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 	int fromUserCurrency = discordFromGuildMember->data.currency.wallet;
 	discordToGuildMember->getDataFromDB();
 	int toUserCurrency = discordToGuildMember->data.currency.wallet;
-	 ;
+	DiscordCoreAPI::User currentUser = newEvent->discordCoreClient->users->getUserAsync({ .userId = newEvent->getRequesterId() }).get();
 	*fromUserIDNew;
 	
 	if (*betAmount > fromUserCurrency) {
@@ -24,6 +24,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		msgString = *msgEmbedString + "\n\n__**Sorry, but you have insufficient funds in your wallet for placing that wager!**__";
 
 		DiscordCoreAPI::EmbedData messageEmbed3;
+		messageEmbed3.setAuthor(currentUser.data.username, currentUser.data.avatar);
 		messageEmbed3.setDescription(msgString);
 		messageEmbed3.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
 		messageEmbed3.setColor(discordGuild->data.borderColor);
@@ -37,8 +38,8 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		else {
 			DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage(*newEvent);
 			auto newEvent02 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
-			DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 			DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
+			dataPackage2.flags = 64;
 			dataPackage2.embeds.push_back(messageEmbed3);
 			auto newEvent03 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage2);
 			DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent03, 20000);
@@ -49,6 +50,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		string msgString;
 		msgString += *msgEmbedString + "\n\n__**Sorry, but they have insufficient funds in their wallet for accepting that wager!**__";
 		DiscordCoreAPI::EmbedData messageEmbed4;
+		messageEmbed4.setAuthor(currentUser.data.username, currentUser.data.avatar);
 		messageEmbed4.setDescription(msgString);
 		messageEmbed4.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
 		messageEmbed4.setColor(discordGuild->data.borderColor);
@@ -62,9 +64,9 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		else {
 			DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage(*newEvent);
 			auto newEvent02 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
-			DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 			DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
 			dataPackage2.embeds.push_back(messageEmbed4);
+			dataPackage2.flags = 64;
 			auto newEvent03 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage2);
 			DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent03, 20000);
 		}
@@ -134,8 +136,9 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 
 	if (finalFromUserRoll > finalToUserRoll) {
 		discordFromGuildMember->data.currency.wallet += *betAmount;
-		discordToGuildMember->data.currency.wallet -= *betAmount;
 		discordFromGuildMember->writeDataToDB();
+		discordToGuildMember->getDataFromDB();
+		discordToGuildMember->data.currency.wallet -= *betAmount;
 		discordToGuildMember->writeDataToDB();
 
 		unsigned int currentPage = 0;
@@ -201,6 +204,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		messageEmbeds.resize(currentPage + 1);
 		for (unsigned int x = 0; x < finalStrings.size(); x += 1) {
 			messageEmbeds[x] = DiscordCoreAPI::EmbedData();
+			messageEmbeds[x].setAuthor(currentUser.data.username, currentUser.data.avatar);
 			messageEmbeds[x].setColor("00FE00");
 			messageEmbeds[x].setTimeStamp(DiscordCoreAPI::getTimeAndDate());
 			messageEmbeds[x].setTitle("__**Duel Results: " + to_string(x + 1) + " of " + to_string(finalStrings.size()) + "**__");
@@ -209,8 +213,9 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 	}
 	else if (finalToUserRoll > finalFromUserRoll) {
 		discordToGuildMember->data.currency.wallet += *betAmount;
-		discordFromGuildMember->data.currency.wallet -= *betAmount;
 		discordToGuildMember->writeDataToDB();
+		discordFromGuildMember->getDataFromDB();
+		discordFromGuildMember->data.currency.wallet -= *betAmount;
 		discordFromGuildMember->writeDataToDB();
 
 		unsigned int currentPage = 0;
@@ -273,6 +278,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		messageEmbeds.resize(currentPage + 1);
 		for (unsigned int x = 0; x < finalStrings.size(); x += 1) {
 			messageEmbeds[x] = DiscordCoreAPI::EmbedData();
+			messageEmbeds[x].setAuthor(currentUser.data.username, currentUser.data.avatar);
 			messageEmbeds[x].setColor("FE0000");
 			messageEmbeds[x].setTimeStamp(DiscordCoreAPI::getTimeAndDate());
 			messageEmbeds[x].setTitle("__**Duel Results: " + to_string(x + 1) + " of " + to_string(finalStrings.size()) + "**__");
@@ -283,6 +289,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		finalStrings.resize(1);
 		messageEmbeds.push_back(DiscordCoreAPI::EmbedData());
 		finalStrings[0] = "__**Looks like it was a draw! Nicely done!**__";
+		messageEmbeds[0].setAuthor(currentUser.data.username, currentUser.data.avatar);
 		messageEmbeds[0].setColor("FEFEFE");
 		messageEmbeds[0].setTimeStamp(DiscordCoreAPI::getTimeAndDate());
 		messageEmbeds[0].setTitle("__**Duel Results: " + to_string(0 + 1) + " of " + to_string(finalStrings.size()) + "**__");
@@ -298,6 +305,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 			DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 			DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
 			dataPackage2.embeds.push_back(messageEmbeds[0]);
+			dataPackage2.flags = 64;
 			DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
 		}
 	}
@@ -308,7 +316,9 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 void executeExit(string fromUserID, string toUserID, DiscordCoreAPI::DiscordGuild discordGuild, DiscordCoreAPI::InputEventData originalEvent) {
 	string rejectedString;
 	rejectedString = "Sorry, <@!" + fromUserID + ">, but <@!" + toUserID + "> has rejected your duel offer! (Timed Out!)";
+	DiscordCoreAPI::User currentUser = originalEvent.discordCoreClient->users->getUserAsync({ originalEvent.getRequesterId() }).get();
 	DiscordCoreAPI::EmbedData messageEmbed2;
+	messageEmbed2.setAuthor(currentUser.data.username, currentUser.data.avatar);
 	messageEmbed2.setColor(discordGuild.data.borderColor);
 	messageEmbed2.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
 	messageEmbed2.setTitle("__**DUEL REJECTED!**__");
@@ -370,9 +380,9 @@ namespace DiscordCoreAPI {
 			 	else {
 					DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage(args->eventData);
 					auto newEvent02 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
-					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 					DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
 					dataPackage2.embeds.push_back(msgEmbed);
+					dataPackage2.flags = 64;
 					auto newEvent03 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage2);
 					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent03, 20000);
 				}
@@ -396,9 +406,9 @@ namespace DiscordCoreAPI {
 				else {
 					DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage(args->eventData);
 					auto newEvent02 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
-					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 					DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
 					dataPackage2.embeds.push_back(msgEmbed);
+					dataPackage2.flags = 64;
 					auto newEvent03 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage2);
 					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent03, 20000);
 				}
@@ -435,7 +445,6 @@ namespace DiscordCoreAPI {
 				else {
 					DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage(args->eventData);
 					auto newEvent02 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
-					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 					DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
 					dataPackage2.embeds.push_back(msgEmbed);
 					auto newEvent03 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage2);
@@ -464,9 +473,9 @@ namespace DiscordCoreAPI {
 				else {
 					DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage(args->eventData);
 					auto newEvent02 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
-					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 					DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
 					dataPackage2.embeds.push_back(msgEmbed);
+					dataPackage2.flags = 64;
 					auto newEvent03 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage2);
 					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent03, 20000);
 				}
@@ -489,9 +498,9 @@ namespace DiscordCoreAPI {
 				else {
 					DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage(args->eventData);
 					auto newEvent02 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage);
-					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent02);
 					DiscordCoreAPI::CreateFollowUpMessageData dataPackage2(newEvent02);
 					dataPackage2.embeds.push_back(msgEmbed);
+					dataPackage2.flags = 64;
 					auto newEvent03 = DiscordCoreAPI::InputEventManager::respondToEvent(dataPackage2);
 					DiscordCoreAPI::InputEventManager::deleteInputEventResponse(newEvent03, 20000);
 				}
@@ -501,6 +510,7 @@ namespace DiscordCoreAPI {
 			string msgEmbedString = "You've been challenged to a duel! :crossed_swords: \nBy user: <@!" + fromUserID + ">\nFor a wager of: " + to_string(betAmount) + " " +
 				args->eventData.discordCoreClient->discordUser->data.currencyName + "\nReact with :white_check_mark: to accept or :x: to reject!";
 			EmbedData messageEmbed;
+			messageEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 			messageEmbed.setDescription(msgEmbedString);
 			messageEmbed.setTimeStamp(getTimeAndDate());
 			messageEmbed.setTitle("__**IT'S TIME TO DUEL!**__");
@@ -517,7 +527,6 @@ namespace DiscordCoreAPI {
 			else {
 				CreateDeferredInteractionResponseData dataPackage(args->eventData);
 				auto newEvent01 = InputEventManager::respondToEvent(dataPackage);
-				InputEventManager::deleteInputEventResponse(newEvent01);
 				CreateFollowUpMessageData dataPackage2(newEvent01);
 				dataPackage2.embeds.push_back(messageEmbed);
 				dataPackage2.content = "<@!" + toUserID + ">";
@@ -543,6 +552,7 @@ namespace DiscordCoreAPI {
 				string rejectedString = "Sorry, <@!" + fromUserID + ">, but <@!" + toUserID + "> has rejected your duel offer!";
 				EmbedData messageEmbed5;
 				messageEmbed5 = EmbedData();
+				messageEmbed5.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				messageEmbed5.setColor("FE0000");
 				messageEmbed5.setTimeStamp(getTimeAndDate());
 				messageEmbed5.setTitle("__**DUEL REJECTED!**__");

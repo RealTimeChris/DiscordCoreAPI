@@ -49,11 +49,11 @@ namespace DiscordCoreAPI {
 					co_return;
 				}
 
-				regex itemNameRegExp("\.{1,32}");
+				regex itemNameRegExp(".{1,32}");
 				regex selfModRegExp("\\d{1,5}");
 				regex oppModRegExp("-{0,1}\\d{1,5}");
 				regex itemCostRegExp("\\d{1,6}");
-				regex emojiRegExp("\.{1,32}");
+				regex emojiRegExp(".{1,32}");
 				if (args->argumentsArray.size() == 0 || !regex_search(args->argumentsArray.at(0), itemNameRegExp)) {
 					string msgString = "------\n**Please enter a valid item name! (!addshopitem = ITEMNAME, SELFMOD, OPPMOD, ITEMCOST, EMOJI)**\n------";
 					EmbedData msgEmbed;

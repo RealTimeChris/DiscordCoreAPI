@@ -429,9 +429,7 @@ namespace DiscordCoreAPI {
     }
 
     // Recurses through a succession of messages.
-    task<void> recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned int waitForMaxMs) {
-        apartment_context mainThread;
-        co_await resume_background();
+    void recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned int waitForMaxMs) {
         unsigned int newCurrentPageIndex = currentPageIndex;
         try {
             InputEventData event01 = originalEvent;
@@ -624,13 +622,12 @@ namespace DiscordCoreAPI {
                     }
                     doWeQuit = true;
                 }
-            }
-            co_await mainThread;
-            co_return;
+            };
+            return;
         }
         catch (exception& e) {
             cout << "recurseThroughMessagePages() Error: " << e.what() << endl << endl;
-            co_return;
+            return;
         }
     };
 
