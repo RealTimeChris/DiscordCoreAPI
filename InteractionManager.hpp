@@ -22,7 +22,7 @@ namespace DiscordCoreAPI {
     class Button;
 
     struct ButtonInteractionData {
-        ButtonInteractionData() { };
+        ButtonInteractionData() {}
         ButtonInteractionData(const ButtonInteractionData& dataPackage) {
             this->applicationId = dataPackage.applicationId;
             this->channelId = dataPackage.channelId;

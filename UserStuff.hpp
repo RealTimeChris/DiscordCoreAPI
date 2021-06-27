@@ -41,13 +41,6 @@ namespace DiscordCoreAPI {
 			this->data = dataNew;
 			this->discordCoreClient = coreClientNew;
 		}
-
-	protected:
-		friend class DiscordCoreClient;
-		friend class UserManagerAgent;
-		friend class UserManager;
-		friend class Guild;
-		friend class GuildManager;
 	};
 
 	struct GetUserData {

@@ -17,8 +17,8 @@
 #include "InteractionManager.hpp"
 #include "EventManager.hpp"
 #include "SlashCommandStuff.hpp"
-#include "DatabaseStuff.hpp"
 #include "InputEventManager.hpp"
+#include "DatabaseStuff.hpp"
 
 void myPurecallHandler(void) {
 	cout << "CURRENT THREAD: " << this_thread::get_id() << endl;
@@ -116,14 +116,6 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<exception> errorBuffer;
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext;
 
-		void login() {
-			this->initialize(this->botToken).get();
-			this->pWebSocketReceiverAgent->start();
-			this->pWebSocketConnectionAgent->start();
-			this->start();
-			return;
-		}
-
 		task<void> initialize(hstring botTokenNew) {
 			thisPointer.reset(this);
 			_set_purecall_handler(myPurecallHandler);
@@ -177,7 +169,11 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			InputEventManager::initialize(this->messages, this->thisPointer, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
 			this->discordUser->writeDataToDB();
+			this->pWebSocketReceiverAgent->start();
+			this->pWebSocketConnectionAgent->start();
+			this->start();
 			co_await mainThread;
+			co_return;
 		}
 
 		Guild createGuild(GuildData guildData) {

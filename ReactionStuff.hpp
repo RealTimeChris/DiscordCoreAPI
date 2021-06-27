@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class DiscordCoreClient;
 		friend class ReactionManager;
-		friend class DiscordCoreClientNew;
+		friend class IndexHost;
 
 		static unbounded_buffer<DiscordCoreInternal::PutReactionData>* requestPutReactionBuffer;
 		static unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll>* requestDeleteReactionBuffer;

@@ -12,7 +12,7 @@
 #include "Commands\CommandsList.hpp"
 
 namespace DiscordCoreAPI {
-    class DiscordCoreClientNew {
+    class IndexHost {
     public:
         static void onChannelCreation(OnChannelCreationData dataPackage) {
             dataPackage.channel.discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
@@ -171,28 +171,28 @@ namespace DiscordCoreAPI {
         try {
             DiscordCoreInternal::ThreadManager::initialize();
             DiscordCoreAPI::pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
-            pDiscordCoreClient->login();
-            pDiscordCoreClient->eventManager->onChannelCreation(&DiscordCoreClientNew::onChannelCreation);
-            pDiscordCoreClient->eventManager->onChannelUpdate(&DiscordCoreClientNew::onChannelUpdate);
-            pDiscordCoreClient->eventManager->onChannelDeletion(&DiscordCoreClientNew::onChannelDeletion);
-            pDiscordCoreClient->eventManager->onGuildCreation(&DiscordCoreClientNew::onGuildCreation);
-            pDiscordCoreClient->eventManager->onGuildUpdate(&DiscordCoreClientNew::onGuildUpdate);
-            pDiscordCoreClient->eventManager->onGuildDeletion(&DiscordCoreClientNew::onGuildDeletion);
-            pDiscordCoreClient->eventManager->onGuildMemberAdd(&DiscordCoreClientNew::onGuildMemberAdd);
-            pDiscordCoreClient->eventManager->onGuildMemberRemove(&DiscordCoreClientNew::onGuildMemberRemove);
-            pDiscordCoreClient->eventManager->onGuildMemberUpdate(&DiscordCoreClientNew::onGuildMemberUpdate);
-            pDiscordCoreClient->eventManager->onRoleCreation(&DiscordCoreClientNew::onRoleCreation);
-            pDiscordCoreClient->eventManager->onRoleUpdate(&DiscordCoreClientNew::onRoleUpdate);
-            pDiscordCoreClient->eventManager->onRoleDeletion(&DiscordCoreClientNew::onRoleDeletion);
-            pDiscordCoreClient->eventManager->onInteractionCreation(&DiscordCoreClientNew::onInteractionCreation);
-            pDiscordCoreClient->eventManager->onMessageCreation(&DiscordCoreClientNew::onMessageCreation);
-            pDiscordCoreClient->eventManager->onMessageUpdate(&DiscordCoreClientNew::onMessageUpdate);
-            pDiscordCoreClient->eventManager->onMessageDeletion(&DiscordCoreClientNew::onMessageDeletion);
-            pDiscordCoreClient->eventManager->onMessageDeleteBulk(&DiscordCoreClientNew::onMessageDeleteBulk);
-            pDiscordCoreClient->eventManager->onReactionAdd(&DiscordCoreClientNew::onReactionAdd);
-            pDiscordCoreClient->eventManager->onReactionRemove(&DiscordCoreClientNew::onReactionRemove);
-            pDiscordCoreClient->eventManager->onReactionRemoveAll(&DiscordCoreClientNew::onReactionRemoveAll);
-            pDiscordCoreClient->eventManager->onReactionRemoveEmoji(&DiscordCoreClientNew::onReactionRemoveEmoji);
+            pDiscordCoreClient->initialize(to_hstring(botToken)).get();
+            pDiscordCoreClient->eventManager->onChannelCreation(&IndexHost::onChannelCreation);
+            pDiscordCoreClient->eventManager->onChannelUpdate(&IndexHost::onChannelUpdate);
+            pDiscordCoreClient->eventManager->onChannelDeletion(&IndexHost::onChannelDeletion);
+            pDiscordCoreClient->eventManager->onGuildCreation(&IndexHost::onGuildCreation);
+            pDiscordCoreClient->eventManager->onGuildUpdate(&IndexHost::onGuildUpdate);
+            pDiscordCoreClient->eventManager->onGuildDeletion(&IndexHost::onGuildDeletion);
+            pDiscordCoreClient->eventManager->onGuildMemberAdd(&IndexHost::onGuildMemberAdd);
+            pDiscordCoreClient->eventManager->onGuildMemberRemove(&IndexHost::onGuildMemberRemove);
+            pDiscordCoreClient->eventManager->onGuildMemberUpdate(&IndexHost::onGuildMemberUpdate);
+            pDiscordCoreClient->eventManager->onRoleCreation(&IndexHost::onRoleCreation);
+            pDiscordCoreClient->eventManager->onRoleUpdate(&IndexHost::onRoleUpdate);
+            pDiscordCoreClient->eventManager->onRoleDeletion(&IndexHost::onRoleDeletion);
+            pDiscordCoreClient->eventManager->onInteractionCreation(&IndexHost::onInteractionCreation);
+            pDiscordCoreClient->eventManager->onMessageCreation(&IndexHost::onMessageCreation);
+            pDiscordCoreClient->eventManager->onMessageUpdate(&IndexHost::onMessageUpdate);
+            pDiscordCoreClient->eventManager->onMessageDeletion(&IndexHost::onMessageDeletion);
+            pDiscordCoreClient->eventManager->onMessageDeleteBulk(&IndexHost::onMessageDeleteBulk);
+            pDiscordCoreClient->eventManager->onReactionAdd(&IndexHost::onReactionAdd);
+            pDiscordCoreClient->eventManager->onReactionRemove(&IndexHost::onReactionRemove);
+            pDiscordCoreClient->eventManager->onReactionRemoveAll(&IndexHost::onReactionRemoveAll);
+            pDiscordCoreClient->eventManager->onReactionRemoveEmoji(&IndexHost::onReactionRemoveEmoji);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::addShopItem);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::addShopRole);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::balance);
