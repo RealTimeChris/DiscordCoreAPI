@@ -12,7 +12,7 @@
 #include "FoundationEntities.hpp"
 
 namespace DiscordCoreInternal {
-
+	
 	string getIdentifyPayload(string botToken, int intents) {
 		json data;
 		data = {
@@ -76,7 +76,6 @@ namespace DiscordCoreInternal {
 	};
 
 	string getCreateMessagePayload(PostMessageData dataPackage) {
-		
 		auto componentsActionRow = json::array();
 
 		for (auto& value : dataPackage.components) {
@@ -1299,7 +1298,7 @@ namespace DiscordCoreInternal {
 			 return dataArray.dump();
 		 };
 
-		 string getEditChannelPermissionOverwritesPayload(EditChannelPermissionOverwritesData dataPackage) {
+		 string getEditChannelPermissionOverwritesPayload(PutPermissionOverwritesData dataPackage) {
 			 json data = { {"allow", dataPackage.allow},
 				 {"deny", dataPackage.deny},
 				 {"type", dataPackage.type} };

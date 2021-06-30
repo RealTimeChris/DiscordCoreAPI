@@ -19,6 +19,21 @@ namespace  DiscordCoreInternal {
 
     class ThreadManager;
 
+    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
+        __int64 timeValue = timeInMs / 1000;
+        __time64_t rawTime(timeValue);
+        tm timeInfo;
+        char timeBuffer[26];
+        errno_t error;
+        error = localtime_s(&timeInfo, &rawTime);
+        if (error)
+        {
+            printf("Invalid argument to _localtime64_s.");
+        }
+        strftime(timeBuffer, 26, "%F %R", &timeInfo);
+        return timeBuffer;
+    }
+
     struct AllowedMentionsData {
         vector<string> parse;
         vector<string> roles;
@@ -290,6 +305,7 @@ namespace  DiscordCoreInternal {
         bool mute = false;
         bool pending = false;
         string permissions;
+        string userMention;
     };
 
     struct WelcomeScreenChannelData {
@@ -873,11 +889,13 @@ namespace  DiscordCoreInternal {
         MessageType type = MessageType::APPLICATION_COMMAND;
         MessageActivityData activity;
         ApplicationData application;
+        string applicationId;
         MessageReferenceData messageReference;
         int flags = 0;
         vector<MessageStickerData> stickers;
         MessageInteractionData interaction;
         vector<ActionRowData> components;
+        ChannelData thread;
     };
 
     struct MessageData : MessageDataOld {
@@ -943,7 +961,7 @@ namespace  DiscordCoreInternal {
         string channelId;
     };
 
-    struct EditChannelPermissionOverwritesData {
+    struct PutPermissionOverwritesData {
         HttpAgentResources agentResources;
         string allow;
         string deny;
@@ -1040,6 +1058,12 @@ namespace  DiscordCoreInternal {
     };
 
     struct GetGuildMemberData {
+        HttpAgentResources agentResources;
+        string guildId;
+        string guildMemberId;
+    };
+
+    struct FetchGuildMemberData {
         HttpAgentResources agentResources;
         string guildId;
         string guildMemberId;
@@ -1567,7 +1591,7 @@ namespace DiscordCoreAPI {
     }
 
     string getTimeAndDate() {
-        const std::time_t now = std::time(nullptr);
+        const time_t now = time(nullptr);
         char charArray[32];
         std::tm time;
         localtime_s(&time, &now);
@@ -2146,6 +2170,7 @@ namespace DiscordCoreAPI {
             newData.premiumSince = this->premiumSince;
             newData.roles = this->roles;
             newData.user = this->user;
+            newData.userMention = this->userMention;
             return newData;
         }
         string guildId;
@@ -2158,6 +2183,7 @@ namespace DiscordCoreAPI {
         bool mute;
         bool pending;
         string permissions;
+        string userMention;
     };
 
     struct ApplicationCommandInteractionDataResolved {
@@ -2499,6 +2525,7 @@ namespace DiscordCoreAPI {
         vector<MessageStickerData> stickers;
         MessageInteractionData interaction;
         vector<ActionRowData> components;
+        ChannelData thread;
     };
 
     struct InviteData {
@@ -2727,6 +2754,15 @@ namespace DiscordCoreAPI {
         vector<WelcomeScreenChannelData> welcomeChannels{};
     };
 
+    struct StageInstanceData {
+        string id;
+        string guildId;
+        string channelId;
+        string topic;
+        int privacyLevel;
+        bool discoverableDisabled;
+    };
+
     struct GuildData {
         string icon;
         string name;
@@ -2741,6 +2777,7 @@ namespace DiscordCoreAPI {
         string banner;
         string ruleChannelID;
         string applicationID;
+        string createdAt;
         string joinedAt;
         string widgetChannelID;
         string systemChannelID;
@@ -2772,9 +2809,11 @@ namespace DiscordCoreAPI {
         int maxVideoChannelUsers = 0;
         int approximateMemberCount = 0;
         int approximatePresenceCount = 0;
+        int nsfwLevel = 0;
         WelcomeScreenData welcomeScreen{};
         vector<GuildMemberData> members{};
         vector<ChannelData> channels{};
+        vector<StageInstanceData> stageInstances{};
     };
 
     struct ReactionAddData {

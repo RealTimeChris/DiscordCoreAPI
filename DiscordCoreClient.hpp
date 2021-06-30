@@ -145,14 +145,6 @@ namespace DiscordCoreAPI {
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
 			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			ReactionManagerAgent::initialize();
-			UserManagerAgent::initialize();
-			MessageManagerAgent::initialize();
-			RoleManagerAgent::initialize();
-			GuildMemberManagerAgent::initialize();
-			GuildManagerAgent::initialize();
-			ChannelManagerAgent::initialize();
-			InteractionManagerAgent::initialize();
 			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->reactions = make_shared<ReactionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
 			this->users = make_shared<UserManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
@@ -176,11 +168,8 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		Guild createGuild(GuildData guildData) {
-			DiscordCoreInternal::HttpAgentResources agentResources;
-			agentResources.baseURL = this->baseURL;
-			agentResources.botToken = this->botToken;
-			Guild guild(agentResources, guildData, (shared_ptr<DiscordCoreClient>)this->thisPointer, this->thisPointer);
+		Guild createGuild(GuildData guildData){
+			Guild guild(this->agentResources, guildData, (shared_ptr<DiscordCoreClient>)this->thisPointer, this->thisPointer);
 			DiscordGuild discordGuild(guild.data);
 			discordGuild.data.rouletteGame.currentlySpinning = false;
 			discordGuild.writeDataToDB();
@@ -592,6 +581,7 @@ namespace DiscordCoreAPI {
 			}
 			done();
 			this->terminate();
+			return;
 		}
 	};
 	map<string, DiscordGuild> DiscordCoreClientBase::guildMap;

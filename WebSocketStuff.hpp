@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 			agent(*threadContextNew->scheduler)
 		{
 			this->threadContext = threadContextNew;
-			this->groupId = this->threadContext->createGroup(*this->threadManager->getThreadContext().get());
+			this->groupId = this->threadContext->createGroup(*this->threadContext);
 		}
 
 		bool getError(exception& error) {
@@ -83,7 +83,6 @@ namespace DiscordCoreInternal {
 	protected:
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		ISource<json>& workloadSource;
-		ThreadManager* threadManager{ nullptr };
 		ITarget<WebSocketWorkload>& workloadTarget;
 		unbounded_buffer<exception> errorBuffer;
 		unsigned int groupId;

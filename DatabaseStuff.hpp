@@ -202,6 +202,7 @@ namespace DiscordCoreAPI {
     };
 
     struct DiscordGuildMemberData {
+        string guildMemberMention = "";
         string guildMemberId = "";
         string displayName = "";
         string guildId = "";
@@ -519,6 +520,7 @@ namespace DiscordCoreAPI {
             bsoncxx::builder::basic::document buildDoc;
             try {
                 using bsoncxx::builder::basic::kvp;
+                buildDoc.append(kvp("guildMemberMention", discordGuildMemberData.guildMemberMention));
                 buildDoc.append(kvp("_id", discordGuildMemberData.globalId));
                 buildDoc.append(kvp("guildId", discordGuildMemberData.guildId));
                 buildDoc.append(kvp("guildMemberId", discordGuildMemberData.guildMemberId));
@@ -565,6 +567,7 @@ namespace DiscordCoreAPI {
         DiscordGuildMemberData parseGuildMemberData(bsoncxx::document::value docValue) {
             DiscordGuildMemberData guildMemberData;
             try {
+                guildMemberData.guildMemberMention = docValue.view()["guildMemberMention"].get_utf8().value.to_string();
                 guildMemberData.guildId = docValue.view()["guildId"].get_utf8().value.to_string();
                 guildMemberData.displayName = docValue.view()["displayName"].get_utf8().value.to_string();
                 guildMemberData.globalId = docValue.view()["globalId"].get_utf8().value.to_string();
@@ -793,6 +796,7 @@ namespace DiscordCoreAPI {
                 this->data.displayName = guildMemberData.nick;
             }
             this->data.userName = guildMemberData.user.username;
+            this->data.guildMemberMention = guildMemberData.userMention;
         }
 
         void writeDataToDB() {

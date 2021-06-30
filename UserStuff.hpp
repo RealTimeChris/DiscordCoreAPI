@@ -55,17 +55,19 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class DiscordCoreClient;
 		friend class UserManager;
-		static unbounded_buffer<DiscordCoreInternal::FetchUserData>* requestFetchUserBuffer;
-		static unbounded_buffer<DiscordCoreInternal::GetUserData>* requestGetUserBuffer;
-		static unbounded_buffer<DiscordCoreInternal::GetApplicationData>* requestGetApplicationBuffer;
-		static unbounded_buffer<User>* outUserBuffer;
-		static unbounded_buffer<Application>* outApplicationBuffer;
-		static concurrent_queue<User> usersToInsert;
-		static overwrite_buffer<map<string, User>> cache2;
+
+		static overwrite_buffer<map<string, User>> cache;
+
+		unbounded_buffer<DiscordCoreInternal::GetApplicationData> requestGetApplicationBuffer;
+		unbounded_buffer<DiscordCoreInternal::FetchUserData> requestFetchUserBuffer;
+		unbounded_buffer<DiscordCoreInternal::GetUserData> requestGetUserBuffer;
+		unbounded_buffer<Application> outApplicationBuffer;
 		unbounded_buffer<exception> errorBuffer;
+		unbounded_buffer<User> outUserBuffer;
+		concurrent_queue<User> usersToInsert;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
@@ -76,17 +78,8 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = coreClientNew;
 		}
 
-		static void initialize() {
-			UserManagerAgent::requestFetchUserBuffer = new unbounded_buffer<DiscordCoreInternal::FetchUserData>;
-			UserManagerAgent::requestGetUserBuffer = new unbounded_buffer<DiscordCoreInternal::GetUserData>;
-			UserManagerAgent::requestGetApplicationBuffer = new unbounded_buffer<DiscordCoreInternal::GetApplicationData>;
-			UserManagerAgent::outApplicationBuffer = new unbounded_buffer<Application>;
-			UserManagerAgent::outUserBuffer = new unbounded_buffer<User>;
-			return;
-		}
-
 		bool getError(exception& error) {
-			if (try_receive(errorBuffer, error)) {
+			if (try_receive(this->errorBuffer, error)) {
 				return true;
 			}
 			return false;
@@ -108,15 +101,15 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "UserManagerAgent::getObject() Error: " << error.what() << endl << endl;
+				cout << "UserManagerAgent::getObjectData() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "UserManagerAgent::getObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "UserManagerAgent::getObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "UserManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "UserManagerAgent::getObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			UserData userData;
 			DiscordCoreInternal::parseObject(returnData.data, &userData);
@@ -135,15 +128,15 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "UserManagerAgent::getObject() Error: " << error.what() << endl << endl;
+				cout << "UserManagerAgent::getObjectData() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "UserManagerAgent::getObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "UserManagerAgent::getObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "UserManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "UserManagerAgent::getObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			ApplicationData applicationData;
 			DiscordCoreInternal::parseObject(returnData.data, &applicationData);
@@ -154,48 +147,48 @@ namespace DiscordCoreAPI {
 		void run() {
 			try {
 				DiscordCoreInternal::GetUserData dataPackage01;
-				if (try_receive(UserManagerAgent::requestGetUserBuffer, dataPackage01)) {
+				if (try_receive(this->requestGetUserBuffer, dataPackage01)) {
 					map<string, User> cacheTemp;
-					if (try_receive(UserManagerAgent::cache2, cacheTemp)) {
+					if (try_receive(UserManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage01.userId)) {
 							User user = cacheTemp.at(dataPackage01.userId);
-							send(UserManagerAgent::outUserBuffer, user);
+							send(this->outUserBuffer, user);
 						}
 					}
 				}
 				DiscordCoreInternal::FetchUserData dataPackage02;
-				if (try_receive(UserManagerAgent::requestFetchUserBuffer, dataPackage02)) {
+				if (try_receive(this->requestFetchUserBuffer, dataPackage02)) {
 					map<string, User> cacheTemp;
-					if (try_receive(UserManagerAgent::cache2, cacheTemp)) {
+					if (try_receive(UserManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage02.userId)) {
 							cacheTemp.erase(dataPackage02.userId);
 						}
 					}
 					User user = getObjectData(dataPackage02);
 					cacheTemp.insert(make_pair(dataPackage02.userId, user));
-					send(UserManagerAgent::outUserBuffer, user);
-					asend(UserManagerAgent::cache2, cacheTemp);
+					send(this->outUserBuffer, user);
+					asend(UserManagerAgent::cache, cacheTemp);
 				}
 				DiscordCoreInternal::GetApplicationData dataPackage03;
-				if (try_receive(UserManagerAgent::requestGetApplicationBuffer, dataPackage03)) {
+				if (try_receive(this->requestGetApplicationBuffer, dataPackage03)) {
 					Application application = getObjectData(dataPackage03);
-					send(UserManagerAgent::outApplicationBuffer, application);
+					send(this->outApplicationBuffer, application);
 				}
 				DiscordCoreInternal::UserData dataPackage04;
 				User user(dataPackage04, this->discordCoreClient);
-				while (UserManagerAgent::usersToInsert.try_pop(user)) {
+				while (this->usersToInsert.try_pop(user)) {
 					map<string, User> cacheTemp;
-					if (try_receive(UserManagerAgent::cache2, cacheTemp)) {
+					if (try_receive(UserManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(user.data.id)) {
 							cacheTemp.erase(user.data.id);
 						}
 					}
 					cacheTemp.insert(make_pair(user.data.id, user));
-					asend(UserManagerAgent::cache2, cacheTemp);
+					asend(UserManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (const exception& e) {
-				send(errorBuffer, e);
+				send(this->errorBuffer, e);
 			}
 			done();
 		}
@@ -218,7 +211,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.userType = DiscordCoreInternal::GetUserDataType::USER;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(UserManagerAgent::requestFetchUserBuffer, dataPackageNew);
+			send(requestAgent.requestFetchUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -227,7 +220,7 @@ namespace DiscordCoreAPI {
 			}
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
-			try_receive(UserManagerAgent::outUserBuffer, user);
+			try_receive(requestAgent.outUserBuffer, user);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return user;
 		}
@@ -245,7 +238,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userType = DiscordCoreInternal::GetUserDataType::SELF;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(UserManagerAgent::requestFetchUserBuffer, dataPackageNew);
+			send(requestAgent.requestFetchUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -254,7 +247,7 @@ namespace DiscordCoreAPI {
 			}
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
-			try_receive(UserManagerAgent::outUserBuffer, user);
+			try_receive(requestAgent.outUserBuffer, user);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return user;
 		}
@@ -272,7 +265,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(UserManagerAgent::requestGetUserBuffer, dataPackageNew);
+			send(requestAgent.requestGetUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -281,7 +274,7 @@ namespace DiscordCoreAPI {
 			}
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
-			try_receive(UserManagerAgent::outUserBuffer, user);
+			try_receive(requestAgent.outUserBuffer, user);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return user;
 		}
@@ -298,7 +291,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::GetApplicationData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(UserManagerAgent::requestGetApplicationBuffer, dataPackageNew);
+			send(requestAgent.requestGetApplicationBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -307,7 +300,7 @@ namespace DiscordCoreAPI {
 			}
 			DiscordCoreInternal::ApplicationData applicationData;
 			Application application(applicationData);
-			try_receive(UserManagerAgent::outApplicationBuffer, application);
+			try_receive(requestAgent.outApplicationBuffer, application);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return application;
 		}
@@ -322,7 +315,7 @@ namespace DiscordCoreAPI {
 			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			UserManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient);
-			UserManagerAgent::usersToInsert.push(user);
+			requestAgent.usersToInsert.push(user);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -353,13 +346,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		unsigned int groupId;
 	};
-	overwrite_buffer<map<string, User>> UserManagerAgent::cache2;
-	unbounded_buffer<DiscordCoreInternal::FetchUserData>* UserManagerAgent::requestFetchUserBuffer;
-	unbounded_buffer<DiscordCoreInternal::GetUserData>* UserManagerAgent::requestGetUserBuffer;
-	unbounded_buffer<DiscordCoreInternal::GetApplicationData>* UserManagerAgent::requestGetApplicationBuffer;
-	unbounded_buffer<Application>* UserManagerAgent::outApplicationBuffer;
-	unbounded_buffer<User>* UserManagerAgent::outUserBuffer;
-	concurrent_queue<User> UserManagerAgent::usersToInsert;
-	
+	overwrite_buffer<map<string, User>> UserManagerAgent::cache;
 }
 #endif

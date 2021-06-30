@@ -14,6 +14,7 @@
 namespace DiscordCoreAPI {
     class IndexHost {
     public:
+
         static void onChannelCreation(OnChannelCreationData dataPackage) {
             dataPackage.channel.discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
             return;
@@ -95,8 +96,8 @@ namespace DiscordCoreAPI {
                     dataPackageNew.token = dataPackage.eventData.getInteractionToken();
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (Button::buttonInteractioinBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        asend(Button::buttonInteractioinBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (Button::buttonInteractionMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
+                        asend(Button::buttonInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 co_await mainThread;
@@ -214,10 +215,15 @@ namespace DiscordCoreAPI {
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::removeShopRole);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::rob);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::roulette);
-            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::shop);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::sellDrugs);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::setBalance);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::setBorderColor);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::setGameChannel);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::shop);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::slots);
             DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::test);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::transfer);
+            DiscordCoreAPI::CommandController::addCommand(&DiscordCoreAPI::withdraw);
             return DiscordCoreAPI::pDiscordCoreClient;
         }
         catch (exception& e) {

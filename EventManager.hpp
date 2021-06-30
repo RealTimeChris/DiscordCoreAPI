@@ -426,17 +426,17 @@ namespace DiscordCoreAPI {
 
 		winrt::event<delegate<OnGuildBanRemoveData>> onGuildBanRemoveEvent;
 
-		winrt::event <delegate<OnGuildMemberAddData>> onGuildMemberAddEvent;
+		winrt::event<delegate<OnGuildMemberAddData>> onGuildMemberAddEvent;
 
-		winrt::event <delegate<OnGuildMemberRemoveData>> onGuildMemberRemoveEvent;
+		winrt::event<delegate<OnGuildMemberRemoveData>> onGuildMemberRemoveEvent;
 
-		winrt::event <delegate<OnGuildMemberUpdateData>> onGuildMemberUpdateEvent;
+		winrt::event<delegate<OnGuildMemberUpdateData>> onGuildMemberUpdateEvent;
 
-		winrt::event<delegate<OnRoleCreationData>>onRoleCreationEvent;
+		winrt::event<delegate<OnRoleCreationData>> onRoleCreationEvent;
 
-		winrt::event<delegate<OnRoleUpdateData>>onRoleUpdateEvent;
+		winrt::event<delegate<OnRoleUpdateData>> onRoleUpdateEvent;
 
-		winrt::event<delegate<OnRoleDeletionData>>onRoleDeletionEvent;
+		winrt::event<delegate<OnRoleDeletionData>> onRoleDeletionEvent;
 
 		winrt::event<delegate<OnInviteCreationData>> onInviteCreationEvent;
 
@@ -446,27 +446,27 @@ namespace DiscordCoreAPI {
 
 		winrt::event<delegate<OnMessageUpdateData>> onMessageUpdateEvent;
 
-		winrt::event <delegate<OnMessageDeletionData>> onMessageDeletionEvent;
+		winrt::event<delegate<OnMessageDeletionData>> onMessageDeletionEvent;
 
 		winrt::event<delegate<OnMessageDeleteBulkData>>onMessageDeleteBulkEvent;
 
-		winrt::event <delegate<OnReactionAddData>> onReactionAddEvent;
+		winrt::event<delegate<OnReactionAddData>> onReactionAddEvent;
 
-		winrt::event <delegate<OnReactionRemoveData>> onReactionRemoveEvent;
+		winrt::event<delegate<OnReactionRemoveData>> onReactionRemoveEvent;
 
-		winrt::event <delegate<OnReactionRemoveAllData>> onReactionRemoveAllEvent;
+		winrt::event<delegate<OnReactionRemoveAllData>> onReactionRemoveAllEvent;
 
-		winrt::event <delegate<OnReactionRemoveEmojiData>> onReactionRemoveEmojiEvent;
+		winrt::event<delegate<OnReactionRemoveEmojiData>> onReactionRemoveEmojiEvent;
 
-		winrt::event <delegate<OnPresenceUpdateData>> onPresenceUpdateEvent;
+		winrt::event<delegate<OnPresenceUpdateData>> onPresenceUpdateEvent;
 
-		winrt::event <delegate<OnTypingStartData>> onTypingStartEvent;
+		winrt::event<delegate<OnTypingStartData>> onTypingStartEvent;
 
-		winrt::event <delegate<OnUserUpdateData>> onUserUpdateEvent;
+		winrt::event<delegate<OnUserUpdateData>> onUserUpdateEvent;
 
-		winrt::event <delegate<OnVoiceStateUpdateData>> onVoiceStateUpdateEvent;
+		winrt::event<delegate<OnVoiceStateUpdateData>> onVoiceStateUpdateEvent;
 
-		winrt::event <delegate<OnVoiceServerUpdateData>> onVoiceServerUpdateEvent;
+		winrt::event<delegate<OnVoiceServerUpdateData>> onVoiceServerUpdateEvent;
 
 		winrt::event<delegate<OnInteractionCreationData>> onInteractionCreationEvent;
 		

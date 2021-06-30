@@ -80,16 +80,17 @@ namespace DiscordCoreAPI {
 		friend class ReactionManager;
 		friend class IndexHost;
 
-		static unbounded_buffer<DiscordCoreInternal::PutReactionData>* requestPutReactionBuffer;
-		static unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll>* requestDeleteReactionBuffer;
-		static unbounded_buffer<DiscordCoreInternal::GetReactionData>* requestGetReactionBuffer;
-		static unbounded_buffer<Reaction>* outReactionBuffer;
-		static concurrent_queue<Reaction>* reactionsToInsert;
 		static overwrite_buffer<map<string, Reaction>> cache;
+
+		unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll> requestDeleteReactionBuffer;
+		unbounded_buffer<DiscordCoreInternal::PutReactionData> requestPutReactionBuffer;
+		unbounded_buffer<DiscordCoreInternal::GetReactionData> requestGetReactionBuffer;
+		unbounded_buffer<Reaction> outReactionBuffer;
+		concurrent_queue<Reaction> reactionsToInsert;
 		unbounded_buffer<exception> errorBuffer;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
@@ -99,17 +100,8 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = coreClientNew;
 		}
 
-		static void initialize() {
-			ReactionManagerAgent::requestDeleteReactionBuffer = new unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll>;
-			ReactionManagerAgent::requestGetReactionBuffer = new unbounded_buffer<DiscordCoreInternal::GetReactionData>;
-			ReactionManagerAgent::requestPutReactionBuffer = new unbounded_buffer<DiscordCoreInternal::PutReactionData>;
-			ReactionManagerAgent::outReactionBuffer = new unbounded_buffer<Reaction>;
-			ReactionManagerAgent::reactionsToInsert = new concurrent_queue<Reaction>;
-			return;
-		}
-
 		bool getError(exception& error) {
-			if (try_receive(errorBuffer, error)) {
+			if (try_receive(this->errorBuffer, error)) {
 				return true;
 			}
 			return false;
@@ -126,15 +118,15 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "ReactionManagerAgent::putObject() Error: " << error.what() << endl << endl;
+				cout << "this->putObject() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "ReactionManagerAgent::putObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->putObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "ReactionManagerAgent::putObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->putObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			ReactionData reactionData;
 			DiscordCoreInternal::parseObject(returnData.data, &reactionData);
@@ -164,15 +156,15 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "ReactionManagerAgent::deleteObject() Error: " << error.what() << endl << endl;
+				cout << "this->deleteObject() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "ReactionManagerAgent::deleteObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->deleteObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "ReactionManagerAgent::deleteObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->deleteObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}
@@ -180,27 +172,27 @@ namespace DiscordCoreAPI {
 		void run() {
 			try {
 				DiscordCoreInternal::PutReactionData dataPackage01;
-				if (try_receive(ReactionManagerAgent::requestPutReactionBuffer, dataPackage01)) {
+				if (try_receive(this->requestPutReactionBuffer, dataPackage01)) {
 					Reaction reaction = this->putObjectData(dataPackage01);
-					send(ReactionManagerAgent::outReactionBuffer, reaction);
+					send(this->outReactionBuffer, reaction);
 				}
 				DiscordCoreInternal::DeleteReactionDataAll dataPackage02;
-				if (try_receive(ReactionManagerAgent::requestDeleteReactionBuffer, dataPackage02)) {
+				if (try_receive(this->requestDeleteReactionBuffer, dataPackage02)) {
 					this->deleteObjectData(dataPackage02);
 				}
 				DiscordCoreInternal::GetReactionData dataPackage03;
-				if (try_receive(ReactionManagerAgent::requestGetReactionBuffer, dataPackage03)) {
+				if (try_receive(this->requestGetReactionBuffer, dataPackage03)) {
 					map<string, Reaction> cacheTemp;
 					if (try_receive(ReactionManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage03.messageId + dataPackage03.userId + dataPackage03.emojiName)) {
 							Reaction reaction = cacheTemp.at(dataPackage03.messageId + dataPackage03.userId + dataPackage03.emojiName);
-							send(ReactionManagerAgent::outReactionBuffer, reaction);
+							send(this->outReactionBuffer, reaction);
 						}
 					}
 				}
 				DiscordCoreInternal::ReactionData dataPackage04;
 				Reaction reaction(dataPackage04, this->discordCoreClient);
-				while (ReactionManagerAgent::reactionsToInsert->try_pop(reaction)) {
+				while (this->reactionsToInsert.try_pop(reaction)) {
 					map<string, Reaction> cacheTemp;
 					if (try_receive(ReactionManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(reaction.data.messageId + reaction.data.userId + reaction.data.emoji.name)) {
@@ -212,7 +204,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			catch (const exception& error) {
-				send(errorBuffer, error);
+				send(this->errorBuffer, error);
 			}
 			done();
 		}
@@ -248,7 +240,7 @@ namespace DiscordCoreAPI {
 			}
 			dataPackageNew.emoji = output;
 			ReactionManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(ReactionManagerAgent::requestPutReactionBuffer, dataPackageNew);
+			send(requestAgent.requestPutReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -257,7 +249,7 @@ namespace DiscordCoreAPI {
 			}
 			DiscordCoreInternal::ReactionData reactionData;
 			Reaction reaction(reactionData, this->discordCoreClient);
-			try_receive(ReactionManagerAgent::outReactionBuffer, reaction);
+			try_receive(requestAgent.outReactionBuffer, reaction);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return reaction;
 		}
@@ -277,7 +269,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.emojiName = dataPackage.emojiName;
 			dataPackageNew.userId = dataPackage.userId;
 			ReactionManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient);
-			send(ReactionManagerAgent::requestGetReactionBuffer, dataPackageNew);
+			send(requestAgent.requestGetReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -286,7 +278,7 @@ namespace DiscordCoreAPI {
 			}
 			DiscordCoreInternal::ReactionData reactionData;
 			Reaction reaction(reactionData, this->discordCoreClient);
-			try_receive(ReactionManagerAgent::outReactionBuffer, reaction);
+			try_receive(requestAgent.outReactionBuffer, reaction);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return reaction;
 		}
@@ -321,7 +313,7 @@ namespace DiscordCoreAPI {
 			}
 			dataPackageNew.encodedEmoji = output;
 			ReactionManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(ReactionManagerAgent::requestDeleteReactionBuffer, dataPackageNew);
+			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -360,7 +352,7 @@ namespace DiscordCoreAPI {
 			}
 			dataPackageNew.encodedEmoji = output;
 			ReactionManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(ReactionManagerAgent::requestDeleteReactionBuffer, dataPackageNew);
+			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -399,7 +391,7 @@ namespace DiscordCoreAPI {
 			}
 			dataPackageNew.encodedEmoji = output;
 			ReactionManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(ReactionManagerAgent::requestDeleteReactionBuffer, dataPackageNew);
+			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -425,7 +417,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.messageId = dataPackage.messageId;
 			dataPackageNew.deletionType = DiscordCoreInternal::ReactionDeletionType::ALL_DELETE;
 			ReactionManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
-			send(ReactionManagerAgent::requestDeleteReactionBuffer, dataPackageNew);
+			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -446,7 +438,7 @@ namespace DiscordCoreAPI {
 			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			ReactionManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient);
-			ReactionManagerAgent::reactionsToInsert->push(reaction);
+			requestAgent.reactionsToInsert.push(reaction);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
@@ -496,12 +488,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		unsigned int groupId;
 	};
-
-	unbounded_buffer<DiscordCoreInternal::PutReactionData>* ReactionManagerAgent::requestPutReactionBuffer;
-	unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll>* ReactionManagerAgent::requestDeleteReactionBuffer;
-	unbounded_buffer<DiscordCoreInternal::GetReactionData>* ReactionManagerAgent::requestGetReactionBuffer;
-	unbounded_buffer<Reaction>* ReactionManagerAgent::outReactionBuffer;
-	concurrent_queue<Reaction>* ReactionManagerAgent::reactionsToInsert;
 	overwrite_buffer<map<string, Reaction>> ReactionManagerAgent::cache;
 }
 #endif

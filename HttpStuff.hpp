@@ -18,10 +18,13 @@ namespace DiscordCoreInternal {
 
 		static void initialize() {
 			HttpRequestAgent::threadContext = ThreadManager::getThreadContext().get();
+			return;
 		};
+
 		static shared_ptr<ThreadContext> threadContext;
-		unbounded_buffer<HttpData> workReturnBuffer;
 		unbounded_buffer<HttpWorkload> workSubmissionBuffer;
+		unbounded_buffer<HttpData> workReturnBuffer;
+
 		HttpRequestAgent(HttpAgentResources agentResources) 
 			: agent(*HttpRequestAgent::threadContext->scheduler)
 		{
@@ -53,6 +56,7 @@ namespace DiscordCoreInternal {
 				this->postHeaders.Authorization(credentialValue);
 				this->patchHeaders.Authorization(credentialValue);
 				this->deleteHeaders.Authorization(credentialValue);
+				return;
 			}
 			catch (hresult_error ex) {
 				wcout << "Error: " << ex.message().c_str() << endl << endl;
@@ -496,7 +500,7 @@ namespace DiscordCoreInternal {
 			}
 			return deleteData;
 		}
-
+		
 		unsigned int groupId;
 		Uri baseURI{ nullptr };
 		hstring baseURL = L"";
