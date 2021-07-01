@@ -8,6 +8,8 @@
 
 ## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
 
+## [Example "Game" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-GameHouse-Cpp)
+
 ## Features
 ### Concurrent Discord API Access
 - As a result of using the asynchronous agents library, this library has the ability to make fully asynchronous requests to the Discord API.
