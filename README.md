@@ -59,6 +59,8 @@ if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 
 - [LibCurl](https://github.com/curl/curl)
 
+- [OpenSSL](https://github.com/openssl/openssl)
+
 ## Roadmap
 I am currently working on getting this thing to be "useful", and here are some of the things I plan on implementing:
 
