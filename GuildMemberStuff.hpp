@@ -20,21 +20,6 @@ namespace DiscordCoreAPI {
 
 	class UserManager;
 
-	class DiscordCoreClientBase {
-	public:
-		shared_ptr<ChannelManager> channels{ nullptr };
-		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
-		shared_ptr<RoleManager> roles{ nullptr };
-		shared_ptr<UserManager> users{ nullptr };
-		shared_ptr<DiscordCoreClientBase> thisPointer{ this };
-	protected:
-		friend class Guild;
-		friend class WebSocketConnectionAgent;
-		friend class HttpRequestAgent;
-		static map<string, DiscordGuild> guildMap;
-		static map<string, DiscordGuildMember> guildMemberMap;
-	};
-
 	class GuildMember {
 	public:
 		GuildMemberData data;

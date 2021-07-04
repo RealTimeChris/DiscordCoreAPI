@@ -12,7 +12,6 @@
 #include "ReactionStuff.hpp"
 #include "JSONifier.hpp"
 #include "HttpStuff.hpp"
-#include "InteractionManager.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -224,11 +223,11 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
+		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
-			this->discordCoreClient = coreClientNew;
+			this->discordCoreClient = discordCoreClientNew;
 		}
 
 		bool getError(exception& error) {

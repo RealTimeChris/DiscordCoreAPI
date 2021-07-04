@@ -9,7 +9,6 @@
 #define _REACTION_STUFF_
 
 #include "../pch.h"
-#include "MessageStuff.hpp"
 #include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
@@ -93,11 +92,11 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
+		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew)
 			:agent(*threadContextNew->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
-			this->discordCoreClient = coreClientNew;
+			this->discordCoreClient = discordCoreClientNew;
 		}
 
 		bool getError(exception& error) {
@@ -484,7 +483,7 @@ namespace DiscordCoreAPI {
 		friend class ReactionManagerAgent;
 		friend class DiscordCoreClient;
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		unsigned int groupId;
 	};

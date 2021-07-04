@@ -9,7 +9,6 @@
 #define _GUILD_STUFF_
 
 #include "../pch.h"
-#include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
 #include "HttpStuff.hpp"
 #include "ChannelStuff.hpp"
@@ -19,6 +18,21 @@
 #include "RoleStuff.hpp"
 
 namespace DiscordCoreAPI {
+
+	class DiscordCoreClientBase {
+	public:
+		shared_ptr<ChannelManager> channels{ nullptr };
+		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
+		shared_ptr<RoleManager> roles{ nullptr };
+		shared_ptr<UserManager> users{ nullptr };
+		shared_ptr<DiscordCoreClientBase> thisPointer{ this };
+	protected:
+		friend class Guild;
+		friend class WebSocketConnectionAgent;
+		friend class HttpRequestAgent;
+		static map<string, DiscordGuild> guildMap;
+		static map<string, DiscordGuildMember> guildMemberMap;
+	};
 
 	class Guild {
 	public:
@@ -117,6 +131,15 @@ namespace DiscordCoreAPI {
 		string userId;
 	};
 
+	struct GetInviteData {
+		string guildId;
+		string inviteId;
+	};
+
+	struct GetInvitesData {
+		string guildId;
+	};
+
 	class GuildManagerAgent : public agent {
 	public:
 		static overwrite_buffer<map<string, Guild>> cache;
@@ -127,11 +150,13 @@ namespace DiscordCoreAPI {
 
 		unbounded_buffer<DiscordCoreInternal::GetAuditLogData> requestGetAuditLogBuffer;
 		unbounded_buffer<DiscordCoreInternal::FetchGuildData> requestFetchGuildBuffer;
+		unbounded_buffer<DiscordCoreInternal::GetInvitesData> requestGetInvitesBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer;
+		unbounded_buffer<vector<InviteData>> outInvitesBuffer;
 		unbounded_buffer<AuditLogData> outAuditLogBuffer;
 		unbounded_buffer<exception> errorBuffer;
 		unbounded_buffer<Guild> outGuildBuffer;
-		concurrent_queue<Guild> guildsToInsert;		
+		concurrent_queue<Guild> guildsToInsert;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
@@ -164,20 +189,50 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "requestAgent.getObject() Error: " << error.what() << endl << endl;
+				cout << "requestAgent.getObject() Error 00: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "requestAgent.getObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "requestAgent.getObject() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "requestAgent.getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "requestAgent.getObject() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			GuildData guildData;
 			DiscordCoreInternal::parseObject(returnData.data, &guildData);
 			Guild guildNew(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
 			return guildNew;
+		}
+
+		vector<InviteData> getObjectData(DiscordCoreInternal::GetInvitesData dataPackage) {
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_INVITES;
+			workload.relativePath = "/guilds/" + dataPackage.guildId + "/invites";
+			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			send(requestAgent.workSubmissionBuffer, workload);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			while (requestAgent.getError(error)) {
+				cout << "requestAgent.getObject() Error 01: " << error.what() << endl << endl;
+			}
+			DiscordCoreInternal::HttpData returnData;
+			try_receive(requestAgent.workReturnBuffer, returnData);
+			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+				cout << "requestAgent.getObject() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			else {
+				cout << "requestAgent.getObject() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			vector<InviteData> inviteData;
+			for (auto value : returnData.data) {
+				InviteData inviteDataNew;
+				DiscordCoreInternal::parseObject(value, &inviteDataNew);
+				inviteData.push_back(inviteDataNew);
+			}			
+			return inviteData;
 		}
 
 		AuditLogData getObjectData(DiscordCoreInternal::GetAuditLogData dataPackage) {
@@ -254,8 +309,13 @@ namespace DiscordCoreAPI {
 					AuditLogData auditLog = getObjectData(dataPackage03);
 					send(this->outAuditLogBuffer, auditLog);
 				}
-				GuildData dataPackage04;
-				Guild guildNew(this->agentResources, dataPackage04, this->discordCoreClient, this->discordCoreClientBase);
+				DiscordCoreInternal::GetInvitesData dataPackage04;
+				if (try_receive(this->requestGetInvitesBuffer, dataPackage04)) {
+					vector<InviteData> inviteData = getObjectData(dataPackage04);
+					send(this->outInvitesBuffer, inviteData);
+				}
+				GuildData dataPackage05;
+				Guild guildNew(this->agentResources, dataPackage05, this->discordCoreClient, this->discordCoreClientBase);
 				while (this->guildsToInsert.try_pop(guildNew)) {
 					map<string, Guild> cacheTemp;
 					try_receive(GuildManagerAgent::cache, cacheTemp);
@@ -302,6 +362,41 @@ namespace DiscordCoreAPI {
 			try_receive(requestAgent.outGuildBuffer, guild);
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return guild;
+		}
+
+		task<vector<InviteData>> getInvitesAsync(GetInvitesData dataPackage) {
+			unsigned int groupIdNew;
+			if (this->threadContext->schedulerGroups.size() == 0) {
+				groupIdNew = this->threadContext->createGroup();
+			}
+			else {
+				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
+			}
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			DiscordCoreInternal::GetInvitesData dataPackageNew;
+			dataPackageNew.agentResources = this->agentResources;
+			dataPackageNew.guildId = dataPackage.guildId;
+			GuildManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient, this->discordCoreClientBase);
+			send(requestAgent.requestGetInvitesBuffer, dataPackageNew);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			while (requestAgent.getError(error)) {
+				cout << "GuildManager::getAuditLogDataAsync() Error: " << error.what() << endl << endl;
+			}
+			vector<InviteData> inviteData;
+			try_receive(requestAgent.outInvitesBuffer, inviteData);
+			this->threadContext->releaseGroup(groupIdNew);
+			co_return inviteData;
+		}
+
+		InviteData getInvite(GetInviteData dataPackage) {
+			vector<InviteData>invites = getInvitesAsync({ dataPackage.guildId }).get();
+			for (auto value : invites) {
+				if (dataPackage.inviteId == value.code) {
+					return value;
+				}
+			}
 		}
 
 		task<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage) {

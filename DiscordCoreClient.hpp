@@ -19,6 +19,7 @@
 #include "SlashCommandStuff.hpp"
 #include "InputEventManager.hpp"
 #include "DatabaseStuff.hpp"
+#include "YouTubeStuff.hpp"
 
 void myPurecallHandler(void) {
 	cout << "CURRENT THREAD: " << this_thread::get_id() << endl;
@@ -36,7 +37,7 @@ namespace DiscordCoreAPI {
 		InputEventData eventData;
 	};
 
-	class DiscordCoreClient :public DiscordCoreClientBase,  protected agent {
+	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
 	public:
 		shared_ptr<User> currentUser{ nullptr };
 		shared_ptr<GuildManager> guilds{ nullptr };
@@ -49,7 +50,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources;
 
-		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler){
+		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			this->botToken = botTokenNew;
 		}
 
@@ -69,7 +70,7 @@ namespace DiscordCoreAPI {
 
 		DiscordGuildMember getDiscordGuildMember(DiscordCoreInternal::GuildMemberData guildMemberData) {
 			auto guildMemberCursor = DiscordCoreClient::guildMemberMap.find(guildMemberData.guildId + " + " + guildMemberData.user.id);
-			if (guildMemberCursor == DiscordCoreClient::guildMemberMap.end()){
+			if (guildMemberCursor == DiscordCoreClient::guildMemberMap.end()) {
 				DiscordGuildMember discordGuildMember(guildMemberData);
 				DiscordCoreClient::guildMemberMap.insert(make_pair(guildMemberData.guildId + " + " + guildMemberData.user.id, discordGuildMember));
 				discordGuildMember.getDataFromDB();
@@ -168,10 +169,9 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		Guild createGuild(GuildData guildData){
+		Guild createGuild(GuildData guildData) {
 			Guild guild(this->agentResources, guildData, (shared_ptr<DiscordCoreClient>)this->thisPointer, this->thisPointer);
 			DiscordGuild discordGuild(guild.data);
-			discordGuild.data.rouletteGame.currentlySpinning = false;
 			discordGuild.writeDataToDB();
 			if (DiscordCoreClient::guildMap.contains(guild.data.id)) {
 				DiscordCoreClient::guildMap.erase(guild.data.id);
@@ -447,8 +447,8 @@ namespace DiscordCoreAPI {
 						messageDeletionData.channelId = workload.payLoad.at("channel_id");
 						if (workload.payLoad.contains("guild_id")) {
 							messageDeletionData.guildId = workload.payLoad.at("guild_id");
-						}						
-						messageDeletionData.discordCoreClient = this;
+						}
+						messageDeletionData.discordCoreClient = this->thisPointer;
 						this->eventManager->onMessageDeletionEvent(messageDeletionData);
 						break;
 					}
@@ -460,7 +460,7 @@ namespace DiscordCoreAPI {
 						for (auto value : workload.payLoad.at("ids")) {
 							messageDeleteBulkData.ids.push_back(value);
 						}
-						messageDeleteBulkData.discordCoreClient = this;
+						messageDeleteBulkData.discordCoreClient = this->thisPointer;
 						this->eventManager->onMessageDeleteBulkEvent(messageDeleteBulkData);
 						break;
 					}
@@ -477,7 +477,7 @@ namespace DiscordCoreAPI {
 						reactionData.userId = reactionAddDataNew.userId;
 						Reaction reaction(reactionData, this->thisPointer);
 						OnReactionAddData reactionAddData;
-						reactionAddData.discordCoreClient = this;
+						reactionAddData.discordCoreClient = this->thisPointer;
 						reactionAddData.reaction = reaction;
 						this->eventManager->onReactionAddEvent(reactionAddData);
 						break;
@@ -498,7 +498,7 @@ namespace DiscordCoreAPI {
 						reactionRemoveAllData.channelId = workload.payLoad.at("channel_id");
 						reactionRemoveAllData.guildId = workload.payLoad.at("guild_id");
 						reactionRemoveAllData.messageId = workload.payLoad.at("message_id");
-						reactionRemoveAllData.discordCoreClient = this;
+						reactionRemoveAllData.discordCoreClient = this->thisPointer;
 						this->eventManager->onReactionRemoveAllEvent(reactionRemoveAllData);
 						break;
 					}
@@ -510,7 +510,7 @@ namespace DiscordCoreAPI {
 						reactionRemoveEmojiData.messageId = workload.payLoad.at("message_id");
 						EmojiData emojiData;
 						DiscordCoreInternal::parseObject(workload.payLoad.at("emoji"), &emojiData);
-						reactionRemoveEmojiData.discordCoreClient = this;
+						reactionRemoveEmojiData.discordCoreClient = this->thisPointer;
 						reactionRemoveEmojiData.emoji = emojiData;
 						this->eventManager->onReactionRemoveEmojiEvent(reactionRemoveEmojiData);
 						break;

@@ -80,10 +80,12 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnInviteCreationData {
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		InviteData invite;
 	};
 
 	struct OnInviteDeletionData {
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string channelId;
 		string guildId;
 		string code;
@@ -103,21 +105,21 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnMessageDeletionData {
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string messageId;
 		string channelId;
 		string guildId;
 	};
 
 	struct OnMessageDeleteBulkData {
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		vector<string> ids;
 		string channelId;
 		string guildId;
 	};
 
 	struct OnReactionAddData {
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		Reaction reaction;
 	};
 
@@ -126,14 +128,14 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnReactionRemoveAllData {
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string channelId;
 		string messageId;
 		string guildId;
 	};
 
 	struct OnReactionRemoveEmojiData {
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string channelId;
 		string guildId;
 		string messageId;

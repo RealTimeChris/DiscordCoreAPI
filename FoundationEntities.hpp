@@ -23,15 +23,22 @@ namespace  DiscordCoreInternal {
         __int64 timeValue = timeInMs / 1000;
         __time64_t rawTime(timeValue);
         tm timeInfo;
-        char timeBuffer[26];
+        char timeBuffer[32];
         errno_t error;
         error = localtime_s(&timeInfo, &rawTime);
         if (error)
         {
             printf("Invalid argument to _localtime64_s.");
         }
-        strftime(timeBuffer, 26, "%F %R", &timeInfo);
+        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
         return timeBuffer;
+    }
+
+    string convertSnowFlakeToDateTimeString(string snowFlake) {
+        string returnString;
+        __int64 timeInMs = (stoll(snowFlake) >> 22) + 1420070400000;
+        returnString = convertTimeInMsToDateTimeString(timeInMs);
+        return returnString;
     }
 
     struct AllowedMentionsData {
@@ -45,18 +52,18 @@ namespace  DiscordCoreInternal {
         string messageId;
         string channelId;
         string guildId;
-        bool failIfNotExists = false;
+        bool failIfNotExists{ false };
     };
 
     struct AttachmentData {
         string id;
         string filename;
         string contentType;
-        int size = 0;
+        int size{ 0 };
         string url;
         string proxyUrl;
-        int height = 0;
-        int width = 0;
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedFooterData {
@@ -68,22 +75,22 @@ namespace  DiscordCoreInternal {
     struct EmbedImageData {
         string url;
         string proxyUrl;
-        int height = 0;
-        int width = 0;
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedThumbnailData {
         string url;
         string proxyUrl;
-        int height = 0;
-        int width = 0;
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedVideoData {
         string url;
         string proxyUrl;
-        int height = 0;
-        int width = 0;
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedProviderData {
@@ -101,7 +108,7 @@ namespace  DiscordCoreInternal {
     struct EmbedFieldData {
         string name;
         string value;
-        bool Inline = false;
+        bool Inline{ false };
     };
 
     struct EmbedData {
@@ -283,15 +290,16 @@ namespace  DiscordCoreInternal {
         string id;
         string discriminator;
         string avatar;
-        bool bot = false;
-        bool system = false;
-        bool mfaEnabled = false;
+        bool bot{ false };
+        bool system{ false };
+        bool mfaEnabled{ false };
         string locale;
-        bool verified = false;
+        bool verified{ false };
         string email;
-        int flags = 0;
-        int premiumType = 0;
-        int publicFlags = 0;
+        int flags{ 0 };
+        int premiumType{ 0 };
+        int publicFlags{ 0 };
+        string createdAt;
     };
 
     struct GuildMemberData {
@@ -301,9 +309,9 @@ namespace  DiscordCoreInternal {
         vector<string> roles;
         string joinedAt;
         string premiumSince;
-        bool deaf = false;
-        bool mute = false;
-        bool pending = false;
+        bool deaf{ false };
+        bool mute{ false };
+        bool pending{ false };
         string permissions;
         string userMention;
     };
@@ -356,24 +364,24 @@ namespace  DiscordCoreInternal {
     struct RoleData {
         string id;
         string name;
-        int color = 0;
-        bool hoist = false;
-        int position = 0;
+        int color{ 0 };
+        bool hoist{ false };
+        int position{ 0 };
         string permissions;
-        bool managed = false;
-        bool mentionable = false;
+        bool managed{ false };
+        bool mentionable{ false };
         RoleTagsData tags;
     };
 
     struct EmojiData {
-        string id = "";
-        string name = "";
+        string id{ "" };
+        string name{ "" };
         vector<RoleData> roles;
         UserData user;
-        bool requireColons = false;
-        bool managed = false;
-        bool animated = false;
-        bool available = false;
+        bool requireColons{ false };
+        bool managed{ false };
+        bool animated{ false };
+        bool available{ false };
     };
 
     struct ReactionData {
@@ -401,7 +409,7 @@ namespace  DiscordCoreInternal {
         AssetsData assets;
         SecretsData secrets;
         bool instance;
-        int flags = 0;
+        int flags{ 0 };
         vector<ButtonData> buttons;
     };
 
@@ -434,7 +442,7 @@ namespace  DiscordCoreInternal {
         map<string, OverWriteData> permissionOverwrites;
         string name;
         string topic;
-        bool nsfw = false;
+        bool nsfw{ false };
         string lastMessageId;
         int bitrate = -1;
         int userLimit = -1;
@@ -487,28 +495,28 @@ namespace  DiscordCoreInternal {
         string ownerID;
         vector<string> features{};
         string permissions;
-        bool owner = false;
-        int afkTimeOut = 0;
-        bool widgetEnabled = false;
+        bool owner{ false };
+        int afkTimeOut{ 0 };
+        bool widgetEnabled{ false };
         VerificationLevel verificationLevel = VerificationLevel::NONE;
         DefaultMessageNotificationLevel defaultMessageNotifications = DefaultMessageNotificationLevel::ALL_MESSAGES;
         ExplicitContentFilterLevel explicitContentFilter = ExplicitContentFilterLevel::DISABLED;
         vector<EmojiData> emoji{};
         map<string, RoleData> roles{};
-        int systemChannelFlags = 0;
+        int systemChannelFlags{ 0 };
         MFALevel mfaLevel = MFALevel::NONE;
-        bool large = false;
-        bool unavailable = false;
-        int memberCount = 0;
+        bool large{ false };
+        bool unavailable{ false };
+        int memberCount{ 0 };
         vector<VoiceStateData> voiceStates{};
         vector<PresenceUpdateData> presences{};
-        int maxPresences = 0;
-        int maxMembers = 0;
-        int premiumSubscriptionCount = 0;
+        int maxPresences{ 0 };
+        int maxMembers{ 0 };
+        int premiumSubscriptionCount{ 0 };
         PremiumTier premiumTier = PremiumTier::NONE;
-        int maxVideoChannelUsers = 0;
-        int approximateMemberCount = 0;
-        int approximatePresenceCount = 0;
+        int maxVideoChannelUsers{ 0 };
+        int approximateMemberCount{ 0 };
+        int approximatePresenceCount{ 0 };
         WelcomeScreenData welcomeScreen{};
         vector<GuildMemberData> members{};
         vector<ChannelData> channels{};
@@ -527,7 +535,7 @@ namespace  DiscordCoreInternal {
             return returnValue;
         }
 
-        unsigned int createGroup(){
+        unsigned int createGroup() {
             ScheduleGroup* newGroup = this->scheduler->CreateScheduleGroup();
             unsigned int returnValue = newGroup->Id();
             schedulerGroups.push_back(newGroup);
@@ -535,7 +543,7 @@ namespace  DiscordCoreInternal {
         }
 
         void releaseGroup(unsigned int schedulerGroupId) {
-            for (unsigned int x = 0; x < this->schedulerGroups.size(); x +=1 ) {
+            for (unsigned int x{ 0 }; x < this->schedulerGroups.size(); x += 1) {
                 if (this->schedulerGroups.at(x)->Id() == schedulerGroupId) {
                     this->schedulerGroups.at(x)->Release();
                     this->schedulerGroups.erase(this->schedulerGroups.begin() + x);
@@ -571,6 +579,7 @@ namespace  DiscordCoreInternal {
     struct HttpAgentResources {
         hstring botToken;
         hstring baseURL;
+        hstring userAgent;
     };
 
     struct DeleteInteractionResponseData {
@@ -620,8 +629,8 @@ namespace  DiscordCoreInternal {
         string icon;
         string description;
         vector<string> rpcOrigins;
-        bool botPublic = false;
-        bool botRequireCodeGrant = false;
+        bool botPublic{ false };
+        bool botRequireCodeGrant{ false };
         string termsOfServiceUrl;
         string privacyPolicyUrl;
         UserData owner;
@@ -632,7 +641,7 @@ namespace  DiscordCoreInternal {
         string primarySkuId;
         string slug;
         string coverImage;
-        int flags = 0;
+        int flags{ 0 };
     };
 
     struct MessageStickerData {
@@ -642,7 +651,11 @@ namespace  DiscordCoreInternal {
         string description;
         string tags;
         string asset;
-        int formatType = -1;
+        int formatType;
+        bool available;
+        string guildId;
+        UserData user;
+        int sortValue;
     };
 
     enum class ComponentType {
@@ -661,11 +674,11 @@ namespace  DiscordCoreInternal {
     struct ComponentData {
         ComponentType type = ComponentType::ActionRow;
         ButtonStyle style = ButtonStyle::Danger;
-        string label = "";
+        string label{ "" };
         EmojiData emoji;
-        string customId = "";
-        string url = "";
-        bool disabled = false;
+        string customId{ "" };
+        string url{ "" };
+        bool disabled{ false };
     };
 
     struct ActionRowData {
@@ -673,11 +686,11 @@ namespace  DiscordCoreInternal {
     };
 
     struct InteractionApplicationCommandCallbackData {
-        bool tts = false;
+        bool tts{ false };
         string content;
         vector<EmbedData> embeds;
         AllowedMentionsData allowedMentions;
-        int flags = 0;
+        int flags{ 0 };
         vector<ActionRowData> components;
     };
 
@@ -766,14 +779,17 @@ namespace  DiscordCoreInternal {
         GET_AUDIT_LOG = 40,
         DELETE_FOLLOW_UP_MESSAGE = 41,
         DELETE_GUILD_ROLE = 42,
-        PATCH_GUILD_ROLES = 43
+        PATCH_GUILD_ROLES = 43,
+        YOUTUBE_SEARCH = 44,
+        YOUTUBE_VIDEO_QUERY = 45,
+        GET_INVITES = 46
     };
 
     struct GetApplicationData {
         HttpAgentResources agentResources;
     };
 
-    struct EditInteractionResponseData{
+    struct EditInteractionResponseData {
         HttpAgentResources agentResources;
         string  content;
         vector<EmbedData> embeds;
@@ -838,8 +854,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct HttpData {
-        unsigned int returnCode = 0;
-        string returnMessage = "";
+        unsigned int returnCode{ 0 };
+        string returnMessage{ "" };
         json data;
     };
 
@@ -861,9 +877,21 @@ namespace  DiscordCoreInternal {
 
     struct HttpWorkload {
         HttpWorkloadClass workloadClass;
-        HttpWorkloadType workloadType;
+        HttpWorkloadType workloadType = HttpWorkloadType::UNSET;
         string relativePath;
         string content;
+    };
+
+    enum class MessageStickerItemType {
+        PNG = 1,
+        APNG = 2,
+        LOTTIE = 3
+    };
+
+    struct MessageStickerItemData {
+        string id;
+        string name;
+        MessageStickerItemType formatType;
     };
 
     struct MessageDataOld {
@@ -875,8 +903,8 @@ namespace  DiscordCoreInternal {
         string content;
         string timestamp;
         string editedTimestamp;
-        bool tts = false;
-        bool mentionEveryone = false;
+        bool tts{ false };
+        bool mentionEveryone{ false };
         vector<UserData> mentions;
         vector<string> mentionRoles;
         vector<ChannelMentionData> mentionChannels;
@@ -884,18 +912,19 @@ namespace  DiscordCoreInternal {
         vector<EmbedData> embeds;
         vector<ReactionData> reactions;
         string nonce;
-        bool pinned = false;
+        bool pinned{ false };
         string webhookId;
         MessageType type = MessageType::APPLICATION_COMMAND;
         MessageActivityData activity;
         ApplicationData application;
         string applicationId;
         MessageReferenceData messageReference;
-        int flags = 0;
+        int flags{ 0 };
         vector<MessageStickerData> stickers;
         MessageInteractionData interaction;
         vector<ActionRowData> components;
         ChannelData thread;
+        vector<MessageStickerItemData> stickerItems;
     };
 
     struct MessageData : MessageDataOld {
@@ -1017,7 +1046,7 @@ namespace  DiscordCoreInternal {
         vector<EmbedData> embeds;
         int nonce;
         MessageData replyingToMessageData;
-        bool tts = false;
+        bool tts{ false };
         vector<ActionRowData> components;
     };
 
@@ -1030,7 +1059,7 @@ namespace  DiscordCoreInternal {
         string finalContent;
         vector<EmbedData> embeds;
         MessageReferenceData messageReference;
-        int flags = 0;
+        int flags{ 0 };
         vector<AttachmentData> attachments;
         AllowedMentionsData allowedMentions;
         vector<ActionRowData> components;
@@ -1038,7 +1067,7 @@ namespace  DiscordCoreInternal {
 
     struct DeleteMessageData {
         HttpAgentResources agentResources;
-        unsigned int timeDelay = 0;
+        unsigned int timeDelay{ 0 };
         string channelId;
         string messageId;
     };
@@ -1050,7 +1079,7 @@ namespace  DiscordCoreInternal {
         string finalContent;
         string content;
         int nonce;
-        bool tts = false;
+        bool tts{ false };
         vector<EmbedData> embeds;
         AllowedMentionsData allowedMentions;
         MessageReferenceData messageReference;
@@ -1160,16 +1189,16 @@ namespace  DiscordCoreInternal {
     };
 
     struct ApplicationCommandOptionChoiceData {
-        string name = "";
-        int	valueInt = 0;
-        string valueString = "";
+        string name{ "" };
+        int	valueInt{ 0 };
+        string valueString{ "" };
     };
 
     struct ApplicationCommandOptionData {
         ApplicationCommandOptionType type = ApplicationCommandOptionType::SUB_COMMAND_GROUP;
-        string name = "";
-        string description = "";
-        bool required = false;
+        string name{ "" };
+        string description{ "" };
+        bool required{ false };
         vector<ApplicationCommandOptionChoiceData>	choices;
         vector<ApplicationCommandOptionData> options;
     };
@@ -1213,7 +1242,7 @@ namespace  DiscordCoreInternal {
     struct ApplicationCommandInteractionDataOption {
         string name;
         ApplicationCommandOptionType type = ApplicationCommandOptionType::BOOLEAN;
-        bool valueBool = false;
+        bool valueBool{ false };
         string valueString;
         int valueInt = -1;
         vector<ApplicationCommandInteractionDataOption> options;
@@ -1338,7 +1367,7 @@ namespace  DiscordCoreInternal {
                 this->requesterId = this->interactionData.requesterId;
             }
         }
-        DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
         InputEventType eventType;
         InputEventResponseType inputEventResponseType;
         InteractionData getInteractionData() {
@@ -1361,6 +1390,7 @@ namespace  DiscordCoreInternal {
             else {
                 return this->messageData.components;
             }
+            return vector<ActionRowData>();
         }
         vector<EmbedData> getEmbeds() {
             if (this->interactionData.message.embeds.size() > 0) {
@@ -1376,6 +1406,7 @@ namespace  DiscordCoreInternal {
             else {
                 return this->messageData.embeds;
             }
+            return vector<EmbedData>();
         }
         string getApplicationId() {
             if (this->interactionData.applicationId == "") {
@@ -1397,19 +1428,26 @@ namespace  DiscordCoreInternal {
             }
         }
         string getUserName() {
-            if (this->messageData.author.username == "") {
+            if (this->messageData.author.username == "" && this->interactionData.member.user.username != "") {
                 return this->interactionData.member.user.username;
             }
+            else if (this->interactionData.member.user.username == "" && this->interactionData.user.username != "") {
+                return this->interactionData.user.username;
+            }
             else {
+                cout << "USERNAME: " << this->interactionData.user.username << endl;
                 return this->messageData.author.username;
             }
         }
         string getAvatarURL() {
-            if (this->messageData.author.avatar == "") {
-
+            if (this->messageData.author.avatar == "" && this->interactionData.member.user.avatar != "") {
                 return this->interactionData.member.user.avatar;
             }
+            else if (this->interactionData.member.user.avatar == "" && this->interactionData.user.avatar != "") {
+                return this->interactionData.user.avatar;
+            }
             else {
+                cout << "AVATAR URL: " << this->interactionData.user.avatar << endl;
                 return this->messageData.author.avatar;
             }
         }
@@ -1458,7 +1496,8 @@ namespace  DiscordCoreInternal {
         InteractionData interactionData;
         MessageData messageData;
         string requesterId;
-    }; 
+    };
+
     struct EditFollowUpMessageData {
         HttpAgentResources agentResources;
         string applicationId;
@@ -1521,6 +1560,15 @@ namespace  DiscordCoreInternal {
         unsigned int limit;
     };
 
+    struct GetInviteData {
+        HttpAgentResources agentResources;
+        string inviteId;
+    };
+
+    struct GetInvitesData {
+        HttpAgentResources agentResources;
+        string guildId;
+    };
 }
 
 namespace DiscordCoreAPI {
@@ -1540,6 +1588,12 @@ namespace DiscordCoreAPI {
         CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
             stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
         return timeValue.GetTime();
+    }
+
+    string convertTimeStampToNewOne(string timeStamp) {
+        long long timeInMs = convertTimestampToInteger(timeStamp) * 1000;
+        string returnString = DiscordCoreInternal::convertTimeInMsToDateTimeString(timeInMs);
+        return returnString;
     }
 
     bool hasTimeElapsed(string timeStamp, long long days = 0, long long hours = 0, long long minutes = 0) {
@@ -1576,7 +1630,7 @@ namespace DiscordCoreAPI {
             DispatcherQueue threadQueue = queueController.DispatcherQueue();
             DispatcherQueueTimer timer = threadQueue.CreateTimer();
             timer.Interval(chrono::milliseconds(timeDelay));
-            timer.Tick([timer, lambda](winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args){
+            timer.Tick([timer, lambda](winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args) {
                 lambda();
                 timer.Stop();
                 return;
@@ -1592,10 +1646,18 @@ namespace DiscordCoreAPI {
 
     string getTimeAndDate() {
         const time_t now = time(nullptr);
-        char charArray[32];
+        char charArray[26];
         std::tm time;
+        DYNAMIC_TIME_ZONE_INFORMATION timeZoneInfo{};
+        auto returnValue = GetDynamicTimeZoneInformation(&timeZoneInfo);
         localtime_s(&time, &now);
-        strftime(charArray, 32, "%F %R", &time);
+        if ((int)returnValue == 1) {
+            time.tm_hour = (time.tm_hour + (timeZoneInfo.Bias / 60)) % 24;
+        }
+        else {
+            time.tm_hour = (time.tm_hour + (timeZoneInfo.Bias / 60) - 1) % 24;
+        }
+        strftime(charArray, 26, "%F %R", &time);
         return charArray;
     }
 
@@ -1703,6 +1765,7 @@ namespace DiscordCoreAPI {
             newData.system = this->system;
             newData.username = this->username;
             newData.verified = this->verified;
+            newData.createdAt = this->createdAt;
             return newData;
         }
         string username;
@@ -1710,14 +1773,15 @@ namespace DiscordCoreAPI {
         string discriminator;
         string avatar;
         bool bot;
-        bool system = false;
-        bool mfaEnabled = false;
+        bool system{ false };
+        bool mfaEnabled{ false };
         string locale;
-        bool verified = false;
+        bool verified{ false };
         string email;
-        int flags = 0;
-        int premiumType = 0;
-        int publicFlags = 0;
+        int flags{ 0 };
+        int premiumType{ 0 };
+        int publicFlags{ 0 };
+        string createdAt;
     };
 
     struct EmojiData {
@@ -1735,8 +1799,8 @@ namespace DiscordCoreAPI {
             newData.user = this->user;
             return newData;
         }
-        string id = "";
-        string name = "";
+        string id{ "" };
+        string name{ "" };
         vector<RoleData> roles;
         UserData user;
         bool requireColons;
@@ -1759,11 +1823,11 @@ namespace DiscordCoreAPI {
         }
         ComponentType type;
         ButtonStyle style;
-        string label = "";
+        string label{ "" };
         EmojiData emoji;
-        string customId = "";
-        string url = "";
-        bool disabled = false;
+        string customId{ "" };
+        string url{ "" };
+        bool disabled{ false };
     };
 
     struct AttachmentData {
@@ -1779,14 +1843,14 @@ namespace DiscordCoreAPI {
             newData.width = this->width;
             return newData;
         }
-        string id = "";
-        string filename = "";
-        string contentType = "";
-        int size = 0;
-        string url = "";
-        string proxyUrl = "";
-        int height = 0;
-        int width = 0;
+        string id{ "" };
+        string filename{ "" };
+        string contentType{ "" };
+        int size{ 0 };
+        string url{ "" };
+        string proxyUrl{ "" };
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedFooterData {
@@ -2023,7 +2087,7 @@ namespace DiscordCoreAPI {
         string content;
         vector<EmbedData> embeds;
         AllowedMentionsData allowedMentions;
-        int flags = 0;
+        int flags{ 0 };
         vector<ActionRowData> components;
     };
 
@@ -2368,6 +2432,10 @@ namespace DiscordCoreAPI {
             newData.name = this->name;
             newData.packId = this->packId;
             newData.tags = this->tags;
+            newData.available = this->available;
+            newData.guildId = this->guildId;
+            newData.sortValue = this->sortValue;
+            newData.user = this->user;
             return newData;
         }
         string id;
@@ -2377,6 +2445,10 @@ namespace DiscordCoreAPI {
         string tags;
         string asset;
         int formatType;
+        bool available;
+        string guildId;
+        UserData user;
+        int sortValue;
     };
 
     struct TeamMembersObjectData {
@@ -2448,7 +2520,26 @@ namespace DiscordCoreAPI {
         string primarySkuId;
         string slug;
         string coverImage;
-        int flags = 0;
+        int flags{ 0 };
+    };
+
+    enum class MessageStickerItemType {
+        PNG = 1,
+        APNG = 2,
+        LOTTIE = 3
+    };
+
+    struct MessageStickerItemData {
+        operator DiscordCoreInternal::MessageStickerItemData() {
+            DiscordCoreInternal::MessageStickerItemData newData;
+            newData.formatType = (DiscordCoreInternal::MessageStickerItemType)this->formatType;
+            newData.id = this->id;
+            newData.name = this->name;
+            return newData;
+        }
+        string id;
+        string name;
+        MessageStickerItemType formatType;
     };
 
     struct MessageDataOld {
@@ -2492,6 +2583,9 @@ namespace DiscordCoreAPI {
             for (auto value : this->stickers) {
                 newData.stickers.push_back(value);
             }
+            for (auto value : this->stickerItems) {
+                newData.stickerItems.push_back(value);
+            }
             newData.timestamp = this->timestamp;
             newData.tts = this->tts;
             newData.type = (DiscordCoreInternal::MessageType)this->type;
@@ -2520,12 +2614,14 @@ namespace DiscordCoreAPI {
         MessageType type;
         MessageActivityData activity;
         ApplicationData application;
+        string applicationId;
         MessageReferenceData messageReference;
-        int flags = 0;
+        int flags{ 0 };
         vector<MessageStickerData> stickers;
         MessageInteractionData interaction;
         vector<ActionRowData> components;
         ChannelData thread;
+        vector<MessageStickerItemData> stickerItems;
     };
 
     struct InviteData {
@@ -2546,50 +2642,8 @@ namespace DiscordCoreAPI {
     struct MessageData : MessageDataOld {
         operator DiscordCoreInternal::MessageData() {
             DiscordCoreInternal::MessageData newData;
+            newData.requesterId = this->requesterId;
             newData.referencedMessage = this->referencedMessage;
-            newData.activity.partyId = this->activity.partyId;
-            newData.activity.type = this->activity.type;
-            newData.application = this->application;
-            for (auto value : this->attachments) {
-                newData.attachments.push_back(value);                
-            }
-            newData.author = this->author;
-            newData.channelId = this->channelId;
-            for (auto value : this->components) {
-                newData.components.push_back(value);
-            }
-            newData.content = this->content;
-            newData.editedTimestamp = this->editedTimestamp;
-            for (auto value : this->embeds) {
-                newData.embeds.push_back(value);
-            }
-            newData.flags = this->flags;
-            newData.guildId = this->guildId;
-            newData.id = this->id;
-            newData.interaction = this->interaction;
-            newData.member = this->member;
-            for (auto value : this->mentionChannels) {
-                newData.mentionChannels.push_back(value);
-            }
-            newData.mentionEveryone = this->mentionEveryone;
-            newData.mentionRoles = this->mentionRoles;
-            for (auto value : this->mentions) {
-                newData.mentions.push_back(value);
-            }
-            newData.messageReference = this->messageReference;
-            newData.nonce = this->nonce;
-            newData.pinned = this->pinned;
-            for (auto value : this->reactions) {
-                newData.reactions.push_back(value);
-            }
-            newData.referencedMessage = this->referencedMessage;
-            for (auto value : this->stickers) {
-                newData.stickers.push_back(value);
-            }
-            newData.timestamp = this->timestamp;
-            newData.tts = this->tts;
-            newData.type = (DiscordCoreInternal::MessageType)this->type;
-            newData.webhookId = this->webhookId;
             return newData;
         }
         string requesterId;
@@ -2651,9 +2705,14 @@ namespace DiscordCoreAPI {
         string requesterId;
     };
 
+    struct PartySizeData {
+        int currentSize;
+        int maxSize;
+    };
+
     struct PartyData {
         string id;
-        vector<int> size{};
+        PartySizeData size;
     };
 
     struct AssetsData {
@@ -2670,8 +2729,8 @@ namespace DiscordCoreAPI {
     };
 
     struct TimestampData {
-        int start;
-        int end;
+        __int64 start;
+        __int64 end;
     };
 
     struct ButtonData {
@@ -2680,21 +2739,15 @@ namespace DiscordCoreAPI {
     };
 
     struct ActivityData {
+        __int64 applicationId;
         string name;
-        int type;
-        string url;
-        int createdAt;
-        TimestampData timestamps;
-        string applicationId;
-        string details;
         string state;
-        EmojiData emoji;
-        PartyData party;
-        AssetsData assets;
-        SecretsData secrets;
+        string details;
+        TimestampData timestamps;
+        AssetsData activityAssets;
+        PartyData activityParty;
+        SecretsData	activitySecrets;
         bool instance;
-        int flags = 0;
-        vector<ButtonData> buttons;
     };
 
     struct ClientStatusData {
@@ -2787,29 +2840,29 @@ namespace DiscordCoreAPI {
         vector<string> features{};
         vector<ChannelData> threads;
         string permissions;
-        bool owner = false;
-        int afkTimeOut = 0;
-        bool widgetEnabled = false;
+        bool owner{ false };
+        int afkTimeOut{ 0 };
+        bool widgetEnabled{ false };
         VerificationLevel verificationLevel = VerificationLevel::NONE;
         DefaultMessageNotificationLevel defaultMessageNotifications = DefaultMessageNotificationLevel::ALL_MESSAGES;
         ExplicitContentFilterLevel explicitContentFilter = ExplicitContentFilterLevel::DISABLED;
         vector<EmojiData> emoji{};
         vector<RoleData> roles{};
-        int systemChannelFlags = 0;
+        int systemChannelFlags{ 0 };
         MFALevel mfaLevel = MFALevel::NONE;
-        bool large = false;
-        bool unavailable = false;
-        int memberCount = 0;
+        bool large{ false };
+        bool unavailable{ false };
+        int memberCount{ 0 };
         vector<VoiceStateData> voiceStates{};
         vector<PresenceUpdateData> presences{};
-        int maxPresences = 0;
-        int maxMembers = 0;
-        int premiumSubscriptionCount = 0;
+        int maxPresences{ 0 };
+        int maxMembers{ 0 };
+        int premiumSubscriptionCount{ 0 };
         PremiumTier premiumTier = PremiumTier::NONE;
-        int maxVideoChannelUsers = 0;
-        int approximateMemberCount = 0;
-        int approximatePresenceCount = 0;
-        int nsfwLevel = 0;
+        int maxVideoChannelUsers{ 0 };
+        int approximateMemberCount{ 0 };
+        int approximatePresenceCount{ 0 };
+        int nsfwLevel{ 0 };
         WelcomeScreenData welcomeScreen{};
         vector<GuildMemberData> members{};
         vector<ChannelData> channels{};
@@ -2929,16 +2982,16 @@ namespace DiscordCoreAPI {
             return vector<ActionRowData>();
         }
         vector<EmbedData> getEmbeds() {
-            if(this->interactionData.message.embeds.size() >0 ){
+            if (this->interactionData.message.embeds.size() > 0) {
                 if (this->interactionData.message.embeds.at(0).description != "") {
                     return this->interactionData.message.embeds;
                 }
                 else if (this->interactionData.message.embeds.at(0).fields.size() > 0) {
                     if (this->interactionData.message.embeds.at(0).fields.at(0).value != "") {
                         return this->interactionData.message.embeds;
-                    } 
+                    }
                 }
-            }            
+            }
             else {
                 return this->messageData.embeds;
             }
@@ -2964,19 +3017,26 @@ namespace DiscordCoreAPI {
             }
         }
         string getUserName() {
-            if (this->messageData.author.username == "") {
+            if (this->messageData.author.username == "" && this->interactionData.member.user.username != "") {
                 return this->interactionData.member.user.username;
             }
+            else if (this->interactionData.member.user.username == "" && this->interactionData.user.username != "") {
+                return this->interactionData.user.username;
+            }
             else {
+                cout << "USERNAME: " << this->interactionData.user.username << endl;
                 return this->messageData.author.username;
             }
         }
         string getAvatarURL() {
-            if (this->messageData.author.avatar == "") {
-
+            if (this->messageData.author.avatar == "" && this->interactionData.member.user.avatar != "") {
                 return this->interactionData.member.user.avatar;
             }
+            else if (this->interactionData.member.user.avatar == "" && this->interactionData.user.avatar != "") {
+                return this->interactionData.user.avatar;
+            }
             else {
+                cout << "AVATAR URL: " << this->interactionData.user.avatar << endl;
                 return this->messageData.author.avatar;
             }
         }
@@ -3018,13 +3078,13 @@ namespace DiscordCoreAPI {
         string getRequesterId() {
             return this->requesterId;
         }
-        protected:
-            friend class CommandController;
-            friend class InputEventManager;
-            friend class DiscordCoreClient;
-            InteractionData interactionData;
-            MessageData messageData;
-            string requesterId;
+    protected:
+        friend class CommandController;
+        friend class InputEventManager;
+        friend class DiscordCoreClient;
+        InteractionData interactionData;
+        MessageData messageData;
+        string requesterId;
     };
 
     struct WebhookData {
@@ -3115,8 +3175,8 @@ namespace DiscordCoreAPI {
     };
 
     struct AuditLogChangeData {
-        string newValueString = "";
-        string oldValueString = "";
+        string newValueString{ "" };
+        string oldValueString{ "" };
         string key;
     };
 
@@ -3157,6 +3217,15 @@ namespace DiscordCoreAPI {
         std::string userId;
         int timestamp;
         GuildMemberData member;
+    };
+
+    struct YouTubeSearchResult {
+        string videoId;
+        string thumbNailURL;
+        string videoTitle;
+        string duration;
+        string description;
+        string videoURL;
     };
 };
 

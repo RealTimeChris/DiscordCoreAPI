@@ -892,11 +892,10 @@ namespace DiscordCoreAPI {
         bool doWeQuit = false;
 
         void run() {
-            ButtonInteractionData buttonInteractionData;
             try {
                 while (doWeQuit == false) {
                     if (this->getButtonDataForAll == false) {
-                        buttonInteractionData = receive(Button::buttonIncomingInteractionBuffer, this->maxTimeInMs);
+                        ButtonInteractionData buttonInteractionData = receive(Button::buttonIncomingInteractionBuffer, this->maxTimeInMs);
                         if (buttonInteractionData.user.id != this->userId) {
                             CreateInteractionResponseData createResponseData(buttonInteractionData);
                             createResponseData.data.flags = 64;
@@ -915,7 +914,7 @@ namespace DiscordCoreAPI {
                         }
                     }
                     else {
-                        buttonInteractionData = receive(Button::buttonIncomingInteractionBuffer, this->maxTimeInMs);
+                        ButtonInteractionData buttonInteractionData = receive(Button::buttonIncomingInteractionBuffer, this->maxTimeInMs);
                         this->interactionData = buttonInteractionData;
                         this->buttonId = buttonInteractionData.customId;
                         doWeQuit = true;

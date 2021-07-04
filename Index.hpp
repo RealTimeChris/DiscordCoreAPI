@@ -47,11 +47,17 @@ namespace DiscordCoreAPI {
 
         static void onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
             dataPackage.guildMember.discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMember, dataPackage.guildMember.data.guildId).get();
+            Guild guild = dataPackage.guildMember.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
+            guild.data.memberCount += 1;
+            dataPackage.guildMember.discordCoreClient->guilds->insertGuildAsync(guild).get();
             return;
         }
 
         static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
             dataPackage.user.discordCoreClient->guildMembers->removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
+            Guild guild = dataPackage.user.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildId }).get();
+            guild.data.memberCount -= 1;
+            dataPackage.user.discordCoreClient->guilds->insertGuildAsync(guild).get();
             return;
         }
 

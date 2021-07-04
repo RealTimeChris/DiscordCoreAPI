@@ -10,7 +10,6 @@
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"
-#include "MessageStuff.hpp"
 #include "HttpStuff.hpp"
 
 namespace DiscordCoreAPI {
