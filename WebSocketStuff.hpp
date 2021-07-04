@@ -51,11 +51,41 @@ namespace DiscordCoreInternal {
 		WebSocketEventType eventType;
 	};
 
+	class VoiceChannelWebSocketAgent :public agent {
+	public:
+
+		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew)
+			:agent(*threadContextNew->scheduler) {
+
+		}
+
+		bool getError(exception& error) {
+			if (try_receive(errorBuffer, error)) {
+				return true;
+			}
+			return false;
+		}
+
+		void terminate() {
+			this->doWeQuit = true;
+			this->threadContext->releaseGroup(this->groupId);
+		}
+
+		~VoiceChannelWebSocketAgent() {
+			this->terminate();
+		}
+
+	protected:
+		unbounded_buffer<exception> errorBuffer;
+		shared_ptr<ThreadContext> threadContext;
+		unsigned int groupId;
+		bool doWeQuit = false;
+	};
+
 	class WebSocketReceiverAgent : public agent {
 	public:
-		bool doWeQuit = false;
 
-		WebSocketReceiverAgent(ISource<json>& pWorkloadSource, ITarget<WebSocketWorkload>& pWorkloadTarget,  shared_ptr<ThreadContext> threadContextNew)
+		WebSocketReceiverAgent(ISource<json>& pWorkloadSource, ITarget<WebSocketWorkload>& pWorkloadTarget, shared_ptr<ThreadContext> threadContextNew)
 			:workloadSource(pWorkloadSource),
 			workloadTarget(pWorkloadTarget),
 			agent(*threadContextNew->scheduler)
@@ -76,7 +106,7 @@ namespace DiscordCoreInternal {
 			this->threadContext->releaseGroup(this->groupId);
 		}
 
-		~WebSocketReceiverAgent(){
+		~WebSocketReceiverAgent() {
 			this->terminate();
 		}
 
@@ -86,6 +116,7 @@ namespace DiscordCoreInternal {
 		ITarget<WebSocketWorkload>& workloadTarget;
 		unbounded_buffer<exception> errorBuffer;
 		unsigned int groupId;
+		bool doWeQuit = false;
 
 		void run() {
 			try {
@@ -272,7 +303,7 @@ namespace DiscordCoreInternal {
 	class WebSocketConnectionAgent :public agent {
 	public:
 
-		WebSocketConnectionAgent(ITarget<json>& target,  hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
+		WebSocketConnectionAgent(ITarget<json>& target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
 			: agent(*threadContextNew->scheduler),
 			webSocketMessageTarget(target) {
 			this->threadContext = threadContextNew;
@@ -280,7 +311,7 @@ namespace DiscordCoreInternal {
 			this->botToken = botTokenNew;
 		}
 
-		void setSocketPath(string socketPathBase){
+		void setSocketPath(string socketPathBase) {
 			std::wstringstream stream;
 			stream << DiscordCoreInternal::getSocketPath(to_hstring(socketPathBase)).c_str();
 			stream << L"/?v=9&encoding=json";
@@ -337,12 +368,12 @@ namespace DiscordCoreInternal {
 				this->connect();
 				return;
 			}
-			
+
 		}
 
 		void cleanup() {
 			done();
-			
+
 			if (this->messageWriter != nullptr) {
 				this->messageWriter.DetachStream();
 				this->messageWriter.Close();
@@ -366,7 +397,7 @@ namespace DiscordCoreInternal {
 			if (this->dispatchQueueController) {
 				this->dispatchQueueController = nullptr;
 			}
-			
+
 			this->threadContext->releaseGroup(this->groupId);
 		}
 
@@ -408,7 +439,7 @@ namespace DiscordCoreInternal {
 			if (this->messageWriter != nullptr) {
 				this->messageWriter.WriteString(to_hstring(message));
 			}
-			
+
 			try {
 				// Send the data as one complete message.
 				if (this->messageWriter != nullptr) {
@@ -458,7 +489,7 @@ namespace DiscordCoreInternal {
 							message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
 						}
 					}
-				}				
+				}
 				json payload = payload.parse(to_string(message));
 
 				asend(&this->webSocketMessageTarget, payload);

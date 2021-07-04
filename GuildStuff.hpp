@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 
 		Guild() {};
 
-		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) {
+		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) {
 			this->discordCoreClient = discordCoreClientNew;
 			this->discordCoreClientBase = discordCoreClientBaseNew;
 			this->data = dataNew;
@@ -64,20 +64,20 @@ namespace DiscordCoreAPI {
 			try {
 				cout << "Caching guild: " << this->data.name << endl;
 				cout << "Caching channels for guild: " << this->data.name << endl;
-				for (auto value:data.channels) {
+				for (auto value : data.channels) {
 					value.guildId = this->data.id;
 					ChannelData channelData = value;
 					Channel channel(channelData, this->discordCoreClient);
 					this->discordCoreClientBase->channels->insertChannelAsync(channel).get();
 				}
 				cout << "Caching guild members for guild: " << this->data.name << endl;
-				for (unsigned int x = 0;x< this->data.members.size(); x+=1) {
+				for (unsigned int x = 0; x < this->data.members.size(); x += 1) {
 					GuildMemberData guildMemberData = data.members.at(x);
 					if (x >= 1) {
 						bool doWeContinue = false;
 						map<string, GuildMember> guildMemberMap = receive(GuildMemberManagerAgent::cache);
 						for (auto [key, value] : guildMemberMap) {
-							if (this->data.id + " + " +guildMemberData.user.id == value.data.guildId + " + " + value.data.user.id) {
+							if (this->data.id + " + " + guildMemberData.user.id == value.data.guildId + " + " + value.data.user.id) {
 								doWeContinue = true;
 								this->data.members.erase(this->data.members.begin() + x);
 								x -= 1;
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 	};
-	
+
 	struct GetGuildData {
 		string guildId;
 	};
@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 				InviteData inviteDataNew;
 				DiscordCoreInternal::parseObject(value, &inviteDataNew);
 				inviteData.push_back(inviteDataNew);
-			}			
+			}
 			return inviteData;
 		}
 
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/audit-logs";
 			if (dataPackage.userId != "") {
 				workload.relativePath += "?user_id=" + dataPackage.userId;
-				if (to_string((int)dataPackage.actionType)!= "") {
+				if (to_string((int)dataPackage.actionType) != "") {
 					workload.relativePath += "&action_type=" + to_string((int)dataPackage.actionType);
 				}
 				if (dataPackage.limit != 0) {

@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
 		User userNew;
 	};
 
-	struct OnVoiceStateUpdateData{
+	struct OnVoiceStateUpdateData {
 		VoiceStateData voiceStateData;
 	};
 
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 		string endpoint;
 	};
 
-	class EventManager  {
+	class EventManager {
 	public:
 
 		event_token onChannelCreation(delegate<OnChannelCreationData> const& handler) {
@@ -471,7 +471,7 @@ namespace DiscordCoreAPI {
 		winrt::event<delegate<OnVoiceServerUpdateData>> onVoiceServerUpdateEvent;
 
 		winrt::event<delegate<OnInteractionCreationData>> onInteractionCreationEvent;
-		
+
 	};
 }
 #endif

@@ -355,8 +355,8 @@ namespace DiscordCoreAPI {
         unbounded_buffer<exception> errorBuffer;
 
         DiscordCoreInternal::HttpAgentResources agentResources;
-        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-        ScheduleGroup* pScheduleGroup;
+        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+        ScheduleGroup* pScheduleGroup{ nullptr };
 
         InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, ScheduleGroup* scheduleGroup)
             :agent(*scheduleGroup) {
@@ -841,7 +841,7 @@ namespace DiscordCoreAPI {
             friend class DiscordCoreClient;
 
             DiscordCoreInternal::HttpAgentResources agentResources;
-            shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+            shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
             unsigned int groupId;
     };
 
@@ -884,7 +884,7 @@ namespace DiscordCoreAPI {
         unsigned int maxTimeInMs;
         bool getButtonDataForAll;
         ButtonInteractionData interactionData;
-        unbounded_buffer<ButtonInteractionData>* buttonIncomingInteractionBuffer;
+        unbounded_buffer<ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
         string channelId;
         string messageId;
         string userId;
@@ -932,7 +932,7 @@ namespace DiscordCoreAPI {
         }
     };
     map<string, unbounded_buffer<ButtonInteractionData>*> Button::buttonInteractionMap;
-    shared_ptr<InteractionManager> Button::interactions;
-    shared_ptr<DiscordCoreInternal::ThreadContext> Button::threadContext;
+    shared_ptr<InteractionManager> Button::interactions{ nullptr };
+    shared_ptr<DiscordCoreInternal::ThreadContext> Button::threadContext{ nullptr };
 };
 #endif

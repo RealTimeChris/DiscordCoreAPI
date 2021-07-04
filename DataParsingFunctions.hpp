@@ -65,7 +65,9 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData.at("detailedMetadataSnippets").is_null()) {
-            partialSearchResult.description = jsonObjectData.at("detailedMetadataSnippets").at(0).at("snippetText").at("runs").at(jsonObjectData.at("detailedMetadataSnippets").at(0).at("snippetText").at("runs").size() - 1).at("text").get<string>();
+            for (auto value : jsonObjectData.at("detailedMetadataSnippets").at(0).at("snippetText").at("runs")) {
+                partialSearchResult.description += value.at("text").get<string>();
+            }
         }
 
         *pDataStructure = partialSearchResult;

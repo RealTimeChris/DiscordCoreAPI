@@ -31,7 +31,6 @@ namespace DiscordCoreInternal {
 			try {
 				this->groupId = HttpRequestAgent::threadContext->createGroup(*ThreadManager::getThreadContext().get());
 				this->baseURL = agentResources.baseURL;
-				this->botToken = agentResources.botToken;
 				Filters::HttpBaseProtocolFilter filter;
 				Filters::HttpCacheControl cacheControl{ nullptr };
 				cacheControl = filter.CacheControl();
@@ -39,23 +38,41 @@ namespace DiscordCoreInternal {
 				cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
 				this->getHttpClient = HttpClient(filter);
 				this->getHeaders = this->getHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->getHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}				
 				this->putHttpClient = HttpClient(filter);
 				this->putHeaders = this->putHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->putHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
 				this->postHttpClient = HttpClient(filter);
 				this->postHeaders = this->postHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->postHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
 				this->patchHttpClient = HttpClient(filter);
 				this->patchHeaders = this->patchHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->patchHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
 				this->deleteHttpClient = HttpClient(filter);
 				this->deleteHeaders = this->deleteHttpClient.DefaultRequestHeaders();
-				hstring headerString = L"Bot ";
-				hstring headerString2 = headerString + this->botToken;
-				HttpCredentialsHeaderValue credentialValue(nullptr);
-				credentialValue = credentialValue.Parse(headerString2.c_str());
-				this->getHeaders.Authorization(credentialValue);
-				this->putHeaders.Authorization(credentialValue);
-				this->postHeaders.Authorization(credentialValue);
-				this->patchHeaders.Authorization(credentialValue);
-				this->deleteHeaders.Authorization(credentialValue);
+				if (agentResources.userAgent != L"") {
+					this->deleteHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
+				if (agentResources.botToken != L"") {
+					this->botToken = agentResources.botToken;
+					hstring headerString = L"Bot ";
+					hstring headerString2 = headerString + this->botToken;
+					HttpCredentialsHeaderValue credentialValue(nullptr);
+					credentialValue = credentialValue.Parse(headerString2.c_str());
+					this->getHeaders.Authorization(credentialValue);
+					this->putHeaders.Authorization(credentialValue);
+					this->postHeaders.Authorization(credentialValue);
+					this->patchHeaders.Authorization(credentialValue);
+					this->deleteHeaders.Authorization(credentialValue);
+				}				
 				return;
 			}
 			catch (hresult_error ex) {
@@ -138,19 +155,19 @@ namespace DiscordCoreInternal {
 					}
 					HttpData returnData;
 					if (workload.workloadClass == HttpWorkloadClass::GET) {
-						returnData = httpGETObjectDataAsync(workload.relativePath, &rateLimitData);
+						returnData = httpGETObjectData(workload.relativePath, &rateLimitData);
 					}
 					else if (workload.workloadClass == HttpWorkloadClass::POST) {
-						returnData = httpPOSTObjectDataAsync(workload.relativePath, workload.content, &rateLimitData);
+						returnData = httpPOSTObjectData(workload.relativePath, workload.content, &rateLimitData);
 					}
 					else if (workload.workloadClass == HttpWorkloadClass::PUT) {
-						returnData = httpPUTObjectDataAsync(workload.relativePath, workload.content, &rateLimitData);
+						returnData = httpPUTObjectData(workload.relativePath, workload.content, &rateLimitData);
 					}
 					else if (workload.workloadClass == HttpWorkloadClass::PATCH) {
-						returnData = httpPATCHObjectDataAsync(workload.relativePath, workload.content, &rateLimitData);
+						returnData = httpPATCHObjectData(workload.relativePath, workload.content, &rateLimitData);
 					}
 					else if (workload.workloadClass == HttpWorkloadClass::DELETED) {
-						returnData = httpDELETEObjectDataAsync(workload.relativePath, &rateLimitData);
+						returnData = httpDELETEObjectData(workload.relativePath, &rateLimitData);
 					}
 					auto bucketValueIterator = HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType);
 					if (bucketValueIterator != end(HttpRequestAgent::rateLimitDataBucketValues)) {
@@ -174,12 +191,12 @@ namespace DiscordCoreInternal {
 			done();
 		}
 
-		HttpData httpGETObjectDataAsync(string relativeURL, RateLimitData* pRateLimitData) {
+		HttpData httpGETObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData getData;
 			string connectionPath = to_string(baseURL) + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
-			httpResponse = getHttpClient.TryGetAsync(requestUri).get().ResponseMessage();
+			httpResponse = getHttpClient.GetAsync(requestUri).get();
 			unsigned int getsRemainingLocal;
 			float currentMSTimeLocal;
 			float msRemainLocal;
@@ -190,7 +207,15 @@ namespace DiscordCoreInternal {
 			getData.returnMessage = returnMessage;
 			json jsonValue;
 			if (returnMessage != "") {
-				jsonValue = jsonValue.parse(returnMessage);
+				if (returnMessage.find("var ytInitialData = ") != string::npos) {
+					string newString = returnMessage.substr(returnMessage.find("var ytInitialData = ") + to_string(L"var ytInitialData = ").length());
+					const char* stringSequence = ";</script><script nonce=";
+					newString = newString.substr(0, newString.find(stringSequence));
+					jsonValue = jsonValue.parse(newString);
+				}
+				else {
+					jsonValue = jsonValue.parse(returnMessage);
+				}
 			}
 			getData.data = jsonValue;
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-remaining")) {
@@ -203,7 +228,7 @@ namespace DiscordCoreInternal {
 				msRemainLocal = stof(httpResponse.Headers().TryLookup(L"x-ratelimit-reset-after").value().c_str()) * 1000;
 			}
 			else {
-				msRemainLocal = 250;
+				msRemainLocal = 10;
 			}
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-bucket")) {
 				bucket = to_string(httpResponse.Headers().TryLookup(L"x-ratelimit-bucket").value().c_str());
@@ -224,7 +249,7 @@ namespace DiscordCoreInternal {
 					HttpData returnData;
 					return returnData;
 				}
-				getData = httpGETObjectDataAsync(relativeURL, pRateLimitData);
+				getData = httpGETObjectData(relativeURL, pRateLimitData);
 			}
 			if (returnMessage != "") {
 				if (jsonValue.contains("retry-after") && !jsonValue.at("retry-after").is_null()) {
@@ -234,7 +259,7 @@ namespace DiscordCoreInternal {
 			return getData;
 		}
 
-		HttpData httpPUTObjectDataAsync(string relativeURL, string content, RateLimitData* pRateLimitData) {
+		HttpData httpPUTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData putData;
 			string connectionPath = to_string(baseURL) + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
@@ -271,7 +296,7 @@ namespace DiscordCoreInternal {
 				msRemainLocal = stof(httpResponse.Headers().TryLookup(L"x-ratelimit-reset-after").value().c_str()) * 1000;
 			}
 			else {
-				msRemainLocal = 250;
+				msRemainLocal = 10;
 			}
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-bucket")) {
 				bucket = to_string(httpResponse.Headers().TryLookup(L"x-ratelimit-bucket").value().c_str());
@@ -292,7 +317,7 @@ namespace DiscordCoreInternal {
 					HttpData returnData;
 					return returnData;
 				}
-				putData = httpPUTObjectDataAsync(relativeURL, content, pRateLimitData);
+				putData = httpPUTObjectData(relativeURL, content, pRateLimitData);
 			}
 			if (returnMessage != "") {
 				if (jsonValue.contains("retry-after") && !jsonValue.at("retry-after").is_null()) {
@@ -302,7 +327,7 @@ namespace DiscordCoreInternal {
 			return putData;
 		}
 
-		HttpData httpPOSTObjectDataAsync(string relativeURL, string content, RateLimitData* pRateLimitData) {
+		HttpData httpPOSTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData postData;
 			string connectionPath = to_string(baseURL) + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
@@ -339,7 +364,7 @@ namespace DiscordCoreInternal {
 				msRemainLocal = stof(httpResponse.Headers().TryLookup(L"x-ratelimit-reset-after").value().c_str()) * 1000;
 			}
 			else {
-				msRemainLocal = 250;
+				msRemainLocal = 10;
 			}
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-bucket")) {
 				bucket = to_string(httpResponse.Headers().TryLookup(L"x-ratelimit-bucket").value().c_str());
@@ -360,7 +385,7 @@ namespace DiscordCoreInternal {
 					HttpData returnData;
 					return returnData;
 				}
-				postData = httpPOSTObjectDataAsync(relativeURL, content, pRateLimitData);
+				postData = httpPOSTObjectData(relativeURL, content, pRateLimitData);
 			}
 			if (returnMessage != "") {
 				if (jsonValue.contains("retry-after") && !jsonValue.at("retry-after").is_null()) {
@@ -370,7 +395,7 @@ namespace DiscordCoreInternal {
 			return postData;
 		}
 
-		HttpData httpPATCHObjectDataAsync(string relativeURL, string content, RateLimitData* pRateLimitData) {
+		HttpData httpPATCHObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData patchData;
 			string connectionPath = to_string(this->baseURL) + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
@@ -410,7 +435,7 @@ namespace DiscordCoreInternal {
 				msRemainLocal = stof(httpResponse.Headers().TryLookup(L"x-ratelimit-reset-after").value().c_str()) * 1000;
 			}
 			else {
-				msRemainLocal = 250;
+				msRemainLocal = 10;
 			}
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-bucket")) {
 				bucket = to_string(httpResponse.Headers().TryLookup(L"x-ratelimit-bucket").value().c_str());
@@ -431,7 +456,7 @@ namespace DiscordCoreInternal {
 					HttpData returnData;
 					return returnData;
 				}
-				patchData = httpPATCHObjectDataAsync(relativeURL, content, pRateLimitData);
+				patchData = httpPATCHObjectData(relativeURL, content, pRateLimitData);
 			}
 			if (returnMessage != "") {
 				if (jsonValue.contains("retry-after") && !jsonValue.at("retry-after").is_null()) {
@@ -441,7 +466,7 @@ namespace DiscordCoreInternal {
 			return patchData;
 		}
 
-		HttpData httpDELETEObjectDataAsync(string relativeURL, RateLimitData* pRateLimitData) {
+		HttpData httpDELETEObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData deleteData;
 			string connectionPath = to_string(baseURL) + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
@@ -470,7 +495,7 @@ namespace DiscordCoreInternal {
 				msRemainLocal = stof(httpResponse.Headers().TryLookup(L"x-ratelimit-reset-after").value().c_str()) * 1000;
 			}
 			else {
-				msRemainLocal = 250;
+				msRemainLocal = 10;
 			}
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-bucket")) {
 				bucket = to_string(httpResponse.Headers().TryLookup(L"x-ratelimit-bucket").value().c_str());
@@ -491,7 +516,7 @@ namespace DiscordCoreInternal {
 					HttpData returnData;
 					return returnData;
 				}
-				deleteData = httpDELETEObjectDataAsync(relativeURL, pRateLimitData);
+				deleteData = httpDELETEObjectData(relativeURL, pRateLimitData);
 			}
 			if (returnMessage != "") {
 				if (jsonValue.contains("retry-after") && !jsonValue.at("retry-after").is_null()) {
