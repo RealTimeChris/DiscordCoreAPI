@@ -61,6 +61,8 @@ if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 
 - [OpenSSL](https://github.com/openssl/openssl)
 
+- [Boost](https://github.com/boostorg/boost)
+
 ## Roadmap
 I am currently working on getting this thing to be "useful", and here are some of the things I plan on implementing:
 
