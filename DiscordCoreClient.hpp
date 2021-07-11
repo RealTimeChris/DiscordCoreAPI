@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
 	public:
-		shared_ptr<User> currentUser{ nullptr };
+		shared_ptr<BotUser> currentUser{ nullptr };
 		shared_ptr<GuildManager> guilds{ nullptr };
 		shared_ptr<ReactionManager> reactions{ nullptr };
 		shared_ptr<MessageManager> messages{ nullptr };
@@ -107,6 +107,7 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
+		friend class BotUser;
 		bool doWeQuit = false;
 		hstring botToken;
 		hstring baseURL = L"https://discord.com/api/v9";
@@ -117,7 +118,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<exception> errorBuffer;
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext;
 
-		task<void> initialize(hstring botTokenNew) {
+		task<void> initialize() {
 			thisPointer.reset(this);
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
@@ -125,7 +126,7 @@ namespace DiscordCoreAPI {
 			this->mainThreadContext->createGroup();
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
-			this->botToken = botTokenNew;
+
 			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->agentResources.baseURL = this->baseURL;
 			this->agentResources.botToken = this->botToken;
@@ -154,7 +155,7 @@ namespace DiscordCoreAPI {
 			this->guildMembers = make_shared<GuildMemberManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
 			this->channels = make_shared<ChannelManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
 			this->guilds = make_shared<GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)this->thisPointer, (shared_ptr<DiscordCoreClientBase>)this->thisPointer);
-			this->currentUser = make_shared<User>(this->users->fetchCurrentUserAsync().get().data, this->thisPointer);
+			this->currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, this->thisPointer, this->pWebSocketConnectionAgent);
 			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			Button::initialize(this->interactions);

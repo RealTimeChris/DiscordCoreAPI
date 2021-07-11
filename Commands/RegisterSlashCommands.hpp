@@ -21,6 +21,7 @@ namespace DiscordCoreAPI {
 			this->helpDescription = "__**Register Slash Commands Usage:**__ !registerslashcommands or /registerslashcommands!";
 		}
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+			InputEventManager::deleteInputEventResponse(args->eventData);
 			/*
 			CreateApplicationCommandData createSellDrugsCommandData;
 			createSellDrugsCommandData.defaultPermission = true;
@@ -44,7 +45,7 @@ namespace DiscordCoreAPI {
 			applicationCommandOptionOne.type = ApplicationCommandOptionType::USER;
 			applicationCommandOptionOne.description = "The person who's balances you would like to check.";
 			createBalanceCommandData.options.push_back(applicationCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBalanceCommandData);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createBalanceCommandData);
 
 			CreateApplicationCommandData createAddShopItemCommandData;
 			createAddShopItemCommandData.defaultPermission = true;
@@ -80,7 +81,7 @@ namespace DiscordCoreAPI {
 			addShopItemCommandOptionFive.type = ApplicationCommandOptionType::STRING;
 			addShopItemCommandOptionFive.description = "The emoji/icon to use for the item.";
 			createAddShopItemCommandData.options.push_back(addShopItemCommandOptionFive);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopItemCommandData);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopItemCommandData);
 
 			CreateApplicationCommandData createAddShopRoleCommandData;
 			createAddShopRoleCommandData.defaultPermission = true;
@@ -104,8 +105,8 @@ namespace DiscordCoreAPI {
 			addShopRoleCommandOptionThree.type = ApplicationCommandOptionType::INTEGER;
 			addShopRoleCommandOptionThree.description = "The value/cost of the role.";
 			createAddShopRoleCommandData.options.push_back(addShopRoleCommandOptionThree);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopRoleCommandData);
-
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createAddShopRoleCommandData);
+			
 			CreateApplicationCommandData createCoinflipRoleCommandData;
 			createCoinflipRoleCommandData.defaultPermission = true;
 			createCoinflipRoleCommandData.description = "Play heads or tails.";
@@ -116,23 +117,7 @@ namespace DiscordCoreAPI {
 			coinflipCommandOptionOne.type = ApplicationCommandOptionType::INTEGER;
 			coinflipCommandOptionOne.description = "The wager you would like to place.";
 			createCoinflipRoleCommandData.options.push_back(coinflipCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createCoinflipRoleCommandData);
-
-			CreateApplicationCommandData createBotInfoCommandData;
-			createBotInfoCommandData.defaultPermission = true;
-			createBotInfoCommandData.description = "Display info about the current bot.";
-			createBotInfoCommandData.name = "botinfo";
-			ApplicationCommandOptionData botInfoCommandOptionOne;
-			botInfoCommandOptionOne.name = "botname";
-			botInfoCommandOptionOne.required = true;
-			botInfoCommandOptionOne.type = ApplicationCommandOptionType::STRING;
-			botInfoCommandOptionOne.description = "The bot which you would like to display the info of.";
-			ApplicationCommandOptionChoiceData botInfoChoiceOne;
-			botInfoChoiceOne.name = "name";
-			botInfoChoiceOne.valueString = "gamehouse";
-			botInfoCommandOptionOne.choices.push_back(botInfoChoiceOne);
-			createBotInfoCommandData.options.push_back(botInfoCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBotInfoCommandData);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createCoinflipRoleCommandData);
 
 			CreateApplicationCommandData createBlackjackCommandData;
 			createBlackjackCommandData.defaultPermission = true;
@@ -144,13 +129,13 @@ namespace DiscordCoreAPI {
 			blackJackCommandOptionOne.type = ApplicationCommandOptionType::INTEGER;
 			blackJackCommandOptionOne.description = "The amount which you would like to wager.";
 			createBlackjackCommandData.options.push_back(blackJackCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBlackjackCommandData);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createBlackjackCommandData);
 
 			CreateApplicationCommandData createButtonsCommandData;
 			createButtonsCommandData.defaultPermission = true;
 			createButtonsCommandData.description = "Test the buttons.";
 			createButtonsCommandData.name = "buttons";
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createButtonsCommandData);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createButtonsCommandData);
 			
 			CreateApplicationCommandData createShopCommandData;
 			createShopCommandData.defaultPermission = true;
@@ -168,19 +153,7 @@ namespace DiscordCoreAPI {
 			buyCommandOptionOne.type = ApplicationCommandOptionType::STRING;
 			buyCommandOptionOne.description = "The item or role which you would like to purchase.";
 			createBuyCommandData.options.push_back(buyCommandOptionOne);
-			args->coreClient->slashCommands->createGlobalApplicationCommandAsync(createBuyCommandData);
-			
-			DiscordCoreAPI::CreateApplicationCommandData createTestCommandData;
-			createTestCommandData.defaultPermission = true;
-			createTestCommandData.description = "A test command.";
-			createTestCommandData.name = "test";
-			DiscordCoreAPI::ApplicationCommandOptionData testCommandOptionOne;
-			testCommandOptionOne.name = "optionone";
-			testCommandOptionOne.required = true;
-			testCommandOptionOne.type = ApplicationCommandOptionType::STRING;
-			testCommandOptionOne.description = "The first argument to be entered.";
-			createTestCommandData.options.push_back(testCommandOptionOne);
-			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createTestCommandData);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createBuyCommandData);
 			
 			DiscordCoreAPI::CreateApplicationCommandData createBotInfoCommandData;
 			createBotInfoCommandData.defaultPermission = true;
@@ -222,7 +195,7 @@ namespace DiscordCoreAPI {
 			createGamehouseOptionsCommandData.defaultPermission = true;
 			createGamehouseOptionsCommandData.description = "View the options of this bot.";
 			createGamehouseOptionsCommandData.name = "gamehouseoptions";
-			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createGamehouseOptionsCommandData).get();
+		 	args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createGamehouseOptionsCommandData).get();
 			
 			DiscordCoreAPI::CreateApplicationCommandData createInventoryCommandData;
 			createInventoryCommandData.defaultPermission = true;
@@ -468,9 +441,8 @@ namespace DiscordCoreAPI {
 			rouletteOptionThree.options.push_back(rouletteOptionThreeTwo);
 			createRouletteCommandData.options.push_back(rouletteOptionThree);
 			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createRouletteCommandData).get();
-*/
 			
-DiscordCoreAPI::CreateApplicationCommandData createSetGameChannelCommandData;
+			DiscordCoreAPI::CreateApplicationCommandData createSetGameChannelCommandData;
 			createSetGameChannelCommandData.defaultPermission = true;
 			createSetGameChannelCommandData.description = "Sets the channels which you can play games in.";
 			createSetGameChannelCommandData.name = "setgamechannel";
@@ -488,10 +460,10 @@ DiscordCoreAPI::CreateApplicationCommandData createSetGameChannelCommandData;
 			createSetGameChannelOptionTwoOne.description = "Add a channel to the list of enabled channels";
 			createSetGameChannelOptionTwoOne.required = true;
 			createSetGameChannelOptionTwoOne.type = ApplicationCommandOptionType::STRING;
-			ApplicationCommandOptionChoiceData choiceOne;
-			choiceOne.name = "add";
-			choiceOne.valueString = "add";
-			createSetGameChannelOptionTwoOne.choices.push_back(choiceOne);
+			ApplicationCommandOptionChoiceData setGameChannelchoiceOne;
+			setGameChannelchoiceOne.name = "add";
+			setGameChannelchoiceOne.valueString = "add";
+			createSetGameChannelOptionTwoOne.choices.push_back(setGameChannelchoiceOne);
 			createSetGameChannelOptionTwo.options.push_back(createSetGameChannelOptionTwoOne);
 			createSetGameChannelCommandData.options.push_back(createSetGameChannelOptionTwo);
 			DiscordCoreAPI::ApplicationCommandOptionData createSetGameChannelOptionThree;
@@ -525,8 +497,115 @@ DiscordCoreAPI::CreateApplicationCommandData createSetGameChannelCommandData;
 			createSetGameChannelOptionFour.options.push_back(createSetGameChannelOptionFourOne);
 			createSetGameChannelCommandData.options.push_back(createSetGameChannelOptionFour);
 			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createSetGameChannelCommandData).get();
-			InputEventManager::deleteInputEventResponse(args->eventData);
+
+			CreateApplicationCommandData createSetBalanceCommandData;
+			createSetBalanceCommandData.defaultPermission = true;
+			createSetBalanceCommandData.description = "Set the currency balance of yourself or another server member.";
+			createSetBalanceCommandData.name = "setbalance";
+			ApplicationCommandOptionData createSetBalanceOptionOne;
+			createSetBalanceOptionOne.type = ApplicationCommandOptionType::INTEGER;
+			createSetBalanceOptionOne.name = "amount";
+			createSetBalanceOptionOne.required = true;
+			createSetBalanceOptionOne.description = "The amount to set the balance to.";
+			createSetBalanceCommandData.options.push_back(createSetBalanceOptionOne);
+			ApplicationCommandOptionData createBalanceOptionOne;
+			createBalanceOptionOne.type = ApplicationCommandOptionType::STRING;
+			createBalanceOptionOne.name = "balancetype";
+			createBalanceOptionOne.description = "Which of the two balances to set.";
+			createBalanceOptionOne.required = true;
+			ApplicationCommandOptionChoiceData setBalancechoiceOne;
+			setBalancechoiceOne.name = "wallet";
+			setBalancechoiceOne.valueString = "wallet";
+			ApplicationCommandOptionChoiceData setBalancechoiceTwo;
+			setBalancechoiceTwo.name = "bank";
+			setBalancechoiceTwo.valueString = "bank";
+			createBalanceOptionOne.choices.push_back(setBalancechoiceOne);
+			createBalanceOptionOne.choices.push_back(setBalancechoiceTwo);
+			createSetBalanceCommandData.options.push_back(createBalanceOptionOne);
+			ApplicationCommandOptionData createSetBalanceOptionThree;
+			createSetBalanceOptionThree.name = "targetuser";
+			createSetBalanceOptionThree.description = "The user who's balance you would like to set.";
+			createSetBalanceOptionThree.required = false;
+			createSetBalanceOptionThree.type = ApplicationCommandOptionType::USER;
+			createSetBalanceCommandData.options.push_back(createSetBalanceOptionThree);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createSetBalanceCommandData).get();
 			
+			CreateApplicationCommandData createSetBorderColorCommandData;
+			createSetBorderColorCommandData.defaultPermission = true;
+			createSetBorderColorCommandData.description = "Set the defaul color of borders.";
+			createSetBorderColorCommandData.name = "setbordercolor";
+			ApplicationCommandOptionData createSetBorderColoreOptionOne;
+			createSetBorderColoreOptionOne.type = ApplicationCommandOptionType::STRING;
+			createSetBorderColoreOptionOne.name = "botname";
+			createSetBorderColoreOptionOne.description = "Which of the bots to change the setting on.";
+			createSetBorderColoreOptionOne.required = true;
+			ApplicationCommandOptionChoiceData setBorderColorchoiceOne;
+			setBorderColorchoiceOne.name = "gamehouse";
+			setBorderColorchoiceOne.valueString = "gamehouse";
+			createSetBorderColoreOptionOne.choices.push_back(setBorderColorchoiceOne);
+			createSetBorderColorCommandData.options.push_back(createSetBorderColoreOptionOne);
+			ApplicationCommandOptionData createSetBorderColorOptionTwo;
+			createSetBorderColorOptionTwo.type = ApplicationCommandOptionType::STRING;
+			createSetBorderColorOptionTwo.name = "hexcolorvalue";
+			createSetBorderColorOptionTwo.required = true;
+			createSetBorderColorOptionTwo.description = "The hex-color-value to set the borders to.";
+			createSetBorderColorCommandData.options.push_back(createSetBorderColorOptionTwo);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createSetBorderColorCommandData).get();
+			
+			CreateApplicationCommandData createSlotsCommandData;
+			createSlotsCommandData.defaultPermission = true;
+			createSlotsCommandData.description = "Play a game of slots.";
+			createSlotsCommandData.name = "slots";
+			ApplicationCommandOptionData createSlotsOptionOne;
+			createSlotsOptionOne.type = ApplicationCommandOptionType::INTEGER;
+			createSlotsOptionOne.name = "betamount";
+			createSlotsOptionOne.description = "The amount of currency which you will wager.";
+			createSlotsOptionOne.required = true;
+			createSlotsCommandData.options.push_back(createSlotsOptionOne);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createSlotsCommandData).get();
+			
+			CreateApplicationCommandData createTransferCommandData;
+			createTransferCommandData.defaultPermission = true;
+			createTransferCommandData.description = "Transfer currency from yourself to another server member.";
+			createTransferCommandData.name = "transfer";
+			ApplicationCommandOptionData createTransferOptionOne;
+			createTransferOptionOne.type = ApplicationCommandOptionType::INTEGER;
+			createTransferOptionOne.name = "amount";
+			createTransferOptionOne.description = "The amount of currency which you would like to transfer.";
+			createTransferOptionOne.required = true;
+			createTransferCommandData.options.push_back(createTransferOptionOne);
+			ApplicationCommandOptionData createTransferOptionTwo;
+			createTransferOptionTwo.type = ApplicationCommandOptionType::USER;
+			createTransferOptionTwo.name = "user";
+			createTransferOptionTwo.description = "The target user for the transfer.";
+			createTransferOptionTwo.required = true;
+			createTransferCommandData.options.push_back(createTransferOptionTwo);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createTransferCommandData).get();			
+
+			CreateApplicationCommandData createWithdrawCommandData;
+			createWithdrawCommandData.defaultPermission = true;
+			createWithdrawCommandData.description = "Withdraw currency from your bank account to your wallet.";
+			createWithdrawCommandData.name = "withdraw";
+			ApplicationCommandOptionData createWithdrawOptionOne;
+			createWithdrawOptionOne.type = ApplicationCommandOptionType::INTEGER;
+			createWithdrawOptionOne.name = "amount";
+			createWithdrawOptionOne.description = "The amount of currency which you would like to withdraw.";
+			createWithdrawOptionOne.required = true;
+			createWithdrawCommandData.options.push_back(createWithdrawOptionOne);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createWithdrawCommandData).get();
+
+			CreateApplicationCommandData createDepositommandData;
+			createDepositommandData.defaultPermission = true;
+			createDepositommandData.description = "Deposit currency from your wallet into your bank.";
+			createDepositommandData.name = "deposit";
+			ApplicationCommandOptionData createDepositOptionOne;
+			createDepositOptionOne.type = ApplicationCommandOptionType::INTEGER;
+			createDepositOptionOne.name = "amount";
+			createDepositOptionOne.description = "The amount of currency which you would like to deposit.";
+			createDepositOptionOne.required = true;
+			createDepositommandData.options.push_back(createDepositOptionOne);
+			args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createDepositommandData).get();
+			*/
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
 			EmbedData msgEmbed;

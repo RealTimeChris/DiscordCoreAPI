@@ -133,10 +133,10 @@ namespace DiscordCoreAPI {
 				discordGuild.data.guildShop.roles.at(x) = discordGuild.data.guildShop.roles.at(maxIdx);
 				discordGuild.data.guildShop.roles.at(maxIdx) = tempRole;
 			}
-				
+			
 			vector<string> itemsMsgStrings;
 			vector<EmbedData> itemsMessageEmbeds;
-			unsigned int currentPage = 0;				
+			unsigned int currentPage = 0;
 			bool firstLoop = true;
 
 			for (auto& value:discordGuild.data.guildShop.items) {
@@ -145,12 +145,11 @@ namespace DiscordCoreAPI {
 					itemsMessageEmbeds.resize(1);
 					firstLoop = false;
 				}
-				string itemsMsgStringTemp;
-				itemsMsgStringTemp = "**| __Item:__** " + value.emoji + " " + value.itemName + " **| __Cost:__** " + to_string(value.itemCost) + " **| __Self-Mod:__** " + to_string(value.selfMod) + " **| __Opp-Mod:__** " + to_string(value.oppMod) + "\n";
+				string itemsMsgStringTemp = "**| __Item:__** " + value.emoji + " " + value.itemName + " **| __Cost:__** " + to_string(value.itemCost) + " **| __Self-Mod:__** " + to_string(value.selfMod) + " **| __Opp-Mod:__** " + to_string(value.oppMod) + "\n";
 					if (itemsMsgStringTemp.length() + itemsMsgStrings.at(currentPage).length() >= 2048) {
 						currentPage += 1;
-						itemsMsgStrings.resize(currentPage);
-						itemsMessageEmbeds.resize(currentPage);
+						itemsMsgStrings.resize(currentPage + 1);
+						itemsMessageEmbeds.resize(currentPage + 1);
 					}
 					itemsMessageEmbeds[currentPage] = *new EmbedData();
 					itemsMsgStrings[currentPage] += itemsMsgStringTemp;
@@ -180,7 +179,7 @@ namespace DiscordCoreAPI {
 
 			for (auto x = 0; x < rolesMsgEmbeds.size(); x += 1) {
 				rolesMsgEmbeds[x].setTimeStamp(getTimeAndDate());
-				rolesMsgEmbeds[x].setTitle("__**Shop Inventory(Roles) Page " + to_string(x + 1) + " of " + to_string(itemsMessageEmbeds.size() + rolesMsgEmbeds.size()) + "**__");
+				rolesMsgEmbeds[x].setTitle("__**Shop Inventory (Roles) Page " + to_string(x + 1) + " of " + to_string(itemsMessageEmbeds.size() + rolesMsgEmbeds.size()) + ":**__");
 				rolesMsgEmbeds[x].setDescription(rolesMsgStrings[x]);
 				rolesMsgEmbeds[x].setColor(discordGuild.data.borderColor);
 				rolesMsgEmbeds[x].setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -188,7 +187,7 @@ namespace DiscordCoreAPI {
 
 			for (auto x = 0; x < itemsMessageEmbeds.size(); x += 1) {
 				itemsMessageEmbeds[x].setTimeStamp(getTimeAndDate());
-				itemsMessageEmbeds[x].setTitle("__**Shop Inventory(Items) Page " + to_string(rolesMsgEmbeds.size() + x + 1) + " of " + to_string(itemsMessageEmbeds.size() + rolesMsgEmbeds.size()) + "**__:");
+				itemsMessageEmbeds[x].setTitle("__**Shop Inventory (Items) Page " + to_string(rolesMsgEmbeds.size() + x + 1) + " of " + to_string(itemsMessageEmbeds.size() + rolesMsgEmbeds.size()) + ":**__");
 				itemsMessageEmbeds[x].setDescription(itemsMsgStrings[x]);
 				itemsMessageEmbeds[x].setColor(discordGuild.data.borderColor);
 				itemsMessageEmbeds[x].setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -244,7 +243,7 @@ namespace DiscordCoreAPI {
 
 			discordGuild.writeDataToDB();
 			string userID = args->eventData.getAuthorId();
-			recurseThroughMessagePages(userID, newEvent, currentPageIndex, finalMsgEmbedsArray, true, 120000);
+			recurseThroughMessagePages(userID, newEvent, currentPageIndex, finalMsgEmbedsArray, true, 120000, false);
 
 			co_return;
 		}

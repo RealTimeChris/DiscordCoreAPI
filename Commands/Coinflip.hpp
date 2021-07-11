@@ -54,13 +54,13 @@ namespace DiscordCoreAPI {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(replyData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(responseData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -79,13 +79,13 @@ namespace DiscordCoreAPI {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(replyData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(responseData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -109,13 +109,13 @@ namespace DiscordCoreAPI {
 					ReplyMessageData replyData(args->eventData);
 					replyData.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(replyData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				else {
 					CreateEphemeralInteractionResponseData responseData(args->eventData);
 					responseData.data.embeds.push_back(msgEmbed);
 					auto newEvent = InputEventManager::respondToEvent(responseData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					InputEventManager::deleteInputEventResponse(newEvent, 20000);
 				}
 				co_return;
 			}
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 				inputData = InputEventManager::respondToEvent(responseData2);
 			}
 			Button button2(inputData);
-			ButtonInteractionData buttonInteractionData = button2.getOurButtonData(false, 60000);
+			ButtonInteractionData buttonInteractionData = button2.getOurButtonData(false, 120000);
 			if (buttonInteractionData.customId == ""){
 				string timeOutString = "------\nSorry, but you ran out of time to select an option.\n------";
 				EmbedData msgEmbed2;
@@ -188,16 +188,14 @@ namespace DiscordCoreAPI {
 				msgEmbed3.setTitle("__**Heads, or Tails**__");
 				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				if (args->eventData.eventType == DiscordCoreAPI::InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData replyData(args->eventData);
-					replyData.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(replyData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					EditMessageData replyData(inputData);
+					replyData.embeds.push_back(msgEmbed3);
+					InputEventManager::respondToEvent(replyData);
 				}
 				else {
-					CreateEphemeralInteractionResponseData responseData(args->eventData);
-					responseData.data.embeds.push_back(msgEmbed);
-					auto newEvent = InputEventManager::respondToEvent(responseData);
-					InputEventManager::deleteInputEventResponse(newEvent);
+					EditInteractionResponseData responseData(inputData);
+					responseData.embeds.push_back(msgEmbed3);
+					InputEventManager::respondToEvent(responseData);
 				}
 				co_return;
 			}

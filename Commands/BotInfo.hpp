@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
             DiscordGuild discordGuild(guild.data);
 
             if (args->argumentsArray.size() == 0 || (args->argumentsArray.at(0) != "janny" && args->argumentsArray.at(0) != "musichouse" && args->argumentsArray.at(0) != "gamehouse")) {
-                string msgString = "------\n**Please, enter the name of a bot as the first argument!(!displayguildsdata = BOTNAME)**\n------";
+                string msgString = "------\n**Please, enter the name of a bot as the first argument! (!botinfo = BOTNAME)**\n------";
                 EmbedData msgEmbed;
                 msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
                 msgEmbed.setColor(discordGuild.data.borderColor);
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
             messageEmbed.addField("__Bot Name:__", args->eventData.discordCoreClient->currentUser->data.username, true);
             messageEmbed.addField("__Bot ID:__", args->eventData.discordCoreClient->currentUser->data.id, true);
             messageEmbed.addField("__Guild Count:__", to_string(args->eventData.discordCoreClient->discordUser->data.guildCount), true);
-            messageEmbed.addField("__Currency Name:__", args->eventData.discordCoreClient->discordUser->data.currencyName, true);
+            messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser->data.createdAt, true);
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 ReplyMessageData dataPackage(args->eventData);
                 dataPackage.embeds.push_back(messageEmbed);

@@ -42,6 +42,44 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
+	string getVoiceStateUpdatePayload(UpdateVoiceStateData dataPackage) {
+		json data;
+		data =
+		{
+		{"op",4},
+		{"d" , {
+			{"guild_id", dataPackage.guildId},
+			{"channel_id" , dataPackage.channelId},
+			{"self_mute" , dataPackage.selfMute},
+			{"self_deaf", dataPackage.selfDeaf}
+		}}};
+		return data.dump();
+	}
+
+	string getModifyGuildMemberPayload(ModifyGuildMemberData dataPackage) {
+		json roleIdArray = json::array();
+
+		for (auto value : dataPackage.roleIds) {
+			roleIdArray.push_back(value);
+		}
+		json data;
+		if (dataPackage.newVoiceChannelId != "") {
+			data = { {"nick",dataPackage.nick},
+				{"mute", dataPackage.mute},
+				{"deaf", dataPackage.deaf},
+				{"channel_id", dataPackage.newVoiceChannelId} ,
+				{"roles", roleIdArray } };
+		}
+		else {
+			data = { {"nick",dataPackage.nick},
+				{"mute", dataPackage.mute},
+				{"deaf", dataPackage.deaf},
+				{"roles", roleIdArray } };
+		}
+		
+		return data.dump();
+	}
+
 	string getResumePayload(string botToken, string sessionID, int lastReceivedNumber) {
 		json data;
 		data = {

@@ -28,12 +28,6 @@ namespace DiscordCoreAPI {
 			}
 
 			InputEventManager::deleteInputEventResponse(args->eventData);
-			InputEventData newEvent = args->eventData;
-			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-				CreateDeferredInteractionResponseData dataPackage(args->eventData);
-				dataPackage.requesterId = args->eventData.getAuthorId();
-				newEvent = InputEventManager::respondToEvent(dataPackage);
-			}
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -42,6 +36,13 @@ namespace DiscordCoreAPI {
 
 			if (areWeAllowed == false) {
 				co_return;
+			}
+
+			InputEventData newEvent = args->eventData;
+			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+				CreateDeferredInteractionResponseData dataPackage(args->eventData);
+				dataPackage.requesterId = args->eventData.getAuthorId();
+				newEvent = InputEventManager::respondToEvent(dataPackage);
 			}
 
 			unsigned int minIdx = 0;
@@ -88,9 +89,9 @@ namespace DiscordCoreAPI {
 				}			
 
 				string msgString = "";
-				msgString += "__**#" + to_string(currentPage * membersPerPage + ((x % membersPerPage) + 1)) + " | Name:**__ <@!" + membersArray[x].data.guildMemberId + ">** | __" + args->eventData.discordCoreClient->discordUser->data.currencyName +
-					":__** " + to_string(membersArray[x].data.currency.wallet) + "\n";
-				 
+				msgString += "__**#" + to_string(currentPage * membersPerPage + ((x % membersPerPage) + 1)) + " | Name:**__ " + membersArray[x].data.guildMemberMention + "** | __" + args->eventData.discordCoreClient->discordUser->data.currencyName +
+					":__** " + to_string(membersArray[x].data.currency.wallet) + "\n";				 
+
 					pageStrings[currentPage] += msgString;
 				if (x% membersPerPage ==  membersPerPage - 1 || x ==  (unsigned int)membersArray.size() - 1) {
 					pageEmbeds[currentPage].setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -114,7 +115,7 @@ namespace DiscordCoreAPI {
 				dataPackage.embeds.push_back(pageEmbeds[currentPageIndex]);
 				newEvent = InputEventManager::respondToEvent(dataPackage);
 			}
-			recurseThroughMessagePages(userID, newEvent, currentPageIndex, pageEmbeds, true, 120000);
+			recurseThroughMessagePages(userID, newEvent, currentPageIndex, pageEmbeds, true, 120000, false);
 			discordGuild.writeDataToDB();
 			co_return;
 

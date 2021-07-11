@@ -847,9 +847,7 @@ namespace DiscordCoreAPI {
 					co_return;
 				}
 
-				if (args->eventData.eventType != InputEventType::SLASH_COMMAND_INTERACTION) {
-					InputEventManager::deleteInputEventResponse(args->eventData);
-				}
+				InputEventManager::deleteInputEventResponse(args->eventData);
 
 				Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild.data);
@@ -860,7 +858,7 @@ namespace DiscordCoreAPI {
 					co_return;
 				}
 
-				GuildMember guildMember = args->eventData.discordCoreClient->guildMembers->fetchAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getRequesterId() }).get();
+				GuildMember guildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getRequesterId() }).get();
 				GuildMember botMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ .guildId = args->eventData.getMessageData().guildId, .guildMemberId = args->eventData.discordCoreClient->discordUser->data.userId }).get();
 				if (!DiscordCoreAPI::PermissionsConverter::checkForPermission(botMember, channel, Permissions::MANAGE_MESSAGES)) {
 					string msgString = "------\n**I need the Manage Messages permission in this channel, for this game!**\n------";
@@ -1057,21 +1055,9 @@ namespace DiscordCoreAPI {
 				finalMessageEmbed.setDescription(finalMsgString);
 				finalMessageEmbed.setTitle("__**Blackjack:**__");
 				finalMessageEmbed.setFooter("Cards Remaining: " + to_string(discordGuild.data.blackjackStack.size()));
-				DiscordCoreAPI::EmbedFieldData field01;
-				field01.name = "Dealer's Hand: " + to_string(newDealerHandScore);
-				field01.value = dealerHand[0].suit + dealerHand[0].type;
-				field01.Inline = true;
-				finalMessageEmbed.fields.push_back(field01);
-				DiscordCoreAPI::EmbedFieldData field02;
-				field02.name = "Player's Hand: " + to_string(userHandScore);
-				field02.value = userHand[0].suit + userHand[0].type + userHand[1].suit + userHand[1].type;
-				field02.Inline = true;
-				finalMessageEmbed.fields.push_back(field02);
-				DiscordCoreAPI::EmbedFieldData field03;
-				field03.name = "__**Game Status: In Play**__";
-				field03.value = footerMsgString;
-				field03.Inline = false;
-				finalMessageEmbed.fields.push_back(field03);
+				finalMessageEmbed.addField("Dealer's Hand: " + to_string(newDealerHandScore), dealerHand[0].suit + dealerHand[0].type, true);
+				finalMessageEmbed.addField("Player's Hand: " + to_string(userHandScore), userHand[0].suit + userHand[0].type + userHand[1].suit + userHand[1].type, true);
+				finalMessageEmbed.addField("__**Game Status: In Play**__", footerMsgString, false);
 				DiscordCoreAPI::InputEventData event001;
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData replyMessageData(args->eventData);
@@ -1127,13 +1113,13 @@ namespace DiscordCoreAPI {
 					DiscordCoreAPI::InputEventManager::respondToEvent(deferButtonData);
 				}
 
-				if (event001.eventType== InputEventType::REGULAR_MESSAGE) {
+				if (event001.eventType == InputEventType::REGULAR_MESSAGE) {
 					EditMessageData editData(event001);
-					finalMessageEmbed.fields.at(2).value = footerMsgStringOld;
 					editData.components = event001.getComponents();
 					if (canWeDoubleDown) {
 						editData.components.at(0).components.erase(editData.components.at(0).components.begin() + 2);
-					}					
+					}
+					finalMessageEmbed.fields.at(2).value = footerMsgStringOld;
 					editData.embeds.push_back(finalMessageEmbed);
 					event001 = InputEventManager::respondToEvent(editData);
 				}
@@ -1145,7 +1131,7 @@ namespace DiscordCoreAPI {
 					}
 					finalMessageEmbed.fields.at(2).value = footerMsgStringOld;
 					editData.embeds.push_back(finalMessageEmbed);
-					event001 = InputEventManager::respondToEvent(editData);
+					event001 = InputEventManager::respondToEvent(editData);  
 				}
 				unsigned int newCardCount = 0;
 				if (button.getButtonId() == "check") {

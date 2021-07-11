@@ -27,35 +27,26 @@ namespace DiscordCoreAPI {
 				for (auto value : roles) {
 					cout << value.data.id << endl;
 				}
-
+				InviteData inviteData = args->eventData.discordCoreClient->guilds->getInvite({ .guildId = args->eventData.getGuildId(), .inviteId = "RjuhhxzUvN" });
+				cout << inviteData.uses << endl;
 				EmbedData msgEmbed;
 				regex userIDRegExp("<@!\\d{1,18}>");
 				if (args->argumentsArray.size() > 0) {
 					if (args->argumentsArray.at(0) == "testing") {
 						msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-						msgEmbed.setColor("FEFE00");
-						msgEmbed.setDescription("__**READY TO GO!**__");
+						msgEmbed.setColor("FEFEFE");
+						msgEmbed.setDescription(args->argumentsArray[1]);
 						msgEmbed.setTimeStamp(getTimeAndDate());
-						msgEmbed.setTitle("__**Welcome:**__");
+						msgEmbed.setTitle("__**Welcome To &:**__");
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 							ReplyMessageData responseData01(args->eventData);
 							responseData01.embeds.push_back(msgEmbed);
 							InputEventData event01 = InputEventManager::respondToEvent(responseData01);
-							EditMessageData responseData(event01);
-							msgEmbed.setDescription("Empty Description");
-							responseData.embeds.push_back(msgEmbed);
-							InputEventData event03 = InputEventManager::respondToEvent(responseData);
-							InputEventManager::deleteInputEventResponse(event03, 5000);
 						}
 						else {
 							CreateEphemeralInteractionResponseData newData(args->eventData);
 							newData.data.embeds.push_back(msgEmbed);
 							auto eventNew = InputEventManager::respondToEvent(newData);
-							EditInteractionResponseData editData(eventNew);
-							msgEmbed.setDescription("EDITED DESCRIPTION!");
-							editData.embeds.push_back(msgEmbed);
-							auto eventNew02 = InputEventManager::respondToEvent(editData);
-							InputEventManager::deleteInputEventResponse(eventNew02, 5000);
 						}
 					}
 					else if (regex_search(args->argumentsArray.at(0), userIDRegExp)){
@@ -130,6 +121,7 @@ namespace DiscordCoreAPI {
 						*/
 					}
 				}
+				/*
 				string permissionString;
 				vector<Permissions> permisVector;
 				permisVector.push_back(Permissions::ADD_REACTIONS);
@@ -150,7 +142,7 @@ namespace DiscordCoreAPI {
 				deleteData.limit = 100;
 				deleteData.deletePinned = false;
 				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(deleteData);
-
+				*/
 				co_return;
 			}
 			catch (exception error) {

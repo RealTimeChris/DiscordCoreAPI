@@ -28,12 +28,10 @@ namespace DiscordCoreAPI {
 					co_return;
 				}
 
-				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					InputEventManager::deleteInputEventResponse(args->eventData);
-				}
+				InputEventManager::deleteInputEventResponse(args->eventData);
 
 				Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
-				DiscordGuild discordGuild = args->eventData.discordCoreClient->getDiscordGuild(guild.data);
+				DiscordGuild discordGuild(guild.data);
 
 				bool areWeAllowed = checkIfAllowedGamingInChannel(args->eventData, discordGuild);
 

@@ -11,6 +11,7 @@
 #include "../pch.h"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
+#include "WebSocketStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -41,6 +42,36 @@ namespace DiscordCoreAPI {
 			this->data = dataNew;
 			this->discordCoreClient = coreClientNew;
 		}
+	};
+
+	struct UpdateVoiceStateData {
+		string guildId;
+		string channelId;
+		bool selfMute;
+		bool selfDeaf;
+	};
+
+	class BotUser:public User {
+	public:
+		BotUser(DiscordCoreInternal::UserData userDataNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
+			this->pConnectionWebSocketAgent = pConnectionWebSocketAgentNew;
+			this->data = userDataNew;
+			this->discordCoreClient = coreClientNew;
+		}
+
+		task<void> updateVoiceStatusAsync(UpdateVoiceStateData dataPackage) {
+			DiscordCoreInternal::UpdateVoiceStateData dataPackageNew;
+			dataPackageNew.channelId = dataPackage.channelId;
+			dataPackageNew.guildId = dataPackage.guildId;
+			dataPackageNew.selfDeaf = dataPackage.selfDeaf;
+			dataPackageNew.selfMute = dataPackage.selfMute;
+			string payload = DiscordCoreInternal::getVoiceStateUpdatePayload(dataPackageNew);
+			this->pConnectionWebSocketAgent->sendMessage(payload);
+			co_return;
+		}
+
+	protected:
+		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgent;
 	};
 
 	struct GetUserData {

@@ -31,8 +31,13 @@
 #include "Rob.hpp"
 #include "Roulette.hpp"
 #include "SellDrugs.hpp"
+#include "SetBalance.hpp"
+#include "SetBorderColor.hpp"
 #include "SetGameChannel.hpp"
 #include "Shop.hpp"
+#include "Slots.hpp"
 #include "Test.hpp"
+#include "Transfer.hpp"
+#include "Withdraw.hpp"
 
 #endif

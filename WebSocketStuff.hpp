@@ -318,6 +318,36 @@ namespace DiscordCoreInternal {
 			this->socketPath = stream.str();
 		}
 
+		void sendMessage(string& text) {
+
+			string message = text;
+			if (message.empty()) {
+				cout << "Please specify text to send" << endl;
+				return;
+			}
+
+			cout << "Sending Message: ";
+			cout << message << endl;
+
+			// Buffer any data we want to send.
+			if (this->messageWriter != nullptr) {
+				this->messageWriter.WriteString(to_hstring(message));
+			}
+
+			try {
+				// Send the data as one complete message.
+				if (this->messageWriter != nullptr) {
+					this->messageWriter.StoreAsync().get();
+				}
+			}
+			catch (hresult_error const& ex) {
+				wcout << ex.message().c_str() << endl;
+			}
+
+			cout << "Send Complete" << endl;
+			return;
+		}
+
 		bool getError(exception& error) {
 			if (try_receive(errorBuffer, error)) {
 				return true;
@@ -331,6 +361,7 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
+		friend class BotUser;
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		event_token messageReceivedToken;
 		event_token closedToken;
@@ -422,36 +453,6 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket_Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-		}
-
-		void sendMessage(string& text) {
-
-			string message = text;
-			if (message.empty()) {
-				cout << "Please specify text to send" << endl;
-				return;
-			}
-
-			cout << "Sending Message: ";
-			cout << message << endl;
-
-			// Buffer any data we want to send.
-			if (this->messageWriter != nullptr) {
-				this->messageWriter.WriteString(to_hstring(message));
-			}
-
-			try {
-				// Send the data as one complete message.
-				if (this->messageWriter != nullptr) {
-					this->messageWriter.StoreAsync().get();
-				}
-			}
-			catch (hresult_error const& ex) {
-				wcout << ex.message().c_str() << endl;
-			}
-
-			cout << "Send Complete" << endl;
-			return;
 		}
 
 		void OnHeartbeat(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args) {

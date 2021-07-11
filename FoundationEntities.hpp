@@ -782,7 +782,8 @@ namespace  DiscordCoreInternal {
         PATCH_GUILD_ROLES = 43,
         YOUTUBE_SEARCH = 44,
         YOUTUBE_VIDEO_QUERY = 45,
-        GET_INVITES = 46
+        GET_INVITES = 46,
+        PATCH_GUILD_MEMBER = 47
     };
 
     struct GetApplicationData {
@@ -1101,6 +1102,24 @@ namespace  DiscordCoreInternal {
     struct GetGuildMemberRolesData {
         HttpAgentResources agentResources;
         vector<string> roleIds;
+    };
+
+    struct ModifyGuildMemberData {
+        HttpAgentResources agentResources;
+        string guildMemberId;
+        string guildId;
+        string nick;
+        vector<string> roleIds;
+        bool mute;
+        bool deaf;
+        string newVoiceChannelId = "";
+    };
+
+    struct UpdateVoiceStateData {
+        string guildId;
+        string channelId;
+        bool selfMute;
+        bool selfDeaf;
     };
 
     struct FetchRolesData {
@@ -2221,6 +2240,21 @@ namespace DiscordCoreAPI {
         ThreadMember member;
     };
 
+    struct VoiceStateData {
+        string guildId;
+        string channelId;
+        string userId;
+        string sessionId;
+        bool deaf;
+        bool mute;
+        bool selfDeaf;
+        bool selfMute;
+        bool selfStream;
+        bool selfVideo;
+        bool suppress;
+        string requestToSpeakTimestamp;
+    };
+
     struct GuildMemberData {
         operator DiscordCoreInternal::GuildMemberData() {
             DiscordCoreInternal::GuildMemberData newData;
@@ -2248,6 +2282,7 @@ namespace DiscordCoreAPI {
         bool pending;
         string permissions;
         string userMention;
+        VoiceStateData voiceData;
     };
 
     struct ApplicationCommandInteractionDataResolved {
@@ -2648,22 +2683,6 @@ namespace DiscordCoreAPI {
         }
         string requesterId;
         MessageDataOld referencedMessage;
-    };
-
-    struct VoiceStateData {
-        string guildId;
-        string channelId;
-        string userId;
-        GuildMemberData guildMember;
-        string sessionId;
-        bool deaf;
-        bool mute;
-        bool selfDeaf;
-        bool selfMute;
-        bool selfStream;
-        bool selfVideo;
-        bool suppress;
-        string requestToSpeakTimestamp;
     };
 
     struct InteractionData {
@@ -3210,13 +3229,31 @@ namespace DiscordCoreAPI {
         vector<AuditLogEntryData> auditLogEntries;
         vector<IntegrationData> integrations;
     };
-
+    
     struct TypingStartData {
         std::string channelId;
         std::string guildId;
         std::string userId;
         int timestamp;
         GuildMemberData member;
+    };
+
+    struct YouTubeFormat {
+        int itag = 0;
+        string mimeType = "";
+        string codecs = "";
+        int bitrate = 0;
+        int width = 0;
+        int height = 0;
+        string quality = "";
+        int fps = 0;
+        string audioQuality = "";
+        string signatureCipher = "";
+        int averageBitrate = 0;
+        int contentLength = 0;
+        string downloadURL = "";
+        string signature = "";
+        string aitags = "";
     };
 
     struct YouTubeSearchResult {
@@ -3226,6 +3263,7 @@ namespace DiscordCoreAPI {
         string duration;
         string description;
         string videoURL;
+        vector<YouTubeFormat> formats;
     };
 };
 

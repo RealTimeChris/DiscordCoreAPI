@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 				for (unsigned int x = 0; x < discordGuildMember.data.items.size(); x += 1) {
 					if (discordGuildMember.data.items[x].selfMod > 0) {
 						userGainAmount += discordGuildMember.data.items[x].selfMod;
-						userGainString += "+" + to_string(discordGuildMember.data.items[x].selfMod) + " of base roll from <@!" + discordGuildMember.data.guildMemberId + "> 's " + discordGuildMember.data.items[x].emoji + discordGuildMember.data.items[x].itemName + "}\n";
+						userGainString += "+" + to_string(discordGuildMember.data.items[x].selfMod) + " of base roll from <@!" + discordGuildMember.data.guildMemberId + "> 's " + discordGuildMember.data.items[x].emoji + discordGuildMember.data.items[x].itemName + "\n";
 					}
 				}
 

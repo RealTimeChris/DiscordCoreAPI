@@ -310,7 +310,7 @@ void executeCheck(DiscordCoreAPI::DiscordGuildMember* discordFromGuildMember, Di
 		}
 	}
 	unsigned int currentPageIndex = 0;
-	recurseThroughMessagePages(*fromUserIDNew, *newEvent, currentPageIndex, messageEmbeds, false, 120000);
+	recurseThroughMessagePages(*fromUserIDNew, *newEvent, currentPageIndex, messageEmbeds, false, 120000, true);
 }
 
 void executeExit(string fromUserID, string toUserID, DiscordCoreAPI::DiscordGuild discordGuild, DiscordCoreAPI::InputEventData originalEvent) {

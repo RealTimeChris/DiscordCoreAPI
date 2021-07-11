@@ -474,8 +474,10 @@ namespace DiscordCoreInternal {
             voiceStateData.userId = jsonObjectData.at("user_id").get<string>();
         }
 
-        if (jsonObjectData.contains("guild_member") && !jsonObjectData.at("guild_member").is_null()) {
-            parseObject(jsonObjectData.at("guild_member"), &voiceStateData.guildMember);
+        if (jsonObjectData.contains("member") && !jsonObjectData.at("member").is_null()) {
+            DiscordCoreAPI::GuildMemberData guildMemberData;
+            parseObject(jsonObjectData.at("member"), &guildMemberData);
+            voiceStateData.userId = guildMemberData.user.id;
         }
 
         if (jsonObjectData.contains("session_id") && !jsonObjectData.at("session_id").is_null()) {
@@ -2371,6 +2373,118 @@ namespace DiscordCoreInternal {
         }
 
         *pDataStructure = appCommandInteractionData;
+    }
+
+    void parseObject(json jsonObjectData, vector<DiscordCoreAPI::YouTubeFormat>* pDataStructure) {
+        vector<DiscordCoreAPI::YouTubeFormat> youtubeFormats;
+        
+        if (!jsonObjectData.is_null()) {
+            if (jsonObjectData.contains("streamingData") && !jsonObjectData.at("streamingData").is_null() && jsonObjectData.at("streamingData").contains("formats") && !jsonObjectData.at("streamingData").at("formats").is_null()) {
+                for (auto value : jsonObjectData.at("streamingData").at("formats")) {
+                    DiscordCoreAPI::YouTubeFormat newData;
+                    if (value.contains("audioQuality")) {
+                        newData.audioQuality = value.at("audioQuality").get<string>();
+                    }
+                    if (value.contains("averageBitrate")) {
+                        newData.averageBitrate = value.at("averageBitrate").get<int>();
+                    }
+                    if (value.contains("bitrate")) {
+                        newData.bitrate = value.at("bitrate").get<int>();
+                    }
+                    if (value.contains("contentLength")) {
+                        newData.contentLength = stol(value.at("contentLength").get<string>());
+                    }
+                    if (value.contains("fps")) {
+                        newData.fps = value.at("fps").get<int>();
+                    }
+                    if (value.contains("height")) {
+                        newData.height = value.at("height").get<int>();
+                    }
+                    if (value.contains("width")) {
+                        newData.height = value.at("width").get<int>();
+                    }
+                    if (value.contains("aitags")) {
+                        newData.aitags = value.at("aitags").get<string>();
+                    }
+                    if (value.contains("itag")) {
+                        newData.itag = value.at("itag").get<int>();
+                    }
+                    if (value.contains("mimeType")) {
+                        newData.mimeType = value.at("mimeType").get<string>();
+                    }
+                    if (value.contains("quality")) {
+                        newData.quality = value.at("quality").get<string>();
+                    }
+                    if (value.contains("signatureCipher")) {
+                        newData.signatureCipher = value.at("signatureCipher").get<string>();
+                    }
+                    else if(value.contains("cipher")) {
+                        newData.signatureCipher = value.at("cipher").get<string>();
+                    }
+                    if (newData.signatureCipher.find("&sp") != string::npos) {
+                        newData.signature = newData.signatureCipher.substr(0, newData.signatureCipher.find("&sp"));
+                    }
+                    if (newData.signatureCipher.find("url") != string::npos) {
+                        newData.downloadURL = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
+                    }
+                    youtubeFormats.push_back(newData);
+                }
+            }
+
+            if (jsonObjectData.contains("streamingData") && !jsonObjectData.at("streamingData").is_null() && jsonObjectData.at("streamingData").contains("adaptiveFormats") && !jsonObjectData.at("streamingData").at("adaptiveFormats").is_null()) {
+                for (auto value : jsonObjectData.at("streamingData").at("adaptiveFormats")) {
+                    DiscordCoreAPI::YouTubeFormat newData;
+                    if (value.contains("audioQuality")) {
+                        newData.audioQuality = value.at("audioQuality").get<string>();
+                    }
+                    if (value.contains("averageBitrate")) {
+                        newData.averageBitrate = value.at("averageBitrate").get<int>();
+                    }
+                    if (value.contains("bitrate")) {
+                        newData.bitrate = value.at("bitrate").get<int>();
+                    }
+                    if (value.contains("contentLength")) {
+                        newData.contentLength = stol(value.at("contentLength").get<string>());
+                    }
+                    if (value.contains("fps")) {
+                        newData.fps = value.at("fps").get<int>();
+                    }
+                    if (value.contains("height")) {
+                        newData.height = value.at("height").get<int>();
+                    }
+                    if (value.contains("width")) {
+                        newData.height = value.at("width").get<int>();
+                    }
+                    if (value.contains("aitags")) {
+                        newData.aitags = value.at("aitags").get<string>();
+                    }
+                    if (value.contains("itag")) {
+                        newData.itag = value.at("itag").get<int>();
+                    }
+                    if (value.contains("mimeType")) {
+                        newData.mimeType = value.at("mimeType").get<string>();
+                    }
+                    if (value.contains("quality")) {
+                        newData.quality = value.at("quality").get<string>();
+                    }
+                    if (value.contains("signatureCipher")) {
+                        newData.signatureCipher = value.at("signatureCipher").get<string>();
+                    }
+                    else if (value.contains("cipher")) {
+                        newData.signatureCipher = value.at("cipher").get<string>();
+                    }
+                    if (newData.signatureCipher.find("&sp") != string::npos) {
+                        newData.signature = newData.signatureCipher.substr(0, newData.signatureCipher.find("&sp"));
+                    }
+                    if (newData.signatureCipher.find("url") != string::npos) {
+                        newData.downloadURL = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
+                    }
+                    youtubeFormats.push_back(newData);
+                }
+            }
+        }
+
+        *pDataStructure = youtubeFormats;
     }
 
     void parseObject(json jsonObjectData, CommandData* pDataStructure) {

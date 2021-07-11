@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 	public:
 		GuildData data;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-
+		
 	protected:
 		friend class GuildManagerAgent;
 		friend class DiscordCoreClient;
@@ -73,6 +73,11 @@ namespace DiscordCoreAPI {
 				cout << "Caching guild members for guild: " << this->data.name << endl;
 				for (unsigned int x = 0; x < this->data.members.size(); x += 1) {
 					GuildMemberData guildMemberData = data.members.at(x);
+					for (auto value : this->data.voiceStates) {
+						if (value.userId == guildMemberData.user.id) {
+							guildMemberData.voiceData = value;
+						}
+					}					
 					if (x >= 1) {
 						bool doWeContinue = false;
 						map<string, GuildMember> guildMemberMap = receive(GuildMemberManagerAgent::cache);

@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
 	public:
 		SetGameChannel() {
 			this->commandName = "setgamechannel";
-			this->helpDescription = "__**Set Game Channel Usage:**__";
+			this->helpDescription = "__**Set Game Channel Usage:**__ !setgamechannel = ADD or !setgamechannel = REMOVE in the channel you would like to add/remove. Also !setgamechannel = PURGE to remove all channels, or just !setgamechannel to view the currently enabled channels!";
 		}
 
 		virtual task<void>execute(shared_ptr<BaseFunctionArguments> args) {

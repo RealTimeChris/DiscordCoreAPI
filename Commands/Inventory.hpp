@@ -271,7 +271,7 @@ namespace DiscordCoreAPI {
 			}
 
 			
-			recurseThroughMessagePages(userID, newEvent, currentPageIndex, finalMsgEmbedsArray, true, 120000);
+			recurseThroughMessagePages(userID, newEvent, currentPageIndex, finalMsgEmbedsArray, true, 120000, false);
 			co_return;
 		}
 	};
