@@ -527,8 +527,8 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("Size") && !jsonObjectData.at("Size").is_null()) {
-            partyData.size.currentSize = jsonObjectData.at("Size").at("CurrentSize").get<int>();
-            partyData.size.maxSize = jsonObjectData.at("Size").at("MaxSize").get<int>();
+            partyData.size[0] = jsonObjectData.at("Size").at("CurrentSize").get<int>();
+            partyData.size[1] = jsonObjectData.at("Size").at("MaxSize").get<int>();
         }
 
         *pDataStructure = partyData;
@@ -613,13 +613,13 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("Name") && !jsonObjectData.at("Name").is_null()) {
             activityData.name = jsonObjectData.at("Name").get<string>();
         }
-
+        /*
         if (jsonObjectData.contains("Timestamps") && !jsonObjectData.at("Timestamps").is_null()) {
             parseObject(jsonObjectData.at("Timestamps"), &activityData.timestamps);
         }
 
         if (jsonObjectData.contains("ApplicationId") && !jsonObjectData.at("ApplicationId").is_null()) {
-            activityData.applicationId = jsonObjectData.at("ApplicationId").get<__int64>();
+            activityData.applicationId = jsonObjectData.at("ApplicationId").get<string>();
         }
 
         if (jsonObjectData.contains("Details") && !jsonObjectData.at("Details").is_null()) {
@@ -631,21 +631,21 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("ActivityParty") && !jsonObjectData.at("ActivityParty").is_null()) {
-            parseObject(jsonObjectData.at("ActivityParty"), &activityData.activityParty);
+            parseObject(jsonObjectData.at("ActivityParty"), &activityData.party);
         }
 
         if (jsonObjectData.contains("ActivityAssets") && !jsonObjectData.at("ActivityAssets").is_null()) {
-            parseObject(jsonObjectData.at("ActivityAssets"), &activityData.activityAssets);
+            parseObject(jsonObjectData.at("ActivityAssets"), &activityData.assets);
         }
 
         if (jsonObjectData.contains("ActivitySecrets") && !jsonObjectData.at("ActivitySecrets").is_null()) {
-            parseObject(jsonObjectData.at("ActivitySecrets"), &activityData.activitySecrets);
+            parseObject(jsonObjectData.at("ActivitySecrets"), &activityData.secrets);
         }
 
         if (jsonObjectData.contains("Instance") && !jsonObjectData.at("Instance").is_null()) {
             activityData.instance = jsonObjectData.at("Instance").get<bool>();
         }
-
+        */
         *pDataStructure = activityData;
     }
 
@@ -2427,6 +2427,9 @@ namespace DiscordCoreInternal {
                     if (newData.signatureCipher.find("url") != string::npos) {
                         newData.downloadURL = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
                     }
+                    else if (value.contains("url") && !value.at("url").is_null()) {
+                        newData.downloadURL = value.at("url");
+                    }
                     youtubeFormats.push_back(newData);
                 }
             }
@@ -2478,6 +2481,9 @@ namespace DiscordCoreInternal {
                     }
                     if (newData.signatureCipher.find("url") != string::npos) {
                         newData.downloadURL = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
+                    }
+                    else if (value.contains("url") && !value.at("url").is_null()) {
+                        newData.downloadURL = value.at("url");
                     }
                     youtubeFormats.push_back(newData);
                 }

@@ -44,6 +44,12 @@ namespace DiscordCoreAPI {
 		}
 	};
 
+	struct UpdatePresenceData {
+		vector<ActivityData> activities;
+		string status;
+		bool afk;
+	};
+
 	struct UpdateVoiceStateData {
 		string guildId;
 		string channelId;
@@ -66,6 +72,20 @@ namespace DiscordCoreAPI {
 			dataPackageNew.selfDeaf = dataPackage.selfDeaf;
 			dataPackageNew.selfMute = dataPackage.selfMute;
 			string payload = DiscordCoreInternal::getVoiceStateUpdatePayload(dataPackageNew);
+			this->pConnectionWebSocketAgent->sendMessage(payload);
+			co_return;
+		}
+
+		task<void> updatePresenceAsync(UpdatePresenceData dataPackage) {
+			
+			DiscordCoreInternal::UpdatePresenceData dataPackageNew;
+			for (auto value : dataPackage.activities) {
+				dataPackageNew.activities.push_back(value);
+			}
+			dataPackageNew.afk = dataPackage.afk;
+			dataPackageNew.since = (__int64)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			dataPackageNew.status = dataPackage.status;
+			string payload = DiscordCoreInternal::getPresenceUpdatePayload(dataPackageNew);
 			this->pConnectionWebSocketAgent->sendMessage(payload);
 			co_return;
 		}

@@ -166,6 +166,14 @@ namespace DiscordCoreAPI {
 			this->pWebSocketReceiverAgent->start();
 			this->pWebSocketConnectionAgent->start();
 			this->start();
+			executeFunctionAfterTimePeriod([&]() {
+				vector<ActivityData> activities;
+				ActivityData activity;
+				activity.name = "!help for my commands!";
+				activity.type = ActivityType::Game;
+				activities.push_back(activity);
+				this->currentUser->updatePresenceAsync({ .activities = activities, .status = "online",.afk = false }).get();
+				}, 5000);
 			co_await mainThread;
 			co_return;
 		}

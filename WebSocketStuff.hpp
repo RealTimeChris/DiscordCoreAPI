@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew)
 			:agent(*threadContextNew->scheduler) {
-
+			this->threadContext = threadContextNew;
 		}
 
 		bool getError(exception& error) {
@@ -327,7 +327,7 @@ namespace DiscordCoreInternal {
 			}
 
 			cout << "Sending Message: ";
-			cout << message << endl;
+			cout << message << endl << endl;
 
 			// Buffer any data we want to send.
 			if (this->messageWriter != nullptr) {
@@ -341,10 +341,10 @@ namespace DiscordCoreInternal {
 				}
 			}
 			catch (hresult_error const& ex) {
-				wcout << ex.message().c_str() << endl;
+				wcout << ex.message().c_str() << endl << endl;
 			}
 
-			cout << "Send Complete" << endl;
+			cout << "Send Complete" << endl << endl;
 			return;
 		}
 
@@ -518,11 +518,13 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload.at("op") == 6) {
+					cout << "Resuming!" << endl << endl;
 					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
 					this->sendMessage(resume);
 				}
 
 				if (payload.at("op") == 7) {
+					cout << "Reconnecting (Type 7)!" << endl << endl;
 					this->cleanup();
 					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
 					this->sendMessage(resume);
@@ -530,6 +532,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload.at("op") == 9) {
+					cout << "Reconnecting (Type 9)!" << endl << endl;
 					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
 					this->sendMessage(resume);
 					this->connect();

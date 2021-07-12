@@ -42,17 +42,62 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
+	string getPresenceUpdatePayload(UpdatePresenceData dataPackage) {
+		json data;
+
+		auto activitiesArray = json::array();
+
+		for (auto value : dataPackage.activities) {
+			if (value.url == "") {
+				json dataNew = { { "name",value.name},
+				{"type" ,value.type}
+				};
+				activitiesArray.push_back(dataNew);
+			}
+			else {
+				json dataNew = { { "name",value.name},
+				{"type" ,value.type},{"url", value.url}
+				};
+				activitiesArray.push_back(dataNew);
+			}			
+		}
+		data = { {"op", 3},{"d" , {{
+	"since", dataPackage.since},
+			{"activities" ,activitiesArray} ,
+			{"status" ,dataPackage.status},
+			{"afk" ,dataPackage.afk}}}
+		};
+
+		return data.dump();
+	}
+
 	string getVoiceStateUpdatePayload(UpdateVoiceStateData dataPackage) {
 		json data;
-		data =
-		{
-		{"op",4},
-		{"d" , {
-			{"guild_id", dataPackage.guildId},
-			{"channel_id" , dataPackage.channelId},
-			{"self_mute" , dataPackage.selfMute},
-			{"self_deaf", dataPackage.selfDeaf}
-		}}};
+		if (dataPackage.channelId != "") {
+			data =
+			{
+			{"op",4},
+			{"d" , {
+				{"guild_id", dataPackage.guildId},
+				{"channel_id" , dataPackage.channelId},
+				{"self_mute" , dataPackage.selfMute},
+				{"self_deaf", dataPackage.selfDeaf}
+			}} };
+
+		}
+		else {
+			data =
+			{
+			{"op",4},
+			{"d" , {
+				{"guild_id", dataPackage.guildId},
+				{"channel_id" , nullptr},
+				{"self_mute" , dataPackage.selfMute},
+				{"self_deaf", dataPackage.selfDeaf}
+			}} };
+		}
+		
+		
 		return data.dump();
 	}
 

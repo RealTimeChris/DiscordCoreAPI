@@ -330,7 +330,7 @@ namespace  DiscordCoreInternal {
 
     struct PartyData {
         string id;
-        vector<int> size{};
+        vector<int> size{ 0, 0 };
     };
 
     struct AssetsData {
@@ -347,8 +347,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct TimestampData {
-        int start;
-        int end;
+        __int64 start = 0;
+        __int64 end = 0;
     };
 
     struct ButtonData {
@@ -396,27 +396,34 @@ namespace  DiscordCoreInternal {
     };
 
     struct ActivityData {
-        string name;
-        int type;
-        string url;
-        int createdAt;
+        int createdAt = 0;
         TimestampData timestamps;
-        string applicationId;
-        string details;
-        string state;
+        string applicationId = "";
+        string details = "";
+        string state = "";
         EmojiData emoji;
         PartyData party;
         AssetsData assets;
         SecretsData secrets;
-        bool instance;
-        int flags{ 0 };
-        vector<ButtonData> buttons;
+        bool instance = false;
+        int flags = 0;
+        string name = "";
+        int type;
+        string url = "";
+        ButtonData buttons;
     };
 
     struct ClientStatusData {
         string desktop;
         string mobile;
         string web;
+    };
+
+    struct UpdatePresenceData {
+        __int64 since;
+        vector<ActivityData> activities;
+        string status;
+        bool afk;
     };
 
     struct PresenceUpdateData {
@@ -1634,9 +1641,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    task<void> executeFunctionAfterTimePeriod(function<void()> const& lambda, unsigned int timeDelay) {
-        apartment_context mainThread;
-        co_await resume_background();
+    void executeFunctionAfterTimePeriod(function<void()> const& lambda, unsigned int timeDelay) {
         if (timeDelay > 0) {
             DispatcherQueueOptions options{
                 sizeof(DispatcherQueueOptions),
@@ -1659,8 +1664,7 @@ namespace DiscordCoreAPI {
         else {
             lambda();
         }
-        co_await mainThread;
-        co_return;
+        return;
     }
 
     string getTimeAndDate() {
@@ -2724,17 +2728,27 @@ namespace DiscordCoreAPI {
         string requesterId;
     };
 
-    struct PartySizeData {
-        int currentSize;
-        int maxSize;
-    };
-
     struct PartyData {
+        operator DiscordCoreInternal::PartyData() {
+            DiscordCoreInternal::PartyData newData;
+            newData.id = this->id;
+            newData.size[0] = this->size[0];
+            newData.size[1] = this->size[1];
+            return newData;
+        }
         string id;
-        PartySizeData size;
+        vector<int> size{ 0, 0 };
     };
 
     struct AssetsData {
+        operator DiscordCoreInternal::AssetsData() {
+            DiscordCoreInternal::AssetsData newData;
+            newData.largeImage = this->largeImage;
+            newData.largeText = this->largeText;
+            newData.smallImage = this->smallImage;
+            newData.smallText = this->smallText;
+            return newData;
+        }
         string largeImage;
         string largeText;
         string smallImage;
@@ -2742,45 +2756,90 @@ namespace DiscordCoreAPI {
     };
 
     struct SecretsData {
+        operator DiscordCoreInternal::SecretsData() {
+            DiscordCoreInternal::SecretsData newData;
+            newData.join = this->join;
+            newData.match = this->match;
+            newData.spectate = this->spectate;
+            return newData;
+        }
         string join;
         string spectate;
         string match;
     };
 
     struct TimestampData {
+        operator DiscordCoreInternal::TimestampData() {
+            DiscordCoreInternal::TimestampData newData;
+            newData.end = this->end;
+            newData.start = this->start;
+            return newData;
+        }
         __int64 start;
         __int64 end;
     };
 
     struct ButtonData {
+        operator DiscordCoreInternal::ButtonData() {
+            DiscordCoreInternal::ButtonData newData;
+            newData.label = this->label;
+            newData.url = this->url;
+            return newData;
+        }
         string label;
         string url;
     };
 
+    enum class ActivityType {
+        Game = 0,
+        Streaming = 1,
+        Listening = 2,
+        Watching = 3,
+        Custom = 4,
+        Competing = 5
+    };
+
     struct ActivityData {
-        __int64 applicationId;
-        string name;
-        string state;
-        string details;
+        operator DiscordCoreInternal::ActivityData() {
+            DiscordCoreInternal::ActivityData newData;
+            newData.applicationId = this->applicationId;
+            newData.assets = this->assets;
+            newData.createdAt = this->createdAt;
+            newData.details = this->details;
+            newData.emoji = this->emoji;
+            newData.flags = this->flags;
+            newData.instance = this->instance;
+            newData.party = this->party;
+            newData.secrets = this->secrets;
+            newData.state = this->state;
+            newData.timestamps = this->timestamps;
+            newData.type = (int)this->type;
+            newData.url = this->url;
+            newData.name = this->name;
+            newData.buttons = this->buttons;
+            return newData;
+        }
+        int createdAt = 0;
         TimestampData timestamps;
-        AssetsData activityAssets;
-        PartyData activityParty;
-        SecretsData	activitySecrets;
-        bool instance;
+        string applicationId = "";
+        string details = "";
+        string state = "";
+        EmojiData emoji;
+        PartyData party;
+        AssetsData assets;
+        SecretsData secrets;
+        bool instance = false;
+        int flags = 0;
+        string name = "";
+        ActivityType type;
+        string url = "";
+        ButtonData buttons;
     };
 
     struct ClientStatusData {
         string desktop;
         string mobile;
         string web;
-    };
-
-    struct PresenceUpdateData {
-        UserData user;
-        string guildId;
-        string status;
-        vector<ActivityData> activities;
-        ClientStatusData clientStatus;
     };
 
     enum class PremiumTier {
@@ -2833,6 +2892,14 @@ namespace DiscordCoreAPI {
         string topic;
         int privacyLevel;
         bool discoverableDisabled;
+    };
+
+    struct PresenceUpdateData {
+        UserData user;
+        string guildId;
+        string status;
+        vector<ActivityData> activities;
+        ClientStatusData clientStatus;
     };
 
     struct GuildData {
@@ -3229,7 +3296,7 @@ namespace DiscordCoreAPI {
         vector<AuditLogEntryData> auditLogEntries;
         vector<IntegrationData> integrations;
     };
-    
+
     struct TypingStartData {
         std::string channelId;
         std::string guildId;
