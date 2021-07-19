@@ -61,6 +61,8 @@ if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 
 - [LibSodium](https://github.com/jedisct1/libsodium)
 
+- [FFMPEG](http://ffmpeg.org/)
+
 ## Roadmap
 I am currently working on getting this thing to be "useful", and here are some of the things I plan on implementing:
 
