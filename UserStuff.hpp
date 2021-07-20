@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = coreClientNew;
 		}
 
-		task<void> updateVoiceStatusAsync(UpdateVoiceStateData dataPackage) {
+		void updateVoiceStatus(UpdateVoiceStateData dataPackage) {
 			DiscordCoreInternal::UpdateVoiceStateData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -73,11 +73,10 @@ namespace DiscordCoreAPI {
 			dataPackageNew.selfMute = dataPackage.selfMute;
 			string payload = DiscordCoreInternal::getVoiceStateUpdatePayload(dataPackageNew);
 			this->pConnectionWebSocketAgent->sendMessage(payload);
-			co_return;
+			return;
 		}
 
-		task<void> updatePresenceAsync(UpdatePresenceData dataPackage) {
-			
+		void updatePresence(UpdatePresenceData dataPackage) {
 			DiscordCoreInternal::UpdatePresenceData dataPackageNew;
 			for (auto value : dataPackage.activities) {
 				dataPackageNew.activities.push_back(value);
@@ -87,7 +86,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.status = dataPackage.status;
 			string payload = DiscordCoreInternal::getPresenceUpdatePayload(dataPackageNew);
 			this->pConnectionWebSocketAgent->sendMessage(payload);
-			co_return;
+			return;
 		}
 
 	protected:
@@ -130,10 +129,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool getError(exception& error) {
-			if (try_receive(this->errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(this->errorBuffer, error);
 		}
 
 		User getObjectData(DiscordCoreInternal::FetchUserData dataPackage) {

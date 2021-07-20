@@ -19,6 +19,7 @@
 #include "SlashCommandStuff.hpp"
 #include "InputEventManager.hpp"
 #include "DatabaseStuff.hpp"
+#include "FFMPEGStuff.hpp"
 #include "YouTubeStuff.hpp"
 
 void myPurecallHandler(void) {
@@ -37,19 +38,61 @@ namespace DiscordCoreAPI {
 		InputEventData eventData;
 	};
 
+	VoiceConnection* Guild::connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew) {
+		if(channelId != ""){
+			if ((this->voiceConnection == nullptr || this->voiceConnection->voiceConnectionData.channelId != channelId)) {
+				auto voiceConnectData = websocketAgent->getVoiceConnectionData(channelId, this->data.id);
+				voiceConnectData.channelId = channelId;
+				voiceConnectData.guildId = this->data.id;
+				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
+				voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
+				this->voiceConnection = make_shared<VoiceConnection>(voiceConnectData, bufferMessageBlockNew);
+				map<string, Guild> guildMap;
+				try_receive(GuildManagerAgent::cache, guildMap);
+				if (guildMap.contains(this->data.id)) {
+					if (guildMap.at(this->data.id).voiceConnection != nullptr) {
+						return guildMap.at(this->data.id).voiceConnection.get();
+					}
+					guildMap.erase(this->data.id);
+				}
+				guildMap.insert(make_pair(this->data.id, *this));
+				asend(GuildManagerAgent::cache, guildMap);
+				return this->voiceConnection.get();
+			}
+		}		
+		return this->voiceConnection.get();
+	}
+
+	void Guild::disconnectFromVoice() {
+		if (this->voiceConnection != nullptr) {
+			this->voiceConnection->terminate();
+			this->voiceConnection = nullptr;
+			map<string, Guild> guildMap = receive(GuildManagerAgent::cache);
+			if (guildMap.contains(this->data.id)) {
+				guildMap.erase(this->data.id);
+			}
+			guildMap.insert(make_pair(this->data.id, *this));
+			asend(GuildManagerAgent::cache, guildMap);
+			this->discordCoreClientBase->currentUser->updateVoiceStatus({ .guildId = this->data.id,.channelId = "", .selfMute = false,.selfDeaf = false });
+			return;
+		}
+	}
+
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
 	public:
-		shared_ptr<BotUser> currentUser{ nullptr };
-		shared_ptr<GuildManager> guilds{ nullptr };
-		shared_ptr<ReactionManager> reactions{ nullptr };
-		shared_ptr<MessageManager> messages{ nullptr };
+		friend class Guild;
+		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
-		shared_ptr<EventManager> eventManager{ nullptr };
-		shared_ptr<DiscordUser> discordUser{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreClient> thisPointer{ nullptr };
+		shared_ptr<EventManager> eventManager{ nullptr };
+		shared_ptr<ReactionManager> reactions{ nullptr };
+		shared_ptr<MessageManager> messages{ nullptr };
+		shared_ptr<DiscordUser> discordUser{ nullptr };
+		shared_ptr<GuildManager> guilds{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources;
-
+		map<string, shared_ptr<unbounded_buffer<AudioDataChunk>>> audioBuffersMap;
+		
 		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			this->botToken = botTokenNew;
 		}
@@ -92,9 +135,23 @@ namespace DiscordCoreAPI {
 		}
 
 		void terminate() {
+			this->done();
 			DatabaseManagerAgent::cleanup();
 			InputEventManager::cleanup();
+			this->channels.get()->~ChannelManager();
+			this->guildMap.clear();
+			this->guildMemberMap.clear();
+			this->guildMembers.get()->~GuildMemberManager();
+			this->guilds.get()->~GuildManager();
+			this->interactions.get()->~InteractionManager();
+			this->messages.get()->~MessageManager();
+			this->reactions.get()->~ReactionManager();
+			this->roles.get()->~RoleManager();
+			this->slashCommands.get()->~SlashCommandManager();
+			this->users.get()->~UserManager();
+			this->pWebSocketConnectionAgent->terminate();
 			this->pWebSocketReceiverAgent->terminate();
+			agent::wait(this->pWebSocketConnectionAgent.get());
 			agent::wait(this->pWebSocketReceiverAgent.get());
 			exception error;
 			while (this->pWebSocketReceiverAgent->getError(error)) {
@@ -109,14 +166,13 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class BotUser;
 		bool doWeQuit = false;
-		hstring botToken;
 		hstring baseURL = L"https://discord.com/api/v9";
-		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
+		hstring gatewayBaseURL = L"wss://gateway.discord.gg/?v=9";
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
 		unbounded_buffer<json> webSocketIncWorkloadBuffer;
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
 		unbounded_buffer<exception> errorBuffer;
-		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext;
+		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
 			thisPointer.reset(this);
@@ -126,7 +182,6 @@ namespace DiscordCoreAPI {
 			this->mainThreadContext->createGroup();
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
-
 			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->agentResources.baseURL = this->baseURL;
 			this->agentResources.botToken = this->botToken;
@@ -166,13 +221,14 @@ namespace DiscordCoreAPI {
 			this->pWebSocketReceiverAgent->start();
 			this->pWebSocketConnectionAgent->start();
 			this->start();
-			executeFunctionAfterTimePeriod([&]() {
+			executeFunctionAfterTimePeriod([&](ThreadPoolTimer threadPoolTimer) {
 				vector<ActivityData> activities;
 				ActivityData activity;
 				activity.name = "!help for my commands!";
 				activity.type = ActivityType::Game;
 				activities.push_back(activity);
-				this->currentUser->updatePresenceAsync({ .activities = activities, .status = "online",.afk = false }).get();
+				this->currentUser->updatePresence({ .activities = activities, .status = "online",.afk = false });
+				threadPoolTimer.Cancel();
 				}, 5000);
 			co_await mainThread;
 			co_return;
@@ -186,10 +242,13 @@ namespace DiscordCoreAPI {
 				DiscordCoreClient::guildMap.erase(guild.data.id);
 				this->discordUser->data.guildCount -= 1;
 				this->discordUser->writeDataToDB();
+				this->audioBuffersMap.erase(guild.data.id);
 			}
 			else {
 				this->discordUser->data.guildCount += 1;
 				this->discordUser->writeDataToDB();
+				shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
+				this->audioBuffersMap.insert(make_pair(guild.data.id, thePtr));
 				DiscordCoreClient::guildMap.insert(make_pair(guild.data.id, discordGuild));
 			}
 			return guild;
@@ -589,13 +648,12 @@ namespace DiscordCoreAPI {
 				send(errorBuffer, e);
 			}
 			done();
-			this->terminate();
 			return;
 		}
 	};
 	map<string, DiscordGuild> DiscordCoreClientBase::guildMap;
 	map<string, DiscordGuildMember> DiscordCoreClientBase::guildMemberMap;
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> pDiscordCoreClient;
+	shared_ptr<DiscordCoreAPI::DiscordCoreClient> pDiscordCoreClient{ nullptr };
 }
 #include "Commands/CommandsList.hpp"
 

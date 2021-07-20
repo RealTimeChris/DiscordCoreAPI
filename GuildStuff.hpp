@@ -16,6 +16,7 @@
 #include "GuildMemberStuff.hpp"
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
+#include "VoiceConnectionStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -26,10 +27,12 @@ namespace DiscordCoreAPI {
 		shared_ptr<RoleManager> roles{ nullptr };
 		shared_ptr<UserManager> users{ nullptr };
 		shared_ptr<DiscordCoreClientBase> thisPointer{ this };
+		shared_ptr<BotUser> currentUser{ nullptr };
 	protected:
 		friend class Guild;
 		friend class WebSocketConnectionAgent;
 		friend class HttpRequestAgent;
+		hstring botToken;
 		static map<string, DiscordGuild> guildMap;
 		static map<string, DiscordGuildMember> guildMemberMap;
 	};
@@ -38,7 +41,11 @@ namespace DiscordCoreAPI {
 	public:
 		GuildData data;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		
+
+		VoiceConnection* connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew);
+
+		void disconnectFromVoice();
+
 	protected:
 		friend class GuildManagerAgent;
 		friend class DiscordCoreClient;
@@ -50,6 +57,7 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildUpdateData;
 		friend struct OnGuildDeletionData;
 
+		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 
 		Guild() {};
@@ -58,6 +66,7 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = discordCoreClientNew;
 			this->discordCoreClientBase = discordCoreClientBaseNew;
 			this->data = dataNew;
+			return;
 		}
 
 		void initialize() {
@@ -174,13 +183,11 @@ namespace DiscordCoreAPI {
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = coreClientNew;
 			this->discordCoreClientBase = coreClientBaseNew;
+			return;
 		}
 
 		bool getError(exception error) {
-			if (try_receive(this->errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(this->errorBuffer, error);
 		}
 
 		Guild getObjectData(DiscordCoreInternal::FetchGuildData dataPackage) {
@@ -336,6 +343,7 @@ namespace DiscordCoreAPI {
 				send(this->errorBuffer, e);
 			}
 			done();
+			return;
 		}
 	};
 
@@ -506,10 +514,12 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = coreClientNew;
 			this->discordCoreClientBase = coreClientBaseNew;
 			this->groupId = this->threadContext->createGroup();
+			return;
 		}
 
 		~GuildManager() {
 			this->threadContext->releaseGroup(this->groupId);
+			return;
 		}
 
 	protected:

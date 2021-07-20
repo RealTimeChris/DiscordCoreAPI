@@ -51,12 +51,83 @@ namespace DiscordCoreInternal {
 		WebSocketEventType eventType;
 	};
 
-	class VoiceChannelWebSocketAgent :public agent {
+	class VoiceChannelWebSocketAgent: public agent {
 	public:
 
-		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew)
+		static unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
+		DatagramSocket voiceSocket{ nullptr };
+		shared_ptr<unbounded_buffer<bool>> readyBuffer;
+		VoiceConnectionData voiceConnectionData;
+
+		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<bool>> readyBufferNew)
 			:agent(*threadContextNew->scheduler) {
 			this->threadContext = threadContextNew;
+			this->voiceConnectionData = voiceConnectionDataNew;
+			this->groupId = this->threadContext->createGroup();
+			this->readyBuffer = readyBufferNew;
+			return;
+		}
+
+		void sendVoiceData(vector<uint8_t> data) {
+
+			vector<uint8_t> message = data;
+			if (message.size()==0) {
+				cout << "Please specify text to send" << endl;
+				return;
+			}
+
+			cout << "Sending Voice Data: ";
+			for (unsigned int x = 0; x < message.size();x+=1){
+				cout << message[x];
+			}
+			cout << endl;
+
+			// Buffer any data we want to send.
+			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
+			DataWriter dataWriter(randomAccessStream);
+			dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+			dataWriter.WriteBytes(message);
+			dataWriter.StoreAsync().get();
+			if (randomAccessStream.CanRead()) {
+				DataReader dataReader(randomAccessStream.GetInputStreamAt(0));
+				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+				dataReader.LoadAsync((uint32_t)message.size()).get();
+				IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.size());
+				this->voiceSocket.OutputStream().WriteAsync(buffer).get();
+			}
+
+			cout << "Send Complete" << endl << endl;
+			return;
+		}
+
+		void sendMessage(string text) {
+
+			string message = text;
+			if (message.empty()) {
+				cout << "Please specify text to send" << endl;
+				return;
+			}
+
+			cout << "Sending Voice Message: ";
+			cout << message << endl;
+
+			// Buffer any data we want to send.
+			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
+			DataWriter dataWriter(randomAccessStream);
+			dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+			dataWriter.WriteString(to_hstring(message));
+			dataWriter.StoreAsync().get();
+			randomAccessStream.FlushAsync().get();
+			if (randomAccessStream.CanRead()) {
+				DataReader dataReader(randomAccessStream.GetInputStreamAt(0));
+				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+				dataReader.LoadAsync((uint32_t)message.length()).get();
+				IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.length());
+				this->webSocket.OutputStream().WriteAsync(buffer).get();
+			}
+
+			cout << "Send Complete" << endl << endl;
+			return;
 		}
 
 		bool getError(exception& error) {
@@ -67,19 +138,200 @@ namespace DiscordCoreInternal {
 		}
 
 		void terminate() {
-			this->doWeQuit = true;
-			this->threadContext->releaseGroup(this->groupId);
+			if (this != nullptr) {
+				this->doWeQuit = true;
+				this->done();
+				this->threadContext->releaseGroup(this->groupId);
+				if (this->webSocket != nullptr) {
+					this->webSocket.Close(1000, L"Disconnecting.");
+					this->webSocket = nullptr;
+				}				
+				if (this->heartbeatTimer != nullptr) {
+					this->heartbeatTimer.Cancel();
+					this->heartbeatTimer = nullptr;
+				}
+				if (this->voiceSocket != nullptr) {
+					this->voiceSocket.Close();
+					this->voiceSocket = nullptr;
+				}
+			}			
+			return;
 		}
 
 		~VoiceChannelWebSocketAgent() {
 			this->terminate();
+			return;
 		}
 
 	protected:
+		friend class VoiceConnection;
+		friend class WebSocketConnectionAgent;
+		friend class Guild;
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		MessageWebSocket webSocket{ nullptr };
+		ThreadPoolTimer heartbeatTimer{ nullptr };
 		unbounded_buffer<exception> errorBuffer;
-		shared_ptr<ThreadContext> threadContext;
+		unbounded_buffer<bool> connectReadyBuffer;
+		string secretKey;
+		int audioSSRC;
+		int heartbeatInterval = 0;
+		int lastNumberReceived = 0;
+		bool didWeReceiveHeartbeatAck = true;
+		event_token voiceDataReceivedToken;
+		event_token messageReceivedToken;
+		event_token closedToken;
 		unsigned int groupId;
+		bool areWeConnected = false;
+		string voiceIp;
+		string voicePort;
+		string externalIp;
+		string voiceEncryptionMode;
 		bool doWeQuit = false;
+
+		void connect() {
+			try {
+				this->voiceConnectionData = receive(this->voiceConnectionDataBuffer);
+				this->heartbeatTimer = ThreadPoolTimer(nullptr);
+				this->webSocket = MessageWebSocket();
+				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
+				this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
+				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
+				this->webSocket.ConnectAsync(Uri(to_hstring(this->voiceConnectionData.endpoint))).get();
+				this->areWeConnected = true;
+			}
+			catch (winrt::hresult_error& error) {
+				cout << "HRESULT Error: " << to_string(error.message()) << endl;
+			}
+		}
+
+		void collectExternalIP() {
+			HttpClient httpClient;
+			Uri uri(L"https://icanhazip.com/");
+			hstring ipString = httpClient.GetStringAsync(uri).get();
+			string ipStringNew = to_string(ipString);
+			ipStringNew = ipStringNew.substr(0, ipStringNew.length() - 1);
+			this->externalIp = ipStringNew;
+		}
+
+		void voiceConnect() {
+			bool readyToConnect = receive(this->connectReadyBuffer);
+			this->voiceSocket = DatagramSocket();
+			this->voiceSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
+			winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceIp));
+			auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voicePort)).get();
+			this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
+			this->collectExternalIP();
+			this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
+			send(*this->readyBuffer, true);
+		}
+
+		void run() {
+			this->connect();
+			this->voiceConnect();
+		}
+
+		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
+			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			if (args.Code() != 1000 && args.Code() != 4014) {
+				this->heartbeatTimer.Cancel();
+				send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
+				this->connect();
+				string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
+				this->sendMessage(resumePayload);
+			}
+		}
+
+		void sendHeartBeat(bool* didWeReceiveHeartbeatAckNew) {
+			try {
+				if (this->didWeReceiveHeartbeatAck == false) {
+					this->connect();
+					this->groupId = this->threadContext->createGroup(*ThreadManager::getThreadContext().get());
+					this->didWeReceiveHeartbeatAck = true;
+					return;
+				}
+				string heartbeatPayload = getVoiceHeartbeatPayload(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				this->sendMessage(heartbeatPayload);
+				*didWeReceiveHeartbeatAckNew = true;
+				return;
+			}
+			catch (hresult_error error) {
+				wcout << error.message().c_str() << endl;
+			}
+		}
+
+		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
+			
+			hstring message;
+			DataReader dataReader{ nullptr };
+			if (args.GetDataReader() != nullptr) {
+				dataReader = args.GetDataReader();
+				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+				if (dataReader.UnconsumedBufferLength() > 0) {
+					message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
+				}
+			}
+			json payload = payload.parse(to_string(message));
+
+			cout << "Message received from Voice WebSocket: " << to_string(message) << endl << endl;
+
+			if (payload.contains("op")) {
+				if (payload.at("op") == 6) {
+					this->didWeReceiveHeartbeatAck = true;
+				}
+
+				if (payload.at("op") == 2) {
+					this->collectExternalIP();
+					this->audioSSRC = payload.at("d").at("ssrc");
+					this->voiceConnectionData.audioSSRC = this->audioSSRC;
+					this->voiceIp = payload.at("d").at("ip");
+					this->voicePort = to_string(payload.at("d").at("port"));
+					for (auto value : payload.at("d").at("modes")) {
+						if (value == "xsalsa20_poly1305_lite") {
+							this->voiceEncryptionMode = value;
+						}
+					}
+					string protocolPayloadSelectString = getSelectProtocolPayload(this->voicePort, this->externalIp, this->voiceEncryptionMode);
+					this->sendMessage(protocolPayloadSelectString);
+					send(this->connectReadyBuffer, true);
+				}
+
+				if (payload.at("op") == 4) {
+					for (unsigned int x = 0; x < payload.at("d").at("secret_key").size(); x += 1) {
+						this->secretKey.append(to_string(payload.at("d").at("secret_key").at(x).get<int>()));
+						this->voiceConnectionData.keys = this->secretKey;
+					}
+				}
+
+				if (payload.at("op") == 8) {
+					if (payload.at("d").contains("heartbeat_interval")) {
+						this->heartbeatInterval = (int)payload.at("d").at("heartbeat_interval").get<float>();
+					}
+					string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData);
+					this->sendMessage(identifyPayload);
+					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void{
+						VoiceChannelWebSocketAgent::sendHeartBeat(&this->didWeReceiveHeartbeatAck);
+						this->didWeReceiveHeartbeatAck = false;
+					};
+					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, TimeSpan(this->heartbeatInterval * 10000));
+				}
+			}
+			return;
+		}
+
+		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args) {
+			hstring message;
+			DataReader dataReader{ nullptr };
+			if (args.GetDataReader() != nullptr) {
+				dataReader = args.GetDataReader();
+				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+				if (dataReader.UnconsumedBufferLength() > 0) {
+					message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
+				}
+			}
+
+			cout << "Message received from VoiceDatagramSocket: " << to_string(message) << endl << endl;
+		}
+
 	};
 
 	class WebSocketReceiverAgent : public agent {
@@ -92,6 +344,7 @@ namespace DiscordCoreInternal {
 		{
 			this->threadContext = threadContextNew;
 			this->groupId = this->threadContext->createGroup(*this->threadContext);
+			return;
 		}
 
 		bool getError(exception& error) {
@@ -104,10 +357,12 @@ namespace DiscordCoreInternal {
 		void terminate() {
 			this->doWeQuit = true;
 			this->threadContext->releaseGroup(this->groupId);
+			return;
 		}
 
 		~WebSocketReceiverAgent() {
 			this->terminate();
+			return;
 		}
 
 	protected:
@@ -130,10 +385,12 @@ namespace DiscordCoreInternal {
 				run();
 			}
 			done();
+			return;
 		}
 
 		void sendWorkload(WebSocketWorkload workload) {
 			send(this->workloadTarget, workload);
+			return;
 		}
 
 		void onMessageReceived(json payload) {
@@ -297,11 +554,13 @@ namespace DiscordCoreInternal {
 				return;
 
 			}
+			return;
 		}
 	};
 
 	class WebSocketConnectionAgent :public agent {
 	public:
+		hstring botToken = L"";
 
 		WebSocketConnectionAgent(ITarget<json>& target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
 			: agent(*threadContextNew->scheduler),
@@ -309,6 +568,20 @@ namespace DiscordCoreInternal {
 			this->threadContext = threadContextNew;
 			this->groupId = this->threadContext->createGroup(*ThreadManager::getThreadContext().get());
 			this->botToken = botTokenNew;
+			return;
+		}
+
+		VoiceConnectionData getVoiceConnectionData(string channelId, string guildId) {
+			UpdateVoiceStateData dataPackage;
+			dataPackage.channelId = channelId;
+			dataPackage.guildId = guildId;
+			dataPackage.selfDeaf = false;
+			dataPackage.selfMute = false;
+			string newString = getVoiceStateUpdatePayload(dataPackage);
+			this->areWeCollectingData = true;
+			this->sendMessage(newString);
+			VoiceConnectionData newData = receive(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer);
+			return newData;
 		}
 
 		void setSocketPath(string socketPathBase) {
@@ -316,6 +589,7 @@ namespace DiscordCoreInternal {
 			stream << DiscordCoreInternal::getSocketPath(to_hstring(socketPathBase)).c_str();
 			stream << L"/?v=9&encoding=json";
 			this->socketPath = stream.str();
+			return;
 		}
 
 		void sendMessage(string& text) {
@@ -327,7 +601,7 @@ namespace DiscordCoreInternal {
 			}
 
 			cout << "Sending Message: ";
-			cout << message << endl << endl;
+			cout << message << endl;
 
 			// Buffer any data we want to send.
 			if (this->messageWriter != nullptr) {
@@ -355,51 +629,60 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		~WebSocketConnectionAgent() {
+		void terminate() {
+			this->done();
 			this->cleanup();
-			return;
+		}
+
+		~WebSocketConnectionAgent() {
+			this->done();
+			this->cleanup();
 		}
 
 	protected:
 		friend class BotUser;
+		friend class VoiceChannelWebSocketAgent;
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		event_token messageReceivedToken;
 		event_token closedToken;
 		MessageWebSocket webSocket{ nullptr };
 		DataWriter messageWriter{ nullptr };
 		hstring socketPath = L"";
-		hstring botToken = L"";
 		hstring sessionID = L"";
 		int heartbeatInterval = 0;
 		int lastNumberReceived = 0;
 		int intentsValue = ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14));
 		bool didWeReceiveHeartbeatAck = true;
-		DispatcherQueueController dispatchQueueController{ nullptr };
-		DispatcherQueue dispatchQueueForHB{ nullptr };
-		DispatcherQueueTimer heartbeatTimer{ nullptr };
+		ThreadPoolTimer heartbeatTimer{ nullptr };
 		ITarget<json>& webSocketMessageTarget;
 		unbounded_buffer<exception> errorBuffer;
 		unsigned int groupId;
+		bool isThisConnected = false;
+		bool areWeCollectingData = false;
+		bool stateUpdateCollected = false;
+		bool serverUpdateCollected = false;
+		VoiceConnectionData* pVoiceConnectionData;
 
 		void run() {
-			try {
-				this->connect();
-				return;
+			if (isThisConnected == false) {
+				try {
+					this->connect();
+					return;
+				}
+				catch (const exception& e) {
+					cout << e.what() << endl;
+					concurrency::send(errorBuffer, e);
+					this->connect();
+					return;
+				}
+				catch (hresult& e) {
+					cout << e.value << endl;
+					exception eNew(to_string(e.value).c_str());
+					concurrency::send(errorBuffer, eNew);
+					this->connect();
+					return;
+				}
 			}
-			catch (const exception& e) {
-				cout << e.what() << endl;
-				concurrency::send(errorBuffer, e);
-				this->connect();
-				return;
-			}
-			catch (hresult& e) {
-				cout << e.value << endl;
-				exception eNew(to_string(e.value).c_str());
-				concurrency::send(errorBuffer, eNew);
-				this->connect();
-				return;
-			}
-
 		}
 
 		void cleanup() {
@@ -417,46 +700,35 @@ namespace DiscordCoreInternal {
 			}
 
 			if (this->heartbeatTimer) {
-				this->heartbeatTimer.Stop();
+				this->heartbeatTimer.Cancel();
 				this->heartbeatTimer = nullptr;
 			}
 
-			if (this->dispatchQueueForHB) {
-				this->dispatchQueueForHB = nullptr;
-			}
-
-			if (this->dispatchQueueController) {
-				this->dispatchQueueController = nullptr;
-			}
-
 			this->threadContext->releaseGroup(this->groupId);
+			return;
 		}
 
 		void connect() {
 			try {
-				this->dispatchQueueController = this->dispatchQueueController.CreateOnDedicatedThread();
-				this->dispatchQueueForHB = this->dispatchQueueController.DispatcherQueue();
-				this->heartbeatTimer = this->dispatchQueueForHB.CreateTimer();
 				this->webSocket = MessageWebSocket();
-				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
 				this->messageWriter = DataWriter(this->webSocket.OutputStream());
+				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
 				this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 				this->closedToken = this->webSocket.Closed({ this, &WebSocketConnectionAgent::onClosed });
 				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
 				this->webSocket.ConnectAsync(Uri(this->socketPath)).get();
+				this->isThisConnected = true;
 			}
 			catch (hresult result) {
 				cout << result.value << endl;
 				return;
 			}
+			return;
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
-			wcout << L"WebSocket_Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-		}
-
-		void OnHeartbeat(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args) {
-			this->sendHeartBeat();
+			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			return;
 		}
 
 		void sendHeartBeat() {
@@ -476,9 +748,10 @@ namespace DiscordCoreInternal {
 				wcout << error.message().c_str() << endl;
 				return;
 			}
+			return;
 		}
 
-		void onMessageReceived(MessageWebSocket const& msgWebSocket, MessageWebSocketMessageReceivedEventArgs const& args) {
+		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args) {
 			try {
 				DataReader dataReader{ nullptr };
 				hstring message;
@@ -494,6 +767,42 @@ namespace DiscordCoreInternal {
 				json payload = payload.parse(to_string(message));
 
 				asend(&this->webSocketMessageTarget, payload);
+
+				if (this->areWeCollectingData == true && payload.at("t")=="VOICE_SERVER_UPDATE"&&!this->serverUpdateCollected) {
+					if (this->serverUpdateCollected != true && this->stateUpdateCollected !=true) {
+						this->pVoiceConnectionData = new VoiceConnectionData;
+						this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
+						this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
+						this->serverUpdateCollected = true;
+					}
+					else {
+						this->pVoiceConnectionData->endpoint =payload.at("d").at("endpoint").get<string>();
+						this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
+						send(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer, *this->pVoiceConnectionData);
+						delete this->pVoiceConnectionData;
+						this->pVoiceConnectionData = nullptr;
+						this->areWeCollectingData = false;
+						this->serverUpdateCollected = false;
+						this->stateUpdateCollected = false;
+					}
+				}
+
+				if (this->areWeCollectingData == true && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected) {
+					if (this->stateUpdateCollected != true && this->serverUpdateCollected!= true) {
+						this->pVoiceConnectionData = new VoiceConnectionData;
+						this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
+						this->stateUpdateCollected = true;
+					}
+					else {
+						this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
+						send(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer, *this->pVoiceConnectionData);
+						delete this->pVoiceConnectionData;
+						this->pVoiceConnectionData = nullptr;
+						this->areWeCollectingData = false;
+						this->serverUpdateCollected = false;
+						this->stateUpdateCollected = false;
+					}
+				}
 
 				if (payload.at("s") >= 0) {
 					this->lastNumberReceived = payload.at("s");
@@ -540,9 +849,11 @@ namespace DiscordCoreInternal {
 
 				if (payload.at("op") == 10) {
 					this->heartbeatInterval = payload.at("d").at("heartbeat_interval");
-					this->heartbeatTimer.Interval(chrono::milliseconds(this->heartbeatInterval));
-					this->heartbeatTimer.Tick({ this, &WebSocketConnectionAgent::OnHeartbeat });
-					this->heartbeatTimer.Start();
+					TimerElapsedHandler onHeartBeat = [this](ThreadPoolTimer timer) {
+						WebSocketConnectionAgent::sendHeartBeat();
+						return;
+					};
+					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, TimeSpan(this->heartbeatInterval * 10000));
 					std::string identity = getIdentifyPayload(to_string(this->botToken), this->intentsValue);
 					this->sendMessage(identity);
 				}
@@ -551,7 +862,7 @@ namespace DiscordCoreInternal {
 					this->didWeReceiveHeartbeatAck = true;
 				}
 
-				cout << "Message received from MessageWebSocket: " << to_string(message) << endl << endl;
+				cout << "Message received from WebSocket: " << to_string(message) << endl << endl;
 			}
 			catch (hresult_error const& ex) {
 				wcout << ex.message().c_str() << endl;
@@ -559,6 +870,7 @@ namespace DiscordCoreInternal {
 			}
 		};
 	};
-
+	unbounded_buffer<VoiceConnectionData> VoiceChannelWebSocketAgent::voiceConnectionDataBuffer;
 }
 #endif
+

@@ -19,28 +19,6 @@ namespace  DiscordCoreInternal {
 
     class ThreadManager;
 
-    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
-        __int64 timeValue = timeInMs / 1000;
-        __time64_t rawTime(timeValue);
-        tm timeInfo;
-        char timeBuffer[32];
-        errno_t error;
-        error = localtime_s(&timeInfo, &rawTime);
-        if (error)
-        {
-            printf("Invalid argument to _localtime64_s.");
-        }
-        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
-        return timeBuffer;
-    }
-
-    string convertSnowFlakeToDateTimeString(string snowFlake) {
-        string returnString;
-        __int64 timeInMs = (stoll(snowFlake) >> 22) + 1420070400000;
-        returnString = convertTimeInMsToDateTimeString(timeInMs);
-        return returnString;
-    }
-
     struct AllowedMentionsData {
         vector<string> parse;
         vector<string> roles;
@@ -1305,29 +1283,6 @@ namespace  DiscordCoreInternal {
         CreateInteractionResponseData interactionResponseData;
     };
 
-    class StopWatch {
-    public:
-        StopWatch(unsigned long long maxNumberOfMsNew) {
-            this->maxNumberOfMs = maxNumberOfMsNew;
-            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-        }
-
-        bool hasTimePassed() {
-            unsigned long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-            unsigned long long elapsedTime = currentTime - this->startTime;
-            if (elapsedTime >= this->maxNumberOfMs) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-
-    protected:
-        unsigned long long maxNumberOfMs;
-        unsigned long long startTime;
-    };
-
     enum class InputEventType {
         SLASH_COMMAND_INTERACTION = 1,
         BUTTON_INTERACTION = 2,
@@ -1595,11 +1550,74 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources;
         string guildId;
     };
+
+    struct VoiceConnectionData {
+        string channelId;
+        string endpoint;
+        string sessionId;
+        string guildId;
+        string token;
+        string userId;
+        int audioSSRC;
+        string keys;
+    };
+
+    struct VoiceReadyPayload {
+        int ssrc;
+        string ip;
+        int port;
+        vector<string> modes;
+    };
 }
 
 namespace DiscordCoreAPI {
 
     class DiscordCoreClient;
+
+    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
+        __int64 timeValue = timeInMs / 1000;
+        __time64_t rawTime(timeValue);
+        tm timeInfo;
+        char timeBuffer[32];
+        errno_t error;
+        error = localtime_s(&timeInfo, &rawTime);
+        if (error)
+        {
+            printf("Invalid argument to _localtime64_s.");
+        }
+        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
+        return timeBuffer;
+    }
+
+    string convertSnowFlakeToDateTimeString(string snowFlake) {
+        string returnString;
+        __int64 timeInMs = (stoll(snowFlake) >> 22) + 1420070400000;
+        returnString = convertTimeInMsToDateTimeString(timeInMs);
+        return returnString;
+    }
+
+    class StopWatch {
+    public:
+        StopWatch(unsigned long long maxNumberOfMsNew) {
+            this->maxNumberOfMs = maxNumberOfMsNew;
+            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+        }
+
+        bool hasTimePassed() {
+            unsigned long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            unsigned long long elapsedTime = currentTime - this->startTime;
+            if (elapsedTime >= this->maxNumberOfMs) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+    protected:
+        unsigned long long maxNumberOfMs;
+        unsigned long long startTime;
+    };
 
     string constructStringContent(DiscordCoreInternal::CommandData commandData) {
         string finalCommandString;
@@ -1618,7 +1636,7 @@ namespace DiscordCoreAPI {
 
     string convertTimeStampToNewOne(string timeStamp) {
         long long timeInMs = convertTimestampToInteger(timeStamp) * 1000;
-        string returnString = DiscordCoreInternal::convertTimeInMsToDateTimeString(timeInMs);
+        string returnString = convertTimeInMsToDateTimeString(timeInMs);
         return returnString;
     }
 
@@ -1641,30 +1659,33 @@ namespace DiscordCoreAPI {
         }
     }
 
-    void executeFunctionAfterTimePeriod(function<void()> const& lambda, unsigned int timeDelay) {
-        if (timeDelay > 0) {
-            DispatcherQueueOptions options{
-                sizeof(DispatcherQueueOptions),
-                DQTYPE_THREAD_DEDICATED,
-                DQTAT_COM_ASTA
-            };
-            ABI::Windows::System::IDispatcherQueueController* ptrNew{ nullptr };
-            check_hresult(CreateDispatcherQueueController(options, &ptrNew));
-            DispatcherQueueController queueController = { ptrNew, take_ownership_from_abi };
-            DispatcherQueue threadQueue = queueController.DispatcherQueue();
-            DispatcherQueueTimer timer = threadQueue.CreateTimer();
-            timer.Interval(chrono::milliseconds(timeDelay));
-            timer.Tick([timer, lambda](winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args) {
-                lambda();
-                timer.Stop();
+    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> const& lambda, unsigned int timeDelayInMs) {
+        ThreadPoolTimer threadPoolTimer{ nullptr };
+        if (timeDelayInMs > 0) {
+            TimerElapsedHandler timeElapsedHandler = [&, threadPoolTimer, lambda](ThreadPoolTimer threadPoolTimerNew) {
+                lambda(threadPoolTimerNew);
                 return;
-                });
-            timer.Start();
+            };
+            threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, TimeSpan(timeDelayInMs * 10000));
         }
         else {
-            lambda();
+            lambda(threadPoolTimer);
         }
         return;
+    }
+
+    DispatcherQueueTimer getDispatcherQueueTimer() {
+        DispatcherQueueOptions options{
+               sizeof(DispatcherQueueOptions),
+               DQTYPE_THREAD_DEDICATED,
+               DQTAT_COM_ASTA
+        };
+        ABI::Windows::System::IDispatcherQueueController* ptrNew{ nullptr };
+        check_hresult(CreateDispatcherQueueController(options, &ptrNew));
+        DispatcherQueueController queueController = { ptrNew, take_ownership_from_abi };
+        DispatcherQueue threadQueue = queueController.DispatcherQueue();
+        DispatcherQueueTimer timer = threadQueue.CreateTimer();
+        return timer;
     }
 
     string getTimeAndDate() {
@@ -3110,7 +3131,6 @@ namespace DiscordCoreAPI {
                 return this->interactionData.user.username;
             }
             else {
-                cout << "USERNAME: " << this->interactionData.user.username << endl;
                 return this->messageData.author.username;
             }
         }
@@ -3122,7 +3142,6 @@ namespace DiscordCoreAPI {
                 return this->interactionData.user.avatar;
             }
             else {
-                cout << "AVATAR URL: " << this->interactionData.user.avatar << endl;
                 return this->messageData.author.avatar;
             }
         }
@@ -3316,8 +3335,9 @@ namespace DiscordCoreAPI {
         int fps = 0;
         string audioQuality = "";
         string signatureCipher = "";
+        string audioSampleRate = "";
         int averageBitrate = 0;
-        int contentLength = 0;
+        __int64 contentLength = 0;
         string downloadURL = "";
         string signature = "";
         string aitags = "";

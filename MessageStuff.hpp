@@ -231,10 +231,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool getError(exception& error) {
-			if (try_receive(this->errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(this->errorBuffer, error);
 		}
 
 		Message getObjectData(DiscordCoreInternal::GetMessageData dataPackage) {
@@ -433,7 +430,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.timeDelay > 0) {
 				DispatcherQueueTimer timer = this->threadContext->dispatcherQueue.get()->CreateTimer();
 				timer.Interval(chrono::milliseconds(dataPackage.timeDelay));
-				timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args) {
+				timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&) {
 					onDeleteData(dataPackage);
 					timer.Stop();
 					});

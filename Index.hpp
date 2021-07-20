@@ -15,34 +15,30 @@
         class IndexHost {
         public:
 
+            static shared_ptr<DiscordCoreClient> discordCoreClient;
+
             static void onChannelCreation(OnChannelCreationData dataPackage) {
                 dataPackage.channel.discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
-                return;
             }
 
             static void onChannelUpdate(OnChannelUpdateData dataPackage) {
                 dataPackage.channelNew.discordCoreClient->channels->insertChannelAsync(dataPackage.channelNew).get();
-                return;
             }
 
             static void onChannelDeletion(OnChannelDeletionData dataPackage) {
                 dataPackage.channel.discordCoreClient->channels->removeChannelAsync(dataPackage.channel.data.id).get();
-                return;
             }
 
             static void onGuildCreation(OnGuildCreationData dataPackage) {
                 dataPackage.guild.discordCoreClient->guilds->insertGuildAsync(dataPackage.guild).get();
-                return;
             }
 
             static void onGuildUpdate(OnGuildUpdateData dataPackage) {
                 dataPackage.guildNew.discordCoreClient->guilds->insertGuildAsync(dataPackage.guildNew).get();
-                return;
             }
 
             static void onGuildDeletion(OnGuildDeletionData dataPackage) {
                 dataPackage.guild.discordCoreClient->guilds->removeGuildAsync(dataPackage.guild.data.id).get();
-                return;
             }
 
             static void onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
@@ -50,7 +46,6 @@
                 Guild guild = dataPackage.guildMember.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
                 guild.data.memberCount += 1;
                 dataPackage.guildMember.discordCoreClient->guilds->insertGuildAsync(guild).get();
-                return;
             }
 
             static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
@@ -58,37 +53,29 @@
                 Guild guild = dataPackage.user.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildId }).get();
                 guild.data.memberCount -= 1;
                 dataPackage.user.discordCoreClient->guilds->insertGuildAsync(guild).get();
-                return;
             }
 
             static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
                 dataPackage.guildMemberNew.discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMemberNew, dataPackage.guildMemberNew.data.guildId).get();
-                return;
             }
 
             static void onRoleCreation(OnRoleCreationData dataPackage) {
                 dataPackage.role.discordCoreClient->roles->insertRoleAsync(dataPackage.role).get();
-                return;
             }
 
             static void onRoleUpdate(OnRoleUpdateData dataPackage) {
                 dataPackage.roleNew.discordCoreClient->roles->insertRoleAsync(dataPackage.roleNew).get();
-                return;
             }
 
             static void onRoleDeletion(OnRoleDeletionData dataPackage) {
                 dataPackage.roleOld.discordCoreClient->roles->removeRoleAsync(dataPackage.roleOld.data.id).get();
-                return;
             }
 
-            static task<void> onInteractionCreationToBeWrapped(OnInteractionCreationData dataPackage) {
-                apartment_context mainThread;
-                co_await resume_background();
+            static void onInteractionCreationToBeWrapped(OnInteractionCreationData dataPackage) {
                 try {
                     if (dataPackage.eventData.eventType != InputEventType::BUTTON_INTERACTION) {
                         CommandData commandData(dataPackage.eventData);
                         commandData.eventData = dataPackage.eventData;
-                        cout << "GUILD ID: " << dataPackage.eventData.getGuildId() << endl;
                         CommandController::checkForAndRunCommand(commandData);
                     }
                     else {
@@ -107,66 +94,57 @@
                             asend(Button::buttonInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                         }
                     }
-                    co_await mainThread;
-                    co_return;
                 }
                 catch (exception& e) {
                     cout << "onMessageCreated() Error: " << e.what() << endl << endl;
-                    co_return;
                 }
             }
 
             static task<void> onInteractionCreation(OnInteractionCreationData dataPackage) {
                 apartment_context mainThread;
                 co_await resume_background();
-                create_task(IndexHost::onInteractionCreationToBeWrapped(dataPackage)).then([&](task<void> previousTask)->task<void> {
-                    try {
-                        previousTask.get();
-                    }
-                    catch (const exception& e) {
-                        cout << "Exception: " << e.what() << endl;
-                    }
-                    catch (const winrt::hresult_invalid_argument& e) {
-                        cout << "Exception: " << to_string(e.message()) << endl;
-                    }
-                    catch (winrt::hresult_error& e) {
-                        cout << "Exception: " << to_string(e.message()) << endl;
-                    }
+                try {
+                    IndexHost::onInteractionCreationToBeWrapped(dataPackage);
                     co_await mainThread;
                     co_return;
-                    }).get();
+                }
+                catch (const exception& e) {
+                    cout << "Exception: " << e.what() << endl;
+                }
+                catch (const winrt::hresult_invalid_argument& e) {
+                    cout << "Exception: " << to_string(e.message()) << endl;
+                }
+                catch (winrt::hresult_error& e) {
+                    cout << "Exception: " << to_string(e.message()) << endl;
+                }
+                co_await mainThread;
+                co_return;
             }
 
             static void onMessageCreation(OnMessageCreationData dataPackage) {
                 dataPackage.message.discordCoreClient->messages->insertMessageAsync(dataPackage.message).get();
-                return;
             }
 
             static void onMessageUpdate(OnMessageUpdateData dataPackage) {
                 dataPackage.messageNew.discordCoreClient->messages->insertMessageAsync(dataPackage.messageNew).get();
-                return;
             }
 
             static void onMessageDeletion(OnMessageDeletionData dataPackage) {
                 dataPackage.discordCoreClient->messages->removeMessageAsync(dataPackage.channelId, dataPackage.messageId).get();
-                return;
             }
 
             static void onMessageDeleteBulk(OnMessageDeleteBulkData dataPackage) {
                 for (auto value : dataPackage.ids) {
                     dataPackage.discordCoreClient->messages->removeMessageAsync(dataPackage.channelId, value).get();
                 }
-                return;
             }
 
             static void onReactionAdd(OnReactionAddData dataPackage) {
                 dataPackage.discordCoreClient->reactions->insertReactionAsync(dataPackage.reaction).get();
-                return;
             }
 
             static void onReactionRemove(OnReactionRemoveData dataPackage) {
                 dataPackage.reactionRemoveData.discordCoreClient->reactions->removeReactionAsync(dataPackage.reactionRemoveData.messageId, dataPackage.reactionRemoveData.userId, dataPackage.reactionRemoveData.emoji.name).get();
-                return;
             }
 
             static void onReactionRemoveAll(OnReactionRemoveAllData dataPackage) {
@@ -179,7 +157,6 @@
                     }
                     asend(ReactionManagerAgent::cache, reactionMap);
                 }
-                return;
             }
 
             static void onReactionRemoveEmoji(OnReactionRemoveEmojiData dataPackage) {
@@ -192,10 +169,9 @@
                     }
                     asend(ReactionManagerAgent::cache, reactionMap);
                 }
-                return;
             }
 
-            static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage){
+            static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
                 map<string, GuildMember> guildMemberMap;
                 if (try_receive(GuildMemberManagerAgent::cache, guildMemberMap)) {
                     if (guildMemberMap.contains(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId)) {
@@ -206,14 +182,25 @@
                     }
                     asend(GuildMemberManagerAgent::cache, guildMemberMap);
                 }
+                map<string, Guild> guildMap;
+                if (try_receive(GuildManagerAgent::cache, guildMap)) {
+                    if (dataPackage.voiceStateData.userId == IndexHost::discordCoreClient->currentUser->data.id) {
+                        if (dataPackage.voiceStateData.channelId == "") {
+                            Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
+                            guild.disconnectFromVoice();
+                            guildMap.erase(dataPackage.voiceStateData.guildId);
+                            guildMap.insert(make_pair(dataPackage.voiceStateData.guildId, guild));
+                            asend(GuildManagerAgent::cache, guildMap);
+                        }
+                    }
+                }
             }
-
         };
 
     shared_ptr<DiscordCoreClient> DiscordCoreClient::finalSetup(string botToken) {
         try {
-            DiscordCoreInternal::ThreadManager::initialize();
             pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
+            IndexHost::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();
             pDiscordCoreClient->eventManager->onChannelCreation(&IndexHost::onChannelCreation);
             pDiscordCoreClient->eventManager->onChannelUpdate(&IndexHost::onChannelUpdate);
@@ -238,12 +225,6 @@
             pDiscordCoreClient->eventManager->onReactionRemoveEmoji(&IndexHost::onReactionRemoveEmoji);
             pDiscordCoreClient->eventManager->onVoiceStateUpdate(&IndexHost::onVoiceStateUpdate);
             CommandController::addCommand(&botInfo);
-            CommandController::addCommand(&displayGuildsData);
-            CommandController::addCommand(&help);
-            CommandController::addCommand(&play);
-            CommandController::addCommand(&registerSlashCommands);
-            CommandController::addCommand(&setBorderColor);
-            CommandController::addCommand(&setMusicChannel);
             CommandController::addCommand(&test);
             return pDiscordCoreClient;
         }
@@ -252,5 +233,6 @@
             return pDiscordCoreClient;
         }
     };
+    shared_ptr<DiscordCoreClient> IndexHost::discordCoreClient{ nullptr };
 }
 #endif

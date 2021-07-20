@@ -33,17 +33,43 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
-	string getHeartbeatPayload(int lastReceivedNumber) {
+	string getIsSpeakingPayload(bool isSpeaking, int ssrc, int delay = 0) {
 		json data;
-		data = {
+		if (isSpeaking) {
+			data = {
+			{"op", 5,},
+			{"d" ,{ {"speaking",1 << 0},
+		{"delay" , delay},
+		{"ssrc" , ssrc}}} };
+		}
+		else {
+			data = {
+			{"op", 5,},
+				{"d" , { {"speaking",0},
+		{"delay" , delay},
+		{"ssrc" , ssrc}} }
+			};
+		}
+		return data.dump();
+	};
+
+	string getHeartbeatPayload(int lastReceivedNumber) {
+		json data = {
 			{"d", lastReceivedNumber},
 			{"op", 1}
 		};
 		return data.dump();
 	};
 
+	string getVoiceHeartbeatPayload(__int64 nonce) {
+		json data = {
+			{"d", nonce},
+			{"op", int(3)}
+		};
+		return data.dump();
+	};
+
 	string getPresenceUpdatePayload(UpdatePresenceData dataPackage) {
-		json data;
 
 		auto activitiesArray = json::array();
 
@@ -61,7 +87,7 @@ namespace DiscordCoreInternal {
 				activitiesArray.push_back(dataNew);
 			}			
 		}
-		data = { {"op", 3},{"d" , {{
+		json data ={ {"op", 3},{"d" , {{
 	"since", dataPackage.since},
 			{"activities" ,activitiesArray} ,
 			{"status" ,dataPackage.status},
@@ -96,8 +122,48 @@ namespace DiscordCoreInternal {
 				{"self_deaf", dataPackage.selfDeaf}
 			}} };
 		}
-		
-		
+				
+
+		return data.dump();
+	}
+
+	string getVoiceIdentifyPayload(DiscordCoreInternal::VoiceConnectionData dataPackage) {
+		json data;
+
+		data = {
+			{"d" , {
+			{"user_id" , dataPackage.userId},
+			{"server_id", dataPackage.guildId},
+			{"session_id" , dataPackage.sessionId},
+			{"token" , dataPackage.token}
+			}},{	"op", int(0)}
+		};
+
+		return data.dump();
+	}
+
+	string getResumeVoicePayload(string serverId, string sessionId, string token) {
+		json data = { {"op", 7},
+			{"d" , {{
+				"server_id", serverId},
+			{"session_id" , sessionId},
+			{"token" , token}
+			}}
+		};
+		return data.dump();
+	}
+
+	string getSelectProtocolPayload(string localPort, string localIp, string encryptionMode) {
+		json data = {
+			{"op", 1},
+			{"d" , {
+				{"protocol", "udp"},
+			{"data" ,{
+				{"address", localIp},
+			{"port" , stol(localPort)},
+			{"mode" , encryptionMode}
+
+		}} } } };
 		return data.dump();
 	}
 

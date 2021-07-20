@@ -104,10 +104,7 @@ namespace DiscordCoreAPI {
         }
 
         bool getError(exception& error) {
-            if (try_receive(errorBuffer, error)) {
-                return true;
-            }
-            return false;
+            return try_receive(errorBuffer, error);
         }
 
         static bsoncxx::builder::basic::document convertUserDataToDBDoc(DiscordUserData discordUserData) {

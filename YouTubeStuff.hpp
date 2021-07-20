@@ -10,6 +10,7 @@
 
 #include "HttpStuff.hpp"
 #include "DataParsingFunctions.hpp"
+#include "FFMPEGStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -72,12 +73,9 @@ namespace DiscordCoreAPI {
 		downloadURL = charString;
 		curl_free(charString);
 		downloadURL += "&ratebypass=yes";
-		if (format.signature.find("D3%") != string::npos) {
-			format.signature = format.signature.substr(0, format.signature.find("D3%"));
-		}
 		if (format.signature != "") {
 			downloadURL += "&sig=" + format.signature;
-		}		
+		}
 		return downloadURL;
 	}
 
@@ -93,7 +91,7 @@ namespace DiscordCoreAPI {
 		string sliceStr = ":function\\(a,b\\)\\{return a\\.slice\\(b\\)\\}";
 		string spliceStr = ":function\\(a,b\\)\\{a\\.splice\\(0,b\\)\\}";
 		string swapStr = ":function\\(a,b\\)\\{var c=a\\[0\\];a\\[0\\]=a\\[b(?:%a\\.length)?\\];a\\[b(?:%a\\.length)?\\]=c(?:;return a)?\\}";
-		
+
 		regex reverseRegexp("(?:^|,)(" + jsKeyStr + ")" + reverseStr);
 		regex sliceRegexp("(?:^|,)(" + jsKeyStr + ")" + sliceStr);
 		regex spliceRegexp("(?:^|,)(" + jsKeyStr + ")" + spliceStr);
@@ -118,7 +116,7 @@ namespace DiscordCoreAPI {
 			string actionFuncResult = value.str();
 			if (actionFuncResult != "") {
 				tokenActions.push_back(actionFuncResult);
-			}			
+			}
 		}
 
 		string object = tokenActions[1];
@@ -129,28 +127,28 @@ namespace DiscordCoreAPI {
 		string reverseKey;
 		regex_search(objectBody, matchResultsNew01, reverseRegexp);
 		if (!matchResultsNew01.empty() && matchResultsNew01.size() > 0) {
-			reverseKey = regex_replace(matchResultsNew01[1].str(), regex("\$/g,'\\$"), "");
+			reverseKey = regex_replace(matchResultsNew01[1].str(), regex("/g,'\\$"), "");
 			reverseKey = regex_replace(reverseKey, regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		smatch matchResultsNew02;
 		string sliceKey;
 		regex_search(objectBody, matchResultsNew02, sliceRegexp);
 		if (!matchResultsNew02.empty() && matchResultsNew02.size() > 0) {
-			sliceKey = regex_replace(matchResultsNew02[1].str(), regex("\$/g,'\\$"), "");
+			sliceKey = regex_replace(matchResultsNew02[1].str(), regex("/g,'\\$"), "");
 			sliceKey = regex_replace(sliceKey, regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		smatch matchResultsNew03;
 		string spliceKey;
 		regex_search(objectBody, matchResultsNew03, spliceRegexp);
 		if (!matchResultsNew03.empty() && matchResultsNew03.size() > 0) {
-			spliceKey = regex_replace(matchResultsNew03[1].str(), regex("\$/g,'\\$"), "");
+			spliceKey = regex_replace(matchResultsNew03[1].str(), regex("/g,'\\$"), "");
 			spliceKey = regex_replace(spliceKey, regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		smatch matchResultsNew04;
 		string swapKey;
 		regex_search(objectBody, matchResultsNew04, swapRegexp);
 		if (!matchResultsNew04.empty() && matchResultsNew04.size() > 0) {
-			swapKey= regex_replace(matchResultsNew04[1].str(), regex("\$/g,'\\$"), "");
+			swapKey = regex_replace(matchResultsNew04[1].str(), regex("/g,'\\$"), "");
 			swapKey = regex_replace(swapKey, regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 
@@ -192,7 +190,7 @@ namespace DiscordCoreAPI {
 	string decipher(vector<string> tokens, string cipherSignature) {
 		vector<char> signatureNew = splitString(cipherSignature);
 
-		for (unsigned int x = 0, len = (unsigned int)tokens.size(); x < len; x+=1) {
+		for (unsigned int x = 0, len = (unsigned int)tokens.size(); x < len; x += 1) {
 			string token = tokens[x];
 			int position;
 			switch (token[0]) {
@@ -217,7 +215,12 @@ namespace DiscordCoreAPI {
 		return signatureNewString;
 	}
 
-	YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile){
+	YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile) {
+		CURLU* urlHandle = curl_url();
+		int* outLength{ nullptr };
+		char* charString = curl_easy_unescape(urlHandle, format.signature.c_str(), (int)format.signature.length(), outLength);
+		format.signature = charString;
+		curl_free(charString);
 		YouTubeFormat decipheredFormat = format;
 		vector<string> tokens = getTokens(html5playerFile);
 		if (decipheredFormat.signature.length() >= to_string(L"s=").length()) {
@@ -228,18 +231,15 @@ namespace DiscordCoreAPI {
 		return decipheredFormat;
 	};
 
+	void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
+		auto folder = Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
+		auto folder2 = folder.GetFolderFromPathAsync(filePath).get();
+		winrt::Windows::Storage::StorageFile storageFile = folder2.CreateFileAsync(fileName, CreationCollisionOption::ReplaceExisting).get();
+		winrt::Windows::Storage::FileIO::WriteBufferAsync(storageFile, readBuffer).get();
+	}
+
 	class YouTubeAPI {
 	public:
-
-		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
-		const hstring baseWatchURL = L"https://www.youtube.com/watch?v=";
-		const hstring baseURL = L"https://www.youtube.com";
-		int maxBufSize = 4096;
-		const int downloadChunkSize = 1024 * 1024 * 10;
-		const string newLine = "\n\r";
-		string playerResponse = "";
-		string html5PlayerFile = "";
-		string html5Player = "";
 
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
 			DiscordCoreInternal::HttpAgentResources agentResources;
@@ -260,7 +260,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData = receive(requestAgent.workReturnBuffer);
 			vector<DiscordCoreAPI::YouTubeSearchResult> searchResults;
 			json partialSearchResultsJson = json::parse(to_string(returnData.data));
-			for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")){
+			for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
 				DiscordCoreAPI::YouTubeSearchResult searchResult;
 				if (value.contains("videoRenderer")) {
 					DiscordCoreInternal::parseObject(value.at("videoRenderer"), &searchResult);
@@ -273,8 +273,9 @@ namespace DiscordCoreAPI {
 			return searchResults;
 		}
 
-		IBuffer downloadVideo(YouTubeSearchResult videoSearchResult) {
-			regex html5PlayerRegex("/s/player/\\S{1,12}/player_ias.vflset/en_US/base.js");
+		task<void> downloadAudio(YouTubeSearchResult videoSearchResult, shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBuffer) {
+			apartment_context mainThread;
+			co_await resume_background();
 			string watchHTMLURL = to_string(this->baseWatchURL) + videoSearchResult.videoId + "&hl=en";
 			Filters::HttpBaseProtocolFilter filter;
 			filter.AutomaticDecompression(true);
@@ -331,24 +332,20 @@ namespace DiscordCoreAPI {
 			string request = "GET " + format.downloadURL + " HTTP/1.1" + newLine +
 				"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 				+ newLine + newLine;
-
-			StreamSocket streamSocket;
-			StreamSocketControl streamSocketControl = streamSocket.Control();
-			streamSocketControl.MinProtectionLevel(SocketProtectionLevel::Tls12);
-			streamSocketControl.SerializeConnectionAttempts(true);
-			streamSocketControl.QualityOfService(SocketQualityOfService::LowLatency);
+			cout << "URL: " << format.downloadURL << endl;
+			StreamSocket streamSocket = StreamSocket();
+			streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
+			streamSocket.Control().NoDelay(true);
+			streamSocket.Control().SerializeConnectionAttempts(false);
 			Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
-			auto endpointPair = streamSocket.GetEndpointPairsAsync(hostName, L"443").get();
-			streamSocket.ConnectAsync(endpointPair.First().Current()).get();
+			streamSocket.ConnectAsync(streamSocket.GetEndpointPairsAsync(hostName, L"443").get().First().Current()).get();
 			streamSocket.UpgradeToSslAsync(SocketProtectionLevel::Tls12, hostName).get();
-			auto inputStream = streamSocket.InputStream();
-			auto outputStream = streamSocket.OutputStream();
-			DataWriter dataWriter(outputStream);
-			DataReader dataReader(inputStream);
+			DataWriter dataWriter(streamSocket.OutputStream());
+			DataReader dataReader(streamSocket.InputStream());
 			dataReader.InputStreamOptions(InputStreamOptions::None);
 			dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataWriter.WriteString(to_hstring(request));
-			dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+			dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataWriter.StoreAsync().get();
 			string headers;
 			InMemoryRandomAccessStream finalFileOutput;
@@ -358,11 +355,17 @@ namespace DiscordCoreAPI {
 			if (format.contentLength < this->maxBufSize) {
 				this->maxBufSize = format.contentLength;
 			}
-			dataReader.LoadAsync(this->maxBufSize).get();
-			int remainingDownloadContentLength = format.contentLength;
-			int contentLengthCurrent = dataReader.UnconsumedBufferLength();
+			dataReader.LoadAsync((uint32_t)this->maxBufSize).get();
+			__int64 remainingDownloadContentLength = format.contentLength;
+			__int64 contentLengthCurrent = dataReader.UnconsumedBufferLength();
+			int counter = 0;
+			string playerId = to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			while (remainingDownloadContentLength > 0) {
-				auto buffer = dataReader.ReadBuffer(contentLengthCurrent);
+				auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+				InMemoryRandomAccessStream outputStream;
+				DataWriter streamDataWriter(outputStream);
+				dataWriterOutput.UnicodeEncoding(UnicodeEncoding::Utf8);
+				IBuffer streamBuffer;
 				if (!headersFinished) {
 					stringstream bufferStream;
 					bufferStream << buffer.data();
@@ -372,14 +375,18 @@ namespace DiscordCoreAPI {
 					headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
 					headersFinished = true;
 					remainingDownloadContentLength -= contentLengthCurrent - headerLength;
-					dataWriterOutput.WriteBuffer(buffer, headerLength + 4, (uint32_t)buffer.Length() - headerLength - 4);
+					dataWriterOutput.WriteBuffer(buffer, headerLength, (uint32_t)buffer.Length() - headerLength);
+					dataWriterOutput.StoreAsync().get();
+					streamDataWriter.WriteBuffer(buffer, headerLength, (uint32_t)buffer.Length() - headerLength);
+					streamDataWriter.StoreAsync().get();
 				}
 				else {
 					dataWriterOutput.WriteBuffer(buffer, 0, (uint32_t)buffer.Length());
+					dataWriterOutput.StoreAsync().get();
+					streamDataWriter.WriteBuffer(buffer, 0, (uint32_t)buffer.Length());
+					streamDataWriter.StoreAsync().get();
 					remainingDownloadContentLength -= contentLengthCurrent;
 				}
-
-				dataWriterOutput.StoreAsync().get();
 
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
@@ -388,19 +395,39 @@ namespace DiscordCoreAPI {
 					contentLengthCurrent = remainingDownloadContentLength;
 				}
 				if (contentLengthCurrent > 0) {
-					dataReader.LoadAsync(contentLengthCurrent).get();
+					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
 				}
+				counter += 1;
 			}
 			DataReader dataReader00(finalFileOutput.GetInputStreamAt(0));
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size()).get();
 			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size());
-			auto folder = Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
-			auto folder2 = folder.GetFolderFromPathAsync(L"C:\\Users\\Chris\\Downloads").get();
-			winrt::Windows::Storage::StorageFile storageFile = folder2.CreateFileAsync(to_hstring(videoSearchResult.videoTitle) + L".weba", CreationCollisionOption::ReplaceExisting).get();
-			winrt::Windows::Storage::FileIO::WriteBufferAsync(storageFile, readBuffer).get();
-			return readBuffer;
+			hstring filePath = L"C:\\Users\\Chris\\source\\repos\\MBot-MusicHouse-Cpp\\x64\\Release\\";
+			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".weba";
+			saveFile(filePath, fileName, readBuffer);
+
+			AudioDataChunk audioData;
+			audioData.audioBitrate = format.bitrate;
+			audioData.totalByteSize = format.contentLength;
+			audioData.filePathAndName = to_string(filePath + fileName);
+			audioData.playerId = playerId;
+			audioData.filePath = to_string(filePath);
+			audioData.fileName = to_string(fileName);
+			send(*sendAudioBuffer, audioData);
+			co_return;
 		}
+
+	protected:
+		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
+		const hstring baseWatchURL = L"https://www.youtube.com/watch?v=";
+		const hstring baseURL = L"https://www.youtube.com";
+		__int64 maxBufSize = 4096;
+		const string newLine = "\n\r";
+		string playerResponse = "";
+		string html5PlayerFile = "";
+		string html5Player = "";
 	};
-}
+};
+
 #endif

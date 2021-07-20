@@ -531,7 +531,7 @@ namespace DiscordCoreAPI {
             if (dataPackage.timeDelayInMs> 0){
                 DispatcherQueueTimer timer = InteractionManagerAgent::threadContext->dispatcherQueue.get()->CreateTimer();
                 timer.Interval(chrono::milliseconds(dataPackage.timeDelayInMs));
-                timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args) {
+                timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&) {
                     deleteObjectData(dataPackage);
                     timer.Stop();
                     });
@@ -571,7 +571,7 @@ namespace DiscordCoreAPI {
             if (dataPackage.timeDelayInMs > 0) {
                 DispatcherQueueTimer timer = InteractionManagerAgent::threadContext->dispatcherQueue.get()->CreateTimer();
                 timer.Interval(chrono::milliseconds(dataPackage.timeDelayInMs));
-                timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& args) {
+                timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&) {
                     deleteObjectData(dataPackage);
                     timer.Stop();
                     });

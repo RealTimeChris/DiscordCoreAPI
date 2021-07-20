@@ -129,10 +129,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool getError(exception& error) {
-			if (try_receive(this->errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(this->errorBuffer, error);
 		}
 
 		vector<Role> getObjectData(DiscordCoreInternal::FetchRolesData  dataPackage) {

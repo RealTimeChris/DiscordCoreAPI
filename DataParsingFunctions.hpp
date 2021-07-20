@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 
         if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
             userData.id = jsonObjectData.at("id").get<string>();
-            userData.createdAt = convertSnowFlakeToDateTimeString(jsonObjectData.at("id").get<string>());
+            userData.createdAt = DiscordCoreAPI::convertSnowFlakeToDateTimeString(jsonObjectData.at("id").get<string>());
         }
 
         if (jsonObjectData.contains("discriminator") && !jsonObjectData.at("discriminator").is_null()) {
@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("archive_timestamp") && !jsonObjectData.at("archive_timestamp").is_null()) {
-            threadMetadata.archiveTimestamp = jsonObjectData.at("archive_timestamp").get<string>();
+            threadMetadata.archiveTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("archive_timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("locked") && !jsonObjectData.at("locked").is_null()) {
@@ -171,7 +171,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("join_timestamp") && !jsonObjectData.at("join_timestamp").is_null()) {
-            threadMember.joinTimestamp = jsonObjectData.at("join_timestamp").get<string>();
+            threadMember.joinTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("join_timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("flags") && !jsonObjectData.at("flags").is_null()) {
@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("last_pin_timestamp") && !jsonObjectData.at("last_pin_timestamp").is_null()) {
-            channelData.lastPinTimestamp = jsonObjectData.at("last_pin_timestamp").get<string>();
+            channelData.lastPinTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("last_pin_timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("rtc_region") && !jsonObjectData.at("rtc_region").is_null()) {
@@ -415,6 +415,30 @@ namespace DiscordCoreInternal {
         *pDataStructure = guildMemberData;
     }
 
+    void parseObject(json jsonObjectData, DiscordCoreInternal::VoiceReadyPayload* pDatastructure) {
+        DiscordCoreInternal::VoiceReadyPayload readyPayload;
+
+        if (jsonObjectData.contains("ip") && !jsonObjectData.at("ip").is_null()) {
+            readyPayload.ip = jsonObjectData.at("ip").get<string>();
+        }
+
+        if (jsonObjectData.contains("port") && !jsonObjectData.at("port").is_null()) {
+            readyPayload.port = jsonObjectData.at("port").get<int>();
+        }
+
+        if (jsonObjectData.contains("ssrc") && !jsonObjectData.at("ssrc").is_null()) {
+            readyPayload.ssrc = jsonObjectData.at("ssrc").get<int>();
+        }
+
+        if (jsonObjectData.contains("modes") && !jsonObjectData.at("modes").is_null()) {
+            for (auto value : jsonObjectData.at("modes")) {
+                readyPayload.modes.push_back(value.get<string>());
+            };
+        }
+
+        *pDatastructure = readyPayload;
+    }
+
     void parseObject(json jsonObjectData, DiscordCoreAPI::EmojiData* pDataStructure) {
         DiscordCoreAPI::EmojiData emojiData = *pDataStructure;
 
@@ -513,7 +537,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("request_to_speak_timestamp") && !jsonObjectData.at("request_to_speak_timestamp").is_null()) {
-            voiceStateData.requestToSpeakTimestamp = jsonObjectData.at("request_to_speak_timestamp").get<string>();
+            voiceStateData.requestToSpeakTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("request_to_speak_timestamp").get<string>());
         }
 
         *pDataStructure = voiceStateData;
@@ -613,7 +637,7 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("Name") && !jsonObjectData.at("Name").is_null()) {
             activityData.name = jsonObjectData.at("Name").get<string>();
         }
-        /*
+        
         if (jsonObjectData.contains("Timestamps") && !jsonObjectData.at("Timestamps").is_null()) {
             parseObject(jsonObjectData.at("Timestamps"), &activityData.timestamps);
         }
@@ -645,7 +669,7 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("Instance") && !jsonObjectData.at("Instance").is_null()) {
             activityData.instance = jsonObjectData.at("Instance").get<bool>();
         }
-        */
+        
         *pDataStructure = activityData;
     }
 
@@ -1029,7 +1053,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
-            guildData.createdAt = convertSnowFlakeToDateTimeString(jsonObjectData.at("id"));
+            guildData.createdAt = DiscordCoreAPI::convertSnowFlakeToDateTimeString(jsonObjectData.at("id"));
         }
 
         *pDataStructure = guildData;
@@ -1845,11 +1869,11 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("timestamp") && !jsonObjectData.at("timestamp").is_null()) {
-            messageData.timestamp = jsonObjectData.at("timestamp").get<string>();
+            messageData.timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("edited_timestamp") && !jsonObjectData.at("edited_timestamp").is_null()) {
-            messageData.editedTimestamp = jsonObjectData.at("edited_timestamp").get<string>();
+            messageData.editedTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("edited_timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("tts") && !jsonObjectData.at("tts").is_null()) {
@@ -2024,11 +2048,11 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("timestamp") && !jsonObjectData.at("timestamp").is_null()) {
-            messageData.timestamp = jsonObjectData.at("timestamp").get<string>();
+            messageData.timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("edited_timestamp") && !jsonObjectData.at("edited_timestamp").is_null()) {
-            messageData.editedTimestamp = jsonObjectData.at("edited_timestamp").get<string>();
+            messageData.editedTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("edited_timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("tts") && !jsonObjectData.at("tts").is_null()) {
@@ -2388,11 +2412,14 @@ namespace DiscordCoreInternal {
                     if (value.contains("averageBitrate")) {
                         newData.averageBitrate = value.at("averageBitrate").get<int>();
                     }
+                    if (value.contains("audioSampleRate")) {
+                        newData.audioSampleRate = value.at("audioSampleRate").get<string>();
+                    }
                     if (value.contains("bitrate")) {
                         newData.bitrate = value.at("bitrate").get<int>();
                     }
                     if (value.contains("contentLength")) {
-                        newData.contentLength = stol(value.at("contentLength").get<string>());
+                        newData.contentLength = stoll(value.at("contentLength").get<string>());
                     }
                     if (value.contains("fps")) {
                         newData.fps = value.at("fps").get<int>();
@@ -2443,11 +2470,14 @@ namespace DiscordCoreInternal {
                     if (value.contains("averageBitrate")) {
                         newData.averageBitrate = value.at("averageBitrate").get<int>();
                     }
+                    if (value.contains("audioSampleRate")) {
+                        newData.audioSampleRate = value.at("audioSampleRate").get<string>();
+                    }
                     if (value.contains("bitrate")) {
                         newData.bitrate = value.at("bitrate").get<int>();
                     }
                     if (value.contains("contentLength")) {
-                        newData.contentLength = stol(value.at("contentLength").get<string>());
+                        newData.contentLength = stoll(value.at("contentLength").get<string>());
                     }
                     if (value.contains("fps")) {
                         newData.fps = value.at("fps").get<int>();

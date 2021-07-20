@@ -60,10 +60,6 @@ namespace DiscordCoreInternal {
             co_return threadContext;
         }
 
-        static void initialize() {
-            ThreadManager::threads; new concurrent_vector<ThreadContext>();
-        };
-
         ~ThreadManager() {
             for (auto value : *ThreadManager::threads) {
                 value->scheduler->Release();

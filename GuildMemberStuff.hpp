@@ -89,12 +89,9 @@ namespace DiscordCoreAPI {
 		}
 
 		bool getError(exception& error) {
-			if (try_receive(this->errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(this->errorBuffer, error);
 		}
-		 
+		
 		GuildMember getObjectData(DiscordCoreInternal::FetchGuildMemberData dataPackage){
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
