@@ -427,14 +427,12 @@ namespace DiscordCoreAPI {
 		}
 
 		void deleteObjectData(DiscordCoreInternal::DeleteMessageData dataPackage) {
-			if (dataPackage.timeDelay > 0) {
-				DispatcherQueueTimer timer = this->threadContext->dispatcherQueue.get()->CreateTimer();
-				timer.Interval(chrono::milliseconds(dataPackage.timeDelay));
-				timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&) {
+			if (dataPackage.timeDelay > 0){
+				ThreadPoolTimer threadPoolTimer = ThreadPoolTimer(nullptr);
+				TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimer) {
 					onDeleteData(dataPackage);
-					timer.Stop();
-					});
-				timer.Start();
+				};
+				threadPoolTimer.CreateTimer(onSend, TimeSpan(dataPackage.timeDelay * 10000));
 			}
 			else {
 				onDeleteData(dataPackage);

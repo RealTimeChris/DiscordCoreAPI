@@ -528,19 +528,16 @@ namespace DiscordCoreAPI {
         }
 
         void deleteObjectDataTimer(DiscordCoreInternal::DeleteInteractionResponseData dataPackage) {
-            if (dataPackage.timeDelayInMs> 0){
-                DispatcherQueueTimer timer = InteractionManagerAgent::threadContext->dispatcherQueue.get()->CreateTimer();
-                timer.Interval(chrono::milliseconds(dataPackage.timeDelayInMs));
-                timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&) {
+            if (dataPackage.timeDelayInMs > 0) {
+                ThreadPoolTimer threadPoolTimer = ThreadPoolTimer(nullptr);
+                TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimerNew) {
                     deleteObjectData(dataPackage);
-                    timer.Stop();
-                    });
-                timer.Start();
+                };
+                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, TimeSpan(dataPackage.timeDelayInMs * 10000));
             }
             else {
                 deleteObjectData(dataPackage);
             }
-            return;
         }
 
         void deleteObjectData(DiscordCoreInternal::DeleteFollowUpMessageData dataPackage) {
@@ -569,18 +566,15 @@ namespace DiscordCoreAPI {
 
         void deleteObjectDataTimer(DiscordCoreInternal::DeleteFollowUpMessageData dataPackage) {
             if (dataPackage.timeDelayInMs > 0) {
-                DispatcherQueueTimer timer = InteractionManagerAgent::threadContext->dispatcherQueue.get()->CreateTimer();
-                timer.Interval(chrono::milliseconds(dataPackage.timeDelayInMs));
-                timer.Tick([this, dataPackage, timer](winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&) {
+                ThreadPoolTimer threadPoolTimer = ThreadPoolTimer(nullptr);
+                TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimerNew) {
                     deleteObjectData(dataPackage);
-                    timer.Stop();
-                    });
-                timer.Start();
+                };
+                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, TimeSpan(dataPackage.timeDelayInMs * 10000));
             }
             else {
                 deleteObjectData(dataPackage);
             }
-            return;
         }
 
     protected:
