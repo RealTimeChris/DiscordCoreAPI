@@ -10,7 +10,7 @@
 
 #include "../pch.h"
 #include "WebSocketStuff.hpp"
-#include "../MBot-MusicHouse-Cpp/DemuxingStuff.hpp"
+#include "DemuxingStuff.hpp"
 
 namespace DiscordCoreAPI {
 
