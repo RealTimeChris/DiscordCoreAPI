@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 				activities.push_back(activity);
 				this->currentUser->updatePresence({ .activities = activities, .status = "online",.afk = false });
 				threadPoolTimer.Cancel();
-				}, 5000);
+				}, 5000, false);
 			co_await mainThread;
 			co_return;
 		}
