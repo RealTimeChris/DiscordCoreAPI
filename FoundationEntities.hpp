@@ -1659,7 +1659,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> const& lambda, unsigned int timeDelayInMs, bool isRepeating = false) {
+    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> const& lambda, unsigned int timeDelayInMs, bool isRepeating) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0) {
             TimerElapsedHandler timeElapsedHandler = [&, threadPoolTimer, lambda](ThreadPoolTimer threadPoolTimerNew) {
