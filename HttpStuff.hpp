@@ -18,7 +18,6 @@ namespace DiscordCoreInternal {
 
 		static void initialize() {
 			HttpRequestAgent::threadContext = ThreadManager::getThreadContext().get();
-			return;
 		};
 
 		static shared_ptr<ThreadContext> threadContext;
@@ -72,8 +71,7 @@ namespace DiscordCoreInternal {
 					this->postHeaders.Authorization(credentialValue);
 					this->patchHeaders.Authorization(credentialValue);
 					this->deleteHeaders.Authorization(credentialValue);
-				}				
-				return;
+				}
 			}
 			catch (hresult_error ex) {
 				wcout << "Error: " << ex.message().c_str() << endl << endl;

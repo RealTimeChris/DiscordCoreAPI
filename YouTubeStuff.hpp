@@ -355,12 +355,15 @@ namespace DiscordCoreAPI {
 			if (format.contentLength < this->maxBufSize) {
 				this->maxBufSize = format.contentLength;
 			}
-			dataReader.LoadAsync((uint32_t)this->maxBufSize).get();
+
 			__int64 remainingDownloadContentLength = format.contentLength;
-			__int64 contentLengthCurrent = dataReader.UnconsumedBufferLength();
+			__int64 contentLengthCurrent = this->maxBufSize;
 			int counter = 0;
 			string playerId = to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			while (remainingDownloadContentLength > 0) {
+				if (contentLengthCurrent > 0) {
+					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
+				}
 				auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
 				InMemoryRandomAccessStream outputStream;
 				DataWriter streamDataWriter(outputStream);
@@ -374,10 +377,13 @@ namespace DiscordCoreAPI {
 					headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
 					headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
 					headersFinished = true;
-					remainingDownloadContentLength -= contentLengthCurrent - headerLength;
-					dataWriterOutput.WriteBuffer(buffer, headerLength, (uint32_t)buffer.Length() - headerLength);
+					contentLengthCurrent -= headerLength;
+					remainingDownloadContentLength -= contentLengthCurrent;
+					cout << "BUFFER LENGTH: " << buffer.Length() << endl;
+					cout << "HEADER LENGTH: " << headerLength << endl;
+					dataWriterOutput.WriteBuffer(buffer, headerLength, (uint32_t)contentLengthCurrent);
 					dataWriterOutput.StoreAsync().get();
-					streamDataWriter.WriteBuffer(buffer, headerLength, (uint32_t)buffer.Length() - headerLength);
+					streamDataWriter.WriteBuffer(buffer, headerLength, (uint32_t)contentLengthCurrent);
 					streamDataWriter.StoreAsync().get();
 				}
 				else {
@@ -388,14 +394,24 @@ namespace DiscordCoreAPI {
 					remainingDownloadContentLength -= contentLengthCurrent;
 				}
 
+				DataReader dataReader00(outputStream.GetInputStreamAt(0));
+				dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
+				dataReader00.LoadAsync((uint32_t)contentLengthCurrent).get();
+				auto readBuffer = dataReader00.ReadBuffer((uint32_t)contentLengthCurrent);
+
+				AudioDataChunk audioData;
+				audioData.audioData = readBuffer;
+				audioData.audioBitrate = format.bitrate;
+				audioData.totalByteSize = format.contentLength;
+				audioData.playerId = playerId;
+				audioData.remainingBytes = remainingDownloadContentLength;
+				send(*sendAudioBuffer, audioData);
+
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
 				}
 				else {
 					contentLengthCurrent = remainingDownloadContentLength;
-				}
-				if (contentLengthCurrent > 0) {
-					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
 				}
 				counter += 1;
 			}
@@ -403,19 +419,9 @@ namespace DiscordCoreAPI {
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size()).get();
 			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size());
-			hstring filePath = L"C:\\Users\\Chris\\source\\repos\\MBot-MusicHouse-Cpp\\x64\\Release\\";
+			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".weba";
 			saveFile(filePath, fileName, readBuffer);
-
-			AudioDataChunk audioData;
-			audioData.audioBitrate = format.bitrate;
-			audioData.totalByteSize = format.contentLength;
-			audioData.filePathAndName = to_string(filePath + fileName);
-			audioData.playerId = playerId;
-			audioData.filePath = to_string(filePath);
-			audioData.fileName = to_string(fileName);
-			send(*sendAudioBuffer, audioData);
-			co_return;
 		}
 
 	protected:

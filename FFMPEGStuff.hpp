@@ -11,7 +11,7 @@
 #include "../pch.h"
 
 namespace DiscordCoreAPI {
-
+/*
     static int openCodecContext(int* streamIndex,
         AVCodecContext** codecContext, AVFormatContext* formatContext, enum AVMediaType type, string sourceFilename)
     {
@@ -28,27 +28,27 @@ namespace DiscordCoreAPI {
             streamIndexValue = ret;
             stream = formatContext->streams[streamIndexValue];
 
-            /* find decoder for the stream */
+            // find decoder for the stream 
             codec = avcodec_find_decoder(stream->codecpar->codec_id);
             if (!codec) {
                 cout << "Failed to find %s codec\n" << endl;
                 return AVERROR(EINVAL);
             }
 
-            /* Allocate a codec context for the decoder */
+            // Allocate a codec context for the decoder 
             *codecContext = avcodec_alloc_context3(codec);
             if (!*codecContext) {
                 cout << "Failed to allocate the %s codec context\n" << endl;
                 return AVERROR(ENOMEM);
             }
 
-            /* Copy codec parameters from input stream to output codec context */
+            // Copy codec parameters from input stream to output codec context 
             if ((ret = avcodec_parameters_to_context(*codecContext, stream->codecpar)) < 0) {
                 cout << "Failed to copy %s codec parameters to decoder context\n" << endl;
                 return ret;
             }
 
-            /* Init the decoders */
+            // Init the decoders 
             if ((ret = avcodec_open2(*codecContext, codec, NULL)) < 0) {
                 cout << "Failed to open %s codec\n" << endl;
                 return ret;
@@ -64,14 +64,14 @@ namespace DiscordCoreAPI {
         cout << "audio_frame " + to_string(frame->nb_samples) + " samples , @ " + to_string(av_get_bytes_per_sample((AVSampleFormat)frame->format)) + " bytes per sample." << endl;
         (*audioFrameIndex)++;
 
-        /* Write the raw audio data samples of the first plane. This works
-         * fine for packed formats (e.g. AV_SAMPLE_FMT_S16). However,
-         * most audio decoders output planar audio, which uses a separate
-         * plane of audio samples for each channel (e.g. AV_SAMPLE_FMT_S16P).
-         * In other words, this code will write only the first audio channel
-         * in these cases.
-         * You should use libswresample or libavfilter to convert the frame
-         * to packed data. */
+        // Write the raw audio data samples of the first plane. This works
+         //* fine for packed formats (e.g. AV_SAMPLE_FMT_S16). However,
+         //* most audio decoders output planar audio, which uses a separate
+         //* plane of audio samples for each channel (e.g. AV_SAMPLE_FMT_S16P).
+         //* In other words, this code will write only the first audio channel
+         //* in these cases.
+         //* You should use libswresample or libavfilter to convert the frame
+         //* to packed data. 
 
         DataWriter dataWriter(randomAccessStream->GetOutputStreamAt(*offsetIntoStream));
         dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
@@ -162,6 +162,7 @@ namespace DiscordCoreAPI {
         InMemoryRandomAccessStream randomAccessStream = nullptr;
 
         AVInputFormat inputFormat;
+        inputFormat
         int error = avformat_open_input(&formatContext, "C:\\Users\\Chris\\source\\repos\\MBot-MusicHouse-Cpp\\x64\\Release\\RICH BRIAN x ZHU. x SKRILLEX x THEY.  - Working For It (Official Audio) 1626736791099322300.weba", NULL, NULL);
 		if (error < 0) {
             const size_t charCount = 128;
@@ -254,6 +255,7 @@ namespace DiscordCoreAPI {
 
         return outputBuffer;
     }
+    */
 
 }
 

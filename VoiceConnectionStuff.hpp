@@ -10,17 +10,16 @@
 
 #include "../pch.h"
 #include "WebSocketStuff.hpp"
-#include "FFMPEGStuff.hpp"
+#include "../MBot-MusicHouse-Cpp/DemuxingStuff.hpp"
 
 namespace DiscordCoreAPI {
 
 	struct AudioDataChunk {
+		IBuffer audioData;
 		string playerId;
 		unsigned __int64 audioBitrate;
-		string filePath;
-		string fileName;
 		__int64 totalByteSize = 1;
-		string filePathAndName;
+		__int64 remainingBytes;
 	};
 
 	class ThreadPoolTimerNew {
@@ -55,37 +54,7 @@ namespace DiscordCoreAPI {
 		bool waitForReadyConnectedStatus() {
 			return receive(*this->readyBuffer);
 		}
-		/*
-		IBuffer getSingleRandomAudioPacket() {
-			int frameSize = 480;
-			int length = frameSize * 2 * sizeof(opus_int16);
-			int error;
-			vector<opus_int16> randomData;
-			randomData.resize(length / sizeof(opus_int16));
-			for (unsigned int x = 0; x < randomData.size(); x += 1) {
-				opus_int16 newValue = (opus_int16)(((float)rand() / (float)RAND_MAX) * (float)UINT16_MAX);
-				randomData[x] = newValue;
-			}
-			auto opusEncoder = opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error);
-			if (error != OPUS_OK) {
-				throw exception("Failed to create opus encoder!");
-			}
-			vector<unsigned char> newData;
-			newData.resize(length / sizeof(opus_int16));
-			if (opus_encode(opusEncoder, randomData.data(), frameSize, newData.data(), length) <= 0) {
-				cout << "Failed to encode random data!" << endl;
-			};
-			IBuffer outputBuffer;
-			InMemoryRandomAccessStream randomStream;
-			DataWriter dataWriter(randomStream);
-			dataWriter.WriteBytes(newData);
-			dataWriter.StoreAsync().get();
-			DataReader dataReader(randomStream.GetInputStreamAt(0));
-			dataReader.LoadAsync(length / sizeof(opus_int16)).get();
-			outputBuffer = dataReader.ReadBuffer(length / sizeof(opus_int16));
-			return outputBuffer;
-		}
-		*/
+		
 		void sendSingleAudioPacket(IBuffer bufferToSend) {
 			if (sodium_init() == -1) {
 				cout << "LibSodium failed to initialize!" << endl << endl;
@@ -121,7 +90,6 @@ namespace DiscordCoreAPI {
 			audioDataPacket = new uint8_t[numOfBytes];
 			std::memcpy(audioDataPacket, header, sizeof(header));
 
-			cout << "BUFFERTOSEND DATA: " << bufferToSend.data() << endl;
 			if (crypto_secretbox_easy(audioDataPacket + sizeof(header),
 				bufferToSend.data(), bufferToSend.Length(), nonce, (unsigned char*)this->voiceConnectionData.keys.data()) != 0) {
 				throw exception("ENCRYPTION FAILED!");
@@ -130,9 +98,7 @@ namespace DiscordCoreAPI {
 			memcpy_s(audioDataPacket + (numOfBytes - nonceSize), nonceSize, nonce, nonceSize);
 			vector<uint8_t> audioDataPacketNew;
 			audioDataPacketNew.resize(numOfBytes);
-			cout << "AUDIO DATA PACKET: ";
 			for (unsigned int x = 0; x < numOfBytes; x+=1){
-				cout << (__int8)audioDataPacket[x];
 				audioDataPacketNew[x] = audioDataPacket[x];
 			}
 			cout << endl;
@@ -154,7 +120,6 @@ namespace DiscordCoreAPI {
 			*playerId = audioData.playerId;
 			*startingTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			for (auto value : *sendTimers) {
-			sendSpeakingMessage(true);
 				value.threadPoolTimer.Cancel();
 			}
 		}
@@ -172,11 +137,15 @@ namespace DiscordCoreAPI {
 			string playerId;
 			int counter = 0;
 			__int64 totalByteSize = 0;
-			__int64 bytesRemaining = 1;
+			__int64 bytesRemaining = -1;
+			int bufferIndex = 0;
+			vector<IBuffer> bufferVector(2);
 			__int64 startingTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			while (doWeQuit == false) {
 				try {
-					cout << "BYTES REMAINING: " << bytesRemaining << endl;
+					if (bytesRemaining == -1) {
+						sendSpeakingMessage(true);
+					}
 					if (bytesRemaining == 0) {
 						sendSpeakingMessage(false);
 					}
@@ -185,28 +154,43 @@ namespace DiscordCoreAPI {
 						cleanupAndSwitchPlayerId(&counter, &totalByteSize, &bytesRemaining, &startingTime, &sendTimers, &playerId, audioData);
 						this->timestamp = (int)startingTime;
 					}
-					IBuffer buffer = demux(audioData.filePathAndName);
-					TimerElapsedHandler onSendTime = [=, this](ThreadPoolTimer timer) {
-						if (buffer.Length() > 0) {
-							VoiceConnection::sendSingleAudioPacket(buffer);
+					if (counter == 0 && bufferIndex < 2) {
+						bufferVector[bufferIndex] = audioData.audioData;
+						bufferIndex += 1;
+					}
+					__int64 currentPosition = totalByteSize - bytesRemaining;
+					if (audioData.audioData.Length() > 0) {
+						IBuffer buffer = demuxWebA(audioData.audioData, currentPosition, totalByteSize);
+						TimerElapsedHandler onSendTime = [=, this](ThreadPoolTimer timer) {
+							if (buffer.Length() > 0) {
+								VoiceConnection::sendSingleAudioPacket(buffer);
+							}
+						};
+						if (buffer != nullptr) {
+							__int64 lengthInNs = (__int64)((float)buffer.Length() / (float)audioData.audioBitrate / (float)2 * 1000000000);
+							ThreadPoolTimer timerNew(nullptr);
+							__int64 currentTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+							__int64 timeDifference = currentTime - startingTime;
+							sendTimers.resize(sendTimers.size() + 1);
+							sendTimers[sendTimers.size() - 1].threadPoolTimer = timerNew.CreateTimer(onSendTime, TimeSpan((counter * lengthInNs) - (timeDifference) / 100));
 						}
-						sendTimers[counter - 1].threadPoolTimer.Cancel();
-						return;
-					};
-					__int64 lengthInNs = (__int64)((float)buffer.Length() / (float)audioData.audioBitrate / (float)2 * 1000000000);
-					ThreadPoolTimer timerNew(nullptr);
-					__int64 currentTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					__int64 timeDifference = currentTime - startingTime;
-					sendTimers.resize(sendTimers.size() + 1);
-					sendTimers[sendTimers.size() - 1].threadPoolTimer = timerNew.CreatePeriodicTimer(onSendTime, TimeSpan((counter * lengthInNs) - (timeDifference) / 100));
-					deleteFile(audioData.filePath, audioData.fileName);
+					}
 				}
 				catch (exception& e) {
 					cout << "Out of time: " << e.what() << endl;
 					break;
 				}
 			}
-			cout << "END OF VOICECONNECTION::PLAY()" << endl;
+			string newString;
+			for (unsigned int x = 0; x < bufferVector[0].Length(); x += 1) {
+				if (bufferVector[0].data()[x] == bufferVector[1].data()[x]) {
+					newString += bufferVector[0].data()[x];
+				}
+				else {
+					newString += to_string(0);
+				}
+			}
+			cout << "END OF VOICECONNECTION::PLAY: " << newString << endl;
 			done();
 		}
 
@@ -225,7 +209,6 @@ namespace DiscordCoreAPI {
 
 		~VoiceConnection() {
 			this->terminate();
-			this->voicechannelWebSocketAgent->terminate();
 		}
 	};
 

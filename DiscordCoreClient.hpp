@@ -97,38 +97,10 @@ namespace DiscordCoreAPI {
 			this->botToken = botTokenNew;
 		}
 
-		DiscordGuild getDiscordGuild(GuildData guildData) {
-			auto guildCursor = DiscordCoreClient::guildMap.find(guildData.id);
-			if (guildCursor == DiscordCoreClient::guildMap.end()) {
-				DiscordGuild discordGuild(guildData);
-				DiscordCoreClient::guildMap.insert(make_pair(guildData.id, discordGuild));
-				discordGuild.getDataFromDB();
-				return discordGuild;
-			}
-			else {
-				guildCursor->second.getDataFromDB();
-				return guildCursor->second;
-			}
-		}
-
-		DiscordGuildMember getDiscordGuildMember(DiscordCoreInternal::GuildMemberData guildMemberData) {
-			auto guildMemberCursor = DiscordCoreClient::guildMemberMap.find(guildMemberData.guildId + " + " + guildMemberData.user.id);
-			if (guildMemberCursor == DiscordCoreClient::guildMemberMap.end()) {
-				DiscordGuildMember discordGuildMember(guildMemberData);
-				DiscordCoreClient::guildMemberMap.insert(make_pair(guildMemberData.guildId + " + " + guildMemberData.user.id, discordGuildMember));
-				discordGuildMember.getDataFromDB();
-				return discordGuildMember;
-			}
-			else {
-				guildMemberCursor->second.getDataFromDB();
-				return guildMemberCursor->second;
-			}
-		}
-
 		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> finalSetup(string botToken);
-
 		bool getError(exception& error) {
 			if (try_receive(errorBuffer, error)) {
+
 				return true;
 			}
 			return false;
@@ -139,8 +111,6 @@ namespace DiscordCoreAPI {
 			DatabaseManagerAgent::cleanup();
 			InputEventManager::cleanup();
 			this->channels.get()->~ChannelManager();
-			this->guildMap.clear();
-			this->guildMemberMap.clear();
 			this->guildMembers.get()->~GuildMemberManager();
 			this->guilds.get()->~GuildManager();
 			this->interactions.get()->~InteractionManager();
@@ -238,20 +208,18 @@ namespace DiscordCoreAPI {
 			Guild guild(this->agentResources, guildData, (shared_ptr<DiscordCoreClient>)this->thisPointer, this->thisPointer);
 			DiscordGuild discordGuild(guild.data);
 			discordGuild.writeDataToDB();
-			if (DiscordCoreClient::guildMap.contains(guild.data.id)) {
-				DiscordCoreClient::guildMap.erase(guild.data.id);
-				this->discordUser->data.guildCount -= 1;
-				this->discordUser->writeDataToDB();
-				this->audioBuffersMap.erase(guild.data.id);
-			}
-			else {
-				this->discordUser->data.guildCount += 1;
-				this->discordUser->writeDataToDB();
-				shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
-				this->audioBuffersMap.insert(make_pair(guild.data.id, thePtr));
-				DiscordCoreClient::guildMap.insert(make_pair(guild.data.id, discordGuild));
-			}
+			this->discordUser->data.guildCount += 1;
+			this->discordUser->writeDataToDB();
+			shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
+			this->audioBuffersMap.insert(make_pair(guild.data.id, thePtr));
 			return guild;
+		}
+
+		void removeGuild(GuildData guildData) {
+			this->discordUser->data.guildCount -= 1;
+			this->discordUser->writeDataToDB();
+			shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
+			this->audioBuffersMap.erase(guildData.id);
 		}
 
 		void run() {
@@ -314,7 +282,8 @@ namespace DiscordCoreAPI {
 					{
 						GuildData guildData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &guildData);
-						Guild guild = createGuild(guildData);
+						removeGuild(guildData);
+						Guild guild(this->agentResources, guildData, this->thisPointer, this->thisPointer);
 						DiscordCoreAPI::OnGuildDeletionData guildDeletionData;
 						guildDeletionData.guild = guild;
 						this->eventManager->onGuildDeletionEvent(guildDeletionData);
@@ -651,8 +620,6 @@ namespace DiscordCoreAPI {
 			return;
 		}
 	};
-	map<string, DiscordGuild> DiscordCoreClientBase::guildMap;
-	map<string, DiscordGuildMember> DiscordCoreClientBase::guildMemberMap;
 	shared_ptr<DiscordCoreAPI::DiscordCoreClient> pDiscordCoreClient{ nullptr };
 }
 #include "Commands/CommandsList.hpp"

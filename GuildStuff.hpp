@@ -33,8 +33,6 @@ namespace DiscordCoreAPI {
 		friend class WebSocketConnectionAgent;
 		friend class HttpRequestAgent;
 		hstring botToken;
-		static map<string, DiscordGuild> guildMap;
-		static map<string, DiscordGuildMember> guildMemberMap;
 	};
 
 	class Guild {
@@ -81,32 +79,15 @@ namespace DiscordCoreAPI {
 				}
 				cout << "Caching guild members for guild: " << this->data.name << endl;
 				for (unsigned int x = 0; x < this->data.members.size(); x += 1) {
-					GuildMemberData guildMemberData = data.members.at(x);
+					GuildMemberData guildMemberData = this->data.members.at(x);
 					for (auto value : this->data.voiceStates) {
 						if (value.userId == guildMemberData.user.id) {
 							guildMemberData.voiceData = value;
 						}
 					}					
-					if (x >= 1) {
-						bool doWeContinue = false;
-						map<string, GuildMember> guildMemberMap = receive(GuildMemberManagerAgent::cache);
-						for (auto [key, value] : guildMemberMap) {
-							if (this->data.id + " + " + guildMemberData.user.id == value.data.guildId + " + " + value.data.user.id) {
-								doWeContinue = true;
-								this->data.members.erase(this->data.members.begin() + x);
-								x -= 1;
-								break;
-							}
-						}
-						if (doWeContinue == true) {
-							continue;
-						}
-						asend(GuildMemberManagerAgent::cache, guildMemberMap);
-					}
 					guildMemberData.guildId = this->data.id;
 					DiscordGuildMember discordGuildMember(guildMemberData);
 					discordGuildMember.writeDataToDB();
-					DiscordCoreClientBase::guildMemberMap.insert(make_pair(guildMemberData.guildId + " + " + guildMemberData.user.id, discordGuildMember));
 					GuildMember guildMember(guildMemberData, this->data.id, this->discordCoreClient);
 					this->discordCoreClientBase->guildMembers->insertGuildMemberAsync(guildMember, this->data.id).get();
 				}
@@ -326,8 +307,7 @@ namespace DiscordCoreAPI {
 					vector<InviteData> inviteData = getObjectData(dataPackage04);
 					send(this->outInvitesBuffer, inviteData);
 				}
-				GuildData dataPackage05;
-				Guild guildNew(this->agentResources, dataPackage05, this->discordCoreClient, this->discordCoreClientBase);
+				Guild guildNew;
 				while (this->guildsToInsert.try_pop(guildNew)) {
 					map<string, Guild> cacheTemp;
 					try_receive(GuildManagerAgent::cache, cacheTemp);
@@ -514,12 +494,10 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = coreClientNew;
 			this->discordCoreClientBase = coreClientBaseNew;
 			this->groupId = this->threadContext->createGroup();
-			return;
 		}
 
 		~GuildManager() {
 			this->threadContext->releaseGroup(this->groupId);
-			return;
 		}
 
 	protected:

@@ -967,11 +967,19 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("members") && !jsonObjectData.at("members").is_null()) {
-            vector<DiscordCoreAPI::GuildMemberData> newVector;
+            vector<DiscordCoreAPI::GuildMemberData> newVector = guildData.members;
             for (auto newValue : jsonObjectData.at("members")) {
                 DiscordCoreAPI::GuildMemberData newData;
                 parseObject(newValue, &newData);
-                newVector.push_back(newData);
+                bool isItFound = false;
+                for (auto value : newVector) {
+                    if (newData.user.id == value.user.id) {
+                        isItFound = true;
+                    }
+                }
+                if (isItFound == false) {
+                    newVector.push_back(newData);
+                }
             }
             guildData.members = newVector;
         }
