@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 		string guildId;
 	};
 
-	class RoleManagerAgent :agent {
+	class RoleManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
 		friend class Guild;

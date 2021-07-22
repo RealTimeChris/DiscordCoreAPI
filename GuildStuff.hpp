@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		GuildData data;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		VoiceConnection* connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew);
+		shared_ptr<VoiceConnection> connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew);
 
 		void disconnectFromVoice();
 
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		string guildId;
 	};
 
-	class GuildManagerAgent : public agent {
+	class GuildManagerAgent : agent {
 	public:
 		static overwrite_buffer<map<string, Guild>> cache;
 	protected:

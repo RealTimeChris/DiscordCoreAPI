@@ -51,7 +51,7 @@ namespace DiscordCoreInternal {
 		WebSocketEventType eventType;
 	};
 
-	class VoiceChannelWebSocketAgent: public agent {
+	class VoiceChannelWebSocketAgent : public agent {
 	public:
 
 		static unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
@@ -131,10 +131,7 @@ namespace DiscordCoreInternal {
 		}
 
 		bool getError(exception& error) {
-			if (try_receive(errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(errorBuffer, error);
 		}
 
 		void terminate() {
@@ -226,8 +223,14 @@ namespace DiscordCoreInternal {
 		}
 
 		void run() {
-			this->connect();
-			this->voiceConnect();
+			try {
+				this->connect();
+				this->voiceConnect();
+			}
+			catch (const exception& e) {
+				send(errorBuffer, e);
+				run();
+			}
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
@@ -348,10 +351,7 @@ namespace DiscordCoreInternal {
 		}
 
 		bool getError(exception& error) {
-			if (try_receive(errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(errorBuffer, error);
 		}
 
 		void terminate() {
@@ -558,7 +558,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class WebSocketConnectionAgent :public agent {
+	class WebSocketConnectionAgent : public agent {
 	public:
 		hstring botToken = L"";
 
@@ -623,10 +623,7 @@ namespace DiscordCoreInternal {
 		}
 
 		bool getError(exception& error) {
-			if (try_receive(errorBuffer, error)) {
-				return true;
-			}
-			return false;
+			return try_receive(errorBuffer, error);
 		}
 
 		void terminate() {
@@ -635,13 +632,14 @@ namespace DiscordCoreInternal {
 		}
 
 		~WebSocketConnectionAgent() {
-			this->done();
-			this->cleanup();
+			this->terminate();
 		}
 
 	protected:
 		friend class BotUser;
+		friend class VoiceConnection;
 		friend class VoiceChannelWebSocketAgent;
+		friend class DiscordCoreClient;
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		event_token messageReceivedToken;
 		event_token closedToken;

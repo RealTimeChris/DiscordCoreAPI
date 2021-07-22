@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		string guildMemberId;
 	};
 
-	class GuildMemberManagerAgent :agent {
+	class GuildMemberManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
 		friend class Guild;

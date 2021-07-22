@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		bool selfDeaf;
 	};
 
-	class BotUser:public User {
+	class BotUser: public User {
 	public:
 		BotUser(DiscordCoreInternal::UserData userDataNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
 			this->pConnectionWebSocketAgent = pConnectionWebSocketAgentNew;
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		string userId;
 	};
 
-	class UserManagerAgent : public agent {
+	class UserManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
 		friend class UserManager;

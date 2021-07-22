@@ -379,8 +379,6 @@ namespace DiscordCoreAPI {
 					headersFinished = true;
 					contentLengthCurrent -= headerLength;
 					remainingDownloadContentLength -= contentLengthCurrent;
-					cout << "BUFFER LENGTH: " << buffer.Length() << endl;
-					cout << "HEADER LENGTH: " << headerLength << endl;
 					dataWriterOutput.WriteBuffer(buffer, headerLength, (uint32_t)contentLengthCurrent);
 					dataWriterOutput.StoreAsync().get();
 					streamDataWriter.WriteBuffer(buffer, headerLength, (uint32_t)contentLengthCurrent);
@@ -415,13 +413,17 @@ namespace DiscordCoreAPI {
 				}
 				counter += 1;
 			}
-			DataReader dataReader00(finalFileOutput.GetInputStreamAt(0));
+			
+			DataReader dataReader00(finalFileOutput.GetInputStreamAt(4));
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
-			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size()).get();
-			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size());
+			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
+			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".weba";
 			saveFile(filePath, fileName, readBuffer);
+			string filePathName = to_string(filePath) + to_string(fileName);
+			//auto newBuffer = demux(filePathName);
+			co_return;
 		}
 
 	protected:

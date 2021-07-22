@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 		string aroundThisId;
 	};
 	
-	class MessageManagerAgent : public agent {
+	class MessageManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
 		friend class MessageManager;

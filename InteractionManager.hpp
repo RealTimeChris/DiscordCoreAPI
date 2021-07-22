@@ -345,12 +345,12 @@ namespace DiscordCoreAPI {
     class InteractionManagerAgent : public agent {
     public:
         unbounded_buffer<DiscordCoreInternal::CreateDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::CreateFollowUpMessageData> requestPostFollowUpMessageBuffer;
-        unbounded_buffer<DiscordCoreInternal::EditFollowUpMessageData> requestPatchFollowUpMessageBuffer;
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer;
         unbounded_buffer<DiscordCoreInternal::CreateInteractionResponseData> requestPostInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::EditInteractionResponseData> requestPatchInteractionResponseBuffer;
+        unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer;
+        unbounded_buffer<DiscordCoreInternal::CreateFollowUpMessageData> requestPostFollowUpMessageBuffer;
+        unbounded_buffer<DiscordCoreInternal::EditFollowUpMessageData> requestPatchFollowUpMessageBuffer;
         unbounded_buffer<MessageData> outInteractionResponseBuffer;
         unbounded_buffer<exception> errorBuffer;
 
@@ -366,10 +366,7 @@ namespace DiscordCoreAPI {
         }
 
         bool getError(exception& error) {
-            if (try_receive(this->errorBuffer, error)) {
-                return true;
-            }
-            return false;
+            return try_receive(this->errorBuffer, error);
         }
 
         MessageData patchObjectData(DiscordCoreInternal::EditFollowUpMessageData dataPackage){

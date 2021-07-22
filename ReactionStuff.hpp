@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		string messageId;
 	};
 
-	class ReactionManagerAgent : public agent {
+	class ReactionManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
 		friend class ReactionManager;

@@ -11,6 +11,7 @@
 #include "../pch.h"
 #include "WebSocketStuff.hpp"
 #include "DemuxingStuff.hpp"
+#include "FFMPEGStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -101,7 +102,6 @@ namespace DiscordCoreAPI {
 			for (unsigned int x = 0; x < numOfBytes; x += 1) {
 				audioDataPacketNew[x] = audioDataPacket[x];
 			}
-			cout << endl;
 
 			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
 			this->sequenceIndex += 1;
@@ -150,6 +150,8 @@ namespace DiscordCoreAPI {
 						sendSpeakingMessage(false);
 					}
 					audioData = receive(bufferMessageBlock.get(), 20000);
+					totalByteSize = audioData.totalByteSize;
+					bytesRemaining = audioData.remainingBytes;
 					if (audioData.playerId != playerId) {
 						cleanupAndSwitchPlayerId(&counter, &totalByteSize, &bytesRemaining, &startingTime, &sendTimers, &playerId, audioData);
 						this->timestamp = (int)startingTime;
@@ -160,10 +162,10 @@ namespace DiscordCoreAPI {
 					}
 					__int64 currentPosition = totalByteSize - bytesRemaining;
 					if (audioData.audioData.Length() > 0) {
-						IBuffer buffer = demuxWebA(audioData.audioData, currentPosition, totalByteSize);
+						IBuffer buffer = demux(audioData.audioData);
 						TimerElapsedHandler onSendTime = [=, this](ThreadPoolTimer timer) {
 							if (buffer.Length() > 0) {
-								VoiceConnection::sendSingleAudioPacket(buffer);
+								//VoiceConnection::sendSingleAudioPacket(buffer);
 							}
 						};
 						if (buffer != nullptr) {
@@ -181,16 +183,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 			}
-			string newString;
-			for (unsigned int x = 0; x < bufferVector[0].Length(); x += 1) {
-				if (bufferVector[0].data()[x] == bufferVector[1].data()[x]) {
-					newString += bufferVector[0].data()[x];
-				}
-				else {
-					newString += to_string(0);
-				}
-			}
-			cout << "END OF VOICECONNECTION::PLAY: " << newString << endl;
+			cout << "END OF VOICECONNECTION::PLAY: " << endl;
 			done();
 		}
 

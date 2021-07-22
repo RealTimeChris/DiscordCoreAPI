@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 		InputEventData eventData;
 	};
 
-	VoiceConnection* Guild::connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew) {
+	shared_ptr<VoiceConnection> Guild::connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew) {
 		if(channelId != ""){
 			if ((this->voiceConnection == nullptr || this->voiceConnection->voiceConnectionData.channelId != channelId)) {
 				auto voiceConnectData = websocketAgent->getVoiceConnectionData(channelId, this->data.id);
@@ -51,16 +51,16 @@ namespace DiscordCoreAPI {
 				try_receive(GuildManagerAgent::cache, guildMap);
 				if (guildMap.contains(this->data.id)) {
 					if (guildMap.at(this->data.id).voiceConnection != nullptr) {
-						return guildMap.at(this->data.id).voiceConnection.get();
+						return guildMap.at(this->data.id).voiceConnection;
 					}
 					guildMap.erase(this->data.id);
 				}
 				guildMap.insert(make_pair(this->data.id, *this));
 				asend(GuildManagerAgent::cache, guildMap);
-				return this->voiceConnection.get();
+				return this->voiceConnection;
 			}
 		}		
-		return this->voiceConnection.get();
+		return this->voiceConnection;
 	}
 
 	void Guild::disconnectFromVoice() {
@@ -80,7 +80,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
 	public:
-		friend class Guild;
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
@@ -98,15 +97,13 @@ namespace DiscordCoreAPI {
 		}
 
 		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> finalSetup(string botToken);
-		bool getError(exception& error) {
-			if (try_receive(errorBuffer, error)) {
 
-				return true;
-			}
-			return false;
+		bool getError(exception& error) {
+			return try_receive(errorBuffer, error);
 		}
 
 		void terminate() {
+			this->doWeQuit = true;
 			this->done();
 			DatabaseManagerAgent::cleanup();
 			InputEventManager::cleanup();
@@ -130,10 +127,10 @@ namespace DiscordCoreAPI {
 			while (this->pWebSocketConnectionAgent->getError(error)) {
 				cout << "DiscordCoreClient::terminate() Error 02: " << error.what() << endl << endl;
 			}
-			this->doWeQuit = true;
 		}
 
 	protected:
+		friend class Guild;
 		friend class BotUser;
 		bool doWeQuit = false;
 		hstring baseURL = L"https://discord.com/api/v9";
@@ -191,14 +188,13 @@ namespace DiscordCoreAPI {
 			this->pWebSocketReceiverAgent->start();
 			this->pWebSocketConnectionAgent->start();
 			this->start();
-			executeFunctionAfterTimePeriod([&](ThreadPoolTimer threadPoolTimer) {
+			executeFunctionAfterTimePeriod([&]() {
 				vector<ActivityData> activities;
 				ActivityData activity;
 				activity.name = "!help for my commands!";
 				activity.type = ActivityType::Game;
 				activities.push_back(activity);
 				this->currentUser->updatePresence({ .activities = activities, .status = "online",.afk = false });
-				threadPoolTimer.Cancel();
 				}, 5000, false);
 			co_await mainThread;
 			co_return;

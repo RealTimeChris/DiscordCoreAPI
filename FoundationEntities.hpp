@@ -1659,6 +1659,26 @@ namespace DiscordCoreAPI {
         }
     }
 
+    void executeFunctionAfterTimePeriod(function<void()> const& lambda, unsigned int timeDelayInMs, bool isRepeating) {
+        ThreadPoolTimer threadPoolTimer{ nullptr };
+        if (timeDelayInMs > 0) {
+            TimerElapsedHandler timeElapsedHandler = [&, threadPoolTimer, lambda](ThreadPoolTimer threadPoolTimerNew)->void {
+                lambda();
+            };
+            if (isRepeating) {
+                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, TimeSpan(timeDelayInMs * 10000));
+            }
+            else {
+                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, TimeSpan(timeDelayInMs * 10000));
+            }
+
+        }
+        else {
+            lambda();
+        }
+        return;
+    }
+
     void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> const& lambda, unsigned int timeDelayInMs, bool isRepeating) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0) {
