@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		ThreadPoolTimer threadPoolTimer{ nullptr };
 	};
 
-	class VoiceConnection: public agent {
+	class VoiceConnection : public agent {
 	public:
 		bool doWeQuit = false;
 		uint16_t sequenceIndex = 0;
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 		bool waitForReadyConnectedStatus() {
 			return receive(*this->readyBuffer);
 		}
-		
+
 		void sendSingleAudioPacket(IBuffer bufferToSend) {
 			if (sodium_init() == -1) {
 				cout << "LibSodium failed to initialize!" << endl << endl;
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 			memcpy_s(audioDataPacket + (numOfBytes - nonceSize), nonceSize, nonce, nonceSize);
 			vector<uint8_t> audioDataPacketNew;
 			audioDataPacketNew.resize(numOfBytes);
-			for (unsigned int x = 0; x < numOfBytes; x+=1){
+			for (unsigned int x = 0; x < numOfBytes; x += 1) {
 				audioDataPacketNew[x] = audioDataPacket[x];
 			}
 			cout << endl;
