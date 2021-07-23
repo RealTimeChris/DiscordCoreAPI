@@ -216,12 +216,7 @@
             pDiscordCoreClient->eventManager->onReactionRemoveEmoji(&IndexHost::onReactionRemoveEmoji);
             pDiscordCoreClient->eventManager->onVoiceStateUpdate(&IndexHost::onVoiceStateUpdate);
             CommandCenter::registerFunction("botinfo", new BotInfo);
-            CommandCenter::registerFunction("displayguildsdata", new DisplayGuildsData);
-            CommandCenter::registerFunction("help", new Help);
             CommandCenter::registerFunction("play", new Play);
-            CommandCenter::registerFunction("registerslashcommands", new RegisterSlashCommands);
-            CommandCenter::registerFunction("setbordercolor", new SetBorderColor);
-            CommandCenter::registerFunction("setmusicchannel", new SetMusicChannel);
             CommandCenter::registerFunction("test", new Test);
             return pDiscordCoreClient;
         }
