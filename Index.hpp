@@ -76,7 +76,7 @@
                     if (dataPackage.eventData.eventType != InputEventType::BUTTON_INTERACTION) {
                         CommandData commandData(dataPackage.eventData);
                         commandData.eventData = dataPackage.eventData;
-                        CommandController::checkForAndRunCommand(commandData);
+                        CommandCenter::checkForAndRunCommand(commandData);
                     }
                     else {
                         ButtonInteractionData dataPackageNew;
@@ -224,8 +224,8 @@
             pDiscordCoreClient->eventManager->onReactionRemoveAll(&IndexHost::onReactionRemoveAll);
             pDiscordCoreClient->eventManager->onReactionRemoveEmoji(&IndexHost::onReactionRemoveEmoji);
             pDiscordCoreClient->eventManager->onVoiceStateUpdate(&IndexHost::onVoiceStateUpdate);
-            CommandController::addCommand(make_shared<BotInfo>());
-            CommandController::addCommand(make_shared<Test>());
+            CommandCenter::registerFunction("botinfo", new BotInfo);
+            CommandCenter::registerFunction("test", new Test);
             return pDiscordCoreClient;
         }
         catch (exception& e) {

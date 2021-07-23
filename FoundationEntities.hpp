@@ -1471,7 +1471,7 @@ namespace  DiscordCoreInternal {
             return this->requesterId;
         }
     protected:
-        friend class CommandController;
+        friend class CommandCenter;
         friend class InputEventManager;
         friend class DiscordCoreClient;
         InteractionData interactionData;
@@ -3210,7 +3210,7 @@ namespace DiscordCoreAPI {
             return this->requesterId;
         }
     protected:
-        friend class CommandController;
+        friend class CommandCenter;
         friend class InputEventManager;
         friend class DiscordCoreClient;
         InteractionData interactionData;

@@ -19,6 +19,10 @@ namespace DiscordCoreAPI {
 			this->helpDescription = "__**Test Usage:**__ Enter !test or /test to run this command!";
 		}
 
+		Test* create() {
+			return new Test;
+		}
+
 		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 			try {
 
@@ -151,6 +155,5 @@ namespace DiscordCoreAPI {
 
 		}
 	};
-	Test test{};
 }
 #endif

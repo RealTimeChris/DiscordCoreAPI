@@ -18,6 +18,10 @@ namespace DiscordCoreAPI {
 			this->helpDescription = "__**Bot Info Usage:**__ Enter !botinfo or /botinfo";
 		}
 
+        BotInfo* create() {
+            return new BotInfo;
+        }
+
         virtual task<void>execute(shared_ptr<BaseFunctionArguments> args) {
 
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE && args->eventData.discordCoreClient->channels->getChannelAsync({ args->eventData.getChannelId() }).get().data.type != ChannelType::DM) {
@@ -79,8 +83,6 @@ namespace DiscordCoreAPI {
             co_return;
 		}
 
-	};
-
-    BotInfo botInfo{ };
+    };
 }
 #endif

@@ -25,37 +25,37 @@ namespace DiscordCoreAPI {
 
 	class BaseFunction {
 	public:
-		BaseFunction() {}
-		BaseFunction(BaseFunction* thisPtr) {
-			*this = *thisPtr;
-		}
+		virtual ~BaseFunction() {};
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
+		virtual BaseFunction* create() = 0;
 		string commandName;
 		string helpDescription;
-		virtual ~BaseFunction() {};
 	};
 
-	class CommandController {
+	class CommandCenter {
 	public:
+		static map<string, BaseFunction*> functions;
 
-		static map<string, shared_ptr<BaseFunction>> commands;
+		static void registerFunction(string functionName, BaseFunction* baseFunction) {
+			CommandCenter::functions.insert(make_pair(functionName, baseFunction));
+		}
 
-		static void addCommand(shared_ptr<BaseFunction> newFunction) {
-			DiscordCoreAPI::CommandController::commands.insert(make_pair(newFunction->commandName, newFunction));
+		static BaseFunction* createFunction(string functionName) {
+			return CommandCenter::functions.at(functionName)->create();
 		}
 
 		static void checkForAndRunCommand(CommandData commandData) {
-			shared_ptr<BaseFunction*> functionPointer{ nullptr };
+			BaseFunction* functionPointer{ nullptr };
 			bool messageOption = false;
 			if (commandData.eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				functionPointer = CommandController::getCommand(convertToLowerCase(commandData.eventData.getMessageData().content), commandData);
+				functionPointer = CommandCenter::getCommand(convertToLowerCase(commandData.eventData.getMessageData().content), commandData);
 				messageOption = true;
 			}
 			else if (commandData.eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				DiscordCoreInternal::CommandData commandDataNew;
 				DiscordCoreInternal::parseObject(commandData.eventData.interactionData.dataRaw, &commandDataNew);
 				string newCommandName = commandData.eventData.discordCoreClient->discordUser->data.prefix + commandDataNew.commandName;
-				functionPointer = CommandController::getCommand(convertToLowerCase(newCommandName), commandData);
+				functionPointer = CommandCenter::getCommand(convertToLowerCase(newCommandName), commandData);
 				messageOption = false;
 			}
 
@@ -66,49 +66,40 @@ namespace DiscordCoreAPI {
 			BaseFunctionArguments args(commandData.eventData);
 
 			if (messageOption == true) {
-				args.argumentsArray = CommandController::parseArguments(commandData.eventData.getMessageData().content);
+				args.argumentsArray = CommandCenter::parseArguments(commandData.eventData.getMessageData().content);
 			}
 			else if (messageOption == false) {
 				DiscordCoreInternal::CommandData commandDataNew;
 				DiscordCoreInternal::parseObject(commandData.eventData.getInteractionData().dataRaw, &commandDataNew);
 				args.argumentsArray = commandDataNew.optionsArgs;
 			}
-			(**functionPointer).execute(make_shared<BaseFunctionArguments>(args)).get();
-			functionPointer.~shared_ptr();
+			functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
+			delete functionPointer;
+			functionPointer = nullptr;
 		};
 
 	protected:
 
-		template<typename T>
-		static shared_ptr<T*>getCommandToWrap(shared_ptr<T> function) {
-			shared_ptr<T*> functionPtr;
-			if (function.get() == nullptr) {
-				functionPtr = make_shared<T*>();
-			}
-			else {
-				functionPtr = make_shared<T*>(function.get());
-			}
-			return functionPtr;
-		}
-
-		static shared_ptr<BaseFunction*> getCommand(string messageContents, CommandData commandData) {
+		static BaseFunction* getCommand(string messageContents, CommandData commandData) {
 			try {
 				size_t currentPosition = INFINITE;
-				shared_ptr<BaseFunction> lowestValue{ nullptr };
+				BaseFunction* lowestValue{ nullptr };
+				string functionName;
 				bool isItFound = false;
-				for (auto const [key, value] : DiscordCoreAPI::CommandController::commands) {
+				for (auto const [key, value] : DiscordCoreAPI::CommandCenter::functions) {
 					if (messageContents[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
 						if (messageContents.find(key) != string::npos && messageContents.find(key) < currentPosition) {
 							isItFound = true;
 							currentPosition = messageContents.find(key);
 							lowestValue = value;
+							functionName = messageContents.substr(messageContents.find(key), key.length());
 						}
 					}
 				}
 				if (isItFound) {
-					shared_ptr<BaseFunction*>newValue = getCommandToWrap(lowestValue);
+					BaseFunction* newValue = createFunction(functionName);
 					return newValue;
-				}				
+				}
 			}
 			catch (exception& e) {
 				cout << "CommandController::getCommand() Error: " << e.what() << endl << endl;
@@ -181,7 +172,9 @@ namespace DiscordCoreAPI {
 				return args;
 			}
 		}
+
 	};
-	map<string, shared_ptr<BaseFunction>> CommandController::commands;
+
+	map<string, BaseFunction*> CommandCenter::functions;
 };
 #endif
