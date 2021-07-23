@@ -181,9 +181,9 @@ namespace DiscordCoreAPI {
                         guild.disconnectFromVoice();
                         guildMap.erase(dataPackage.voiceStateData.guildId);
                         guildMap.insert(make_pair(dataPackage.voiceStateData.guildId, guild));
-                        asend(GuildManagerAgent::cache, guildMap);
                     }
                 }
+                asend(GuildManagerAgent::cache, guildMap);
             }
         }
     };
