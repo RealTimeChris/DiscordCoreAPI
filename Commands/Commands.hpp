@@ -25,9 +25,14 @@ namespace DiscordCoreAPI {
 
 	class BaseFunction {
 	public:
+		BaseFunction() {}
+		BaseFunction(BaseFunction* thisPtr) {
+			*this = *thisPtr;
+		}
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		string commandName;
 		string helpDescription;
+		virtual ~BaseFunction() {};
 	};
 
 	class CommandController {
@@ -40,7 +45,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static void checkForAndRunCommand(CommandData commandData) {
-			BaseFunction* functionPointer{ nullptr };
+			shared_ptr<BaseFunction*> functionPointer{ nullptr };
 			bool messageOption = false;
 			if (commandData.eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 				functionPointer = CommandController::getCommand(convertToLowerCase(commandData.eventData.getMessageData().content), commandData);
@@ -68,29 +73,35 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::parseObject(commandData.eventData.getInteractionData().dataRaw, &commandDataNew);
 				args.argumentsArray = commandDataNew.optionsArgs;
 			}
-			functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
+			(**functionPointer).execute(make_shared<BaseFunctionArguments>(args)).get();
+			functionPointer.~shared_ptr();
 		};
 
 	protected:
 
-		static BaseFunction* getCommand(string messageContents, CommandData commandData) {
+		static shared_ptr<BaseFunction*> getCommand(string messageContents, CommandData commandData) {
 			try {
 				size_t currentPosition = INFINITE;
 				BaseFunction* lowestValue{ nullptr };
-				for (auto const& [key, value] : DiscordCoreAPI::CommandController::commands) {
+				bool isItFound = false;
+				for (auto const [key, value] : DiscordCoreAPI::CommandController::commands) {
 					if (messageContents[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
 						if (messageContents.find(key) != string::npos && messageContents.find(key) < currentPosition) {
+							isItFound = true;
 							currentPosition = messageContents.find(key);
 							lowestValue = value;
 						}
 					}
 				}
-				return lowestValue;
+				if (isItFound) {
+					shared_ptr<BaseFunction*>newValue = make_shared<BaseFunction*>((BaseFunction*)lowestValue);
+					return newValue;
+				}				
 			}
 			catch (exception& e) {
 				cout << "CommandController::getCommand() Error: " << e.what() << endl << endl;
 			}
-			
+			return nullptr;
 		}
 
 		static vector<string> parseArguments(string messageContents) {
