@@ -204,11 +204,6 @@ namespace DiscordCoreAPI {
                 throw exception("Error writing the data to the stream of CustomIOContext!\n");
             };
             this->fileStreamData->Seek((LARGE_INTEGER)0, STREAM_SEEK_SET, nullptr);
-            this->avioContext->buffer = this->fileStreamBuffer;
-            this->avioContext->buffer_size = audioData.Length();
-            STATSTG statsStruct;
-            this->fileStreamData->Stat(&statsStruct, STATFLAG_NONAME);
-            cout << "STREAM SIZE: " << to_string(statsStruct.cbSize.QuadPart) << endl;
             this->avioContext = avio_alloc_context(
                 this->fileStreamBuffer,    // Buffer
                 audioData.Length(),  // Buffer size
@@ -218,15 +213,20 @@ namespace DiscordCoreAPI {
                 0,                // Function - Write Packets
                 streamSeek// Function - Seek to position in stream (see example)
             );
+            if (!this->avioContext) {
+                throw exception("Failed to allocate the context!");
+            }
+            this->avioContext->buffer = this->fileStreamBuffer;
+            this->avioContext->buffer_size = audioData.Length();
+            memcpy_s(this->fileStreamBuffer, audioData.Length(), audioData.data(), audioData.Length());
+            STATSTG statsStruct;
+            this->fileStreamData->Stat(&statsStruct, STATFLAG_NONAME);
+            cout << "STREAM SIZE: " << to_string(statsStruct.cbSize.QuadPart) << endl;
             this->formatContext = avformat_alloc_context();
-            this->formatContext->pb = this->avioContext;
-            this->formatContext->flags = AVFMT_FLAG_CUSTOM_IO | AVFMT_NOFILE;
-            AVInputFormat* inputFormat;
-            if (av_probe_input_buffer2(this->avioContext,&inputFormat,"", nullptr, 0, audioData.Length()) != 0) {
-                throw exception("Failed to probe input format!");
-            };
-            int error = avformat_open_input(&this->formatContext, 0, inputFormat, nullptr);
-            this->formatContext->priv_data = this->fileStreamBuffer;
+            this->formatContext->flags = AVFMT_FLAG_CUSTOM_IO;
+            this->formatContext->iformat = new AVInputFormat();
+            this->formatContext->iformat->flags = AVFMT_NOFILE;
+            int error = avformat_open_input(&this->formatContext, 0, this->formatContext->iformat, nullptr);
             if (error < 0) {
                 const size_t charCount = 128;
                 char* charString = new char[charCount];
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
         AVIOContext* avioContext;
     };
 
-    static int openCodecContext(int* streamIndex,
+    static int getInputStreams(int* streamIndex,
         AVCodecContext** codecContext, AVFormatContext* formatContext, enum AVMediaType type, string sourceFilename)
     {
         int ret, streamIndexValue;
@@ -255,34 +255,9 @@ namespace DiscordCoreAPI {
         else {
             streamIndexValue = ret;
             stream = formatContext->streams[streamIndexValue];
-
-            /* find decoder for the stream */
-            codec = avcodec_find_decoder(stream->codecpar->codec_id);
-            if (!codec) {
-                cout << "Failed to find %s codec\n" << endl;
-                return AVERROR(EINVAL);
-            }
-
-            /* Allocate a codec context for the decoder */
-            *codecContext = avcodec_alloc_context3(codec);
-            if (!*codecContext) {
-                cout << "Failed to allocate the %s codec context\n" << endl;
-                return AVERROR(ENOMEM);
-            }
-
-            /* Copy codec parameters from input stream to output codec context */
-            if ((ret = avcodec_parameters_to_context(*codecContext, stream->codecpar)) < 0) {
-                cout << "Failed to copy %s codec parameters to decoder context\n" << endl;
-                return ret;
-            }
-
-            /* Init the decoders */
-            if ((ret = avcodec_open2(*codecContext, codec, NULL)) < 0) {
-                cout << "Failed to open %s codec\n" << endl;
-                return ret;
-            }
-            *streamIndex = streamIndexValue;
         }
+
+        *streamIndex = streamIndexValue;
 
         return 0;
     }
@@ -378,28 +353,35 @@ namespace DiscordCoreAPI {
             av_get_sample_fmt_name(sample_fmt));
         return -1;
     }
-
-    IBuffer demux(IBuffer audioBuffer) {
+    /*
+    IBuffer demux(IBuffer audioBuffer, string filePathName) {
+        AVCodec avCodec;
         AVCodecContext* audioCodecContext = nullptr;
         AVStream* audioStream = nullptr;
-        int audioStreamIndex = -1, ret = 0, offsetIntoStream = 0;
+        int audioStreamIndex = 0, ret = 0, offsetIntoStream = 0;
         AVFrame* frame = nullptr;
         AVPacket* packet = nullptr;
         IBuffer outputBuffer = nullptr;
         InMemoryRandomAccessStream randomAccessStream;
         InMemoryRandomAccessStream myStream;
-        CustomIOContext formatContext(audioBuffer);
+        //CustomIOContext formatContext(audioBuffer);
+        AVFormatContext* formatContext = avformat_alloc_context();
 
-        if (avformat_find_stream_info(formatContext.formatContext, NULL) < 0) {
+        if (avformat_open_input(&formatContext, filePathName.c_str(), nullptr, nullptr) != 0) {
+            fprintf(stderr, "Could not open the file stream!\n");
+            return IBuffer();
+        }
+
+        if (avformat_find_stream_info(formatContext, nullptr) < 0) {
             fprintf(stderr, "Could not find stream information\n");
             return IBuffer();
         }
 
-        if (openCodecContext(&audioStreamIndex, &audioCodecContext, formatContext.formatContext, AVMEDIA_TYPE_AUDIO, "") >= 0) {
-            audioStream = formatContext.formatContext->streams[audioStreamIndex];
+        if (getInputStreams(&audioStreamIndex, &audioCodecContext, formatContext, AVMEDIA_TYPE_AUDIO, filePathName) >= 0) {
+            audioStream = formatContext->streams[audioStreamIndex];
         }
 
-        av_dump_format(formatContext.formatContext, 0, "", 0);
+        av_dump_format(formatContext, 0, "", 0);
 
         if (!audioStream) {
             cout << "Could not find audio or video stream in the input, aborting\n" << endl;
@@ -422,7 +404,7 @@ namespace DiscordCoreAPI {
             cout << "Demuxing audio from file '%s' into '%s'\n" << endl;
         }
 
-        while (av_read_frame(formatContext.formatContext, packet) >= 0) {
+        while (av_read_frame(formatContext, packet) >= 0) {
             if (packet->stream_index == audioStreamIndex) {
                 ret = decodePacket(audioCodecContext, packet, frame, &randomAccessStream, &offsetIntoStream, &audioStreamIndex);
             }
@@ -459,14 +441,50 @@ namespace DiscordCoreAPI {
         }
     end:
         avcodec_free_context(&audioCodecContext);
-        avformat_close_input(&formatContext.formatContext);
+        avformat_close_input(&formatContext);
         av_packet_free(&packet);
         av_frame_free(&frame);
 
         return outputBuffer;
     }
-    /*
-    IBuffer demux(string downloadURL, int bufferSize) {
+    */
+    static int openCodecContext(int* stream_idx,
+        AVFormatContext* fmt_ctx, enum AVMediaType type)
+    {
+        int ret, stream_index;
+        AVStream* st;
+        AVCodecContext* dec_ctx = NULL;
+        AVCodec* dec = NULL;
+        AVDictionary* opts = NULL;
+        ret = av_find_best_stream(fmt_ctx, type, -1, -1, NULL, 0);
+        if (ret < 0) {
+            fprintf(stderr, "Could not find %s stream in input file '%s'\n",
+                av_get_media_type_string(type));
+            return ret;
+        }
+        else {
+            stream_index = ret;
+            st = fmt_ctx->streams[stream_index];
+            /* find decoder for the stream */
+            dec_ctx = st->codec;
+            dec = avcodec_find_decoder(dec_ctx->codec_id);
+            if (!dec) {
+                fprintf(stderr, "Failed to find %s codec\n",
+                    av_get_media_type_string(type));
+                return AVERROR(EINVAL);
+            }
+            /* Init the decoders, with or without reference counting */
+            if ((ret = avcodec_open2(dec_ctx, dec, &opts)) < 0) {
+                fprintf(stderr, "Failed to open %s codec\n",
+                    av_get_media_type_string(type));
+                return ret;
+            }
+            *stream_idx = stream_index;
+        }
+        return 0;
+    }
+
+    IBuffer demux(string downloadURL) {
         AVCodecContext* audioCodecContext = nullptr;
         AVStream* audioStream = nullptr;
         int audioStreamIndex = -1, ret = 0, offsetIntoStream = 0;
@@ -475,11 +493,9 @@ namespace DiscordCoreAPI {
         IBuffer outputBuffer = nullptr;
         InMemoryRandomAccessStream randomAccessStream;
         InMemoryRandomAccessStream myStream;
-        MyIOContext priv_ctx(myStream, bufferSize);
         AVFormatContext* formatContext = ::avformat_alloc_context();
-        formatContext->pb = priv_ctx.get_avio();
 
-        int error = avformat_open_input(&formatContext, "C:\\Users\\Chris\\source\\repos\\MBot-MusicHouse-Cpp\\x64\\Release\\Skrillex - First Of The Year (Equinox) [Official Music Video] 1626976434441474200.weba", NULL, NULL);
+        int error = avformat_open_input(&formatContext, "C:\\Users\\Chris\\Downloads\\Skrillex - First Of The Year (Equinox) [Official Music Video] 1627070955308433200.webm", NULL, NULL);
         if (error < 0) {
             const size_t charCount = 128;
             char* charString = new char[charCount];
@@ -494,7 +510,12 @@ namespace DiscordCoreAPI {
             return IBuffer();
         }
 
-        if (openCodecContext(&audioStreamIndex, &audioCodecContext, formatContext, AVMEDIA_TYPE_AUDIO, downloadURL) >= 0) {
+        if (openCodecContext(&audioStreamIndex, formatContext, AVMediaType::AVMEDIA_TYPE_AUDIO) != 0) {
+            cout << "Could not find open the codec context!\n" << endl;
+            return IBuffer();
+        }
+
+        if (getInputStreams(&audioStreamIndex, &audioCodecContext, formatContext, AVMEDIA_TYPE_AUDIO, downloadURL) >= 0) {
             audioStream = formatContext->streams[audioStreamIndex];
         }
 
@@ -568,7 +589,7 @@ namespace DiscordCoreAPI {
 
         return outputBuffer;
     }
-    */
+    
 }
 
 #endif

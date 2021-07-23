@@ -355,18 +355,18 @@ namespace DiscordCoreAPI {
 			if (format.contentLength < this->maxBufSize) {
 				this->maxBufSize = format.contentLength;
 			}
-
 			__int64 remainingDownloadContentLength = format.contentLength;
 			__int64 contentLengthCurrent = this->maxBufSize;
 			int counter = 0;
 			string playerId = to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			InMemoryRandomAccessStream outputStream;
 			while (remainingDownloadContentLength > 0) {
 				if (contentLengthCurrent > 0) {
 					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
 				}
 				auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-				InMemoryRandomAccessStream outputStream;
-				DataWriter streamDataWriter(outputStream);
+				
+				DataWriter streamDataWriter(outputStream.GetOutputStreamAt(format.contentLength - remainingDownloadContentLength));
 				dataWriterOutput.UnicodeEncoding(UnicodeEncoding::Utf8);
 				IBuffer streamBuffer;
 				if (!headersFinished) {
@@ -394,10 +394,13 @@ namespace DiscordCoreAPI {
 
 				DataReader dataReader00(outputStream.GetInputStreamAt(0));
 				dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
-				dataReader00.LoadAsync((uint32_t)contentLengthCurrent).get();
-				auto readBuffer = dataReader00.ReadBuffer((uint32_t)contentLengthCurrent);
+				dataReader00.LoadAsync((uint32_t)outputStream.Size()).get();
+				auto readBuffer = dataReader00.ReadBuffer((uint32_t)outputStream.Size());
 
 				AudioDataChunk audioData;
+				audioData.filePath = "C:\\Users\\Chris\\Downloads\\";
+				audioData.fileName = videoSearchResult.videoTitle + " " + playerId + ".webm";
+				saveFile(to_hstring(audioData.filePath), to_hstring(audioData.fileName), readBuffer);
 				audioData.audioData = readBuffer;
 				audioData.audioBitrate = format.bitrate;
 				audioData.totalByteSize = format.contentLength;
@@ -419,7 +422,7 @@ namespace DiscordCoreAPI {
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
 			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
-			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".weba";
+			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
 			saveFile(filePath, fileName, readBuffer);
 			string filePathName = to_string(filePath) + to_string(fileName);
 			//auto newBuffer = demux(filePathName);

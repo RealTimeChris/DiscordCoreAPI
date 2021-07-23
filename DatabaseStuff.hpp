@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
         DatabaseWorkloadType workloadType;
     };
 
-    class DatabaseManagerAgent : public agent {
+    class DatabaseManagerAgent : agent {
     protected:
         friend class DiscordCoreClient;
         friend class DiscordUser;

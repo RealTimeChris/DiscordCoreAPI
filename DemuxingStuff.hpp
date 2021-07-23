@@ -13,14 +13,15 @@
 namespace DiscordCoreAPI{ 
 
     string parseWebm(string bufferString) {
+		json::array_t newData = json::parse(bufferString);
 		int nextPos = 36; // 36 because 4 + 1 + 31 for the EBML header.
-		json info = { {"ebml_version", bufferString.substr(3, 1) },
-			{"ebmlReadVersion",bufferString.substr(7, 1)},
-			{"maxEBMLIDLength",bufferString.substr(11, 1)},
-			{"maxEBMLSizeLength",bufferString.substr(15, 1)},
-			{"docType",bufferString.substr(19, 4)},
-			{"docTypeVersion", bufferString.substr(28,1)},
-			{"docTypeReadVersion",bufferString.substr(32, 1)} };
+		json info = { {"ebml_version", newData.at(5).get<unsigned int>() },
+			{"ebmlReadVersion",newData.at(9).get<unsigned int>()},
+			{"maxEBMLIDLength",newData.at(13).get<unsigned int>()},
+			{"maxEBMLSizeLength",newData.at(17).get<unsigned int>()},
+			{"docType",newData.at(21).get<string>()},
+			{"docTypeVersion", newData.at(28).get<unsigned int>()},
+			{"docTypeReadVersion",newData.at(32).get<unsigned int>()} };
 			//{"segment_length",getElementLength(nextPos + 4, buffer);
 
 		// note that the length here is the number of bytes that make up the length of the element (not the actual total length of the element itself)
@@ -45,17 +46,14 @@ namespace DiscordCoreAPI{
 		IBuffer returnBuffer = bufferToDemux;
 		DataReader dataReader{ nullptr };
 		dataReader = dataReader.FromBuffer(returnBuffer);
-		winrt::Windows::Security::Cryptography::ICryptographicBufferStatics bufferStatics;
 		string newString02;
 		vector<uint8_t> newVector;
 		newVector.resize(36);
 		dataReader.ReadBytes(newVector);
 		cout << "THE STRING02: " << endl;
 		for (auto value : newVector) {
-			cout << std::dec << (int)value<< " ";
-		}
-		for (unsigned int x = 0; x < newVector.size(); x += 1) {
-			newString02 += to_string(bufferToDemux.data()[x]);
+			cout << std::dec << (int)value << " ";
+			newString02 += (char)value;
 		}
 		string newString03 = parseWebm(newString02);
 

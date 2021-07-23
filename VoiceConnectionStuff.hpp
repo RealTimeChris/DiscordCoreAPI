@@ -21,6 +21,8 @@ namespace DiscordCoreAPI {
 		unsigned __int64 audioBitrate;
 		__int64 totalByteSize = 1;
 		__int64 remainingBytes;
+		string filePath;
+		string fileName;
 	};
 
 	class ThreadPoolTimerNew {
@@ -32,13 +34,16 @@ namespace DiscordCoreAPI {
 	class VoiceConnection : public agent {
 	public:
 		bool doWeQuit = false;
-		uint16_t sequenceIndex = 0;
-		uint32_t timestamp = 0;
+		bool doWeWait = true;
+		__int32 timestamp;
+		__int16 sequenceIndex;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlock;
 		shared_ptr<unbounded_buffer<bool>> readyBuffer;
-		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew) {
+		unbounded_buffer<bool> playPauseBuffer;
+		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew)
+			: agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			if (voiceConnectionDataNew.channelId != "") {
 				this->voiceConnectionData = voiceConnectionDataNew;
 				this->bufferMessageBlock = bufferMessageBlockNew;
@@ -46,22 +51,55 @@ namespace DiscordCoreAPI {
 				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->voiceConnectionData, this->readyBuffer);
 				send(this->voicechannelWebSocketAgent->voiceConnectionDataBuffer, this->voiceConnectionData);
 				this->voicechannelWebSocketAgent->start();
+				receive(*this->readyBuffer);
+				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
 			}
 			else {
 				throw exception("Sorry, but you need to select a proper voice channel to connect to!");
 			}
 		}
 
-		bool waitForReadyConnectedStatus() {
-			return receive(*this->readyBuffer);
+		void deleteFile(string filePath, string fileName) {
+			auto folder = Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
+			auto folder2 = folder.GetFolderFromPathAsync(to_hstring(filePath)).get();
+			winrt::Windows::Storage::StorageFile storageFile = folder2.GetFileAsync(to_hstring(fileName)).get();
+			storageFile.DeleteAsync().get();
 		}
 
-		void sendSingleAudioPacket(IBuffer bufferToSend) {
+		void play(bool doWeBlock = false) {
+			send(this->playPauseBuffer, true);
+			this->doWeWait = false;
+			this->start();
+			if (doWeBlock) {
+				wait(this);
+			}
+		}
+
+		void startPlaying() {
+			send(this->playPauseBuffer, true);
+			this->doWeWait = false;
+		}
+
+		void pausePlaying() {
+			this->doWeWait = true;
+		}
+
+		void clearBuffer() {
+
+		}
+
+		~VoiceConnection() {
+			this->terminate();
+		}
+
+	protected:
+		friend class Guild;
+
+		void sendSingleAudioQuantum(IBuffer bufferToSend) {
 			if (sodium_init() == -1) {
 				cout << "LibSodium failed to initialize!" << endl << endl;
 				this->terminate();
 			}
-			this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = 4;
 			const unsigned int frameSize = bufferToSend.Length() / 2;
@@ -124,13 +162,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void deleteFile(string filePath, string fileName) {
-			auto folder = Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
-			auto folder2 = folder.GetFolderFromPathAsync(to_hstring(filePath)).get();
-			winrt::Windows::Storage::StorageFile storageFile = folder2.CreateFileAsync(to_hstring(fileName), CreationCollisionOption::ReplaceExisting).get();
-			storageFile.DeleteAsync().get();
-		}
-
 		void run() {
 			AudioDataChunk audioData;
 			vector<ThreadPoolTimerNew> sendTimers;
@@ -142,6 +173,10 @@ namespace DiscordCoreAPI {
 			vector<IBuffer> bufferVector(2);
 			__int64 startingTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			while (doWeQuit == false) {
+				if (this->doWeWait) {
+					receive(this->playPauseBuffer);
+				}
+
 				try {
 					if (bytesRemaining == -1) {
 						sendSpeakingMessage(true);
@@ -162,7 +197,9 @@ namespace DiscordCoreAPI {
 					}
 					__int64 currentPosition = totalByteSize - bytesRemaining;
 					if (audioData.audioData.Length() > 0) {
-						IBuffer buffer = demux(audioData.audioData);
+						IBuffer buffer;
+						//IBuffer buffer = demux(audioData.filePath + audioData.fileName);
+						//IBuffer bufferNew = demuxWebA(audioData.audioData, currentPosition, totalByteSize);
 						TimerElapsedHandler onSendTime = [=, this](ThreadPoolTimer timer) {
 							if (buffer.Length() > 0) {
 								//VoiceConnection::sendSingleAudioPacket(buffer);
@@ -187,22 +224,12 @@ namespace DiscordCoreAPI {
 			done();
 		}
 
-		void play(bool doWeBlock = false) {
-			this->start();
-			if (doWeBlock) {
-				wait(this);
-			}
-		}
-
 		void terminate() {
 			done();
 			this->doWeQuit = true;
 			this->voicechannelWebSocketAgent->terminate();
 		}
 
-		~VoiceConnection() {
-			this->terminate();
-		}
 	};
 
 }

@@ -206,14 +206,14 @@ namespace DiscordCoreAPI {
 
 		static overwrite_buffer<map<string, Message>> cache;
 
-		unbounded_buffer<DiscordCoreInternal::GetMessageData> requestFetchMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetMessageData> requestGetMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::FetchMessagesData> requestGetMultMessagesBuffer;
 		unbounded_buffer<DiscordCoreInternal::DeleteMessagesBulkData> requestDeleteMultMessagesBuffer;
-		unbounded_buffer<DiscordCoreInternal::PostMessageData> requestPostMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::SendDMData> requestPostDMMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::PatchMessageData> requestPatchMessageBuffer;
+		unbounded_buffer<DiscordCoreInternal::FetchMessagesData> requestGetMultMessagesBuffer;
 		unbounded_buffer<DiscordCoreInternal::DeleteMessageData> requestDeleteMessageBuffer;
+		unbounded_buffer<DiscordCoreInternal::PatchMessageData> requestPatchMessageBuffer;
+		unbounded_buffer<DiscordCoreInternal::GetMessageData> requestFetchMessageBuffer;
+		unbounded_buffer<DiscordCoreInternal::PostMessageData> requestPostMessageBuffer;
+		unbounded_buffer<DiscordCoreInternal::GetMessageData> requestGetMessageBuffer;
+		unbounded_buffer<DiscordCoreInternal::SendDMData> requestPostDMMessageBuffer;
 		unbounded_buffer<vector<Message>> outMultMessagesBuffer;
 		unbounded_buffer<Message> outMessageBuffer;
 		concurrent_queue<Message> messagesToInsert;
