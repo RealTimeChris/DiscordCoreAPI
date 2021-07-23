@@ -86,13 +86,13 @@ namespace DiscordCoreAPI {
 				BaseFunction* lowestValue{ nullptr };
 				string functionName;
 				bool isItFound = false;
-				for (auto const [key, value] : DiscordCoreAPI::CommandCenter::functions) {
+				for (auto const& [key, value] : DiscordCoreAPI::CommandCenter::functions) {
 					if (messageContents[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
 						if (messageContents.find(key) != string::npos && messageContents.find(key) < currentPosition) {
 							isItFound = true;
 							currentPosition = messageContents.find(key);
 							lowestValue = value;
-							functionName = messageContents.substr(messageContents.find(key), key.length());
+							functionName = messageContents.substr(currentPosition, key.length());
 						}
 					}
 				}
