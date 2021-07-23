@@ -1471,7 +1471,7 @@ namespace  DiscordCoreInternal {
             return this->requesterId;
         }
     protected:
-        friend class CommandCenter;
+        friend class CommandController;
         friend class InputEventManager;
         friend class DiscordCoreClient;
         InteractionData interactionData;
@@ -1614,6 +1614,9 @@ namespace DiscordCoreAPI {
             }
         }
 
+        void resetTimer() {
+            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+        }
     protected:
         unsigned long long maxNumberOfMs;
         unsigned long long startTime;
