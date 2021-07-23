@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 	class CommandController {
 	public:
 
-		static map<string, BaseFunction*> commands;
+		static map<string, shared_ptr<BaseFunction>> commands;
 
-		static void addCommand(BaseFunction* newFunction) {
+		static void addCommand(shared_ptr<BaseFunction> newFunction) {
 			DiscordCoreAPI::CommandController::commands.insert(make_pair(newFunction->commandName, newFunction));
 		}
 
@@ -79,10 +79,22 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		template<typename T>
+		static shared_ptr<T*>getCommandToWrap(shared_ptr<T> function) {
+			shared_ptr<T*> functionPtr;
+			if (function.get() == nullptr) {
+				functionPtr = make_shared<T*>();
+			}
+			else {
+				functionPtr = make_shared<T*>(function.get());
+			}
+			return functionPtr;
+		}
+
 		static shared_ptr<BaseFunction*> getCommand(string messageContents, CommandData commandData) {
 			try {
 				size_t currentPosition = INFINITE;
-				BaseFunction* lowestValue{ nullptr };
+				shared_ptr<BaseFunction> lowestValue{ nullptr };
 				bool isItFound = false;
 				for (auto const [key, value] : DiscordCoreAPI::CommandController::commands) {
 					if (messageContents[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
@@ -94,7 +106,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 				if (isItFound) {
-					shared_ptr<BaseFunction*>newValue = make_shared<BaseFunction*>((BaseFunction*)lowestValue);
+					shared_ptr<BaseFunction*>newValue = getCommandToWrap(lowestValue);
 					return newValue;
 				}				
 			}
@@ -170,6 +182,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 	};
-	map<string, BaseFunction*> CommandController::commands;
+	map<string, shared_ptr<BaseFunction>> CommandController::commands;
 };
 #endif
