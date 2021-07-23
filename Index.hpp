@@ -224,8 +224,8 @@
             pDiscordCoreClient->eventManager->onReactionRemoveAll(&IndexHost::onReactionRemoveAll);
             pDiscordCoreClient->eventManager->onReactionRemoveEmoji(&IndexHost::onReactionRemoveEmoji);
             pDiscordCoreClient->eventManager->onVoiceStateUpdate(&IndexHost::onVoiceStateUpdate);
-            CommandController::addCommand(&botInfo);
-            CommandController::addCommand(&test);
+            CommandController::addCommand(make_shared<BotInfo>());
+            CommandController::addCommand(make_shared<Test>());
             return pDiscordCoreClient;
         }
         catch (exception& e) {
