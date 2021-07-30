@@ -24,11 +24,11 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<HttpWorkload> workSubmissionBuffer;
 		unbounded_buffer<HttpData> workReturnBuffer;
 
-		HttpRequestAgent(HttpAgentResources agentResources) 
+		HttpRequestAgent(HttpAgentResources agentResources)
 			: agent(*HttpRequestAgent::threadContext->scheduler)
 		{
 			try {
-				this->groupId = HttpRequestAgent::threadContext->createGroup(*ThreadManager::getThreadContext().get());
+				this->groupId = HttpRequestAgent::threadContext->createGroup();
 				this->baseURL = agentResources.baseURL;
 				Filters::HttpBaseProtocolFilter filter;
 				Filters::HttpCacheControl cacheControl{ nullptr };
@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 				this->getHeaders = this->getHttpClient.DefaultRequestHeaders();
 				if (agentResources.userAgent != L"") {
 					this->getHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
-				}				
+				}
 				this->putHttpClient = HttpClient(filter);
 				this->putHeaders = this->putHttpClient.DefaultRequestHeaders();
 				if (agentResources.userAgent != L"") {
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		bool getError(exception& error){
+		bool getError(exception& error) {
 			if (try_receive(errorBuffer, error)) {
 				return true;
 			}
@@ -97,29 +97,32 @@ namespace DiscordCoreInternal {
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		unbounded_buffer<exception> errorBuffer;
 
-		bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew) {
-			if (rateLimitDataNew->getsRemaining == 0) {
+		static bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew) {
+			if (rateLimitDataNew->getsRemaining <= 0) {
 				float loopStartTime = rateLimitDataNew->timeStartedAt;
 				float targetTime = loopStartTime + rateLimitDataNew->msRemain;
 				float currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-				float timeRemaining = currentTime - targetTime;
-				if (timeRemaining <= -15000.0f) {
-					cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining * -1.0f << "ms." << endl << endl;
-					return true;
-				}
-				if (timeRemaining <= 0.0f) {
-					cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining * -1.0f << "ms." << endl << endl;
-					while (timeRemaining <= 0.0f) {
-						currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-						timeRemaining = currentTime - targetTime;
+				float timeRemaining = targetTime - currentTime;
+				if (timeRemaining > 0.0f) {
+					if (rateLimitDataNew->nextExecutionTime == 0) {
+						rateLimitDataNew->nextExecutionTime = currentTime;
 					}
+					rateLimitDataNew->nextExecutionTime += timeRemaining;
+					timeRemaining = (float)rateLimitDataNew->nextExecutionTime - currentTime;
+					cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining << "ms." << endl << endl;
+					while (timeRemaining > 0.0f) {
+						currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
+						timeRemaining = rateLimitDataNew->nextExecutionTime - currentTime;
+					}
+					rateLimitDataNew->nextExecutionTime = 0;
 					rateLimitDataNew->msRemain = 0.0f;
 					rateLimitDataNew->timeStartedAt = 0.0f;
 				}
 			}
+			rateLimitDataNew->getsRemaining -= 1;
 			return false;
 		}
-		
+
 		void run() {
 			try {
 				transformer<HttpWorkload, HttpData> completeHttpRequest([this](HttpWorkload workload) -> HttpData {
@@ -130,27 +133,28 @@ namespace DiscordCoreInternal {
 						string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 						rateLimitData = HttpRequestAgent::rateLimitData.at(bucket);
 					}
-					if (rateLimitData.getsRemaining == 0) {
+					if (rateLimitData.getsRemaining <= 0) {
 						float loopStartTime = rateLimitData.timeStartedAt;
 						float targetTime = loopStartTime + rateLimitData.msRemain;
 						float currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-						float timeRemaining = currentTime - targetTime;
-						if (timeRemaining <= -15000.0f) {
-							HttpData returnData;
-							returnData.returnCode = 187;
-							returnData.returnMessage = "Waiting on rate-limit, Time Remainiing: " + to_string(timeRemaining * -1.0f) + "ms";
-							return returnData;
-						}
-						if (timeRemaining <= 0.0f) {
-							cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining * -1.0f << "ms" << endl << endl;
-							while (timeRemaining <= 0.0f) {
-								currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-								timeRemaining = currentTime - targetTime;
+						float timeRemaining = targetTime - currentTime;
+						if (timeRemaining > 0.0f) {
+							if (rateLimitData.nextExecutionTime == 0) {
+								rateLimitData.nextExecutionTime = currentTime;
 							}
+							rateLimitData.nextExecutionTime += timeRemaining;
+							timeRemaining = (float)rateLimitData.nextExecutionTime - currentTime;
+							cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining << "ms." << endl << endl;
+							while (timeRemaining > 0.0f) {
+								currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
+								timeRemaining = rateLimitData.nextExecutionTime - currentTime;
+							}
+							rateLimitData.nextExecutionTime = 0;
 							rateLimitData.msRemain = 0.0f;
 							rateLimitData.timeStartedAt = 0.0f;
 						}
 					}
+					rateLimitData.getsRemaining -= 1;
 					HttpData returnData;
 					if (workload.workloadClass == HttpWorkloadClass::GET) {
 						returnData = httpGETObjectData(workload.relativePath, &rateLimitData);
@@ -395,7 +399,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPATCHObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData patchData;
-			string connectionPath = to_string(this->baseURL) + relativeURL;
+			string connectionPath = to_string(baseURL) + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
 			HttpMediaTypeHeaderValue typeHeaderValue(L"application/json");
@@ -523,10 +527,10 @@ namespace DiscordCoreInternal {
 			}
 			return deleteData;
 		}
-		
+
 		unsigned int groupId;
 		Uri baseURI{ nullptr };
-		hstring baseURL = L"";
+		hstring baseURL;
 		hstring botToken = L"";
 		HttpRequestHeaderCollection getHeaders{ nullptr };
 		HttpRequestHeaderCollection putHeaders{ nullptr };

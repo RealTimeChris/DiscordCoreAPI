@@ -924,6 +924,7 @@ namespace  DiscordCoreInternal {
         float msRemain = 0.0f;
         float timeStartedAt = 0.0f;
         string bucket;
+        float nextExecutionTime;
     };
 
     struct GetGuildData {
