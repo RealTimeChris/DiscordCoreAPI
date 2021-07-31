@@ -11,7 +11,8 @@
 #include "../pch.h"
 #include "WebSocketStuff.hpp"
 #include "DemuxingStuff.hpp"
-#include "FFMPEGStuff.hpp"
+#include "DecodingStuff.hpp"
+#include "C:/Users/Chris/source/repos/MBot-MusicHouse-Cpp/AudioOutputStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -60,7 +61,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void deleteFile(string filePath, string fileName) {
-			auto folder = Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
+			auto folder = winrt::Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
 			auto folder2 = folder.GetFolderFromPathAsync(to_hstring(filePath)).get();
 			winrt::Windows::Storage::StorageFile storageFile = folder2.GetFileAsync(to_hstring(fileName)).get();
 			storageFile.DeleteAsync().get();
@@ -162,17 +163,31 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+		void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
+			auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
+			winrt::Windows::Storage::StorageFile storageFile = folder.CreateFileAsync(fileName, CreationCollisionOption::ReplaceExisting).get();
+			winrt::Windows::Storage::FileIO::WriteBufferAsync(storageFile, readBuffer).get();
+		}
+
+		IBuffer loadFile(hstring filePath, hstring fileName) {
+			auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
+			winrt::Windows::Storage::StorageFile storageFile = folder.GetFileAsync(fileName).get();
+			auto returnBuffer = winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile).get();
+			return returnBuffer;
+		}
+
 		void run() {
 			AudioDataChunk audioData;
 			vector<ThreadPoolTimerNew> sendTimers;
+			AudioOutputStuff::OutputStereoSpeakers outputSpeakers = AudioOutputStuff::OutputStereoSpeakers();
 			string playerId;
 			int counter = 0;
 			__int64 totalByteSize = 0;
-			__int64 bytesRemaining = -1;
+			__int64 bytesRemaining = 1;
 			int bufferIndex = 0;
 			vector<IBuffer> bufferVector(2);
 			__int64 startingTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			while (doWeQuit == false) {
+			while (doWeQuit == false && bytesRemaining > 0) {
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
 				}
@@ -185,35 +200,47 @@ namespace DiscordCoreAPI {
 						sendSpeakingMessage(false);
 					}
 					audioData = receive(bufferMessageBlock.get(), 20000);
+					if (counter == 0) {
+						bytesRemaining = audioData.totalByteSize;
+					}
 					totalByteSize = audioData.totalByteSize;
-					bytesRemaining = audioData.remainingBytes;
+					cout << "TOTAL BYTES: " << totalByteSize << endl;
+					bytesRemaining -= audioData.audioData.Length();
+					cout << "AUDIO DATA LENGTH: " << audioData.audioData.Length() << endl;
 					if (audioData.playerId != playerId) {
-						cleanupAndSwitchPlayerId(&counter, &totalByteSize, &bytesRemaining, &startingTime, &sendTimers, &playerId, audioData);
+						//cleanupAndSwitchPlayerId(&counter, &totalByteSize, &bytesRemaining, &startingTime, &sendTimers, &playerId, audioData);
 						this->timestamp = (int)startingTime;
 					}
 					if (counter == 0 && bufferIndex < 2) {
 						bufferVector[bufferIndex] = audioData.audioData;
 						bufferIndex += 1;
 					}
-					__int64 currentPosition = totalByteSize - bytesRemaining;
 					if (audioData.audioData.Length() > 0) {
-						IBuffer buffer;
-						//IBuffer buffer = demux(audioData.filePath + audioData.fileName);
-						//IBuffer bufferNew = demuxWebA(audioData.audioData, currentPosition, totalByteSize);
-						TimerElapsedHandler onSendTime = [=, this](ThreadPoolTimer timer) {
-							if (buffer.Length() > 0) {
-								//VoiceConnection::sendSingleAudioPacket(buffer);
-							}
-						};
-						if (buffer != nullptr) {
-							__int64 lengthInNs = (__int64)((float)buffer.Length() / (float)audioData.audioBitrate / (float)2 * 1000000000);
-							ThreadPoolTimer timerNew(nullptr);
-							__int64 currentTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-							__int64 timeDifference = currentTime - startingTime;
-							sendTimers.resize(sendTimers.size() + 1);
-							sendTimers[sendTimers.size() - 1].threadPoolTimer = timerNew.CreateTimer(onSendTime, TimeSpan((counter * lengthInNs) - (timeDifference) / 100));
+						vector<uint8_t> dataVector;
+						for (unsigned int x = 0; x < audioData.audioData.Length(); x += 1) {
+							dataVector.push_back(audioData.audioData.data()[x]);
 						}
+						WebAFile buffer = demuxWebA(dataVector);
+						InMemoryRandomAccessStream randomStream;
+						DataWriter writer(randomStream.GetOutputStreamAt(0));
+						
+						
+						DataReader reader(randomStream.GetInputStreamAt(0));
+						
+						auto outputBufferNew = decodeOpusData(buffer, audioData.filePath, audioData.fileName);
+						hstring newFilePath = to_hstring(audioData.filePath);
+						hstring newFileName = to_hstring(audioData.fileName) + L" DECODED.opus";
+						writer.WriteBytes(outputBufferNew);
+						writer.StoreAsync().get();
+						reader.LoadAsync((uint32_t)outputBufferNew.size());
+						saveFile(newFilePath, newFileName, reader.ReadBuffer((uint32_t)outputBufferNew.size()));
+						outputBufferNew = decodeOpusData(buffer, audioData.filePath, audioData.fileName);
+						
+						ThreadPoolTimer timerNew(nullptr);
+						sendTimers.resize(sendTimers.size() + 1);
+						//sendTimers[sendTimers.size() - 1].threadPoolTimer = timerNew.CreateTimer(onSendTime, TimeSpan((counter * lengthInNs) - (timeDifference) / 100));
 					}
+					counter += 1;
 				}
 				catch (exception& e) {
 					cout << "Out of time: " << e.what() << endl;

@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
                 ReplyMessageData responseData(eventData);
                 responseData.embeds.push_back(msgEmbed);
                 event01 = InputEventManager::respondToEvent(responseData);
-                InputEventManager::deleteInputEventResponse(event01, 20000);
+                InputEventManager::deleteInputEventResponseAsync(event01, 20000);
             }
             else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                 CreateEphemeralInteractionResponseData responseData(eventData);
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
                     ReplyMessageData replyMessageData(eventData);
                     replyMessageData.embeds.push_back(msgEmbed);
                     InputEventData event01 = InputEventManager::respondToEvent(replyMessageData);
-                    InputEventManager::deleteInputEventResponse(event01, 20000);
+                    InputEventManager::deleteInputEventResponseAsync(event01, 20000);
                 }
                 else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                     CreateEphemeralInteractionResponseData responseData(eventData);
@@ -417,13 +417,13 @@ namespace DiscordCoreAPI {
             ReplyMessageData responseData(eventData);
             responseData.embeds.push_back(msgEmbed);
             InputEventData event01 = InputEventManager::respondToEvent(responseData);
-            InputEventManager::deleteInputEventResponse(event01, 20000);
+            InputEventManager::deleteInputEventResponseAsync(event01, 20000);
         }
         else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
             CreateInteractionResponseData responseData(eventData);
             responseData.data.embeds.push_back(msgEmbed);
             InputEventData event = InputEventManager::respondToEvent(responseData);
-            InputEventManager::deleteInputEventResponse(event, 20000);
+            InputEventManager::deleteInputEventResponseAsync(event, 20000);
         }
         return false;
     }
@@ -610,7 +610,7 @@ namespace DiscordCoreAPI {
                 }
                 else if (button.getButtonId() == "exit" || button.getButtonId() == "") {
                     if (deleteAfter == true) {
-                        InputEventManager::deleteInputEventResponse(event01);
+                        InputEventManager::deleteInputEventResponseAsync(event01);
                     }
                     else {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
@@ -638,7 +638,7 @@ namespace DiscordCoreAPI {
                 }
                 else if (button.getButtonId() == "select") {
                     if (deleteAfter == true) {
-                        InputEventManager::deleteInputEventResponse(event01);
+                        InputEventManager::deleteInputEventResponseAsync(event01);
                     }
                     else {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {

@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			InputEventManager::deleteInputEventResponse(args->eventData);
+			InputEventManager::deleteInputEventResponseAsync(args->eventData);
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				if (args->eventData.eventType != InputEventType::REGULAR_MESSAGE) {
-					InputEventManager::deleteInputEventResponse(newEvent);
+					InputEventManager::deleteInputEventResponseAsync(newEvent);
 				}
 				co_return;
 			}

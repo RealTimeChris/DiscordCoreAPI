@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 
 			cout << "Sending Voice Data: ";
 			for (unsigned int x = 0; x < message.size();x+=1){
-				cout << message[x];
+				//cout << message[x];
 			}
 			cout << endl;
 
@@ -211,7 +211,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void voiceConnect() {
-			bool readyToConnect = receive(this->connectReadyBuffer);
+			receive(this->connectReadyBuffer);
 			this->voiceSocket = DatagramSocket();
 			this->voiceSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
 			winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceIp));

@@ -10,7 +10,6 @@
 
 #include "HttpStuff.hpp"
 #include "DataParsingFunctions.hpp"
-#include "FFMPEGStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -231,13 +230,6 @@ namespace DiscordCoreAPI {
 		return decipheredFormat;
 	};
 
-	void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
-		auto folder = Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
-		auto folder2 = folder.GetFolderFromPathAsync(filePath).get();
-		winrt::Windows::Storage::StorageFile storageFile = folder2.CreateFileAsync(fileName, CreationCollisionOption::ReplaceExisting).get();
-		winrt::Windows::Storage::FileIO::WriteBufferAsync(storageFile, readBuffer).get();
-	}
-
 	class YouTubeAPI {
 	public:
 
@@ -337,7 +329,7 @@ namespace DiscordCoreAPI {
 			streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
 			streamSocket.Control().NoDelay(true);
 			streamSocket.Control().SerializeConnectionAttempts(false);
-			Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
+			winrt::Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
 			streamSocket.ConnectAsync(streamSocket.GetEndpointPairsAsync(hostName, L"443").get().First().Current()).get();
 			streamSocket.UpgradeToSslAsync(SocketProtectionLevel::Tls12, hostName).get();
 			DataWriter dataWriter(streamSocket.OutputStream());
@@ -392,21 +384,10 @@ namespace DiscordCoreAPI {
 					remainingDownloadContentLength -= contentLengthCurrent;
 				}
 
-				DataReader dataReader00(outputStream.GetInputStreamAt(0));
+				DataReader dataReader00(outputStream.GetInputStreamAt(4));
 				dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
-				dataReader00.LoadAsync((uint32_t)outputStream.Size()).get();
-				auto readBuffer = dataReader00.ReadBuffer((uint32_t)outputStream.Size());
-
-				AudioDataChunk audioData;
-				audioData.filePath = "C:\\Users\\Chris\\Downloads\\";
-				audioData.fileName = videoSearchResult.videoTitle + " " + playerId + ".webm";
-				saveFile(to_hstring(audioData.filePath), to_hstring(audioData.fileName), readBuffer);
-				audioData.audioData = readBuffer;
-				audioData.audioBitrate = format.bitrate;
-				audioData.totalByteSize = format.contentLength;
-				audioData.playerId = playerId;
-				audioData.remainingBytes = remainingDownloadContentLength;
-				send(*sendAudioBuffer, audioData);
+				dataReader00.LoadAsync((uint32_t)outputStream.Size()-4).get();
+				auto readBuffer = dataReader00.ReadBuffer((uint32_t)outputStream.Size()-4);
 
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
@@ -416,11 +397,26 @@ namespace DiscordCoreAPI {
 				}
 				counter += 1;
 			}
-			
+			vector<uint8_t> vector;
+			vector.push_back(0);
+			vector.push_back(0);
+			vector.push_back(0);
+			vector.push_back(0);
+			dataWriterOutput.WriteBytes(vector);
+			dataWriterOutput.StoreAsync().get();
 			DataReader dataReader00(finalFileOutput.GetInputStreamAt(4));
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
 			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
+			AudioDataChunk audioData;
+			audioData.filePath = "C:\\Users\\Chris\\Downloads\\";
+			audioData.fileName = videoSearchResult.videoTitle + " " + playerId + ".webm";
+			audioData.audioData = readBuffer;
+			audioData.audioBitrate = format.bitrate;
+			audioData.totalByteSize = format.contentLength;
+			audioData.playerId = playerId;
+			audioData.remainingBytes = remainingDownloadContentLength;
+			send(*sendAudioBuffer, audioData);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
 			saveFile(filePath, fileName, readBuffer);

@@ -24,7 +24,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<HttpWorkload> workSubmissionBuffer;
 		unbounded_buffer<HttpData> workReturnBuffer;
 
-		HttpRequestAgent(HttpAgentResources agentResources)
+		HttpRequestAgent(HttpAgentResources agentResources) 
 			: agent(*HttpRequestAgent::threadContext->scheduler)
 		{
 			try {
@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 				this->getHeaders = this->getHttpClient.DefaultRequestHeaders();
 				if (agentResources.userAgent != L"") {
 					this->getHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
-				}
+				}				
 				this->putHttpClient = HttpClient(filter);
 				this->putHeaders = this->putHttpClient.DefaultRequestHeaders();
 				if (agentResources.userAgent != L"") {
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		bool getError(exception& error) {
+		bool getError(exception& error){
 			if (try_receive(errorBuffer, error)) {
 				return true;
 			}
@@ -122,7 +122,7 @@ namespace DiscordCoreInternal {
 			rateLimitDataNew->getsRemaining -= 1;
 			return false;
 		}
-
+		
 		void run() {
 			try {
 				transformer<HttpWorkload, HttpData> completeHttpRequest([this](HttpWorkload workload) -> HttpData {
@@ -527,7 +527,7 @@ namespace DiscordCoreInternal {
 			}
 			return deleteData;
 		}
-
+		
 		unsigned int groupId;
 		Uri baseURI{ nullptr };
 		hstring baseURL;

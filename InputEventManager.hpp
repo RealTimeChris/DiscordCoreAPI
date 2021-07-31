@@ -158,7 +158,9 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		static void deleteInputEventResponse(InputEventData dataPackage, unsigned int timeDelayNew = 0) {
+		static task<void> deleteInputEventResponseAsync(InputEventData dataPackage, unsigned int timeDelayNew = 0) {
+			apartment_context mainThread;
+			co_await resume_background();
 			if ((dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE)|| (dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT)) {
 				DeleteMessageData deleteData(dataPackage);
 				deleteData.timeDelay = timeDelayNew;
@@ -175,7 +177,8 @@ namespace DiscordCoreAPI {
 				dataPackageNewer.timeDelay = timeDelayNew;
 				InputEventManager::interactions->deleteInteractionResponseAsync(dataPackageNewer).get();
 			}
-			return;
+			co_await mainThread;
+			co_return;
 		}
 
 	protected:

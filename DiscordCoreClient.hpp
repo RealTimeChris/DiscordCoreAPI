@@ -140,6 +140,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
 		unbounded_buffer<exception> errorBuffer;
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
+
 		task<void> initialize() {
 			thisPointer.reset(this);
 			_set_purecall_handler(myPurecallHandler);

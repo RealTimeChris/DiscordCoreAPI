@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 							responseData.embeds.push_back(msgEmbed);
 							responseData.embeds.at(0).setDescription(userID);
 							InputEventData event03 = InputEventManager::respondToEvent(responseData);
-							InputEventManager::deleteInputEventResponse(event03, 5000);
+							InputEventManager::deleteInputEventResponseAsync(event03, 5000);
 						}
 						else {
 							CreateInteractionResponseData newData(args->eventData);
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 							msgEmbed.setDescription(userID);
 							editData.embeds.push_back(msgEmbed);
 							auto eventNew02 = InputEventManager::respondToEvent(editData);
-							InputEventManager::deleteInputEventResponse(eventNew02, 5000);
+							InputEventManager::deleteInputEventResponseAsync(eventNew02, 5000);
 						}
 					}
 					else if(args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
