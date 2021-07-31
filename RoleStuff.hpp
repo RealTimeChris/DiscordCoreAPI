@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 	struct UpdateRolePositionData {
 		string guildId;
 		string roleId;
-		unsigned int newPosition;
+		int newPosition;
 	};
 
 	struct RemoveRoleFromGuildMemberData {
@@ -88,11 +88,12 @@ namespace DiscordCoreAPI {
 
 	struct CreateRoleData {
 		string name;
-		string permissions;
+		string permissions = "0";
 		string hexColorValue;
 		bool hoist;
 		bool mentionable;
 		string guildId;
+		int position;
 	};
 
 	class RoleManagerAgent : agent {
@@ -497,7 +498,7 @@ namespace DiscordCoreAPI {
 			else {
 				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
 			}
-			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			co_await resume_background();
 			if (dataPackage.guildId == "") {
 				exception failError("RoleManager::getRoleAsync() Error: Sorry, but you forgot to set the guildId!");
 				throw failError;
@@ -557,29 +558,26 @@ namespace DiscordCoreAPI {
 
 		vector<Role> updateRolePositions(UpdateRolePositionData dataPackage) {
 			vector<Role> currentRoles = this->getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
+			Role newRole = this->getRoleAsync({ .guildId = dataPackage.guildId, .roleId = dataPackage.roleId }).get();
 			DiscordCoreInternal::UpdateRolePositionData dataPackageNew;
-			unsigned int positionBeforeMoving = 0;
-			for (auto value : currentRoles) {
-				if (dataPackage.roleId == value.data.id) {
-					positionBeforeMoving = value.data.position;
-				}
-			}
+			int positionBeforeMoving = newRole.data.position;
 			for (auto value : currentRoles) {
 				DiscordCoreInternal::RolePositionData newData;
-				if (value.data.position <= (int)dataPackage.newPosition && value.data.position > (int)positionBeforeMoving) {
+				if (value.data.position < dataPackage.newPosition && value.data.position >(int)positionBeforeMoving) {
 					newData.roleId = value.data.id;
 					newData.rolePosition = value.data.position - 1;
+					dataPackageNew.rolePositions.push_back(newData);
 				}
-				else {
+				else if (value.data.position != positionBeforeMoving) {
 					newData.roleId = value.data.id;
 					newData.rolePosition = value.data.position;
+					dataPackageNew.rolePositions.push_back(newData);
 				}
-				if (value.data.id == dataPackage.roleId) {
-					newData.roleId = value.data.id;
-					newData.rolePosition = dataPackage.newPosition;
-				}
-				dataPackageNew.rolePositions.push_back(newData);
 			}
+			DiscordCoreInternal::RolePositionData newData;
+			newData.roleId = newRole.data.id;
+			newData.rolePosition = dataPackage.newPosition;
+			dataPackageNew.rolePositions.push_back(newData);
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.content = DiscordCoreInternal::getUpdateRolePositionsPayload(dataPackageNew);
@@ -606,18 +604,13 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
-			return rolesVector;
+			return rolesVectorNew;
 		}
 
 		task<vector<Role>> getGuildRolesAsync(GetRolesData dataPackage) {
 			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
-			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			groupIdNew = this->threadContext->createGroup();
+			co_await resume_background();
 			if (dataPackage.guildId == "") {
 				exception failError("RoleManager::getRoleAsync() Error: Sorry, but you forgot to set the guildId!");
 				throw failError;
@@ -668,6 +661,7 @@ namespace DiscordCoreAPI {
 			RoleData roleData;
 			Role newRole(roleData, this->discordCoreClient);
 			try_receive(requestAgent.outRoleBuffer, newRole);
+			updateRolePositions({ .guildId = dataPackage.guildId, .roleId = roleData.id, .newPosition = dataPackage.position });
 			this->threadContext->releaseGroup(groupIdNew);
 			co_return newRole;
 		}

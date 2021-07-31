@@ -1448,8 +1448,8 @@ namespace DiscordCoreInternal {
 		 };
 
 		 string getEditChannelPermissionOverwritesPayload(PutPermissionOverwritesData dataPackage) {
-			 json data = { {"allow", dataPackage.allow},
-				 {"deny", dataPackage.deny},
+			 json data = { {"allow", stoll(dataPackage.allow)},
+				 {"deny", stoll(dataPackage.deny)},
 				 {"type", dataPackage.type} };
 
 			 return data.dump();

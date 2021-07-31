@@ -520,7 +520,7 @@ namespace DiscordCoreAPI{
 			this->lacingFlag.showIntElement<int>();
 			this->language = FileElement(inputVector, startingPosition, false, "Language", true);
 			if (this->language.elementId != 0x22b59c) {
-				*startingPosition -= (this->language.theDataRaw.size() + (int)this->language.elementIdRaw.size() + (int)this->language.elementContentSizeRaw.size());
+				*startingPosition -= ((int)this->language.theDataRaw.size() + (int)this->language.elementIdRaw.size() + (int)this->language.elementContentSizeRaw.size());
 				this->language.elementContentSizeRaw.resize(0);
 				this->language.elementIdRaw.resize(0);
 				this->language.theDataRaw.resize(0);

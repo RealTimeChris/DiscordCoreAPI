@@ -1819,7 +1819,7 @@ namespace DiscordCoreAPI {
         string name;
         bool managed;
         bool hoist;
-        string id;
+        string id = "";
         int color;
     };
 
