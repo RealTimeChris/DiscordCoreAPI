@@ -11,6 +11,7 @@
 #include "../pch.h"
 #include "MessageStuff.hpp"
 #include "InteractionManager.hpp"
+#include "GuildStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -18,16 +19,17 @@ namespace DiscordCoreAPI {
 	public:
 		InputEventManager() {}
 
-		static void initialize(shared_ptr<MessageManager> messagesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<InteractionManager> interactionsNew) {
+		static void initialize(shared_ptr<MessageManager> messagesNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreClient> discordCoreClientNew,  DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<InteractionManager> interactionsNew) {
 			InputEventManager::messages = messagesNew;
 			InputEventManager::agentResources = agentResourcesNew;
 			InputEventManager::discordCoreClient = discordCoreClientNew;
+			InputEventManager::discordCoreClientBase = discordCoreClientBaseNew;
 			InputEventManager::interactions = interactionsNew;
 			InputEventManager::threadContext = threadContextNew;
 			InputEventManager::groupId = InputEventManager::threadContext->createGroup();
 		}
-
 		static void cleanup() {
+
 			InputEventManager::threadContext->releaseGroup(InputEventManager::groupId);
 		}
 
@@ -80,7 +82,10 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_RESPONSE_DEFERRED;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
+			dataPackageNewer.interactionData.channelId =
 			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+			dataPackageNewer.interactionData.channelId = dataPackage.channelId;
+			dataPackageNewer.interactionData.guildId = dataPackage.guildId;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
 			return dataPackageNewer;
@@ -143,6 +148,18 @@ namespace DiscordCoreAPI {
 			return dataPackageNewer;
 		}
 
+		static InputEventData respondToEvent(SendDMData dataPackage) {
+			Channel dmChannel = InputEventManager::discordCoreClientBase->channels->getDMChannelAsync({ .userId = dataPackage.userId }).get();
+			dataPackage.channelId = dmChannel.data.id;
+			Message message = InputEventManager::messages->sendDMAsync(dataPackage).get();
+			InputEventData dataPackageNewer;
+			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
+			dataPackageNewer.messageData = message.data;
+			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
+			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
+			return dataPackageNewer;
+		}
+
 		static void respondToEvent(DeferButtonResponseData dataPackage) {
 			ButtonInteractionData newData;
 			newData.token = dataPackage.interactionPackage.interactionToken;
@@ -184,6 +201,7 @@ namespace DiscordCoreAPI {
 	protected:
 		static shared_ptr<MessageManager> messages;
 		static shared_ptr<InteractionManager> interactions;
+		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
 		static DiscordCoreInternal::HttpAgentResources agentResources;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
@@ -191,6 +209,7 @@ namespace DiscordCoreAPI {
 	};
 	shared_ptr<MessageManager> InputEventManager::messages;
 	shared_ptr<InteractionManager> InputEventManager::interactions;
+	shared_ptr<DiscordCoreClientBase> InputEventManager::discordCoreClientBase;
 	shared_ptr< DiscordCoreClient> InputEventManager::discordCoreClient;
 	DiscordCoreInternal::HttpAgentResources InputEventManager::agentResources;
 	shared_ptr<DiscordCoreInternal::ThreadContext> InputEventManager::threadContext;

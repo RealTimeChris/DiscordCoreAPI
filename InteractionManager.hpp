@@ -72,6 +72,8 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->type = InteractionCallbackType::DeferredChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
+            this->channelId = dataPackage.getChannelId();
+            this->guildId = dataPackage.getGuildId();
         }
         string requesterId;
     protected:
@@ -80,6 +82,8 @@ namespace DiscordCoreAPI {
         friend class InputEventManager;
         InteractionPackageData interactionPackage;
         InteractionCallbackType type;
+        string guildId;
+        string channelId;
     };
 
     struct CreateInteractionResponseData {

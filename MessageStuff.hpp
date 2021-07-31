@@ -152,6 +152,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct SendDMData {
+		SendDMData(InputEventData dataPackage) : messageData(dataPackage) {}
 		string channelId;
 		string userId;
 		CreateMessageData messageData;
@@ -379,6 +380,7 @@ namespace DiscordCoreAPI {
 			workload.content = dataPackage.finalContent;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_USER_DM;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
+			cout << "CHANNEL ID: " << dataPackage.channelId << endl;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);

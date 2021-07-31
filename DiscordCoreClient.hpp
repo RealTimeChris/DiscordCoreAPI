@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 			Button::initialize(this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser->data.username, this->currentUser->data.id);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
-			InputEventManager::initialize(this->messages, this->thisPointer, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
+			InputEventManager::initialize(this->messages, this->thisPointer, this->thisPointer, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
 			this->discordUser->writeDataToDB();
 			this->pWebSocketReceiverAgent->start();
 			this->pWebSocketConnectionAgent->start();
@@ -333,8 +333,10 @@ namespace DiscordCoreAPI {
 						DiscordCoreAPI::OnGuildMemberUpdateData guildMemberUpdateData;
 						GuildMember guildMemberOld = this->guildMembers->getGuildMemberAsync({ .guildId = workload.payLoad.at("guild_id"), .guildMemberId = workload.payLoad.at("user").at("id") }).get();
 						guildMemberUpdateData.guildMemberOld = guildMemberOld;
-						DiscordCoreInternal::parseObject(workload.payLoad, &guildMemberOld.data);
-						guildMemberUpdateData.guildMemberNew = guildMemberOld;
+						GuildMemberData guildMemberData;
+						DiscordCoreInternal::parseObject(workload.payLoad, &guildMemberData);
+						GuildMember guildMemberNew(guildMemberData, workload.payLoad.at("guild_id"), this->thisPointer);
+						guildMemberUpdateData.guildMemberNew = guildMemberNew;
 						this->eventManager->onGuildMemberUpdateEvent(guildMemberUpdateData);
 						break;
 					}

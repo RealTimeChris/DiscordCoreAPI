@@ -417,6 +417,7 @@ namespace  DiscordCoreInternal {
         int type = -1;	           //	either 0 (role) or 1 (member)
         string allow;
         string deny;
+        string channelId;
     };
 
     struct ChannelData {
@@ -1771,7 +1772,8 @@ namespace DiscordCoreAPI {
         REQUEST_TO_SPEAK = (1ull << 32),
         MANAGE_THREADS = (1ull << 33),
         USE_PUBLIC_THREADS = (1ull << 34),
-        USE_PRIVATE_THREADS = (1ull << 35)
+        USE_PRIVATE_THREADS = (1ull << 35),
+        USE_EXTERNAL_STICKERS = (1ull << 37)
     };
 
     enum class ComponentType {
@@ -2203,12 +2205,14 @@ namespace DiscordCoreAPI {
             newData.deny = this->deny;
             newData.id = this->id;
             newData.type = this->type;
+            newData.channelId = this->channelId;
             return newData;
         }
         string id;
-        int type;	           //	either 0 (role) or 1 (member)
+        int type;	           //	either 0 (role) or 1 (member;
         string allow;
         string deny;
+        string channelId;
     };
 
     enum class ChannelType {

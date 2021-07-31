@@ -185,8 +185,10 @@ namespace DiscordCoreInternal {
 			data = { {"nick",dataPackage.nick},
 				{"mute", dataPackage.mute},
 				{"deaf", dataPackage.deaf},
+				{"channel_id", nullptr} ,
 				{"roles", roleIdArray } };
 		}
+		
 		
 		return data.dump();
 	}
@@ -501,7 +503,7 @@ namespace DiscordCoreInternal {
 			embedsArray.push_back(embed);
 		}
 
-		if (dataPackage.embeds.at(0).description != "" || dataPackage.embeds.at(0).fields.size() != 0) {
+		if (dataPackage.embeds.size()>0) {
 			if (dataPackage.messageReference.guildId != "") {
 				json data = {
 		{"allowed_mentions", {
