@@ -140,7 +140,6 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
 		unbounded_buffer<exception> errorBuffer;
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
-
 		task<void> initialize() {
 			thisPointer.reset(this);
 			_set_purecall_handler(myPurecallHandler);
@@ -196,6 +195,9 @@ namespace DiscordCoreAPI {
 				activities.push_back(activity);
 				this->currentUser->updatePresence({ .activities = activities, .status = "online",.afk = false });
 				}, 5000, false);
+			executeFunctionAfterTimePeriod([]() {
+				cout << "Heart beat!" << endl << endl;
+				}, 60000, true);
 			co_await mainThread;
 			co_return;
 		}
