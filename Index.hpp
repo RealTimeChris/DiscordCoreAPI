@@ -193,6 +193,9 @@
             pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
             IndexHost::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();
+            executeFunctionAfterTimePeriod([]() {
+                cout << "Heart beat!" << endl << endl;
+                }, 60000, true);
             pDiscordCoreClient->eventManager->onChannelCreation(&IndexHost::onChannelCreation);
             pDiscordCoreClient->eventManager->onChannelUpdate(&IndexHost::onChannelUpdate);
             pDiscordCoreClient->eventManager->onChannelDeletion(&IndexHost::onChannelDeletion);

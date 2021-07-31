@@ -196,9 +196,6 @@ namespace DiscordCoreAPI {
 				activities.push_back(activity);
 				this->currentUser->updatePresence({ .activities = activities, .status = "online",.afk = false });
 				}, 5000, false);
-			executeFunctionAfterTimePeriod([]() {
-				cout << "Heart beat!" << endl << endl;
-				}, 60000, true);
 			co_await mainThread;
 			co_return;
 		}
