@@ -1877,6 +1877,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("timestamp") && !jsonObjectData.at("timestamp").is_null()) {
+            messageData.timestampRaw = jsonObjectData.at("timestamp").get<string>();
             messageData.timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("timestamp").get<string>());
         }
 
@@ -2056,6 +2057,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("timestamp") && !jsonObjectData.at("timestamp").is_null()) {
+            messageData.timestampRaw = jsonObjectData.at("timestamp").get<string>();
             messageData.timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("timestamp").get<string>());
         }
 
@@ -2533,7 +2535,6 @@ namespace DiscordCoreInternal {
 
     void parseObject(json jsonObjectData, CommandData* pDataStructure) {
         CommandData commandData = *pDataStructure;
-
         if (jsonObjectData.contains("options") && !jsonObjectData.at("options").is_null()) {
             for (auto newValue : jsonObjectData.at("options")) {
                 if (newValue.contains("options")) {
@@ -2545,6 +2546,9 @@ namespace DiscordCoreInternal {
                         commandData.optionsArgs.push_back(newValueNew);
                     }
                     else if (newValueNew.is_number()) {
+                        commandData.optionsArgs.push_back(to_string(newValueNew));
+                    }
+                    else if (newValueNew.is_boolean()) {
                         commandData.optionsArgs.push_back(to_string(newValueNew));
                     }
 

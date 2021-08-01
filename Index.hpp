@@ -113,21 +113,15 @@
             }
 
             static void onMessageCreation(OnMessageCreationData dataPackage) {
-                dataPackage.message.discordCoreClient->messages->insertMessageAsync(dataPackage.message).get();
             }
 
             static void onMessageUpdate(OnMessageUpdateData dataPackage) {
-                dataPackage.messageNew.discordCoreClient->messages->insertMessageAsync(dataPackage.messageNew).get();
             }
 
             static void onMessageDeletion(OnMessageDeletionData dataPackage) {
-                dataPackage.discordCoreClient->messages->removeMessageAsync(dataPackage.channelId, dataPackage.messageId).get();
             }
 
             static void onMessageDeleteBulk(OnMessageDeleteBulkData dataPackage) {
-                for (auto value : dataPackage.ids) {
-                    dataPackage.discordCoreClient->messages->removeMessageAsync(dataPackage.channelId, value).get();
-                }
             }
 
             static void onReactionAdd(OnReactionAddData dataPackage) {

@@ -769,7 +769,8 @@ namespace  DiscordCoreInternal {
         YOUTUBE_SEARCH = 44,
         YOUTUBE_VIDEO_QUERY = 45,
         GET_INVITES = 46,
-        PATCH_GUILD_MEMBER = 47
+        PATCH_GUILD_MEMBER = 47,
+        GET_PINNED_MESSAGES = 48
     };
 
     struct GetApplicationData {
@@ -889,6 +890,7 @@ namespace  DiscordCoreInternal {
         GuildMemberData member;
         string content;
         string timestamp;
+        string timestampRaw;
         string editedTimestamp;
         bool tts{ false };
         bool mentionEveryone{ false };
@@ -925,7 +927,7 @@ namespace  DiscordCoreInternal {
         float msRemain = 0.0f;
         float timeStartedAt = 0.0f;
         string bucket;
-        float nextExecutionTime;
+        float nextExecutionTime = 0.0f;
     };
 
     struct GetGuildData {
@@ -1021,6 +1023,11 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources;
         string userId;
         GetUserDataType userType;
+    };
+
+    struct GetPinnedMessagesData {
+        HttpAgentResources agentResources;
+        string channelId;
     };
 
     struct PostMessageData {
@@ -1418,7 +1425,6 @@ namespace  DiscordCoreInternal {
                 return this->interactionData.user.username;
             }
             else {
-                cout << "USERNAME: " << this->interactionData.user.username << endl;
                 return this->messageData.author.username;
             }
         }
@@ -1430,7 +1436,6 @@ namespace  DiscordCoreInternal {
                 return this->interactionData.user.avatar;
             }
             else {
-                cout << "AVATAR URL: " << this->interactionData.user.avatar << endl;
                 return this->messageData.author.avatar;
             }
         }
@@ -2693,6 +2698,7 @@ namespace DiscordCoreAPI {
         GuildMemberData member;
         string content;
         string timestamp;
+        string timestampRaw;
         string editedTimestamp;
         bool tts;
         bool mentionEveryone;

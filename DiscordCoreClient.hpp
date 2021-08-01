@@ -468,7 +468,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::MESSAGE_UPDATE:
 					{
 						DiscordCoreAPI::OnMessageUpdateData messageUpdateData;
-						Message message = this->messages->getMessageAsync({ .channelId = workload.payLoad.at("channel_id"), .id = workload.payLoad.at("id") }).get();
+						Message message = this->messages->fetchAsync({ .channelId = workload.payLoad.at("channel_id"), .id = workload.payLoad.at("id") }).get();
 						messageUpdateData.messageOld = message;
 						DiscordCoreInternal::parseObject(workload.payLoad, &message.data);
 						messageUpdateData.messageNew = message;
