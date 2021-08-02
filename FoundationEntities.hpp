@@ -646,7 +646,8 @@ namespace  DiscordCoreInternal {
 
     enum class ComponentType {
         ActionRow = 1,
-        Button = 2
+        Button = 2,
+        SelectMenu = 3
     };
 
     enum class ButtonStyle {
@@ -657,6 +658,14 @@ namespace  DiscordCoreInternal {
         Link = 5
     };
 
+    struct SelectOptionData {
+        string label;
+        string value;
+        string description;
+        EmojiData emoji;
+        bool _default;
+    };
+
     struct ComponentData {
         ComponentType type = ComponentType::ActionRow;
         ButtonStyle style = ButtonStyle::Danger;
@@ -664,7 +673,11 @@ namespace  DiscordCoreInternal {
         EmojiData emoji;
         string customId{ "" };
         string url{ "" };
+        string placeholder;
         bool disabled{ false };
+        vector<SelectOptionData> options;
+        int maxValues;
+        int minValues;
     };
 
     struct ActionRowData {
@@ -1279,12 +1292,14 @@ namespace  DiscordCoreInternal {
         string guildId;
         string channelId;
         GuildMemberData member;
+        ComponentType componentType;
         UserData user;
         string token;
         int version = -1;
         MessageData message;
         string customId;
         string requesterId;
+        vector<string> values;
     };
 
     struct InteractionResponseFullData {
@@ -1295,7 +1310,8 @@ namespace  DiscordCoreInternal {
     enum class InputEventType {
         SLASH_COMMAND_INTERACTION = 1,
         BUTTON_INTERACTION = 2,
-        REGULAR_MESSAGE = 3
+        REGULAR_MESSAGE = 3,
+        SELECT_MENU_INPUT = 4
     };
 
     enum class InputEventResponseType {
@@ -1308,7 +1324,7 @@ namespace  DiscordCoreInternal {
         INTERACTION_RESPONSE_EDIT = 6,
         INTERACTION_FOLLOW_UP_MESSAGE = 7,
         INTERACTION_FOLLOW_UP_MESSAGE_EDIT = 8,
-        DEFER_BUTTON_RESPONSE = 9
+        DEFER_COMPONENT_RESPONSE = 9
     };
 
     struct InputEventData {
@@ -1783,7 +1799,8 @@ namespace DiscordCoreAPI {
 
     enum class ComponentType {
         ActionRow = 1,
-        Button = 2
+        Button = 2,
+        SelectMenu = 3
     };
 
     enum class ButtonStyle {
@@ -1890,6 +1907,23 @@ namespace DiscordCoreAPI {
         bool available;
     };
 
+    struct SelectOptionData {
+        operator DiscordCoreInternal::SelectOptionData() {
+            DiscordCoreInternal::SelectOptionData newData;
+            newData.description = this->description;
+            newData.emoji = this->emoji;
+            newData.label = this->label;
+            newData.value = this->value;
+            newData._default = this->_default;
+            return newData;
+        }
+        string label;
+        string value;
+        string description;
+        EmojiData emoji;
+        bool _default;
+    };
+
     struct ComponentData {
         operator DiscordCoreInternal::ComponentData() {
             DiscordCoreInternal::ComponentData newData;
@@ -1900,6 +1934,12 @@ namespace DiscordCoreAPI {
             newData.style = (DiscordCoreInternal::ButtonStyle)this->style;
             newData.type = (DiscordCoreInternal::ComponentType)this->type;
             newData.url = this->url;
+            newData.maxValues = this->maxValues;
+            newData.minValues = this->minValues;
+            for (auto value : this->options) {
+                newData.options.push_back(value);
+            }
+            newData.placeholder = this->placeholder;
             return newData;
         }
         ComponentType type;
@@ -1908,7 +1948,11 @@ namespace DiscordCoreAPI {
         EmojiData emoji;
         string customId{ "" };
         string url{ "" };
+        string placeholder;
         bool disabled{ false };
+        vector<SelectOptionData> options;
+        int maxValues;
+        int minValues;
     };
 
     struct AttachmentData {
@@ -2131,7 +2175,7 @@ namespace DiscordCoreAPI {
         INTERACTION_RESPONSE_EDIT = 6,
         INTERACTION_FOLLOW_UP_MESSAGE = 7,
         INTERACTION_FOLLOW_UP_MESSAGE_EDIT = 8,
-        DEFER_BUTTON_RESPONSE = 9
+        DEFER_COMPONENT_RESPONSE = 9
     };
 
     struct AllowedMentionsData {
@@ -2761,6 +2805,7 @@ namespace DiscordCoreAPI {
             newData.channelId = this->channelId;
             newData.customId = this->customId;
             newData.data = this->data;
+            newData.componentType = static_cast<DiscordCoreInternal::ComponentType>(this->componentType);
             newData.dataRaw = this->dataRaw;
             newData.guildId = this->guildId;
             newData.id = this->id;
@@ -2771,12 +2816,14 @@ namespace DiscordCoreAPI {
             newData.user = this->user;
             newData.version = this->version;
             newData.requesterId = this->requesterId;
+            newData.values = this->values;
             return newData;
         }
         string id;
         string applicationId;
         InteractionType type;
         ApplicationCommandInteractionData data;
+        ComponentType componentType;
         json dataRaw;
         string guildId;
         string channelId;
@@ -2786,6 +2833,7 @@ namespace DiscordCoreAPI {
         int version;
         MessageData message;
         string customId;
+        vector<string> values;
         string requesterId;
     };
 
@@ -3054,7 +3102,8 @@ namespace DiscordCoreAPI {
     enum class InputEventType {
         SLASH_COMMAND_INTERACTION = 1,
         BUTTON_INTERACTION = 2,
-        REGULAR_MESSAGE = 3
+        REGULAR_MESSAGE = 3,
+        SELECT_MENU_INPUT = 4
     };
 
     struct InputEventData {

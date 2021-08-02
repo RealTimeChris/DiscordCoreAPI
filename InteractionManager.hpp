@@ -49,12 +49,55 @@ namespace DiscordCoreAPI {
         string guildId;
     };
 
-    struct DeferButtonResponseData {
-        DeferButtonResponseData(ButtonInteractionData dataPackage) {
+    struct SelectMenuInteractionData {
+        SelectMenuInteractionData() {}
+        SelectMenuInteractionData(const SelectMenuInteractionData& dataPackage) {
+            this->applicationId = dataPackage.applicationId;
+            this->channelId = dataPackage.channelId;
+            this->customId = dataPackage.customId;
+            this->guildId = dataPackage.guildId;
+            this->id = dataPackage.id;
+            this->isItForHere = dataPackage.isItForHere;
+            this->values = dataPackage.values;
+            this->member = dataPackage.member;
+            this->message = dataPackage.message;
+            this->token = dataPackage.token;
+            this->type = dataPackage.type;
+            this->user = dataPackage.user;
+        }
+        bool isItForHere;
+        string token;
+        string id;
+        vector<string> values;
+        string applicationId;
+        InteractionType type;
+        string customId;
+        GuildMemberData member;
+        UserData user;
+        MessageData message;
+        string channelId;
+        string guildId;
+
+    };
+
+    struct DeferComponentResponseData {
+        DeferComponentResponseData(InteractionData dataPackage) {
             this->type = InteractionCallbackType::DeferredUpdateMessage;
             this->interactionPackage.interactionId = dataPackage.id;
             this->interactionPackage.interactionToken = dataPackage.token;
-            this->responseType = InputEventResponseType::DEFER_BUTTON_RESPONSE;
+            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+        }
+        DeferComponentResponseData(SelectMenuInteractionData dataPackage) {
+            this->type = InteractionCallbackType::DeferredUpdateMessage;
+            this->interactionPackage.interactionId = dataPackage.id;
+            this->interactionPackage.interactionToken = dataPackage.token;
+            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+        }
+        DeferComponentResponseData(ButtonInteractionData dataPackage) {
+            this->type = InteractionCallbackType::DeferredUpdateMessage;
+            this->interactionPackage.interactionId = dataPackage.id;
+            this->interactionPackage.interactionToken = dataPackage.token;
+            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
         }
     protected:
         friend class InteractionManagerAgent;
@@ -88,6 +131,17 @@ namespace DiscordCoreAPI {
 
     struct CreateInteractionResponseData {
     public:
+        CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
+            this->interactionPackage.interactionId = dataPackage.id;
+            this->interactionPackage.interactionToken = dataPackage.token;
+            this->type = InteractionCallbackType::ChannelMessageWithSource;
+            if (dataPackage.member.user.id != "") {
+                this->requesterId = dataPackage.message.member.user.id;
+            }
+            else {
+                this->requesterId = dataPackage.user.id;
+            }
+        }
         CreateInteractionResponseData(InteractionPackageData dataPackage) {
             this->interactionPackage = dataPackage;
         }
@@ -131,6 +185,30 @@ namespace DiscordCoreAPI {
                     ActionRowData actionRowData;
                     this->data.components.push_back(actionRowData);
                 }
+            }
+        }
+        void addSelectMenu(bool disabled,  string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+            if (this->data.components.size() == 0) {
+                ActionRowData actionRowData;
+                this->data.components.push_back(actionRowData);
+            }
+            if (this->data.components.size() < 5) {
+                if (this->data.components.at(this->data.components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    this->data.components.at(this->data.components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->data.components.at(this->data.components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->data.components.push_back(actionRowData);
+                }
+
             }
         }
         InteractionApplicationCommandCallbackData data;
@@ -205,6 +283,30 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    this->components.at(this->components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+
+            }
+        }
         string content;
         vector<EmbedData> embeds;
         AllowedMentionsData allowedMentions;
@@ -265,6 +367,29 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    this->components.at(this->components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+        }
         string content;
         string username;
         string avatarUrl;
@@ -306,6 +431,29 @@ namespace DiscordCoreAPI {
                     component.url = url;
                     component.type = ComponentType::Button;
                     this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+        }
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    this->components.at(this->components.size() - 1).components.push_back(componentData);
                 }
                 else if (this->components.at(this->components.size() - 1).components.size() == 5) {
                     ActionRowData actionRowData;
@@ -840,6 +988,94 @@ namespace DiscordCoreAPI {
             unsigned int groupId;
     };
 
+    class SelectMenu : public agent {
+    public:
+        static map<string, unbounded_buffer<SelectMenuInteractionData>*>selectMenuInteractionMap;
+
+        SelectMenu(InputEventData dataPackage) : agent(*SelectMenu::threadContext->schedulerGroups.at(0)) {
+            this->channelId = dataPackage.getChannelId();
+            this->messageId = dataPackage.getMessageId();
+            this->userId = dataPackage.getRequesterId();
+            this->selectMenuIncomingInteractionBuffer = new unbounded_buffer<SelectMenuInteractionData>;
+            SelectMenu::selectMenuInteractionMap.insert(make_pair(this->channelId + this->messageId, this->selectMenuIncomingInteractionBuffer));
+        }
+
+        static void initialize(shared_ptr<InteractionManager> interactionsNew) {
+            SelectMenu::interactions = interactionsNew;
+            SelectMenu::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
+            SelectMenu::threadContext->createGroup(*SelectMenu::threadContext);
+        }
+
+        string getSelectMenuId() {
+            return this->selectMenuId;
+        }
+
+        SelectMenuInteractionData getOurSelectMenuData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
+            if (targetUser != "") {
+                this->userId = targetUser;
+            }
+            this->maxTimeInMs = maxWaitTimeInMsNew;
+            this->getButtonDataForAll = getButtonDataForAllNew;
+            start();
+            agent::wait(this);
+            return this->interactionData;
+        }
+
+    protected:
+        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+        static shared_ptr<InteractionManager> interactions;
+        unsigned int maxTimeInMs;
+        bool getButtonDataForAll;
+        SelectMenuInteractionData interactionData;
+        unbounded_buffer<SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
+        string channelId;
+        string messageId;
+        string userId;
+        string selectMenuId = "";
+        bool doWeQuit = false;
+
+        void run() {
+            try {
+                while (doWeQuit == false) {
+                    if (this->getButtonDataForAll == false) {
+                        SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenu::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
+                        if (selectMenuInteractionData.user.id != this->userId) {
+                            CreateInteractionResponseData createResponseData(selectMenuInteractionData);
+                            createResponseData.data.flags = 64;
+                            EmbedData embedData;
+                            embedData.setColor("FEFEFE");
+                            embedData.setTitle("__**Button Issue:**__");
+                            embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
+                            embedData.setDescription("Sorry, but that menu can only be selected by <@!" + this->userId + ">!");
+                            createResponseData.data.embeds.push_back(embedData);
+                            SelectMenu::interactions->createInteractionResponseAsync(createResponseData).get();
+                        }
+                        else {
+                            this->interactionData = selectMenuInteractionData;
+                            this->selectMenuId = selectMenuInteractionData.customId;
+                            doWeQuit = true;
+                        }
+                    }
+                    else {
+                        SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenu::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
+                        this->interactionData = selectMenuInteractionData;
+                        this->selectMenuId = selectMenuInteractionData.customId;
+                        doWeQuit = true;
+                    }
+                }
+                done();
+                SelectMenu::selectMenuInteractionMap.erase(this->channelId + this->messageId);
+            }
+            catch (exception&) {
+                this->selectMenuId = "exit";
+                done();
+                SelectMenu::selectMenuInteractionMap.erase(this->channelId + this->messageId);
+                return;
+            }
+        }
+
+    };
+
     class Button : public agent {
     public:
         static map<string, unbounded_buffer<ButtonInteractionData>*> buttonInteractionMap;
@@ -929,5 +1165,8 @@ namespace DiscordCoreAPI {
     map<string, unbounded_buffer<ButtonInteractionData>*> Button::buttonInteractionMap;
     shared_ptr<InteractionManager> Button::interactions{ nullptr };
     shared_ptr<DiscordCoreInternal::ThreadContext> Button::threadContext{ nullptr };
+    map<string, unbounded_buffer<SelectMenuInteractionData>*> SelectMenu::selectMenuInteractionMap;
+    shared_ptr<InteractionManager> SelectMenu::interactions{ nullptr };
+    shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenu::threadContext{ nullptr };
 };
 #endif

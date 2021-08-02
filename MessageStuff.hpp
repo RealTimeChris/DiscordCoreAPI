@@ -65,6 +65,30 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components.at(this->components.size() - 1).components.size() < 5) {
+					ComponentData componentData;
+					componentData.type = ComponentType::SelectMenu;
+					componentData.disabled = disabled;
+					componentData.customId = customId;
+					componentData.options = options;
+					componentData.placeholder = placeholder;
+					componentData.maxValues = maxValues;
+					componentData.minValues = minValues;
+					this->components.at(this->components.size() - 1).components.push_back(componentData);
+				}
+				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+				
+			}
+		}
 		string content = "";
 		vector<EmbedData> embeds;
 		int flags = 0;
@@ -132,6 +156,30 @@ namespace DiscordCoreAPI {
 					ActionRowData actionRowData;
 					this->components.push_back(actionRowData);
 				}
+			}
+		}
+		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components.at(this->components.size() - 1).components.size() < 5) {
+					ComponentData componentData;
+					componentData.type = ComponentType::SelectMenu;
+					componentData.disabled = disabled;
+					componentData.customId = customId;
+					componentData.options = options;
+					componentData.placeholder = placeholder;
+					componentData.maxValues = maxValues;
+					componentData.minValues = minValues;
+					this->components.at(this->components.size() - 1).components.push_back(componentData);
+				}
+				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+
 			}
 		}
 		string content = "";

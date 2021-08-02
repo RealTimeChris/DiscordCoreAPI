@@ -637,7 +637,7 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("Name") && !jsonObjectData.at("Name").is_null()) {
             activityData.name = jsonObjectData.at("Name").get<string>();
         }
-        
+
         if (jsonObjectData.contains("Timestamps") && !jsonObjectData.at("Timestamps").is_null()) {
             parseObject(jsonObjectData.at("Timestamps"), &activityData.timestamps);
         }
@@ -669,7 +669,7 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("Instance") && !jsonObjectData.at("Instance").is_null()) {
             activityData.instance = jsonObjectData.at("Instance").get<bool>();
         }
-        
+
         *pDataStructure = activityData;
     }
 
@@ -1766,6 +1766,32 @@ namespace DiscordCoreInternal {
         *pDataStructure = reactionAddData;
     }
 
+    void parseObject(json jsonObjectData, DiscordCoreAPI::SelectOptionData* pDataStructure) {
+        DiscordCoreAPI::SelectOptionData newData = *pDataStructure;
+
+        if (jsonObjectData.contains("label") && !jsonObjectData.at("label").is_null()) {
+            newData.label = jsonObjectData.at("label").get<string>();
+        }
+
+        if (jsonObjectData.contains("value") && !jsonObjectData.at("value").is_null()) {
+            newData.value = jsonObjectData.at("value").get<string>();
+        }
+
+        if (jsonObjectData.contains("description") && !jsonObjectData.at("description").is_null()) {
+            newData.description = jsonObjectData.at("description").get<string>();
+        }
+
+        if (jsonObjectData.contains("emoji") && !jsonObjectData.at("emoji").is_null()) {
+            parseObject(jsonObjectData.at("emoji"), &newData.emoji);
+        }
+
+        if (jsonObjectData.contains("default") && !jsonObjectData.at("default").is_null()) {
+            newData._default = jsonObjectData.at("default").get<bool>();
+        }
+
+        *pDataStructure = newData;
+    }
+
     void parseObject(json jsonObjectData, DiscordCoreAPI::ActionRowData* pDataStructure) {
         DiscordCoreAPI::ActionRowData actionRowData = *pDataStructure;
 
@@ -1773,13 +1799,20 @@ namespace DiscordCoreInternal {
             vector<DiscordCoreAPI::ComponentData> newVector;
             for (auto newValue : jsonObjectData.at("components")) {
                 DiscordCoreAPI::ComponentData newData;
-
                 if (newValue.contains("type") && !newValue.at("type").is_null()) {
                     newData.type = newValue.at("type").get<DiscordCoreAPI::ComponentType>();
                 }
 
                 if (newValue.contains("custom_id") && !newValue.at("custom_id").is_null()) {
                     newData.customId = newValue.at("custom_id").get<string>();
+                }
+
+                if (newValue.contains("placeholder") && !newValue.at("placeholder").is_null()) {
+                    newData.placeholder = newValue.at("placeholder").get<string>();
+                }
+
+                if (newValue.contains("disabled") && !newValue.at("disabled").is_null()) {
+                    newData.disabled = newValue.at("disabled").get<bool>();
                 }
 
                 if (newValue.contains("style") && !newValue.at("style").is_null()) {
@@ -1798,8 +1831,22 @@ namespace DiscordCoreInternal {
                     newData.url = newValue.at("url").get<string>();
                 }
 
-                if (newValue.contains("disabled") && !newValue.at("disabled").is_null()) {
-                    newData.disabled = newValue.at("disabled").get<bool>();
+                if (newValue.contains("options") && !newValue.at("options").is_null()) {
+                    vector<DiscordCoreAPI::SelectOptionData> newVector02;
+                    for (auto value : newValue.at("options")) {
+                        DiscordCoreAPI::SelectOptionData newData02;
+                        parseObject(value, &newData02);
+                        newVector02.push_back(newData02);
+                    }
+                    newData.options = newVector02;
+                }
+
+                if (newValue.contains("max_values") && !newValue.at("max_values").is_null()) {
+                    newData.maxValues = newValue.at("max_values").get<int>();
+                }
+
+                if (newValue.contains("min_values") && !newValue.at("min_values").is_null()) {
+                    newData.minValues = newValue.at("min_values").get<int>();
                 }
 
                 newVector.push_back(newData);
@@ -2411,7 +2458,7 @@ namespace DiscordCoreInternal {
 
     void parseObject(json jsonObjectData, vector<DiscordCoreAPI::YouTubeFormat>* pDataStructure) {
         vector<DiscordCoreAPI::YouTubeFormat> youtubeFormats;
-        
+
         if (!jsonObjectData.is_null()) {
             if (jsonObjectData.contains("streamingData") && !jsonObjectData.at("streamingData").is_null() && jsonObjectData.at("streamingData").contains("formats") && !jsonObjectData.at("streamingData").at("formats").is_null()) {
                 for (auto value : jsonObjectData.at("streamingData").at("formats")) {
@@ -2455,7 +2502,7 @@ namespace DiscordCoreInternal {
                     if (value.contains("signatureCipher")) {
                         newData.signatureCipher = value.at("signatureCipher").get<string>();
                     }
-                    else if(value.contains("cipher")) {
+                    else if (value.contains("cipher")) {
                         newData.signatureCipher = value.at("cipher").get<string>();
                     }
                     if (newData.signatureCipher.find("&sp") != string::npos) {
@@ -2579,6 +2626,20 @@ namespace DiscordCoreInternal {
 
         if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
             interactionData.type = jsonObjectData.at("type").get<DiscordCoreAPI::InteractionType>();
+        }
+
+        if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+            if (jsonObjectData.at("data").contains("component_type") && !jsonObjectData.at("data").at("component_type").is_null()) {
+                interactionData.componentType = jsonObjectData.at("data").at("component_type").get<DiscordCoreAPI::ComponentType>();
+            }
+        }
+
+        if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+            if (jsonObjectData.at("data").contains("values") && !jsonObjectData.at("data").at("values").is_null()) {
+                for (auto value : jsonObjectData.at("data").at("values")) {
+                    interactionData.values.push_back(value.get<string>());
+                }
+            }
         }
 
         if (jsonObjectData.contains("token") && !jsonObjectData.at("token").is_null()) {

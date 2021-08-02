@@ -233,38 +233,76 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.emoji.id == "") {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
-					};
-					components.push_back(component);
+				if (valueNew.type == ComponentType::Button) {
+					if (valueNew.emoji.id == "") {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
+					else {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+							{"id", valueNew.emoji.id},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
 				}
-				else {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-						{"id", valueNew.emoji.id},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
+				else if (valueNew.type == ComponentType::SelectMenu) {
+					json optionsArray = json::array();
+					for (auto value01 : valueNew.options) {
+						if (value01.emoji.id == "" && value01.emoji.name == "") {
+							json option = { {"description",value01.description},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+
+						}
+						else if (value01.emoji.id == "") {
+							json option = { {"description",value01.description},
+							{"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
+						else {
+							json option = { {"description",value01.description},
+							{"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
 					};
-					components.push_back(component);
+					{
+						json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+						{"disabled", valueNew.disabled},
+						{"type", valueNew.type},
+							{"max_values", valueNew.maxValues},
+							{"min_values", valueNew.minValues},
+							{"placeholder", valueNew.placeholder }
+						};
+						components.push_back(component);
+					}
 				}
 			}
 			json componentActionRow = { {"type", 1},{
-				"components", components} };
+					"components", components} };
 			componentsActionRow.push_back(componentActionRow);
 		}
 		
@@ -411,38 +449,76 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.emoji.id == "") {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
-					};
-					components.push_back(component);
+				if (valueNew.type == ComponentType::Button) {
+					if (valueNew.emoji.id == "") {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
+					else {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+							{"id", valueNew.emoji.id},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
 				}
-				else {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-						{"id", valueNew.emoji.id},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
+				else if (valueNew.type == ComponentType::SelectMenu) {
+					json optionsArray = json::array();
+					for (auto value01 : valueNew.options) {
+						if (value01.emoji.id == "" && value01.emoji.name == "") {
+							json option = { {"description",value01.description},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+
+						}
+						else if (value01.emoji.id == "") {
+							json option = { {"description",value01.description},
+							{"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
+						else {
+							json option = { {"description",value01.description},
+							{"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
 					};
-					components.push_back(component);
+					{
+						json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+						{"disabled", valueNew.disabled},
+						{"type", valueNew.type},
+							{"max_values", valueNew.maxValues},
+							{"min_values", valueNew.minValues},
+							{"placeholder", valueNew.placeholder }
+						};
+						components.push_back(component);
+					}
 				}
 			}
 			json componentActionRow = { {"type", 1},{
-				"components", components} };
+					"components", components} };
 			componentsActionRow.push_back(componentActionRow);
 		}
 
@@ -589,38 +665,76 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.emoji.id == "") {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
-					};
-					components.push_back(component);
+				if (valueNew.type == ComponentType::Button) {
+					if (valueNew.emoji.id == "") {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
+					else {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+							{"id", valueNew.emoji.id},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
 				}
-				else {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-						{"id", valueNew.emoji.id},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
+				else if (valueNew.type == ComponentType::SelectMenu) {
+					json optionsArray = json::array();
+					for (auto value01 : valueNew.options) {
+						if (value01.emoji.id == "" && value01.emoji.name == "") {
+							json option = { {"description",value01.description},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+
+						}
+						else if (value01.emoji.id == "") {
+							json option = { {"description",value01.description},
+							{"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
+						else {
+							json option = { {"description",value01.description},
+							{"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
 					};
-					components.push_back(component);
+					{
+						json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+						{"disabled", valueNew.disabled},
+						{"type", valueNew.type},
+							{"max_values", valueNew.maxValues},
+							{"min_values", valueNew.minValues},
+							{"placeholder", valueNew.placeholder }
+						};
+						components.push_back(component);
+					}
 				}
 			}
 			json componentActionRow = { {"type", 1},{
-				"components", components} };
+					"components", components} };
 			componentsActionRow.push_back(componentActionRow);
 		}
 
@@ -680,50 +794,9 @@ namespace DiscordCoreInternal {
 			embedsArray.push_back(embed);
 		}
 
-		if (dataPackage.embeds.at(0).description != "" || dataPackage.embeds.at(0).fields.size() != 0) {
-			if (dataPackage.messageReference.guildId != "") {
-				json data = {
-		{"allowed_mentions", {
-			{"parse", dataPackage.allowedMentions.parse},
-			{"replied_user", dataPackage.allowedMentions.repliedUser},
-			{"roles", dataPackage.allowedMentions.roles},
-			{"users", dataPackage.allowedMentions.users}
-			}},
-			{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-			{"channel_id", dataPackage.messageReference.channelId},
-			{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
-				}},
-		{"content", dataPackage.content},
-		{"tts" , dataPackage.tts},
-		{"embeds" ,embedsArray} ,
-		{"components", componentsActionRow} };
-
-				return data.dump();
-			}
-			else {
-				json data = {
-	{"allowed_mentions", {
-			{"parse", dataPackage.allowedMentions.parse},
-			{"replied_user", dataPackage.allowedMentions.repliedUser},
-			{"roles", dataPackage.allowedMentions.roles},
-			{"users", dataPackage.allowedMentions.users}
-			}},
-			{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-			{"channel_id", dataPackage.messageReference.channelId},
-			{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
-				}},
-	{"content", dataPackage.content},
-	{"tts" , dataPackage.tts},
-	{"embeds" ,embedsArray},
-	{"components", componentsActionRow}
-				};
-
-				return data.dump();
-			}
-		}
-		else {
-			if (dataPackage.messageReference.guildId != "") {
-				json data = {
+			if (dataPackage.embeds.size() > 0) {
+				if (dataPackage.messageReference.guildId != "") {
+					json data = {
 			{"allowed_mentions", {
 				{"parse", dataPackage.allowedMentions.parse},
 				{"replied_user", dataPackage.allowedMentions.repliedUser},
@@ -736,32 +809,72 @@ namespace DiscordCoreInternal {
 					}},
 			{"content", dataPackage.content},
 			{"tts" , dataPackage.tts},
-					{"components", componentsActionRow}
-				};
+			{"embeds" ,embedsArray} ,
+			{"components", componentsActionRow} };
 
-				return data.dump();
-			}
-			else {
-				json data = {
-			{"allowed_mentions", {
+					return data.dump();
+				}
+				else {
+					json data = {
+		{"allowed_mentions", {
 				{"parse", dataPackage.allowedMentions.parse},
 				{"replied_user", dataPackage.allowedMentions.repliedUser},
 				{"roles", dataPackage.allowedMentions.roles},
 				{"users", dataPackage.allowedMentions.users}
 				}},
-					{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+				{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
 				{"channel_id", dataPackage.messageReference.channelId},
 				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
 					}},
-			{"content", dataPackage.content},
-			{"tts" , dataPackage.tts},
-				{"components", componentsActionRow}
-				};
+		{"content", dataPackage.content},
+		{"tts" , dataPackage.tts},
+		{"embeds" ,embedsArray},
+		{"components", componentsActionRow}
+					};
 
-				return data.dump();
+					return data.dump();
+				}
 			}
+			else {
+				if (dataPackage.messageReference.guildId != "") {
+					json data = {
+				{"allowed_mentions", {
+					{"parse", dataPackage.allowedMentions.parse},
+					{"replied_user", dataPackage.allowedMentions.repliedUser},
+					{"roles", dataPackage.allowedMentions.roles},
+					{"users", dataPackage.allowedMentions.users}
+					}},
+					{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+					{"channel_id", dataPackage.messageReference.channelId},
+					{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+						}},
+				{"content", dataPackage.content},
+				{"tts" , dataPackage.tts},
+						{"components", componentsActionRow}
+					};
 
-		}
+					return data.dump();
+				}
+				else {
+					json data = {
+				{"allowed_mentions", {
+					{"parse", dataPackage.allowedMentions.parse},
+					{"replied_user", dataPackage.allowedMentions.repliedUser},
+					{"roles", dataPackage.allowedMentions.roles},
+					{"users", dataPackage.allowedMentions.users}
+					}},
+						{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+					{"channel_id", dataPackage.messageReference.channelId},
+					{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+						}},
+				{"content", dataPackage.content},
+				{"tts" , dataPackage.tts},
+					{"components", componentsActionRow}
+					};
+
+					return data.dump();
+				}
+			}
 
 	}
 
@@ -772,38 +885,76 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.emoji.id == "") {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
-					};
-					components.push_back(component);
+				if (valueNew.type == ComponentType::Button) {
+					if (valueNew.emoji.id == "") {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
+					else {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+							{"id", valueNew.emoji.id},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
 				}
-				else {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-						{"id", valueNew.emoji.id},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
+				else if (valueNew.type == ComponentType::SelectMenu) {
+					json optionsArray = json::array();
+					for (auto value01 : valueNew.options) {
+						if (value01.emoji.id == "" && value01.emoji.name == "") {
+							json option = { {"description",value01.description},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+
+						}
+						else if (value01.emoji.id == "") {
+							json option = { {"description",value01.description},
+							{"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
+						else {
+							json option = { {"description",value01.description},
+							{"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
 					};
-					components.push_back(component);
+					{
+						json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+						{"disabled", valueNew.disabled},
+						{"type", valueNew.type},
+							{"max_values", valueNew.maxValues},
+							{"min_values", valueNew.minValues},
+							{"placeholder", valueNew.placeholder }
+						};
+						components.push_back(component);
+					}
 				}
 			}
 			json componentActionRow = { {"type", 1},{
-				"components", components} };
+					"components", components} };
 			componentsActionRow.push_back(componentActionRow);
 		}
 
@@ -1070,38 +1221,76 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.emoji.id == "") {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
-					};
-					components.push_back(component);
+				if (valueNew.type == ComponentType::Button) {
+					if (valueNew.emoji.id == "") {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
+					else {
+						json component = { {"custom_id", valueNew.customId},
+						{"disabled", valueNew.disabled},
+						{"emoji",{
+							{"name", valueNew.emoji.name},
+							{"id", valueNew.emoji.id},
+						{"animated", valueNew.emoji.animated}
+					} },
+						{"label", valueNew.label},
+						{"style", valueNew.style},
+						{"type", valueNew.type},
+						{"url", valueNew.url}
+						};
+						components.push_back(component);
+					}
 				}
-				else {
-					json component = { {"custom_id", valueNew.customId},
-					{"disabled", valueNew.disabled},
-					{"emoji",{
-						{"name", valueNew.emoji.name},
-						{"id", valueNew.emoji.id},
-					{"animated", valueNew.emoji.animated}
-				} },
-					{"label", valueNew.label},
-					{"style", valueNew.style},
-					{"type", valueNew.type},
-					{"url", valueNew.url}
+				else if (valueNew.type == ComponentType::SelectMenu) {
+					json optionsArray = json::array();
+					for (auto value01 : valueNew.options) {
+						if (value01.emoji.id == "" && value01.emoji.name == "") {
+							json option = { {"description",value01.description},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+
+						}
+						else if (value01.emoji.id == "") {
+							json option = { {"description",value01.description},
+							{"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
+						else {
+							json option = { {"description",value01.description},
+							{"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+							{"label", value01.label},
+							{"value", value01.value},{"default", value01._default} };
+							optionsArray.push_back(option);
+						}
 					};
-					components.push_back(component);
+					{
+						json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+						{"disabled", valueNew.disabled},
+						{"type", valueNew.type},
+							{"max_values", valueNew.maxValues},
+							{"min_values", valueNew.minValues},
+							{"placeholder", valueNew.placeholder }
+						};
+						components.push_back(component);
+					}
 				}
 			}
 			json componentActionRow = { {"type", 1},{
-				"components", components} };
+					"components", components} };
 			componentsActionRow.push_back(componentActionRow);
 		}
 
@@ -1207,38 +1396,76 @@ namespace DiscordCoreInternal {
 				auto components = json::array();
 
 				for (auto& valueNew : value.components) {
-					if (valueNew.emoji.id == "") {
-						json component = { {"custom_id", valueNew.customId},
-						{"disabled", valueNew.disabled},
-						{"emoji",{
-							{"name", valueNew.emoji.name},
-						{"animated", valueNew.emoji.animated}
-					} },
-						{"label", valueNew.label},
-						{"style", valueNew.style},
-						{"type", valueNew.type},
-						{"url", valueNew.url}
-						};
-						components.push_back(component);
+					if (valueNew.type == ComponentType::Button) {
+						if (valueNew.emoji.id == "") {
+							json component = { {"custom_id", valueNew.customId},
+							{"disabled", valueNew.disabled},
+							{"emoji",{
+								{"name", valueNew.emoji.name},
+							{"animated", valueNew.emoji.animated}
+						} },
+							{"label", valueNew.label},
+							{"style", valueNew.style},
+							{"type", valueNew.type},
+							{"url", valueNew.url}
+							};
+							components.push_back(component);
+						}
+						else {
+							json component = { {"custom_id", valueNew.customId},
+							{"disabled", valueNew.disabled},
+							{"emoji",{
+								{"name", valueNew.emoji.name},
+								{"id", valueNew.emoji.id},
+							{"animated", valueNew.emoji.animated}
+						} },
+							{"label", valueNew.label},
+							{"style", valueNew.style},
+							{"type", valueNew.type},
+							{"url", valueNew.url}
+							};
+							components.push_back(component);
+						}
 					}
-					else {
-						json component = { {"custom_id", valueNew.customId},
-						{"disabled", valueNew.disabled},
-						{"emoji",{
-							{"name", valueNew.emoji.name},
-							{"id", valueNew.emoji.id},
-						{"animated", valueNew.emoji.animated}
-					} },
-						{"label", valueNew.label},
-						{"style", valueNew.style},
-						{"type", valueNew.type},
-						{"url", valueNew.url}
+					else if (valueNew.type == ComponentType::SelectMenu) {
+						json optionsArray = json::array();
+						for (auto value01 : valueNew.options) {
+							if (value01.emoji.id == "" && value01.emoji.name == "") {
+								json option = { {"description",value01.description},
+								{"label", value01.label},
+								{"value", value01.value},{"default", value01._default} };
+								optionsArray.push_back(option);
+
+							}
+							else if (value01.emoji.id == "") {
+								json option = { {"description",value01.description},
+								{"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+								{"label", value01.label},
+								{"value", value01.value},{"default", value01._default} };
+								optionsArray.push_back(option);
+							}
+							else {
+								json option = { {"description",value01.description},
+								{"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+								{"label", value01.label},
+								{"value", value01.value},{"default", value01._default} };
+								optionsArray.push_back(option);
+							}
 						};
-						components.push_back(component);
+						{
+							json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+							{"disabled", valueNew.disabled},
+							{"type", valueNew.type},
+								{"max_values", valueNew.maxValues},
+								{"min_values", valueNew.minValues},
+								{"placeholder", valueNew.placeholder }
+							};
+							components.push_back(component);
+						}
 					}
 				}
 				json componentActionRow = { {"type", 1},{
-					"components", components} };
+						"components", components} };
 				componentsActionRow.push_back(componentActionRow);
 			}
 
@@ -1357,38 +1584,76 @@ namespace DiscordCoreInternal {
 				auto components = json::array();
 
 				for (auto& valueNew : value.components) {
-					if (valueNew.emoji.id == "") {
-						json component = { {"custom_id", valueNew.customId},
-						{"disabled", valueNew.disabled},
-						{"emoji",{
-							{"name", valueNew.emoji.name},
-						{"animated", valueNew.emoji.animated}
-					} },
-						{"label", valueNew.label},
-						{"style", valueNew.style},
-						{"type", valueNew.type},
-						{"url", valueNew.url}
-						};
-						components.push_back(component);
+					if (valueNew.type == ComponentType::Button) {
+						if (valueNew.emoji.id == "") {
+							json component = { {"custom_id", valueNew.customId},
+							{"disabled", valueNew.disabled},
+							{"emoji",{
+								{"name", valueNew.emoji.name},
+							{"animated", valueNew.emoji.animated}
+						} },
+							{"label", valueNew.label},
+							{"style", valueNew.style},
+							{"type", valueNew.type},
+							{"url", valueNew.url}
+							};
+							components.push_back(component);
+						}
+						else {
+							json component = { {"custom_id", valueNew.customId},
+							{"disabled", valueNew.disabled},
+							{"emoji",{
+								{"name", valueNew.emoji.name},
+								{"id", valueNew.emoji.id},
+							{"animated", valueNew.emoji.animated}
+						} },
+							{"label", valueNew.label},
+							{"style", valueNew.style},
+							{"type", valueNew.type},
+							{"url", valueNew.url}
+							};
+							components.push_back(component);
+						}
 					}
-					else {
-						json component = { {"custom_id", valueNew.customId},
-						{"disabled", valueNew.disabled},
-						{"emoji",{
-							{"name", valueNew.emoji.name},
-							{"id", valueNew.emoji.id},
-						{"animated", valueNew.emoji.animated}
-					} },
-						{"label", valueNew.label},
-						{"style", valueNew.style},
-						{"type", valueNew.type},
-						{"url", valueNew.url}
+					else if (valueNew.type == ComponentType::SelectMenu) {
+						json optionsArray = json::array();
+						for (auto value01 : valueNew.options) {
+							if (value01.emoji.id == "" && value01.emoji.name == "") {
+								json option = { {"description",value01.description},
+								{"label", value01.label},
+								{"value", value01.value},{"default", value01._default} };
+								optionsArray.push_back(option);
+
+							}
+							else if (value01.emoji.id == "") {
+								json option = { {"description",value01.description},
+								{"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+								{"label", value01.label},
+								{"value", value01.value},{"default", value01._default} };
+								optionsArray.push_back(option);
+							}
+							else {
+								json option = { {"description",value01.description},
+								{"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+								{"label", value01.label},
+								{"value", value01.value},{"default", value01._default} };
+								optionsArray.push_back(option);
+							}
 						};
-						components.push_back(component);
+						{
+							json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+							{"disabled", valueNew.disabled},
+							{"type", valueNew.type},
+								{"max_values", valueNew.maxValues},
+								{"min_values", valueNew.minValues},
+								{"placeholder", valueNew.placeholder }
+							};
+							components.push_back(component);
+						}
 					}
 				}
 				json componentActionRow = { {"type", 1},{
-					"components", components} };
+						"components", components} };
 				componentsActionRow.push_back(componentActionRow);
 			}
 
@@ -1535,38 +1800,76 @@ namespace DiscordCoreInternal {
 				 auto components = json::array();
 
 				 for (auto& valueNew : value.components) {
-					 if (valueNew.emoji.id == "") {
-						 json component = { {"custom_id", valueNew.customId},
-						 {"disabled", valueNew.disabled},
-						 {"emoji",{
-							 {"name", valueNew.emoji.name},
-						 {"animated", valueNew.emoji.animated}
-					 } },
-						 {"label", valueNew.label},
-						 {"style", valueNew.style},
-						 {"type", valueNew.type},
-						 {"url", valueNew.url}
-						 };
-						 components.push_back(component);
+					 if (valueNew.type == ComponentType::Button) {
+						 if (valueNew.emoji.id == "") {
+							 json component = { {"custom_id", valueNew.customId},
+							 {"disabled", valueNew.disabled},
+							 {"emoji",{
+								 {"name", valueNew.emoji.name},
+							 {"animated", valueNew.emoji.animated}
+						 } },
+							 {"label", valueNew.label},
+							 {"style", valueNew.style},
+							 {"type", valueNew.type},
+							 {"url", valueNew.url}
+							 };
+							 components.push_back(component);
+						 }
+						 else {
+							 json component = { {"custom_id", valueNew.customId},
+							 {"disabled", valueNew.disabled},
+							 {"emoji",{
+								 {"name", valueNew.emoji.name},
+								 {"id", valueNew.emoji.id},
+							 {"animated", valueNew.emoji.animated}
+						 } },
+							 {"label", valueNew.label},
+							 {"style", valueNew.style},
+							 {"type", valueNew.type},
+							 {"url", valueNew.url}
+							 };
+							 components.push_back(component);
+						 }
 					 }
-					 else {
-						 json component = { {"custom_id", valueNew.customId},
-						 {"disabled", valueNew.disabled},
-						 {"emoji",{
-							 {"name", valueNew.emoji.name},
-							 {"id", valueNew.emoji.id},
-						 {"animated", valueNew.emoji.animated}
-					 } },
-						 {"label", valueNew.label},
-						 {"style", valueNew.style},
-						 {"type", valueNew.type},
-						 {"url", valueNew.url}
+					 else if (valueNew.type == ComponentType::SelectMenu) {
+						 json optionsArray = json::array();
+						 for (auto value01 : valueNew.options) {
+							 if (value01.emoji.id == "" && value01.emoji.name == "") {
+								 json option = { {"description",value01.description},
+								 {"label", value01.label},
+								 {"value", value01.value},{"default", value01._default} };
+								 optionsArray.push_back(option);
+
+							 }
+							 else if (value01.emoji.id == "") {
+								 json option = { {"description",value01.description},
+								 {"emoji", {{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+								 {"label", value01.label},
+								 {"value", value01.value},{"default", value01._default} };
+								 optionsArray.push_back(option);
+							 }
+							 else {
+								 json option = { {"description",value01.description},
+								 {"emoji", {{"id",value01.emoji.id},{"name", value01.emoji.name},{"animated", value01.emoji.animated}}},
+								 {"label", value01.label},
+								 {"value", value01.value},{"default", value01._default} };
+								 optionsArray.push_back(option);
+							 }
 						 };
-						 components.push_back(component);
+						 {
+							 json component = { {"custom_id", valueNew.customId},{"options", optionsArray},
+							 {"disabled", valueNew.disabled},
+							 {"type", valueNew.type},
+								 {"max_values", valueNew.maxValues},
+								 {"min_values", valueNew.minValues},
+								 {"placeholder", valueNew.placeholder }
+							 };
+							 components.push_back(component);
+						 }
 					 }
 				 }
 				 json componentActionRow = { {"type", 1},{
-					 "components", components} };
+						 "components", components} };
 				 componentsActionRow.push_back(componentActionRow);
 			 }
 

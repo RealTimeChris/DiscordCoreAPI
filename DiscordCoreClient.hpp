@@ -181,6 +181,7 @@ namespace DiscordCoreAPI {
 			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			Button::initialize(this->interactions);
+			SelectMenu::initialize(this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser->data.username, this->currentUser->data.id);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			InputEventManager::initialize(this->messages, this->thisPointer, this->thisPointer, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
@@ -408,14 +409,28 @@ namespace DiscordCoreAPI {
 								this->eventManager->onInteractionCreationEvent(eventCreationData);
 							}
 							else if (interactionData.type == InteractionType::MessageComponent) {
-								eventData.eventType = InputEventType::BUTTON_INTERACTION;
-								eventData.inputEventResponseType = InputEventResponseType::DEFER_BUTTON_RESPONSE;
-								eventData.interactionData = interactionData;
-								eventData.discordCoreClient = this->thisPointer;
-								eventData.requesterId = interactionData.requesterId;
-								OnInteractionCreationData eventCreationData;
-								eventCreationData.eventData = eventData;
-								this->eventManager->onInteractionCreationEvent(eventCreationData);
+								if (interactionData.componentType == ComponentType::Button) {
+									eventData.eventType = InputEventType::BUTTON_INTERACTION;
+									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+									eventData.interactionData = interactionData;
+									eventData.discordCoreClient = this->thisPointer;
+									eventData.requesterId = interactionData.requesterId;
+									OnInteractionCreationData eventCreationData;
+									eventCreationData.eventData = eventData;
+									this->eventManager->onInteractionCreationEvent(eventCreationData);
+								}
+								else if (interactionData.componentType == ComponentType::SelectMenu) {
+									eventData.eventType = InputEventType::SELECT_MENU_INPUT;
+									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+									DeferComponentResponseData dataPackage(interactionData);
+									InputEventManager::respondToEvent(dataPackage);
+									eventData.interactionData = interactionData;
+									eventData.discordCoreClient = this->thisPointer;
+									eventData.requesterId = interactionData.requesterId;
+									OnInteractionCreationData eventCreationData;
+									eventCreationData.eventData = eventData;
+									this->eventManager->onInteractionCreationEvent(eventCreationData);
+								}
 							}
 							break;
 						}
@@ -434,14 +449,26 @@ namespace DiscordCoreAPI {
 								this->eventManager->onInteractionCreationEvent(eventCreationData);
 							}
 							else if (interactionData.type == InteractionType::MessageComponent) {
-								eventData.eventType = InputEventType::BUTTON_INTERACTION;
-								eventData.inputEventResponseType = InputEventResponseType::DEFER_BUTTON_RESPONSE;
-								eventData.interactionData = interactionData;
-								eventData.discordCoreClient = this->thisPointer;
-								eventData.requesterId = interactionData.requesterId;
-								OnInteractionCreationData eventCreationData;
-								eventCreationData.eventData = eventData;
-								this->eventManager->onInteractionCreationEvent(eventCreationData);
+								if (interactionData.componentType == ComponentType::Button) {
+									eventData.eventType = InputEventType::BUTTON_INTERACTION;
+									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+									eventData.interactionData = interactionData;
+									eventData.discordCoreClient = this->thisPointer;
+									eventData.requesterId = interactionData.requesterId;
+									OnInteractionCreationData eventCreationData;
+									eventCreationData.eventData = eventData;
+									this->eventManager->onInteractionCreationEvent(eventCreationData);
+								}
+								else if (interactionData.componentType == ComponentType::SelectMenu) {
+									eventData.eventType = InputEventType::SELECT_MENU_INPUT;
+									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+									eventData.interactionData = interactionData;
+									eventData.discordCoreClient = this->thisPointer;
+									eventData.requesterId = interactionData.requesterId;
+									OnInteractionCreationData eventCreationData;
+									eventCreationData.eventData = eventData;
+									this->eventManager->onInteractionCreationEvent(eventCreationData);
+								}
 							}
 							break;
 						}

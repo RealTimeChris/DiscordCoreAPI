@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 			return dataPackageNewer;
 		}
 
-		static void respondToEvent(DeferButtonResponseData dataPackage) {
+		static void respondToEvent(DeferComponentResponseData dataPackage) {
 			ButtonInteractionData newData;
 			newData.token = dataPackage.interactionPackage.interactionToken;
 			newData.id = dataPackage.interactionPackage.interactionId;
