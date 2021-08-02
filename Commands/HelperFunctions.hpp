@@ -480,7 +480,7 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT){
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
@@ -489,7 +489,7 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
@@ -499,7 +499,7 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditFollowUpMessageData dataPackage(event01);
                         vector<EmbedData> embeds;
@@ -513,7 +513,7 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex += 1;
                    EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                    if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                       DeferButtonResponseData newData(buttonIntData);
+                       DeferComponentResponseData newData(buttonIntData);
                        InputEventManager::respondToEvent(newData);
                        EditMessageData editMessageData(event01);
                        editMessageData.components = event01.getComponents();
@@ -522,7 +522,7 @@ namespace DiscordCoreAPI {
                    }
                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                        || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                       DeferButtonResponseData newData(buttonIntData);
+                       DeferComponentResponseData newData(buttonIntData);
                        InputEventManager::respondToEvent(newData);
                        EditInteractionResponseData responseData(event01);
                        vector<EmbedData> embeds;
@@ -532,7 +532,7 @@ namespace DiscordCoreAPI {
                        event01 = InputEventManager::respondToEvent(responseData);
                    }
                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                       DeferButtonResponseData newData(buttonIntData);
+                       DeferComponentResponseData newData(buttonIntData);
                        InputEventManager::respondToEvent(newData);
                        EditFollowUpMessageData dataPackage(event01);
                        vector<EmbedData> embeds;
@@ -546,7 +546,7 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex -= 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
@@ -555,7 +555,7 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
@@ -565,7 +565,7 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditFollowUpMessageData dataPackage(event01);
                         vector<EmbedData> embeds;
@@ -579,7 +579,7 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex = (unsigned int)messageEmbeds.size() - 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
@@ -588,7 +588,7 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
@@ -598,7 +598,7 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        DeferButtonResponseData newData(buttonIntData);
+                        DeferComponentResponseData newData(buttonIntData);
                         InputEventManager::respondToEvent(newData);
                         EditFollowUpMessageData dataPackage(event01);
                         vector<EmbedData> embeds;
