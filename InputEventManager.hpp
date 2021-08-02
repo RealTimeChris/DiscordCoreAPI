@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_RESPONSE_DEFERRED;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
-			dataPackageNewer.interactionData.channelId =
+			dataPackageNewer.interactionData.channelId;
 			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNewer.interactionData.channelId = dataPackage.channelId;
 			dataPackageNewer.interactionData.guildId = dataPackage.guildId;
@@ -161,12 +161,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static void respondToEvent(DeferComponentResponseData dataPackage) {
-			ButtonInteractionData newData;
-			newData.token = dataPackage.interactionPackage.interactionToken;
-			newData.id = dataPackage.interactionPackage.interactionId;
-			newData.applicationId = dataPackage.interactionPackage.applicationId;
-			newData.type = InteractionType::MessageComponent;
-			CreateInteractionResponseData dataPackageNew(newData);
+			CreateInteractionResponseData dataPackageNew(dataPackage);
 			dataPackageNew.interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			dataPackageNew.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNew.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;

@@ -783,7 +783,8 @@ namespace  DiscordCoreInternal {
         YOUTUBE_VIDEO_QUERY = 45,
         GET_INVITES = 46,
         PATCH_GUILD_MEMBER = 47,
-        GET_PINNED_MESSAGES = 48
+        GET_PINNED_MESSAGES = 48,
+        GET_INTERACTION_RESPONSE = 49
     };
 
     struct GetApplicationData {
@@ -829,6 +830,12 @@ namespace  DiscordCoreInternal {
         vector<EmbedData> embeds;
         AllowedMentionsData allowedMentions;
         vector<ActionRowData> components;
+        string applicationId;
+        string interactionToken;
+    };
+
+    struct GetInteractionResponseData {
+        HttpAgentResources agentResources;
         string applicationId;
         string interactionToken;
     };

@@ -412,6 +412,8 @@ namespace DiscordCoreAPI {
 								if (interactionData.componentType == ComponentType::Button) {
 									eventData.eventType = InputEventType::BUTTON_INTERACTION;
 									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+									DeferComponentResponseData dataPackage(interactionData);
+									InputEventManager::respondToEvent(dataPackage);
 									eventData.interactionData = interactionData;
 									eventData.discordCoreClient = this->thisPointer;
 									eventData.requesterId = interactionData.requesterId;
@@ -452,6 +454,8 @@ namespace DiscordCoreAPI {
 								if (interactionData.componentType == ComponentType::Button) {
 									eventData.eventType = InputEventType::BUTTON_INTERACTION;
 									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+									DeferComponentResponseData dataPackage(interactionData);
+									InputEventManager::respondToEvent(dataPackage);
 									eventData.interactionData = interactionData;
 									eventData.discordCoreClient = this->thisPointer;
 									eventData.requesterId = interactionData.requesterId;
@@ -462,6 +466,8 @@ namespace DiscordCoreAPI {
 								else if (interactionData.componentType == ComponentType::SelectMenu) {
 									eventData.eventType = InputEventType::SELECT_MENU_INPUT;
 									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+									DeferComponentResponseData dataPackage(interactionData);
+									InputEventManager::respondToEvent(dataPackage);
 									eventData.interactionData = interactionData;
 									eventData.discordCoreClient = this->thisPointer;
 									eventData.requesterId = interactionData.requesterId;

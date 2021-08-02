@@ -84,6 +84,7 @@ namespace DiscordCoreAPI {
         DeferComponentResponseData(InteractionData dataPackage) {
             this->type = InteractionCallbackType::DeferredUpdateMessage;
             this->interactionPackage.interactionId = dataPackage.id;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionToken = dataPackage.token;
             this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
         }
@@ -91,11 +92,13 @@ namespace DiscordCoreAPI {
             this->type = InteractionCallbackType::DeferredUpdateMessage;
             this->interactionPackage.interactionId = dataPackage.id;
             this->interactionPackage.interactionToken = dataPackage.token;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
             this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
         }
         DeferComponentResponseData(ButtonInteractionData dataPackage) {
             this->type = InteractionCallbackType::DeferredUpdateMessage;
             this->interactionPackage.interactionId = dataPackage.id;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionToken = dataPackage.token;
             this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
         }
@@ -103,6 +106,7 @@ namespace DiscordCoreAPI {
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEventManager;
+        friend struct CreateInteractionResponseData;
         InteractionPackageData interactionPackage;
         InteractionCallbackType type;
         InputEventResponseType responseType;
@@ -131,6 +135,11 @@ namespace DiscordCoreAPI {
 
     struct CreateInteractionResponseData {
     public:
+        CreateInteractionResponseData(DeferComponentResponseData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+            this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+        }
         CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
             this->interactionPackage.interactionId = dataPackage.id;
             this->interactionPackage.interactionToken = dataPackage.token;
@@ -478,6 +487,11 @@ namespace DiscordCoreAPI {
         MessagePackageData messagePackage;
     };
 
+    struct GetInteractionResponseData {
+        string applicationId;
+        string interactionToken;
+    };
+
     struct DeleteFollowUpMessageData {
         DeleteFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
@@ -500,9 +514,11 @@ namespace DiscordCoreAPI {
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::CreateInteractionResponseData> requestPostInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::EditInteractionResponseData> requestPatchInteractionResponseBuffer;
+        unbounded_buffer<DiscordCoreInternal::GetInteractionResponseData> requestGetInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer;
         unbounded_buffer<DiscordCoreInternal::CreateFollowUpMessageData> requestPostFollowUpMessageBuffer;
         unbounded_buffer<DiscordCoreInternal::EditFollowUpMessageData> requestPatchFollowUpMessageBuffer;
+        unbounded_buffer<InteractionResponseData> outInteractionresponseDataBuffer;
         unbounded_buffer<MessageData> outInteractionResponseBuffer;
         unbounded_buffer<exception> errorBuffer;
 
@@ -519,6 +535,32 @@ namespace DiscordCoreAPI {
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
+        }
+
+        InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
+            DiscordCoreInternal::HttpWorkload workload;
+            workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
+            workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+            workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_INTERACTION_RESPONSE;
+            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            send(requestAgent.workSubmissionBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            exception error;
+            while (requestAgent.getError(error)) {
+                cout << "InteractionManagerAgent::patchObjectData() Error: " << error.what() << endl << endl;
+            }
+            DiscordCoreInternal::HttpData returnData;
+            try_receive(requestAgent.workReturnBuffer, returnData);
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "InteractionManagerAgent::patchObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "InteractionManagerAgent::patchObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            DiscordCoreAPI::InteractionResponseData interactionResponseData;
+            DiscordCoreInternal::parseObject(returnData.data, &interactionResponseData);
+            return interactionResponseData;
         }
 
         MessageData patchObjectData(DiscordCoreInternal::EditFollowUpMessageData dataPackage){
@@ -761,6 +803,11 @@ namespace DiscordCoreAPI {
                 if(try_receive(this->requestDeleteFollowUpMessageBuffer, dataPackage07)){
                     deleteObjectDataTimer(dataPackage07);
                 }
+                DiscordCoreInternal::GetInteractionResponseData dataPackage08;
+                if (try_receive(this->requestGetInteractionResponseBuffer, dataPackage08)) {
+                    auto responseData = getObjectData(dataPackage08);
+                    asend(this->outInteractionresponseDataBuffer, responseData);
+                }
             }
             catch (const exception& e) {
                 send(this->errorBuffer, e);
@@ -816,6 +863,29 @@ namespace DiscordCoreAPI {
             }
             this->threadContext->releaseGroup(groupIdNew);
             co_return;
+        }
+
+        task<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
+            unsigned int groupIdNew;
+            InteractionResponseData data;
+            groupIdNew = this->threadContext->createGroup();
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            DiscordCoreInternal::GetInteractionResponseData dataPackageNew;
+            dataPackageNew.applicationId = dataPackage.applicationId;
+            dataPackageNew.interactionToken = dataPackage.interactionToken;
+            dataPackageNew.agentResources = this->agentResources;
+            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            send(requestAgent.requestGetInteractionResponseBuffer, dataPackageNew);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            exception error;
+            while (requestAgent.getError(error)) {
+                cout << "InteractionManager::createInteractionResponseAsync() Error: " << error.what() << endl << endl;
+            }
+            InteractionResponseData outData;
+            try_receive(requestAgent.outInteractionresponseDataBuffer, outData);
+            this->threadContext->releaseGroup(groupIdNew);
+            co_return outData;
         }
 
         task<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
