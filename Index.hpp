@@ -187,9 +187,10 @@ namespace DiscordCoreAPI {
         }
     };
 
-    shared_ptr<DiscordCoreClient> DiscordCoreClient::finalSetup(string botToken) {
+    void DiscordCoreClient::finalSetup(string botToken) {
         try {
-            pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
+            shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
+            pDiscordCoreClient->thisPointer = pDiscordCoreClient;
             IndexHost::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();
             executeFunctionAfterTimePeriod([]() {
@@ -216,13 +217,21 @@ namespace DiscordCoreAPI {
             CommandCenter::registerFunction("botinfo", new BotInfo);
             CommandCenter::registerFunction("play", new Play);
             CommandCenter::registerFunction("test", new Test);
-            return pDiscordCoreClient;
         }
         catch (exception& e) {
             cout << "DiscordCoreAPI::finalSetup Error: " << e.what() << endl;
-            return pDiscordCoreClient;
         }
     };
+
+    void DiscordCoreClient::runBot() {
+        wait((agent*)DiscordCoreClient::thisPointer.get());
+        exception error;
+        DiscordCoreAPI::CommandCenter::registerFunction("test", new DiscordCoreAPI::Test);
+        while (DiscordCoreClient::getError(error)) {
+            cout << "DiscordCoreClient Error: " << error.what() << endl;
+        }
+    }
+
     shared_ptr<DiscordCoreClient> IndexHost::discordCoreClient{ nullptr };
 }
 #endif

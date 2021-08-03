@@ -49,7 +49,6 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class GuildManager;
 		friend class DiscordCoreClientBase;
-		friend class DiscordCoreClientNew;
 		friend struct concurrency::details::_ResultHolder<Guild>;
 		friend struct OnGuildCreationData;
 		friend struct OnGuildUpdateData;
@@ -139,7 +138,6 @@ namespace DiscordCoreAPI {
 	public:
 		static overwrite_buffer<map<string, Guild>> cache;
 	protected:
-		friend class DiscordCoreClientExt;
 		friend class DiscordCoreClient;
 		friend class GuildManager;
 

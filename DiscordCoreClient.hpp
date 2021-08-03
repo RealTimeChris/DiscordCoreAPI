@@ -80,10 +80,10 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
 	public:
+		static shared_ptr<DiscordCoreClient> thisPointer;
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
-		shared_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		shared_ptr<EventManager> eventManager{ nullptr };
 		shared_ptr<ReactionManager> reactions{ nullptr };
 		shared_ptr<MessageManager> messages{ nullptr };
@@ -96,9 +96,11 @@ namespace DiscordCoreAPI {
 			this->botToken = botTokenNew;
 		}
 
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> finalSetup(string botToken);
+		static void finalSetup(string botToken);
 
-		bool getError(exception& error) {
+		static void runBot();
+
+		static bool getError(exception& error) {
 			return try_receive(errorBuffer, error);
 		}
 
@@ -132,13 +134,13 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class Guild;
 		friend class BotUser;
+		static unbounded_buffer<exception> errorBuffer;
 		bool doWeQuit = false;
 		hstring baseURL = L"https://discord.com/api/v9";
 		hstring gatewayBaseURL = L"wss://gateway.discord.gg/?v=9";
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
 		unbounded_buffer<json> webSocketIncWorkloadBuffer;
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
-		unbounded_buffer<exception> errorBuffer;
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
@@ -496,9 +498,9 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::MESSAGE_UPDATE:
 					{
 						DiscordCoreAPI::OnMessageUpdateData messageUpdateData;
-						Message message = this->messages->fetchAsync({ .channelId = workload.payLoad.at("channel_id"), .id = workload.payLoad.at("id") }).get();
-						messageUpdateData.messageOld = message;
-						DiscordCoreInternal::parseObject(workload.payLoad, &message.data);
+						MessageData messageData;
+						DiscordCoreInternal::parseObject(workload.payLoad, &messageData);
+						Message message(messageData, DiscordCoreClient::thisPointer);
 						messageUpdateData.messageNew = message;
 						this->eventManager->onMessageUpdateEvent(messageUpdateData);
 						break;
@@ -640,13 +642,14 @@ namespace DiscordCoreAPI {
 				start();
 			}
 			catch (const exception& e) {
-				send(errorBuffer, e);
+				send(DiscordCoreClient::errorBuffer, e);
 			}
 			done();
 			return;
 		}
 	};
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> pDiscordCoreClient{ nullptr };
+	unbounded_buffer<exception> DiscordCoreClient::errorBuffer;
+	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer;
 }
 #include "Commands/CommandsList.hpp"
 

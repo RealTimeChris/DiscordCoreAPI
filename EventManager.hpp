@@ -100,7 +100,6 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnMessageUpdateData {
-		Message messageOld;
 		Message messageNew;
 	};
 
