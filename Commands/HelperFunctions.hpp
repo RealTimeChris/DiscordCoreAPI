@@ -54,13 +54,13 @@ namespace DiscordCoreAPI {
         return false;
     }
 
-    bool checkIfAllowedPlayingInChannel(DiscordCoreAPI::InputEventData eventData,  DiscordGuild discordGuild) {
+    bool checkIfAllowedGamingInChannel(DiscordCoreAPI::InputEventData eventData, DiscordGuild discordGuild) {
         bool isItFound = true;
-        if (discordGuild.data.musicChannelIds.size() > 0) {
+        if (discordGuild.data.gameChannelIds.size() > 0) {
             isItFound = false;
             string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
             EmbedData msgEmbed;
-            for (auto& value : discordGuild.data.musicChannelIds) {
+            for (auto& value : discordGuild.data.gameChannelIds) {
                 if (eventData.getChannelId() == value) {
                     isItFound = true;
                     break;
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
                     InputEventData event01 = InputEventManager::respondToEvent(responseData);
                 }
             }
-            
+
         }
         return isItFound;
     }
@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
                 originalPermissionString = "0";
             }
             __int64 permissionsInteger = stoll(originalPermissionString);
-            for (auto value:permissionsToAdd) {
+            for (auto value : permissionsToAdd) {
                 permissionsInteger |= (__int64)value;
             }
             stringstream sstream;
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
                 originalPermissionString = "0";
             }
             __int64 permissionsInteger = stoll(originalPermissionString);
-            for (auto value: permissionsToRemove) {
+            for (auto value : permissionsToRemove) {
                 permissionsInteger &= ~(__int64)value;
             }
             stringstream sstream;
@@ -309,76 +309,79 @@ namespace DiscordCoreAPI {
             }
         }
 
-        protected:
-            static string computeBasePermissions(GuildMember guildMember, GuildManager guilds, RoleManager roles) {
-                Guild guild = guilds.getGuildAsync({ guildMember.data.guildId }).get();
+    protected:
+        static string computeBasePermissions(GuildMember guildMember, GuildManager guilds, RoleManager roles) {
+            Guild guild = guilds.getGuildAsync({ guildMember.data.guildId }).get();
 
-                if (guild.data.ownerID == guildMember.data.user.id) {
-                    return getAllPermissions();
-                }
-
-                Role everyone = roles.getRoleAsync({ .guildId = guild.data.id, .roleId = guild.data.id }).get();
-                string permissionsString = everyone.data.permissions;
-                __int64 permissionsInt = stoll(permissionsString);
-
-                for (auto& role : guildMember.data.roles) {
-                    Role currentRole = roles.getRoleAsync({ .guildId = guild.data.id, .roleId = role }).get();
-                    permissionsInt |= stoll(currentRole.data.permissions);
-                }
-
-                if ((permissionsInt & (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) == (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) {
-                    return getAllPermissions();
-                }
-                stringstream stream;
-                stream << permissionsInt;
-                return stream.str();
+            if (guild.data.ownerID == guildMember.data.user.id) {
+                return getAllPermissions();
             }
 
-            static string  computeOverwrites(string basePermissions, GuildMember guildMember, Channel channel) {
-                __int64 permissionsInt = stoll(basePermissions);
-                if ((permissionsInt & (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) == (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) {
-                    return getAllPermissions();
-                }
+            Role everyone = roles.getRoleAsync({ .guildId = guild.data.id, .roleId = guild.data.id }).get();
+            string permissionsString = everyone.data.permissions;
+            __int64 permissionsInt = stoll(permissionsString);
 
-                Guild guild = guildMember.discordCoreClient->guilds->getGuildAsync({ .guildId = guildMember.data.guildId }).get();
-
-                DiscordCoreInternal::OverWriteData overwriteEveryone = channel.data.permissionOverwrites.at(guild.data.id);
-
-                if (overwriteEveryone.id != "") {
-                    permissionsInt &= ~stoll(overwriteEveryone.deny);
-                    permissionsInt |= stoll(overwriteEveryone.allow);
-                }
-
-                map<string, OverWriteData> overWrites = channel.data.permissionOverwrites;
-                __int64 allow = 0;
-                __int64 deny = 0;
-                for (auto& role : guildMember.data.roles) {
-                    Role currentRole = guildMember.discordCoreClient->roles->getRoleAsync({ .guildId = guildMember.data.guildId, .roleId = role }).get();
-                    if (overWrites.contains(currentRole.data.id)) {
-                        allow |= stoll(overWrites.at(currentRole.data.id).allow);
-                        deny |= stoll(overWrites.at(currentRole.data.id).deny);
-                    }
-                }
-
-                permissionsInt &= ~deny;
-                permissionsInt |= allow;
-
-                if (overWrites.contains(guildMember.data.user.id)) {
-                    permissionsInt &= ~stoll(overWrites.at(guildMember.data.user.id).deny);
-                    permissionsInt |= stoll(overWrites.at(guildMember.data.user.id).allow);
-                }
-
-                stringstream stream;
-                stream << permissionsInt;
-                return stream.str();
+            for (auto& role : guildMember.data.roles) {
+                Role currentRole = roles.getRoleAsync({ .guildId = guild.data.id, .roleId = role }).get();
+                permissionsInt |= stoll(currentRole.data.permissions);
             }
 
-            static string computePermissions(GuildMember guildMember, Channel channel) {
-                string permissions;
-                permissions = computeBasePermissions(guildMember, *guildMember.discordCoreClient->guilds, *guildMember.discordCoreClient->roles);
-                permissions = computeOverwrites(permissions, guildMember, channel);
-                return permissions;
+            if ((permissionsInt & (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) == (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) {
+                return getAllPermissions();
             }
+            stringstream stream;
+            stream << permissionsInt;
+            return stream.str();
+        }
+
+        static string  computeOverwrites(string basePermissions, GuildMember guildMember, Channel channel) {
+            __int64 permissionsInt = stoll(basePermissions);
+            if ((permissionsInt & (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) == (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) {
+                return getAllPermissions();
+            }
+
+            Guild guild = guildMember.discordCoreClient->guilds->getGuildAsync({ .guildId = guildMember.data.guildId }).get();
+
+            DiscordCoreInternal::OverWriteData overwriteEveryone;
+            if (channel.data.permissionOverwrites.contains(guild.data.id)) {
+                overwriteEveryone = channel.data.permissionOverwrites.at(guild.data.id);
+            }
+
+            if (overwriteEveryone.id != "") {
+                permissionsInt &= ~stoll(overwriteEveryone.deny);
+                permissionsInt |= stoll(overwriteEveryone.allow);
+            }
+
+            map<string, OverWriteData> overWrites = channel.data.permissionOverwrites;
+            __int64 allow = 0;
+            __int64 deny = 0;
+            for (auto& role : guildMember.data.roles) {
+                Role currentRole = guildMember.discordCoreClient->roles->getRoleAsync({ .guildId = guildMember.data.guildId, .roleId = role }).get();
+                if (overWrites.contains(currentRole.data.id)) {
+                    allow |= stoll(overWrites.at(currentRole.data.id).allow);
+                    deny |= stoll(overWrites.at(currentRole.data.id).deny);
+                }
+            }
+
+            permissionsInt &= ~deny;
+            permissionsInt |= allow;
+
+            if (overWrites.contains(guildMember.data.user.id)) {
+                permissionsInt &= ~stoll(overWrites.at(guildMember.data.user.id).deny);
+                permissionsInt |= stoll(overWrites.at(guildMember.data.user.id).allow);
+            }
+
+            stringstream stream;
+            stream << permissionsInt;
+            return stream.str();
+        }
+
+        static string computePermissions(GuildMember guildMember, Channel channel) {
+            string permissions;
+            permissions = computeBasePermissions(guildMember, *guildMember.discordCoreClient->guilds, *guildMember.discordCoreClient->roles);
+            permissions = computeOverwrites(permissions, guildMember, channel);
+            return permissions;
+        }
     };
 
     bool checkForBotCommanderStatus(GuildMember guildMember, DiscordUser discordUser) {
@@ -393,7 +396,7 @@ namespace DiscordCoreAPI {
         return false;
     }
 
-    bool doWeHaveAdminPermissions(InputEventData eventData,DiscordGuild discordGuild, Channel channel, GuildMember guildMember) {
+    bool doWeHaveAdminPermissions(InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember) {
         bool doWeHaveAdmin = PermissionsConverter::checkForPermission(guildMember, channel, Permissions::ADMINISTRATOR);
 
         if (doWeHaveAdmin) {
@@ -447,12 +450,12 @@ namespace DiscordCoreAPI {
                 }
                 responseDataRegularMessage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 responseDataRegularMessage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
-                
+
                 responseDataRegularMessage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
                 event01 = InputEventManager::respondToEvent(responseDataRegularMessage);
             }
-            else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE 
-                || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT|| originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
+            else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                 EditInteractionResponseData editResponseData(event01);
                 editResponseData.embeds.push_back(messageEmbeds[currentPageIndex]);
                 if (returnFinalEmbed) {
@@ -463,7 +466,7 @@ namespace DiscordCoreAPI {
                 editResponseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
                 event01 = InputEventManager::respondToEvent(editResponseData);
             }
-            else if(originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+            else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                 EditFollowUpMessageData dataPackage(event01);
                 dataPackage.embeds.push_back(messageEmbeds[currentPageIndex]);
                 dataPackage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
@@ -479,9 +482,7 @@ namespace DiscordCoreAPI {
                 if (button.getButtonId() == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
-                    if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT){
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
+                    if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
@@ -489,8 +490,6 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
@@ -499,8 +498,6 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
                         EditFollowUpMessageData dataPackage(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
@@ -511,43 +508,8 @@ namespace DiscordCoreAPI {
                 }
                 else if (button.getButtonId() == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
                     newCurrentPageIndex += 1;
-                   EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
-                   if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                       DeferComponentResponseData newData(buttonIntData);
-                       InputEventManager::respondToEvent(newData);
-                       EditMessageData editMessageData(event01);
-                       editMessageData.components = event01.getComponents();
-                       editMessageData.embeds.push_back(messageEmbed);
-                       event01 = InputEventManager::respondToEvent(editMessageData);
-                   }
-                   else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
-                       || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                       DeferComponentResponseData newData(buttonIntData);
-                       InputEventManager::respondToEvent(newData);
-                       EditInteractionResponseData responseData(event01);
-                       vector<EmbedData> embeds;
-                       embeds.push_back(messageEmbed);
-                       responseData.components = event01.getComponents();
-                       responseData.embeds = embeds;
-                       event01 = InputEventManager::respondToEvent(responseData);
-                   }
-                   else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                       DeferComponentResponseData newData(buttonIntData);
-                       InputEventManager::respondToEvent(newData);
-                       EditFollowUpMessageData dataPackage(event01);
-                       vector<EmbedData> embeds;
-                       embeds.push_back(messageEmbed);
-                       dataPackage.components = event01.getComponents();
-                       dataPackage.embeds = embeds;
-                       event01 = InputEventManager::respondToEvent(dataPackage);
-                   }
-                }
-                else if (button.getButtonId() == "backwards" && (newCurrentPageIndex > 0)) {
-                    newCurrentPageIndex -= 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
@@ -555,8 +517,6 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
@@ -565,8 +525,33 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
+                        EditFollowUpMessageData dataPackage(event01);
+                        vector<EmbedData> embeds;
+                        embeds.push_back(messageEmbed);
+                        dataPackage.components = event01.getComponents();
+                        dataPackage.embeds = embeds;
+                        event01 = InputEventManager::respondToEvent(dataPackage);
+                    }
+                }
+                else if (button.getButtonId() == "backwards" && (newCurrentPageIndex > 0)) {
+                    newCurrentPageIndex -= 1;
+                    EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
+                    if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
+                        EditMessageData editMessageData(event01);
+                        editMessageData.components = event01.getComponents();
+                        editMessageData.embeds.push_back(messageEmbed);
+                        event01 = InputEventManager::respondToEvent(editMessageData);
+                    }
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                        || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
+                        EditInteractionResponseData responseData(event01);
+                        vector<EmbedData> embeds;
+                        embeds.push_back(messageEmbed);
+                        responseData.components = event01.getComponents();
+                        responseData.embeds = embeds;
+                        event01 = InputEventManager::respondToEvent(responseData);
+                    }
+                    else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                         EditFollowUpMessageData dataPackage(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
@@ -579,8 +564,6 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex = (unsigned int)messageEmbeds.size() - 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
@@ -588,8 +571,6 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
                         EditInteractionResponseData responseData(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
@@ -598,8 +579,6 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        DeferComponentResponseData newData(buttonIntData);
-                        InputEventManager::respondToEvent(newData);
                         EditFollowUpMessageData dataPackage(event01);
                         vector<EmbedData> embeds;
                         embeds.push_back(messageEmbed);
@@ -631,7 +610,7 @@ namespace DiscordCoreAPI {
                             dataPackage.content = "";
                             InputEventManager::respondToEvent(dataPackage);
                         }
-                        
+
                     }
                     doWeQuit = true;
                     return RecurseThroughMessagePagesData();
@@ -675,7 +654,7 @@ namespace DiscordCoreAPI {
         }
     };
 
-    float applyAsymptoticTransform(float inputModValue, float horizontalStretch, float ceiling ){
+    float applyAsymptoticTransform(float inputModValue, float horizontalStretch, float ceiling) {
         float finalModValue = 0;
         float newInputModValue = inputModValue;
         if (newInputModValue == 0) {
