@@ -2,26 +2,22 @@
 ---
 - Install the dependencies and `#include Index.hpp`.
 - Create a string with your bot's token.
-- Create a new shared pointer to an object of the `DiscordCoreAPI::DiscordCoreClient` class by executing the `DiscordCoreClient::finalSetup()` function.
-- Execute `agent::wait()` on the `DiscordCoreClient` object.
-- Collect and display any possible errors that pop up during the library's execution.
+- Run the `DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken)` function, using your bot token as an argument.
+- Run the `DiscordCoreAPI::DiscordCoreClient::runBot()` function.
+
 ```cpp
 // Main.cpp - Main source file, for "the framework".
 // https://github.com/RealTimeChris
 
 #include "pch.h"
-#include "./DiscordCoreAPI/Index.hpp"
+#include "../MBot-GameHouse-Cpp/MBot-GameHouse-Cpp/Index.hpp"
 
-int main() {
-    winrt::init_apartment();
-    string botToken = "YOUR_BOT_TOKEN_HERE";
-    shared_ptr<DiscordCoreAPI::DiscordCoreClient> pDiscordCoreClient = DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
-    agent::wait((agent*)pDiscordCoreClient.get());
-    exception error;
-    while (pDiscordCoreClient.get()->getError(error)) {
-        cout << "DiscordCoreClient() Error: " << error.what() << endl << endl;
-    }
-    return 0;
+int main()
+{
+    init_apartment();
+    string botToken = "ODYwMTA1MDY3MzYwMjg4ODA5.YN2ZRA.U8G-Y78hLhFzBfL-VH8v0-zHhzI";
+    DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
+    DiscordCoreAPI::DiscordCoreClient::runBot();
 }
 
 ```
