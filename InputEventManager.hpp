@@ -107,11 +107,10 @@ namespace DiscordCoreAPI {
 		}
 
 		static InputEventData respondToEvent(CreateEphemeralInteractionResponseData dataPackage) {
-			InteractionPackageData interactionPackage;
-			interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
-			interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
-			interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-			CreateInteractionResponseData newData(interactionPackage);
+			CreateInteractionResponseData newData;
+			newData.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+			newData.interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+			newData.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 			newData.data = dataPackage.data;
 			newData.data.flags = 64;
 			newData.type = dataPackage.type;
@@ -162,7 +161,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static void respondToEvent(DeferComponentResponseData dataPackage) {
-			CreateInteractionResponseData dataPackageNew(dataPackage);
+			CreateInteractionResponseData dataPackageNew;
 			dataPackageNew.interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			dataPackageNew.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNew.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;

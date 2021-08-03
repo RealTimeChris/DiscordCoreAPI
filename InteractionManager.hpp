@@ -88,20 +88,6 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionToken = dataPackage.token;
             this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
         }
-        DeferComponentResponseData(SelectMenuInteractionData dataPackage) {
-            this->type = InteractionCallbackType::DeferredUpdateMessage;
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->interactionPackage.applicationId = dataPackage.applicationId;
-            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-        }
-        DeferComponentResponseData(ButtonInteractionData dataPackage) {
-            this->type = InteractionCallbackType::DeferredUpdateMessage;
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.applicationId = dataPackage.applicationId;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-        }
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
@@ -135,11 +121,6 @@ namespace DiscordCoreAPI {
 
     struct CreateInteractionResponseData {
     public:
-        CreateInteractionResponseData(DeferComponentResponseData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-            this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
-            this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
-        }
         CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
             this->interactionPackage.interactionId = dataPackage.id;
             this->interactionPackage.interactionToken = dataPackage.token;
@@ -150,9 +131,6 @@ namespace DiscordCoreAPI {
             else {
                 this->requesterId = dataPackage.user.id;
             }
-        }
-        CreateInteractionResponseData(InteractionPackageData dataPackage) {
-            this->interactionPackage = dataPackage;
         }
         CreateInteractionResponseData(ButtonInteractionData dataPackage) {
             this->interactionPackage.interactionId = dataPackage.id;
@@ -223,12 +201,7 @@ namespace DiscordCoreAPI {
         InteractionApplicationCommandCallbackData data;
         string requesterId;
     protected:
-        CreateInteractionResponseData(InteractionData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.applicationId;
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-        }
+        CreateInteractionResponseData() {}
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEventManager;
@@ -240,11 +213,6 @@ namespace DiscordCoreAPI {
 
     struct CreateEphemeralInteractionResponseData {
     public:
-        CreateEphemeralInteractionResponseData(ButtonInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-        }
         CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
