@@ -20,7 +20,6 @@
 - Set the `commandName` and `helpDescription` members of the class.
 - Add a `create()` function, where the return value is a pointer to the class type of the current command.
 - Add a `virtual task<void> execute()` function with an argument of type `shared_ptr<DiscordCoreAPI::BaseFunctionArguments>`.
-- Create an instance of this new class within the `DiscordCoreAPI` namespace.
 - CONTINUED FURTHER DOWN.
 
 ```cpp
