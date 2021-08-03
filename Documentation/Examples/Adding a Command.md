@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			try {
 
 				EmbedData msgEmbed;
