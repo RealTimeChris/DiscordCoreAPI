@@ -245,7 +245,6 @@ namespace DiscordCoreAPI {
 	struct DeleteMessagesBulkData {
 		string channelId;
 		vector<string> messageIds;
-		string content;
 	};
 	
 	class MessageManagerAgent : agent {
