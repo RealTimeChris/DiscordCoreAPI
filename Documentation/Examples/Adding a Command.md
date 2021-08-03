@@ -20,7 +20,6 @@
 - Set the `commandName` and `helpDescription` members of the class.
 - Add a `create()` function, where the return value is a pointer to the class type of the current command.
 - Add a `virtual task<void> execute()` function with an argument of type `shared_ptr<DiscordCoreAPI::BaseFunctionArguments>`.
-- Create an instance of this new class within the `DiscordCoreAPI` namespace.
 - CONTINUED FURTHER DOWN.
 
 ```cpp
@@ -47,22 +46,10 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			try {
-
-				EmbedData msgEmbed;
-				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-				msgEmbed.setColor("000000");
-				msgEmbed.setDescription(args->argumentsArray.at(0));
-				msgEmbed.setTimeStamp(getTimeAndDate());
-				msgEmbed.setTitle("__**Welcome:**__");
-				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData responseData(args->eventData);
-					responseData.messageReference.channelId = args->eventData.getChannelId();
-					responseData.messageReference.messageId = args->eventData.getMessageId();
-					responseData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData);
-				}
+			if(args->argumentsArray[0] == "test"){
+			
 				DiscordCoreAPI::GetAuditLogData dataPackage;
 				dataPackage.actionType = DiscordCoreAPI::AuditLogEvent::ROLE_UPDATE;
 				dataPackage.guildId = args->eventData.getGuildId();
@@ -85,16 +72,15 @@ namespace DiscordCoreAPI {
 				dataPackage2.channelId = true;
 				dataPackage2.messageIds = messageIds;
 				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(dataPackage2).get();
-
+			}
 				co_return;
 			}
 			catch (exception error) {
-				cout << "Help::execute() Error: " << error.what() << endl << endl;
+				cout << "Test::execute() Error: " << error.what() << endl << endl;
 			}
 
 		}
 	};
-	Test test{};
 }
 #endif
 ```
