@@ -412,8 +412,6 @@ namespace DiscordCoreAPI {
 								if (interactionData.componentType == ComponentType::Button) {
 									eventData.eventType = InputEventType::BUTTON_INTERACTION;
 									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-									DeferComponentResponseData dataPackage(interactionData);
-									InputEventManager::respondToEvent(dataPackage);
 									eventData.interactionData = interactionData;
 									eventData.discordCoreClient = this->thisPointer;
 									eventData.requesterId = interactionData.requesterId;
@@ -424,8 +422,6 @@ namespace DiscordCoreAPI {
 								else if (interactionData.componentType == ComponentType::SelectMenu) {
 									eventData.eventType = InputEventType::SELECT_MENU_INPUT;
 									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-									DeferComponentResponseData dataPackage(interactionData);
-									InputEventManager::respondToEvent(dataPackage);
 									eventData.interactionData = interactionData;
 									eventData.discordCoreClient = this->thisPointer;
 									eventData.requesterId = interactionData.requesterId;
@@ -454,8 +450,6 @@ namespace DiscordCoreAPI {
 								if (interactionData.componentType == ComponentType::Button) {
 									eventData.eventType = InputEventType::BUTTON_INTERACTION;
 									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-									DeferComponentResponseData dataPackage(interactionData);
-									InputEventManager::respondToEvent(dataPackage);
 									eventData.interactionData = interactionData;
 									eventData.discordCoreClient = this->thisPointer;
 									eventData.requesterId = interactionData.requesterId;
@@ -466,8 +460,6 @@ namespace DiscordCoreAPI {
 								else if (interactionData.componentType == ComponentType::SelectMenu) {
 									eventData.eventType = InputEventType::SELECT_MENU_INPUT;
 									eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-									DeferComponentResponseData dataPackage(interactionData);
-									InputEventManager::respondToEvent(dataPackage);
 									eventData.interactionData = interactionData;
 									eventData.discordCoreClient = this->thisPointer;
 									eventData.requesterId = interactionData.requesterId;
@@ -483,6 +475,9 @@ namespace DiscordCoreAPI {
 					{
 						MessageData messageData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &messageData);
+						if (InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
+							asend(*InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
+						}
 						Message message(messageData, this->thisPointer);
 						OnMessageCreationData messageCreationData;
 						messageCreationData.message = message;

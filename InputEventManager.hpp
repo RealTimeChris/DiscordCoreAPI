@@ -62,8 +62,9 @@ namespace DiscordCoreAPI {
 		}
 
 		static InputEventData respondToEvent(CreateInteractionResponseData dataPackage) {
-			InputEventManager::interactions->createInteractionResponseAsync(dataPackage).get();
+			auto messageData = InputEventManager::interactions->createInteractionResponseAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
+			dataPackageNewer.messageData = messageData;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_RESPONSE;
 			dataPackageNewer.interactionData.message.components = dataPackage.data.components;
@@ -165,7 +166,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			dataPackageNew.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNew.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-			dataPackageNew.type = InteractionCallbackType::DeferredUpdateMessage;
+			dataPackageNew.type = dataPackage.type;
 			InputEventManager::interactions->createInteractionResponseAsync(dataPackageNew).get();
 			return;
 		}

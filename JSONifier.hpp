@@ -1684,6 +1684,7 @@ namespace DiscordCoreInternal {
 					{"components", componentsActionRow},
 					}}
 				};
+				cout << data.dump() << endl;
 				return data.dump();
 			};
 		 }
