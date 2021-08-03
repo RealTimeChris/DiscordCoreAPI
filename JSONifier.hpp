@@ -178,6 +178,13 @@ namespace DiscordCoreInternal {
 			data = { {"nick",dataPackage.nick},
 				{"roles", roleIdArray } };
 		}
+		else if(dataPackage.newVoiceChannelId == "") {
+			data = { {"nick",dataPackage.nick},
+				{"mute", dataPackage.mute},
+				{"deaf", dataPackage.deaf},
+				{"channel_id", nullptr} ,
+				{"roles", roleIdArray } };
+		}
 		else {
 			data = { {"nick",dataPackage.nick},
 				{"mute", dataPackage.mute},

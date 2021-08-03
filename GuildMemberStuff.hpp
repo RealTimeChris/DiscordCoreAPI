@@ -250,6 +250,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.deaf = dataPackage.deaf;
 			dataPackageNew.mute = dataPackage.mute;
 			dataPackageNew.newVoiceChannelId = dataPackage.newVoiceChannelId;
+			dataPackageNew.currentChannelId = dataPackage.currentChannelId;
 			dataPackageNew.nick = dataPackage.nick;
 			dataPackageNew.roleIds = dataPackage.roleIds;
 			dataPackageNew.guildId = dataPackage.guildId;
