@@ -1093,7 +1093,7 @@ namespace DiscordCoreAPI {
                             createResponseData.data.flags = 64;
                             EmbedData embedData;
                             embedData.setColor("FEFEFE");
-                            embedData.setTitle("__**Button Issue:**__");
+                            embedData.setTitle("__**Permission Issue:**__");
                             embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
                             embedData.setDescription("Sorry, but that menu can only be selected by <@!" + this->userId + ">!");
                             createResponseData.data.embeds.push_back(embedData);
@@ -1186,7 +1186,7 @@ namespace DiscordCoreAPI {
                             createResponseData.data.flags = 64;
                             EmbedData embedData;
                             embedData.setColor("FEFEFE");
-                            embedData.setTitle("__**Button Issue:**__");
+                            embedData.setTitle("__**Permission Issue:**__");
                             embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
                             embedData.setDescription("Sorry, but that button can only be pressed by <@!" + this->userId + ">!");
                             createResponseData.data.embeds.push_back(embedData);
