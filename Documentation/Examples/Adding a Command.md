@@ -48,20 +48,6 @@ namespace DiscordCoreAPI {
 
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			try {
-
-				EmbedData msgEmbed;
-				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-				msgEmbed.setColor("000000");
-				msgEmbed.setDescription(args->argumentsArray.at(0));
-				msgEmbed.setTimeStamp(getTimeAndDate());
-				msgEmbed.setTitle("__**Welcome:**__");
-				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData responseData(args->eventData);
-					responseData.messageReference.channelId = args->eventData.getChannelId();
-					responseData.messageReference.messageId = args->eventData.getMessageId();
-					responseData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData);
-				}
 				DiscordCoreAPI::GetAuditLogData dataPackage;
 				dataPackage.actionType = DiscordCoreAPI::AuditLogEvent::ROLE_UPDATE;
 				dataPackage.guildId = args->eventData.getGuildId();
@@ -88,12 +74,11 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 			catch (exception error) {
-				cout << "Help::execute() Error: " << error.what() << endl << endl;
+				cout << "Test::execute() Error: " << error.what() << endl << endl;
 			}
 
 		}
 	};
-	Test test{};
 }
 #endif
 ```
