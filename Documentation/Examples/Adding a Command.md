@@ -42,7 +42,11 @@ namespace DiscordCoreAPI {
 			this->helpDescription = "__**Test:**__ Enter !test or /test to run this command!";
 		}
 
-		virtual  task<void> execute(DiscordCoreAPI::BaseFunctionArguments* args) {
+		Test* create() {
+			return new Test;
+		}
+
+		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			try {
 
 				EmbedData msgEmbed;
@@ -52,11 +56,11 @@ namespace DiscordCoreAPI {
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Welcome:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					InputEventResponseData responseData(InputEventResponseType::REGULAR_MESSAGE_RESPONSE);
-					responseData.channelId = args->eventData.messageData.channelId;
-					responseData.messageId = args->eventData.messageData.id;
+					ReplyMessageData responseData(args->eventData);
+					responseData.messageReference.channelId = args->eventData.getChannelId();
+					responseData.messageReference.messageId = args->eventData.getMessageId();
 					responseData.embeds.push_back(msgEmbed);
-					InputEventHandler::respondToEvent(responseData).get();
+					InputEventManager::respondToEvent(responseData);
 				}
 				DiscordCoreAPI::GetAuditLogData dataPackage;
 				dataPackage.actionType = DiscordCoreAPI::AuditLogEvent::ROLE_UPDATE;
@@ -71,10 +75,14 @@ namespace DiscordCoreAPI {
 						cout << value2.oldValueString << endl;
 					}
 				}
+				auto messages = args->eventData.discordCoreClient->messages->fetchMessagesAsync({ .channelId = args->eventData.getChannelId(), .limit = 100, .beforeThisId = args->eventData.getMessageId() }).get();
+				vector<string> messageIds;
+				for (auto value : messages) {
+					messageIds.push_back(value.data.id);
+				}
 				DeleteMessagesBulkData dataPackage2;
-				dataPackage2.deletePinned = true;
-				dataPackage2.limit = 25;
-				dataPackage2.beforeThisId = args->eventData.getMessageId();
+				dataPackage2.channelId = true;
+				dataPackage2.messageIds = messageIds;
 				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(dataPackage2).get();
 
 				co_return;
