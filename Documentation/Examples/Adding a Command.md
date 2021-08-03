@@ -18,6 +18,7 @@
 ```
 - Create a new class, within the `DiscordCoreAPI` namespace, derived from the `BaseFunction` class.
 - Set the `commandName` and `helpDescription` members of the class.
+- Add a `create()` function, where the return value is a pointer to the class type of the current command.
 - Add a `virtual task<void> execute()` function with an argument of type `DiscordCoreAPI::BaseFunctionArguments*`.
 - Create an instance of this new class within the `DiscordCoreAPI` namespace.
 - CONTINUED FURTHER DOWN.
@@ -109,16 +110,11 @@ namespace DiscordCoreAPI {
 int main()
 {
     init_apartment();
-    string botToken = "ODYwMTA0OTM3ODgyNTE3NTM1.YN2ZJQ.fiDmtRQgFNb21CKAzEh7puS0s_Q";
-    shared_ptr<DiscordCoreAPI::DiscordCoreClient> pDiscordCoreClient = DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
-    agent::wait((agent*)pDiscordCoreClient.get());
-    exception error;
+    string botToken = "ODYwMTA1MDY3MzYwMjg4ODA5.YN2ZRA.U8G-Y78hLhFzBfL-VH8v0-zHhzI";
+    DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
     DiscordCoreAPI::CommandCenter::registerFunction("test", new DiscordCoreAPI::Test);
-    while (pDiscordCoreClient.get()->getError(error)) {
-        cout << "DiscordCoreClient Error: " << error.what() << endl;
-    }
+    DiscordCoreAPI::DiscordCoreClient::runBot();
 }
-
 ```
 - NOTE: By default, the format for triggering a command is `!COMMANDNAME = ARGUMENT1, ARGUMENT2, ARGUMENT3... ARGUMENT-N`. This prefix can be changed by changing the prefix value provided by your database. You can also modify this fundamental behavior by modifying the code within the Commands.hpp header file.
 - Accessing command arguments is done by accessing the `argumentsArray` member of the `BaseFunctionArguments` structure that is passed through to the command – as can be seen in the first example block of code here.
