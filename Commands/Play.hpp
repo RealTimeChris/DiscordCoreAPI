@@ -37,12 +37,6 @@ namespace DiscordCoreAPI {
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
-
-			bool areWeAllowed = checkIfAllowedPlayingInChannel(args->eventData, discordGuild);
-
-			if (!areWeAllowed) {
-				co_return;
-			}
 			
 			InputEventData newEvent;
 			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
