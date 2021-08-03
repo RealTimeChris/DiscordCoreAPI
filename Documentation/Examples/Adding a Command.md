@@ -48,6 +48,8 @@ namespace DiscordCoreAPI {
 
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			try {
+			if(args->argumentsArray[0] == "test"){
+			
 				DiscordCoreAPI::GetAuditLogData dataPackage;
 				dataPackage.actionType = DiscordCoreAPI::AuditLogEvent::ROLE_UPDATE;
 				dataPackage.guildId = args->eventData.getGuildId();
@@ -70,7 +72,7 @@ namespace DiscordCoreAPI {
 				dataPackage2.channelId = true;
 				dataPackage2.messageIds = messageIds;
 				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(dataPackage2).get();
-
+			}
 				co_return;
 			}
 			catch (exception error) {
