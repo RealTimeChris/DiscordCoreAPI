@@ -10,7 +10,7 @@
 // https://github.com/RealTimeChris
 
 #include "pch.h"
-#include "../MBot-GameHouse-Cpp/MBot-GameHouse-Cpp/Index.hpp"
+#include "./DiscordCoreAPI/Index.hpp"
 
 int main()
 {
