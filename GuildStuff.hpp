@@ -180,15 +180,15 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "requestAgent.getObject() Error 00: " << error.what() << endl << endl;
+				cout << "GuildManagerAgent::getObject() Error 00: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "requestAgent.getObject() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "GuildManagerAgent::getObject() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "requestAgent.getObject() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "GuildManagerAgent::getObject() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			GuildData guildData;
 			DiscordCoreInternal::parseObject(returnData.data, &guildData);
@@ -207,15 +207,15 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "requestAgent.getObject() Error 01: " << error.what() << endl << endl;
+				cout << "GuildManagerAgent::getObject() Error 01: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "requestAgent.getObject() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "GuildManagerAgent::getObject() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "requestAgent.getObject() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "GuildManagerAgent::getObject() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			vector<InviteData> inviteData;
 			for (auto value : returnData.data) {
@@ -255,15 +255,15 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "requestAgent.getObject() Error 02: " << error.what() << endl << endl;
+				cout << "GuildManagerAgent::getObject() Error 02: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "requestAgent.getObject() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "GuildManagerAgent::getObject() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "requestAgent.getObject() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "GuildManagerAgent::getObject() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			AuditLogData auditLogData;
 			DiscordCoreInternal::parseObject(returnData.data, &auditLogData);

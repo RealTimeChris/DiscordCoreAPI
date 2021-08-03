@@ -50,6 +50,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnGuildMemberAddData {
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		GuildMember guildMember;
 	};
 

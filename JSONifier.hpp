@@ -367,7 +367,7 @@ namespace DiscordCoreInternal {
 			embedsArray.push_back(embed);
 		}
 
-		if (dataPackage.embeds.at(0).description != "" || dataPackage.embeds.at(0).fields.size() != 0){
+		if (dataPackage.embeds.size() > 0){
 			if (dataPackage.messageReference.guildId != "") {
 				json data = {
 		{"allowed_mentions", {
@@ -395,10 +395,6 @@ namespace DiscordCoreInternal {
 		{"roles", dataPackage.allowedMentions.roles},
 		{"users", dataPackage.allowedMentions.users}
 		}},
-		{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-			{"channel_id", dataPackage.messageReference.channelId},
-			{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
-				}},
 	{"content", dataPackage.content},
 	{"tts" , dataPackage.tts},
 	{"embeds" ,embedsArray},

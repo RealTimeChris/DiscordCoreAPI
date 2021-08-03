@@ -108,6 +108,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct CreateMessageData {
+		CreateMessageData() {}
 		CreateMessageData(InputEventData dataPackage) {
 			this->channelId = dataPackage.getChannelId();
 			this->requesterId = dataPackage.getRequesterId();
@@ -119,9 +120,9 @@ namespace DiscordCoreAPI {
 		vector<ActionRowData> components;
 		int nonce;
 		bool tts = false;
+		string channelId;
 	protected:
 		friend class MessageManager;
-		string channelId;
 		string requesterId;
 	};
 

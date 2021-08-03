@@ -27,17 +27,17 @@ namespace DiscordCoreAPI {
 
 		GuildMember() {};
 
-	protected:
-		friend class DiscordCoreClient;
-		friend class GuildMemberManager;
-		friend class GuildMemberManagerAgent;
-		friend class Guild;
-
 		GuildMember(GuildMemberData guildMemberData, string guildIdNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = guildMemberData;
 			this->data.guildId = guildIdNew;
 			this->discordCoreClient = discordCoreClientNew;
 		}
+
+	protected:
+		friend class DiscordCoreClient;
+		friend class GuildMemberManager;
+		friend class GuildMemberManagerAgent;
+		friend class Guild;
 	};
 
 	struct ModifyGuildMemberData{

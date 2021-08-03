@@ -137,6 +137,16 @@ namespace DiscordCoreAPI {
 			return dataPackageNewer;
 		}
 
+		static InputEventData respondToEvent(CreateMessageData dataPackage) {
+			Message message = InputEventManager::messages->createMessageAsync(dataPackage).get();
+			InputEventData dataPackageNewer;
+			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
+			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
+			dataPackageNewer.messageData = message.data;
+			dataPackageNewer.discordCoreClient = InputEventManager::discordCoreClient;
+			return dataPackageNewer;
+		}
+
 		static InputEventData respondToEvent(EditMessageData dataPackage) {
 			Message message = InputEventManager::messages->editMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;

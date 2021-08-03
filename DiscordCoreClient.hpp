@@ -317,6 +317,7 @@ namespace DiscordCoreAPI {
 						GuildMember guildMember(guildMemberData, workload.payLoad.at("guild_id").get<string>(), this->thisPointer);
 						DiscordCoreAPI::OnGuildMemberAddData guildMemberAddData;
 						guildMemberAddData.guildMember = guildMember;
+						guildMemberAddData.discordCoreClient = this->thisPointer;
 						this->eventManager->onGuildMemberAddEvent(guildMemberAddData);
 						break;
 					}
@@ -379,6 +380,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreInternal::parseObject(workload.payLoad, &inviteData);
 						OnInviteCreationData inviteCreationData;
 						inviteCreationData.invite = inviteData;
+						inviteCreationData.discordCoreClient = this->thisPointer;
 						this->eventManager->onInviteCreationEvent(inviteCreationData);
 						break;
 					}
@@ -391,6 +393,7 @@ namespace DiscordCoreAPI {
 						inviteDeletionData.channelId = channelId;
 						inviteDeletionData.guildId = guildId;
 						inviteDeletionData.code = code;
+						inviteDeletionData.discordCoreClient = this->thisPointer;
 						this->eventManager->onInviteDeletionEvent(inviteDeletionData);
 						break;
 					}
