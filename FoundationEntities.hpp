@@ -1127,6 +1127,7 @@ namespace  DiscordCoreInternal {
         bool mute;
         bool deaf;
         string newVoiceChannelId = "";
+        string currentChannelId = "";
     };
 
     struct UpdateVoiceStateData {

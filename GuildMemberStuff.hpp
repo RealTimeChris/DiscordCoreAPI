@@ -41,13 +41,14 @@ namespace DiscordCoreAPI {
 	};
 
 	struct ModifyGuildMemberData{
+		string guildMemberId;
+		string guildId;
 		string nick;
 		vector<string> roleIds;
 		bool mute;
 		bool deaf;
-		string guildMemberId;
 		string newVoiceChannelId = "";
-		string guildId;
+		string currentChannelId = "";
 	};
 
 	struct FetchGuildMemberData {

@@ -174,18 +174,15 @@ namespace DiscordCoreInternal {
 			roleIdArray.push_back(value);
 		}
 		json data;
-		if (dataPackage.newVoiceChannelId != "") {
+		if (dataPackage.currentChannelId == "") {
 			data = { {"nick",dataPackage.nick},
-				{"mute", dataPackage.mute},
-				{"deaf", dataPackage.deaf},
-				{"channel_id", dataPackage.newVoiceChannelId} ,
 				{"roles", roleIdArray } };
 		}
 		else {
 			data = { {"nick",dataPackage.nick},
 				{"mute", dataPackage.mute},
 				{"deaf", dataPackage.deaf},
-				{"channel_id", nullptr} ,
+				{"channel_id", dataPackage.newVoiceChannelId} ,
 				{"roles", roleIdArray } };
 		}
 		
