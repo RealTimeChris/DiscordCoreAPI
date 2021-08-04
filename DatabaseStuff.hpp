@@ -256,11 +256,9 @@ namespace DiscordCoreAPI {
         DatabaseManagerAgent()
             : agent(*DatabaseManagerAgent::threadContext->scheduler) {
             this->botUserId = DatabaseManagerAgent::botUserId;
-            this->groupId = DatabaseManagerAgent::threadContext->createGroup();
         }
 
         ~DatabaseManagerAgent() {
-            DatabaseManagerAgent::threadContext->releaseGroup(this->groupId);
         }
 
         static void initialize(string botUserIdNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
@@ -270,11 +268,10 @@ namespace DiscordCoreAPI {
             DatabaseManagerAgent::client = mongocxx::client{ mongocxx::uri{} };
             DatabaseManagerAgent::dataBase = DatabaseManagerAgent::client[DatabaseManagerAgent::botUserId];
             DatabaseManagerAgent::collection = DatabaseManagerAgent::dataBase[DatabaseManagerAgent::botUserId];
-            DatabaseManagerAgent::groupId = DatabaseManagerAgent::threadContext->createGroup();
         }
 
         static void cleanup() {
-            DatabaseManagerAgent::threadContext->releaseGroup(DatabaseManagerAgent::groupId);
+            DatabaseManagerAgent::threadContext->releaseGroup();
         }
 
         bool getError(exception& error) {

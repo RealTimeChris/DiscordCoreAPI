@@ -117,15 +117,21 @@ namespace DiscordCoreAPI {
 		concurrent_queue<User> usersToInsert;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew)
-			:agent(*threadContextNew->scheduler)
-		{
+		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> coreClientNew)
+			:agent(*UserManagerAgent::threadContext->scheduler) {
 			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
 			this->discordCoreClient = coreClientNew;
+		}
+
+		static void intialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+			UserManagerAgent::threadContext = threadContextNew;
+		}
+
+		static void cleanup() {
+			UserManagerAgent::threadContext->releaseGroup();
 		}
 
 		bool getError(exception& error) {
@@ -245,19 +251,12 @@ namespace DiscordCoreAPI {
 	public:
 
 		task<User> fetchAsync(FetchUserData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::FetchUserData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.userType = DiscordCoreInternal::GetUserDataType::USER;
-			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestFetchUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -268,23 +267,15 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
 			try_receive(requestAgent.outUserBuffer, user);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return user;
 		}
 
 		task<User> fetchCurrentUserAsync() {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::FetchUserData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userType = DiscordCoreInternal::GetUserDataType::SELF;
-			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestFetchUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -295,23 +286,15 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
 			try_receive(requestAgent.outUserBuffer, user);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return user;
 		}
 
 		task<User> getUserAsync(GetUserData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetUserData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
-			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestGetUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -322,22 +305,14 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
 			try_receive(requestAgent.outUserBuffer, user);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return user;
 		}
 
 		task<Application> getApplicationDataAsync() {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetApplicationData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
-			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestGetApplicationBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -348,20 +323,12 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::ApplicationData applicationData;
 			Application application(applicationData);
 			try_receive(requestAgent.outApplicationBuffer, application);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return application;
 		}
 
 		task<void> insertUserAsync(User user) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			UserManagerAgent requestAgent(this->agentResources, this->threadContext, this->discordCoreClient);
+			UserManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			requestAgent.usersToInsert.push(user);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -369,7 +336,6 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "UserManager::inserUser() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
@@ -377,11 +343,10 @@ namespace DiscordCoreAPI {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
-			this->groupId = this->threadContext->createGroup();
 		}
 
 		~UserManager() {
-			this->threadContext->releaseGroup(this->groupId);
+			this->threadContext->releaseGroup();
 		}
 
 	protected:
@@ -391,8 +356,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		unsigned int groupId;
 	};
 	overwrite_buffer<map<string, User>> UserManagerAgent::cache;
+	shared_ptr<DiscordCoreInternal::ThreadContext> UserManagerAgent::threadContext;
 }
 #endif

@@ -120,6 +120,14 @@ namespace DiscordCoreAPI {
 			this->users.get()->~UserManager();
 			this->pWebSocketConnectionAgent->terminate();
 			this->pWebSocketReceiverAgent->terminate();
+			InteractionManagerAgent::cleanup();
+			MessageManagerAgent::cleanup();
+			ChannelManagerAgent::cleanup();
+			GuildMemberManagerAgent::cleanup();
+			ReactionManagerAgent::cleanup();
+			UserManagerAgent::cleanup();
+			RoleManagerAgent::cleanup();
+			GuildManagerAgent::cleanup();
 			agent::wait(this->pWebSocketConnectionAgent.get());
 			agent::wait(this->pWebSocketReceiverAgent.get());
 			exception error;
@@ -148,12 +156,11 @@ namespace DiscordCoreAPI {
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
-			this->mainThreadContext->createGroup();
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
-			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
+			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
@@ -167,6 +174,16 @@ namespace DiscordCoreAPI {
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
+			GuildMemberManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			ChannelManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			ReactionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			UserManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			RoleManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			GuildManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			Button::initialize(this->interactions);
+			SelectMenu::initialize(this->interactions);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
 			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
@@ -180,8 +197,6 @@ namespace DiscordCoreAPI {
 			this->currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, DiscordCoreClient::thisPointer, this->pWebSocketConnectionAgent);
 			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			Button::initialize(this->interactions);
-			SelectMenu::initialize(this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser->data.username, this->currentUser->data.id);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			InputEventManager::initialize(this->messages, DiscordCoreClient::thisPointer, DiscordCoreClient::thisPointer, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);

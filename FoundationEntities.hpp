@@ -337,6 +337,7 @@ namespace  DiscordCoreInternal {
     struct RoleTagsData {
         string botId;
         string integrationId;
+        string premiumSubscriber;
     };
 
     struct RoleData {
@@ -509,56 +510,21 @@ namespace  DiscordCoreInternal {
     };
 
     struct ThreadContext {
-        ThreadContext() {
-            this->schedulerGroups = vector<ScheduleGroup*>();
+    public:
+        ThreadContext() {}
+        ThreadContext(ThreadContext* threadContext) {
+            this->scheduler = threadContext->scheduler;
+            this->dispatcherQueue = threadContext->dispatcherQueue;
+            this->schedulerGroup = threadContext->schedulerGroup;
         }
 
-        unsigned int createGroup(ThreadContext threadContextNew) {
-            while (testForThreadFreedom(threadContextNew)) {}
-            ScheduleGroup* newGroup = this->scheduler->CreateScheduleGroup();
-            unsigned int returnValue = newGroup->Id();
-            schedulerGroups.push_back(newGroup);
-            return returnValue;
-        }
-
-        unsigned int createGroup() {
-            ScheduleGroup* newGroup = this->scheduler->CreateScheduleGroup();
-            unsigned int returnValue = newGroup->Id();
-            schedulerGroups.push_back(newGroup);
-            return returnValue;
-        }
-
-        void releaseGroup(unsigned int schedulerGroupId) {
-            for (unsigned int x{ 0 }; x < this->schedulerGroups.size(); x += 1) {
-                if (this->schedulerGroups.at(x)->Id() == schedulerGroupId) {
-                    this->schedulerGroups.at(x)->Release();
-                    this->schedulerGroups.erase(this->schedulerGroups.begin() + x);
-                }
-            }
+        void releaseGroup() {
+            this->schedulerGroup->Release();
+            this->schedulerGroup = nullptr;
         };
 
-        bool testForThreadFreedom(ThreadContext threadContextNew) {
-            HANDLE eventHandle = CreateEventExA(NULL, "threadCheck", NULL, NULL);
-            this->testFunction(eventHandle);
-            if (WaitForSingleObjectEx(eventHandle, 10000, false) == WAIT_OBJECT_0) {
-                return true;
-            }
-            else {
-                *this = threadContextNew;
-                return false;
-            }
-        }
-
-        task<void> testFunction(HANDLE eventHandle) {
-            apartment_context mainThread;
-            co_await resume_foreground(*this->dispatcherQueue.get());
-            SetEvent(eventHandle);
-            co_await mainThread;
-            co_return;
-        }
-
         Scheduler* scheduler{ nullptr };
-        vector<ScheduleGroup*> schedulerGroups{ nullptr };
+        ScheduleGroup* schedulerGroup{ nullptr };
         shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
     };
 
@@ -1833,6 +1799,7 @@ namespace DiscordCoreAPI {
         }
         string integrationId;
         string botId;
+        string premiumSubscriber;
     };
 
     struct RoleData {

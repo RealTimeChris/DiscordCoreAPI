@@ -63,7 +63,6 @@ namespace DiscordCoreInternal {
 			:agent(*threadContextNew->scheduler) {
 			this->threadContext = threadContextNew;
 			this->voiceConnectionData = voiceConnectionDataNew;
-			this->groupId = this->threadContext->createGroup();
 			this->readyBuffer = readyBufferNew;
 			return;
 		}
@@ -138,7 +137,7 @@ namespace DiscordCoreInternal {
 			if (this != nullptr) {
 				this->doWeQuit = true;
 				this->done();
-				this->threadContext->releaseGroup(this->groupId);
+				this->threadContext->releaseGroup();
 				if (this->webSocket != nullptr) {
 					this->webSocket.Close(1000, L"Disconnecting.");
 					this->webSocket = nullptr;
@@ -177,7 +176,6 @@ namespace DiscordCoreInternal {
 		event_token voiceDataReceivedToken;
 		event_token messageReceivedToken;
 		event_token closedToken;
-		unsigned int groupId;
 		bool areWeConnected = false;
 		string voiceIp;
 		string voicePort;
@@ -248,7 +246,6 @@ namespace DiscordCoreInternal {
 			try {
 				if (this->didWeReceiveHeartbeatAck == false) {
 					this->connect();
-					this->groupId = this->threadContext->createGroup(*ThreadManager::getThreadContext().get());
 					this->didWeReceiveHeartbeatAck = true;
 					return;
 				}
@@ -346,7 +343,6 @@ namespace DiscordCoreInternal {
 			agent(*threadContextNew->scheduler)
 		{
 			this->threadContext = threadContextNew;
-			this->groupId = this->threadContext->createGroup(*this->threadContext);
 			return;
 		}
 
@@ -356,7 +352,7 @@ namespace DiscordCoreInternal {
 
 		void terminate() {
 			this->doWeQuit = true;
-			this->threadContext->releaseGroup(this->groupId);
+			this->threadContext->releaseGroup();
 			return;
 		}
 
@@ -370,7 +366,6 @@ namespace DiscordCoreInternal {
 		ISource<json>& workloadSource;
 		ITarget<WebSocketWorkload>& workloadTarget;
 		unbounded_buffer<exception> errorBuffer;
-		unsigned int groupId;
 		bool doWeQuit = false;
 
 		void run() {
@@ -566,7 +561,6 @@ namespace DiscordCoreInternal {
 			: agent(*threadContextNew->scheduler),
 			webSocketMessageTarget(target) {
 			this->threadContext = threadContextNew;
-			this->groupId = this->threadContext->createGroup(*ThreadManager::getThreadContext().get());
 			this->botToken = botTokenNew;
 			return;
 		}
@@ -654,7 +648,6 @@ namespace DiscordCoreInternal {
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		ITarget<json>& webSocketMessageTarget;
 		unbounded_buffer<exception> errorBuffer;
-		unsigned int groupId;
 		bool isThisConnected = false;
 		bool areWeCollectingData = false;
 		bool stateUpdateCollected = false;
@@ -702,7 +695,7 @@ namespace DiscordCoreInternal {
 				this->heartbeatTimer = nullptr;
 			}
 
-			this->threadContext->releaseGroup(this->groupId);
+			this->threadContext->releaseGroup();
 			return;
 		}
 
@@ -734,7 +727,6 @@ namespace DiscordCoreInternal {
 				if (this->didWeReceiveHeartbeatAck == false) {
 					this->cleanup();
 					this->connect();
-					this->groupId = this->threadContext->createGroup(*ThreadManager::getThreadContext().get());
 					this->didWeReceiveHeartbeatAck = true;
 					return;
 				}

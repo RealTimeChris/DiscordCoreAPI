@@ -20,16 +20,17 @@ namespace DiscordCoreInternal {
 
         static task<shared_ptr<ThreadContext>> getThreadContext() {
             if (ThreadManager::threads == nullptr) {
-                ThreadManager::threads = new concurrent_vector<shared_ptr<ThreadContext>>();
+                ThreadManager::threads = new concurrent_vector<shared_ptr<ThreadContext>>;
             }
             if (ThreadManager::threads->size() > 0) {
                 for (auto value : *ThreadManager::threads) {
-                    if (value->schedulerGroups.size() == 0) {
+                    if (value->schedulerGroup == nullptr) {
+                        value->schedulerGroup = value->scheduler->CreateScheduleGroup();
                         co_return value;
                     }
                 }
-            } 
-            
+            }
+
             DispatcherQueueOptions options{
                 sizeof(DispatcherQueueOptions),
                 DQTYPE_THREAD_DEDICATED,
@@ -42,7 +43,7 @@ namespace DiscordCoreInternal {
             DispatcherQueue threadQueue = queueController2.DispatcherQueue();
             co_await resume_foreground(threadQueue);
             SchedulerPolicy policy;
-            policy.SetConcurrencyLimits(concurrency::MaxExecutionResources, concurrency::MaxExecutionResources);
+            policy.SetConcurrencyLimits(1, 1);
             policy.SetPolicyValue(PolicyElementKey::ContextPriority, THREAD_PRIORITY_ABOVE_NORMAL);
             policy.SetPolicyValue(PolicyElementKey::ContextStackSize, 0);
             policy.SetPolicyValue(PolicyElementKey::DynamicProgressFeedback, ProgressFeedbackEnabled);
@@ -56,6 +57,7 @@ namespace DiscordCoreInternal {
             shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
             threadContext->scheduler = newScheduler;
             threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
+            threadContext->schedulerGroup = threadContext->scheduler->CreateScheduleGroup();
             ThreadManager::threads->push_back(threadContext);
             co_return threadContext;
         }
@@ -63,9 +65,7 @@ namespace DiscordCoreInternal {
         ~ThreadManager() {
             for (auto value : *ThreadManager::threads) {
                 value->scheduler->Release();
-                for (auto value2 : value->schedulerGroups) {
-                    value2->Release();
-                }
+                value->schedulerGroup->Release();
             }
             delete ThreadManager::threads;
             ThreadManager::threads = nullptr;

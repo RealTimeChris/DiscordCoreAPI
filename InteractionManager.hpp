@@ -494,15 +494,21 @@ namespace DiscordCoreAPI {
         unbounded_buffer<exception> errorBuffer;
 
         DiscordCoreInternal::HttpAgentResources agentResources;
-        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         ScheduleGroup* pScheduleGroup{ nullptr };
 
-        InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, ScheduleGroup* scheduleGroup)
-            :agent(*scheduleGroup) {
+        InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)
+            :agent(*InteractionManagerAgent::threadContext->scheduler) {
             this->agentResources = agentResourcesNew;
-            this->threadContext = threadContextNew;
-            this->pScheduleGroup = scheduleGroup;
         }
+
+       static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew){
+           InteractionManagerAgent::threadContext = threadContextNew;
+       }
+
+       static void cleanup(){
+           InteractionManagerAgent::threadContext->releaseGroup();
+       }
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -792,8 +798,6 @@ namespace DiscordCoreAPI {
     public:
 
         task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
-            unsigned int groupIdNew;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::CreateDeferredInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
@@ -801,7 +805,7 @@ namespace DiscordCoreAPI {
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.type;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.content = DiscordCoreInternal::getCreateDeferredInteractionResponsePayload(dataPackageNew);
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPostDeferredInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -809,13 +813,10 @@ namespace DiscordCoreAPI {
             while (requestAgent.getError(error)) {
                 cout << "InteractionManager::createDeferredInteractionResponseAsync() Error: " << error.what() << endl << endl;
             }
-            this->threadContext->releaseGroup(groupIdNew);
             co_return;
         }
 
         task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
-            unsigned int groupIdNew;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::CreateInteractionResponseData dataPackageNew;
             dataPackageNew.data = dataPackage.data;
@@ -824,7 +825,7 @@ namespace DiscordCoreAPI {
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.type;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.content = DiscordCoreInternal::getCreateInteractionResponsePayload(dataPackageNew);
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, &requestAgent.outInteractionResponseBuffer));
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
@@ -833,7 +834,6 @@ namespace DiscordCoreAPI {
             while (requestAgent.getError(error)) {
                 cout << "InteractionManager::createInteractionResponseAsync() Error: " << error.what() << endl << endl;
             }
-            this->threadContext->releaseGroup(groupIdNew);
             MessageData messageData;
             if (dataPackage.type == InteractionCallbackType::ChannelMessage || dataPackage.type == InteractionCallbackType::ChannelMessageWithSource) {
                 try {
@@ -845,15 +845,12 @@ namespace DiscordCoreAPI {
         }
 
         task<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
-            unsigned int groupIdNew;
-            InteractionResponseData data;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::GetInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionToken;
             dataPackageNew.agentResources = this->agentResources;
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestGetInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -863,13 +860,10 @@ namespace DiscordCoreAPI {
             }
             InteractionResponseData outData;
             try_receive(requestAgent.outInteractionresponseDataBuffer, outData);
-            this->threadContext->releaseGroup(groupIdNew);
             co_return outData;
         }
 
         task<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
-            unsigned int groupIdNew;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::EditInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -889,7 +883,7 @@ namespace DiscordCoreAPI {
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.type;
             dataPackageNew.finalContent = DiscordCoreInternal::getEditInteractionResponsePayload(dataPackageNew);
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPatchInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -899,20 +893,17 @@ namespace DiscordCoreAPI {
             }
             MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
-            this->threadContext->releaseGroup(groupIdNew);
             co_return messageData;
         }
 
         task<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
-            unsigned int groupIdNew;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::DeleteInteractionResponseData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.timeDelayInMs = dataPackage.timeDelay;
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestDeleteInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -920,13 +911,10 @@ namespace DiscordCoreAPI {
             while (requestAgent.getError(error)) {
                 cout << "InteractionManager::deleteInteractionResponseAsync() Error: " << error.what() << endl << endl;
             }
-            this->threadContext->releaseGroup(groupIdNew);
             co_return;
         }
 
         task<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
-            unsigned int groupIdNew;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::CreateFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -945,7 +933,7 @@ namespace DiscordCoreAPI {
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.tts = dataPackage.tts;
             dataPackageNew.username = dataPackage.username;
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPostFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -955,13 +943,10 @@ namespace DiscordCoreAPI {
             }
             MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
-            this->threadContext->releaseGroup(groupIdNew);
             co_return messageData;
         }
 
         task<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
-            unsigned int groupIdNew;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::EditFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -982,7 +967,7 @@ namespace DiscordCoreAPI {
             dataPackageNew.tts = dataPackage.tts;
             dataPackageNew.username = dataPackage.username;
             dataPackageNew.finalContent = DiscordCoreInternal::getEditFollowUpMessagePayload(dataPackageNew);
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPatchFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -992,13 +977,10 @@ namespace DiscordCoreAPI {
             }
             MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
-            this->threadContext->releaseGroup(groupIdNew);
             co_return messageData;
         }
 
         task<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
-            unsigned int groupIdNew;
-            groupIdNew = this->threadContext->createGroup();
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::DeleteFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -1006,7 +988,7 @@ namespace DiscordCoreAPI {
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.timeDelayInMs = dataPackage.timeDelay;
             dataPackageNew.messageId = dataPackage.messagePackage.messageId;
-            InteractionManagerAgent requestAgent(this->agentResources, this->threadContext, this->threadContext->schedulerGroups.at(this->threadContext->schedulerGroups.size() - 1));
+            InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestDeleteFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1014,18 +996,16 @@ namespace DiscordCoreAPI {
             while (requestAgent.getError(error)) {
                 cout << "InteractionManager::deleteFollowUpMessageData() Error: " << error.what() << endl << endl;
             }
-            this->threadContext->releaseGroup(groupIdNew);
             co_return;
         }
 
         InteractionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;
-            this->groupId = this->threadContext->createGroup();
         }
 
         ~InteractionManager() {
-            this->threadContext->releaseGroup(this->groupId);
+            this->threadContext->releaseGroup();
         }
 
         protected:
@@ -1034,14 +1014,13 @@ namespace DiscordCoreAPI {
 
             DiscordCoreInternal::HttpAgentResources agentResources;
             shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-            unsigned int groupId;
     };
 
     class SelectMenu : public agent {
     public:
         static map<string, unbounded_buffer<SelectMenuInteractionData>*>selectMenuInteractionMap;
 
-        SelectMenu(InputEventData dataPackage) : agent(*SelectMenu::threadContext->schedulerGroups.at(0)) {
+        SelectMenu(InputEventData dataPackage) : agent(*SelectMenu::threadContext->schedulerGroup) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
@@ -1052,7 +1031,6 @@ namespace DiscordCoreAPI {
         static void initialize(shared_ptr<InteractionManager> interactionsNew) {
             SelectMenu::interactions = interactionsNew;
             SelectMenu::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
-            SelectMenu::threadContext->createGroup(*SelectMenu::threadContext);
         }
 
         string getSelectMenuId() {
@@ -1134,7 +1112,7 @@ namespace DiscordCoreAPI {
     public:
         static map<string, unbounded_buffer<ButtonInteractionData>*> buttonInteractionMap;
 
-        Button(InputEventData dataPackage) : agent(*Button::threadContext->schedulerGroups.at(0)) {
+        Button(InputEventData dataPackage) : agent(*Button::threadContext->scheduler) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
@@ -1145,7 +1123,6 @@ namespace DiscordCoreAPI {
         static void initialize(shared_ptr<InteractionManager> interactionsNew) {
             Button::interactions = interactionsNew;
             Button::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
-            Button::threadContext->createGroup(*Button::threadContext);
         }
 
         string getButtonId() {
@@ -1229,5 +1206,6 @@ namespace DiscordCoreAPI {
     shared_ptr<InteractionManager> SelectMenu::interactions{ nullptr };
     shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenu::threadContext{ nullptr };
     map<string, unbounded_buffer<MessageData>*> InteractionManagerAgent::collectMessageDataBuffers;
+    shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext;
 };
 #endif

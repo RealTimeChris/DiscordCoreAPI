@@ -76,21 +76,13 @@ namespace DiscordCoreAPI {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;
             this->applicationId = applicationIdNew;
-            this->groupId = this->threadContext->createGroup();
 		}
 
         ~SlashCommandManager() {
-            this->threadContext->releaseGroup(this->groupId);
+            this->threadContext->releaseGroup();
         }
 
 		task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData createApplicationCommandData) {
-            unsigned int groupIdNew;
-            if (this->threadContext->schedulerGroups.size() == 0) {
-                groupIdNew = this->threadContext->createGroup();
-            }
-            else {
-                groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-            }
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::CreateApplicationCommandData createApplicationCommandDataNew;
             createApplicationCommandDataNew.applicationId = this->applicationId;
@@ -122,7 +114,6 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::ApplicationCommandData appCommandData;
             DiscordCoreInternal::parseObject(returnData.data, &appCommandData);
             ApplicationCommand appCommand(appCommandData);
-            this->threadContext->releaseGroup(groupIdNew);
             co_return appCommandData;
 		}
 
@@ -158,13 +149,6 @@ namespace DiscordCoreAPI {
         }
 
         task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData editApplicationCommandData) {
-            unsigned int groupIdNew;
-            if (this->threadContext->schedulerGroups.size() == 0) {
-                groupIdNew = this->threadContext->createGroup();
-            }
-            else {
-                groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-            }
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             vector<ApplicationCommand> appCommands = getGlobalApplicationCommands();
             bool isItFound = false;
@@ -210,18 +194,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::ApplicationCommandData appCommandData;
             DiscordCoreInternal::parseObject(returnData.data, &appCommandData);
             ApplicationCommand appCommand(appCommandData);
-            this->threadContext->releaseGroup(groupIdNew);
             co_return appCommand;
         }
 
         task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData deleteApplicationCommandData) {
-            unsigned int groupIdNew;
-            if (this->threadContext->schedulerGroups.size() == 0) {
-                groupIdNew = this->threadContext->createGroup();
-            }
-            else {
-                groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-            }
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             vector<ApplicationCommand> appCommands = getGlobalApplicationCommands();
             string commandId;
@@ -256,26 +232,17 @@ namespace DiscordCoreAPI {
             else {
                 cout << "SlashCommandManager::deleteGlobalApplicationCommandAsync() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            this->threadContext->releaseGroup(groupIdNew);
             co_return;
         }
 
         task<void> displayGlobalApplicationCommandsAsync() {
-            unsigned int groupIdNew;
-            if (this->threadContext->schedulerGroups.size() == 0) {
-                groupIdNew = this->threadContext->createGroup();
-            }
-            else {
-                groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-            }
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             vector<ApplicationCommand> applicationCommands = getGlobalApplicationCommands();
-            for (unsigned int x = 0; x < applicationCommands.size(); x += 1){
+            for (unsigned int x = 0; x < applicationCommands.size(); x += 1) {
                 cout << "Command Name: " << applicationCommands.at(x).data.name << endl;
                 cout << "Command Description: " << applicationCommands.at(x).data.description << endl;
                 displayOptions(applicationCommands.at(x).data.options);
             }
-            this->threadContext->releaseGroup(groupIdNew);
             co_return;
         }
 
@@ -283,7 +250,6 @@ namespace DiscordCoreAPI {
         DiscordCoreInternal::HttpAgentResources agentResources;
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         string applicationId;
-        unsigned int groupId;
 
         void displayOptions(vector<DiscordCoreInternal::ApplicationCommandOptionData> applicationCommandOptionData) {
             for (unsigned int x = 0; x < applicationCommandOptionData.size(); x += 1) {

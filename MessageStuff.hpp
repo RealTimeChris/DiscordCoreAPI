@@ -267,14 +267,21 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<exception> errorBuffer;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew)
-			:agent(*threadContextNew->scheduler) {
+		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew)
+			:agent(*MessageManagerAgent::threadContext->scheduler) {
 			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
+		}
+
+		static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+			MessageManagerAgent::threadContext = threadContextNew;
+		}
+
+		static void cleanup() {
+			MessageManagerAgent::threadContext->releaseGroup();
 		}
 
 		bool getError(exception& error) {
@@ -595,13 +602,6 @@ namespace DiscordCoreAPI {
 	public:
 
 		task<Message> replyAsync(ReplyMessageData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::PostMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -620,7 +620,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.tts = dataPackage.tts;
 			dataPackageNew.content = dataPackage.content;
 			dataPackageNew.finalContent = DiscordCoreInternal::getReplyMessagePayload(dataPackageNew);
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -632,18 +632,10 @@ namespace DiscordCoreAPI {
 			Message messageNew(messageData, this->discordCoreClient);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.data.requesterId = dataPackage.requesterId;
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return messageNew;
 		}
 
 		task<Message> sendDMAsync(SendDMData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::SendDMData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -661,7 +653,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.nonce = dataPackage.messageData.nonce;
 			dataPackageNew.tts = dataPackage.messageData.tts;
 			dataPackageNew.finalContent = DiscordCoreInternal::getCreateMessagePayload(dataPackageNew);
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostDMMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -672,18 +664,10 @@ namespace DiscordCoreAPI {
 			MessageData messageData;
 			Message messageNew(messageData, this->discordCoreClient);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return messageNew;
 		}
 
 		task<Message> createMessageAsync(CreateMessageData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::PostMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -700,7 +684,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.nonce = dataPackage.nonce;
 			dataPackageNew.tts = dataPackage.tts;
 			dataPackageNew.finalContent = DiscordCoreInternal::getCreateMessagePayload(dataPackageNew);
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -712,18 +696,10 @@ namespace DiscordCoreAPI {
 			Message messageNew(messageData, this->discordCoreClient);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.data.requesterId = dataPackage.requesterId;
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return messageNew;
 		}
 
 		task<Message> editMessageAsync(EditMessageData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::PatchMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -742,7 +718,7 @@ namespace DiscordCoreAPI {
 			}
 			dataPackageNew.flags = dataPackage.flags;
 			dataPackageNew.finalContent = DiscordCoreInternal::getEditMessagePayload(dataPackageNew);
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPatchMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -754,25 +730,17 @@ namespace DiscordCoreAPI {
 			Message messageNew(messageData, this->discordCoreClient);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.data.requesterId = dataPackage.requesterId;
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return messageNew;
 		}
 
 		task<void> deleteMessageAsync(DeleteMessageData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
 			dataPackageNew.timeDelay = dataPackage.timeDelay;
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestDeleteMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -780,25 +748,17 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "MessageManager::deleteMessageAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<void> deleteMessasgeBulkAsync(DeleteMessagesBulkData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteMessagesBulkData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageIds = dataPackage.messageIds;
 			dataPackageNew.content = DiscordCoreInternal::getDeleteMessagesBulkPayload(dataPackageNew);
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestDeleteMultMessagesBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -806,23 +766,15 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "MessageManager::deleteMessagesBulkAsync() Error: " << error.what() << endl << endl;
 			}
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return;
 		}
 
 		task<vector<Message>> fetchPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetPinnedMessagesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPinnedMessagesBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -832,18 +784,10 @@ namespace DiscordCoreAPI {
 			}
 			vector<Message> messageVector;
 			try_receive(requestAgent.outMultMessagesBuffer, messageVector);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return messageVector;
 		}
 
 		task<vector<Message>> fetchMessagesAsync(FetchMessagesData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::FetchMessagesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -852,7 +796,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.aroundThisId = dataPackage.aroundThisId;
 			dataPackageNew.beforeThisId = dataPackage.beforeThisId;
 			dataPackageNew.limit = dataPackage.limit;
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestGetMultMessagesBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -862,24 +806,16 @@ namespace DiscordCoreAPI {
 			}
 			vector<Message> messageVector;
 			try_receive(requestAgent.outMultMessagesBuffer, messageVector);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return messageVector;
 		}
 
 		task<Message> fetchAsync(FetchMessageData dataPackage) {
-			unsigned int groupIdNew;
-			if (this->threadContext->schedulerGroups.size() == 0) {
-				groupIdNew = this->threadContext->createGroup();
-			}
-			else {
-				groupIdNew = this->threadContext->schedulerGroups.at(0)->Id();
-			}
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.id;
-			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->threadContext, this->discordCoreClient);
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestFetchMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
@@ -890,7 +826,6 @@ namespace DiscordCoreAPI {
 			MessageData messageData;
 			Message messageNew(messageData, this->discordCoreClient);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
-			this->threadContext->releaseGroup(groupIdNew);
 			co_return messageNew;
 		}
 
@@ -898,26 +833,22 @@ namespace DiscordCoreAPI {
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
 			this->discordCoreClient = discordCoreClientNew;
-			this->groupId = this->threadContext->createGroup();
 		}
 
 		~MessageManager() {
-			for (auto value : this->threadContext->schedulerGroups) {
-				if (value->Id() == this->groupId) {
-					value->Release();
-				}
-			}
+			this->threadContext->releaseGroup();
 		}
 
 	protected:
 		friend class Channel;
 		friend class Guild;
 		friend class DiscordCoreClient;
-		unsigned int groupId;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 	};
+
+	shared_ptr<DiscordCoreInternal::ThreadContext> MessageManagerAgent::threadContext;
 }
 #endif

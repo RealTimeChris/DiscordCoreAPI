@@ -13,26 +13,79 @@
 
 namespace DiscordCoreInternal {
 
-	class HttpRequestAgent : public agent {
+	class HttpRequestAgent : ThreadContext,  public agent {
 	public:
 
 		static void initialize(string botTokenNew, string baseURLNew) {
-			HttpRequestAgent::threadContext = ThreadManager::getThreadContext().get();
 			HttpRequestAgent::botToken = botTokenNew;
 			HttpRequestAgent::baseURL = baseURLNew;
 		};
 
-		static shared_ptr<ThreadContext> threadContext;
 		unbounded_buffer<HttpWorkload> workSubmissionBuffer;
 		unbounded_buffer<HttpData> workReturnBuffer;
 		static string botToken;
 		static string baseURL;
 
-		HttpRequestAgent(HttpAgentResources agentResources) 
-			: agent(*HttpRequestAgent::threadContext->scheduler)
+		HttpRequestAgent(HttpAgentResources agentResources, shared_ptr<ThreadContext> threadContextNew)
+			: agent(*threadContextNew->scheduler), ThreadContext(threadContextNew.get())
 		{
 			try {
-				this->groupId = HttpRequestAgent::threadContext->createGroup();
+				this->baseURL = HttpRequestAgent::baseURL;
+				Filters::HttpBaseProtocolFilter filter;
+				Filters::HttpCacheControl cacheControl{ nullptr };
+				cacheControl = filter.CacheControl();
+				cacheControl.ReadBehavior(Filters::HttpCacheReadBehavior::NoCache);
+				cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
+				this->getHttpClient = HttpClient(filter);
+				this->getHeaders = this->getHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->getHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
+				this->putHttpClient = HttpClient(filter);
+				this->putHeaders = this->putHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->putHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
+				this->postHttpClient = HttpClient(filter);
+				this->postHeaders = this->postHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->postHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
+				this->patchHttpClient = HttpClient(filter);
+				this->patchHeaders = this->patchHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->patchHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
+				this->deleteHttpClient = HttpClient(filter);
+				this->deleteHeaders = this->deleteHttpClient.DefaultRequestHeaders();
+				if (agentResources.userAgent != L"") {
+					this->deleteHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				}
+				if (HttpRequestAgent::botToken != "") {
+					this->botToken = HttpRequestAgent::botToken;
+					hstring headerString = L"Bot ";
+					hstring headerString2 = headerString + to_hstring(HttpRequestAgent::botToken);
+					HttpCredentialsHeaderValue credentialValue(nullptr);
+					credentialValue = credentialValue.Parse(headerString2.c_str());
+					this->getHeaders.Authorization(credentialValue);
+					this->putHeaders.Authorization(credentialValue);
+					this->postHeaders.Authorization(credentialValue);
+					this->patchHeaders.Authorization(credentialValue);
+					this->deleteHeaders.Authorization(credentialValue);
+				}
+			}
+			catch (hresult_error ex) {
+				wcout << "Error: " << ex.message().c_str() << endl << endl;
+			}
+			catch (const exception& e) {
+				cout << "HttpRequestAgent() Error: " << e.what() << endl << endl;
+			}
+		}
+
+		HttpRequestAgent(HttpAgentResources agentResources) 
+			:  agent(*HttpRequestAgent::ThreadContext::scheduler) , ThreadContext(DiscordCoreInternal::ThreadManager::getThreadContext().get().get())
+		{
+			try {
 				this->baseURL = HttpRequestAgent::baseURL;
 				Filters::HttpBaseProtocolFilter filter;
 				Filters::HttpCacheControl cacheControl{ nullptr };
@@ -93,7 +146,7 @@ namespace DiscordCoreInternal {
 		}
 
 		~HttpRequestAgent() {
-			HttpRequestAgent::threadContext->releaseGroup(this->groupId);
+			HttpRequestAgent::ThreadContext::releaseGroup();
 		}
 
 	protected:
@@ -531,8 +584,7 @@ namespace DiscordCoreInternal {
 			}
 			return deleteData;
 		}
-		
-		unsigned int groupId;
+
 		Uri baseURI{ nullptr };
 		HttpRequestHeaderCollection getHeaders{ nullptr };
 		HttpRequestHeaderCollection putHeaders{ nullptr };
@@ -547,7 +599,6 @@ namespace DiscordCoreInternal {
 	};
 	concurrent_unordered_map<HttpWorkloadType, string> HttpRequestAgent::rateLimitDataBucketValues;
 	concurrent_unordered_map<string, RateLimitData> HttpRequestAgent::rateLimitData;
-	shared_ptr<ThreadContext> HttpRequestAgent::threadContext;
 	string HttpRequestAgent::botToken;
 	string HttpRequestAgent::baseURL;
 }

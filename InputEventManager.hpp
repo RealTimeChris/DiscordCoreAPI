@@ -26,11 +26,10 @@ namespace DiscordCoreAPI {
 			InputEventManager::discordCoreClientBase = discordCoreClientBaseNew;
 			InputEventManager::interactions = interactionsNew;
 			InputEventManager::threadContext = threadContextNew;
-			InputEventManager::groupId = InputEventManager::threadContext->createGroup();
 		}
 		static void cleanup() {
 
-			InputEventManager::threadContext->releaseGroup(InputEventManager::groupId);
+			InputEventManager::threadContext->releaseGroup();
 		}
 
 		static InputEventData respondToEvent(CreateFollowUpMessageData dataPackage) {
