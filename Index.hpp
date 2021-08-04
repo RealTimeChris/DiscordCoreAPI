@@ -15,8 +15,6 @@ namespace DiscordCoreAPI {
     class IndexHost {
     public:
 
-        static shared_ptr<DiscordCoreClient> discordCoreClient;
-
         static void onChannelCreation(OnChannelCreationData dataPackage) {
             dataPackage.channel.discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
         }
@@ -174,7 +172,7 @@ namespace DiscordCoreAPI {
             }
             map<string, Guild> guildMap;
             if (try_receive(GuildManagerAgent::cache, guildMap)) {
-                if (dataPackage.voiceStateData.userId == IndexHost::discordCoreClient->currentUser->data.id) {
+                if (dataPackage.voiceStateData.userId == dataPackage.discordCoreClient->currentUser->data.id) {
                     if (dataPackage.voiceStateData.channelId == "") {
                         Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
                         guild.disconnectFromVoice();
@@ -191,7 +189,6 @@ namespace DiscordCoreAPI {
         try {
             shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
             pDiscordCoreClient->thisPointer = pDiscordCoreClient;
-            IndexHost::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();
             executeFunctionAfterTimePeriod([]() {
                 cout << "Heart beat!" << endl << endl;
@@ -231,7 +228,5 @@ namespace DiscordCoreAPI {
             cout << "DiscordCoreClient Error: " << error.what() << endl;
         }
     }
-
-    shared_ptr<DiscordCoreClient> IndexHost::discordCoreClient{ nullptr };
 }
 #endif

@@ -156,6 +156,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnVoiceStateUpdateData {
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		VoiceStateData voiceStateData;
 	};
 

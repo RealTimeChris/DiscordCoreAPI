@@ -618,6 +618,7 @@ namespace DiscordCoreAPI {
 						VoiceStateData newData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &newData);
 						voiceStateUpdateData.voiceStateData = newData;
+						voiceStateUpdateData.discordCoreClient = this->thisPointer;
 						this->eventManager->onVoiceStateUpdateEvent(voiceStateUpdateData);
 						break;
 					}
