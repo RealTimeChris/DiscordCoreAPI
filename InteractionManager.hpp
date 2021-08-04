@@ -1038,6 +1038,10 @@ namespace DiscordCoreAPI {
 
         string getSelectMenuId() {
             return this->selectMenuId;
+            exception error;
+            while (getError(error)) {
+                cout << "SelectMenu::run() Error: " << error.what() << endl;
+            }
         }
 
         SelectMenuInteractionData getOurSelectMenuData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
@@ -1058,11 +1062,16 @@ namespace DiscordCoreAPI {
         bool getButtonDataForAll;
         SelectMenuInteractionData interactionData;
         unbounded_buffer<SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
+        unbounded_buffer<exception> errorBuffer;
         string channelId;
         string messageId;
         string userId;
         string selectMenuId = "";
         bool doWeQuit = false;
+
+        bool getError(exception& error) {
+            return try_receive(this->errorBuffer, error);
+        }
 
         void run() {
             try {
@@ -1102,8 +1111,9 @@ namespace DiscordCoreAPI {
                 done();
                 SelectMenu::selectMenuInteractionMap.erase(this->channelId + this->messageId);
             }
-            catch (exception&) {
+            catch (exception&e) {
                 this->selectMenuId = "exit";
+                send(this->errorBuffer, e);
                 done();
                 SelectMenu::selectMenuInteractionMap.erase(this->channelId + this->messageId);
                 return;
@@ -1130,6 +1140,10 @@ namespace DiscordCoreAPI {
 
         string getButtonId() {
             return this->buttonId;
+            exception error;
+            while (getError(error)) {
+                cout << "Button::run() Error: " << error.what() << endl;
+            }
         }
 
         ButtonInteractionData getOurButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
@@ -1150,11 +1164,16 @@ namespace DiscordCoreAPI {
         bool getButtonDataForAll;
         ButtonInteractionData interactionData;
         unbounded_buffer<ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
+        unbounded_buffer<exception> errorBuffer;
         string channelId;
         string messageId;
         string userId;
         string buttonId = "";
         bool doWeQuit = false;
+
+        bool getError(exception& error) {
+            return try_receive(this->errorBuffer, error);
+        }
 
         void run() {
             try {
@@ -1194,9 +1213,11 @@ namespace DiscordCoreAPI {
                 done();
                 Button::buttonInteractionMap.erase(this->channelId + this->messageId);
             }
-            catch (exception&) {
+            catch (exception&e) {
                 this->buttonId = "exit";
+                send(this->errorBuffer, e);
                 done();
+
                 Button::buttonInteractionMap.erase(this->channelId + this->messageId);
                 return;
             }
