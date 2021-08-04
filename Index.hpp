@@ -129,38 +129,6 @@ namespace DiscordCoreAPI {
             co_return;
         }
 
-        static void onReactionAdd(OnReactionAddData dataPackage) {
-            IndexHost::discordCoreClient->reactions->insertReactionAsync(dataPackage.reaction).get();
-        }
-
-        static void onReactionRemove(OnReactionRemoveData dataPackage) {
-            IndexHost::discordCoreClient->reactions->removeReactionAsync(dataPackage.reactionRemoveData.messageId, dataPackage.reactionRemoveData.userId, dataPackage.reactionRemoveData.emoji.name).get();
-        }
-
-        static void onReactionRemoveAll(OnReactionRemoveAllData dataPackage) {
-            map<string, Reaction> reactionMap;
-            if (try_receive(ReactionManagerAgent::cache, reactionMap)) {
-                for (auto [key, value] : reactionMap) {
-                    if (key.find(dataPackage.messageId) != string::npos) {
-                        reactionMap.erase(key);
-                    }
-                }
-                asend(ReactionManagerAgent::cache, reactionMap);
-            }
-        }
-
-        static void onReactionRemoveEmoji(OnReactionRemoveEmojiData dataPackage) {
-            map<string, Reaction> reactionMap;
-            if (try_receive(ReactionManagerAgent::cache, reactionMap)) {
-                for (auto [key, value] : reactionMap) {
-                    if (key.find(dataPackage.messageId) != string::npos && key.find(dataPackage.emoji.name) != string::npos) {
-                        reactionMap.erase(key);
-                    }
-                }
-                asend(ReactionManagerAgent::cache, reactionMap);
-            }
-        }
-
         static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
             map<string, GuildMember> guildMemberMap;
             if (try_receive(GuildMemberManagerAgent::cache, guildMemberMap)) {
@@ -209,10 +177,6 @@ namespace DiscordCoreAPI {
             pDiscordCoreClient->eventManager->onRoleUpdate(&IndexHost::onRoleUpdate);
             pDiscordCoreClient->eventManager->onRoleDeletion(&IndexHost::onRoleDeletion);
             pDiscordCoreClient->eventManager->onInteractionCreation(&IndexHost::onInteractionCreation);
-            pDiscordCoreClient->eventManager->onReactionAdd(&IndexHost::onReactionAdd);
-            pDiscordCoreClient->eventManager->onReactionRemove(&IndexHost::onReactionRemove);
-            pDiscordCoreClient->eventManager->onReactionRemoveAll(&IndexHost::onReactionRemoveAll);
-            pDiscordCoreClient->eventManager->onReactionRemoveEmoji(&IndexHost::onReactionRemoveEmoji);
             pDiscordCoreClient->eventManager->onVoiceStateUpdate(&IndexHost::onVoiceStateUpdate);
             CommandCenter::registerFunction("botinfo", new BotInfo);
             CommandCenter::registerFunction("play", new Play);
