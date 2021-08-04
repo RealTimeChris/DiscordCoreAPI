@@ -817,15 +817,16 @@ namespace DiscordCoreAPI {
         }
 
         task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_background();
             DiscordCoreInternal::CreateInteractionResponseData dataPackageNew;
             dataPackageNew.data = dataPackage.data;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.type;
-            dataPackageNew.agentResources = this->agentResources;
+            DiscordCoreInternal::HttpAgentResources agentResourcesNew;
+            dataPackageNew.agentResources = agentResourcesNew;
             dataPackageNew.content = DiscordCoreInternal::getCreateInteractionResponsePayload(dataPackageNew);
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent(agentResourcesNew);
             InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, &requestAgent.outInteractionResponseBuffer));
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
@@ -1002,9 +1003,11 @@ namespace DiscordCoreAPI {
         InteractionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;
+            this->threadContext->dispatcherQueue.get()->CreateTimer();
         }
 
         ~InteractionManager() {
+            cout << "WERE HERE WERE HERE WERE HERE " << endl;
             this->threadContext->releaseGroup();
         }
 

@@ -529,7 +529,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct HttpAgentResources {
-        hstring userAgent;
+        hstring userAgent = L"";
     };
 
     struct DeleteInteractionResponseData {
