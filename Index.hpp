@@ -15,58 +15,60 @@ namespace DiscordCoreAPI {
     class IndexHost {
     public:
 
+        static shared_ptr<DiscordCoreClient> discordCoreClient;
+
         static void onChannelCreation(OnChannelCreationData dataPackage) {
-            dataPackage.channel.discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
+            IndexHost::discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
         }
 
         static void onChannelUpdate(OnChannelUpdateData dataPackage) {
-            dataPackage.channelNew.discordCoreClient->channels->insertChannelAsync(dataPackage.channelNew).get();
+            IndexHost::discordCoreClient->channels->insertChannelAsync(dataPackage.channelNew).get();
         }
 
         static void onChannelDeletion(OnChannelDeletionData dataPackage) {
-            dataPackage.channel.discordCoreClient->channels->removeChannelAsync(dataPackage.channel.data.id).get();
+            IndexHost::discordCoreClient->channels->removeChannelAsync(dataPackage.channel.data.id).get();
         }
 
         static void onGuildCreation(OnGuildCreationData dataPackage) {
-            dataPackage.guild.discordCoreClient->guilds->insertGuildAsync(dataPackage.guild).get();
+            IndexHost::discordCoreClient->guilds->insertGuildAsync(dataPackage.guild).get();
         }
 
         static void onGuildUpdate(OnGuildUpdateData dataPackage) {
-            dataPackage.guildNew.discordCoreClient->guilds->insertGuildAsync(dataPackage.guildNew).get();
+            IndexHost::discordCoreClient->guilds->insertGuildAsync(dataPackage.guildNew).get();
         }
 
         static void onGuildDeletion(OnGuildDeletionData dataPackage) {
-            dataPackage.guild.discordCoreClient->guilds->removeGuildAsync(dataPackage.guild.data.id).get();
+            IndexHost::discordCoreClient->guilds->removeGuildAsync(dataPackage.guild.data.id).get();
         }
 
         static void onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
-            dataPackage.guildMember.discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMember, dataPackage.guildMember.data.guildId).get();
+            IndexHost::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMember, dataPackage.guildMember.data.guildId).get();
             Guild guild = dataPackage.guildMember.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
             guild.data.memberCount += 1;
-            dataPackage.guildMember.discordCoreClient->guilds->insertGuildAsync(guild).get();
+            IndexHost::discordCoreClient->guilds->insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
-            dataPackage.user.discordCoreClient->guildMembers->removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
-            Guild guild = dataPackage.user.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildId }).get();
+            IndexHost::discordCoreClient->guildMembers->removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
+            Guild guild = IndexHost::discordCoreClient->guilds->getGuildAsync({ dataPackage.guildId }).get();
             guild.data.memberCount -= 1;
-            dataPackage.user.discordCoreClient->guilds->insertGuildAsync(guild).get();
+            IndexHost::discordCoreClient->guilds->insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
-            dataPackage.guildMemberNew.discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMemberNew, dataPackage.guildMemberNew.data.guildId).get();
+            IndexHost::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMemberNew, dataPackage.guildMemberNew.data.guildId).get();
         }
 
         static void onRoleCreation(OnRoleCreationData dataPackage) {
-            dataPackage.role.discordCoreClient->roles->insertRoleAsync(dataPackage.role).get();
+            IndexHost::discordCoreClient->roles->insertRoleAsync(dataPackage.role).get();
         }
 
         static void onRoleUpdate(OnRoleUpdateData dataPackage) {
-            dataPackage.roleNew.discordCoreClient->roles->insertRoleAsync(dataPackage.roleNew).get();
+            IndexHost::discordCoreClient->roles->insertRoleAsync(dataPackage.roleNew).get();
         }
 
         static void onRoleDeletion(OnRoleDeletionData dataPackage) {
-            dataPackage.roleOld.discordCoreClient->roles->removeRoleAsync(dataPackage.roleOld.data.id).get();
+            IndexHost::discordCoreClient->roles->removeRoleAsync(dataPackage.roleOld.data.id).get();
         }
 
         static task<void> onInteractionCreation(OnInteractionCreationData dataPackage) {
@@ -128,11 +130,11 @@ namespace DiscordCoreAPI {
         }
 
         static void onReactionAdd(OnReactionAddData dataPackage) {
-            dataPackage.discordCoreClient->reactions->insertReactionAsync(dataPackage.reaction).get();
+            IndexHost::discordCoreClient->reactions->insertReactionAsync(dataPackage.reaction).get();
         }
 
         static void onReactionRemove(OnReactionRemoveData dataPackage) {
-            dataPackage.reactionRemoveData.discordCoreClient->reactions->removeReactionAsync(dataPackage.reactionRemoveData.messageId, dataPackage.reactionRemoveData.userId, dataPackage.reactionRemoveData.emoji.name).get();
+            IndexHost::discordCoreClient->reactions->removeReactionAsync(dataPackage.reactionRemoveData.messageId, dataPackage.reactionRemoveData.userId, dataPackage.reactionRemoveData.emoji.name).get();
         }
 
         static void onReactionRemoveAll(OnReactionRemoveAllData dataPackage) {
@@ -172,7 +174,7 @@ namespace DiscordCoreAPI {
             }
             map<string, Guild> guildMap;
             if (try_receive(GuildManagerAgent::cache, guildMap)) {
-                if (dataPackage.voiceStateData.userId == dataPackage.discordCoreClient->currentUser->data.id) {
+                if (dataPackage.voiceStateData.userId == IndexHost::discordCoreClient->currentUser->data.id) {
                     if (dataPackage.voiceStateData.channelId == "") {
                         Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
                         guild.disconnectFromVoice();
@@ -188,7 +190,8 @@ namespace DiscordCoreAPI {
     void DiscordCoreClient::finalSetup(string botToken) {
         try {
             shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
-            pDiscordCoreClient->thisPointer = pDiscordCoreClient;
+            DiscordCoreClient::thisPointer = pDiscordCoreClient;
+            IndexHost::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();
             executeFunctionAfterTimePeriod([]() {
                 cout << "Heart beat!" << endl << endl;
@@ -223,10 +226,10 @@ namespace DiscordCoreAPI {
     void DiscordCoreClient::runBot() {
         wait((agent*)DiscordCoreClient::thisPointer.get());
         exception error;
-        DiscordCoreAPI::CommandCenter::registerFunction("test", new DiscordCoreAPI::Test);
         while (DiscordCoreClient::getError(error)) {
             cout << "DiscordCoreClient Error: " << error.what() << endl;
         }
     }
+    shared_ptr<DiscordCoreClient> IndexHost::discordCoreClient{ nullptr };
 }
 #endif

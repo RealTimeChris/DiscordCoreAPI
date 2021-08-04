@@ -50,7 +50,6 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnGuildMemberAddData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		GuildMember guildMember;
 	};
 
@@ -105,21 +104,18 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnMessageDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string messageId;
 		string channelId;
 		string guildId;
 	};
 
 	struct OnMessageDeleteBulkData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		vector<string> ids;
 		string channelId;
 		string guildId;
 	};
 
 	struct OnReactionAddData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		Reaction reaction;
 	};
 
@@ -128,14 +124,12 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnReactionRemoveAllData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string channelId;
 		string messageId;
 		string guildId;
 	};
 
 	struct OnReactionRemoveEmojiData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string channelId;
 		string guildId;
 		string messageId;
@@ -156,7 +150,6 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnVoiceStateUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		VoiceStateData voiceStateData;
 	};
 
