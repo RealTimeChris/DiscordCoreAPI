@@ -563,8 +563,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct HttpAgentResources {
-        hstring botToken;
-        hstring baseURL;
         hstring userAgent;
     };
 
@@ -784,7 +782,9 @@ namespace  DiscordCoreInternal {
         GET_INVITES = 46,
         PATCH_GUILD_MEMBER = 47,
         GET_PINNED_MESSAGES = 48,
-        GET_INTERACTION_RESPONSE = 49
+        GET_INTERACTION_RESPONSE = 49,
+        GET_INVITE = 50,
+        GET_VANITY_INVITE = 51
     };
 
     struct GetApplicationData {
@@ -1575,6 +1575,11 @@ namespace  DiscordCoreInternal {
     struct GetInviteData {
         HttpAgentResources agentResources;
         string inviteId;
+    };
+
+    struct GetVanityInviteData {
+        HttpAgentResources agentResources;
+        string guildId;
     };
 
     struct GetInvitesData {

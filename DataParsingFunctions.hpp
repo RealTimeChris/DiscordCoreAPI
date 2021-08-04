@@ -971,6 +971,7 @@ namespace DiscordCoreInternal {
             for (auto newValue : jsonObjectData.at("members")) {
                 DiscordCoreAPI::GuildMemberData newData;
                 parseObject(newValue, &newData);
+                newData.guildId = guildData.id;
                 bool isItFound = false;
                 for (auto value : newVector) {
                     if (newData.user.id == value.user.id) {

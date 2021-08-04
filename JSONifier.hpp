@@ -174,26 +174,47 @@ namespace DiscordCoreInternal {
 			roleIdArray.push_back(value);
 		}
 		json data;
-		if (dataPackage.currentChannelId == "") {
-			data = { {"nick",dataPackage.nick},
-				{"roles", roleIdArray } };
-		}
-		else if(dataPackage.newVoiceChannelId == "") {
-			data = { {"nick",dataPackage.nick},
-				{"mute", dataPackage.mute},
-				{"deaf", dataPackage.deaf},
-				{"channel_id", nullptr} ,
-				{"roles", roleIdArray } };
+		if (roleIdArray.size() == 0){
+			if (dataPackage.currentChannelId == "") {
+				data = { {"nick",dataPackage.nick},
+					{"roles", nullptr} };
+			}
+			else if (dataPackage.newVoiceChannelId == "") {
+				data = { {"nick",dataPackage.nick},
+					{"mute", dataPackage.mute},
+					{"deaf", dataPackage.deaf},
+					{"channel_id", nullptr} ,
+					{"roles", nullptr} };
+			}
+			else {
+				data = { {"nick",dataPackage.nick},
+					{"mute", dataPackage.mute},
+					{"deaf", dataPackage.deaf},
+					{"channel_id", dataPackage.newVoiceChannelId} ,
+					{"roles", nullptr} };
+			}
 		}
 		else {
-			data = { {"nick",dataPackage.nick},
-				{"mute", dataPackage.mute},
-				{"deaf", dataPackage.deaf},
-				{"channel_id", dataPackage.newVoiceChannelId} ,
-				{"roles", roleIdArray } };
+			if (dataPackage.currentChannelId == "") {
+				data = { {"nick",dataPackage.nick},
+					{"roles", roleIdArray } };
+			}
+			else if (dataPackage.newVoiceChannelId == "") {
+				data = { {"nick",dataPackage.nick},
+					{"mute", dataPackage.mute},
+					{"deaf", dataPackage.deaf},
+					{"channel_id", nullptr} ,
+					{"roles", roleIdArray } };
+			}
+			else {
+				data = { {"nick",dataPackage.nick},
+					{"mute", dataPackage.mute},
+					{"deaf", dataPackage.deaf},
+					{"channel_id", dataPackage.newVoiceChannelId} ,
+					{"roles", roleIdArray } };
+			}
 		}
-		
-		
+
 		return data.dump();
 	}
 

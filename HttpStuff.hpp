@@ -16,20 +16,24 @@ namespace DiscordCoreInternal {
 	class HttpRequestAgent : public agent {
 	public:
 
-		static void initialize() {
+		static void initialize(string botTokenNew, string baseURLNew) {
 			HttpRequestAgent::threadContext = ThreadManager::getThreadContext().get();
+			HttpRequestAgent::botToken = botTokenNew;
+			HttpRequestAgent::baseURL = baseURLNew;
 		};
 
 		static shared_ptr<ThreadContext> threadContext;
 		unbounded_buffer<HttpWorkload> workSubmissionBuffer;
 		unbounded_buffer<HttpData> workReturnBuffer;
+		static string botToken;
+		static string baseURL;
 
 		HttpRequestAgent(HttpAgentResources agentResources) 
 			: agent(*HttpRequestAgent::threadContext->scheduler)
 		{
 			try {
 				this->groupId = HttpRequestAgent::threadContext->createGroup();
-				this->baseURL = agentResources.baseURL;
+				this->baseURL = HttpRequestAgent::baseURL;
 				Filters::HttpBaseProtocolFilter filter;
 				Filters::HttpCacheControl cacheControl{ nullptr };
 				cacheControl = filter.CacheControl();
@@ -60,10 +64,10 @@ namespace DiscordCoreInternal {
 				if (agentResources.userAgent != L"") {
 					this->deleteHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
 				}
-				if (agentResources.botToken != L"") {
-					this->botToken = agentResources.botToken;
+				if (HttpRequestAgent::botToken != "") {
+					this->botToken = HttpRequestAgent::botToken;
 					hstring headerString = L"Bot ";
-					hstring headerString2 = headerString + this->botToken;
+					hstring headerString2 = headerString + to_hstring(HttpRequestAgent::botToken);
 					HttpCredentialsHeaderValue credentialValue(nullptr);
 					credentialValue = credentialValue.Parse(headerString2.c_str());
 					this->getHeaders.Authorization(credentialValue);
@@ -195,7 +199,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpGETObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData getData;
-			string connectionPath = to_string(baseURL) + relativeURL;
+			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
 			httpResponse = getHttpClient.GetAsync(requestUri).get();
@@ -263,7 +267,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPUTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData putData;
-			string connectionPath = to_string(baseURL) + relativeURL;
+			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpContentHeaderCollection contentHeaderCollection;
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
@@ -331,7 +335,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPOSTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData postData;
-			string connectionPath = to_string(baseURL) + relativeURL;
+			string connectionPath = HttpRequestAgent::baseURL+ relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpContentHeaderCollection contentHeaderCollection;
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
@@ -399,7 +403,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPATCHObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData patchData;
-			string connectionPath = to_string(baseURL) + relativeURL;
+			string connectionPath = HttpRequestAgent::baseURL+ relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
 			HttpMediaTypeHeaderValue typeHeaderValue(L"application/json");
@@ -470,7 +474,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpDELETEObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData deleteData;
-			string connectionPath = to_string(baseURL) + relativeURL;
+			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
 			httpResponse = deleteHttpClient.DeleteAsync(requestUri).get();
@@ -530,8 +534,6 @@ namespace DiscordCoreInternal {
 		
 		unsigned int groupId;
 		Uri baseURI{ nullptr };
-		hstring baseURL;
-		hstring botToken = L"";
 		HttpRequestHeaderCollection getHeaders{ nullptr };
 		HttpRequestHeaderCollection putHeaders{ nullptr };
 		HttpRequestHeaderCollection postHeaders{ nullptr };
@@ -546,5 +548,7 @@ namespace DiscordCoreInternal {
 	concurrent_unordered_map<HttpWorkloadType, string> HttpRequestAgent::rateLimitDataBucketValues;
 	concurrent_unordered_map<string, RateLimitData> HttpRequestAgent::rateLimitData;
 	shared_ptr<ThreadContext> HttpRequestAgent::threadContext;
+	string HttpRequestAgent::botToken;
+	string HttpRequestAgent::baseURL;
 }
 #endif

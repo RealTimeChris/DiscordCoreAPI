@@ -235,7 +235,6 @@ namespace DiscordCoreAPI {
 
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
 			DiscordCoreInternal::HttpAgentResources agentResources;
-			agentResources.baseURL = baseSearchURL;
 			DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
