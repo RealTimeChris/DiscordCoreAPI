@@ -108,7 +108,6 @@ namespace DiscordCoreAPI {
 			this->doWeQuit = true;
 			this->done();
 			DatabaseManagerAgent::cleanup();
-			InputEventManager::cleanup();
 			this->channels.get()->~ChannelManager();
 			this->guildMembers.get()->~GuildMemberManager();
 			this->guilds.get()->~GuildManager();
@@ -197,9 +196,9 @@ namespace DiscordCoreAPI {
 			this->currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, DiscordCoreClient::thisPointer, this->pWebSocketConnectionAgent);
 			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			InputEventManager::initialize(DiscordCoreClient::thisPointer, DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser->data.username, this->currentUser->data.id);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
-			InputEventManager::initialize(this->messages, DiscordCoreClient::thisPointer, DiscordCoreClient::thisPointer, agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->interactions);
 			this->discordUser->writeDataToDB();
 			this->pWebSocketReceiverAgent->start();
 			this->pWebSocketConnectionAgent->start();

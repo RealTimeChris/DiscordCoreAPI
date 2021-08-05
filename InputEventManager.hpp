@@ -19,17 +19,11 @@ namespace DiscordCoreAPI {
 	public:
 		InputEventManager() {}
 
-		static void initialize(shared_ptr<MessageManager> messagesNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreClient> discordCoreClientNew,  DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<InteractionManager> interactionsNew) {
+		static void initialize(shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<MessageManager> messagesNew,shared_ptr<InteractionManager> interactionsNew) {
 			InputEventManager::messages = messagesNew;
-			InputEventManager::agentResources = agentResourcesNew;
 			InputEventManager::discordCoreClient = discordCoreClientNew;
 			InputEventManager::discordCoreClientBase = discordCoreClientBaseNew;
 			InputEventManager::interactions = interactionsNew;
-			InputEventManager::threadContext = threadContextNew;
-		}
-		static void cleanup() {
-
-			InputEventManager::threadContext->releaseGroup();
 		}
 
 		static InputEventData respondToEvent(CreateFollowUpMessageData dataPackage) {
@@ -207,17 +201,11 @@ namespace DiscordCoreAPI {
 		static shared_ptr<InteractionManager> interactions;
 		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
-		static DiscordCoreInternal::HttpAgentResources agentResources;
-		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		static unsigned int groupId;
 	};
 	shared_ptr<MessageManager> InputEventManager::messages;
 	shared_ptr<InteractionManager> InputEventManager::interactions;
 	shared_ptr<DiscordCoreClientBase> InputEventManager::discordCoreClientBase;
 	shared_ptr< DiscordCoreClient> InputEventManager::discordCoreClient;
-	DiscordCoreInternal::HttpAgentResources InputEventManager::agentResources;
-	shared_ptr<DiscordCoreInternal::ThreadContext> InputEventManager::threadContext;
-	unsigned int InputEventManager::groupId;
 
 
 }

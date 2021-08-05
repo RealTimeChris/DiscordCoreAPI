@@ -74,18 +74,17 @@ namespace DiscordCoreInternal {
     class ThreadManager {
     public:
 
-        static concurrent_vector<shared_ptr<ThreadContext>>* threads;
+        static concurrent_vector<shared_ptr<ThreadContext>> threads;
 
         static task<void> intialize() {
-            ThreadManager::threads = new concurrent_vector<shared_ptr<ThreadContext>>();
             shared_ptr<ThreadContext> threadContext = createThreadContext().get();
-            ThreadManager::threads->push_back(threadContext);
+            ThreadManager::threads.push_back(threadContext);
             ThreadManagerAgent::initialize(threadContext);
             co_return;
         }
 
         static task<shared_ptr<ThreadContext>> getThreadContext() {
-            for (auto value : *ThreadManager::threads) {
+            for (auto value : ThreadManager::threads) {
                 if (value->schedulerGroup == nullptr) {
                     value->schedulerGroup = value->scheduler->CreateScheduleGroup();
                     co_return value;
@@ -96,22 +95,20 @@ namespace DiscordCoreInternal {
             requestAgent.start();
             agent::wait(&requestAgent);
             auto threadContext = receive(ThreadManagerAgent::outputBuffer);
-            ThreadManager::threads->push_back(threadContext);
+            ThreadManager::threads.push_back(threadContext);
             co_return threadContext;
         }
 
         ~ThreadManager() {
-            for (auto value : *ThreadManager::threads) {
+            for (auto value : ThreadManager::threads) {
                 value->scheduler->Release();
                 value->schedulerGroup->Release();
             }
-            delete ThreadManager::threads;
-            ThreadManager::threads = nullptr;
             ThreadManagerAgent::cleanup();
         };
 
     };
-    concurrent_vector<shared_ptr<ThreadContext>>* ThreadManager::threads{ nullptr };
+    concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads;
     unbounded_buffer<bool> ThreadManagerAgent::readyBuffer;
     unbounded_buffer<shared_ptr<ThreadContext>> ThreadManagerAgent::outputBuffer;
     shared_ptr<ThreadContext> ThreadManagerAgent::threadContext{ nullptr };
