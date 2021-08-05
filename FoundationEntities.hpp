@@ -2754,13 +2754,13 @@ namespace DiscordCoreAPI {
         string createdAt;
         string guildId;
         UserData inviter;
-        unsigned int maxAge;
-        unsigned int maxUses;
-        unsigned int targetType;
+        unsigned int maxAge = 0;
+        unsigned int maxUses = 0;
+        unsigned int targetType = 0;
         UserData targetUser;
         ApplicationData targetApplication;
         bool temporary;
-        unsigned int uses;
+        unsigned int uses = 0;
     };
 
     struct MessageData : MessageDataOld {

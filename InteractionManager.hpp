@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
                 }
             }
         }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+        void addSelectMenu(bool disabled,  string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
             if (this->data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.components.push_back(actionRowData);
@@ -502,13 +502,13 @@ namespace DiscordCoreAPI {
             this->agentResources = agentResourcesNew;
         }
 
-        static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
-            InteractionManagerAgent::threadContext = threadContextNew;
-        }
+       static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew){
+           InteractionManagerAgent::threadContext = threadContextNew;
+       }
 
-        static void cleanup() {
-            InteractionManagerAgent::threadContext->releaseGroup();
-        }
+       static void cleanup(){
+           InteractionManagerAgent::threadContext->releaseGroup();
+       }
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -540,7 +540,7 @@ namespace DiscordCoreAPI {
             return interactionResponseData;
         }
 
-        MessageData patchObjectData(DiscordCoreInternal::EditFollowUpMessageData dataPackage) {
+        MessageData patchObjectData(DiscordCoreInternal::EditFollowUpMessageData dataPackage){
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
@@ -616,7 +616,7 @@ namespace DiscordCoreAPI {
             else {
                 cout << "InteractionManagerAgent::postObjectData() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            return;
+            return ;
         }
 
         void postObjectData(DiscordCoreInternal::CreateDeferredInteractionResponseData dataPackage) {
@@ -777,7 +777,7 @@ namespace DiscordCoreAPI {
                     postObjectData(dataPackage06);
                 }
                 DiscordCoreInternal::DeleteFollowUpMessageData dataPackage07;
-                if (try_receive(this->requestDeleteFollowUpMessageBuffer, dataPackage07)) {
+                if(try_receive(this->requestDeleteFollowUpMessageBuffer, dataPackage07)){
                     deleteObjectDataTimer(dataPackage07);
                 }
                 DiscordCoreInternal::GetInteractionResponseData dataPackage08;
@@ -794,7 +794,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    class InteractionManager {
+	class InteractionManager {
     public:
 
         task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
@@ -841,7 +841,7 @@ namespace DiscordCoreAPI {
                     messageData = receive(requestAgent.outInteractionResponseBuffer, 1000);
                 }
                 catch (exception&) {};
-            }
+            }            
             co_return messageData;
         }
 
@@ -1009,12 +1009,12 @@ namespace DiscordCoreAPI {
             this->threadContext->releaseGroup();
         }
 
-    protected:
-        friend class InteractionManagerAgent;
-        friend class DiscordCoreClient;
+        protected:
+            friend class InteractionManagerAgent;
+            friend class DiscordCoreClient;
 
-        DiscordCoreInternal::HttpAgentResources agentResources;
-        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+            DiscordCoreInternal::HttpAgentResources agentResources;
+            shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
     };
 
     class SelectMenu : public agent {
@@ -1109,7 +1109,7 @@ namespace DiscordCoreAPI {
                 done();
                 SelectMenu::selectMenuInteractionMap.erase(this->channelId + this->messageId);
             }
-            catch (exception& e) {
+            catch (exception&e) {
                 this->selectMenuId = "exit";
                 send(this->errorBuffer, e);
                 done();
@@ -1211,7 +1211,7 @@ namespace DiscordCoreAPI {
                 done();
                 Button::buttonInteractionMap.erase(this->channelId + this->messageId);
             }
-            catch (exception& e) {
+            catch (exception&e) {
                 this->buttonId = "exit";
                 send(this->errorBuffer, e);
                 done();

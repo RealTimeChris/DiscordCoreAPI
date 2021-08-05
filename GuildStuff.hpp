@@ -548,10 +548,6 @@ namespace DiscordCoreAPI {
 		}
 
 		~GuildManager() {
-			cout << "WERE HERE WERE HERE WERE HERE00000" << endl;
-			if (this->threadContext->schedulerGroup == nullptr) {
-				cout << "WERE HERE WERE HERE WERE HERE010101" << endl;
-			}
 			this->threadContext->releaseGroup();
 		}
 
