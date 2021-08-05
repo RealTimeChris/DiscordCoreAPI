@@ -77,9 +77,7 @@ namespace DiscordCoreInternal {
         static concurrent_vector<shared_ptr<ThreadContext>>* threads;
 
         static task<void> intialize() {
-            if (ThreadManager::threads == nullptr) {
-                ThreadManager::threads = new concurrent_vector<shared_ptr<ThreadContext>>();
-            }
+            ThreadManager::threads = new concurrent_vector<shared_ptr<ThreadContext>>();
             shared_ptr<ThreadContext> threadContext = createThreadContext().get();
             ThreadManager::threads->push_back(threadContext);
             ThreadManagerAgent::initialize(threadContext);
@@ -87,6 +85,12 @@ namespace DiscordCoreInternal {
         }
 
         static task<shared_ptr<ThreadContext>> getThreadContext() {
+            for (auto value : *ThreadManager::threads) {
+                if (value->schedulerGroup == nullptr) {
+                    value->schedulerGroup = value->scheduler->CreateScheduleGroup();
+                    co_return value;
+                }
+            }
             ThreadManagerAgent requestAgent;
             send(ThreadManagerAgent::readyBuffer, true);
             requestAgent.start();

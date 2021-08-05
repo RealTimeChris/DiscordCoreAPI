@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
-			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
