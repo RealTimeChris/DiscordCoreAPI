@@ -16,6 +16,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreClient;
 
 	struct BaseFunctionArguments {
+		BaseFunctionArguments() {}
 		BaseFunctionArguments(InputEventData inputEventData) {
 			this->eventData = inputEventData;
 		}
@@ -28,8 +29,8 @@ namespace DiscordCoreAPI {
 		virtual ~BaseFunction() {};
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		virtual BaseFunction* create() = 0;
-		string commandName;
-		string helpDescription;
+		string commandName = "";
+		string helpDescription = "";
 	};
 
 	class CommandCenter {
@@ -38,10 +39,6 @@ namespace DiscordCoreAPI {
 
 		static void registerFunction(string functionName, BaseFunction* baseFunction) {
 			CommandCenter::functions.insert(make_pair(functionName, baseFunction));
-		}
-
-		static BaseFunction* createFunction(string functionName) {
-			return CommandCenter::functions.at(functionName)->create();
 		}
 
 		static void checkForAndRunCommand(CommandData commandData) {
@@ -79,6 +76,10 @@ namespace DiscordCoreAPI {
 		};
 
 	protected:
+
+		static BaseFunction* createFunction(string functionName) {
+			return CommandCenter::functions.at(functionName)->create();
+		}
 
 		static BaseFunction* getCommand(string messageContents, CommandData commandData) {
 			try {
