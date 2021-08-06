@@ -54,6 +54,44 @@ namespace DiscordCoreAPI {
         return false;
     }
 
+    bool checkIfAllowedGamingInChannel(DiscordCoreAPI::InputEventData eventData, DiscordGuild discordGuild) {
+        bool isItFound = true;
+        if (discordGuild.data.gameChannelIds.size() > 0) {
+            isItFound = false;
+            string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
+            EmbedData msgEmbed;
+            for (auto& value : discordGuild.data.gameChannelIds) {
+                if (eventData.getChannelId() == value) {
+                    isItFound = true;
+                    break;
+                }
+                else {
+                    msgString += "<#" + value + ">\n";
+                }
+            }
+            msgString += "------";
+            if (isItFound == false) {
+                msgEmbed.setAuthor(eventData.getUserName(), eventData.getAvatarURL());
+                msgEmbed.setColor(discordGuild.data.borderColor);
+                msgEmbed.setDescription(msgString);
+                msgEmbed.setTitle("__**Permissions Issue:**__");
+                if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                    ReplyMessageData replyMessageData(eventData);
+                    replyMessageData.embeds.push_back(msgEmbed);
+                    InputEventData event01 = InputEventManager::respondToEvent(replyMessageData);
+                    InputEventManager::deleteInputEventResponseAsync(event01, 20000);
+                }
+                else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+                    CreateEphemeralInteractionResponseData responseData(eventData);
+                    responseData.data.embeds.push_back(msgEmbed);
+                    InputEventData event01 = InputEventManager::respondToEvent(responseData);
+                }
+            }
+
+        }
+        return isItFound;
+    }
+
     class PermissionsConverter {
     public:
 
@@ -272,19 +310,19 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        static string computeBasePermissions(GuildMember guildMember, GuildManager guilds, RoleManager roles) {
-            Guild guild = guilds.getGuildAsync({ guildMember.data.guildId }).get();
+        static string computeBasePermissions(GuildMember guildMember, shared_ptr<GuildManager> guilds, shared_ptr<RoleManager> roles) {
+            Guild guild = guilds->getGuildAsync({ guildMember.data.guildId }).get();
 
             if (guild.data.ownerID == guildMember.data.user.id) {
                 return getAllPermissions();
             }
 
-            Role everyone = roles.getRoleAsync({ .guildId = guild.data.id, .roleId = guild.data.id }).get();
+            Role everyone = roles->getRoleAsync({ .guildId = guild.data.id, .roleId = guild.data.id }).get();
             string permissionsString = everyone.data.permissions;
             __int64 permissionsInt = stoll(permissionsString);
 
             for (auto& role : guildMember.data.roles) {
-                Role currentRole = roles.getRoleAsync({ .guildId = guild.data.id, .roleId = role }).get();
+                Role currentRole = roles->getRoleAsync({ .guildId = guild.data.id, .roleId = role }).get();
                 permissionsInt |= stoll(currentRole.data.permissions);
             }
 
@@ -340,7 +378,7 @@ namespace DiscordCoreAPI {
 
         static string computePermissions(GuildMember guildMember, Channel channel) {
             string permissions;
-            permissions = computeBasePermissions(guildMember, *guildMember.discordCoreClient->guilds, *guildMember.discordCoreClient->roles);
+            permissions = computeBasePermissions(guildMember, guildMember.discordCoreClient->guilds, guildMember.discordCoreClient->roles);
             permissions = computeOverwrites(permissions, guildMember, channel);
             return permissions;
         }
@@ -431,6 +469,9 @@ namespace DiscordCoreAPI {
             else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                 EditFollowUpMessageData dataPackage(event01);
                 dataPackage.embeds.push_back(messageEmbeds[currentPageIndex]);
+                if (returnFinalEmbed) {
+                    dataPackage.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
+                }
                 dataPackage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 dataPackage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
                 dataPackage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);

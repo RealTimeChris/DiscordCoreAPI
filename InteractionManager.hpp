@@ -502,13 +502,13 @@ namespace DiscordCoreAPI {
             this->agentResources = agentResourcesNew;
         }
 
-       static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew){
-           InteractionManagerAgent::threadContext = threadContextNew;
-       }
+        static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew){
+            InteractionManagerAgent::threadContext = threadContextNew;
+        }
 
-       static void cleanup(){
-           InteractionManagerAgent::threadContext->releaseGroup();
-       }
+        static void cleanup(){
+            InteractionManagerAgent::threadContext->releaseGroup();
+        }
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -752,7 +752,7 @@ namespace DiscordCoreAPI {
                 DiscordCoreInternal::EditInteractionResponseData dataPackage01;
                 if (try_receive(this->requestPatchInteractionResponseBuffer, dataPackage01)) {
                     MessageData messageData = patchObjectData(dataPackage01);
-                    asend(this->outInteractionResponseBuffer, messageData);
+                    send(this->outInteractionResponseBuffer, messageData);
                 }
                 DiscordCoreInternal::CreateInteractionResponseData dataPackage02;
                 if (try_receive(this->requestPostInteractionResponseBuffer, dataPackage02)) {
@@ -761,7 +761,7 @@ namespace DiscordCoreAPI {
                 DiscordCoreInternal::CreateFollowUpMessageData dataPackage03;
                 if (try_receive(this->requestPostFollowUpMessageBuffer, dataPackage03)) {
                     MessageData messageData = postObjectData(dataPackage03);
-                    asend(this->outInteractionResponseBuffer, messageData);
+                    send(this->outInteractionResponseBuffer, messageData);
                 }
                 DiscordCoreInternal::DeleteInteractionResponseData dataPackage04;
                 if (try_receive(this->requestDeleteInteractionResponseBuffer, dataPackage04)) {
@@ -770,7 +770,7 @@ namespace DiscordCoreAPI {
                 DiscordCoreInternal::EditFollowUpMessageData dataPackage05;
                 if (try_receive(this->requestPatchFollowUpMessageBuffer, dataPackage05)) {
                     MessageData messageData = patchObjectData(dataPackage05);
-                    asend(this->outInteractionResponseBuffer, messageData);
+                    send(this->outInteractionResponseBuffer, messageData);
                 }
                 DiscordCoreInternal::CreateDeferredInteractionResponseData dataPackage06;
                 if (try_receive(this->requestPostDeferredInteractionResponseBuffer, dataPackage06)) {
@@ -783,7 +783,7 @@ namespace DiscordCoreAPI {
                 DiscordCoreInternal::GetInteractionResponseData dataPackage08;
                 if (try_receive(this->requestGetInteractionResponseBuffer, dataPackage08)) {
                     auto responseData = getObjectData(dataPackage08);
-                    asend(this->outInteractionresponseDataBuffer, responseData);
+                    send(this->outInteractionresponseDataBuffer, responseData);
                 }
             }
             catch (const exception& e) {
@@ -1036,10 +1036,6 @@ namespace DiscordCoreAPI {
 
         string getSelectMenuId() {
             return this->selectMenuId;
-            exception error;
-            while (getError(error)) {
-                cout << "SelectMenu::run() Error: " << error.what() << endl;
-            }
         }
 
         SelectMenuInteractionData getOurSelectMenuData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
@@ -1050,6 +1046,10 @@ namespace DiscordCoreAPI {
             this->getButtonDataForAll = getButtonDataForAllNew;
             start();
             agent::wait(this);
+            exception error;
+            while (getError(error)) {
+                cout << "SelectMenu::run() Error: " << error.what() << endl;
+            }
             return this->interactionData;
         }
 
@@ -1138,10 +1138,6 @@ namespace DiscordCoreAPI {
 
         string getButtonId() {
             return this->buttonId;
-            exception error;
-            while (getError(error)) {
-                cout << "Button::run() Error: " << error.what() << endl;
-            }
         }
 
         ButtonInteractionData getOurButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
@@ -1152,6 +1148,10 @@ namespace DiscordCoreAPI {
             this->getButtonDataForAll = getButtonDataForAllNew;
             start();
             agent::wait(this);
+            exception error;
+            while (getError(error)) {
+                cout << "Button::run() Error: " << error.what() << endl;
+            }
             return this->interactionData;
         }
 

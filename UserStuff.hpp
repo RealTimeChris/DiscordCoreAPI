@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 					User user = getObjectData(dataPackage02);
 					cacheTemp.insert(make_pair(dataPackage02.userId, user));
 					send(this->outUserBuffer, user);
-					asend(UserManagerAgent::cache, cacheTemp);
+					send(UserManagerAgent::cache, cacheTemp);
 				}
 				DiscordCoreInternal::GetApplicationData dataPackage03;
 				if (try_receive(this->requestGetApplicationBuffer, dataPackage03)) {
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 						}
 					}
 					cacheTemp.insert(make_pair(user.data.id, user));
-					asend(UserManagerAgent::cache, cacheTemp);
+					send(UserManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (const exception& e) {

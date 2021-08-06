@@ -358,7 +358,7 @@ namespace DiscordCoreAPI {
 					Guild guild = getObjectData(dataPackage02);
 					cacheTemp.insert(make_pair(dataPackage02.guildId, guild));
 					send(this->outGuildBuffer, guild);
-					asend(GuildManagerAgent::cache, cacheTemp);
+					send(GuildManagerAgent::cache, cacheTemp);
 				}
 				DiscordCoreInternal::GetAuditLogData dataPackage03;
 				if (try_receive(this->requestGetAuditLogBuffer, dataPackage03)) {
@@ -389,7 +389,7 @@ namespace DiscordCoreAPI {
 					}
 					guildNew.initialize();
 					cacheTemp.insert(make_pair(guildNew.data.id, guildNew));
-					asend(GuildManagerAgent::cache, cacheTemp);
+					send(GuildManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (const exception& e) {
@@ -536,7 +536,7 @@ namespace DiscordCoreAPI {
 			if (cache.contains(guildId)) {
 				cache.erase(guildId);
 			}
-			asend(GuildManagerAgent::cache, cache);
+			send(GuildManagerAgent::cache, cache);
 			co_return;
 		}
 

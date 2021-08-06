@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 				Role newRole(roleData, this->discordCoreClient);
 				cacheTemp.insert(make_pair(newRole.data.id, newRole));
 			}
-			asend(RoleManagerAgent::cache, cacheTemp);
+			send(RoleManagerAgent::cache, cacheTemp);
 			RoleData roleData;
 			if (cacheTemp.contains(dataPackage.roleId)) {
 				roleData = cacheTemp.at(dataPackage.roleId).data;
@@ -392,7 +392,7 @@ namespace DiscordCoreAPI {
 					}
 					cacheTemp.insert(make_pair(dataPackage02.roleId, role));
 					send(this->outRoleBuffer, role);
-					asend(cache, cacheTemp);
+					send(cache, cacheTemp);
 				}
 				DiscordCoreInternal::PatchRoleData dataPackage03;
 				if (try_receive(this->requestPatchRoleBuffer, dataPackage03)) {
@@ -405,7 +405,7 @@ namespace DiscordCoreAPI {
 					}
 					cacheTemp.insert(make_pair(dataPackage03.roleId, role));
 					send(this->outRoleBuffer, role);
-					asend(cache, cacheTemp);
+					send(cache, cacheTemp);
 				}
 				DiscordCoreInternal::PutRoleData dataPackage04;
 				if (try_receive(this->requestPutRoleBuffer, dataPackage04)) {
@@ -440,7 +440,7 @@ namespace DiscordCoreAPI {
 					}
 					cacheTemp.insert(make_pair(dataPackage09.roleId, role));
 					send(this->outRoleBuffer, role);
-					asend(cache, cacheTemp);
+					send(cache, cacheTemp);
 				}
 				RoleData dataPackage10;
 				Role roleNew(dataPackage10, this->discordCoreClient);
@@ -452,7 +452,7 @@ namespace DiscordCoreAPI {
 						}
 					}
 					cacheTemp.insert(make_pair(roleNew.data.id, roleNew));
-					asend(RoleManagerAgent::cache, cacheTemp);
+					send(RoleManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (const exception& e) {
@@ -712,7 +712,7 @@ namespace DiscordCoreAPI {
 				Role role = cache.at(roleId);
 				cache.erase(roleId);
 			}
-			asend(RoleManagerAgent::cache, cache);
+			send(RoleManagerAgent::cache, cache);
 			co_return;
 		}
 

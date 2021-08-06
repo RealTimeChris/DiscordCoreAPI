@@ -227,7 +227,7 @@ namespace DiscordCoreAPI {
 					Channel channel = getObjectData (dataPackage02);
 					cacheTemp.insert(make_pair(dataPackage02.channelId, channel));
 					send(this->outChannelBuffer, channel);
-					asend(cache, cacheTemp);
+					send(cache, cacheTemp);
 				}
 				DiscordCoreInternal::PutPermissionOverwritesData dataPackage03;
 				if (try_receive(this->requestPutChannelPermOWsBuffer, dataPackage03)) {
@@ -246,18 +246,18 @@ namespace DiscordCoreAPI {
 							cacheTemp.erase(channel.data.id);
 							cacheTemp.insert(make_pair(channel.data.id, channel));
 							send(this->outChannelBuffer, channel);
-							asend(cache, cacheTemp);
+							send(cache, cacheTemp);
 						}
 	 					else {
 							cacheTemp.insert(make_pair(channel.data.id, channel));
 							send(this->outChannelBuffer, channel);
-							asend(cache, cacheTemp);
+							send(cache, cacheTemp);
 						}
 					}
 					else {
 						cacheTemp.insert(make_pair(channel.data.id, channel));
 						send(this->outChannelBuffer, channel);
-						asend(cache, cacheTemp);
+						send(cache, cacheTemp);
 					}
 				}
 				ChannelData dataPackage06;
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 						}
 					}
 					cacheTemp.insert(make_pair(channelNew.data.id, channelNew));
-					asend(ChannelManagerAgent::cache, cacheTemp);
+					send(ChannelManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (const exception& e) {
@@ -398,7 +398,7 @@ namespace DiscordCoreAPI {
 			if (cache.contains(channelId)) {
 				cache.erase(channelId);
 			}
-			asend(ChannelManagerAgent::cache, cache);
+			send(ChannelManagerAgent::cache, cache);
 			co_return;
 		}
 

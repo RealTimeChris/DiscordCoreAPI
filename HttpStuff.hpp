@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			catch (hresult_error ex) {
-				wcout << "Error: " << ex.message().c_str() << endl << endl;
+				wcout << "HttpRequestAgent() Error: " << ex.message().c_str() << endl << endl;
 			}
 			catch (const exception& e) {
 				cout << "HttpRequestAgent() Error: " << e.what() << endl << endl;
@@ -400,7 +400,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPATCHObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData patchData;
-			string connectionPath = HttpRequestAgent::baseURL+ relativeURL;
+			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
 			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
 			HttpMediaTypeHeaderValue typeHeaderValue(L"application/json");

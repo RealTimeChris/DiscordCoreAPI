@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
 							send(this->outGuildMemberBuffer, GuildMember);
 						}
 					}
-					asend(GuildMemberManagerAgent::cache, cacheTemp);
+					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 				DiscordCoreInternal::FetchGuildMemberData dataPackage02;
 				if (try_receive(this->requestFetchGuildMemberBuffer, dataPackage02)) {
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 					GuildMember GuildMember = getObjectData(dataPackage02);
 					cacheTemp.insert(make_pair(dataPackage02.guildId + " + " + dataPackage02.guildMemberId, GuildMember));
 					send(this->outGuildMemberBuffer, GuildMember);
-					asend(GuildMemberManagerAgent::cache, cacheTemp);
+					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 				DiscordCoreInternal::ModifyGuildMemberData dataPackage03;
 				if (try_receive(this->requestPatchGuildMemberBuffer, dataPackage03)) {
@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 					GuildMember GuildMember = patchObjectData(dataPackage03);
 					cacheTemp.insert(make_pair(dataPackage03.guildId + " + " + dataPackage03.guildMemberId, GuildMember));
 					send(this->outGuildMemberBuffer, GuildMember);
-					asend(GuildMemberManagerAgent::cache, cacheTemp);
+					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 				GuildMember guildMember;
 				while (this->guildMembersToInsert.try_pop(guildMember)) {
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 						cacheTemp.erase(guildMember.data.guildId + " + " + guildMember.data.user.id);
 					}
 					cacheTemp.insert(make_pair(guildMember.data.guildId + " + " + guildMember.data.user.id, guildMember));
-					asend(GuildMemberManagerAgent::cache, cacheTemp);
+					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (const exception& e) {
@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember = cache.at(guildId + guildMemberId);
 				cache.erase(guildId + guildMemberId);
 			}
-			asend(GuildMemberManagerAgent::cache, cache);
+			send(GuildMemberManagerAgent::cache, cache);
 			co_return;
 		}
 
