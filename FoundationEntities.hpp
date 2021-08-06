@@ -511,7 +511,9 @@ namespace  DiscordCoreInternal {
 
     struct ThreadContext {
     public:
-        ThreadContext() {}
+        ThreadContext(Scheduler* newScheduler) {
+            this->scheduler = newScheduler;
+        }
         ThreadContext(ThreadContext* threadContext) {
             this->scheduler = threadContext->scheduler;
             this->dispatcherQueue = threadContext->dispatcherQueue;

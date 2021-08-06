@@ -167,12 +167,12 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "ChannelManagerAgent::putObject () Error: " << error.what() << endl << endl;
+				cout << "ChannelManagerAgent::putObject () Error 01: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "ChannelManagerAgent::putObject () Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::putObject () Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
 				cout << "ChannelManagerAgent::putObject () Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -294,7 +294,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "this->fetchAsync() Error: " << error.what() << endl << endl;
+				cout << "ChannelManager::fetchAsync() Error: " << error.what() << endl << endl;
 			}
 			ChannelData channelData;
 			Channel channel(channelData, this->discordCoreClient);
@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "this->getChannelAsync() Error: " << error.what() << endl << endl;
+				cout << "ChannelManager::getChannelAsync() Error: " << error.what() << endl << endl;
 			}
 			ChannelData channelData;
 			Channel channel(channelData, this->discordCoreClient);
@@ -332,7 +332,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "this->getDMChannelAsync() Error: " << error.what() << endl << endl;
+				cout << "ChannelManager::getDMChannelAsync() Error: " << error.what() << endl << endl;
 			}
 			ChannelData channelData;
 			Channel channel(channelData, this->discordCoreClient);
@@ -356,7 +356,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "this->editChannelPermissionOverwritesAsync() Error: " << error.what() << endl << endl;
+				cout << "ChannelManager::editChannelPermissionOverwritesAsync() Error: " << error.what() << endl << endl;
 			}
 			co_return;
 		}
@@ -373,7 +373,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "this->deleteChannelPermissionOverwritesAsync() Error: " << error.what() << endl << endl;
+				cout << "ChannelManager::deleteChannelPermissionOverwritesAsync() Error: " << error.what() << endl << endl;
 			}
 			co_return;
 		}
@@ -386,7 +386,7 @@ namespace DiscordCoreAPI {
 			requestAgent.wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "this->insertChannelAsync() Error: " << error.what() << endl << endl;
+				cout << "ChannelManager::insertChannelAsync() Error: " << error.what() << endl << endl;
 			}
 			co_return;
 		}
