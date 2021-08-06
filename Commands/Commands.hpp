@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static void checkForAndRunCommand(CommandData commandData) {
-			BaseFunction* functionPointer{ nullptr };
+			shared_ptr<BaseFunction> functionPointer{ nullptr };
 			bool messageOption = false;
 			if (commandData.eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 				functionPointer = CommandCenter::getCommand(convertToLowerCase(commandData.eventData.getMessageData().content), commandData);
@@ -71,17 +71,17 @@ namespace DiscordCoreAPI {
 				args.argumentsArray = commandDataNew.optionsArgs;
 			}
 			functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
-			delete functionPointer;
+			functionPointer.~shared_ptr();
 			functionPointer = nullptr;
 		};
 
 	protected:
 
-		static BaseFunction* createFunction(string functionName) {
-			return CommandCenter::functions.at(functionName)->create();
+		static shared_ptr<BaseFunction> createFunction(string functionName) {
+			return shared_ptr<BaseFunction>(CommandCenter::functions.at(functionName)->create());
 		}
 
-		static BaseFunction* getCommand(string messageContents, CommandData commandData) {
+		static shared_ptr<BaseFunction> getCommand(string messageContents, CommandData commandData) {
 			try {
 				size_t currentPosition = INFINITE;
 				BaseFunction* lowestValue{ nullptr };
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 				if (isItFound) {
-					BaseFunction* newValue = createFunction(functionName);
+					shared_ptr<BaseFunction> newValue = createFunction(functionName);
 					return newValue;
 				}
 			}

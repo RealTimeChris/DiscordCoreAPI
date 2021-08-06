@@ -157,6 +157,7 @@ namespace DiscordCoreAPI {
 
     void DiscordCoreClient::finalSetup(string botToken) {
         try {
+            DiscordCoreInternal::ThreadManager::intialize();
             shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
             DiscordCoreClient::thisPointer = pDiscordCoreClient;
             IndexHost::discordCoreClient = pDiscordCoreClient;
