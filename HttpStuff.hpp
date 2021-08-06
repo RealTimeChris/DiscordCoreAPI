@@ -25,9 +25,9 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<HttpData> workReturnBuffer;
 		static string botToken;
 		static string baseURL;
-
+ 
 		HttpRequestAgent(HttpAgentResources agentResources) 
-			:  agent(*HttpRequestAgent::shared_ptr::get()->scheduler) , shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
+			:  agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup) , shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
 		{
 			try {
 				this->baseURL = HttpRequestAgent::baseURL;
@@ -86,17 +86,22 @@ namespace DiscordCoreInternal {
 			if (try_receive(errorBuffer, error)) {
 				return true;
 			}
+			hresult_error error02;
+			while (try_receive(errorhBuffer, error02)) {
+				cout << "HttpRequestAgent Error: " << error02.code() << ", " << to_string(error02.message()) << endl << endl;
+			}
 			return false;
 		}
 
 		~HttpRequestAgent() {
-			HttpRequestAgent::shared_ptr::get()->releaseGroup();
+			this->get()->releaseGroup();
 		}
 
 	protected:
 		static concurrent_unordered_map<string, RateLimitData> rateLimitData;
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		unbounded_buffer<exception> errorBuffer;
+		unbounded_buffer<hresult_error> errorhBuffer;
 
 		static bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew) {
 			if (rateLimitDataNew->getsRemaining <= 0) {
@@ -190,6 +195,9 @@ namespace DiscordCoreInternal {
 			}
 			catch (const exception& e) {
 				send(errorBuffer, e);
+			}
+			catch (const hresult_error& e) {
+				send(errorhBuffer, e);
 			}
 			done();
 		}

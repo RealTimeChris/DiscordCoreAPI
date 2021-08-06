@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 					guildMap.erase(this->data.id);
 				}
 				guildMap.insert(make_pair(this->data.id, *this));
-				asend(GuildManagerAgent::cache, guildMap);
+				send(GuildManagerAgent::cache, guildMap);
 				return this->voiceConnection;
 			}
 		}
@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 				guildMap.erase(this->data.id);
 			}
 			guildMap.insert(make_pair(this->data.id, *this));
-			asend(GuildManagerAgent::cache, guildMap);
+			send(GuildManagerAgent::cache, guildMap);
 			this->discordCoreClientBase->currentUser->updateVoiceStatus({ .guildId = this->data.id,.channelId = "", .selfMute = false,.selfDeaf = false });
 			return;
 		}
@@ -492,7 +492,7 @@ namespace DiscordCoreAPI {
 						MessageData messageData;
 						DiscordCoreInternal::parseObject(workload.payLoad, &messageData);
 						if (InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
-							asend(*InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
+							send(*InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
 						}
 						Message message(messageData, DiscordCoreClient::thisPointer);
 						OnMessageCreationData messageCreationData;

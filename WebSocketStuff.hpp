@@ -756,7 +756,7 @@ namespace DiscordCoreInternal {
 				}
 				json payload = payload.parse(to_string(message));
 
-				asend(&this->webSocketMessageTarget, payload);
+				send(&this->webSocketMessageTarget, payload);
 
 				if (this->areWeCollectingData == true && payload.at("t")=="VOICE_SERVER_UPDATE"&&!this->serverUpdateCollected) {
 					if (this->serverUpdateCollected != true && this->stateUpdateCollected !=true) {
@@ -854,8 +854,8 @@ namespace DiscordCoreInternal {
 
 				cout << "Message received from WebSocket: " << to_string(message) << endl << endl;
 			}
-			catch (hresult_error const& ex) {
-				wcout << ex.message().c_str() << endl;
+			catch (hresult_error & ex) {
+				cout << to_string(ex.message()) << endl;
 				return;
 			}
 		};
