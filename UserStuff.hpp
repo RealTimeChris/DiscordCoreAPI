@@ -116,8 +116,8 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<User> outUserBuffer;
 		concurrent_queue<User> usersToInsert;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> coreClientNew)

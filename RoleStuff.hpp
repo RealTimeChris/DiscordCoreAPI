@@ -118,8 +118,8 @@ namespace DiscordCoreAPI {
 		concurrent_queue<Role> rolesToInsert;
 		unbounded_buffer<exception> errorBuffer;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		RoleManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew)

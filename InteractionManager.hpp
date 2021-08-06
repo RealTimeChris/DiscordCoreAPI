@@ -493,8 +493,8 @@ namespace DiscordCoreAPI {
         unbounded_buffer<MessageData> outInteractionResponseBuffer;
         unbounded_buffer<exception> errorBuffer;
 
-        DiscordCoreInternal::HttpAgentResources agentResources;
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+        DiscordCoreInternal::HttpAgentResources agentResources;
         ScheduleGroup* pScheduleGroup{ nullptr };
 
         InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)

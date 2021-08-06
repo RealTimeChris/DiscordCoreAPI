@@ -157,8 +157,8 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<Guild> outGuildBuffer;
 		concurrent_queue<Guild> guildsToInsert;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 

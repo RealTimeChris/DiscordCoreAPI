@@ -77,8 +77,8 @@ namespace DiscordCoreAPI {
 		concurrent_queue<Channel>channelsToInsert;
 		unbounded_buffer<exception> errorBuffer;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> coreClientNew)

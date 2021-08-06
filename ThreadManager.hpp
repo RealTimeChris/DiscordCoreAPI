@@ -19,8 +19,8 @@ namespace DiscordCoreInternal {
     protected:
         friend class ThreadManager;
         static shared_ptr<ThreadContext> threadContext;
-        static unbounded_buffer<bool> readyBuffer;
-        static unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer;
+        unbounded_buffer<bool> readyBuffer;
+        unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer;
         ThreadManagerAgent():agent(*ThreadManagerAgent::threadContext->scheduler){
         }
 
@@ -56,10 +56,10 @@ namespace DiscordCoreInternal {
 
         static task<shared_ptr<ThreadContext>> getThreadContext() {
             ThreadManagerAgent requestAgent;
-            send(ThreadManagerAgent::readyBuffer, true);
+            send(requestAgent.readyBuffer, true);
             requestAgent.start();
             agent::wait(&requestAgent);
-            auto threadContext = receive(ThreadManagerAgent::outputBuffer);
+            auto threadContext = receive(requestAgent.outputBuffer);
             ThreadManager::threads.push_back(threadContext);
             co_return threadContext;
         }
@@ -113,8 +113,6 @@ namespace DiscordCoreInternal {
     }
 
     concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads;
-    unbounded_buffer<bool> ThreadManagerAgent::readyBuffer;
-    unbounded_buffer<shared_ptr<ThreadContext>> ThreadManagerAgent::outputBuffer;
     shared_ptr<ThreadContext> ThreadManagerAgent::threadContext{ nullptr };
 }
 #endif

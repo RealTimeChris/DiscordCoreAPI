@@ -84,8 +84,8 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<Reaction> outReactionBuffer;
 		unbounded_buffer<exception> errorBuffer;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew)
