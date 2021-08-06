@@ -523,7 +523,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::getObjectData");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -547,7 +547,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::patchObjectData 01");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -571,7 +571,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::patchObjectData 02");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -595,7 +595,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::postObjectData 01");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -617,7 +617,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::postObjectData 02");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -639,7 +639,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::postObjectData 03");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -662,7 +662,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::deleteObjectData 01");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -696,7 +696,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent");
+            requestAgent.getError("InteractionManagerAgent::deleteObjectData 02");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {

@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
+			requestAgent.getError("MessageManagerAgent::getObjectData 01");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -345,7 +345,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
+			requestAgent.getError("MessageManagerAgent::getObjectData 02");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -373,7 +373,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
+			requestAgent.getError("MessageManagerAgent::getObjectData 03");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -402,7 +402,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
+			requestAgent.getError("MessageManagerAgent::patchObjectData");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
+			requestAgent.getError("MessageManagerAgent::postObjectData 01");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -454,7 +454,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
+			requestAgent.getError("MessageManagerAgent::postObjectData 02");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -469,6 +469,28 @@ namespace DiscordCoreAPI {
 			return messageNew;
 		}
 
+		void postObjectData(DiscordCoreInternal::DeleteMessagesBulkData dataPackage) {
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_MESSAGE;
+			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
+			workload.content = dataPackage.content;
+			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			send(requestAgent.workSubmissionBuffer, workload);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			requestAgent.getError("MessageManagerAgent::postObjectData 03");
+			DiscordCoreInternal::HttpData returnData;
+			try_receive(requestAgent.workReturnBuffer, returnData);
+			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+				cout << "MessageManagerAgent::postObjectData() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			else {
+				cout << "MessageManagerAgent::postObjectData() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			return;
+		}
+
 		void onDeleteData(DiscordCoreInternal::DeleteMessageData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_MESSAGE;
@@ -478,7 +500,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
+			requestAgent.getError("MessageManagerAgent::deleteObjectData");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -491,7 +513,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void deleteObjectData(DiscordCoreInternal::DeleteMessageData dataPackage) {
-			if (dataPackage.timeDelay > 0){
+			if (dataPackage.timeDelay > 0) {
 				ThreadPoolTimer threadPoolTimer = ThreadPoolTimer(nullptr);
 				TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimer) {
 					onDeleteData(dataPackage);
@@ -500,28 +522,6 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				onDeleteData(dataPackage);
-			}
-			return;
-		}
-
-		void postObjectData(DiscordCoreInternal::DeleteMessagesBulkData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_MESSAGE;
-			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
-			workload.content = dataPackage.content;
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent");
-			DiscordCoreInternal::HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
-			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::postObjectData() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
-			}
-			else {
-				cout << "MessageManagerAgent::postObjectData() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}
