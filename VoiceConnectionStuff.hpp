@@ -254,7 +254,6 @@ namespace DiscordCoreAPI {
 		void terminate() {
 			done();
 			this->doWeQuit = true;
-			this->voicechannelWebSocketAgent->terminate();
 		}
 
 	};

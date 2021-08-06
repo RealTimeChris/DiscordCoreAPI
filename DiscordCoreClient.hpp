@@ -117,8 +117,6 @@ namespace DiscordCoreAPI {
 			this->roles->~RoleManager();
 			this->slashCommands->~SlashCommandManager();
 			this->users->~UserManager();
-			this->pWebSocketConnectionAgent->terminate();
-			this->pWebSocketReceiverAgent->terminate();
 			InteractionManagerAgent::cleanup();
 			MessageManagerAgent::cleanup();
 			ChannelManagerAgent::cleanup();

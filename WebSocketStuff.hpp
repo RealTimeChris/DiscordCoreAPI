@@ -133,27 +133,6 @@ namespace DiscordCoreInternal {
 			return try_receive(errorBuffer, error);
 		}
 
-		void terminate() {
-			if (this != nullptr) {
-				this->doWeQuit = true;
-				this->done();
-				this->threadContext->releaseGroup();
-				if (this->webSocket != nullptr) {
-					this->webSocket.Close(1000, L"Disconnecting.");
-					this->webSocket = nullptr;
-				}				
-				if (this->heartbeatTimer != nullptr) {
-					this->heartbeatTimer.Cancel();
-					this->heartbeatTimer = nullptr;
-				}
-				if (this->voiceSocket != nullptr) {
-					this->voiceSocket.Close();
-					this->voiceSocket = nullptr;
-				}
-			}			
-			return;
-		}
-
 		~VoiceChannelWebSocketAgent() {
 			this->terminate();
 			return;
@@ -332,6 +311,26 @@ namespace DiscordCoreInternal {
 			cout << "Message received from VoiceDatagramSocket: " << to_string(message) << endl << endl;
 		}
 
+		void terminate() {
+			if (this != nullptr) {
+				this->doWeQuit = true;
+				this->done();
+				this->threadContext->releaseGroup();
+				if (this->webSocket != nullptr) {
+					this->webSocket.Close(1000, L"Disconnecting.");
+					this->webSocket = nullptr;
+				}
+				if (this->heartbeatTimer != nullptr) {
+					this->heartbeatTimer.Cancel();
+					this->heartbeatTimer = nullptr;
+				}
+				if (this->voiceSocket != nullptr) {
+					this->voiceSocket.Close();
+					this->voiceSocket = nullptr;
+				}
+			}
+		}
+
 	};
 
 	class WebSocketReceiverAgent : public agent {
@@ -348,12 +347,6 @@ namespace DiscordCoreInternal {
 
 		bool getError(exception& error) {
 			return try_receive(errorBuffer, error);
-		}
-
-		void terminate() {
-			this->doWeQuit = true;
-			this->threadContext->releaseGroup();
-			return;
 		}
 
 		~WebSocketReceiverAgent() {
@@ -551,6 +544,11 @@ namespace DiscordCoreInternal {
 			}
 			return;
 		}
+
+		void terminate() {
+			this->doWeQuit = true;
+			this->threadContext->releaseGroup();
+		}
 	};
 
 	class WebSocketConnectionAgent : public agent {
@@ -620,11 +618,6 @@ namespace DiscordCoreInternal {
 			return try_receive(errorBuffer, error);
 		}
 
-		void terminate() {
-			this->done();
-			this->cleanup();
-		}
-
 		~WebSocketConnectionAgent() {
 			this->terminate();
 		}
@@ -674,6 +667,11 @@ namespace DiscordCoreInternal {
 					return;
 				}
 			}
+		}
+
+		void terminate() {
+			this->done();
+			this->cleanup();
 		}
 
 		void cleanup() {
