@@ -523,10 +523,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::getObjectData() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -550,10 +547,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::patchObjectData() Error 00: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -577,10 +571,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::patchObjectData() Error 01: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -604,10 +595,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::postObjectData() Error 00: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -629,10 +617,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::postObjectData() Error 01: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -654,10 +639,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::postObjectData() Error 02: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -680,10 +662,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::deleteObjectData() Error 02: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -717,10 +696,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManagerAgent::deleteObjectData() Error 03: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManagerAgent");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {

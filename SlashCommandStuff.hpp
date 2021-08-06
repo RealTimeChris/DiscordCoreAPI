@@ -99,10 +99,7 @@ namespace DiscordCoreAPI {
             send(httpRequestAgent.workSubmissionBuffer, workload);
             httpRequestAgent.start();
             agent::wait(&httpRequestAgent);
-            exception error;
-            while (httpRequestAgent.getError(error)) {
-                cout << "SlashCommandManager::createGlobalApplicationCommandAsync() Error: " << error.what() << endl << endl;
-            }
+            httpRequestAgent.getError("SlashCommandManager");
             DiscordCoreInternal::HttpData returnData;
             try_receive(httpRequestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -126,10 +123,7 @@ namespace DiscordCoreAPI {
             send(httpRequestAgent.workSubmissionBuffer, workload);
             httpRequestAgent.start();
             agent::wait(&httpRequestAgent);
-            exception error;
-            while (httpRequestAgent.getError(error)) {
-                cout << "SlashCommandManager::getGlobalApplicationCommandAsync() Error: " << error.what() << endl << endl;
-            }
+            httpRequestAgent.getError("SlashCommandManager");
             DiscordCoreInternal::HttpData returnData;
             try_receive(httpRequestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -179,10 +173,7 @@ namespace DiscordCoreAPI {
             send(httpRequestAgent.workSubmissionBuffer, workload);
             httpRequestAgent.start();
             agent::wait(&httpRequestAgent);
-            exception error;
-            while (httpRequestAgent.getError(error)) {
-                cout << "SlashCommandManager::editGlobalApplicationCommandAsync() Error: " << error.what() << endl << endl;
-            }
+            httpRequestAgent.getError("SlashCommandManager");
             DiscordCoreInternal::HttpData returnData;
             try_receive(httpRequestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -220,10 +211,7 @@ namespace DiscordCoreAPI {
             send(httpRequestAgent.workSubmissionBuffer, workload);
             httpRequestAgent.start();
             agent::wait(&httpRequestAgent);
-            exception error;
-            while (httpRequestAgent.getError(error)) {
-                cout << "SlashCommandManager::deleteGlobalApplicationCommandAsync() Error: " << error.what() << endl << endl;
-            }
+            httpRequestAgent.getError("SlashCommandManager");
             DiscordCoreInternal::HttpData returnData;
             try_receive(httpRequestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
