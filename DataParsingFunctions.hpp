@@ -1515,61 +1515,82 @@ namespace DiscordCoreInternal {
 
     void parseObject(json jsonObjectData, DiscordCoreAPI::InviteData* pDataStructure) {
         DiscordCoreAPI::InviteData inviteData = *pDataStructure;
-
-        if (jsonObjectData.contains("channel_id") && !jsonObjectData.at("channel_id").is_null()) {
-            inviteData.channelId = jsonObjectData.at("channel_id").get<string>();
-        }
-
-        if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null()) {
+        
+        if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null()&&jsonObjectData.at("code").type() == nlohmann::detail::value_t::string) {
             inviteData.code = jsonObjectData.at("code").get<string>();
         }
+        else if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null()) {
+            inviteData.code = to_string(jsonObjectData.at("code").get<int>());
+        }
+       
+        if (jsonObjectData.contains("guild") && !jsonObjectData.at("guild").is_null()) {
+            parseObject(jsonObjectData.at("guild"), &inviteData.guild);
+        }
 
-        if (jsonObjectData.contains("created_at") && !jsonObjectData.at("created_at").is_null()) {
-            inviteData.createdAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("created_at"));
+        if (jsonObjectData.contains("channel") && !jsonObjectData.at("channel").is_null()) {
+            parseObject(jsonObjectData.at("channel"), &inviteData.channel);
+        }
+       
+        if (jsonObjectData.contains("inviter") && !jsonObjectData.at("inviter").is_null()) {
+            parseObject(jsonObjectData.at("inviter"), &inviteData.inviter);
+        }
+
+        if (jsonObjectData.contains("target_type") && !jsonObjectData.at("target_type").is_null()) {
+            inviteData.targetType = jsonObjectData.at("target_type").get<int>();
         }
 
         if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
             inviteData.guildId = jsonObjectData.at("guild_id").get<string>();
         }
 
-        if (jsonObjectData.contains("inviter") && !jsonObjectData.at("inviter").is_null()) {
-            DiscordCoreAPI::UserData userData;
-            parseObject(jsonObjectData.at("inviter"), &userData);
-            inviteData.inviter = userData;
-        }
-
-        if (jsonObjectData.contains("max_age") && !jsonObjectData.at("max_age").is_null()) {
-            inviteData.maxAge = jsonObjectData.at("max_age").get<unsigned int>();
-        }
-
-        if (jsonObjectData.contains("max_uses") && !jsonObjectData.at("max_uses").is_null()) {
-            inviteData.maxAge = jsonObjectData.at("max_uses").get<unsigned int>();
-        }
-
-        if (jsonObjectData.contains("target_type") && !jsonObjectData.at("target_type").is_null()) {
-            inviteData.maxAge = jsonObjectData.at("target_type").get<unsigned int>();
+        if (jsonObjectData.contains("channel_id") && !jsonObjectData.at("channel_id").is_null()) {
+            inviteData.channelId = jsonObjectData.at("channel_id").get<string>();
         }
 
         if (jsonObjectData.contains("target_user") && !jsonObjectData.at("target_user").is_null()) {
-            DiscordCoreAPI::UserData userData;
-            parseObject(jsonObjectData.at("target_user"), &userData);
-            inviteData.inviter = userData;
+            parseObject(jsonObjectData.at("target_user"), &inviteData.targetUser);
         }
 
         if (jsonObjectData.contains("target_application") && !jsonObjectData.at("target_application").is_null()) {
-            DiscordCoreAPI::ApplicationData appData;
-            parseObject(jsonObjectData.at("target_application"), &appData);
-            inviteData.targetApplication = appData;
+            parseObject(jsonObjectData.at("target_application"), &inviteData.targetApplication);
+        }
+
+        if (jsonObjectData.contains("approximate_presence_count") && !jsonObjectData.at("approximate_presence_count").is_null()) {
+            inviteData.approximatePresenceCount = jsonObjectData.at("approximate_presence_count").get<int>();
+        }
+
+        if (jsonObjectData.contains("approximate_member_count") && !jsonObjectData.at("approximate_member_count").is_null()) {
+            inviteData.approximateMemberCount = jsonObjectData.at("approximate_member_count").get<int>();
+        }
+
+        if (jsonObjectData.contains("expires_at") && !jsonObjectData.at("expires_at").is_null()) {
+            inviteData.expiresAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("expires_at").get<string>());
+        }
+
+        if (jsonObjectData.contains("stage_instance") && !jsonObjectData.at("stage_instance").is_null()) {
+            parseObject(jsonObjectData.at("stage_instance"), &inviteData.stageInstance);
+        }
+
+        if (jsonObjectData.contains("uses") && !jsonObjectData.at("uses").is_null()) {
+            inviteData.uses = jsonObjectData.at("uses").get<int>();
+        }
+
+        if (jsonObjectData.contains("max_uses") && !jsonObjectData.at("max_uses").is_null()) {
+            inviteData.maxUses = jsonObjectData.at("max_uses").get<int>();
+        }
+
+        if (jsonObjectData.contains("max_age") && !jsonObjectData.at("max_age").is_null()) {
+            inviteData.maxAge = jsonObjectData.at("max_age").get<int>();
         }
 
         if (jsonObjectData.contains("temporary") && !jsonObjectData.at("temporary").is_null()) {
             inviteData.temporary = jsonObjectData.at("temporary").get<bool>();
         }
 
-        if (jsonObjectData.contains("uses") && !jsonObjectData.at("uses").is_null()) {
-            inviteData.uses = jsonObjectData.at("uses").get<unsigned int>();
+        if (jsonObjectData.contains("created_at") && !jsonObjectData.at("created_at").is_null()) {
+            inviteData.createdAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("created_at").get<string>());
         }
-
+        
         *pDataStructure = inviteData;
     };
 

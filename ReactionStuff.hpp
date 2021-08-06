@@ -119,10 +119,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "this->putObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->putObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "this->putObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->putObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			ReactionData reactionData;
 			DiscordCoreInternal::parseObject(returnData.data, &reactionData);
@@ -155,10 +155,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "this->deleteObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->deleteObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "this->deleteObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "this->deleteObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}

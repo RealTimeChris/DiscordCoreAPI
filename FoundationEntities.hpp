@@ -2750,21 +2750,6 @@ namespace DiscordCoreAPI {
         vector<MessageStickerItemData> stickerItems;
     };
 
-    struct InviteData {
-        string channelId;
-        string code;
-        string createdAt;
-        string guildId;
-        UserData inviter;
-        unsigned int maxAge = 0;
-        unsigned int maxUses = 0;
-        unsigned int targetType = 0;
-        UserData targetUser;
-        ApplicationData targetApplication;
-        bool temporary;
-        unsigned int uses = 0;
-    };
-
     struct MessageData : MessageDataOld {
         operator DiscordCoreInternal::MessageData() {
             DiscordCoreInternal::MessageData newData;
@@ -2976,6 +2961,14 @@ namespace DiscordCoreAPI {
         vector<WelcomeScreenChannelData> welcomeChannels{};
     };
 
+    struct PresenceUpdateData {
+        UserData user;
+        string guildId;
+        string status;
+        vector<ActivityData> activities;
+        ClientStatusData clientStatus;
+    };
+
     struct StageInstanceData {
         string id;
         string guildId;
@@ -2983,14 +2976,6 @@ namespace DiscordCoreAPI {
         string topic;
         int privacyLevel;
         bool discoverableDisabled;
-    };
-
-    struct PresenceUpdateData {
-        UserData user;
-        string guildId;
-        string status;
-        vector<ActivityData> activities;
-        ClientStatusData clientStatus;
     };
 
     struct GuildData {
@@ -3385,6 +3370,27 @@ namespace DiscordCoreAPI {
         vector<UserData> users;
         vector<AuditLogEntryData> auditLogEntries;
         vector<IntegrationData> integrations;
+    };
+
+    struct InviteData {
+        string channelId;
+        string guildId;
+        ChannelData channel;
+        string code;
+        string createdAt;
+        string expiresAt;
+        GuildData guild;
+        UserData inviter;
+        int maxAge = 0;
+        int maxUses = 0;
+        int targetType = 0;
+        UserData targetUser;
+        int approximatePresenceCount;
+        int approximateMemberCount;
+        ApplicationData targetApplication;
+        StageInstanceData stageInstance;
+        bool temporary;
+        int uses = 0;
     };
 
     struct TypingStartData {

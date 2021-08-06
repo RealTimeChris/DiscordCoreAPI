@@ -153,10 +153,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "RoleManagerAgent::getObject() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::getObjectData() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "RoleManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::getObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			vector<Role> roleVector;
 			for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
@@ -181,10 +181,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "RoleManagerAgent::getObject() Error 03: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::getObjectData() Error 03: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "RoleManagerAgent::getObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::getObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			map<string, Role> cacheTemp = receive(RoleManagerAgent::cache, 1U);
 			for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
@@ -271,10 +271,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "RoleManagerAgent::postObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::postObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "RoleManagerAgent::postObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::postObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			RoleData roleData;
 			DiscordCoreInternal::parseObject(returnData.data, &roleData);
@@ -295,10 +295,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "RoleManagerAgent::putObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::putObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "RoleManagerAgent::putObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::putObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}
@@ -316,10 +316,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "RoleManagerAgent::deleteObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::deleteObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "RoleManagerAgent::deleteObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::deleteObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}
@@ -337,10 +337,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "RoleManagerAgent::deleteObject() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::deleteObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "RoleManagerAgent::deleteObject() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "RoleManagerAgent::deleteObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}

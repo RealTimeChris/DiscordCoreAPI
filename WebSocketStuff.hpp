@@ -693,7 +693,6 @@ namespace DiscordCoreInternal {
 				this->heartbeatTimer = nullptr;
 			}
 
-			this->threadContext->releaseGroup();
 			return;
 		}
 
@@ -743,15 +742,17 @@ namespace DiscordCoreInternal {
 			try {
 				DataReader dataReader{ nullptr };
 				hstring message;
-				if (args.IsMessageComplete()) {
-					if (args.GetDataReader() != nullptr) {
-						dataReader = args.GetDataReader();
-						dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
-						if (dataReader.UnconsumedBufferLength() > 0) {
-							message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
+				if (args != nullptr) {
+					if (args.IsMessageComplete()) {
+						if (args.GetDataReader() != nullptr) {
+							dataReader = args.GetDataReader();
+							dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+							if (dataReader.UnconsumedBufferLength() > 0) {
+								message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
+							}
 						}
 					}
-				}
+				}				
 				json payload = payload.parse(to_string(message));
 
 				send(&this->webSocketMessageTarget, payload);
