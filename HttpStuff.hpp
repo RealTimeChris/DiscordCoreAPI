@@ -493,6 +493,7 @@ namespace DiscordCoreInternal {
 			deleteData.returnCode = (unsigned int)httpResponse.StatusCode();
 			deleteData.returnMessage = returnMessage;
 			json jsonValue;
+			
 			if (returnMessage != "") {
 				jsonValue = jsonValue.parse(returnMessage);
 			}
@@ -521,7 +522,7 @@ namespace DiscordCoreInternal {
 			pRateLimitData->bucket = bucket;
 			pRateLimitData->msRemain = msRemainLocal;
 			pRateLimitData->timeStartedAt = currentMSTimeLocal;
-			pRateLimitData->getsRemaining = getsRemainingLocal;
+			pRateLimitData->getsRemaining = getsRemainingLocal - 2;
 			if ((int)httpResponse.StatusCode() == 429) {
 				cout << "httpDELETEObjectDataAsync(), We've hit rate limit! Time Remaining: " << msRemainLocal << endl << endl;
 				if (executeByRateLimitData(pRateLimitData)) {

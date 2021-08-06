@@ -177,7 +177,9 @@ namespace DiscordCoreAPI {
 			apartment_context mainThread;
 			co_await resume_background();
 			if ((dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE)|| (dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT)) {
-				DeleteMessageData deleteData(dataPackage);
+				DeleteMessageData deleteData;
+				deleteData.channelId = dataPackage.getChannelId();
+				deleteData.messageId = dataPackage.getMessageId();
 				deleteData.timeDelay = timeDelayNew;
 				InputEventManager::messages->deleteMessageAsync(deleteData).get();
 			}

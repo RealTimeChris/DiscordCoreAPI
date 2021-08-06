@@ -752,7 +752,8 @@ namespace  DiscordCoreInternal {
         GET_PINNED_MESSAGES = 48,
         GET_INTERACTION_RESPONSE = 49,
         GET_INVITE = 50,
-        GET_VANITY_INVITE = 51
+        GET_VANITY_INVITE = 51,
+        PUT_PIN_MESSAGE = 52
     };
 
     struct GetApplicationData {
@@ -839,9 +840,9 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources;
         string channelId;
         unsigned int limit;
-        string beforeThisId;
-        string afterThisId;
-        string aroundThisId;
+        string beforeThisId = "";
+        string afterThisId = "";
+        string aroundThisId = "";
     };
 
     struct DeleteMessagesBulkData {
@@ -994,6 +995,12 @@ namespace  DiscordCoreInternal {
         string channelId;
         string messageId;
         string requesterId;
+    };
+
+    struct PinMessageData {
+        HttpAgentResources agentResources;
+        string channelId;
+        string messageId;
     };
 
     enum class GetUserDataType {

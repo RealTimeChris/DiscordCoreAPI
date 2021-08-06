@@ -220,9 +220,9 @@ namespace DiscordCoreAPI {
 	struct FetchMessagesData {
 		string channelId;
 		unsigned int limit;
-		string beforeThisId;
-		string afterThisId;
-		string aroundThisId;
+		string beforeThisId = "";
+		string afterThisId = "";
+		string aroundThisId = "";
 	};
 
 	struct FetchMessageData {
@@ -231,14 +231,13 @@ namespace DiscordCoreAPI {
 		string id;
 	};
 
+	struct PinMessageData {
+		string channelId;
+		string messageId;
+	};
+
 	struct DeleteMessageData {
-		DeleteMessageData(InputEventData dataPackage) {
-			this->channelId = dataPackage.getChannelId();
-			this->messageId = dataPackage.getMessageId();
-		}
 		unsigned int timeDelay = 0;
-	protected:
-		friend class MessageManager;
 		string channelId;
 		string messageId;
 	};
@@ -261,6 +260,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<DiscordCoreInternal::PatchMessageData> requestPatchMessageBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetMessageData> requestFetchMessageBuffer;
 		unbounded_buffer<DiscordCoreInternal::PostMessageData> requestPostMessageBuffer;
+		unbounded_buffer<DiscordCoreInternal::PinMessageData> requestPinMessageBuffer;
 		unbounded_buffer<DiscordCoreInternal::SendDMData> requestPostDMMessageBuffer;
 		unbounded_buffer<vector<Message>> outMultMessagesBuffer;
 		unbounded_buffer<Message> outMessageBuffer;
@@ -491,6 +491,27 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
+		void putObjectData(DiscordCoreInternal::PinMessageData dataPackage) {
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PUT;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PUT_PIN_MESSAGE;
+			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
+			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			send(requestAgent.workSubmissionBuffer, workload);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			requestAgent.getError("MessageManagerAgent::putObjectData 00");
+			DiscordCoreInternal::HttpData returnData;
+			try_receive(requestAgent.workReturnBuffer, returnData);
+			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+				cout << "MessageManagerAgent:putObjectData() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			else {
+				cout << "MessageManagerAgent::putObjectData() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			return;
+		}
+
 		void onDeleteData(DiscordCoreInternal::DeleteMessageData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_MESSAGE;
@@ -565,6 +586,10 @@ namespace DiscordCoreAPI {
 				if (try_receive(this->requestPinnedMessagesBuffer, dataPackage09)) {
 					vector<Message> messageVector = getObjectData(dataPackage09);
 					send(this->outMultMessagesBuffer, messageVector);
+				}
+				DiscordCoreInternal::PinMessageData dataPackage10;
+				if (try_receive(this->requestPinMessageBuffer, dataPackage10)) {
+					putObjectData(dataPackage10);
 				}
 			}
 			catch (const exception& e) {
@@ -783,6 +808,24 @@ namespace DiscordCoreAPI {
 			vector<Message> messageVector;
 			try_receive(requestAgent.outMultMessagesBuffer, messageVector);
 			co_return messageVector;
+		}
+
+		task<void> pinMessageAsync(PinMessageData dataPackage) {
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			DiscordCoreInternal::PinMessageData dataPackageNew;
+			dataPackageNew.agentResources = this->agentResources;
+			dataPackageNew.channelId = dataPackage.channelId;
+			dataPackageNew.messageId = dataPackage.messageId;
+			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
+			send(requestAgent.requestPinMessageBuffer, dataPackageNew);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			while (requestAgent.getError(error)) {
+				cout << "MessageManager::fetchAsync() Error: " << error.what() << endl << endl;
+			}
+			co_return;
+
 		}
 
 		task<Message> fetchAsync(FetchMessageData dataPackage) {

@@ -525,6 +525,18 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
+		task<vector<Guild>> getAllGuildsAsync() {
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			map<string, Guild>cache;
+			try_receive(GuildManagerAgent::cache, cache);
+			vector<Guild> guildVector;
+			for (auto [key, value] : cache) {
+				guildVector.push_back(value);
+			}
+			send(GuildManagerAgent::cache, cache);
+			co_return guildVector;
+		}
+
 		GuildManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreClientBase> coreClientBaseNew) {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
