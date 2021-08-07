@@ -8,8 +8,8 @@
 #ifndef _WEBSOCKET_STUFF_
 #define _WEBSOCKET_STUFF_
 
-#include "pch.h"
-#include "JSONifier.hpp"
+#include "../pch.h"
+#include "DataParsingFunctions.hpp"
 
 namespace DiscordCoreInternal {
 

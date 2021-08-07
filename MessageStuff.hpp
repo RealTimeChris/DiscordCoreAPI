@@ -788,7 +788,7 @@ namespace DiscordCoreAPI {
 			co_return messageVector;
 		}
 
-		task<vector<Message>> fetchMessagesAsync(FetchMessagesData dataPackage) {
+		task<shared_ptr<vector<Message>>> fetchMessagesAsync(FetchMessagesData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::FetchMessagesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -805,8 +805,12 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "MessageManager::fetchMessagesAsync() Error: " << error.what() << endl << endl;
 			}
-			vector<Message> messageVector{};
-			try_receive(requestAgent.outMultMessagesBuffer, messageVector);
+			shared_ptr<vector<Message>> messageVector = make_shared<vector<Message>>();
+			try_receive(requestAgent.outMultMessagesBuffer, *messageVector.get());
+			if (messageVector->size()==0){
+				messageVector.reset();
+				messageVector = nullptr;
+			}
 			co_return messageVector;
 		}
 

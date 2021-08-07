@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 	class GuildMemberManager;
 
 	class RoleManager;
-
+	
 	class UserManager;
 
 	class GuildMember {
@@ -34,9 +34,9 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		friend class DiscordCoreClient;
-		friend class GuildMemberManager;
 		friend class GuildMemberManagerAgent;
+		friend class GuildMemberManager;
+		friend class DiscordCoreClient;
 		friend class Guild;
 	};
 

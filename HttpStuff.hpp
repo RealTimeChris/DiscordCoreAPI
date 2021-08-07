@@ -82,14 +82,14 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		bool getError(string callingClassAndFunction){
+		bool getError(string stackTrace){
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << callingClassAndFunction + "::HttpRequestAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::HttpRequestAgent Error: " << error.what() << endl << endl;
 			}
 			hresult_error error02;
 			while (try_receive(errorhBuffer, error02)) {
-				cout << callingClassAndFunction + "::HttpRequestAgent Error: " << error02.code() << ", " << to_string(error02.message()) << endl << endl;
+				cout << stackTrace + "::HttpRequestAgent Error: " << error02.code() << ", " << to_string(error02.message()) << endl << endl;
 			}
 			return true;
 		}

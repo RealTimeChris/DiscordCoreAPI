@@ -14,7 +14,7 @@
 #include "GuildMemberStuff.hpp"
 
 namespace DiscordCoreAPI {
-
+	
 	class Role {
 	public:
 		RoleData data;
