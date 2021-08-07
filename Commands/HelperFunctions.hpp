@@ -54,44 +54,6 @@ namespace DiscordCoreAPI {
         return false;
     }
 
-    bool checkIfAllowedGamingInChannel(DiscordCoreAPI::InputEventData eventData, DiscordGuild discordGuild) {
-        bool isItFound = true;
-        if (discordGuild.data.gameChannelIds.size() > 0) {
-            isItFound = false;
-            string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
-            EmbedData msgEmbed;
-            for (auto& value : discordGuild.data.gameChannelIds) {
-                if (eventData.getChannelId() == value) {
-                    isItFound = true;
-                    break;
-                }
-                else {
-                    msgString += "<#" + value + ">\n";
-                }
-            }
-            msgString += "------";
-            if (isItFound == false) {
-                msgEmbed.setAuthor(eventData.getUserName(), eventData.getAvatarURL());
-                msgEmbed.setColor(discordGuild.data.borderColor);
-                msgEmbed.setDescription(msgString);
-                msgEmbed.setTitle("__**Permissions Issue:**__");
-                if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData replyMessageData(eventData);
-                    replyMessageData.embeds.push_back(msgEmbed);
-                    InputEventData event01 = InputEventManager::respondToEvent(replyMessageData);
-                    InputEventManager::deleteInputEventResponseAsync(event01, 20000);
-                }
-                else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                    CreateEphemeralInteractionResponseData responseData(eventData);
-                    responseData.data.embeds.push_back(msgEmbed);
-                    InputEventData event01 = InputEventManager::respondToEvent(responseData);
-                }
-            }
-
-        }
-        return isItFound;
-    }
-
     class PermissionsConverter {
     public:
 
