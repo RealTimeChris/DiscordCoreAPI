@@ -59,40 +59,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::getError();
 		}
 
-		static void getError() {
-			exception error;
-			while (try_receive(DiscordCoreClient::errorBuffer, error)) {
-				cout << "DiscordCoreClient Error: " << error.what() << endl;
-			}
-		}
-
-		void terminate() {
-			this->doWeQuit = true;
-			DatabaseManagerAgent::cleanup();
-			this->slashCommands->~SlashCommandManager();
-			this->guilds->~GuildManager();
-			this->channels->~ChannelManager();
-			this->guildMembers->~GuildMemberManager();
-			this->roles->~RoleManager();
-			this->messages->~MessageManager();
-			this->users->~UserManager();
-			this->reactions->~ReactionManager();
-			this->interactions->~InteractionManager();
-			agent::wait(this->pWebSocketReceiverAgent.get());
-			SelectMenu::cleanup();
-			Button::cleanup();
-			InteractionManagerAgent::cleanup();
-			MessageManagerAgent::cleanup();
-			GuildManagerAgent::cleanup();
-			RoleManagerAgent::cleanup();
-			UserManagerAgent::cleanup();
-			ReactionManagerAgent::cleanup();
-			ChannelManagerAgent::cleanup();
-			GuildMemberManagerAgent::cleanup();
-			agent::wait(this->pWebSocketConnectionAgent.get());
-			this->mainThreadContext->releaseGroup();
-		}
-
 	protected:
 		friend class Guild;
 		friend class BotUser;
@@ -122,7 +88,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("DiscordCoreClient");
+			requestAgent.getError("DiscordCoreClient::initialize()");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			GuildMemberManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
@@ -609,6 +575,41 @@ namespace DiscordCoreAPI {
 			done();
 			return;
 		}
+
+		static void getError() {
+			exception error;
+			while (try_receive(DiscordCoreClient::errorBuffer, error)) {
+				cout << "DiscordCoreClient Error: " << error.what() << endl;
+			}
+		}
+
+		void terminate() {
+			this->doWeQuit = true;
+			DatabaseManagerAgent::cleanup();
+			this->slashCommands->~SlashCommandManager();
+			this->guilds->~GuildManager();
+			this->channels->~ChannelManager();
+			this->guildMembers->~GuildMemberManager();
+			this->roles->~RoleManager();
+			this->messages->~MessageManager();
+			this->users->~UserManager();
+			this->reactions->~ReactionManager();
+			this->interactions->~InteractionManager();
+			agent::wait(this->pWebSocketReceiverAgent.get());
+			SelectMenu::cleanup();
+			Button::cleanup();
+			InteractionManagerAgent::cleanup();
+			MessageManagerAgent::cleanup();
+			GuildManagerAgent::cleanup();
+			RoleManagerAgent::cleanup();
+			UserManagerAgent::cleanup();
+			ReactionManagerAgent::cleanup();
+			ChannelManagerAgent::cleanup();
+			GuildMemberManagerAgent::cleanup();
+			agent::wait(this->pWebSocketConnectionAgent.get());
+			this->mainThreadContext->releaseGroup();
+		}
+
 	};
 	unbounded_buffer<exception> DiscordCoreClient::errorBuffer;
 	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer;
