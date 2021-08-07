@@ -11,6 +11,7 @@
 #include "../pch.h"
 #include "DataParsingFunctions.hpp"
 #include "HttpStuff.hpp"
+#include "WebSocketStuff.hpp"
 #include "ChannelStuff.hpp"
 #include "MessageStuff.hpp"
 #include "GuildMemberStuff.hpp"
