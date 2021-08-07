@@ -101,6 +101,10 @@ namespace DiscordCoreAPI {
 		string userId;
 	};
 
+	struct LeaveGuildData {
+		string guildId;
+	};
+
 	class UserManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
@@ -109,6 +113,7 @@ namespace DiscordCoreAPI {
 		static overwrite_buffer<map<string, User>> cache;
 
 		unbounded_buffer<DiscordCoreInternal::GetApplicationData> requestGetApplicationBuffer;
+		unbounded_buffer<DiscordCoreInternal::LeaveGuildData> requestLeaveGuildBuffer;
 		unbounded_buffer<DiscordCoreInternal::FetchUserData> requestFetchUserBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetUserData> requestGetUserBuffer;
 		unbounded_buffer<Application> outApplicationBuffer;
@@ -191,6 +196,26 @@ namespace DiscordCoreAPI {
 			return application;
 		}
 
+		void deleteObjectData(DiscordCoreInternal::LeaveGuildData dataPackage) {
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_LEAVE_GUILD;
+			workload.relativePath = "/users/@me/guilds/" + dataPackage.guildId;
+			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			send(requestAgent.workSubmissionBuffer, workload);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			requestAgent.getError("UserManagerAgent::deleteObjectData 02");
+			DiscordCoreInternal::HttpData returnData;
+			try_receive(requestAgent.workReturnBuffer, returnData);
+			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+				cout << "UserManagerAgent::deleteObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			else {
+				cout << "UserManagerAgent::deleteObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+		}
+
 		void run() {
 			try {
 				DiscordCoreInternal::GetUserData dataPackage01;
@@ -221,8 +246,12 @@ namespace DiscordCoreAPI {
 					Application application = getObjectData(dataPackage03);
 					send(this->outApplicationBuffer, application);
 				}
-				DiscordCoreInternal::UserData dataPackage04;
-				User user(dataPackage04, this->discordCoreClient);
+				DiscordCoreInternal::LeaveGuildData dataPackage04;
+				if (try_receive(this->requestLeaveGuildBuffer, dataPackage04)) {
+					deleteObjectData(dataPackage04);
+				}
+				DiscordCoreInternal::UserData dataPackage05;
+				User user(dataPackage05, this->discordCoreClient);
 				while (this->usersToInsert.try_pop(user)) {
 					map<string, User> cacheTemp;
 					if (try_receive(UserManagerAgent::cache, cacheTemp)) {
@@ -233,6 +262,7 @@ namespace DiscordCoreAPI {
 					cacheTemp.insert(make_pair(user.data.id, user));
 					send(UserManagerAgent::cache, cacheTemp);
 				}
+
 			}
 			catch (const exception& e) {
 				send(this->errorBuffer, e);
@@ -256,7 +286,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "UserManager::fetch() Error: " << error.what() << endl << endl;
+				cout << "UserManager::fetchAsync() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
@@ -275,7 +305,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "UserManager::fetchCurrentUser() Error: " << error.what() << endl << endl;
+				cout << "UserManager::fetchCurrentUserAsync() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
@@ -294,12 +324,28 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "UserManager::getUser() Error: " << error.what() << endl << endl;
+				cout << "UserManager::getUserAsync() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::UserData userData;
 			User user(userData, this->discordCoreClient);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
+		}
+
+		task<void> leaveGuildAsync(LeaveGuildData dataPackage){ 
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			DiscordCoreInternal::LeaveGuildData dataPackageNew;
+			dataPackageNew.agentResources = this->agentResources;
+			dataPackageNew.guildId = dataPackage.guildId;
+			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
+			send(requestAgent.requestLeaveGuildBuffer, dataPackageNew);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			while (requestAgent.getError(error)) {
+				cout << "UserManager::leaveGuildAsync() Error: " << error.what() << endl << endl;
+			}
+			co_return;
 		}
 
 		task<Application> getApplicationDataAsync() {
@@ -312,7 +358,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "UserManager::getApplicationData() Error: " << error.what() << endl << endl;
+				cout << "UserManager::getApplicationDataAsync() Error: " << error.what() << endl << endl;
 			}
 			DiscordCoreInternal::ApplicationData applicationData;
 			Application application(applicationData);
@@ -328,7 +374,7 @@ namespace DiscordCoreAPI {
 			agent::wait(&requestAgent);
 			exception error;
 			while (requestAgent.getError(error)) {
-				cout << "UserManager::inserUser() Error: " << error.what() << endl << endl;
+				cout << "UserManager::inserUserAsync() Error: " << error.what() << endl << endl;
 			}
 			co_return;
 		}

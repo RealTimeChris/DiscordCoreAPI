@@ -46,6 +46,8 @@ namespace DiscordCoreAPI {
             Guild guild = dataPackage.guildMember.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
             guild.data.memberCount += 1;
             EventHandler::discordCoreClient->guilds->insertGuildAsync(guild).get();
+            MonitorInvitesArgs inviteArgs(dataPackage.guildMember, EventHandler::discordCoreClient);
+            MonitorInvites::execute(inviteArgs);
         }
 
         static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
@@ -57,6 +59,14 @@ namespace DiscordCoreAPI {
 
         static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
             EventHandler::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMemberNew, dataPackage.guildMemberNew.data.guildId).get();
+        }
+
+        static void onInviteCreation(OnInviteCreationData dataPackage) {
+            MonitorInvites::execute(dataPackage);
+        }
+
+        static void onInviteDeletion(OnInviteDeletionData dataPackage) {
+            MonitorInvites::execute(dataPackage);
         }
 
         static void onRoleCreation(OnRoleCreationData dataPackage) {

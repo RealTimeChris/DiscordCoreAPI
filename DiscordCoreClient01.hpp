@@ -171,6 +171,9 @@ namespace DiscordCoreAPI {
 			Guild guild(this->agentResources, guildData, (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, DiscordCoreClient::thisPointer);
 			DiscordGuild discordGuild(guild.data);
 			discordGuild.getDataFromDB();
+			for (unsigned int x = 0; x < discordGuild.data.deletionChannels.size(); x += 1) {
+				discordGuild.data.deletionChannels[x].currentlyBeingDeleted = false;
+			}
 			discordGuild.writeDataToDB();
 			this->discordUser->data.guildCount += 1;
 			this->discordUser->writeDataToDB();

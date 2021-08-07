@@ -9,7 +9,6 @@
 #define _FOUNDATION_ENTITIES_
 
 #include "../pch.h"
-#include "ThreadManager.hpp"
 
 namespace DiscordCoreAPI {
     class DiscordCoreClient;
@@ -754,7 +753,8 @@ namespace  DiscordCoreInternal {
         GET_INVITE = 50,
         GET_VANITY_INVITE = 51,
         PUT_PIN_MESSAGE = 52,
-        PUT_GUILD_BAN = 53
+        PUT_GUILD_BAN = 53,
+        DELETE_LEAVE_GUILD = 54
     };
 
     struct GetApplicationData {
@@ -1013,6 +1013,11 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources;
         string userId;
         GetUserDataType userType;
+    };
+
+    struct LeaveGuildData {
+        HttpAgentResources agentResources;
+        string guildId;
     };
 
     struct FetchUserData {
