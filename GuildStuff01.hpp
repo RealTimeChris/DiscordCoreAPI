@@ -1,12 +1,12 @@
-// GuildStuff.hpp - Header for the "Guild Stuff" of the DiscordCore library.
+// GuildStuff01.hpp - First header for the "Guild Stuff" of the DiscordCore library.
 // May 12, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _GUILD_STUFF_
-#define _GUILD_STUFF_
+#ifndef _GUILD_STUFF_01_
+#define _GUILD_STUFF_01_
 
 #include "../pch.h"
 #include "DataParsingFunctions.hpp"
@@ -17,23 +17,9 @@
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
 #include "VoiceConnectionStuff.hpp"
+#include "DiscordCoreClientBase.hpp"
 
 namespace DiscordCoreAPI {
-
-	class DiscordCoreClientBase {
-	public:
-		shared_ptr<ChannelManager> channels{ nullptr };
-		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
-		shared_ptr<RoleManager> roles{ nullptr };
-		shared_ptr<UserManager> users{ nullptr };
-		shared_ptr<DiscordCoreClientBase> thisPointer{ this };
-		shared_ptr<BotUser> currentUser{ nullptr };
-	protected:
-		friend class Guild;
-		friend class WebSocketConnectionAgent;
-		friend class HttpRequestAgent;
-		hstring botToken;
-	};
 
 	class Guild {
 	public:
@@ -145,6 +131,7 @@ namespace DiscordCoreAPI {
 		friend class GuildManager;
 
 		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer;
+		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetAuditLogData> requestGetAuditLogBuffer;
 		unbounded_buffer<DiscordCoreInternal::FetchGuildData> requestFetchGuildBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetInvitesData> requestGetInvitesBuffer;
@@ -154,6 +141,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<AuditLogData> outAuditLogBuffer;
 		unbounded_buffer<InviteData> outInviteBuffer;
 		unbounded_buffer<exception> errorBuffer;
+		unbounded_buffer<BanData> outBanBuffer;
 		unbounded_buffer<Guild> outGuildBuffer;
 		concurrent_queue<Guild> guildsToInsert;
 
@@ -320,6 +308,31 @@ namespace DiscordCoreAPI {
 			return auditLogData;
 		}
 
+		BanData putObjectData(DiscordCoreInternal::PutGuildBanData dataPackage) {
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PUT;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PUT_GUILD_BAN;
+			workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.guildMemberId;
+			workload.content = DiscordCoreInternal::getAddBanPayload(dataPackage);
+			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			send(requestAgent.workSubmissionBuffer, workload);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			requestAgent.getError("GuildManagerAgent::putObjectData 00");
+			DiscordCoreInternal::HttpData returnData;
+			try_receive(requestAgent.workReturnBuffer, returnData);
+			BanData banData;
+			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+				cout << "GuildManagerAgent::putObjectData() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				banData.failedDueToPerms = true;
+			}
+			else {
+				cout << "GuildManagerAgent::putObjectData() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+			}
+			DiscordCoreInternal::parseObject(returnData.data, &banData);
+			return banData;
+		}
+
 		void run() {
 			try {
 				DiscordCoreInternal::GetGuildData dataPackage01;
@@ -364,6 +377,11 @@ namespace DiscordCoreAPI {
 				if (try_receive(this->requestGetVanityInviteBuffer, dataPackage06)) {
 					InviteData inviteData = getObjectData(dataPackage06);
 					send(this->outInviteBuffer, inviteData);
+				}
+				DiscordCoreInternal::PutGuildBanData dataPackage07;
+				if (try_receive(this->requestPutGuildBanBuffer, dataPackage07)) {
+					BanData inviteData = putObjectData(dataPackage07);
+					send(this->outBanBuffer, inviteData);
 				}
 				Guild guildNew;
 				while (this->guildsToInsert.try_pop(guildNew)) {
@@ -423,6 +441,27 @@ namespace DiscordCoreAPI {
 			vector<InviteData> inviteData;
 			try_receive(requestAgent.outInvitesBuffer, inviteData);
 			co_return inviteData;
+		}
+
+		task<BanData> createGuildBanAsync(CreateGuildBanData dataPackage) {
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			DiscordCoreInternal::PutGuildBanData dataPackageNew;
+			dataPackageNew.agentResources = this->agentResources;
+			dataPackageNew.guildId = dataPackage.guildId;
+			dataPackageNew.guildMemberId = dataPackage.guildMemberId;
+			dataPackageNew.deleteMessageDays = dataPackage.deleteMessageDays;
+			dataPackageNew.reason = dataPackage.reason;
+			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
+			send(requestAgent.requestPutGuildBanBuffer, dataPackageNew);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			while (requestAgent.getError(error)) {
+				cout << "GuildManager::getInviteAsync() Error: " << error.what() << endl << endl;
+			}
+			BanData banData;
+			try_receive(requestAgent.outBanBuffer, banData);
+			co_return banData;
 		}
 
 		task<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage) {

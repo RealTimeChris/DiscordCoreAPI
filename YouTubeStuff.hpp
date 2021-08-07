@@ -277,7 +277,7 @@ namespace DiscordCoreAPI {
 			HttpRequestMessage requestMessageHTMLBody;
 			auto headersNewHTMLBody = requestMessageHTMLBody.Headers();
 			headersNewHTMLBody.Append(L"user-agent", L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			requestMessageHTMLBody.RequestUri(Uri(to_hstring(watchHTMLURL)));
+			requestMessageHTMLBody.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(watchHTMLURL)));
 			allocator<csub_match> allocator;
 			cmatch html5PlayerMatchResults(allocator);
 			hstring resultStringHTMLBody;
@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
 			HttpRequestMessage requestPlayerFile;
 			auto requestPlayerFileHeaders = requestPlayerFile.Headers();
 			requestPlayerFileHeaders.Append(L"user-agent", L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			requestPlayerFile.RequestUri(Uri(to_hstring(this->html5Player)));
+			requestPlayerFile.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(this->html5Player)));
 			auto responseMessage02 = httpClientGetHTMLBody.SendRequestAsync(requestPlayerFile).get();
 			hstring responseToPlayerGet02 = responseMessage02.Content().ReadAsStringAsync().get();
 			this->html5PlayerFile = to_string(responseToPlayerGet02);

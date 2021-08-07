@@ -1,74 +1,74 @@
-// Index.hpp - An index file to round everything up.
+// EventHandler.hpp - An index file to round everything up.
 // Jun 7, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _INDEX_
-#define _INDEX_
+#ifndef _EVENT_HANDLER_
+#define _EVENT_HANDLER_
 
-#include "DiscordCoreClient02.hpp"
+#include "DiscordCoreClient01.hpp"
 #include "Commands\CommandsList.hpp"
 
 namespace DiscordCoreAPI {
-    class IndexHost {
+    class EventHandler {
     public:
 
         static shared_ptr<DiscordCoreClient> discordCoreClient;
 
         static void onChannelCreation(OnChannelCreationData dataPackage) {
-            IndexHost::discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
+            EventHandler::discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
         }
 
         static void onChannelUpdate(OnChannelUpdateData dataPackage) {
-            IndexHost::discordCoreClient->channels->insertChannelAsync(dataPackage.channelNew).get();
+            EventHandler::discordCoreClient->channels->insertChannelAsync(dataPackage.channelNew).get();
         }
 
         static void onChannelDeletion(OnChannelDeletionData dataPackage) {
-            IndexHost::discordCoreClient->channels->removeChannelAsync(dataPackage.channel.data.id).get();
+            EventHandler::discordCoreClient->channels->removeChannelAsync(dataPackage.channel.data.id).get();
         }
 
         static void onGuildCreation(OnGuildCreationData dataPackage) {
-            IndexHost::discordCoreClient->guilds->insertGuildAsync(dataPackage.guild).get();
+            EventHandler::discordCoreClient->guilds->insertGuildAsync(dataPackage.guild).get();
         }
 
         static void onGuildUpdate(OnGuildUpdateData dataPackage) {
-            IndexHost::discordCoreClient->guilds->insertGuildAsync(dataPackage.guildNew).get();
+            EventHandler::discordCoreClient->guilds->insertGuildAsync(dataPackage.guildNew).get();
         }
 
         static void onGuildDeletion(OnGuildDeletionData dataPackage) {
-            IndexHost::discordCoreClient->guilds->removeGuildAsync(dataPackage.guild.data.id).get();
+            EventHandler::discordCoreClient->guilds->removeGuildAsync(dataPackage.guild.data.id).get();
         }
 
         static void onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
-            IndexHost::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMember, dataPackage.guildMember.data.guildId).get();
+            EventHandler::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMember, dataPackage.guildMember.data.guildId).get();
             Guild guild = dataPackage.guildMember.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
             guild.data.memberCount += 1;
-            IndexHost::discordCoreClient->guilds->insertGuildAsync(guild).get();
+            EventHandler::discordCoreClient->guilds->insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
-            IndexHost::discordCoreClient->guildMembers->removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
-            Guild guild = IndexHost::discordCoreClient->guilds->getGuildAsync({ dataPackage.guildId }).get();
+            EventHandler::discordCoreClient->guildMembers->removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
+            Guild guild = EventHandler::discordCoreClient->guilds->getGuildAsync({ dataPackage.guildId }).get();
             guild.data.memberCount -= 1;
-            IndexHost::discordCoreClient->guilds->insertGuildAsync(guild).get();
+            EventHandler::discordCoreClient->guilds->insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
-            IndexHost::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMemberNew, dataPackage.guildMemberNew.data.guildId).get();
+            EventHandler::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMemberNew, dataPackage.guildMemberNew.data.guildId).get();
         }
 
         static void onRoleCreation(OnRoleCreationData dataPackage) {
-            IndexHost::discordCoreClient->roles->insertRoleAsync(dataPackage.role).get();
+            EventHandler::discordCoreClient->roles->insertRoleAsync(dataPackage.role).get();
         }
 
         static void onRoleUpdate(OnRoleUpdateData dataPackage) {
-            IndexHost::discordCoreClient->roles->insertRoleAsync(dataPackage.roleNew).get();
+            EventHandler::discordCoreClient->roles->insertRoleAsync(dataPackage.roleNew).get();
         }
 
         static void onRoleDeletion(OnRoleDeletionData dataPackage) {
-            IndexHost::discordCoreClient->roles->removeRoleAsync(dataPackage.roleOld.data.id).get();
+            EventHandler::discordCoreClient->roles->removeRoleAsync(dataPackage.roleOld.data.id).get();
         }
 
         static task<void> onInteractionCreation(OnInteractionCreationData dataPackage) {
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
                     if (Button::buttonInteractionMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        asend(Button::buttonInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                        send(Button::buttonInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::SELECT_MENU_INPUT) {
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
                     if (SelectMenu::selectMenuInteractionMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        asend(SelectMenu::selectMenuInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                        send(SelectMenu::selectMenuInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 co_await mainThread;
@@ -138,11 +138,11 @@ namespace DiscordCoreAPI {
                     guildMember.data.voiceData = dataPackage.voiceStateData;
                     guildMemberMap.insert(std::make_pair(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId, guildMember));
                 }
-                asend(GuildMemberManagerAgent::cache, guildMemberMap);
+                send(GuildMemberManagerAgent::cache, guildMemberMap);
             }
             map<string, Guild> guildMap;
             if (try_receive(GuildManagerAgent::cache, guildMap)) {
-                if (dataPackage.voiceStateData.userId == IndexHost::discordCoreClient->currentUser->data.id) {
+                if (dataPackage.voiceStateData.userId == EventHandler::discordCoreClient->currentUser->data.id) {
                     if (dataPackage.voiceStateData.channelId == "") {
                         Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
                         guild.disconnectFromVoice();
@@ -150,12 +150,11 @@ namespace DiscordCoreAPI {
                         guildMap.insert(make_pair(dataPackage.voiceStateData.guildId, guild));
                     }
                 }
-                asend(GuildManagerAgent::cache, guildMap);
+                send(GuildManagerAgent::cache, guildMap);
             }
         }
     };
 
-
-    shared_ptr<DiscordCoreClient> IndexHost::discordCoreClient{ nullptr };
+    shared_ptr<DiscordCoreClient> EventHandler::discordCoreClient{ nullptr };
 }
 #endif

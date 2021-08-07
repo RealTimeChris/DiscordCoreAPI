@@ -539,7 +539,7 @@ namespace DiscordCoreAPI {
 				TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimer) {
 					onDeleteData(dataPackage);
 				};
-				threadPoolTimer.CreateTimer(onSend, TimeSpan(dataPackage.timeDelay * 10000));
+				threadPoolTimer.CreateTimer(onSend, winrt::Windows::Foundation::TimeSpan(dataPackage.timeDelay * 10000));
 			}
 			else {
 				onDeleteData(dataPackage);

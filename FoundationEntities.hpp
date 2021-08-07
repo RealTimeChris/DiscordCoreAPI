@@ -753,7 +753,8 @@ namespace  DiscordCoreInternal {
         GET_INTERACTION_RESPONSE = 49,
         GET_INVITE = 50,
         GET_VANITY_INVITE = 51,
-        PUT_PIN_MESSAGE = 52
+        PUT_PIN_MESSAGE = 52,
+        PUT_GUILD_BAN = 53
     };
 
     struct GetApplicationData {
@@ -1579,6 +1580,14 @@ namespace  DiscordCoreInternal {
         int port;
         vector<string> modes;
     };
+
+    struct PutGuildBanData {
+        HttpAgentResources agentResources;
+        string guildId;
+        string guildMemberId;
+        int deleteMessageDays = 0;
+        string reason = "";
+    };
 }
 
 namespace DiscordCoreAPI {
@@ -1680,10 +1689,10 @@ namespace DiscordCoreAPI {
                 lambda();
             };
             if (isRepeating) {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, TimeSpan(timeDelayInMs * 10000));
+                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             }
             else {
-                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, TimeSpan(timeDelayInMs * 10000));
+                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             }
 
         }
@@ -1701,10 +1710,10 @@ namespace DiscordCoreAPI {
                 return;
             };
             if (isRepeating) {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, TimeSpan(timeDelayInMs * 10000));
+                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             }
             else {
-                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, TimeSpan(timeDelayInMs * 10000));
+                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             }
 
         }
@@ -3427,6 +3436,19 @@ namespace DiscordCoreAPI {
         string aitags = "";
     };
 
+    struct CreateGuildBanData{
+        string guildId;
+        string guildMemberId;
+        int deleteMessageDays;
+        string reason;
+    };
+
+    struct BanData {
+        string reason;
+        UserData user;
+        bool failedDueToPerms = false;
+    };
+
     struct YouTubeSearchResult {
         string videoId;
         string thumbNailURL;
@@ -3435,6 +3457,15 @@ namespace DiscordCoreAPI {
         string description;
         string videoURL;
         vector<YouTubeFormat> formats;
+    };
+
+    static string commandPrefix;
+
+    struct CommandData {
+        CommandData(InputEventData inputEventData) {
+            this->eventData = inputEventData;
+        }
+        InputEventData eventData;
     };
 };
 

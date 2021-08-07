@@ -33,6 +33,23 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
+	string getAddBanPayload(PutGuildBanData dataPackage) {
+		json data;
+		if (dataPackage.deleteMessageDays == 0 && dataPackage.reason != "") {
+			data = { {"reason", dataPackage.reason} };
+		}
+		else if (dataPackage.reason == "" && dataPackage.deleteMessageDays != 0) {
+			data = { {"delete_message_days", dataPackage.deleteMessageDays} };
+		}
+		else if (dataPackage.reason == "" && dataPackage.deleteMessageDays == 0) {
+			data = {  };
+		}
+		else {
+			data = { {"reason", dataPackage.reason}, { "delete_message_days", dataPackage.deleteMessageDays } };
+		}
+		return data.dump();
+	}
+
 	string getIsSpeakingPayload(bool isSpeaking, int ssrc, int delay = 0) {
 		json data;
 		if (isSpeaking) {

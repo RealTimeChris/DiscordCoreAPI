@@ -1,18 +1,18 @@
-// DiscordCoreClient.hpp - Header file for the main/exposed DiscordCoreClient class.
+// DiscordCoreClient01.hpp - Header file for the main/exposed DiscordCoreClient class.
 // May 12, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _DISCORD_CORE_CLIENT_
-#define _DISCORD_CORE_CLIENT_
+#ifndef _DISCORD_CORE_CLIENT_01_
+#define _DISCORD_CORE_CLIENT_01_
 
 #include "../pch.h"
 #include "ThreadManager.hpp"
 #include "HttpStuff.hpp"
 #include "WebSocketStuff.hpp"
-#include "GuildStuff.hpp"
+#include "GuildStuff01.hpp"
 #include "UserStuff.hpp"
 #include "InteractionManager.hpp"
 #include "EventManager.hpp"
@@ -21,6 +21,7 @@
 #include "DatabaseStuff.hpp"
 #include "FFMPEGStuff.hpp"
 #include "YouTubeStuff.hpp"
+#include "GuildStuff02.hpp"
 
 void myPurecallHandler(void) {
 	cout << "CURRENT THREAD: " << this_thread::get_id() << endl;
@@ -28,55 +29,6 @@ void myPurecallHandler(void) {
 }
 
 namespace DiscordCoreAPI {
-
-	static string commandPrefix;
-
-	struct CommandData {
-		CommandData(InputEventData inputEventData) {
-			this->eventData = inputEventData;
-		}
-		InputEventData eventData;
-	};
-
-	shared_ptr<VoiceConnection> Guild::connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew) {
-		if (channelId != "") {
-			if ((this->voiceConnection == nullptr || this->voiceConnection->voiceConnectionData.channelId != channelId)) {
-				auto voiceConnectData = websocketAgent->getVoiceConnectionData(channelId, this->data.id);
-				voiceConnectData.channelId = channelId;
-				voiceConnectData.guildId = this->data.id;
-				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
-				voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
-				this->voiceConnection = make_shared<VoiceConnection>(voiceConnectData, bufferMessageBlockNew);
-				map<string, Guild> guildMap;
-				try_receive(GuildManagerAgent::cache, guildMap);
-				if (guildMap.contains(this->data.id)) {
-					if (guildMap.at(this->data.id).voiceConnection != nullptr) {
-						return guildMap.at(this->data.id).voiceConnection;
-					}
-					guildMap.erase(this->data.id);
-				}
-				guildMap.insert(make_pair(this->data.id, *this));
-				send(GuildManagerAgent::cache, guildMap);
-				return this->voiceConnection;
-			}
-		}
-		return this->voiceConnection;
-	}
-
-	void Guild::disconnectFromVoice() {
-		if (this->voiceConnection != nullptr) {
-			this->voiceConnection->terminate();
-			this->voiceConnection = nullptr;
-			map<string, Guild> guildMap = receive(GuildManagerAgent::cache);
-			if (guildMap.contains(this->data.id)) {
-				guildMap.erase(this->data.id);
-			}
-			guildMap.insert(make_pair(this->data.id, *this));
-			send(GuildManagerAgent::cache, guildMap);
-			this->discordCoreClientBase->currentUser->updateVoiceStatus({ .guildId = this->data.id,.channelId = "", .selfMute = false,.selfDeaf = false });
-			return;
-		}
-	}
 
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
 	public:

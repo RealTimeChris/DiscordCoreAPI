@@ -9,7 +9,7 @@
 #define _HELPER_FUNCTIONS_
 
 #include "../pch.h"
-#include "../DiscordCoreClient.hpp"
+#include "DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
 

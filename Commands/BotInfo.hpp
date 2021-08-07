@@ -8,7 +8,7 @@
 #ifndef _BOT_INFO_
 #define _BOT_INFO_
 
-#include "../DiscordCoreClient.hpp"
+#include "DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
 	class BotInfo : public BaseFunction {

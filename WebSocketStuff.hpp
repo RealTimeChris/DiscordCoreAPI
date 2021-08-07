@@ -171,7 +171,7 @@ namespace DiscordCoreInternal {
 				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
 				this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
 				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
-				this->webSocket.ConnectAsync(Uri(to_hstring(this->voiceConnectionData.endpoint))).get();
+				this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endpoint))).get();
 				this->areWeConnected = true;
 			}
 			catch (winrt::hresult_error& error) {
@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 
 		void collectExternalIP() {
 			HttpClient httpClient;
-			Uri uri(L"https://icanhazip.com/");
+			winrt::Windows::Foundation::Uri uri(L"https://icanhazip.com/");
 			hstring ipString = httpClient.GetStringAsync(uri).get();
 			string ipStringNew = to_string(ipString);
 			ipStringNew = ipStringNew.substr(0, ipStringNew.length() - 1);
@@ -292,7 +292,7 @@ namespace DiscordCoreInternal {
 						VoiceChannelWebSocketAgent::sendHeartBeat(&this->didWeReceiveHeartbeatAck);
 						this->didWeReceiveHeartbeatAck = false;
 					};
-					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, TimeSpan(this->heartbeatInterval * 10000));
+					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
 				}
 			}
 			return;
@@ -704,7 +704,7 @@ namespace DiscordCoreInternal {
 				this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 				this->closedToken = this->webSocket.Closed({ this, &WebSocketConnectionAgent::onClosed });
 				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
-				this->webSocket.ConnectAsync(Uri(this->socketPath)).get();
+				this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(this->socketPath)).get();
 				this->isThisConnected = true;
 			}
 			catch (hresult result) {
@@ -838,7 +838,7 @@ namespace DiscordCoreInternal {
 						WebSocketConnectionAgent::sendHeartBeat();
 						return;
 					};
-					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, TimeSpan(this->heartbeatInterval * 10000));
+					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
 					std::string identity = getIdentifyPayload(to_string(this->botToken), this->intentsValue);
 					this->sendMessage(identity);
 				}

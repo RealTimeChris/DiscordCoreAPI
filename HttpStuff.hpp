@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 		HttpData httpGETObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData getData;
 			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
-			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
+			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
 			httpResponse = getHttpClient.GetAsync(requestUri).get();
 			unsigned int getsRemainingLocal;
@@ -274,7 +274,7 @@ namespace DiscordCoreInternal {
 		HttpData httpPUTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData putData;
 			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
-			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
+			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpContentHeaderCollection contentHeaderCollection;
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
 			contentHeaderCollection.ContentDisposition(headerValue);
@@ -342,7 +342,7 @@ namespace DiscordCoreInternal {
 		HttpData httpPOSTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData postData;
 			string connectionPath = HttpRequestAgent::baseURL+ relativeURL;
-			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
+			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpContentHeaderCollection contentHeaderCollection;
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
 			contentHeaderCollection.ContentDisposition(headerValue);
@@ -410,7 +410,7 @@ namespace DiscordCoreInternal {
 		HttpData httpPATCHObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData patchData;
 			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
-			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
+			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
 			HttpMediaTypeHeaderValue typeHeaderValue(L"application/json");
 			auto contentHeaderCollection = HttpRequestHeaderCollection(nullptr);
@@ -481,7 +481,7 @@ namespace DiscordCoreInternal {
 		HttpData httpDELETEObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData deleteData;
 			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
-			Uri requestUri = Uri(to_hstring(connectionPath.c_str()));
+			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
 			httpResponse = deleteHttpClient.DeleteAsync(requestUri).get();
 			unsigned int getsRemainingLocal;
@@ -539,7 +539,7 @@ namespace DiscordCoreInternal {
 			return deleteData;
 		}
 
-		Uri baseURI{ nullptr };
+		winrt::Windows::Foundation::Uri baseURI{ nullptr };
 		HttpRequestHeaderCollection getHeaders{ nullptr };
 		HttpRequestHeaderCollection putHeaders{ nullptr };
 		HttpRequestHeaderCollection postHeaders{ nullptr };

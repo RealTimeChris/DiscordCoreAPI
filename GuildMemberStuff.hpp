@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class Guild;
 		friend class GuildMemberManager;
-		friend class IndexHost;
+		friend class EventHandler;
 
 		static overwrite_buffer<map<string, GuildMember>> cache;
 

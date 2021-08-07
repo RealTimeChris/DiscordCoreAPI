@@ -9,7 +9,7 @@
 #define _DATABASE_STUFF_
 
 #include "../pch.h"
-#include "GuildStuff.hpp"
+#include "GuildStuff01.hpp"
 #include "GuildMemberStuff.hpp"
 
 namespace DiscordCoreAPI {

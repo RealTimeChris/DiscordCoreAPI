@@ -680,7 +680,7 @@ namespace DiscordCoreAPI {
                 TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimerNew) {
                     deleteObjectData(dataPackage);
                 };
-                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, TimeSpan(dataPackage.timeDelayInMs * 10000));
+                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, winrt::Windows::Foundation::TimeSpan(dataPackage.timeDelayInMs * 10000));
             }
             else {
                 deleteObjectData(dataPackage);
@@ -714,7 +714,7 @@ namespace DiscordCoreAPI {
                 TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimerNew) {
                     deleteObjectData(dataPackage);
                 };
-                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, TimeSpan(dataPackage.timeDelayInMs * 10000));
+                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, winrt::Windows::Foundation::TimeSpan(dataPackage.timeDelayInMs * 10000));
             }
             else {
                 deleteObjectData(dataPackage);

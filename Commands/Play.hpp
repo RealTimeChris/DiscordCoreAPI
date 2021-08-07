@@ -8,7 +8,7 @@
 #ifndef _PLAY_
 #define _PLAY_
 
-#include "../DiscordCoreClient.hpp"
+#include "DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
 

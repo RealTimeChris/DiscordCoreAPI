@@ -3024,5 +3024,18 @@ namespace DiscordCoreInternal {
         *pDataStructure = typingStartData;
     }
 
+    void parseObject(json jsonObjectData, DiscordCoreAPI::BanData* pDataStructure) {
+        DiscordCoreAPI::BanData newData;
+
+        if (jsonObjectData.contains("user") && !jsonObjectData.at("user").is_null()) {
+            parseObject(jsonObjectData.at("user"), &newData.user);
+        }
+
+        if (jsonObjectData.contains("reason") && !jsonObjectData.at("reason").is_null()) {
+            newData.reason = jsonObjectData.at("reason").get<string>();
+        }
+
+        *pDataStructure = newData;
+    }
 };
 #endif
