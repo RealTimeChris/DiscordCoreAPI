@@ -96,6 +96,10 @@ namespace DiscordCoreAPI {
 			this->botToken = botTokenNew;
 		}
 
+		~DiscordCoreClient() {
+			this->terminate();
+		}
+
 		static void finalSetup(string botToken);
 
 		static void runBot() {
