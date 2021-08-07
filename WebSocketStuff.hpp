@@ -126,16 +126,11 @@ namespace DiscordCoreInternal {
 			}
 
 			cout << "Send Complete" << endl << endl;
-			return;
-		}
-
-		bool getError(exception& error) {
-			return try_receive(errorBuffer, error);
 		}
 
 		~VoiceChannelWebSocketAgent() {
 			this->terminate();
-			return;
+			this->getError();
 		}
 
 	protected:
@@ -160,7 +155,13 @@ namespace DiscordCoreInternal {
 		string voicePort;
 		string externalIp;
 		string voiceEncryptionMode;
-		bool doWeQuit = false;
+
+		void getError() {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << "VoiceChannelWebSocketAgent Error: " << error.what() << endl;
+			}
+		}
 
 		void connect() {
 			try {
@@ -312,9 +313,8 @@ namespace DiscordCoreInternal {
 		}
 
 		void terminate() {
+			done();
 			if (this != nullptr) {
-				this->doWeQuit = true;
-				this->done();
 				this->threadContext->releaseGroup();
 				if (this->webSocket != nullptr) {
 					this->webSocket.Close(1000, L"Disconnecting.");
@@ -345,16 +345,9 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		void getError() {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << "WebSocketReceiverAgent Error: " << error.what() << endl;
-			}
-		}
-
 		~WebSocketReceiverAgent() {
-			this->getError();
 			this->terminate();
+			this->getError();
 			return;
 		}
 
@@ -364,6 +357,13 @@ namespace DiscordCoreInternal {
 		ITarget<WebSocketWorkload>& workloadTarget;
 		unbounded_buffer<exception> errorBuffer;
 		bool doWeQuit = false;
+
+		void getError() {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << "WebSocketReceiverAgent Error: " << error.what() << endl;
+			}
+		}
 
 		void run() {
 			try {
@@ -377,12 +377,10 @@ namespace DiscordCoreInternal {
 				run();
 			}
 			done();
-			return;
 		}
 
 		void sendWorkload(WebSocketWorkload workload) {
 			send(this->workloadTarget, workload);
-			return;
 		}
 
 		void onMessageReceived(json payload) {
@@ -543,10 +541,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (winrt::hresult_error const& ex) {
 				wcout << ex.message().c_str() << endl;
-				return;
-
 			}
-			return;
 		}
 
 		void terminate() {
@@ -565,19 +560,6 @@ namespace DiscordCoreInternal {
 			this->threadContext = threadContextNew;
 			this->botToken = botTokenNew;
 			return;
-		}
-
-		VoiceConnectionData getVoiceConnectionData(string channelId, string guildId) {
-			UpdateVoiceStateData dataPackage;
-			dataPackage.channelId = channelId;
-			dataPackage.guildId = guildId;
-			dataPackage.selfDeaf = false;
-			dataPackage.selfMute = false;
-			string newString = getVoiceStateUpdatePayload(dataPackage);
-			this->areWeCollectingData = true;
-			this->sendMessage(newString);
-			VoiceConnectionData newData = receive(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer);
-			return newData;
 		}
 
 		void setSocketPath(string socketPathBase) {
@@ -618,20 +600,25 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		void getError() {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << "WebSocketConnectionAgent Error: " << error.what() << endl;
-			}
+		VoiceConnectionData getVoiceConnectionData(string channelId, string guildId) {
+			UpdateVoiceStateData dataPackage;
+			dataPackage.channelId = channelId;
+			dataPackage.guildId = guildId;
+			dataPackage.selfDeaf = false;
+			dataPackage.selfMute = false;
+			string newString = getVoiceStateUpdatePayload(dataPackage);
+			this->areWeCollectingData = true;
+			this->sendMessage(newString);
+			VoiceConnectionData newData = receive(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer);
+			return newData;
 		}
 
 		~WebSocketConnectionAgent() {
-			this->getError();
 			this->terminate();
+			this->getError();
 		}
 
 	protected:
-		friend class BotUser;
 		friend class VoiceConnection;
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreClient;
@@ -654,6 +641,13 @@ namespace DiscordCoreInternal {
 		bool stateUpdateCollected = false;
 		bool serverUpdateCollected = false;
 		VoiceConnectionData* pVoiceConnectionData;
+
+		void getError() {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << "WebSocketConnectionAgent Error: " << error.what() << endl;
+			}
+		}
 
 		void run() {
 			if (isThisConnected == false) {
@@ -700,8 +694,6 @@ namespace DiscordCoreInternal {
 				this->heartbeatTimer.Cancel();
 				this->heartbeatTimer = nullptr;
 			}
-
-			return;
 		}
 
 		void connect() {
@@ -717,9 +709,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (hresult result) {
 				cout << result.value << endl;
-				return;
 			}
-			return;
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
@@ -741,9 +731,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (hresult_error error) {
 				wcout << error.message().c_str() << endl;
-				return;
 			}
-			return;
 		}
 
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args) {
@@ -863,7 +851,6 @@ namespace DiscordCoreInternal {
 			}
 			catch (hresult_error & ex) {
 				cout << to_string(ex.message()) << endl;
-				return;
 			}
 		};
 	};
