@@ -96,8 +96,12 @@ namespace DiscordCoreAPI {
 			GuildMemberManagerAgent::threadContext->releaseGroup();
 		}
 
-		bool getError(exception& error) {
-			return try_receive(this->errorBuffer, error);
+		void getError(string stackTrace) {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << stackTrace + "::GuildMemberManagerAgent Error: " << error.what() << endl << endl;
+			}
+			return;
 		}
 		
 		GuildMember getObjectData(DiscordCoreInternal::FetchGuildMemberData dataPackage){
@@ -109,7 +113,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManagerAgent::getObjectData");
+			requestAgent.getError("GuildMemberManagerAgent::getObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -134,7 +138,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManagerAgent::patchObjectData");
+			requestAgent.getError("GuildMemberManagerAgent::patchObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -219,10 +223,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestFetchGuildMemberBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "GuildMemberManager::fetchAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("GuildMemberManager::fetchAsync");
 			GuildMemberData guildMemberData;
 			GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
@@ -245,10 +246,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestPatchGuildMemberBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "GuildMemberManager::modifyGuildMemberAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("GuildMemberManager::modifyGuildMemberAsync");
 			GuildMemberData guildMemberData;
 			GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
@@ -265,10 +263,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestGetGuildMemberBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "GuildMemberManager::getGuildMemberAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("GuildMemberManager::getGuildMemberAsync");
 			GuildMemberData guildMemberData;
 			GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
@@ -281,10 +276,7 @@ namespace DiscordCoreAPI {
 			requestAgent.guildMembersToInsert.push(guildMember);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "GuildMemberManager::getGuildMemberAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("GuildMemberManager::insertGuildMemberAsync");
 			co_return;
 		}
 

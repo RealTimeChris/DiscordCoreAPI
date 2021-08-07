@@ -102,8 +102,12 @@ namespace DiscordCoreAPI {
 			ReactionManagerAgent::threadContext->releaseGroup();
 		}
 
-		bool getError(exception& error) {
-			return try_receive(this->errorBuffer, error);
+		void getError(string stackTrace) {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << stackTrace + "::ReactionManagerAgent Error: " << error.what() << endl << endl;
+			}
+			return;
 		}
 
 		Reaction putObjectData(DiscordCoreInternal::PutReactionData dataPackage) {
@@ -115,7 +119,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManagerAgent::putObjectData");
+			requestAgent.getError("ReactionManagerAgent::putObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -150,8 +154,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManagerAgent::");
-			requestAgent.getError("ReactionManagerAgent::deleteObjectData");
+			requestAgent.getError("ReactionManagerAgent::deleteObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -208,10 +211,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestPutReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ReactionManager::createReactionAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ReactionManager::createReactionAsync");
 			DiscordCoreInternal::ReactionData reactionData;
 			Reaction reaction(reactionData, this->discordCoreClient);
 			try_receive(requestAgent.outReactionBuffer, reaction);
@@ -244,10 +244,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ReactionManager::deleteUserReactionAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ReactionManager::deleteUserReactionAsync");
 			co_return;
 		}
 
@@ -275,10 +272,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ReactionManager::deleteOwnReactionAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ReactionManager::deleteOwnReactionAsync");
 			co_return;
 		}
 
@@ -306,10 +300,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ReactionManager::deleteReactionsByEmojiAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ReactionManager::deleteReactionByEmojiAsync");
 			co_return;
 		}
 
@@ -324,10 +315,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ReactionManager::deleteAllReactionsAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ReactionManager::deleteAllReactionsAsync");
 			co_return;
 		}
 

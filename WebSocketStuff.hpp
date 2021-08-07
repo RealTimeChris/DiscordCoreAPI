@@ -159,8 +159,9 @@ namespace DiscordCoreInternal {
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << "VoiceChannelWebSocketAgent Error: " << error.what() << endl;
+				cout << "VoiceChannelWebSocketAgent Error: " << error.what() << endl << endl;
 			}
+			return;
 		}
 
 		void connect() {
@@ -361,8 +362,9 @@ namespace DiscordCoreInternal {
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << "WebSocketReceiverAgent Error: " << error.what() << endl;
+				cout << "WebSocketReceiverAgent Error: " << error.what() << endl << endl;
 			}
+			return;
 		}
 
 		void run() {

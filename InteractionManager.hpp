@@ -510,8 +510,12 @@ namespace DiscordCoreAPI {
             InteractionManagerAgent::threadContext->releaseGroup();
         }
 
-        bool getError(exception& error) {
-            return try_receive(this->errorBuffer, error);
+        void getError(string stackTrace) {
+            exception error;
+            while (try_receive(errorBuffer, error)) {
+                cout << stackTrace + "::InteractionManagerAgent Error: " << error.what() << endl << endl;
+            }
+            return;
         }
 
         InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
@@ -523,7 +527,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::getObjectData");
+            requestAgent.getError("InteractionManagerAgent::getObjectData_00");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -547,7 +551,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::patchObjectData 01");
+            requestAgent.getError("InteractionManagerAgent::patchObjectData_00");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -571,7 +575,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::patchObjectData 02");
+            requestAgent.getError("InteractionManagerAgent::patchObjectData_01");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -595,7 +599,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::postObjectData 01");
+            requestAgent.getError("InteractionManagerAgent::postObjectData_00");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -617,7 +621,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::postObjectData 02");
+            requestAgent.getError("InteractionManagerAgent::postObjectData_01");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -639,7 +643,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::postObjectData 03");
+            requestAgent.getError("InteractionManagerAgent::postObjectData_02");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -662,7 +666,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::deleteObjectData 01");
+            requestAgent.getError("InteractionManagerAgent::deleteObjectData_00");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -696,7 +700,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManagerAgent::deleteObjectData 02");
+            requestAgent.getError("InteractionManagerAgent::deleteObjectData_01");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -785,10 +789,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestPostDeferredInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::createDeferredInteractionResponseAsync() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::createDeferredInteractionResponseAsync");
             co_return;
         }
 
@@ -807,10 +808,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::createInteractionResponseAsync() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::createInteractionResponseAsync");
             MessageData messageData;
             if (dataPackage.type == InteractionCallbackType::ChannelMessage || dataPackage.type == InteractionCallbackType::ChannelMessageWithSource) {
                 try {
@@ -831,10 +829,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestGetInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::getInteractionResponseAsync() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::getInteractionResponseAsync");
             InteractionResponseData outData;
             try_receive(requestAgent.outInteractionresponseDataBuffer, outData);
             co_return outData;
@@ -864,10 +859,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestPatchInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::editInteractionResponseAsync() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::editInteractionResponseAsync");
             MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_return messageData;
@@ -884,10 +876,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestDeleteInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::deleteInteractionResponseAsync() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::deleteInteractionResponseAsync");
             co_return;
         }
 
@@ -914,10 +903,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestPostFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::createFollowUpMessage() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::createFollowUpMessageAsync");
             MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_return messageData;
@@ -948,10 +934,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestPatchFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::editFollowUpMessageAsync() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::editFollowUpMessageAsync");
             MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_return messageData;
@@ -969,10 +952,7 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestDeleteFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            exception error;
-            while (requestAgent.getError(error)) {
-                cout << "InteractionManager::deleteFollowUpMessageData() Error: " << error.what() << endl << endl;
-            }
+            requestAgent.getError("InteractionManager::deleteFollowUpMessageAsync");
             co_return;
         }
 

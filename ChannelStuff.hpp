@@ -95,8 +95,12 @@ namespace DiscordCoreAPI {
 			ChannelManagerAgent::threadContext->releaseGroup();
 		}
 
-		bool getError(exception& error) {
-			return try_receive(this->errorBuffer, error);
+		void getError(string stackTrace) {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << stackTrace + "::ChannelManagerAgent Error: " << error.what() << endl << endl;
+			}
+			return;
 		}
 
 		Channel getObjectData(DiscordCoreInternal::FetchChannelData dataPackage) {
@@ -108,7 +112,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ChannelManagerAgent::getObjectData");
+			requestAgent.getError("ChannelManagerAgent::getObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -134,7 +138,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ChannelManagerAgent::PostObjectData");
+			requestAgent.getError("ChannelManagerAgent::postObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -159,7 +163,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ChannelManagerAgent::putObjectData");
+			requestAgent.getError("ChannelManagerAgent::putObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -180,7 +184,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ChannelManagerAgent::deleteObjectData");
+			requestAgent.getError("ChannelManagerAgent::deleteObjectData_00");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -280,10 +284,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestFetchChannelBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ChannelManager::fetchAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ChannelManager::fetchAsync");
 			ChannelData channelData;
 			Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
@@ -299,10 +300,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestGetChannelBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ChannelManager::getChannelAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ChannelManager::getChannelAsync");
 			ChannelData channelData;
 			Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
@@ -318,10 +316,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestGetDMChannelBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ChannelManager::getDMChannelAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ChannelManager::getDMChannelAsync");
 			ChannelData channelData;
 			Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
@@ -342,10 +337,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestPutChannelPermOWsBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ChannelManager::editChannelPermissionOverwritesAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ChannelManager::editChannelPermissionOverwritesAsync");
 			co_return;
 		}
 
@@ -359,10 +351,7 @@ namespace DiscordCoreAPI {
 			send(requestAgent.requestDeleteChannelPermOWsBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ChannelManager::deleteChannelPermissionOverwritesAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ChannelManager::deleteChannelPermissionOverwritesAsync");
 			co_return;
 		}
 
@@ -372,10 +361,7 @@ namespace DiscordCoreAPI {
 			requestAgent.channelsToInsert.push(channel);
 			requestAgent.start();
 			requestAgent.wait(&requestAgent);
-			exception error;
-			while (requestAgent.getError(error)) {
-				cout << "ChannelManager::insertChannelAsync() Error: " << error.what() << endl << endl;
-			}
+			requestAgent.getError("ChannelManager::inserChannelAsync");
 			co_return;
 		}
 

@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		bool getError(string stackTrace){
+		void getError(string stackTrace){
 			exception error;
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::HttpRequestAgent Error: " << error.what() << endl << endl;
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorhBuffer, error02)) {
 				cout << stackTrace + "::HttpRequestAgent Error: " << error02.code() << ", " << to_string(error02.message()) << endl << endl;
 			}
-			return true;
+			return;
 		}
 
 		~HttpRequestAgent() {
