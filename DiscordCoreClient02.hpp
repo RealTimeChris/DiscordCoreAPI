@@ -12,7 +12,6 @@
 
 namespace DiscordCoreAPI {
 
-
     void DiscordCoreClient::finalSetup(string botToken) {
         try {
             DiscordCoreInternal::ThreadManager::intialize();
