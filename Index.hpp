@@ -188,13 +188,6 @@ namespace DiscordCoreAPI {
         }
     };
 
-    void DiscordCoreClient::runBot() {
-        wait((agent*)DiscordCoreClient::thisPointer.get());
-        exception error;
-        while (DiscordCoreClient::getError(error)) {
-            cout << "DiscordCoreClient Error: " << error.what() << endl;
-        }
-    }
     shared_ptr<DiscordCoreClient> IndexHost::discordCoreClient{ nullptr };
 }
 #endif

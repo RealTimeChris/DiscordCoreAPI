@@ -354,7 +354,7 @@ namespace DiscordCoreAPI {
 			else {
 				cout << "MessageManagerAgent::getObjectData() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			vector<Message> messagesVector;
+			vector<Message> messagesVector{};
 			for (auto value : returnData.data) {
 				MessageData messageData;
 				DiscordCoreInternal::parseObject(value, &messageData);
@@ -382,7 +382,7 @@ namespace DiscordCoreAPI {
 			else {
 				cout << "MessageManagerAgent::getObjectData() Success 03: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			vector<Message> messagesVector;
+			vector<Message> messagesVector{};
 			for (auto value : returnData.data) {
 				MessageData messageData;
 				DiscordCoreInternal::parseObject(value, &messageData);
@@ -783,7 +783,7 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "MessageManager::fetchMessagesAsync() Error: " << error.what() << endl << endl;
 			}
-			vector<Message> messageVector;
+			vector<Message> messageVector{};
 			try_receive(requestAgent.outMultMessagesBuffer, messageVector);
 			co_return messageVector;
 		}
@@ -805,7 +805,7 @@ namespace DiscordCoreAPI {
 			while (requestAgent.getError(error)) {
 				cout << "MessageManager::fetchMessagesAsync() Error: " << error.what() << endl << endl;
 			}
-			vector<Message> messageVector;
+			vector<Message> messageVector{};
 			try_receive(requestAgent.outMultMessagesBuffer, messageVector);
 			co_return messageVector;
 		}

@@ -1010,6 +1010,10 @@ namespace DiscordCoreAPI {
             SelectMenu::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
         }
 
+        static void cleanup() {
+            SelectMenu::threadContext->releaseGroup();
+        }
+
         string getSelectMenuId() {
             return this->selectMenuId;
         }
@@ -1110,6 +1114,10 @@ namespace DiscordCoreAPI {
         static void initialize(shared_ptr<InteractionManager> interactionsNew) {
             Button::interactions = interactionsNew;
             Button::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
+        }
+
+        static void cleanup() {
+            Button::threadContext->releaseGroup();
         }
 
         string getButtonId() {

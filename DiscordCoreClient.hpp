@@ -98,42 +98,43 @@ namespace DiscordCoreAPI {
 
 		static void finalSetup(string botToken);
 
-		static void runBot();
+		static void runBot() {
+			wait((agent*)DiscordCoreClient::thisPointer.get());
+			DiscordCoreClient::getError();
+		}
 
-		static bool getError(exception& error) {
-			return try_receive(errorBuffer, error);
+		static void getError() {
+			exception error;
+			while (try_receive(DiscordCoreClient::errorBuffer, error)) {
+				cout << "DiscordCoreClient Error: " << error.what() << endl;
+			}
 		}
 
 		void terminate() {
 			this->doWeQuit = true;
-			this->done();
 			DatabaseManagerAgent::cleanup();
+			this->slashCommands->~SlashCommandManager();
+			this->guilds->~GuildManager();
 			this->channels->~ChannelManager();
 			this->guildMembers->~GuildMemberManager();
-			this->guilds->~GuildManager();
-			this->interactions->~InteractionManager();
-			this->messages->~MessageManager();
-			this->reactions->~ReactionManager();
 			this->roles->~RoleManager();
-			this->slashCommands->~SlashCommandManager();
+			this->messages->~MessageManager();
 			this->users->~UserManager();
+			this->reactions->~ReactionManager();
+			this->interactions->~InteractionManager();
+			agent::wait(this->pWebSocketReceiverAgent.get());
+			SelectMenu::cleanup();
+			Button::cleanup();
 			InteractionManagerAgent::cleanup();
 			MessageManagerAgent::cleanup();
+			GuildManagerAgent::cleanup();
+			RoleManagerAgent::cleanup();
+			UserManagerAgent::cleanup();
+			ReactionManagerAgent::cleanup();
 			ChannelManagerAgent::cleanup();
 			GuildMemberManagerAgent::cleanup();
-			ReactionManagerAgent::cleanup();
-			UserManagerAgent::cleanup();
-			RoleManagerAgent::cleanup();
-			GuildManagerAgent::cleanup();
 			agent::wait(this->pWebSocketConnectionAgent.get());
-			agent::wait(this->pWebSocketReceiverAgent.get());
-			exception error;
-			while (this->pWebSocketReceiverAgent->getError(error)) {
-				cout << "DiscordCoreClient::terminate() Error 01: " << error.what() << endl << endl;
-			}
-			while (this->pWebSocketConnectionAgent->getError(error)) {
-				cout << "DiscordCoreClient::terminate() Error 02: " << error.what() << endl << endl;
-			}
+			this->mainThreadContext->releaseGroup();
 		}
 
 	protected:
@@ -213,6 +214,10 @@ namespace DiscordCoreAPI {
 		Guild createGuild(GuildData guildData) {
 			Guild guild(this->agentResources, guildData, (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, DiscordCoreClient::thisPointer);
 			DiscordGuild discordGuild(guild.data);
+			discordGuild.getDataFromDB();
+			for (unsigned int x = 0; x < discordGuild.data.deletionChannels.size(); x += 1) {
+				discordGuild.data.deletionChannels[x].currentlyBeingDeleted = false;
+			}
 			discordGuild.writeDataToDB();
 			this->discordUser->data.guildCount += 1;
 			this->discordUser->writeDataToDB();

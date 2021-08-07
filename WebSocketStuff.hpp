@@ -345,11 +345,15 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		bool getError(exception& error) {
-			return try_receive(errorBuffer, error);
+		void getError() {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << "WebSocketReceiverAgent Error: " << error.what() << endl;
+			}
 		}
 
 		~WebSocketReceiverAgent() {
+			this->getError();
 			this->terminate();
 			return;
 		}
@@ -614,11 +618,15 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		bool getError(exception& error) {
-			return try_receive(errorBuffer, error);
+		void getError() {
+			exception error;
+			while (try_receive(errorBuffer, error)) {
+				cout << "WebSocketConnectionAgent Error: " << error.what() << endl;
+			}
 		}
 
 		~WebSocketConnectionAgent() {
+			this->getError();
 			this->terminate();
 		}
 
