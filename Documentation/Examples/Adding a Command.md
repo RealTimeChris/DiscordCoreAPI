@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 // https://github.com/RealTimeChris
 
 #include "pch.h"
-#include "./DiscordCoreAPI/Index.hpp"
+#include "./DiscordCoreAPI/DiscordCoreClient02.hpp"
 
 int main()
 {
