@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
-			thisPointer.reset(this);
+			DiscordCoreClient::thisPointer.reset(this);
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
