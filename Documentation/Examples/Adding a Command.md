@@ -1,6 +1,6 @@
 ### **Adding a Command:**
 ---
-- In a new header for the command (that is stored within the Commands folder) #include the `../DiscordCoreClient.hpp` file.
+- In a new header for the command (that is stored within the Commands folder) #include the `../DiscordCoreClient02.hpp` file.
 - Add this header to the `Commands/CommandsList.hpp` header.
 ```cpp
 // CommandsList.hpp - Commands! All of them!
@@ -31,7 +31,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include "../DiscordCoreClient.hpp"
+#include "../DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 // https://github.com/RealTimeChris
 
 #include "pch.h"
-#include "./DiscordCoreAPI/Index.hpp"
+#include "./DiscordCoreAPI/DiscordCoreClient02.hpp"
 
 int main()
 {
