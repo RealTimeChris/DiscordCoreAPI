@@ -816,6 +816,7 @@ namespace DiscordCoreAPI {
                 }
                 catch (exception&) {};
             }            
+            InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
             co_return messageData;
         }
 

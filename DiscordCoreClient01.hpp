@@ -28,13 +28,8 @@ void myPurecallHandler(void) {
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
+	class DiscordCoreClient :public DiscordCoreClientBase, protected agent, enable_shared_from_this<DiscordCoreClient> {
 	public:
-		DiscordCoreClient (DiscordCoreClient& e) {
-			this->agentResources = e.agentResources;
-			this->audioBuffersMap = e.audioBuffersMap;
-			this->baseURL = e.baseURL;
-		}
 
 		static shared_ptr<DiscordCoreClient> thisPointer;
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
@@ -76,7 +71,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
-			DiscordCoreClient::thisPointer.reset(this);
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
@@ -616,7 +610,7 @@ namespace DiscordCoreAPI {
 
 	};
 	unbounded_buffer<exception> DiscordCoreClient::errorBuffer;
-	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer;
+	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer{ nullptr };
 }
 #include "Commands/CommandsList.hpp"
 
