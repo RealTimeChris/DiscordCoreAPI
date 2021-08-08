@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 				}
 				auto messages = args->eventData.discordCoreClient->messages->fetchMessagesAsync({ .channelId = args->eventData.getChannelId(), .limit = 100, .beforeThisId = args->eventData.getMessageId() }).get();
 				vector<string> messageIds;
-				for (auto value : *messages.get()) {
+				for (auto value : *messages) {
 					messageIds.push_back(value.data.id);
 				}
 				DeleteMessagesBulkData dataPackage2;
