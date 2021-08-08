@@ -26,6 +26,8 @@ void myPurecallHandler(void) {
 	return;
 }
 
+BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
+
 namespace DiscordCoreAPI {
 
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent, enable_shared_from_this<DiscordCoreClient> {
@@ -48,7 +50,33 @@ namespace DiscordCoreAPI {
 		}
 
 		~DiscordCoreClient() {
-			this->terminate();
+			DiscordCoreClient::terminate();
+		}
+
+		static void terminate() {
+			DiscordCoreClient::thisPointer->doWeQuit = true;
+			DatabaseManagerAgent::cleanup();
+			DiscordCoreClient::thisPointer->guilds->~GuildManager();
+			DiscordCoreClient::thisPointer->channels->~ChannelManager();
+			DiscordCoreClient::thisPointer->guildMembers->~GuildMemberManager();
+			DiscordCoreClient::thisPointer->roles->~RoleManager();
+			DiscordCoreClient::thisPointer->messages->~MessageManager();
+			DiscordCoreClient::thisPointer->users->~UserManager();
+			DiscordCoreClient::thisPointer->reactions->~ReactionManager();
+			DiscordCoreClient::thisPointer->interactions->~InteractionManager();
+			agent::wait(DiscordCoreClient::thisPointer->pWebSocketReceiverAgent.get());
+			SelectMenu::cleanup();
+			Button::cleanup();
+			InteractionManagerAgent::cleanup();
+			MessageManagerAgent::cleanup();
+			GuildManagerAgent::cleanup();
+			RoleManagerAgent::cleanup();
+			UserManagerAgent::cleanup();
+			ReactionManagerAgent::cleanup();
+			ChannelManagerAgent::cleanup();
+			GuildMemberManagerAgent::cleanup();
+			agent::wait(DiscordCoreClient::thisPointer->pWebSocketConnectionAgent.get());
+			DiscordCoreClient::thisPointer->mainThreadContext->releaseGroup();
 		}
 
 		static void finalSetup(string botToken, vector<RepeatedFunctionData>* lambda);
@@ -71,6 +99,8 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
+			PHANDLER_ROUTINE handlerRoutine(&HandlerRoutine);
+			SetConsoleCtrlHandler(handlerRoutine, true);
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
@@ -581,37 +611,17 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void terminate() {
-			this->doWeQuit = true;
-			DatabaseManagerAgent::cleanup();
-			this->slashCommands->~SlashCommandManager();
-			this->guilds->~GuildManager();
-			this->channels->~ChannelManager();
-			this->guildMembers->~GuildMemberManager();
-			this->roles->~RoleManager();
-			this->messages->~MessageManager();
-			this->users->~UserManager();
-			this->reactions->~ReactionManager();
-			this->interactions->~InteractionManager();
-			agent::wait(this->pWebSocketReceiverAgent.get());
-			SelectMenu::cleanup();
-			Button::cleanup();
-			InteractionManagerAgent::cleanup();
-			MessageManagerAgent::cleanup();
-			GuildManagerAgent::cleanup();
-			RoleManagerAgent::cleanup();
-			UserManagerAgent::cleanup();
-			ReactionManagerAgent::cleanup();
-			ChannelManagerAgent::cleanup();
-			GuildMemberManagerAgent::cleanup();
-			agent::wait(this->pWebSocketConnectionAgent.get());
-			this->mainThreadContext->releaseGroup();
-		}
-
 	};
 	unbounded_buffer<exception> DiscordCoreClient::errorBuffer;
 	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer{ nullptr };
 }
 #include "Commands/CommandsList.hpp"
+
+BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType) {
+	if (dwCtrlType == CTRL_C_EVENT) {
+		DiscordCoreAPI::DiscordCoreClient::terminate();
+	}
+	return true;
+};
 
 #endif
