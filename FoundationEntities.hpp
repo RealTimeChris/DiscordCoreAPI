@@ -3472,6 +3472,12 @@ namespace DiscordCoreAPI {
         }
         InputEventData eventData;
     };
+
+    struct RepeatedFunctionData {
+        function<void(DiscordCoreClient*)> function;
+        bool repeated;
+    };
+
 };
 
 #endif

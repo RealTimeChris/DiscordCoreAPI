@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 			InputEventManager::discordCoreClientBase = discordCoreClientBaseNew;
 			InputEventManager::interactions = interactionsNew;
 		}
-
+		 
 		static InputEventData respondToEvent(CreateFollowUpMessageData dataPackage) {
 			MessageData messageData = InputEventManager::interactions->createFollowUpMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;

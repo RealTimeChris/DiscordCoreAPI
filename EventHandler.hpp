@@ -28,11 +28,11 @@ namespace DiscordCoreAPI {
         static void onChannelDeletion(OnChannelDeletionData dataPackage) {
             EventHandler::discordCoreClient->channels->removeChannelAsync(dataPackage.channel.data.id).get();
         }
-
+        
         static void onGuildCreation(OnGuildCreationData dataPackage) {
             EventHandler::discordCoreClient->guilds->insertGuildAsync(dataPackage.guild).get();
         }
-
+        
         static void onGuildUpdate(OnGuildUpdateData dataPackage) {
             EventHandler::discordCoreClient->guilds->insertGuildAsync(dataPackage.guildNew).get();
         }

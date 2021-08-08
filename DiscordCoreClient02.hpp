@@ -12,15 +12,29 @@
 
 namespace DiscordCoreAPI {
 
-    void DiscordCoreClient::finalSetup(string botToken) {
+    void DiscordCoreClient::finalSetup(string botToken, vector<RepeatedFunctionData>* lambda = nullptr) {
         try {
             DiscordCoreInternal::ThreadManager::intialize();
             shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
             DiscordCoreClient::thisPointer = pDiscordCoreClient;
             EventHandler::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();
-            executeFunctionAfterTimePeriod([]() {
-                cout << "Heart beat!" << endl << endl;
+            vector<RepeatedFunctionData>* vectorNew = new vector<RepeatedFunctionData>;
+            executeFunctionAfterTimePeriod([=]() {
+                cout << "Heart beat!" << endl << endl;;
+                if (lambda != nullptr) {
+                    for (unsigned int x = 0; x < lambda->size(); x += 1) {
+                        vectorNew->push_back(lambda->at(x));
+                    }
+                    for (unsigned int x = 0; x < vectorNew->size(); x += 1) {
+                        vectorNew->at(x).function(pDiscordCoreClient.get());
+                    }
+                    for (unsigned int x = 0; x < vectorNew->size(); x += 1) {
+                        if (!vectorNew->at(x).repeated) {
+                            vectorNew->erase(vectorNew->begin() + x);
+                        }
+                    }
+                }
                 }, 60000, true);
             pDiscordCoreClient->eventManager->onChannelCreation(&EventHandler::onChannelCreation);
             pDiscordCoreClient->eventManager->onChannelUpdate(&EventHandler::onChannelUpdate);

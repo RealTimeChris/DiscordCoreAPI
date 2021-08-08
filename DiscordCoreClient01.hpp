@@ -30,6 +30,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent {
 	public:
+		DiscordCoreClient (DiscordCoreClient& e) {
+			this->agentResources = e.agentResources;
+			this->audioBuffersMap = e.audioBuffersMap;
+			this->baseURL = e.baseURL;
+		}
+
 		static shared_ptr<DiscordCoreClient> thisPointer;
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
@@ -50,7 +56,7 @@ namespace DiscordCoreAPI {
 			this->terminate();
 		}
 
-		static void finalSetup(string botToken);
+		static void finalSetup(string botToken, vector<RepeatedFunctionData>* lambda);
 
 		static void runBot() {
 			wait((agent*)DiscordCoreClient::thisPointer.get());
