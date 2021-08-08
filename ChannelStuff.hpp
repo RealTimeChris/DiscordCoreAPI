@@ -116,10 +116,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "ChannelManagerAgent::getObject () Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "ChannelManagerAgent::getObject () Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			ChannelData channelData;
 			DiscordCoreInternal::parseObject(returnData.data, &channelData);
@@ -142,10 +142,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "ChannelManagerAgent::postObject () Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "ChannelManagerAgent::postObject () Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			ChannelData channelData;
 			DiscordCoreInternal::parseObject(returnData.data, &channelData);
@@ -167,10 +167,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "ChannelManagerAgent::putObject () Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "ChannelManagerAgent::putObject () Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}
@@ -188,10 +188,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "ChannelManagerAgent::deleteObject () Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "ChannelManagerAgent::deleteObject () Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "ChannelManagerAgent::deleteObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}

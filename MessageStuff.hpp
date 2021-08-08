@@ -305,10 +305,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::getObject() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::getObject_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::getObject() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::getObject_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			MessageData messageData;
 			DiscordCoreInternal::parseObject(returnData.data, &messageData);
@@ -353,10 +353,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::getObjectData() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::getObjectData() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::getObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			vector<Message> messagesVector{};
 			for (auto value : returnData.data) {
@@ -381,10 +381,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::getObjectData() Error 03: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::getObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::getObjectData() Success 03: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::getObjectData_02 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			vector<Message> messagesVector{};
 			for (auto value : returnData.data) {
@@ -410,10 +410,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::patchObjectData() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::patchObjectData() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			MessageData messageData;
 			messageData.requesterId = dataPackage.requesterId;
@@ -436,10 +436,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::postObjectData() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::postObjectData() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			MessageData messageData;
 			messageData.requesterId = dataPackage.requesterId;
@@ -462,10 +462,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::postObjectData() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::postObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::postObjectData() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::postObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			MessageData messageData;
 			DiscordCoreInternal::parseObject(returnData.data, &messageData);
@@ -487,10 +487,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::postObjectData() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::postObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::postObjectData() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::postObjectData_02 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}
@@ -508,10 +508,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent:putObjectData() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent:putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::putObjectData() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}
@@ -529,10 +529,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-				cout << "MessageManagerAgent::onDeleteData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::onDeleteData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			else {
-				cout << "MessageManagerAgent::onDeleteData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+				cout << "MessageManagerAgent::onDeleteData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			return;
 		}

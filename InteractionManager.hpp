@@ -531,10 +531,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::getObjectData() Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::getObjectData() Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreAPI::InteractionResponseData interactionResponseData;
             DiscordCoreInternal::parseObject(returnData.data, &interactionResponseData);
@@ -555,10 +555,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::patchObjectData() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::patchObjectData() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreAPI::MessageData messageData;
             DiscordCoreInternal::parseObject(returnData.data, &messageData);
@@ -579,10 +579,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::patchObjectData() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::patchObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::patchObjectData() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::patchObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             MessageData messageData;
             DiscordCoreInternal::parseObject(returnData.data, &messageData);
@@ -603,10 +603,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::postObjectData() Error 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::postObjectData() Success 00: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             return ;
         }
@@ -625,10 +625,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::postObjectData() Error 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::postObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::postObjectData() Success 01: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::postObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             return;
         }
@@ -647,10 +647,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::postObjectData() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::postObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::postObjectData() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::postObjectData_02 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             MessageData messageData;
             DiscordCoreInternal::parseObject(returnData.data, &messageData);
@@ -670,10 +670,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::deleteObjectData() Error 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::deleteObjectData() Success 02: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::deleteObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             return;
         }
@@ -704,10 +704,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "InteractionManagerAgent::deleteObjectData() Error 03: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::deleteObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "InteractionManagerAgent::deleteObjectData() Success 03: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "InteractionManagerAgent::deleteObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             return;
         }

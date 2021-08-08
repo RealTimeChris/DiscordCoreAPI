@@ -21,7 +21,16 @@ namespace DiscordCoreInternal {
         static shared_ptr<ThreadContext> threadContext;
         unbounded_buffer<bool> readyBuffer;
         unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer;
+        unbounded_buffer<exception> errorBuffer;
         ThreadManagerAgent():agent(*ThreadManagerAgent::threadContext->scheduler){
+        }
+
+        void getError() {
+            exception error;
+            while (try_receive(errorBuffer, error)) {
+                cout << "ThreadManagerAgent Error: " << error.what() << endl << endl;
+            }
+            return;
         }
 
         static void initialize(shared_ptr<ThreadContext> threadContextNew) {
@@ -33,13 +42,17 @@ namespace DiscordCoreInternal {
         }
 
         void run() {
-            if (receive(ThreadManagerAgent::readyBuffer)) {
-                auto threadContextNew = createThreadContext().get();
-                send(ThreadManagerAgent::outputBuffer, threadContextNew);
-                done();
+            try {
+                if (receive(ThreadManagerAgent::readyBuffer)) {
+                    auto threadContextNew = createThreadContext().get();
+                    send(ThreadManagerAgent::outputBuffer, threadContextNew);
+                    done();
+                }
+            }
+            catch (exception& e) {
+                send(this->errorBuffer, e);
             }
         }
-
     };
 
     class ThreadManager {
@@ -59,6 +72,7 @@ namespace DiscordCoreInternal {
             send(requestAgent.readyBuffer, true);
             requestAgent.start();
             agent::wait(&requestAgent);
+            requestAgent.getError();
             auto threadContext = receive(requestAgent.outputBuffer);
             ThreadManager::threads.push_back(threadContext);
             co_return threadContext;
