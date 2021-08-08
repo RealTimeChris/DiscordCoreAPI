@@ -49,8 +49,11 @@ namespace DiscordCoreAPI {
 			this->botToken = botTokenNew;
 		}
 
-		~DiscordCoreClient() {
-			DiscordCoreClient::terminate();
+		static void finalSetup(string botToken, vector<RepeatedFunctionData>* lambda);
+
+		static void runBot() {
+			wait((agent*)DiscordCoreClient::thisPointer.get());
+			DiscordCoreClient::getError();
 		}
 
 		static void terminate() {
@@ -79,11 +82,8 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->mainThreadContext->releaseGroup();
 		}
 
-		static void finalSetup(string botToken, vector<RepeatedFunctionData>* lambda);
-
-		static void runBot() {
-			wait((agent*)DiscordCoreClient::thisPointer.get());
-			DiscordCoreClient::getError();
+		~DiscordCoreClient() {
+			DiscordCoreClient::terminate();
 		}
 
 	protected:
