@@ -21,17 +21,18 @@ namespace DiscordCoreAPI {
             pDiscordCoreClient->initialize().get();
             vector<RepeatedFunctionData>* vectorNew = new vector<RepeatedFunctionData>;
             executeFunctionAfterTimePeriod([=]() {
-                cout << "Heart beat!" << endl << endl;;
+                cout << "Heart beat!" << endl << endl;
+                if (vectorNew->size() > 0) {
+                    for (auto value : *vectorNew) {
+                        value.function(pDiscordCoreClient.get());
+                    }
+                    return;
+                }
                 if (lambda != nullptr) {
                     for (unsigned int x = 0; x < lambda->size(); x += 1) {
-                        vectorNew->push_back(lambda->at(x));
-                    }
-                    for (unsigned int x = 0; x < vectorNew->size(); x += 1) {
-                        vectorNew->at(x).function(pDiscordCoreClient.get());
-                    }
-                    for (unsigned int x = 0; x < vectorNew->size(); x += 1) {
-                        if (!vectorNew->at(x).repeated) {
-                            vectorNew->erase(vectorNew->begin() + x);
+                        lambda->at(x).function(pDiscordCoreClient.get());
+                        if (lambda->at(x).repeated) {
+                            vectorNew->push_back(lambda->at(x));
                         }
                     }
                 }
