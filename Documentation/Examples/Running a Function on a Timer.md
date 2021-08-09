@@ -4,14 +4,14 @@
 - Create a function who's argument is of type `shared_ptr<DiscordCoreAPI::DiscordCoreClient>`.
 - Create a data value of type `vector<DiscordCoreAPI::RepeatedFunctionData>*`, and populate it with a new pointer of its own type.
 - Create a data structure of type `DiscordCoreAPI::RepeatedFunctionData`, and fill out its members, and stuff it inside the vector.
-- Pass this vector as a second argument to the `DiscordCoreAPI::DiscordCoreClient::finalSetup()` function.
+- Pass this vector as a second argument to the `DiscordCoreAPI::DiscordCoreClient::finalSetup()` function - now it will run on a schedule defined by the `intervalInMS` member of the data structure.
 
 ```cpp
 // main.cpp - Main entry point.
 // https://github.com/RealTimeChris
 
 #include "pch.h"
-#include "./MBot-Janny-Cpp/DiscordCoreClient02.hpp"
+#include "./DiscordCoreAPI/DiscordCoreClient02.hpp"
 
 static void onBoot(shared_ptr<DiscordCoreAPI::DiscordCoreClient> dataPackage) {
     vector<DiscordCoreAPI::Guild> guilds = dataPackage->guilds->getAllGuildsAsync().get();
