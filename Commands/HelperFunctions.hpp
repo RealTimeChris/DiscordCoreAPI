@@ -9,7 +9,7 @@
 #define _HELPER_FUNCTIONS_
 
 #include "../pch.h"
-#include "DiscordCoreClient02.hpp"
+
 
 namespace DiscordCoreAPI {
 
@@ -396,6 +396,7 @@ namespace DiscordCoreAPI {
     struct RecurseThroughMessagePagesData {
         InputEventData inputEventData;
         unsigned int currentPageIndex;
+        string buttonId;
     };
 
     // Recurses through a succession of messages.
@@ -560,12 +561,14 @@ namespace DiscordCoreAPI {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                             EditMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
                             InputEventManager::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                             EditInteractionResponseData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
                             InputEventManager::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
@@ -588,12 +591,14 @@ namespace DiscordCoreAPI {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                             EditMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
                             event01 = InputEventManager::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                             EditInteractionResponseData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
                             event01 = InputEventManager::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
@@ -608,6 +613,7 @@ namespace DiscordCoreAPI {
                     RecurseThroughMessagePagesData returnData;
                     returnData.currentPageIndex = newCurrentPageIndex;
                     returnData.inputEventData = event01;
+                    returnData.buttonId = button.getButtonId();
                     return returnData;
                 }
             };
