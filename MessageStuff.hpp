@@ -34,179 +34,6 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	struct EditMessageData {
-		EditMessageData(InputEventData dataPackage) {
-			this->channelId = dataPackage.getChannelId();
-			this->messageId = dataPackage.getMessageId();
-			this->originalMessageData = dataPackage.getMessageData();
-			this->requesterId = dataPackage.getRequesterId();
-		}
-		void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData component;
-					component.customId = customId;
-					component.disabled = disabled;
-					component.emoji.name = emojiName;
-					component.emoji.id = emojiId;
-					component.label = buttonLabel;
-					component.style = buttonStyle;
-					component.url = url;
-					component.type = ComponentType::Button;
-					this->components.at(this->components.size() - 1).components.push_back(component);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-		}
-		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.disabled = disabled;
-					componentData.customId = customId;
-					componentData.options = options;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					this->components.at(this->components.size() - 1).components.push_back(componentData);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-				
-			}
-		}
-		string content = "";
-		vector<EmbedData> embeds;
-		int flags = 0;
-		vector<AttachmentData> attachments;
-		AllowedMentionsData allowedMentions;
-		MessageData originalMessageData;
-		vector<ActionRowData> components;
-	protected:
-		friend class InteractionManagerAgent;
-		friend class InteractionManager;
-		friend class InputEventManager;
-		friend class MessageManager;
-		friend class MessageManagerAgent;
-		string requesterId;
-		string channelId;
-		string messageId;
-	};
-
-	struct CreateMessageData {
-		CreateMessageData() {}
-		CreateMessageData(InputEventData dataPackage) {
-			this->channelId = dataPackage.getChannelId();
-			this->requesterId = dataPackage.getRequesterId();
-		}
-		AllowedMentionsData allowedMentions;
-		string content = "";
-		vector<EmbedData> embeds;
-		MessageReferenceData messageReference;
-		vector<ActionRowData> components;
-		int nonce;
-		bool tts = false;
-		string channelId;
-	protected:
-		friend class MessageManager;
-		string requesterId;
-	};
-
-	struct ReplyMessageData {
-		ReplyMessageData(InputEventData dataPackage) {
-			this->replyingToMessageData = dataPackage.getMessageData();
-			this->messageReference.channelId = dataPackage.getChannelId();
-			this->messageReference.failIfNotExists = false;
-			this->messageReference.guildId = dataPackage.getGuildId();
-			this->messageReference.messageId = dataPackage.getMessageId();
-			this->requesterId = dataPackage.getRequesterId();
-		}
-		void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData component;
-					component.customId = customId;
-					component.disabled = disabled;
-					component.emoji.name = emojiName;
-					component.emoji.id = emojiId;
-					component.label = buttonLabel;
-					component.style = buttonStyle;
-					component.url = url;
-					component.type = ComponentType::Button;
-					this->components.at(this->components.size() - 1).components.push_back(component);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-		}
-		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.disabled = disabled;
-					componentData.customId = customId;
-					componentData.options = options;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					this->components.at(this->components.size() - 1).components.push_back(componentData);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-
-			}
-		}
-		string content = "";
-		bool tts = false;
-		vector<EmbedData> embeds;
-		AllowedMentionsData allowedMentions;
-		MessageReferenceData messageReference;
-		int nonce;
-	protected:
-		friend class InteractionManagerAgent;
-		friend class InteractionManager;
-		friend class InputEventManager;
-		friend class MessageManager;
-		friend class MessageManagerAgent;
-		vector<ActionRowData> components;
-		MessageData replyingToMessageData;
-		string requesterId;
-	};
-
-	struct SendDMData {
-		SendDMData(InputEventData dataPackage) : messageData(dataPackage) {}
-		string channelId;
-		string userId;
-		CreateMessageData messageData;
-	};
-
 	struct FetchPinnedMessagesData {
 		string channelId;
 	};
@@ -395,7 +222,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
-			workload.content = dataPackage.finalContent;
+			workload.content = dataPackage.content;
 			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
@@ -418,7 +245,7 @@ namespace DiscordCoreAPI {
 
 		Message postObjectData(DiscordCoreInternal::PostMessageData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
-			workload.content = dataPackage.finalContent;
+			workload.content = dataPackage.content;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_MESSAGE;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
@@ -604,21 +431,8 @@ namespace DiscordCoreAPI {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::PostMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
-			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
 			dataPackageNew.channelId = dataPackage.replyingToMessageData.channelId;
-			for (auto value : dataPackage.components) {
-				dataPackageNew.components.push_back(value);
-			}
-			dataPackageNew.content = dataPackage.content;
-			for (auto value : dataPackage.embeds) {
-				dataPackageNew.embeds.push_back(value);
-			}
-			dataPackageNew.messageReference = dataPackage.messageReference;
-			dataPackageNew.nonce = dataPackage.nonce;
-			dataPackageNew.replyingToMessageData = dataPackage.replyingToMessageData;
-			dataPackageNew.tts = dataPackage.tts;
-			dataPackageNew.content = dataPackage.content;
-			dataPackageNew.finalContent = DiscordCoreInternal::getReplyMessagePayload(dataPackageNew);
+			dataPackageNew.content = DiscordCoreInternal::getReplyMessagePayload(dataPackage);
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostMessageBuffer, dataPackageNew);
 			requestAgent.start();
@@ -648,7 +462,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.messageReference = dataPackage.messageData.messageReference;
 			dataPackageNew.nonce = dataPackage.messageData.nonce;
 			dataPackageNew.tts = dataPackage.messageData.tts;
-			dataPackageNew.finalContent = DiscordCoreInternal::getCreateMessagePayload(dataPackageNew);
+			dataPackageNew.finalContent = DiscordCoreInternal::getCreateMessagePayload(dataPackage);
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostDMMessageBuffer, dataPackageNew);
 			requestAgent.start();
@@ -665,18 +479,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::PostMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
-			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
-			dataPackageNew.content = dataPackage.content;
-			for (auto value : dataPackage.components) {
-				dataPackageNew.components.push_back(value);
-			}
-			for (auto value : dataPackage.embeds) {
-				dataPackageNew.embeds.push_back(value);
-			}
-			dataPackageNew.messageReference = dataPackage.messageReference;
-			dataPackageNew.nonce = dataPackage.nonce;
-			dataPackageNew.tts = dataPackage.tts;
-			dataPackageNew.finalContent = DiscordCoreInternal::getCreateMessagePayload(dataPackageNew);
+			dataPackageNew.content = DiscordCoreInternal::getCreateMessagePayload(dataPackage);
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostMessageBuffer, dataPackageNew);
 			requestAgent.start();
@@ -695,19 +498,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.originalMessageData.channelId;
 			dataPackageNew.messageId = dataPackage.originalMessageData.id;
-			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
-			for (auto value : dataPackage.attachments) {
-				dataPackageNew.attachments.push_back(value);
-			}
-			for (auto value : dataPackage.components) {
-				dataPackageNew.components.push_back(value);
-			}
-			dataPackageNew.content = dataPackage.content;
-			for (auto value : dataPackage.embeds) {
-				dataPackageNew.embeds.push_back(value);
-			}
-			dataPackageNew.flags = dataPackage.flags;
-			dataPackageNew.finalContent = DiscordCoreInternal::getEditMessagePayload(dataPackageNew);
+			dataPackageNew.content = DiscordCoreInternal::getEditMessagePayload(dataPackage);
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPatchMessageBuffer, dataPackageNew);
 			requestAgent.start();

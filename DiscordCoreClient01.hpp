@@ -618,7 +618,7 @@ namespace DiscordCoreAPI {
 #include "Commands/CommandsList.hpp"
 
 BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType) {
-	if (dwCtrlType == CTRL_C_EVENT) {
+	if (dwCtrlType == CTRL_C_EVENT || dwCtrlType == CTRL_CLOSE_EVENT) {
 		DiscordCoreAPI::DiscordCoreClient::terminate();
 	}
 	return true;

@@ -43,14 +43,6 @@ namespace DiscordCoreAPI {
 		string channelId;
 	};
 
-	struct EditChannelPermissionOverwritesData {
-		string allow;
-		string deny;
-		int type;
-		string roleOrUserId;
-		string channelId;
-	};
-
 	struct DeleteChannelPermissionOverwritesData {
 		string channelId;
 		string roleOrUserId;
@@ -329,11 +321,8 @@ namespace DiscordCoreAPI {
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.roleOrUserId = dataPackage.roleOrUserId;
-			dataPackageNew.allow = dataPackage.allow;
-			dataPackageNew.deny = dataPackage.deny;
-			dataPackageNew.type = dataPackage.type;
-			dataPackageNew.content = DiscordCoreInternal::getEditChannelPermissionOverwritesPayload(dataPackageNew);
-			ChannelManagerAgent requestAgent(this->agentResources,  this->discordCoreClient);
+			dataPackageNew.content = DiscordCoreInternal::getEditChannelPermissionOverwritesPayload(dataPackage);
+			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			send(requestAgent.requestPutChannelPermOWsBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);

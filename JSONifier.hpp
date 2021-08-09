@@ -268,14 +268,14 @@ namespace DiscordCoreInternal {
 		return finalValue;
 	};
 
-	string getCreateMessagePayload(PostMessageData dataPackage) {
+	string getCreateMessagePayload(DiscordCoreAPI::CreateMessageData dataPackage) {
 		auto componentsActionRow = json::array();
 
 		for (auto& value : dataPackage.components) {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == ComponentType::Button) {
+				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == ComponentType::SelectMenu) {
+				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -479,15 +479,15 @@ namespace DiscordCoreInternal {
 		
 	}
 
-	string getCreateMessagePayload(PostDMData dataPackage) {
+	string getCreateMessagePayload(DiscordCoreAPI::SendDMData dataPackage) {
 
 		auto componentsActionRow = json::array();
 
-		for (auto& value : dataPackage.components) {
+		for (auto& value : dataPackage.messageData.components) {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == ComponentType::Button) {
+				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -518,7 +518,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == ComponentType::SelectMenu) {
+				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -562,7 +562,7 @@ namespace DiscordCoreInternal {
 
 		auto embedsArray = json::array();
 
-		for (auto& value : dataPackage.embeds) {
+		for (auto& value : dataPackage.messageData.embeds) {
 
 			auto fields = json::array();
 
@@ -617,21 +617,21 @@ namespace DiscordCoreInternal {
 			embedsArray.push_back(embed);
 		}
 
-		if (dataPackage.embeds.size()>0) {
-			if (dataPackage.messageReference.guildId != "") {
+		if (dataPackage.messageData.embeds.size()>0) {
+			if (dataPackage.messageData.messageReference.guildId != "") {
 				json data = {
 		{"allowed_mentions", {
-			{"parse", dataPackage.allowedMentions.parse},
-			{"replied_user", dataPackage.allowedMentions.repliedUser},
-			{"roles", dataPackage.allowedMentions.roles},
-			{"users", dataPackage.allowedMentions.users}
+			{"parse", dataPackage.messageData.allowedMentions.parse},
+			{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
+			{"roles", dataPackage.messageData.allowedMentions.roles},
+			{"users", dataPackage.messageData.allowedMentions.users}
 			}},
-			{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-			{"channel_id", dataPackage.messageReference.channelId},
-			{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+			{"message_reference",{{"message_id", dataPackage.messageData.messageReference.messageId},
+			{"channel_id", dataPackage.messageData.messageReference.channelId},
+			{"fail_if_not_exists", dataPackage.messageData.messageReference.failIfNotExists}
 				}},
-		{"content", dataPackage.content},
-		{"tts" , dataPackage.tts},
+		{"content", dataPackage.messageData.content},
+		{"tts" , dataPackage.messageData.tts},
 		{"embeds" ,embedsArray},
 					{"components", componentsActionRow}
 				};
@@ -640,13 +640,13 @@ namespace DiscordCoreInternal {
 			else {
 				json data = {
 	{"allowed_mentions", {
-		{"parse", dataPackage.allowedMentions.parse},
-		{"replied_user", dataPackage.allowedMentions.repliedUser},
-		{"roles", dataPackage.allowedMentions.roles},
-		{"users", dataPackage.allowedMentions.users}
+		{"parse", dataPackage.messageData.allowedMentions.parse},
+		{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
+		{"roles", dataPackage.messageData.allowedMentions.roles},
+		{"users", dataPackage.messageData.allowedMentions.users}
 		}},
-	{"content", dataPackage.content},
-	{"tts" , dataPackage.tts},
+	{"content", dataPackage.messageData.content},
+	{"tts" , dataPackage.messageData.tts},
 	{"embeds" ,embedsArray},
 				{"components", componentsActionRow}
 				};
@@ -654,20 +654,20 @@ namespace DiscordCoreInternal {
 			}
 		}
 		else {
-			if (dataPackage.messageReference.guildId != "") {
+			if (dataPackage.messageData.messageReference.guildId != "") {
 				json data = {
 			{"allowed_mentions", {
-				{"parse", dataPackage.allowedMentions.parse},
-				{"replied_user", dataPackage.allowedMentions.repliedUser},
-				{"roles", dataPackage.allowedMentions.roles},
-				{"users", dataPackage.allowedMentions.users}
+				{"parse", dataPackage.messageData.allowedMentions.parse},
+				{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
+				{"roles", dataPackage.messageData.allowedMentions.roles},
+				{"users", dataPackage.messageData.allowedMentions.users}
 				}},
-				{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-				{"channel_id", dataPackage.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+				{"message_reference",{{"message_id", dataPackage.messageData.messageReference.messageId},
+				{"channel_id", dataPackage.messageData.messageReference.channelId},
+				{"fail_if_not_exists", dataPackage.messageData.messageReference.failIfNotExists}
 					}},
-			{"content", dataPackage.content},
-			{"tts" , dataPackage.tts},
+			{"content", dataPackage.messageData.content},
+			{"tts" , dataPackage.messageData.tts},
 					{"components", componentsActionRow}
 				};
 				return data.dump();
@@ -675,17 +675,17 @@ namespace DiscordCoreInternal {
 			else {
 				json data = {
 			{"allowed_mentions", {
-				{"parse", dataPackage.allowedMentions.parse},
-				{"replied_user", dataPackage.allowedMentions.repliedUser},
-				{"roles", dataPackage.allowedMentions.roles},
-				{"users", dataPackage.allowedMentions.users}
+				{"parse", dataPackage.messageData.allowedMentions.parse},
+				{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
+				{"roles", dataPackage.messageData.allowedMentions.roles},
+				{"users", dataPackage.messageData.allowedMentions.users}
 				}},
-					{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-				{"channel_id", dataPackage.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+					{"message_reference",{{"message_id", dataPackage.messageData.messageReference.messageId},
+				{"channel_id", dataPackage.messageData.messageReference.channelId},
+				{"fail_if_not_exists", dataPackage.messageData.messageReference.failIfNotExists}
 					}},
-			{"content", dataPackage.content},
-			{"tts" , dataPackage.tts},
+			{"content", dataPackage.messageData.content},
+			{"tts" , dataPackage.messageData.tts},
 				{"components", componentsActionRow}
 				};
 				return data.dump();
@@ -695,7 +695,7 @@ namespace DiscordCoreInternal {
 
 	}
 
-	string getReplyMessagePayload(PostMessageData dataPackage) {
+	string getReplyMessagePayload(DiscordCoreAPI::ReplyMessageData dataPackage) {
 
 		auto componentsActionRow = json::array();
 
@@ -703,7 +703,7 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == ComponentType::Button) {
+				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -734,7 +734,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == ComponentType::SelectMenu) {
+				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -916,14 +916,14 @@ namespace DiscordCoreInternal {
 
 	}
 
-	string getEditMessagePayload(PatchMessageData dataPackage) {
+	string getEditMessagePayload(DiscordCoreAPI::EditMessageData dataPackage) {
 		auto componentsActionRow = json::array();
 
 		for (auto& value : dataPackage.components) {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == ComponentType::Button) {
+				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -954,7 +954,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == ComponentType::SelectMenu) {
+				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -1047,7 +1047,7 @@ namespace DiscordCoreInternal {
 			{ "title", value.title },
 			{ "fields", fields },
 			{ "color",realColorVal },
-				{"timestamp", value.timestamp}
+				{"timestamp", value.timestampRaw}
 			};
 			embedsArray.push_back(embed);
 		}
@@ -1536,14 +1536,14 @@ namespace DiscordCoreInternal {
 			};
 		}
 
-		string getCreateDeferredInteractionResponsePayload(CreateDeferredInteractionResponseData dataPackage) {
+		string getCreateDeferredInteractionResponsePayload(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
 
 			json data = { {"type", dataPackage.type}
 			};
 			return data.dump();
 		}
 
-		string getCreateInteractionResponsePayload(CreateInteractionResponseData dataPackage) {
+		string getCreateInteractionResponsePayload(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
 
 			auto embedsArray = json::array();
 
@@ -1622,7 +1622,7 @@ namespace DiscordCoreInternal {
 				auto components = json::array();
 
 				for (auto& valueNew : value.components) {
-					if (valueNew.type == ComponentType::Button) {
+					if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 						if (valueNew.emoji.id == "") {
 							json component = { {"custom_id", valueNew.customId},
 							{"disabled", valueNew.disabled},
@@ -1653,7 +1653,7 @@ namespace DiscordCoreInternal {
 							components.push_back(component);
 						}
 					}
-					else if (valueNew.type == ComponentType::SelectMenu) {
+					else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 						json optionsArray = json::array();
 						for (auto value01 : valueNew.options) {
 							if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -1753,7 +1753,7 @@ namespace DiscordCoreInternal {
 			 return dataArray.dump();
 		 };
 
-		 string getEditChannelPermissionOverwritesPayload(PutPermissionOverwritesData dataPackage) {
+		 string getEditChannelPermissionOverwritesPayload(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
 			 json data = { {"allow", stoll(dataPackage.allow)},
 				 {"deny", stoll(dataPackage.deny)},
 				 {"type", dataPackage.type} };
@@ -1761,7 +1761,7 @@ namespace DiscordCoreInternal {
 			 return data.dump();
 		 }
 
-		 string getPostFollowUpMessagePayload(CreateFollowUpMessageData dataPackage) {
+		 string getPostFollowUpMessagePayload(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
 			 auto embedsArray = json::array();
 
 			 for (auto& value : dataPackage.embeds) {
@@ -1839,7 +1839,7 @@ namespace DiscordCoreInternal {
 				 auto components = json::array();
 
 				 for (auto& valueNew : value.components) {
-					 if (valueNew.type == ComponentType::Button) {
+					 if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 						 if (valueNew.emoji.id == "") {
 							 json component = { {"custom_id", valueNew.customId},
 							 {"disabled", valueNew.disabled},
@@ -1870,7 +1870,7 @@ namespace DiscordCoreInternal {
 							 components.push_back(component);
 						 }
 					 }
-					 else if (valueNew.type == ComponentType::SelectMenu) {
+					 else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 						 json optionsArray = json::array();
 						 for (auto value01 : valueNew.options) {
 							 if (value01.emoji.id == "" && value01.emoji.name == "") {

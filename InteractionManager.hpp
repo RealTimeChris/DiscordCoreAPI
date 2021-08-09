@@ -21,474 +21,17 @@ namespace DiscordCoreAPI {
 
     class Button;
 
-    struct ButtonInteractionData {
-        ButtonInteractionData() {}
-        ButtonInteractionData(const ButtonInteractionData& dataPackage) {
-            this->applicationId = dataPackage.applicationId;
-            this->channelId = dataPackage.channelId;
-            this->customId = dataPackage.customId;
-            this->guildId = dataPackage.guildId;
-            this->id = dataPackage.id;
-            this->isItForHere = dataPackage.isItForHere;
-            this->member = dataPackage.member;
-            this->message = dataPackage.message;
-            this->token = dataPackage.token;
-            this->type = dataPackage.type;
-            this->user = dataPackage.user;
-        }
-        bool isItForHere;
-        string token;
-        string id;
-        string applicationId;
-        InteractionType type;
-        string customId;
-        GuildMemberData member;
-        UserData user;
-        MessageData message;
-        string channelId;
-        string guildId;
-    };
-
-    struct SelectMenuInteractionData {
-        SelectMenuInteractionData() {}
-        SelectMenuInteractionData(const SelectMenuInteractionData& dataPackage) {
-            this->applicationId = dataPackage.applicationId;
-            this->channelId = dataPackage.channelId;
-            this->customId = dataPackage.customId;
-            this->guildId = dataPackage.guildId;
-            this->id = dataPackage.id;
-            this->isItForHere = dataPackage.isItForHere;
-            this->values = dataPackage.values;
-            this->member = dataPackage.member;
-            this->message = dataPackage.message;
-            this->token = dataPackage.token;
-            this->type = dataPackage.type;
-            this->user = dataPackage.user;
-        }
-        bool isItForHere;
-        string token;
-        string id;
-        vector<string> values;
-        string applicationId;
-        InteractionType type;
-        string customId;
-        GuildMemberData member;
-        UserData user;
-        MessageData message;
-        string channelId;
-        string guildId;
-
-    };
-
-    struct DeferComponentResponseData {
-        DeferComponentResponseData(InteractionData dataPackage) {
-            this->type = InteractionCallbackType::DeferredUpdateMessage;
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.applicationId = dataPackage.applicationId;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-        }
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        friend struct CreateInteractionResponseData;
-        InteractionPackageData interactionPackage;
-        InteractionCallbackType type;
-        InputEventResponseType responseType;
-    };
-
-    struct CreateDeferredInteractionResponseData {
-        CreateDeferredInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->type = InteractionCallbackType::DeferredChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-            this->channelId = dataPackage.getChannelId();
-            this->guildId = dataPackage.getGuildId();
-        }
-        string requesterId;
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        InteractionPackageData interactionPackage;
-        InteractionCallbackType type;
-        string guildId;
-        string channelId;
-    };
-
-    struct CreateInteractionResponseData {
-    public:
-        CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            if (dataPackage.member.user.id != "") {
-                this->requesterId = dataPackage.message.member.user.id;
-            }
-            else {
-                this->requesterId = dataPackage.user.id;
-            }
-        }
-        CreateInteractionResponseData(ButtonInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            if (dataPackage.member.user.id != "") {
-                this->requesterId = dataPackage.message.member.user.id;
-            }
-            else {
-                this->requesterId = dataPackage.user.id;
-            }
-        }
-        CreateInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.components.push_back(actionRowData);
-            }
-            if (this->data.components.size() < 5) {
-                if (this->data.components.at(this->data.components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->data.components.at(this->data.components.size() - 1).components.push_back(component);
-                }
-                else if (this->data.components.at(this->data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled,  string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.components.push_back(actionRowData);
-            }
-            if (this->data.components.size() < 5) {
-                if (this->data.components.at(this->data.components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->data.components.at(this->data.components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->data.components.at(this->data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.components.push_back(actionRowData);
-                }
-
-            }
-        }
-        InteractionApplicationCommandCallbackData data;
-        string requesterId;
-    protected:
-        CreateInteractionResponseData() {}
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        friend class Button;
-        friend class SelectMenu;
-        InteractionCallbackType type;
-        InteractionPackageData interactionPackage;
-    };
-
-    struct CreateEphemeralInteractionResponseData {
-    public:
-        CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        InteractionApplicationCommandCallbackData data;
-        string requesterId;
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        InteractionCallbackType type;
-        InteractionPackageData interactionPackage;
-    };
-
-    struct EditInteractionResponseData {
-        EditInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->type = InteractionCallbackType::UpdateMessage;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-
-            }
-        }
-        string content;
-        vector<EmbedData> embeds;
-        AllowedMentionsData allowedMentions;
-        vector<AttachmentData> attachments;
-        vector<ActionRowData>components;
-        int flags;
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        InteractionCallbackType type;
-        InteractionPackageData interactionPackage;
-        string requesterId;
-    };
-
-    struct DeleteInteractionResponseData {
-        DeleteInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-        }
-        unsigned int timeDelay = 0;
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        InteractionPackageData interactionPackage;
-    };
-
-    struct CreateFollowUpMessageData {
-        CreateFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        string content;
-        string username;
-        string avatarUrl;
-        bool tts;
-        vector<EmbedData> embeds;
-        DiscordCoreInternal::AllowedMentionsData allowedMentions;
-        vector<ActionRowData> components;
-        int flags = 0;
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        InteractionPackageData interactionPackage;
-        string requesterId;
-    };
-
-    struct EditFollowUpMessageData {
-        EditFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->messagePackage.messageId = dataPackage.getMessageId();
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        string content;
-        string username;
-        string avatarUrl;
-        bool tts;
-        vector<EmbedData> embeds;
-        DiscordCoreInternal::AllowedMentionsData allowedMentions;
-        vector<ActionRowData> components;
-        int flags;
-        string requesterId;
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        InteractionPackageData interactionPackage;
-        MessagePackageData messagePackage;
-    };
-
-    struct GetInteractionResponseData {
-        string applicationId;
-        string interactionToken;
-    };
-
-    struct DeleteFollowUpMessageData {
-        DeleteFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->messagePackage.messageId = dataPackage.getMessageId();
-        }
-        unsigned int timeDelay = 0;
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEventManager;
-        InteractionPackageData interactionPackage;
-        MessagePackageData messagePackage;
-    };
-
     class InteractionManagerAgent : public agent {
     public:
         static map<string, unbounded_buffer<MessageData>*> collectMessageDataBuffers;
-        unbounded_buffer<DiscordCoreInternal::CreateDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer;
+        unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::CreateInteractionResponseData> requestPostInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::EditInteractionResponseData> requestPatchInteractionResponseBuffer;
+        unbounded_buffer<DiscordCoreInternal::PostInteractionResponseData> requestPostInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::GetInteractionResponseData> requestGetInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer;
-        unbounded_buffer<DiscordCoreInternal::CreateFollowUpMessageData> requestPostFollowUpMessageBuffer;
         unbounded_buffer<DiscordCoreInternal::EditFollowUpMessageData> requestPatchFollowUpMessageBuffer;
+        unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer;
         unbounded_buffer<InteractionResponseData> outInteractionresponseDataBuffer;
         unbounded_buffer<MessageData> outInteractionResponseBuffer;
         unbounded_buffer<exception> errorBuffer;
@@ -589,7 +132,7 @@ namespace DiscordCoreAPI {
             return messageData;
         }
 
-        void postObjectData(DiscordCoreInternal::CreateInteractionResponseData dataPackage) {
+        void postObjectData(DiscordCoreInternal::PostInteractionResponseData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/interactions/" + dataPackage.interactionId + "/" + dataPackage.interactionToken + "/callback";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
@@ -611,7 +154,7 @@ namespace DiscordCoreAPI {
             return ;
         }
 
-        void postObjectData(DiscordCoreInternal::CreateDeferredInteractionResponseData dataPackage) {
+        void postObjectData(DiscordCoreInternal::PostDeferredInteractionResponseData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/interactions/" + dataPackage.interactionId + "/" + dataPackage.interactionToken + "/callback";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
@@ -633,12 +176,12 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        MessageData postObjectData(DiscordCoreInternal::CreateFollowUpMessageData dataPackage) {
+        MessageData postObjectData(DiscordCoreInternal::PostFollowUpMessageData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_FOLLOW_UP_MESSAGE;
-            workload.content = DiscordCoreInternal::getPostFollowUpMessagePayload(dataPackage);
+            workload.content = dataPackage.content;
             DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
@@ -734,11 +277,11 @@ namespace DiscordCoreAPI {
                     MessageData messageData = patchObjectData(dataPackage01);
                     send(this->outInteractionResponseBuffer, messageData);
                 }
-                DiscordCoreInternal::CreateInteractionResponseData dataPackage02;
+                DiscordCoreInternal::PostInteractionResponseData dataPackage02;
                 if (try_receive(this->requestPostInteractionResponseBuffer, dataPackage02)) {
                     postObjectData(dataPackage02);
                 }
-                DiscordCoreInternal::CreateFollowUpMessageData dataPackage03;
+                DiscordCoreInternal::PostFollowUpMessageData dataPackage03;
                 if (try_receive(this->requestPostFollowUpMessageBuffer, dataPackage03)) {
                     MessageData messageData = postObjectData(dataPackage03);
                     send(this->outInteractionResponseBuffer, messageData);
@@ -752,7 +295,7 @@ namespace DiscordCoreAPI {
                     MessageData messageData = patchObjectData(dataPackage05);
                     send(this->outInteractionResponseBuffer, messageData);
                 }
-                DiscordCoreInternal::CreateDeferredInteractionResponseData dataPackage06;
+                DiscordCoreInternal::PostDeferredInteractionResponseData dataPackage06;
                 if (try_receive(this->requestPostDeferredInteractionResponseBuffer, dataPackage06)) {
                     postObjectData(dataPackage06);
                 }
@@ -779,12 +322,11 @@ namespace DiscordCoreAPI {
 
         task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            DiscordCoreInternal::CreateDeferredInteractionResponseData dataPackageNew;
+            DiscordCoreInternal::PostDeferredInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
-            dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.type;
             dataPackageNew.agentResources = this->agentResources;
-            dataPackageNew.content = DiscordCoreInternal::getCreateDeferredInteractionResponsePayload(dataPackageNew);
+            dataPackageNew.content = DiscordCoreInternal::getCreateDeferredInteractionResponsePayload(dataPackage);
             InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPostDeferredInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
@@ -795,15 +337,13 @@ namespace DiscordCoreAPI {
 
         task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
             co_await resume_background();
-            DiscordCoreInternal::CreateInteractionResponseData dataPackageNew;
-            dataPackageNew.data = dataPackage.data;
+            DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
-            dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.type;
-            DiscordCoreInternal::HttpAgentResources agentResourcesNew;
-            dataPackageNew.agentResources = agentResourcesNew;
-            dataPackageNew.content = DiscordCoreInternal::getCreateInteractionResponsePayload(dataPackageNew);
-            InteractionManagerAgent requestAgent(agentResourcesNew);
+            DiscordCoreInternal::HttpAgentResources httpAgentResources;
+            dataPackageNew.agentResources = httpAgentResources;
+            dataPackageNew.content = DiscordCoreInternal::getCreateInteractionResponsePayload(dataPackage);
+            InteractionManagerAgent requestAgent(httpAgentResources);
             InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, &requestAgent.outInteractionResponseBuffer));
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
@@ -883,23 +423,12 @@ namespace DiscordCoreAPI {
 
         task<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            DiscordCoreInternal::CreateFollowUpMessageData dataPackageNew;
+            DiscordCoreInternal::PostFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
-            dataPackageNew.allowedMentions = dataPackage.allowedMentions;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
-            dataPackageNew.avatarURL = dataPackage.avatarUrl;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
-            for (auto value : dataPackage.components) {
-                dataPackageNew.components.push_back(value);
-            }
             dataPackageNew.content = dataPackage.content;
-            for (auto value : dataPackage.embeds) {
-                dataPackageNew.embeds.push_back(value);
-            }
-            dataPackageNew.flags = dataPackage.flags;
-            dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
-            dataPackageNew.tts = dataPackage.tts;
-            dataPackageNew.username = dataPackage.username;
+            dataPackageNew.content = DiscordCoreInternal::getPostFollowUpMessagePayload(dataPackage);
             InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPostFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
