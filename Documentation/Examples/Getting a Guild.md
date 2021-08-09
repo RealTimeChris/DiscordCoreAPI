@@ -1,20 +1,45 @@
 
 ### **Getting a Guild:**
 ---
-- Create a `DiscordCoreAPI::CreateApplicationCommandData` data structure.
-- For each argument, fill out an `ApplicationCommandOptionData` structure, and push it back into the options member of the `CreateApplicationCommandData` structure. (**IMPORTANT #1**: Notes on which kind of types to set can be found [here.](https://discord.com/developers/docs/interactions/slash-commands#subcommands-and-subcommand-groups)) (**IMPORTANT #2**: Be sure to set the order of the arguments up to be equivalent to what they are in the normal version of the command, so that they can be parsed properly.)
-- Run, from the `DiscordCoreClient` instance, the `slashCommands::createGlobalApplicationCommandAsync()` function. (Note: This is done from within a command called `registerslashcommands`, by default.)
+- Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guilds` member.
+- Select, from the `guilds` pointer, the `getGuildASync()` or `fetchAsync()` function, while passing to it either a completed data structure (`getGuildData`, or `fetchGuildData`), or simply `{.guildId = GUILDIDHERE}`.
+- Call the function with .get() added to the end in order to wait for the results now.
 
 ```cpp
-DiscordCoreAPI::CreateApplicationCommandData createTestCommandData;
-createTestCommandData.defaultPermission = true;
-createTestCommandData.description = "A test command.";
-createTestCommandData.name = "test";
-DiscordCoreAPI::ApplicationCommandOptionData testCommandOptionOne;
-testCommandOptionOne.name = "optionone";
-testCommandOptionOne.required = true;
-testCommandOptionOne.type = ApplicationCommandOptionType::STRING;
-testCommandOptionOne.description = "The first argument to be entered.";
-createTestCommandData.options.push_back(testCommandOptionOne);
-args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createTestCommandData).get();
+// Test.hpp - Header for the "test" command.
+// https://github.com/RealTimeChris
+
+#pragma once
+
+#ifndef _TEST_
+#define _TEST_
+
+#include "../DiscordCoreClient02.hpp"
+
+namespace DiscordCoreAPI {
+
+	class Test : public  BaseFunction {
+	public:
+		Test() {
+			this->commandName = "test";
+			this->helpDescription = "__**Test:**__ Enter !test or /test to run this command!";
+		}
+
+		Test* create() {
+			return new Test;
+		}
+
+		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+			InputEventManager::deleteInputEventResponseAsync(args->eventData);
+
+			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
+
+			Guild guild = args->eventData.discordCoreClient->guilds->fetchAsync({ .guildId = args->eventData.getGuildId() }).get();
+
+			co_return;
+
+		}
+	};
+}
+#endif
 ```
