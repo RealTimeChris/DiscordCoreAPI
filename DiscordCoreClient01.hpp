@@ -28,8 +28,6 @@ void myPurecallHandler(void) {
 
 BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
 
-void updatePresence(DiscordCoreAPI::DiscordCoreClient* dataPackage);
-
 namespace DiscordCoreAPI {
 
 	class DiscordCoreClient :public DiscordCoreClientBase, protected agent, enable_shared_from_this<DiscordCoreClient> {
@@ -151,9 +149,6 @@ namespace DiscordCoreAPI {
 			this->pWebSocketReceiverAgent->start();
 			this->pWebSocketConnectionAgent->start();
 			this->start();
-			executeFunctionAfterTimePeriod([=]() {
-				updatePresence(this->thisPointer.get());
-				}, 5000, false);
 			co_await mainThread;
 			co_return;
 		}
@@ -621,14 +616,5 @@ BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType) {
 	}
 	return true;
 };
-
-void updatePresence(DiscordCoreAPI::DiscordCoreClient* dataPackage) {
-	vector<DiscordCoreAPI::ActivityData> activities;
-	DiscordCoreAPI::ActivityData activity;
-	activity.name = "!help for my commands!";
-	activity.type = DiscordCoreAPI::ActivityType::Game;
-	activities.push_back(activity);
-	dataPackage->currentUser->updatePresence({ .activities = activities, .status = "online",.afk = false });
-}
 
 #endif
