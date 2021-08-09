@@ -620,6 +620,7 @@ namespace DiscordCoreAPI {
 BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType) {
 	if (dwCtrlType == CTRL_C_EVENT || dwCtrlType == CTRL_CLOSE_EVENT) {
 		DiscordCoreAPI::DiscordCoreClient::terminate();
+		exit(0);
 	}
 	return true;
 };
