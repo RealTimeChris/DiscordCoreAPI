@@ -39,13 +39,6 @@ namespace DiscordCoreAPI {
 		string emojiId;
 	};
 
-	struct GetReactionData {
-		string channelId;
-		string messageId;
-		string userId;
-		string emojiName;
-	};
-
 	struct DeleteUserReactionData {
 		string channelId;
 		string messageId;

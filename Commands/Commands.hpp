@@ -26,7 +26,7 @@ namespace DiscordCoreAPI {
 
 	class BaseFunction {
 	public:
-		virtual ~BaseFunction() {};
+		virtual ~BaseFunction() {}
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		virtual BaseFunction* create() = 0;
 		string commandName = "";
@@ -49,9 +49,8 @@ namespace DiscordCoreAPI {
 				messageOption = true;
 			}
 			else if (commandData.eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-				DiscordCoreInternal::CommandData commandDataNew;
-				DiscordCoreInternal::parseObject(commandData.eventData.interactionData.dataRaw, &commandDataNew);
-				string newCommandName = commandData.eventData.discordCoreClient->discordUser->data.prefix + commandDataNew.commandName;
+				DiscordCoreInternal::parseObject(commandData.eventData.interactionData.dataRaw, &commandData);
+				string newCommandName = commandData.eventData.discordCoreClient->discordUser->data.prefix + commandData.commandName;
 				functionPointer = CommandCenter::getCommand(convertToLowerCase(newCommandName), commandData);
 				messageOption = false;
 			}
@@ -66,9 +65,8 @@ namespace DiscordCoreAPI {
 				args.argumentsArray = CommandCenter::parseArguments(commandData.eventData.getMessageData().content);
 			}
 			else if (messageOption == false) {
-				DiscordCoreInternal::CommandData commandDataNew;
-				DiscordCoreInternal::parseObject(commandData.eventData.getInteractionData().dataRaw, &commandDataNew);
-				args.argumentsArray = commandDataNew.optionsArgs;
+				DiscordCoreInternal::parseObject(commandData.eventData.getInteractionData().dataRaw, &commandData);
+				args.argumentsArray = commandData.optionsArgs;
 			}
 			functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
 			functionPointer.~shared_ptr();

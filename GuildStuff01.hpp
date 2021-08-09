@@ -134,10 +134,10 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer;
 		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetAuditLogData> requestGetAuditLogBuffer;
-		unbounded_buffer<DiscordCoreInternal::FetchGuildData> requestFetchGuildBuffer;
+		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetInvitesData> requestGetInvitesBuffer;
 		unbounded_buffer<DiscordCoreInternal::GetInviteData> requestGetInviteBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer;
+		unbounded_buffer<DiscordCoreInternal::CollectGuildData> requestCollectGuildBuffer;
 		unbounded_buffer<vector<InviteData>> outInvitesBuffer;
 		unbounded_buffer<AuditLogData> outAuditLogBuffer;
 		unbounded_buffer<InviteData> outInviteBuffer;
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		Guild getObjectData(DiscordCoreInternal::FetchGuildData dataPackage) {
+		Guild getObjectData(DiscordCoreInternal::GetGuildData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_GUILD;
@@ -350,8 +350,8 @@ namespace DiscordCoreAPI {
 						}
 					}
 				}
-				DiscordCoreInternal::FetchGuildData dataPackage02;
-				if (try_receive(this->requestFetchGuildBuffer, dataPackage02)) {
+				DiscordCoreInternal::GetGuildData dataPackage02;
+				if (try_receive(this->requestGetGuildBuffer, dataPackage02)) {
 					map<string, Guild> cacheTemp;
 					if (try_receive(GuildManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage02.guildId)) {
@@ -413,11 +413,11 @@ namespace DiscordCoreAPI {
 
 		task<Guild> fetchAsync(FetchGuildData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::FetchGuildData dataPackageNew;
+			DiscordCoreInternal::GetGuildData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
-			send(requestAgent.requestFetchGuildBuffer, dataPackageNew);
+			send(requestAgent.requestGetGuildBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManager::fetchAsync");
@@ -510,11 +510,11 @@ namespace DiscordCoreAPI {
 
 		task<Guild> getGuildAsync(GetGuildData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetGuildData dataPackageNew;
+			DiscordCoreInternal::CollectGuildData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
-			send(requestAgent.requestGetGuildBuffer, dataPackageNew);
+			send(requestAgent.requestCollectGuildBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManager::getGuildAsync");

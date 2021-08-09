@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static InputEventData respondToEvent(SendDMData dataPackage) {
-			Channel dmChannel = InputEventManager::discordCoreClientBase->channels->getDMChannelAsync({ .userId = dataPackage.userId }).get();
+			Channel dmChannel = InputEventManager::discordCoreClientBase->channels->fetchDMChannelAsync({ .userId = dataPackage.userId }).get();
 			dataPackage.channelId = dmChannel.data.id;
 			Message message = InputEventManager::messages->sendDMAsync(dataPackage).get();
 			InputEventData dataPackageNewer;

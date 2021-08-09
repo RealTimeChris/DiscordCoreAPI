@@ -45,7 +45,6 @@ namespace DiscordCoreInternal {
             else {
                 partialSearchResult.videoTitle = jsonObjectData.at("title").at("simpleText").get<string>();
             }
-
         }
 
         if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
@@ -1278,7 +1277,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("timestamp") && !jsonObjectData.at("timestamp").is_null()) {
-            embedData.timestamp = jsonObjectData.at("timestamp").get<string>();
+            embedData.timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("timestamp").get<string>());
         }
 
         if (jsonObjectData.contains("color") && !jsonObjectData.at("color").is_null()) {
@@ -1515,14 +1514,14 @@ namespace DiscordCoreInternal {
 
     void parseObject(json jsonObjectData, DiscordCoreAPI::InviteData* pDataStructure) {
         DiscordCoreAPI::InviteData inviteData = *pDataStructure;
-        
-        if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null()&&jsonObjectData.at("code").type() == nlohmann::detail::value_t::string) {
+
+        if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null() && jsonObjectData.at("code").type() == nlohmann::detail::value_t::string) {
             inviteData.code = jsonObjectData.at("code").get<string>();
         }
         else if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null()) {
             inviteData.code = to_string(jsonObjectData.at("code").get<int>());
         }
-       
+
         if (jsonObjectData.contains("guild") && !jsonObjectData.at("guild").is_null()) {
             parseObject(jsonObjectData.at("guild"), &inviteData.guild);
         }
@@ -1530,7 +1529,7 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("channel") && !jsonObjectData.at("channel").is_null()) {
             parseObject(jsonObjectData.at("channel"), &inviteData.channel);
         }
-       
+
         if (jsonObjectData.contains("inviter") && !jsonObjectData.at("inviter").is_null()) {
             parseObject(jsonObjectData.at("inviter"), &inviteData.inviter);
         }
@@ -1590,7 +1589,7 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("created_at") && !jsonObjectData.at("created_at").is_null()) {
             inviteData.createdAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("created_at").get<string>());
         }
-        
+
         *pDataStructure = inviteData;
     };
 
@@ -2594,8 +2593,8 @@ namespace DiscordCoreInternal {
         *pDataStructure = youtubeFormats;
     }
 
-    void parseObject(json jsonObjectData, CommandData* pDataStructure) {
-        CommandData commandData = *pDataStructure;
+    void parseObject(json jsonObjectData, DiscordCoreAPI::CommandData* pDataStructure) {
+        DiscordCoreAPI::CommandData commandData = *pDataStructure;
         if (jsonObjectData.contains("options") && !jsonObjectData.at("options").is_null()) {
             for (auto newValue : jsonObjectData.at("options")) {
                 if (newValue.contains("options")) {
@@ -2934,7 +2933,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("synced_at") && !jsonObjectData.at("synced_at").is_null()) {
-            integrationData.syncedAt = jsonObjectData.at("synced_at").get<string>();
+            integrationData.syncedAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("synced_at").get<string>());
         }
 
         if (jsonObjectData.contains("subscriber_count") && !jsonObjectData.at("subscriber_count").is_null()) {

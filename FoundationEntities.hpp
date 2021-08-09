@@ -837,7 +837,7 @@ namespace  DiscordCoreInternal {
         json data;
     };
 
-    struct FetchMessagesData {
+    struct GetMessagesData {
         HttpAgentResources agentResources;
         string channelId;
         unsigned int limit;
@@ -920,12 +920,12 @@ namespace  DiscordCoreInternal {
         float nextExecutionTime = 0.0f;
     };
 
-    struct GetGuildData {
+    struct CollectGuildData {
         HttpAgentResources agentResources;
         string guildId;
     };
 
-    struct FetchGuildData {
+    struct GetGuildData {
         HttpAgentResources agentResources;
         string guildId;
     };
@@ -960,12 +960,12 @@ namespace  DiscordCoreInternal {
         string emojiName;
     };
 
-    struct GetChannelData {
+    struct CollectChannelData {
         HttpAgentResources agentResources;
         string channelId;
     };
 
-    struct FetchChannelData {
+    struct GetChannelData {
         HttpAgentResources agentResources;
         string channelId;
     };
@@ -998,7 +998,7 @@ namespace  DiscordCoreInternal {
         string requesterId;
     };
 
-    struct PinMessageData {
+    struct PutPinMessageData {
         HttpAgentResources agentResources;
         string channelId;
         string messageId;
@@ -1009,7 +1009,7 @@ namespace  DiscordCoreInternal {
         USER = 1
     };
 
-    struct GetUserData {
+    struct CollectUserData {
         HttpAgentResources agentResources;
         string userId;
         GetUserDataType userType;
@@ -1020,7 +1020,7 @@ namespace  DiscordCoreInternal {
         string guildId;
     };
 
-    struct FetchUserData {
+    struct GetUserData {
         HttpAgentResources agentResources;
         string userId;
         GetUserDataType userType;
@@ -1068,7 +1068,7 @@ namespace  DiscordCoreInternal {
         string messageId;
     };
 
-    struct SendDMData {
+    struct PostDMData {
         HttpAgentResources agentResources;
         string userId;
         string channelId;
@@ -1082,13 +1082,13 @@ namespace  DiscordCoreInternal {
         vector<ActionRowData> components;
     };
 
-    struct GetGuildMemberData {
+    struct CollectGuildMemberData {
         HttpAgentResources agentResources;
         string guildId;
         string guildMemberId;
     };
 
-    struct FetchGuildMemberData {
+    struct GetGuildMemberData {
         HttpAgentResources agentResources;
         string guildId;
         string guildMemberId;
@@ -1118,7 +1118,7 @@ namespace  DiscordCoreInternal {
         bool selfDeaf;
     };
 
-    struct FetchRolesData {
+    struct GetRolesData {
         HttpAgentResources agentResources;
         string guildId;
     };
@@ -1154,7 +1154,7 @@ namespace  DiscordCoreInternal {
         string content;
     };
 
-    struct FetchRoleData {
+    struct CollectRoleData {
         HttpAgentResources agentResources;
         string guildId;
         string roleId;
@@ -1240,11 +1240,6 @@ namespace  DiscordCoreInternal {
         string description;
         vector<ApplicationCommandOptionData> options;
         bool defaultPermission;
-    };
-
-    struct CommandData {
-        vector<string> optionsArgs;
-        string commandName;
     };
 
     struct ApplicationCommandInteractionDataResolved {
@@ -1645,15 +1640,6 @@ namespace DiscordCoreAPI {
     protected:
         unsigned long long maxNumberOfMs;
         unsigned long long startTime;
-    };
-
-    string constructStringContent(DiscordCoreInternal::CommandData commandData) {
-        string finalCommandString;
-        finalCommandString = commandData.commandName + " = ";
-        for (auto& value : commandData.optionsArgs) {
-            finalCommandString += value + ", ";
-        }
-        return finalCommandString;
     };
 
     long long convertTimestampToInteger(string timeStamp) {
@@ -3034,8 +3020,6 @@ namespace DiscordCoreAPI {
         int systemChannelFlags{ 0 };
         MFALevel mfaLevel = MFALevel::NONE;
         bool large{ false };
-        bool unavailable{ false };
-        int memberCount{ 0 };
         vector<VoiceStateData> voiceStates{};
         vector<PresenceUpdateData> presences{};
         int maxPresences{ 0 };
@@ -3044,6 +3028,8 @@ namespace DiscordCoreAPI {
         PremiumTier premiumTier = PremiumTier::NONE;
         int maxVideoChannelUsers{ 0 };
         int approximateMemberCount{ 0 };
+        bool unavailable{ false };
+        int memberCount{ 0 };
         int approximatePresenceCount{ 0 };
         int nsfwLevel{ 0 };
         WelcomeScreenData welcomeScreen{};
@@ -3466,18 +3452,28 @@ namespace DiscordCoreAPI {
 
     static string commandPrefix;
 
-    struct CommandData {
-        CommandData(InputEventData inputEventData) {
-            this->eventData = inputEventData;
-        }
-        InputEventData eventData;
-    };
-
     struct RepeatedFunctionData {
         function<void(DiscordCoreClient*)> function;
         bool repeated;
     };
 
+    struct CommandData {
+        CommandData(InputEventData inputEventData) {
+            this->eventData = inputEventData;
+        }
+        vector<string> optionsArgs;
+        string commandName;
+        InputEventData eventData;
+    };
+
+    string constructStringContent(CommandData commandData) {
+        string finalCommandString;
+        finalCommandString = commandData.commandName + " = ";
+        for (auto& value : commandData.optionsArgs) {
+            finalCommandString += value + ", ";
+        }
+        return finalCommandString;
+    };
 };
 
 #endif

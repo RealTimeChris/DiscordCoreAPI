@@ -995,6 +995,10 @@ namespace DiscordCoreAPI {
             SelectMenu::threadContext->releaseGroup();
         }
 
+        ~SelectMenu() {
+            done();
+        }
+
         string getSelectMenuId() {
             return this->selectMenuId;
         }
@@ -1099,6 +1103,10 @@ namespace DiscordCoreAPI {
 
         static void cleanup() {
             Button::threadContext->releaseGroup();
+        }
+
+        ~Button() {
+            done();
         }
 
         string getButtonId() {

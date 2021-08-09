@@ -479,7 +479,7 @@ namespace DiscordCoreInternal {
 		
 	}
 
-	string getCreateMessagePayload(SendDMData dataPackage) {
+	string getCreateMessagePayload(PostDMData dataPackage) {
 
 		auto componentsActionRow = json::array();
 
