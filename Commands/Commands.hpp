@@ -13,8 +13,6 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreClient;
-
 	struct BaseFunctionArguments {
 		BaseFunctionArguments() {}
 		BaseFunctionArguments(InputEventData inputEventData) {
