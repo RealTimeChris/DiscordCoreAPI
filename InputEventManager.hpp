@@ -208,7 +208,5 @@ namespace DiscordCoreAPI {
 	shared_ptr<InteractionManager> InputEventManager::interactions;
 	shared_ptr<DiscordCoreClientBase> InputEventManager::discordCoreClientBase;
 	shared_ptr< DiscordCoreClient> InputEventManager::discordCoreClient;
-
-
 }
 #endif
