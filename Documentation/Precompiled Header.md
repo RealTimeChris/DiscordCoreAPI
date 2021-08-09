@@ -1,5 +1,5 @@
 ```cpp
-// pch.h - Precomiled header.	
+// pch.h - Precomiled header.
 // https://github.com/RealTimeChris
 
 #pragma once
@@ -33,15 +33,12 @@
 #include <winrt/Windows.System.Threading.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Media.Devices.h>
-#include <matroska\KaxContentEncoding.h>
 #include <winrt/Windows.Media.Render.h>
 #include <winrt/Windows.Media.Audio.h>
 #include <winrt/Windows.Networking.h>
 #include <winrt/Windows.Foundation.h>
 #include <concurrent_unordered_map.h>
 #include <winrt/Windows.Foundation.h>
-#include <matroska\matroska_export.h>
-#include <matroska/c/libmatroska_t.h>
 #include <winrt/Windows.Devices.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
@@ -79,10 +76,10 @@ extern "C"
 #include <ogg\config_types.h>
 #include <nlohmann/json.hpp>
 #include <dispatcherqueue.h>
-#include <opus/opusfile.h>
-#include <pplinterface.h>
 #include <ogg\os_types.h>
 #include <winrt/base.h>
+#include <opus/opusfile.h>
+#include <pplinterface.h>
 #include <winrt/base.h>
 #include <curl/curl.h>
 #include <opus/opus.h>
@@ -90,7 +87,6 @@ extern "C"
 #include <pplawait.h>
 #include <concrtrm.h>
 #include <ppltasks.h>
-#include <ogg\ogg.h>
 #include <atltime.h>
 #include <coroutine>
 #include <iostream>
