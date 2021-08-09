@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			catch (exception& e) {
-				cout << "CommandController::getCommand() Error: " << e.what() << endl << endl;
+				cout << "CommandCenter::getCommand() Error: " << e.what() << endl << endl;
 			}
 			return nullptr;
 		}
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 				return args;
 			}
 			catch (exception& e) {
-				cout << "CommandController::parseArguments() Error: " << e.what() << endl << endl;
+				cout << "CommandCenter::parseArguments() Error: " << e.what() << endl << endl;
 				return args;
 			}
 		}
