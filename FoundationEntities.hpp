@@ -12,6 +12,86 @@
 
 namespace DiscordCoreAPI {
     class DiscordCoreClient;
+
+    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
+        __int64 timeValue = timeInMs / 1000;
+        __time64_t rawTime(timeValue);
+        tm timeInfo;
+        char timeBuffer[32];
+        errno_t error;
+        error = localtime_s(&timeInfo, &rawTime);
+        if (error)
+        {
+            printf("Invalid argument to _localtime64_s.");
+        }
+        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
+        return timeBuffer;
+    }
+
+    string convertSnowFlakeToDateTimeString(string snowFlake) {
+        string returnString;
+        __int64 timeInMs = (stoll(snowFlake) >> 22) + 1420070400000;
+        returnString = convertTimeInMsToDateTimeString(timeInMs);
+        return returnString;
+    }
+
+    class StopWatch {
+    public:
+        StopWatch(unsigned long long maxNumberOfMsNew) {
+            this->maxNumberOfMs = maxNumberOfMsNew;
+            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+        }
+
+        bool hasTimePassed() {
+            unsigned long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            unsigned long long elapsedTime = currentTime - this->startTime;
+            if (elapsedTime >= this->maxNumberOfMs) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        void resetTimer() {
+            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+        }
+    protected:
+        unsigned long long maxNumberOfMs;
+        unsigned long long startTime;
+    };
+
+    long long convertTimestampToInteger(string timeStamp) {
+        CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
+            stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
+        return timeValue.GetTime();
+    }
+
+    string convertTimeStampToNewOne(string timeStamp) {
+        long long timeInMs = convertTimestampToInteger(timeStamp) * 1000;
+        string returnString = convertTimeInMsToDateTimeString(timeInMs);
+        return returnString;
+    }
+
+    bool hasTimeElapsed(string timeStamp, long long days = 0, long long hours = 0, long long minutes = 0) {
+        long long startTime = convertTimestampToInteger(timeStamp);
+        long long currentTime = chrono::duration_cast<chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count();
+        long long secondsPerMinute = 60;
+        long long secondsPerHour = secondsPerMinute * 60;
+        long long secondsPerDay = secondsPerHour * 24;
+        long long targetElapsedTime = (days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute);
+        long long actualElapsedTime = currentTime - startTime;
+        if (actualElapsedTime < 0) {
+            actualElapsedTime = 0;
+        }
+        if (actualElapsedTime >= targetElapsedTime) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 };
 
 namespace  DiscordCoreInternal {
@@ -121,6 +201,7 @@ namespace  DiscordCoreInternal {
         }
         EmbedData setTimeStamp(string timeStamp) {
             this->timestamp = timeStamp;
+            this->timestampRaw = DiscordCoreAPI::convertTimeStampToNewOne(timeStamp);
             return *this;
         }
         EmbedData addField(string name, string value, bool Inline = true) {
@@ -140,6 +221,7 @@ namespace  DiscordCoreInternal {
         EmbedFooterData footer;
         EmbedImageData image;
         EmbedThumbnailData thumbnail;
+        string timestampRaw;
         EmbedVideoData video;
         EmbedProviderData provider;
         EmbedAuthorData author;
@@ -1564,85 +1646,6 @@ namespace  DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
     class DiscordCoreClient;
-
-    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
-        __int64 timeValue = timeInMs / 1000;
-        __time64_t rawTime(timeValue);
-        tm timeInfo;
-        char timeBuffer[32];
-        errno_t error;
-        error = localtime_s(&timeInfo, &rawTime);
-        if (error)
-        {
-            printf("Invalid argument to _localtime64_s.");
-        }
-        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
-        return timeBuffer;
-    }
-
-    string convertSnowFlakeToDateTimeString(string snowFlake) {
-        string returnString;
-        __int64 timeInMs = (stoll(snowFlake) >> 22) + 1420070400000;
-        returnString = convertTimeInMsToDateTimeString(timeInMs);
-        return returnString;
-    }
-
-    class StopWatch {
-    public:
-        StopWatch(unsigned long long maxNumberOfMsNew) {
-            this->maxNumberOfMs = maxNumberOfMsNew;
-            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-        }
-
-        bool hasTimePassed() {
-            unsigned long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-            unsigned long long elapsedTime = currentTime - this->startTime;
-            if (elapsedTime >= this->maxNumberOfMs) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-
-        void resetTimer() {
-            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-        }
-    protected:
-        unsigned long long maxNumberOfMs;
-        unsigned long long startTime;
-    };
-
-    long long convertTimestampToInteger(string timeStamp) {
-        CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
-            stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
-        return timeValue.GetTime();
-    }
-
-    string convertTimeStampToNewOne(string timeStamp) {
-        long long timeInMs = convertTimestampToInteger(timeStamp) * 1000;
-        string returnString = convertTimeInMsToDateTimeString(timeInMs);
-        return returnString;
-    }
-
-    bool hasTimeElapsed(string timeStamp, long long days = 0, long long hours = 0, long long minutes = 0) {
-        long long startTime = convertTimestampToInteger(timeStamp);
-        long long currentTime = chrono::duration_cast<chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count();
-        long long secondsPerMinute = 60;
-        long long secondsPerHour = secondsPerMinute * 60;
-        long long secondsPerDay = secondsPerHour * 24;
-        long long targetElapsedTime = (days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute);
-        long long actualElapsedTime = currentTime - startTime;
-        if (actualElapsedTime < 0) {
-            actualElapsedTime = 0;
-        }
-        if (actualElapsedTime >= targetElapsedTime) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 
     template <typename... T, typename Function>
     void executeFunctionAfterTimePeriod(Function function, unsigned int timeDelayInMs, bool isRepeating, T... args) {

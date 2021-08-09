@@ -1408,7 +1408,7 @@ namespace DiscordCoreInternal {
 				{ "title", value.title },
 				{ "fields", fields },
 				{ "color",realColorVal },
-					{"timestamp", value.timestamp}
+					{"timestamp", value.timestampRaw}
 				};
 				embedsArray.push_back(embed);
 			}
