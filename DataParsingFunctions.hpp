@@ -778,7 +778,7 @@ namespace DiscordCoreInternal {
 
     void parseObject(json jsonObjectData, DiscordCoreAPI::GuildData* pDataStructure) {
         DiscordCoreAPI::GuildData guildData = *pDataStructure;
-
+        
         if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
             guildData.id = jsonObjectData.at("id").get<string>();
         }
@@ -1055,7 +1055,7 @@ namespace DiscordCoreInternal {
         if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
             guildData.createdAt = DiscordCoreAPI::convertSnowFlakeToDateTimeString(jsonObjectData.at("id"));
         }
-
+        
         *pDataStructure = guildData;
     };
 
@@ -1514,11 +1514,12 @@ namespace DiscordCoreInternal {
 
     void parseObject(json jsonObjectData, DiscordCoreAPI::InviteData* pDataStructure) {
         DiscordCoreAPI::InviteData inviteData = *pDataStructure;
-
+        
         if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null() && jsonObjectData.at("code").type() == nlohmann::detail::value_t::string) {
             inviteData.code = jsonObjectData.at("code").get<string>();
         }
-        else if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null()) {
+        
+        else if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null() && jsonObjectData.at("code").type() == nlohmann::detail::value_t::number_integer) {
             inviteData.code = to_string(jsonObjectData.at("code").get<int>());
         }
 

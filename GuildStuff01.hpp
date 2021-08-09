@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		string guildId;
 	};
 
-	struct GetVanityInviteData {
+	struct FetchVanityInviteData {
 		string guildId;
 	};
 
@@ -116,11 +116,11 @@ namespace DiscordCoreAPI {
 		string userId;
 	};
 
-	struct GetInviteData {
+	struct FetchInviteData {
 		string inviteId;
 	};
 
-	struct GetInvitesData {
+	struct FetchInvitesData {
 		string guildId;
 	};
 
@@ -340,8 +340,8 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			try {
-				DiscordCoreInternal::GetGuildData dataPackage01;
-				if (try_receive(this->requestGetGuildBuffer, dataPackage01)) {
+				DiscordCoreInternal::CollectGuildData dataPackage01;
+				if (try_receive(this->requestCollectGuildBuffer, dataPackage01)) {
 					map<string, Guild> cacheTemp;
 					if (try_receive(GuildManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage01.guildId)) {
@@ -427,7 +427,7 @@ namespace DiscordCoreAPI {
 			co_return guild;
 		}
 
-		task<vector<InviteData>> getInvitesAsync(GetInvitesData dataPackage) {
+		task<vector<InviteData>> fetchInvitesAsync(FetchInvitesData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetInvitesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -460,7 +460,7 @@ namespace DiscordCoreAPI {
 			co_return banData;
 		}
 
-		task<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage) {
+		task<InviteData> fetchVanityInviteAsync(FetchVanityInviteData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetVanityInviteData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -475,7 +475,7 @@ namespace DiscordCoreAPI {
 			co_return inviteData;
 		}
 
-		task<InviteData> getInviteAsync(GetInviteData dataPackage) {
+		task<InviteData> fetchInviteAsync(FetchInviteData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetInviteData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
