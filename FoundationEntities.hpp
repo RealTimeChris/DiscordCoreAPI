@@ -1644,11 +1644,12 @@ namespace DiscordCoreAPI {
         }
     }
 
-    void executeFunctionAfterTimePeriod(function<void()> const& lambda, unsigned int timeDelayInMs, bool isRepeating) {
+    template <typename... T, typename Function>
+    void executeFunctionAfterTimePeriod(Function function, unsigned int timeDelayInMs, bool isRepeating, T... args) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0) {
-            TimerElapsedHandler timeElapsedHandler = [&, threadPoolTimer, lambda](ThreadPoolTimer threadPoolTimerNew)->void {
-                lambda();
+            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                function(args...);
             };
             if (isRepeating) {
                 threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
@@ -1656,20 +1657,19 @@ namespace DiscordCoreAPI {
             else {
                 threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             }
-
         }
         else {
-            lambda();
+            function(args...);
         }
         return;
     }
 
-    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> const& lambda, unsigned int timeDelayInMs, bool isRepeating) {
+    template <>
+    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> function, unsigned int timeDelayInMs, bool isRepeating) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0) {
-            TimerElapsedHandler timeElapsedHandler = [&, threadPoolTimer, lambda](ThreadPoolTimer threadPoolTimerNew) {
-                lambda(threadPoolTimerNew);
-                return;
+            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                function(threadPoolTimerNew);
             };
             if (isRepeating) {
                 threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
@@ -1677,10 +1677,9 @@ namespace DiscordCoreAPI {
             else {
                 threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             }
-
         }
         else {
-            lambda(threadPoolTimer);
+            function(threadPoolTimer);
         }
         return;
     }
@@ -3425,8 +3424,9 @@ namespace DiscordCoreAPI {
     static string commandPrefix;
 
     struct RepeatedFunctionData {
-        function<void(DiscordCoreClient*)> function;
+        function<void(shared_ptr<DiscordCoreClient>)> function;
         bool repeated;
+        int intervalInMs;
     };
 
     struct CommandData {

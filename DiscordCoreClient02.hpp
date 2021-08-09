@@ -12,31 +12,18 @@
 
 namespace DiscordCoreAPI {
 
-    void DiscordCoreClient::finalSetup(string botToken, vector<RepeatedFunctionData>* lambda = nullptr) {
+    void DiscordCoreClient::finalSetup(string botToken, vector<RepeatedFunctionData>* functionsToExecute = nullptr) {
         try {
             DiscordCoreInternal::ThreadManager::intialize();
             shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
             DiscordCoreClient::thisPointer = pDiscordCoreClient;
             EventHandler::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();
-            vector<RepeatedFunctionData>* vectorNew = new vector<RepeatedFunctionData>;
-            executeFunctionAfterTimePeriod([=]() {
-                cout << "Heart beat!" << endl << endl;
-                if (vectorNew->size() > 0) {
-                    for (auto value : *vectorNew) {
-                        value.function(pDiscordCoreClient.get());
-                    }
-                    return;
+            if (functionsToExecute != nullptr) {
+                for (auto value : *functionsToExecute) {
+                    executeFunctionAfterTimePeriod(value.function, (unsigned int)value.intervalInMs, value.repeated, pDiscordCoreClient);
                 }
-                if (lambda != nullptr) {
-                    for (unsigned int x = 0; x < lambda->size(); x += 1) {
-                        lambda->at(x).function(pDiscordCoreClient.get());
-                        if (lambda->at(x).repeated) {
-                            vectorNew->push_back(lambda->at(x));
-                        }
-                    }
-                }
-                }, 60000, true);
+            }
             pDiscordCoreClient->eventManager->onChannelCreation(&EventHandler::onChannelCreation);
             pDiscordCoreClient->eventManager->onChannelUpdate(&EventHandler::onChannelUpdate);
             pDiscordCoreClient->eventManager->onChannelDeletion(&EventHandler::onChannelDeletion);
@@ -51,9 +38,6 @@ namespace DiscordCoreAPI {
             pDiscordCoreClient->eventManager->onRoleDeletion(&EventHandler::onRoleDeletion);
             pDiscordCoreClient->eventManager->onInteractionCreation(&EventHandler::onInteractionCreation);
             pDiscordCoreClient->eventManager->onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
-            CommandCenter::registerFunction("botinfo", new BotInfo);
-            CommandCenter::registerFunction("play", new Play);
-            CommandCenter::registerFunction("test", new Test);
         }
         catch (exception& e) {
             cout << "DiscordCoreAPI::finalSetup Error: " << e.what() << endl;
