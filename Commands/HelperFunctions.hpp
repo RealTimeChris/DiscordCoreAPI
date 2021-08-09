@@ -10,7 +10,6 @@
 
 #include "../pch.h"
 
-
 namespace DiscordCoreAPI {
 
     string convertToLowerCase(string stringToConvert) {
@@ -578,7 +577,6 @@ namespace DiscordCoreAPI {
                             dataPackage.content = "";
                             InputEventManager::respondToEvent(dataPackage);
                         }
-
                     }
                     doWeQuit = true;
                     return RecurseThroughMessagePagesData();
