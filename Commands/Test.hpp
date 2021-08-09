@@ -22,52 +22,15 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
-			try {
+			InputEventManager::deleteInputEventResponseAsync(args->eventData);
 
-				EmbedData msgEmbed;
-				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-				msgEmbed.setColor("000000");
-				msgEmbed.setDescription(args->argumentsArray.at(0));
-				msgEmbed.setTimeStamp(getTimeAndDate());
-				msgEmbed.setTitle("__**Welcome:**__");
-				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData responseData(args->eventData);
-					responseData.messageReference.channelId = args->eventData.getChannelId();
-					responseData.messageReference.messageId = args->eventData.getMessageId();
-					responseData.embeds.push_back(msgEmbed);
-					InputEventManager::respondToEvent(responseData);
-				}
-				DiscordCoreAPI::GetAuditLogData dataPackage;
-				dataPackage.actionType = DiscordCoreAPI::AuditLogEvent::ROLE_UPDATE;
-				dataPackage.guildId = args->eventData.getGuildId();
-				dataPackage.limit = 25;
-				dataPackage.userId = args->eventData.getAuthorId();
-				AuditLogData auditLogData = args->eventData.discordCoreClient->guilds->getAuditLogDataAsync(dataPackage).get();
+			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 
-				for (auto value : auditLogData.auditLogEntries) {
-					for (auto value2 : value.changes) {
-						cout << value2.newValueString << endl;
-						cout << value2.oldValueString << endl;
-					}
-				}
-				auto messages = args->eventData.discordCoreClient->messages->fetchMessagesAsync({ .channelId = args->eventData.getChannelId(), .limit = 100, .beforeThisId = args->eventData.getMessageId() }).get();
-				vector<string> messageIds;
-				for (auto value : *messages) {
-					messageIds.push_back(value.data.id);
-				}
-				DeleteMessagesBulkData dataPackage2;
-				dataPackage2.channelId = true;
-				dataPackage2.messageIds = messageIds;
-				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(dataPackage2).get();
+			Guild guild = args->eventData.discordCoreClient->guilds->fetchAsync({ .guildId = args->eventData.getGuildId() }).get();
 
-				co_return;
-			}
-			catch (exception error) {
-				cout << "Help::execute() Error: " << error.what() << endl << endl;
-			}
+			co_return;
 
 		}
 	};
-	Test test{};
 }
 #endif
