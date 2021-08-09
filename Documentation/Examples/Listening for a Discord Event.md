@@ -20,7 +20,6 @@ int main()
     init_apartment();
     string botToken = "";
     DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
-    DiscordCoreAPI::CommandCenter::registerFunction("test", new DiscordCoreAPI::Test);
     DiscordCoreAPI::DiscordCoreClient::thisPointer->eventManager->onGuildCreation(&onGuildCreation);
     DiscordCoreAPI::DiscordCoreClient::runBot();
     return 0;
