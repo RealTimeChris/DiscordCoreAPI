@@ -1,19 +1,29 @@
 ### **Listening for a Discord Event:**
 ---
-- Create a `DiscordCoreAPI::CreateApplicationCommandData` data structure.
-- For each argument, fill out an `ApplicationCommandOptionData` structure, and push it back into the options member of the `CreateApplicationCommandData` structure. (**IMPORTANT #1**: Notes on which kind of types to set can be found [here.](https://discord.com/developers/docs/interactions/slash-commands#subcommands-and-subcommand-groups)) (**IMPORTANT #2**: Be sure to set the order of the arguments up to be equivalent to what they are in the normal version of the command, so that they can be parsed properly.)
-- Run, from the `DiscordCoreClient` instance, the `slashCommands::createGlobalApplicationCommandAsync()` function. (Note: This is done from within a command called `registerslashcommands`, by default.)
+- A comlpete list of possible events is [here](https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events)
+- Create a function that returns `void`, that takes an argument of a type that derives its name from the type of event that is being listened for, where the argument is of type `EVENTNAME+Data`.
+- The list of events can be found by dereferencing `DiscordCoreAPI::DiscordCoreClient::thisPointer->eventManager->`, where you pass into the function found here, a pointer to your own created function.
 
 ```cpp
-DiscordCoreAPI::CreateApplicationCommandData createTestCommandData;
-createTestCommandData.defaultPermission = true;
-createTestCommandData.description = "A test command.";
-createTestCommandData.name = "test";
-DiscordCoreAPI::ApplicationCommandOptionData testCommandOptionOne;
-testCommandOptionOne.name = "optionone";
-testCommandOptionOne.required = true;
-testCommandOptionOne.type = ApplicationCommandOptionType::STRING;
-testCommandOptionOne.description = "The first argument to be entered.";
-createTestCommandData.options.push_back(testCommandOptionOne);
-args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createTestCommandData).get();
+// main.cpp - Main entry point.
+// https://github.com/RealTimeChris
+
+#include "pch.h"
+#include "./DiscordCoreAPI/DiscordCoreClient02.hpp"
+
+static void onGuildCreation(DiscordCoreAPI::OnGuildCreationData dataPackage) {
+    cout << "Guild Name: " << dataPackage.guild.data.name << endl;
+}
+
+int main()
+{
+    init_apartment();
+    string botToken = "";
+    DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
+    DiscordCoreAPI::CommandCenter::registerFunction("test", new DiscordCoreAPI::Test);
+    DiscordCoreAPI::DiscordCoreClient::thisPointer->eventManager->onGuildCreation(&onGuildCreation);
+    DiscordCoreAPI::DiscordCoreClient::runBot();
+    return 0;
+}
+
 ```
