@@ -5,7 +5,7 @@
 - ### [Adding a Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Command.md)
 
 ## General Usage:
-- ### [Running a Command]()
+- ### [Running a Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Running%20a%20Command.md)
 - ### [Running a Function on a Timer](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Running%20a%20Function%20on%20a%20Timer.md)
 - ### [Listening for a Discord Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listening%20for%20a%20Discord%20Event.md)
 
