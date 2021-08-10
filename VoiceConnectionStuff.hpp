@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 			int bufferIndex = 0;
 			vector<IBuffer> bufferVector(2);
 			__int64 startingTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			while (doWeQuit == false && bytesRemaining > 0) {
+			while (doWeQuit == false && bytesRemaining >= -1) {
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
 				}
@@ -219,20 +219,18 @@ namespace DiscordCoreAPI {
 						for (unsigned int x = 0; x < audioData.audioData.Length(); x += 1) {
 							dataVector.push_back(audioData.audioData.data()[x]);
 						}
-						WebAFile buffer = demuxWebA(dataVector);
+						//WebAFile buffer = demuxWebA(dataVector);
 						InMemoryRandomAccessStream randomStream;
 						DataWriter writer(randomStream.GetOutputStreamAt(0));
-						
-						
 						DataReader reader(randomStream.GetInputStreamAt(0));
-						
-						auto outputBufferNew = decodeOpusData(buffer, audioData.filePath, audioData.fileName);
+						decodeAudioData(audioData.filePath, audioData.fileName);
+						//auto outputBufferNew = decodeOpusData(buffer, audioData.filePath, audioData.fileName);
 						hstring newFilePath = to_hstring(audioData.filePath);
 						hstring newFileName = to_hstring(audioData.fileName) + L" DECODED.opus";
-						writer.WriteBytes(outputBufferNew);
+						//writer.WriteBytes(outputBufferNew);
 						writer.StoreAsync().get();
-						reader.LoadAsync((uint32_t)outputBufferNew.size());
-						saveFile(newFilePath, newFileName, reader.ReadBuffer((uint32_t)outputBufferNew.size()));
+						//reader.LoadAsync((uint32_t)outputBufferNew.size());
+						//saveFile(newFilePath, newFileName, reader.ReadBuffer((uint32_t)outputBufferNew.size()));
 					}
 					counter += 1;
 				}

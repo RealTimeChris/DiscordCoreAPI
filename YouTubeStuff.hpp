@@ -409,7 +409,7 @@ namespace DiscordCoreAPI {
 			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
 			AudioDataChunk audioData;
 			audioData.filePath = "C:\\Users\\Chris\\Downloads\\";
-			audioData.fileName = videoSearchResult.videoTitle + " " + playerId + ".webm";
+			audioData.fileName = videoSearchResult.videoTitle + " " + playerId + ".m4a";
 			audioData.audioData = readBuffer;
 			audioData.audioBitrate = format.bitrate;
 			audioData.totalByteSize = format.contentLength;
@@ -417,9 +417,8 @@ namespace DiscordCoreAPI {
 			audioData.remainingBytes = remainingDownloadContentLength;
 			send(*sendAudioBuffer, audioData);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
-			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
+			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".m4a";
 			saveFile(filePath, fileName, readBuffer);
-			string filePathName = to_string(filePath) + to_string(fileName);
 			co_return;
 		}
 

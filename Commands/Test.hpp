@@ -25,13 +25,9 @@ namespace DiscordCoreAPI {
 
 			InputEventManager::deleteInputEventResponseAsync(args->eventData);
 
-			DeleteChannelPermissionOverwritesData dataPackage;
-			dataPackage.channelId = args->eventData.getChannelId();
-			dataPackage.roleOrUserId = args->eventData.getAuthorId();
-			args->eventData.discordCoreClient->channels->deleteChannelPermissionOverwritesAsync(dataPackage).get();
+			Channel channel = args->eventData.discordCoreClient->channels->fetchDMChannelAsync({ .userId = args->eventData.getAuthorId() }).get();
 
 			co_return;
-
 		}
 	};
 }
