@@ -24,9 +24,17 @@ namespace DiscordCoreAPI {
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			InputEventManager::deleteInputEventResponseAsync(args->eventData);
 
-			Guild guild01 = args->eventData.discordCoreClient->guilds->getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
+			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+				ReplyMessageData dataPackage(args->eventData);
+				dataPackage.content = "Test Message!";
+				InputEventManager::respondToEvent(dataPackage);
+			}
+			else {
+				CreateInteractionResponseData dataPackage(args->eventData);
+				dataPackage.data.content = "Test Message!";
+				InputEventManager::respondToEvent(dataPackage);
+			}
 
-			Guild guild02 = args->eventData.discordCoreClient->guilds->fetchAsync({ .guildId = args->eventData.getGuildId() }).get();
 
 			co_return;
 
