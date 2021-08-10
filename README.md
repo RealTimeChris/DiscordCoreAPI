@@ -31,20 +31,20 @@
 ```C++
 if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 	string msgString = "Sorry, but we are all out of inventory!";
-	EmbedData messageEmbed;
+	DiscordCoreAPI::EmbedData messageEmbed;
 	messageEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 	messageEmbed.setColor(discordGuild.data.borderColor);
 	messageEmbed.setDescription(msgString);
 	messageEmbed.setTimeStamp(getTimeAndDate());
 	messageEmbed.setTitle("__**Empty Inventory:**__");
 	if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-		ReplyMessageData responseData(args->eventData);
+		DiscordCoreAPI::ReplyMessageData responseData(args->eventData);
 		responseData.embeds.push_back(messageEmbed);
 		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
 		DiscordCoreAPI::InputEventManager::deleteInputEventResponse(event01, 20000).get();
 	}
 	else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-		CreateInteractionResponseData responseData(args->eventData);
+		DiscordCoreAPI::CreateInteractionResponseData responseData(args->eventData);
 		responseData.data.embeds.push_back(messageEmbed);
 		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
 		DiscordCoreAPI::InputEventManager::deleteInputEventResponse(event01, 20000).get();
