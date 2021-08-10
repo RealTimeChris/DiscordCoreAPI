@@ -15,7 +15,9 @@
 - As a result of using the asynchronous agents library, this library has the ability to make fully asynchronous requests to the Discord API.
 
 ### Select Menues
-![](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(83).png?raw=true)
+<p align="center">
+ <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(83).png?raw=true"  width="400">
+</p>
 ![](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(84).png?raw=true)
 
 ### Slash Commands and Buttons
