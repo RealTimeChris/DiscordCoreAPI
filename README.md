@@ -14,6 +14,10 @@
 ### Concurrent Discord API Access
 - As a result of using the asynchronous agents library, this library has the ability to make fully asynchronous requests to the Discord API.
 
+### Select Menues
+![](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(83).png)
+![](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(84).png)
+
 ### Slash Commands and Buttons
 ![](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(53).png?raw=true)
 ### A Unified "Input-Event" System
