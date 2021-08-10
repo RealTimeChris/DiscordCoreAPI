@@ -628,8 +628,6 @@ namespace DiscordCoreAPI{
 				this->clusters.push_back(newCluster);
 				currentPosition += newCluster.elementSize;
 				lastElementSize = newCluster.elementSize;
-				cout << "INPUT VECTOR SIZE: " << inputVector->size() << endl;
-				cout << "STARTING POSITION: " << *startingPosition << endl;
 			}
 		}
 		SeekHead seekHead;

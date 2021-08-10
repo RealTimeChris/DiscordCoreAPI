@@ -420,7 +420,6 @@ namespace DiscordCoreAPI {
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
 			saveFile(filePath, fileName, readBuffer);
 			string filePathName = to_string(filePath) + to_string(fileName);
-			//auto newBuffer = demux(filePathName);
 			co_return;
 		}
 

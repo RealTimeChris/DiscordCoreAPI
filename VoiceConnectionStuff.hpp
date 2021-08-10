@@ -179,11 +179,10 @@ namespace DiscordCoreAPI {
 		void run() {
 			AudioDataChunk audioData;
 			vector<ThreadPoolTimerNew> sendTimers;
-			AudioOutputStuff::OutputStereoSpeakers outputSpeakers = AudioOutputStuff::OutputStereoSpeakers();
 			string playerId;
 			int counter = 0;
 			__int64 totalByteSize = 0;
-			__int64 bytesRemaining = 1;
+			__int64 bytesRemaining = -1;
 			int bufferIndex = 0;
 			vector<IBuffer> bufferVector(2);
 			__int64 startingTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -208,7 +207,7 @@ namespace DiscordCoreAPI {
 					bytesRemaining -= audioData.audioData.Length();
 					cout << "AUDIO DATA LENGTH: " << audioData.audioData.Length() << endl;
 					if (audioData.playerId != playerId) {
-						//cleanupAndSwitchPlayerId(&counter, &totalByteSize, &bytesRemaining, &startingTime, &sendTimers, &playerId, audioData);
+						cleanupAndSwitchPlayerId(&counter, &totalByteSize, &bytesRemaining, &startingTime, &sendTimers, &playerId, audioData);
 						this->timestamp = (int)startingTime;
 					}
 					if (counter == 0 && bufferIndex < 2) {
@@ -234,11 +233,6 @@ namespace DiscordCoreAPI {
 						writer.StoreAsync().get();
 						reader.LoadAsync((uint32_t)outputBufferNew.size());
 						saveFile(newFilePath, newFileName, reader.ReadBuffer((uint32_t)outputBufferNew.size()));
-						outputBufferNew = decodeOpusData(buffer, audioData.filePath, audioData.fileName);
-						
-						ThreadPoolTimer timerNew(nullptr);
-						sendTimers.resize(sendTimers.size() + 1);
-						//sendTimers[sendTimers.size() - 1].threadPoolTimer = timerNew.CreateTimer(onSendTime, TimeSpan((counter * lengthInNs) - (timeDifference) / 100));
 					}
 					counter += 1;
 				}

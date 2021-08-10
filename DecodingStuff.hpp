@@ -104,65 +104,8 @@ namespace DiscordCoreAPI {
     }
 
 	vector<uint8_t> decodeOpusData(WebAFile inputDecodingData, string filePath, string fileName) {
-        auto loadBuffer = loadFile(to_hstring(filePath), to_hstring("porter-robinson-look-at-the-sky-_short-remake_-1627573669964519900_2.opus"));
-        int totalSize = 0;
-        //auto newVector = inputDecodingData.writeToOutputVector();
-        totalSize += loadBuffer.Length();
-        ogg_sync_state syncState;
-        int error;
-        char* filePathNew = new  char[filePath.size() + fileName.size()];
-        for (unsigned int x = 0; x < filePath.size(); x += 1) {
-            filePathNew[x] = filePath[x];
-        }
-        for (unsigned int x = 0; x < fileName.size(); x += 1) {
-            filePathNew[x] = fileName[x];
-        }
-        OggOpusFile* opusFile = op_open_file(filePathNew, &error);
-        if (error != 0) {
-            cout << "ERROR CODE: " << error << endl;
-            cout << "Failed to open the memory stream of Opus data!" << endl;
-        }
-        auto returnVector = applyAudioData(inputDecodingData, loadBuffer);
-        opusFile = op_open_memory(returnVector.data(), returnVector.size(), &error);
-        if (error != 0) {
-            cout << "ERROR CODE: " << error << endl;
-            cout << "Failed to open the memory stream of Opus data!" << endl;
-        }
-        ogg_int64_t  pcmCount = op_pcm_total(opusFile, -2);
-        cout << "PCM COUNT: " << pcmCount << endl;
-        ogg_sync_init(&syncState);
-        ogg_stream_state streamState;
-        ogg_stream_init(&streamState, 00);
-        auto charPtr = ogg_sync_buffer(&syncState, totalSize);
-        memcpy(charPtr, loadBuffer.data(), totalSize);
-        ogg_sync_wrote(&syncState, totalSize);
-        ogg_page oggPage;
-        ogg_sync_pageout(&syncState, &oggPage);
-        
-        //int numOfPackets = ogg_page_packets(&oggPage);
-        //cout << "Number of packets on the current page: " << numOfPackets << endl;
-        /*
-        if (ogg_stream_pagein(&streamState, &oggPage) != 0) {
-            cout << "Failed to submit the page to the bitstream!" << endl;
-        };
-        ogg_packet oggPacket;
-        int error = ogg_stream_packetout(&streamState, &oggPacket);
-        if (error != 1) {
-            cout << error << endl;
-            cout << "Failed to decode the Ogg packet!" << endl;
-        }
-        vector<unsigned char> charVector;
-        
-        const unsigned char* charArray = new unsigned char[totalSize];
-        memcpy((void*)charArray, (void*)newVector.data(), newVector.size());
-        error;
-        */
-        //OggOpusFile* oggOpusMemory = op_open_memory(charArray, totalSize, &error);
-		if (error != 0) {
-            cout << "ERROR CODE: " << error << endl;
-            cout << "Failed to open the memory stream of Opus data!" << endl;
-		}
-        
+        vector<uint8_t> returnVector;
+
         return returnVector;
 
 	}
