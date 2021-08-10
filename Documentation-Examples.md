@@ -11,6 +11,7 @@
 
 ## Channel Manager:
 - ### [Edit Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Edit%20Permission%20Overwrites.md)
+- ### [Delete Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20Permission%20Overwrites.md)
 ## GuildMember Manager:
 
 ## Guild Manager:
