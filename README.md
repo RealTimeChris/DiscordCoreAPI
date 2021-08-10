@@ -15,13 +15,15 @@
 - As a result of using the asynchronous agents library, this library has the ability to make fully asynchronous requests to the Discord API.
 
 ### Select Menus
-<p align="center">
+<p align="left">
  	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(83).png?raw=true"  width="800">
 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(84).png?raw=true"  width="800">
 </p>
 
 ### Slash Commands and Buttons
-![](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(53).png?raw=true)
+<p align="left">
+	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(53).png?raw=true"  width="800">
+</p>
 ### A Unified "Input-Event" System
 - Both user messages and user interactions are accepted via the `onInputEventCreation` event.
 - They can all be responded to using the `InputEventHandler::respondToEvent()` function.
