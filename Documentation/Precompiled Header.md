@@ -1,5 +1,4 @@
-```cpp
-// pch.h - Precomiled header.
+// pch.h - Precomiled header.	
 // https://github.com/RealTimeChris
 
 #pragma once
@@ -72,12 +71,12 @@ extern "C"
 #include <libavutil/lzo.h>
 #include <libavutil/opt.h>
 }
-#include <ogg\config_types.h>
+#include <ogg/config_types.h>
 #include <nlohmann/json.hpp>
 #include <dispatcherqueue.h>
 #include <opus/opusfile.h>
 #include <pplinterface.h>
-#include <ogg\os_types.h>
+#include <ogg/os_types.h>
 #include <winrt/base.h>
 #include <winrt/base.h>
 #include <curl/curl.h>
@@ -124,4 +123,3 @@ using namespace std;
 #pragma intrinsic(__ll_lshift)
 
 #endif
-```
