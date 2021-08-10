@@ -11,7 +11,7 @@
 
 ## Channel Manager:
 - ### [Getting a Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Channel.md)
-- ### [Getting a Direct-Message Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Direct-Message%20Channel)
+- ### [Getting a Direct-Message Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Direct-Message%20Channel.md)
 - ### [Edit Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Edit%20Permission%20Overwrites.md)
 - ### [Delete Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20Permission%20Overwrites.md)
 ## GuildMember Manager:
