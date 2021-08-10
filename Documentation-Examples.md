@@ -9,8 +9,22 @@
 - ### [Running a Function on a Timer](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Running%20a%20Function%20on%20a%20Timer.md)
 - ### [Listening for a Discord Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listening%20for%20a%20Discord%20Event.md)
 
+## Channel Manager:
+
+## GuildMember Manager:
+
 ## Guild Manager:
 - ### [Getting a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild.md)
 
+## Interaction Manager:
+
+## Message Manager:
+
+## Reaction Manager:
+
+## Role Manager:
+
 ## Slash-Command Manager:
 - ### [Adding/Creating a Slash Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding-Creating%20a%20Slash-Command.md)
+
+## User Manager:
