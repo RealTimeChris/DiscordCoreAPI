@@ -16,8 +16,8 @@
 
 ### Select Menus
 <p align="center">
- 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(83).png?raw=true"  width="1000">
-	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(84).png?raw=true"  width="1000">
+ 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(83).png?raw=true"  width="800">
+	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/images/Screenshot%20(84).png?raw=true"  width="800">
 </p>
 
 ### Slash Commands and Buttons
