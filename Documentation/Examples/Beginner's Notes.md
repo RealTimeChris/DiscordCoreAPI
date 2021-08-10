@@ -22,6 +22,8 @@
     
     `DiscordCoreAPI::DiscordCoreClient->users = shared_ptr<DiscordCoreAPI::UserManager>`
     
+    `DiscordCoreAPI::InputEventManager = DiscordCoreAPI::InputEventManager`
+    
     
 - Each of the functions takes an argument that is of a type who's name is derived from the function - for example, the data structure that gets passed into `DiscordCoreAPI::GuildManager::getGuildAsync()` is `DiscordCoreAPI::GetGuildData`.
 - Most of the functions in this library are `Async`, meaning that they return a value of type `task<TaskType>`, which you call `.get()` on to retrieve the returned value, and to suspend the current thread in the process of waiting for it.
