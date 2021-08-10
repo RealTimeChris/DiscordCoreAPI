@@ -267,6 +267,7 @@ namespace DiscordCoreAPI {
 			GuildMemberData guildMemberData;
 			GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
+			guildMember.data.guildId = dataPackage.guildId;
 			co_return guildMember;
 		}
 

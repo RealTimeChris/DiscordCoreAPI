@@ -234,40 +234,35 @@ namespace DiscordCoreAPI {
 	public:
 
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
-			try {
-				DiscordCoreInternal::HttpAgentResources agentResources;
-				agentResources.baseURL = to_string(this->baseSearchURL);
-				DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
-				DiscordCoreInternal::HttpWorkload workload;
-				workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-				workload.workloadType = DiscordCoreInternal::HttpWorkloadType::YOUTUBE_SEARCH;
-				CURLU* urlHandle = curl_url();
-				curl_url_set(urlHandle, CURLUPart::CURLUPART_QUERY, searchQuery.c_str(), CURLU_URLENCODE);
-				char* charString{ nullptr };
-				curl_url_get(urlHandle, CURLUPart::CURLUPART_QUERY, &charString, 0);
-				workload.relativePath = charString;
-				curl_free(charString);
-				send(requestAgent.workSubmissionBuffer, workload);
-				requestAgent.start();
-				agent::wait(&requestAgent);
-				DiscordCoreInternal::HttpData returnData = receive(requestAgent.workReturnBuffer);
-				vector<DiscordCoreAPI::YouTubeSearchResult> searchResults;
-				json partialSearchResultsJson = returnData.data;
-				for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
-					DiscordCoreAPI::YouTubeSearchResult searchResult;
-					if (value.contains("videoRenderer")) {
-						DiscordCoreInternal::parseObject(value.at("videoRenderer"), &searchResult);
-						searchResults.push_back(searchResult);
-					}
+			DiscordCoreInternal::HttpAgentResources agentResources;
+			agentResources.baseURL = to_string(this->baseSearchURL);
+			DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::YOUTUBE_SEARCH;
+			CURLU* urlHandle = curl_url();
+			curl_url_set(urlHandle, CURLUPart::CURLUPART_QUERY, searchQuery.c_str(), CURLU_URLENCODE);
+			char* charString{ nullptr };
+			curl_url_get(urlHandle, CURLUPart::CURLUPART_QUERY, &charString, 0);
+			workload.relativePath = charString;
+			curl_free(charString);
+			send(requestAgent.workSubmissionBuffer, workload);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			DiscordCoreInternal::HttpData returnData = receive(requestAgent.workReturnBuffer);
+			vector<DiscordCoreAPI::YouTubeSearchResult> searchResults;
+			json partialSearchResultsJson = returnData.data;
+			for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
+				DiscordCoreAPI::YouTubeSearchResult searchResult;
+				if (value.contains("videoRenderer")) {
+					DiscordCoreInternal::parseObject(value.at("videoRenderer"), &searchResult);
+					searchResults.push_back(searchResult);
 				}
-				if (returnData.returnCode != 200) {
-					cout << "YouTubeAPI::searchForVideo() Error 01: " << returnData.returnCode << returnData.returnMessage.c_str() << endl;
-				}
-				return searchResults;
-			}			
-			catch (nlohmann::detail::parse_error& e) {
-				cout << e.what() << endl;
 			}
+			if (returnData.returnCode != 200) {
+				cout << "YouTubeAPI::searchForVideo() Error 01: " << returnData.returnCode << returnData.returnMessage.c_str() << endl;
+			}
+			return searchResults;
 		}
 
 		task<void> downloadAudio(YouTubeSearchResult videoSearchResult, shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBuffer) {
