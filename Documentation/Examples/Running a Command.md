@@ -48,4 +48,5 @@ namespace DiscordCoreAPI {
 		}
 	};
 }
-#endif```
+#endif
+```
