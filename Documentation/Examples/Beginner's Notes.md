@@ -2,7 +2,7 @@
 ---
 - All of the central class managers are either members of the class `DiscordCoreAPI::DiscordCoreClient` and are of type `shared_ptr<ManagerType>`, or members of the namespace `DiscordCoreAPI`.
   ##### They are as Follows:
-  ---
+  --
     `DiscordCoreAPI::DiscordCoreClient->channels = shared_ptr<DiscordCoreAPI::ChannelManager>`
     
     `DiscordCoreAPI::DiscordCoreClient->eventManager = shared_ptr<DiscordCoreAPI::EventManager>`
