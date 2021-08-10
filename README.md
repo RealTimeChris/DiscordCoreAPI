@@ -27,7 +27,7 @@
 
 ### A Unified "Input-Event" System
 - Both user messages and user interactions are accepted via the `onInputEventCreation` event.
-- They can all be responded to using the `InputEventHandler::respondToEvent()` function.
+- They can all be responded to using the `DiscordCoreAPI::InputEventHandler::respondToEvent()` function.
 ```C++
 if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 	string msgString = "Sorry, but we are all out of inventory!";
@@ -40,14 +40,14 @@ if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 	if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 		ReplyMessageData responseData(args->eventData);
 		responseData.embeds.push_back(messageEmbed);
-		InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-		InputEventManager::deleteInputEventResponse(event01, 20000).get();
+		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
+		DiscordCoreAPI::InputEventManager::deleteInputEventResponse(event01, 20000).get();
 	}
 	else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 		CreateInteractionResponseData responseData(args->eventData);
 		responseData.data.embeds.push_back(messageEmbed);
-		InputEventData event01 = InputEventManager::respondToEvent(responseData).get();
-		InputEventManager::deleteInputEventResponse(event01, 20000).get();
+		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
+		DiscordCoreAPI::InputEventManager::deleteInputEventResponse(event01, 20000).get();
 	}
 	co_await mainThread;
 	co_return;
