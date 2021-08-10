@@ -18,7 +18,7 @@ static void onGuildCreation(DiscordCoreAPI::OnGuildCreationData dataPackage) {
 int main()
 {
     init_apartment();
-    string botToken = "";
+    string botToken = "YOUR_TOKEN_HERE";
     DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
     DiscordCoreAPI::DiscordCoreClient::thisPointer->eventManager->onGuildCreation(&onGuildCreation);
     DiscordCoreAPI::DiscordCoreClient::runBot();
