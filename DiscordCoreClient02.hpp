@@ -3,8 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
 
+#pragma once
 #ifndef _DISCORD_CORE_CLIENT_02_
 #define _DISCORD_CORE_CLIENT_02_
 

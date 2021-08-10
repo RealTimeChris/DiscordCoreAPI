@@ -25,29 +25,30 @@ namespace DiscordCoreAPI {
         return newString;
     }
 
-    bool areWeInADM(InputEventData eventData, Channel channel) {
+    bool areWeInADM(InputEventData eventData, Channel channel, bool displayResponse = false) {
         auto currentChannelType = channel.data.type;
-
         if (currentChannelType == ChannelType::DM) {
-            string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
-            EmbedData msgEmbed;
-            msgEmbed.setAuthor(eventData.getMessageData().interaction.user.username, eventData.getMessageData().author.avatar);
-            msgEmbed.setColor("FEFEFE");
-            msgEmbed.setDescription(msgString);
-            msgEmbed.setTimeStamp(getTimeAndDate());
-            msgEmbed.setTitle("__**Direct Message Issue:**__");
-            InputEventData event01;
-            if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                ReplyMessageData responseData(eventData);
-                responseData.embeds.push_back(msgEmbed);
-                event01 = InputEventManager::respondToEvent(responseData);
-                InputEventManager::deleteInputEventResponseAsync(event01, 20000);
-            }
-            else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                CreateEphemeralInteractionResponseData responseData(eventData);
-                responseData.data.embeds.push_back(msgEmbed);
-                event01 = InputEventManager::respondToEvent(responseData);
-            }
+            if (displayResponse) {
+                string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
+                EmbedData msgEmbed;
+                msgEmbed.setAuthor(eventData.getMessageData().interaction.user.username, eventData.getMessageData().author.avatar);
+                msgEmbed.setColor("FEFEFE");
+                msgEmbed.setDescription(msgString);
+                msgEmbed.setTimeStamp(getTimeAndDate());
+                msgEmbed.setTitle("__**Direct Message Issue:**__");
+                InputEventData event01;
+                if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                    ReplyMessageData responseData(eventData);
+                    responseData.embeds.push_back(msgEmbed);
+                    event01 = InputEventManager::respondToEvent(responseData);
+                    InputEventManager::deleteInputEventResponseAsync(event01, 20000);
+                }
+                else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+                    CreateEphemeralInteractionResponseData responseData(eventData);
+                    responseData.data.embeds.push_back(msgEmbed);
+                    event01 = InputEventManager::respondToEvent(responseData);
+                }
+            }            
             return true;
         }
         return false;
@@ -357,7 +358,7 @@ namespace DiscordCoreAPI {
         return false;
     }
 
-    bool doWeHaveAdminPermissions(InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember) {
+    bool doWeHaveAdminPermissions(InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember, bool displayResponse = false) {
         bool doWeHaveAdmin = PermissionsConverter::checkForPermission(guildMember, channel, Permissions::ADMINISTRATOR);
 
         if (doWeHaveAdmin) {
@@ -370,25 +371,27 @@ namespace DiscordCoreAPI {
             return true;
         }
 
-        string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
-        EmbedData msgEmbed;
-        msgEmbed.setAuthor(guildMember.data.user.username, guildMember.data.user.avatar);
-        msgEmbed.setColor(discordGuild.data.borderColor);
-        msgEmbed.setDescription(msgString);
-        msgEmbed.setTimeStamp(getTimeAndDate());
-        msgEmbed.setTitle("__**Permissions Issue:**__");
-        if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-            ReplyMessageData responseData(eventData);
-            responseData.embeds.push_back(msgEmbed);
-            InputEventData event01 = InputEventManager::respondToEvent(responseData);
-            InputEventManager::deleteInputEventResponseAsync(event01, 20000);
-        }
-        else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-            CreateInteractionResponseData responseData(eventData);
-            responseData.data.embeds.push_back(msgEmbed);
-            InputEventData event = InputEventManager::respondToEvent(responseData);
-            InputEventManager::deleteInputEventResponseAsync(event, 20000);
-        }
+        if (displayResponse) {
+            string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
+            EmbedData msgEmbed;
+            msgEmbed.setAuthor(guildMember.data.user.username, guildMember.data.user.avatar);
+            msgEmbed.setColor(discordGuild.data.borderColor);
+            msgEmbed.setDescription(msgString);
+            msgEmbed.setTimeStamp(getTimeAndDate());
+            msgEmbed.setTitle("__**Permissions Issue:**__");
+            if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                ReplyMessageData responseData(eventData);
+                responseData.embeds.push_back(msgEmbed);
+                InputEventData event01 = InputEventManager::respondToEvent(responseData);
+                InputEventManager::deleteInputEventResponseAsync(event01, 20000);
+            }
+            else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+                CreateInteractionResponseData responseData(eventData);
+                responseData.data.embeds.push_back(msgEmbed);
+                InputEventData event = InputEventManager::respondToEvent(responseData);
+                InputEventManager::deleteInputEventResponseAsync(event, 20000);
+            }
+        }        
         return false;
     }
 
