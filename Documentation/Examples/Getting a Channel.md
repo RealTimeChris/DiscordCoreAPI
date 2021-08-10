@@ -1,7 +1,7 @@
 ### **Getting a Channel:**
 ---
-- Dereference your DiscordCoreAPI::DiscordCoreClient pointer, and select the guilds member.
-- Select, from the guilds pointer, the getGuildASync() (which collects it from the cache), or fetchAsync() (which collects it from the Discord servers) function, while passing to it either a completed data structure (getGuildData, or fetchGuildData), or simply {.guildId = GUILDIDHERE}.
+- Dereference your DiscordCoreAPI::DiscordCoreClient pointer, and select the `channels` member.
+- Select, from the `channels` pointer, the `getGuildASync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (getGuildData, or fetchGuildData), or simply {.guildId = GUILDIDHERE}.
 - Call the function with .get() added to the end in order to wait for the results now.
 
 ```cpp
