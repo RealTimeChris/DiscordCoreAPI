@@ -1,7 +1,5 @@
 ```cpp
-// pch.h - Precomiled header.	
-// Jun 17, 2021
-// Chris M.
+// pch.h - Precomiled header.
 // https://github.com/RealTimeChris
 
 #pragma once
