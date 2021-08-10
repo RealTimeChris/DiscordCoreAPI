@@ -1181,7 +1181,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 	
-	string	getEditFollowUpMessagePayload(EditFollowUpMessageData dataPackage) {
+	string	getEditFollowUpMessagePayload(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
 		auto embedsArray = json::array();
 
 		for (auto& value : dataPackage.embeds) {
@@ -1259,7 +1259,7 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == ComponentType::Button) {
+				if (valueNew.type ==DiscordCoreAPI::ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -1290,7 +1290,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == ComponentType::SelectMenu) {
+				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -1356,7 +1356,7 @@ namespace DiscordCoreInternal {
 		};
 	}
 
-		string	getEditInteractionResponsePayload(EditInteractionResponseData dataPackage) {
+		string	getEditInteractionResponsePayload(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
 			auto embedsArray = json::array();
 
 			for (auto& value : dataPackage.embeds) {
@@ -1434,7 +1434,7 @@ namespace DiscordCoreInternal {
 				auto components = json::array();
 
 				for (auto& valueNew : value.components) {
-					if (valueNew.type == ComponentType::Button) {
+					if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 						if (valueNew.emoji.id == "") {
 							json component = { {"custom_id", valueNew.customId},
 							{"disabled", valueNew.disabled},
@@ -1465,7 +1465,7 @@ namespace DiscordCoreInternal {
 							components.push_back(component);
 						}
 					}
-					else if (valueNew.type == ComponentType::SelectMenu) {
+					else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 						json optionsArray = json::array();
 						for (auto value01 : valueNew.options) {
 							if (value01.emoji.id == "" && value01.emoji.name == "") {

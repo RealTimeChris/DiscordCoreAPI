@@ -26,11 +26,11 @@ namespace DiscordCoreAPI {
         static map<string, unbounded_buffer<MessageData>*> collectMessageDataBuffers;
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::EditInteractionResponseData> requestPatchInteractionResponseBuffer;
+        unbounded_buffer<DiscordCoreInternal::PatchInteractionResponseData> requestPatchInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::PostInteractionResponseData> requestPostInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::GetInteractionResponseData> requestGetInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer;
-        unbounded_buffer<DiscordCoreInternal::EditFollowUpMessageData> requestPatchFollowUpMessageBuffer;
+        unbounded_buffer<DiscordCoreInternal::PatchFollowUpMessageData> requestPatchFollowUpMessageBuffer;
         unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer;
         unbounded_buffer<InteractionResponseData> outInteractionresponseDataBuffer;
         unbounded_buffer<MessageData> outInteractionResponseBuffer;
@@ -84,12 +84,12 @@ namespace DiscordCoreAPI {
             return interactionResponseData;
         }
 
-        MessageData patchObjectData(DiscordCoreInternal::EditFollowUpMessageData dataPackage){
+        MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage){
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_FOLLOW_UP_MESSAGE;
-            workload.content = dataPackage.finalContent;
+            workload.content = dataPackage.content;
             DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
@@ -108,12 +108,12 @@ namespace DiscordCoreAPI {
             return messageData;
         }
 
-        MessageData patchObjectData(DiscordCoreInternal::EditInteractionResponseData dataPackage) {
+        MessageData patchObjectData(DiscordCoreInternal::PatchInteractionResponseData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_INTERACTION_RESPONSE;
-            workload.content = dataPackage.finalContent;
+            workload.content = dataPackage.content;
             DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
 
         void run() {
             try {
-                DiscordCoreInternal::EditInteractionResponseData dataPackage01;
+                DiscordCoreInternal::PatchInteractionResponseData dataPackage01;
                 if (try_receive(this->requestPatchInteractionResponseBuffer, dataPackage01)) {
                     MessageData messageData = patchObjectData(dataPackage01);
                     send(this->outInteractionResponseBuffer, messageData);
@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
                 if (try_receive(this->requestDeleteInteractionResponseBuffer, dataPackage04)) {
                     deleteObjectDataTimer(dataPackage04);
                 }
-                DiscordCoreInternal::EditFollowUpMessageData dataPackage05;
+                DiscordCoreInternal::PatchFollowUpMessageData dataPackage05;
                 if (try_receive(this->requestPatchFollowUpMessageBuffer, dataPackage05)) {
                     MessageData messageData = patchObjectData(dataPackage05);
                     send(this->outInteractionResponseBuffer, messageData);
@@ -378,24 +378,11 @@ namespace DiscordCoreAPI {
 
         task<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            DiscordCoreInternal::EditInteractionResponseData dataPackageNew;
+            DiscordCoreInternal::PatchInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
             dataPackageNew.agentResources = this->agentResources;
-            dataPackageNew.allowedMentions = dataPackage.allowedMentions;
-            for (auto value : dataPackage.attachments) {
-                dataPackageNew.attachments.push_back(value);
-            }
-            for (auto value : dataPackage.components) {
-                dataPackageNew.components.push_back(value);
-            }
-            dataPackageNew.content = dataPackage.content;
-            for (auto value : dataPackage.embeds) {
-                dataPackageNew.embeds.push_back(value);
-            }
-            dataPackageNew.flags = dataPackage.flags;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
-            dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.type;
-            dataPackageNew.finalContent = DiscordCoreInternal::getEditInteractionResponsePayload(dataPackageNew);
+            dataPackageNew.content = DiscordCoreInternal::getEditInteractionResponsePayload(dataPackage);
             InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPatchInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
@@ -441,25 +428,14 @@ namespace DiscordCoreAPI {
 
         task<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            DiscordCoreInternal::EditFollowUpMessageData dataPackageNew;
+            DiscordCoreInternal::PatchFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
-            dataPackageNew.allowedMentions = dataPackage.allowedMentions;
-            dataPackageNew.avatarUrl = dataPackage.avatarUrl;
-            for (auto value : dataPackage.components) {
-                dataPackageNew.components.push_back(value);
-            }
-            for (auto value : dataPackage.embeds) {
-                dataPackageNew.embeds.push_back(value);
-            }
             dataPackageNew.content = dataPackage.content;
-            dataPackageNew.flags = dataPackage.flags;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.messageId = dataPackage.messagePackage.messageId;
-            dataPackageNew.tts = dataPackage.tts;
-            dataPackageNew.username = dataPackage.username;
-            dataPackageNew.finalContent = DiscordCoreInternal::getEditFollowUpMessagePayload(dataPackageNew);
+            dataPackageNew.content = DiscordCoreInternal::getEditFollowUpMessagePayload(dataPackage);
             InteractionManagerAgent requestAgent(this->agentResources);
             send(requestAgent.requestPatchFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();

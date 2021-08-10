@@ -612,6 +612,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct HttpAgentResources {
+        string baseURL = "";
         hstring userAgent = L"";
     };
 
@@ -843,17 +844,10 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources;
     };
 
-    struct EditInteractionResponseData {
+    struct PatchInteractionResponseData {
         HttpAgentResources agentResources;
         string  content;
-        vector<EmbedData> embeds;
-        AllowedMentionsData allowedMentions;
-        vector<AttachmentData> attachments;
-        vector<ActionRowData> components;
-        string finalContent;
         string applicationId;
-        int flags;
-        InteractionCallbackType type;
         string interactionToken;
     };
 
@@ -1539,20 +1533,12 @@ namespace  DiscordCoreInternal {
         string requesterId;
     };
 
-    struct EditFollowUpMessageData {
+    struct PatchFollowUpMessageData {
         HttpAgentResources agentResources;
         string applicationId;
         string interactionToken;
         string messageId;
-        string finalContent;
         string content;
-        string username;
-        string avatarUrl;
-        bool tts;
-        vector<EmbedData> embeds;
-        AllowedMentionsData allowedMentions;
-        vector<ActionRowData> components;
-        int flags;
     };
 
     enum class AuditLogEvent {
@@ -3723,11 +3709,11 @@ namespace DiscordCoreAPI {
         vector<AttachmentData> attachments;
         vector<ActionRowData>components;
         int flags;
+        InteractionCallbackType type;
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEventManager;
-        InteractionCallbackType type;
         InteractionPackageData interactionPackage;
         string requesterId;
     };

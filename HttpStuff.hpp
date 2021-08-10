@@ -25,12 +25,18 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<HttpData> workReturnBuffer;
 		static string botToken;
 		static string baseURL;
+		string baseURLInd;
  
 		HttpRequestAgent(HttpAgentResources agentResources) 
 			:  agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup) , shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
 		{
 			try {
-				this->baseURL = HttpRequestAgent::baseURL;
+				if (agentResources.baseURL == ""){
+					this->baseURLInd = HttpRequestAgent::baseURL;
+				}
+				else {
+					this->baseURLInd = agentResources.baseURL;
+				}				
 				Filters::HttpBaseProtocolFilter filter;
 				Filters::HttpCacheControl cacheControl{ nullptr };
 				cacheControl = filter.CacheControl();
@@ -205,7 +211,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpGETObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData getData;
-			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
+			string connectionPath = this->baseURLInd + relativeURL;
 			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
 			httpResponse = getHttpClient.GetAsync(requestUri).get();
@@ -273,7 +279,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPUTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData putData;
-			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
+			string connectionPath = this->baseURLInd + relativeURL;
 			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpContentHeaderCollection contentHeaderCollection;
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
@@ -341,7 +347,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPOSTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData postData;
-			string connectionPath = HttpRequestAgent::baseURL+ relativeURL;
+			string connectionPath = this->baseURLInd + relativeURL;
 			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpContentHeaderCollection contentHeaderCollection;
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
@@ -409,7 +415,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpPATCHObjectData(string relativeURL, string content, RateLimitData* pRateLimitData) {
 			HttpData patchData;
-			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
+			string connectionPath = this->baseURLInd + relativeURL;
 			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpContentDispositionHeaderValue headerValue(L"payload_json");
 			HttpMediaTypeHeaderValue typeHeaderValue(L"application/json");
@@ -480,7 +486,7 @@ namespace DiscordCoreInternal {
 
 		HttpData httpDELETEObjectData(string relativeURL, RateLimitData* pRateLimitData) {
 			HttpData deleteData;
-			string connectionPath = HttpRequestAgent::baseURL + relativeURL;
+			string connectionPath = this->baseURLInd + relativeURL;
 			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
 			httpResponse = deleteHttpClient.DeleteAsync(requestUri).get();
