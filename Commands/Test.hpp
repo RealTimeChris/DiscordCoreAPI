@@ -22,19 +22,13 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+
 			InputEventManager::deleteInputEventResponseAsync(args->eventData);
 
-			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				ReplyMessageData dataPackage(args->eventData);
-				dataPackage.content = "Test Message!";
-				InputEventManager::respondToEvent(dataPackage);
-			}
-			else {
-				CreateInteractionResponseData dataPackage(args->eventData);
-				dataPackage.data.content = "Test Message!";
-				InputEventManager::respondToEvent(dataPackage);
-			}
-
+			DeleteChannelPermissionOverwritesData dataPackage;
+			dataPackage.channelId = args->eventData.getChannelId();
+			dataPackage.roleOrUserId = args->eventData.getAuthorId();
+			args->eventData.discordCoreClient->channels->deleteChannelPermissionOverwritesAsync(dataPackage).get();
 
 			co_return;
 

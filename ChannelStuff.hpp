@@ -344,6 +344,27 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
+		ChannelManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->threadContext = threadContextNew;
+			this->agentResources = agentResourcesNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
+
+		~ChannelManager() {
+			this->threadContext->releaseGroup();
+		}
+
+	protected:
+		friend class Guild;
+		friend class ChannelManagerAgent;
+		friend class DiscordCoreClient;
+		friend class DiscordCoreClientBase;
+		friend class EventHandler;
+
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+
 		task<void> insertChannelAsync(Channel channel) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -364,26 +385,6 @@ namespace DiscordCoreAPI {
 			send(ChannelManagerAgent::cache, cache);
 			co_return;
 		}
-
-		ChannelManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->threadContext = threadContextNew;
-			this->agentResources = agentResourcesNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
-		~ChannelManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		friend class Guild;
-		friend class ChannelManagerAgent;
-		friend class DiscordCoreClient;
-		friend class DiscordCoreClientBase;
-
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 				
 	};
 	overwrite_buffer<map<string, Channel>> ChannelManagerAgent::cache;

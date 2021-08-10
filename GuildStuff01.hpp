@@ -524,27 +524,6 @@ namespace DiscordCoreAPI {
 			co_return guild;
 		}
 
-		task<void> insertGuildAsync(Guild guild) {
-			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
-			requestAgent.guildsToInsert.push(guild);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::insertGuildAsync");
-			co_return;
-		}
-
-		task<void> removeGuildAsync(string guildId) {
-			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			map<string, Guild> cache;
-			try_receive(GuildManagerAgent::cache, cache);
-			if (cache.contains(guildId)) {
-				cache.erase(guildId);
-			}
-			send(GuildManagerAgent::cache, cache);
-			co_return;
-		}
-
 		task<vector<Guild>> getAllGuildsAsync() {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			map<string, Guild>cache;
@@ -570,10 +549,34 @@ namespace DiscordCoreAPI {
 
 	protected:
 		friend class DiscordCoreClient;
+		friend class EventHandler;
+
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+
+		task<void> insertGuildAsync(Guild guild) {
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
+			requestAgent.guildsToInsert.push(guild);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			requestAgent.getError("GuildManager::insertGuildAsync");
+			co_return;
+		}
+
+		task<void> removeGuildAsync(string guildId) {
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			map<string, Guild> cache;
+			try_receive(GuildManagerAgent::cache, cache);
+			if (cache.contains(guildId)) {
+				cache.erase(guildId);
+			}
+			send(GuildManagerAgent::cache, cache);
+			co_return;
+		}
+
 	};
 	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache;
 	shared_ptr<DiscordCoreInternal::ThreadContext> GuildManagerAgent::threadContext;

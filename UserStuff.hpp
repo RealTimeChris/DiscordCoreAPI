@@ -355,17 +355,6 @@ namespace DiscordCoreAPI {
 			co_return application;
 		}
 
-		task<void> insertUserAsync(User user) {
-			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			UserManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
-			requestAgent.usersToInsert.push(user);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			exception error;
-			requestAgent.getError("UserManager::insertUserAsync");
-			co_return;
-		}
-
 		UserManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
@@ -377,12 +366,26 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		friend class DiscordCoreClient;
 		friend class DiscordCoreClientBase;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
 		DiscordCoreInternal::HttpAgentResources agentResources;
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+
+		task<void> insertUserAsync(User user) {
+			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+			UserManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
+			requestAgent.usersToInsert.push(user);
+			requestAgent.start();
+			agent::wait(&requestAgent);
+			exception error;
+			requestAgent.getError("UserManager::insertUserAsync");
+			co_return;
+		}
+
 	};
 	overwrite_buffer<map<string, User>> UserManagerAgent::cache;
 	shared_ptr<DiscordCoreInternal::ThreadContext> UserManagerAgent::threadContext;

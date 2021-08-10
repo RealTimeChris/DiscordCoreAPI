@@ -21,7 +21,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
-            overWriteData.type = jsonObjectData.at("type").get<int>();
+            overWriteData.type = (DiscordCoreAPI::EditChannelPermissionOverwritesType)jsonObjectData.at("type").get<int>();
         }
 
         if (jsonObjectData.contains("allow") && !jsonObjectData.at("allow").is_null()) {

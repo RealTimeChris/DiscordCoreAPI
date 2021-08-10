@@ -644,6 +644,26 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
+		RoleManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
+			this->threadContext = threadContextNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
+
+		~RoleManager() {
+			this->threadContext->releaseGroup();
+		}
+
+	protected:
+		friend class DiscordCoreClientBase;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
+		
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+
 		task<void> insertRoleAsync(Role role) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			RoleManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -665,24 +685,6 @@ namespace DiscordCoreAPI {
 			send(RoleManagerAgent::cache, cache);
 			co_return;
 		}
-
-		RoleManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
-		~RoleManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		friend class Guild;
-		friend class DiscordCoreClient;
-		friend class DiscordCoreClientBase;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 	};
 	overwrite_buffer<map<string, Role>> RoleManagerAgent::cache;

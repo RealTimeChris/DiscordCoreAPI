@@ -494,9 +494,14 @@ namespace  DiscordCoreInternal {
         ClientStatusData clientStatus;
     };
 
+    enum class EditChannelPermissionOverwritesType {
+        Role = 0,
+        User = 1
+    };
+
     struct OverWriteData {
         string id;
-        int type = -1;	           //	either 0 (role) or 1 (member)
+        EditChannelPermissionOverwritesType type = EditChannelPermissionOverwritesType::Role;	           //	either 0 (role) or 1 (member)
         string allow;
         string deny;
         string channelId;
@@ -2196,18 +2201,23 @@ namespace DiscordCoreAPI {
         MessageComponent = 3
     };
 
+    enum class EditChannelPermissionOverwritesType {
+        Role = 0,
+        User = 1
+    };
+
     struct OverWriteData {
         operator DiscordCoreInternal::OverWriteData() {
             DiscordCoreInternal::OverWriteData newData;
             newData.allow = this->allow;
             newData.deny = this->deny;
             newData.id = this->id;
-            newData.type = this->type;
+            newData.type = (DiscordCoreInternal::EditChannelPermissionOverwritesType)this->type;
             newData.channelId = this->channelId;
             return newData;
         }
         string id;
-        int type;	           //	either 0 (role) or 1 (member;
+        EditChannelPermissionOverwritesType type;   //	either 0 (role) or 1 (member;
         string allow;
         string deny;
         string channelId;
@@ -4067,7 +4077,7 @@ namespace DiscordCoreAPI {
     struct EditChannelPermissionOverwritesData {
         string allow;
         string deny;
-        int type;
+        EditChannelPermissionOverwritesType type;
         string roleOrUserId;
         string channelId;
     };
