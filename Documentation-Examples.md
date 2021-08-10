@@ -10,7 +10,7 @@
 - ### [Listening for a Discord Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listening%20for%20a%20Discord%20Event.md)
 
 ## Channel Manager:
-
+- ### [Edit Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Edit%20Permission%20Overwrites.md)
 ## GuildMember Manager:
 
 ## Guild Manager:
