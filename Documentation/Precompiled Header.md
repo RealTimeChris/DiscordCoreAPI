@@ -1,5 +1,7 @@
 ```cpp
-// pch.h - Precomiled header.
+// pch.h - Precomiled header.	
+// Jun 17, 2021
+// Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
@@ -54,12 +56,11 @@ extern "C"
 #include <libavutil/intreadwrite.h>
 #include <libavutil/mathematics.h>
 #include <libavformat/avformat.h>
-#include <libavformat/avformat.h>
+#include "libavutil/audio_fifo.h"
 #include <libavutil/spherical.h>
 #include <libavutil/samplefmt.h>
 #include <libavutil/timestamp.h>
 #include <libavutil/avstring.h>
-#include <libavcodec/avcodec.h>
 #include <libavutil/intfloat.h>
 #include <libavutil/imgutils.h>
 #include <libavcodec/avcodec.h>
@@ -76,10 +77,10 @@ extern "C"
 #include <ogg\config_types.h>
 #include <nlohmann/json.hpp>
 #include <dispatcherqueue.h>
-#include <ogg\os_types.h>
-#include <winrt/base.h>
 #include <opus/opusfile.h>
 #include <pplinterface.h>
+#include <ogg\os_types.h>
+#include <winrt/base.h>
 #include <winrt/base.h>
 #include <curl/curl.h>
 #include <opus/opus.h>
