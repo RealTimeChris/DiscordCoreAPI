@@ -1,6 +1,6 @@
 ### **Login/Instantiation of the Library:**
 ---
-- Install the dependencies and `#include DiscordCoreClient02.hpp`.
+- Install the dependencies, create your [precompiled header](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Precompiled%20Header.md) and `#include DiscordCoreClient02.hpp`.
 - Create a string with your bot's token.
 - Run the `DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken)` function, using your bot token as an argument.
 - Run the `DiscordCoreAPI::DiscordCoreClient::runBot()` function.
