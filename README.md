@@ -28,7 +28,6 @@
 ### A Unified "Input-Event" System
 - Both user messages and user interactions are accepted via the `onInputEventCreation` event.
 - They can all be responded to using the `InputEventHandler::respondToEvent()` function.
-- 
 ```C++
 if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 	string msgString = "Sorry, but we are all out of inventory!";
