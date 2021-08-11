@@ -2,7 +2,7 @@
 ---
 - Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guildMembers` member.
 - Populate a `DiscordCoreAPI::ModifyGuildMemberData` structure, to be passed in as an argument.
-- Select, from the `guildMembers` pointer, the `modifyGuildMemberAsync()`.
+- Select, from the `guildMembers` pointer, the `modifyGuildMemberAsync()` function.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
