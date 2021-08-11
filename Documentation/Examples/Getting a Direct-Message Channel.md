@@ -30,8 +30,6 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			InputEventManager::deleteInputEventResponseAsync(args->eventData);
-
 			Channel channel = args->eventData.discordCoreClient->channels->fetchDMChannelAsync({ .userId = args->eventData.getAuthorId() }).get();
 
 			co_return;
