@@ -36,6 +36,7 @@ namespace DiscordCoreAPI {
 			dataPackage.channelId = args->eventData.getChannelId();
 			dataPackage.type = EditChannelPermissionOverwritesType::User;
 			dataPackage.roleOrUserId = args->eventData.getAuthorId();
+			
 			args->eventData.discordCoreClient->channels->editChannelPermissionOverwritesAsync(dataPackage).get();
 
 			co_return;
