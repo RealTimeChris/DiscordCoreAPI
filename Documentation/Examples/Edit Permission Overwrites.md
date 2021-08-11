@@ -28,8 +28,6 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			InputEventManager::deleteInputEventResponseAsync(args->eventData);
-
 			EditChannelPermissionOverwritesData dataPackage;
 			dataPackage.allow = PermissionsConverter::addPermissionsToString(dataPackage.allow, vector<Permissions>{Permissions::ADD_REACTIONS, Permissions::MANAGE_MESSAGES});
 			dataPackage.deny = PermissionsConverter::removePermissionsFromString(dataPackage.deny, vector<Permissions>{Permissions::ATTACH_FILES, Permissions::EMBED_LINKS});
