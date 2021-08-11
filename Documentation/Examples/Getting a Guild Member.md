@@ -1,7 +1,7 @@
 ### **Getting a Guild Member:**
 ---
 - Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guildMembers` member.
-- Select, from the `guildMembers` pointer, the `getGuildMemberAsync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`getGuildMemberData`, or `fetchGuildMemberData`).
+- Select, from the `guildMembers` pointer, the `getGuildMemberAsync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::GetGuildMemberData`, or `DiscordCoreAPI::FetchGuildMemberData`).
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
