@@ -28,11 +28,10 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			InputEventManager::deleteInputEventResponseAsync(args->eventData);
-
 			DeleteChannelPermissionOverwritesData dataPackage;
 			dataPackage.channelId = args->eventData.getChannelId();
 			dataPackage.roleOrUserId = args->eventData.getAuthorId();
+			
 			args->eventData.discordCoreClient->channels->deleteChannelPermissionOverwritesAsync(dataPackage).get();
 
 			co_return;
