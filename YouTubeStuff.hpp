@@ -296,7 +296,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::parseObject(jsonObject, &videoSearchResult.formats);
 			YouTubeFormat format;
 			for (auto value : videoSearchResult.formats) {
-				if (value.mimeType.find("opus") != string::npos) {
+				if (value.mimeType.find("mp4a.40.2") != string::npos) {
 					format = value;
 					if (value.audioQuality == "AUDIO_QUALITY_MEDIUM" && format.audioQuality == "AUDIO_QUALITY_LOW") {
 						format = value;
