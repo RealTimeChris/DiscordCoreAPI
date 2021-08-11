@@ -39,6 +39,7 @@ namespace DiscordCoreAPI {
 			FetchGuildMemberData dataPackage02;
 			dataPackage02.guildId = args->eventData.getGuildId();
 			dataPackage02.guildMemberId = args->eventData.getAuthorId();
+			
 			GuildMember guildMember02 = args->eventData.discordCoreClient->guildMembers->fetchAsync(dataPackage02).get();
 
 			co_return;
