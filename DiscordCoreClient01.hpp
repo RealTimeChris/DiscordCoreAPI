@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 			this->botToken = botTokenNew;
 		}
 
-		static void finalSetup(string botToken, vector<RepeatedFunctionData>* lambda);
+		static void finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* lambda);
 
 		static void runBot() {
 			wait((agent*)DiscordCoreClient::thisPointer.get());
