@@ -271,6 +271,24 @@ namespace DiscordCoreAPI {
 			co_return guildMember;
 		}
 
+		GuildMemberManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
+			this->threadContext = threadContextNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
+
+		~GuildMemberManager() {
+			this->threadContext->releaseGroup();
+		}
+
+	protected:
+		friend class Guild;
+		friend class DiscordCoreClient;
+		friend class DiscordCoreClientBase;
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+
 		task<void> insertGuildMemberAsync(GuildMember guildMember, string guildId) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GuildMemberManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -292,24 +310,6 @@ namespace DiscordCoreAPI {
 			send(GuildMemberManagerAgent::cache, cache);
 			co_return;
 		}
-
-		GuildMemberManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
-		~GuildMemberManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		friend class Guild;
-		friend class DiscordCoreClient;
-		friend class DiscordCoreClientBase;
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 	};
 	overwrite_buffer<map<string, GuildMember>> GuildMemberManagerAgent::cache;
 	shared_ptr<DiscordCoreInternal::ThreadContext> GuildMemberManagerAgent::threadContext{ nullptr };

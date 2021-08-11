@@ -10,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-	class Test : public  BaseFunction {
+	class Test : public BaseFunction {
 	public:
 		Test() {
 			this->commandName = "test";
@@ -23,9 +23,17 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			InputEventManager::deleteInputEventResponseAsync(args->eventData);
+			ModifyGuildMemberData dataPackage01;
+			dataPackage01.currentChannelId = "";
+			dataPackage01.deaf = false;
+			dataPackage01.mute = false;
+			dataPackage01.newVoiceChannelId = "";
+			dataPackage01.nick = "TEST NICK";
+			dataPackage01.roleIds = vector<string>{ "" };
+			dataPackage01.guildId = args->eventData.getGuildId();
+			dataPackage01.guildMemberId = args->eventData.getAuthorId();
 
-			Channel channel = args->eventData.discordCoreClient->channels->fetchDMChannelAsync({ .userId = args->eventData.getAuthorId() }).get();
+			GuildMember guildMember01 = args->eventData.discordCoreClient->guildMembers->modifyGuildMemberAsync(dataPackage01).get();
 
 			co_return;
 		}
