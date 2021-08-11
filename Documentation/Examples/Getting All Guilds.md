@@ -1,7 +1,7 @@
 
 ### **Getting All Guilds:**
 ---
-- Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `channels` member.
+- Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guilds` member.
 - Select, from the `guilds` pointer, the `getAllGuildsAsync()` functino and execute it, with a return value of type `auto` or `vector<Guild>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
