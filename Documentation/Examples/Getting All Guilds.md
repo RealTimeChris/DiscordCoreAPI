@@ -30,7 +30,6 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
-
 			
 			vector<Guild> guilds = args->eventData.discordCoreClient->guilds->getAllGuildsAsync().get();
 
