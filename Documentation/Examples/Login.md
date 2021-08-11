@@ -10,7 +10,7 @@
 // https://github.com/RealTimeChris
 
 #include "pch.h"
-#include "./DiscordCoreAPI/DiscordCoreClient02.hpp"
+#include "./DiscordCoreAPI-main/DiscordCoreClient02.hpp"
 
 int main()
 {
