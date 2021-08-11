@@ -36,7 +36,7 @@ int main()
     function01.repeated = false;
     function01.intervalInMs = 10000;
     functionVector.push_back(function01);
-    DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken, &functionVector);
+    DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken, "!", &functionVector);
     DiscordCoreAPI::DiscordCoreClient::runBot();
     return 0;
 }
