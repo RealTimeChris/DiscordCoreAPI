@@ -2,7 +2,7 @@
 ---
 - Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guilds` member.
 - Populate a data structure of type `DiscordCoreAPI::GetAuditLogData`.
-- Select, from the `guilds` pointer, the `getAuditLogData()` function and execute it, with a return value of type `auto` or `vector<AuditLogData>`, while passing it the created data structure.
+- Select, from the `guilds` pointer, the `getAuditLogDataAsync()` function and execute it, with a return value of type `auto` or `vector<AuditLogData>`, while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
