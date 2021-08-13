@@ -96,9 +96,11 @@ namespace DiscordCoreAPI {
             return sstream.str();
         }
 
-        static void displayPermissions(string permissionString) {
+        static vector<string> displayPermissions(string permissionString) {
+            vector<string> returnVector;
             if (permissionString == "") {
                 permissionString = "0";
+                cout << "TESTING TESTING TESTING" << endl;
             }
             __int64 permissionsInteger = stoll(permissionString);
             if (permissionsInteger & 1 << 3) {
@@ -109,113 +111,150 @@ namespace DiscordCoreAPI {
             stringstream sstream;
             if (permissionsInteger & (1 << 0)) {
                 sstream << "CREATE_INSTANT_INVITE" << endl;
+                returnVector.push_back("Create Instant Invite");
             }
             if (permissionsInteger & (1 << 1)) {
                 sstream << "KICK_MEMBERS" << endl;
+                returnVector.push_back("Kick Members");
             }
             if (permissionsInteger & (1 << 2)) {
                 sstream << "BAN_MEMBERS" << endl;
+                returnVector.push_back("Ban Members");
             }
             if (permissionsInteger & (1 << 3)) {
                 sstream << "ADMINISTRATOR" << endl;
+                returnVector.push_back("Administrator");
             }
             if (permissionsInteger & (1 << 4)) {
                 sstream << "MANAGE_CHANNELS" << endl;
+                returnVector.push_back("Manage Channels");
             }
             if (permissionsInteger & (1 << 5)) {
                 sstream << "MANAGE_GUILD" << endl;
+                returnVector.push_back("Manage Guild");
             }
             if (permissionsInteger & (1 << 6)) {
                 sstream << "ADD_REACTIONS" << endl;
+                returnVector.push_back("Add Reactions");
             }
             if (permissionsInteger & (1 << 7)) {
                 sstream << "VIEW_AUDIT_LOG" << endl;
+                returnVector.push_back("View Audit Log");
             }
             if (permissionsInteger & (1 << 8)) {
                 sstream << "PRIORITY_SPEAKER" << endl;
+                returnVector.push_back("Priority Speaker");
             }
             if (permissionsInteger & (1 << 9)) {
                 sstream << "STREAM" << endl;
+                returnVector.push_back("Stream");
             }
             if (permissionsInteger & (1 << 10)) {
                 sstream << "VIEW_CHANNEL" << endl;
+                returnVector.push_back("View Channel");
             }
             if (permissionsInteger & (1 << 11)) {
                 sstream << "SEND_MESSAGES" << endl;
+                returnVector.push_back("Send Messages");
             }
             if (permissionsInteger & (1 << 12)) {
                 sstream << "SEND_TTS_MESSAGES" << endl;
+                returnVector.push_back("Send TTS Messages");
             }
             if (permissionsInteger & (1 << 13)) {
                 sstream << "MANAGE_MESSAGES" << endl;
+                returnVector.push_back("Manage Messages");
             }
             if (permissionsInteger & (1 << 14)) {
                 sstream << "EMBED_LINKS" << endl;
+                returnVector.push_back("Embed Links");
             }
             if (permissionsInteger & (1 << 15)) {
                 sstream << "ATTACH_FILES" << endl;
+                returnVector.push_back("Attach Files");
             }
             if (permissionsInteger & (1 << 16)) {
                 sstream << "READ_MESSAGE_HISTORY" << endl;
+                returnVector.push_back("Read Message History");
             }
             if (permissionsInteger & (1 << 17)) {
                 sstream << "MENTION_EVERYONE" << endl;
+                returnVector.push_back("Mention Everyone");
             }
             if (permissionsInteger & (1 << 18)) {
                 sstream << "USE_EXTERNAL_EMOJI" << endl;
+                returnVector.push_back("Use External Emoji");
             }
             if (permissionsInteger & (1 << 19)) {
                 sstream << "VIEW_GUILD_INSIGHTS" << endl;
+                returnVector.push_back("View Guild Insights");
             }
             if (permissionsInteger & (1 << 20)) {
                 sstream << "CONNECT" << endl;
+                returnVector.push_back("Connect");
             }
             if (permissionsInteger & (1 << 21)) {
                 sstream << "SPEAK" << endl;
+                returnVector.push_back("Speak");
             }
             if (permissionsInteger & (1 << 22)) {
                 sstream << "MUTE_MEMBERS" << endl;
+                returnVector.push_back("Mute Members");
             }
             if (permissionsInteger & (1 << 23)) {
                 sstream << "DEAFEN_MEMBERS" << endl;
+                returnVector.push_back("Deafen Members");
             }
             if (permissionsInteger & (1 << 24)) {
                 sstream << "MOVE_MEMBERS" << endl;
+                returnVector.push_back("Move Members");
             }
             if (permissionsInteger & (1 << 25)) {
                 sstream << "USE_VAD" << endl;
+                returnVector.push_back("Use VAD");
             }
             if (permissionsInteger & (1 << 26)) {
                 sstream << "CHANGE_NICKNAME" << endl;
+                returnVector.push_back("Change Nickname");
             }
             if (permissionsInteger & (1 << 27)) {
                 sstream << "MANAGE_NICKNAMES" << endl;
+                returnVector.push_back("Manage Nicknames");
             }
             if (permissionsInteger & (1 << 28)) {
                 sstream << "MANAGE_ROLES" << endl;
+                returnVector.push_back("Manage Roles");
             }
             if (permissionsInteger & (1 << 29)) {
                 sstream << "MANAGE_WEBHOOKS" << endl;
+                returnVector.push_back("Manage Webhooks");
             }
             if (permissionsInteger & (1 << 30)) {
                 sstream << "MANAGE_EMOJIS" << endl;
+                returnVector.push_back("Manage Emojis");
             }
             if (permissionsInteger & (1 << 31)) {
                 sstream << "USE_SLASH_COMMANDS" << endl;
+                returnVector.push_back("Use Slash Commands");
             }
             if (permissionsInteger & (1ull << 32)) {
                 sstream << "REQUEST_TO_SPEAK" << endl;
+                returnVector.push_back("Request To Speak");
             }
             if (permissionsInteger & (1ull << 34)) {
                 sstream << "MANAGE_THREADS" << endl;
+                returnVector.push_back("Manage Threads");
             }
             if (permissionsInteger & (1ull << 35)) {
                 sstream << "USE_PUBLIC_THREADS" << endl;
+                returnVector.push_back("Use Public Threads");
             }
             if (permissionsInteger & (1ull << 36)) {
                 sstream << "USE_PRIVATE_THREADS" << endl;
+                returnVector.push_back("Use Private Threads");
             }
             cout << "PERMISSIONS: " << endl << sstream.str() << endl;
+            return returnVector;
         }
 
         static string getAllPermissions() {
@@ -259,6 +298,11 @@ namespace DiscordCoreAPI {
             stringstream stream;
             stream << allPerms;
             return stream.str();
+        }
+
+        static string getAllOfMyPerrmissions(GuildMember guildMember, Channel channel){
+            string permsString = computePermissions(guildMember, channel);
+            return permsString;
         }
 
         static bool checkForPermission(GuildMember guildMember, Channel channel, Permissions permission) {
