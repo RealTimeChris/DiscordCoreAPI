@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 
 			cout << "Sending Voice Data: ";
 			for (unsigned int x = 0; x < message.size();x+=1){
-				//cout << message[x];
+				cout << message[x];
 			}
 			cout << endl;
 
@@ -93,8 +93,8 @@ namespace DiscordCoreInternal {
 				dataReader.LoadAsync((uint32_t)message.size()).get();
 				IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.size());
 				this->voiceSocket.OutputStream().WriteAsync(buffer).get();
+				this->voiceSocket.OutputStream().FlushAsync().get();
 			}
-
 			cout << "Send Complete" << endl << endl;
 			return;
 		}
@@ -155,6 +155,7 @@ namespace DiscordCoreInternal {
 		string voicePort;
 		string externalIp;
 		string voiceEncryptionMode;
+		bool areWeWaitingForIp = true;
 
 		void getError() {
 			exception error;
@@ -181,12 +182,16 @@ namespace DiscordCoreInternal {
 		}
 
 		void collectExternalIP() {
-			HttpClient httpClient;
-			winrt::Windows::Foundation::Uri uri(L"https://icanhazip.com/");
-			hstring ipString = httpClient.GetStringAsync(uri).get();
-			string ipStringNew = to_string(ipString);
-			ipStringNew = ipStringNew.substr(0, ipStringNew.length() - 1);
-			this->externalIp = ipStringNew;
+			unsigned char packet[70] = { 0 };
+			packet[0] = (this->audioSSRC >> 24) & 0xff;
+			packet[1] = (this->audioSSRC>> 16) & 0xff;
+			packet[2] = (this->audioSSRC >> 8) & 0xff;
+			packet[3] = (this->audioSSRC) & 0xff;
+			vector<uint8_t> sendVector;
+			for (unsigned int x = 0; x < 70; x += 1) {
+				sendVector.push_back(packet[x]);
+			}
+			this->sendVoiceData(sendVector);
 		}
 
 		void voiceConnect() {
@@ -196,7 +201,6 @@ namespace DiscordCoreInternal {
 			winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceIp));
 			auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voicePort)).get();
 			this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
-			this->collectExternalIP();
 			this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
 			send(*this->readyBuffer, true);
 		}
@@ -204,7 +208,6 @@ namespace DiscordCoreInternal {
 		void run() {
 			try {
 				this->connect();
-				this->voiceConnect();
 			}
 			catch (const exception& e) {
 				send(errorBuffer, e);
@@ -261,7 +264,6 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload.at("op") == 2) {
-					this->collectExternalIP();
 					this->audioSSRC = payload.at("d").at("ssrc");
 					this->voiceConnectionData.audioSSRC = this->audioSSRC;
 					this->voiceIp = payload.at("d").at("ip");
@@ -271,9 +273,12 @@ namespace DiscordCoreInternal {
 							this->voiceEncryptionMode = value;
 						}
 					}
+					send(this->connectReadyBuffer, true);
+					this->voiceConnect();
+					this->collectExternalIP();
+					while (areWeWaitingForIp) { cout<< "Were here!"<< endl; };
 					string protocolPayloadSelectString = getSelectProtocolPayload(this->voicePort, this->externalIp, this->voiceEncryptionMode);
 					this->sendMessage(protocolPayloadSelectString);
-					send(this->connectReadyBuffer, true);
 				}
 
 				if (payload.at("op") == 4) {
@@ -299,18 +304,25 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args) {
-			hstring message;
+		void onVoiceDataReceived(DatagramSocket const& , DatagramSocketMessageReceivedEventArgs const& args) {
+			string message;
 			DataReader dataReader{ nullptr };
 			if (args.GetDataReader() != nullptr) {
 				dataReader = args.GetDataReader();
 				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
 				if (dataReader.UnconsumedBufferLength() > 0) {
-					message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
+					for (unsigned int x = 0; x < dataReader.UnconsumedBufferLength(); x += 1) {
+						message.push_back(dataReader.ReadByte());
+					}
 				}
 			}
 
-			cout << "Message received from VoiceDatagramSocket: " << to_string(message) << endl << endl;
+			if (areWeWaitingForIp) {
+				areWeWaitingForIp = false;
+				this->externalIp = message.substr(4, message.find('\u0000', 4) - 4);
+			}
+
+			cout << "Message received from VoiceDatagramSocket: " << message << endl << endl;
 		}
 
 		void terminate() {

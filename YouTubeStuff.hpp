@@ -233,6 +233,10 @@ namespace DiscordCoreAPI {
 	class YouTubeAPI {
 	public:
 
+		YouTubeAPI(shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBufferNew) {
+			this->sendAudioBuffer = sendAudioBufferNew;
+		}
+
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
 			DiscordCoreInternal::HttpAgentResources agentResources;
 			agentResources.baseURL = to_string(this->baseSearchURL);
@@ -265,7 +269,7 @@ namespace DiscordCoreAPI {
 			return searchResults;
 		}
 
-		task<void> downloadAudio(YouTubeSearchResult videoSearchResult, shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBuffer) {
+		task<void> downloadAudio(YouTubeSearchResult videoSearchResult) {
 			apartment_context mainThread;
 			co_await resume_background();
 			string watchHTMLURL = to_string(this->baseWatchURL) + videoSearchResult.videoId + "&hl=en";
@@ -296,7 +300,8 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::parseObject(jsonObject, &videoSearchResult.formats);
 			YouTubeFormat format;
 			for (auto value : videoSearchResult.formats) {
-				if (value.mimeType.find("mp4a.40.2") != string::npos) {
+				//if (value.mimeType.find("mp4a.40.2") != string::npos) {
+				if (value.mimeType.find("opus") != string::npos) {
 					format = value;
 					if (value.audioQuality == "AUDIO_QUALITY_MEDIUM" && format.audioQuality == "AUDIO_QUALITY_LOW") {
 						format = value;
@@ -407,27 +412,29 @@ namespace DiscordCoreAPI {
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
 			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
-			AudioDataChunk audioData;
-			audioData.filePath = "C:\\Users\\Chris\\Downloads\\";
-			audioData.fileName = videoSearchResult.videoTitle + " " + playerId + ".m4a";
-			audioData.audioData = readBuffer;
-			audioData.audioBitrate = format.bitrate;
-			audioData.totalByteSize = format.contentLength;
-			audioData.playerId = playerId;
-			audioData.remainingBytes = remainingDownloadContentLength;
-			send(*sendAudioBuffer, audioData);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".m4a";
 			saveFile(filePath, fileName, readBuffer);
+			SongDecoder songDecoder(to_string(filePath), to_string(fileName));
+			auto returnVector = songDecoder.decodeSong();
+			this->songQueue.push_back(returnVector);
 			co_return;
 		}
 
+		void sendNextSong() {
+			AudioDataChunk audioData;
+			audioData.audioData = songQueue.at(0);
+			send(*this->sendAudioBuffer, audioData);
+		}
+
 	protected:
+		shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBuffer;
 		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
 		const hstring baseWatchURL = L"https://www.youtube.com/watch?v=";
 		const hstring baseURL = L"https://www.youtube.com";
 		__int64 maxBufSize = 4096;
 		const string newLine = "\n\r";
+		vector<vector<uint8_t>> songQueue;
 		string playerResponse = "";
 		string html5PlayerFile = "";
 		string html5Player = "";
