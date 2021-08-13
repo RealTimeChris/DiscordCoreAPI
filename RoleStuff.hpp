@@ -10,8 +10,8 @@
 
 #include "pch.h"
 #include "JSONifier.hpp"
-#include "FoundationEntities.hpp"
 #include "GuildMemberStuff.hpp"
+#include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
 	
@@ -28,72 +28,15 @@ namespace DiscordCoreAPI {
 		friend class RoleManagerAgent;
 		friend class Guild;
 
-		Role(RoleData roleData,  shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+		Role(RoleData roleData, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = roleData;
 			this->discordCoreClient = discordCoreClientNew;
 		}
 	};
 
-	struct UpdateRoleData {
-		string guildId;
-		string roleId;
-		string name;
-		string permissions;
-		string hexColorValue;
-		bool hoist;
-		bool mentionable;
-	};
-
-	struct GetRolesData{
-		string guildId;
-	};
-
-	struct FetchRoleData {
-		string guildId;
-		string roleId;
-	};
-
-	struct UpdateRolePositionData {
-		string guildId;
-		string roleId;
-		int newPosition;
-	};
-
-	struct RemoveRoleFromGuildMemberData {
-		string guildId;
-		string userId;
-		string roleId;
-	};
-
-	struct GetRoleData {
-		string guildId;
-		string roleId;
-	};
-
-	struct DeleteGuildRoleData {
-		string guildId;
-		string roleId;
-	};
-
 	struct GetGuildMemberRolesData {
 		string guildId;
 		GuildMember guildMember;
-	};
-
-	struct AddRoleToGuildMemberData {
-		string guildId;
-		string userId;
-		string roleId;
-	};
-
-	struct CreateRoleData {
-		string name;
-		string permissions = "0";
-		string hexColorValue;
-		bool hoist;
-		bool mentionable;
-		string guildId;
-		int position;
 	};
 
 	class RoleManagerAgent : agent {

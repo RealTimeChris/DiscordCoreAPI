@@ -35,23 +35,6 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	struct FetchChannelData {
-		string channelId;
-	};
-
-	struct GetChannelData {
-		string channelId;
-	};
-
-	struct DeleteChannelPermissionOverwritesData {
-		string channelId;
-		string roleOrUserId;
-	};
-
-	struct FetchDMChannelData {
-		string userId;
-	};
-
 	class ChannelManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;

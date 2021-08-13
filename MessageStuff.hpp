@@ -33,40 +33,6 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = discordCoreClientNew;
 		}
 	};
-
-	struct FetchPinnedMessagesData {
-		string channelId;
-	};
-
-	struct FetchMessagesData {
-		string channelId;
-		unsigned int limit;
-		string beforeThisId = "";
-		string afterThisId = "";
-		string aroundThisId = "";
-	};
-
-	struct FetchMessageData {
-		string requesterId;
-		string channelId;
-		string id;
-	};
-
-	struct PinMessageData {
-		string channelId;
-		string messageId;
-	};
-
-	struct DeleteMessageData {
-		unsigned int timeDelay = 0;
-		string channelId;
-		string messageId;
-	};
-
-	struct DeleteMessagesBulkData {
-		string channelId;
-		vector<string> messageIds;
-	};
 	
 	class MessageManagerAgent : agent {
 	protected:

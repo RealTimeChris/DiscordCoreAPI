@@ -4082,6 +4082,23 @@ namespace DiscordCoreAPI {
         string channelId;
     };
 
+    struct FetchChannelData {
+        string channelId;
+    };
+
+    struct GetChannelData {
+        string channelId;
+    };
+
+    struct DeleteChannelPermissionOverwritesData {
+        string channelId;
+        string roleOrUserId;
+    };
+
+    struct FetchDMChannelData {
+        string userId;
+    };
+
     // Message Stuff.
 
     struct SendDMData {
@@ -4089,6 +4106,98 @@ namespace DiscordCoreAPI {
         string channelId;
         string userId;
         CreateMessageData messageData;
+    };
+
+    struct FetchPinnedMessagesData {
+        string channelId;
+    };
+
+    struct FetchMessagesData {
+        string channelId;
+        unsigned int limit;
+        string beforeThisId = "";
+        string afterThisId = "";
+        string aroundThisId = "";
+    };
+
+    struct FetchMessageData {
+        string requesterId;
+        string channelId;
+        string id;
+    };
+
+    struct PinMessageData {
+        string channelId;
+        string messageId;
+    };
+
+    struct DeleteMessageData {
+        unsigned int timeDelay = 0;
+        string channelId;
+        string messageId;
+    };
+
+    struct DeleteMessagesBulkData {
+        string channelId;
+        vector<string> messageIds;
+    };
+
+    // Role Stuff.
+    struct UpdateRoleData {
+        string guildId;
+        string roleId;
+        string name;
+        string permissions;
+        string hexColorValue;
+        bool hoist;
+        bool mentionable;
+    };
+
+    struct GetRolesData {
+        string guildId;
+    };
+
+    struct FetchRoleData {
+        string guildId;
+        string roleId;
+    };
+
+    struct UpdateRolePositionData {
+        string guildId;
+        string roleId;
+        int newPosition;
+    };
+
+    struct RemoveRoleFromGuildMemberData {
+        string guildId;
+        string userId;
+        string roleId;
+    };
+
+    struct GetRoleData {
+        string guildId;
+        string roleId;
+    };
+
+    struct DeleteGuildRoleData {
+        string guildId;
+        string roleId;
+    };
+
+    struct AddRoleToGuildMemberData {
+        string guildId;
+        string userId;
+        string roleId;
+    };
+
+    struct CreateRoleData {
+        string name;
+        string permissions = "0";
+        string hexColorValue;
+        bool hoist;
+        bool mentionable;
+        string guildId;
+        int position;
     };
 };
 
