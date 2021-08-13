@@ -1,8 +1,8 @@
-
-### **Getting All Guilds:**
+### **Getting Audit Logs:**
 ---
 - Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guilds` member.
-- Select, from the `guilds` pointer, the `getAllGuildsAsync()` function and execute it, with a return value of type `auto` or `vector<Guild>`.
+- Populate a data structure of type `DiscordCoreAPI::GetAuditLogData`.
+- Select, from the `guilds` pointer, the `getAuditLogDataAsync()` function and execute it, with a return value of type `auto` or `AuditLogData` while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,8 +30,14 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+
+			GetAuditLogData dataPackage;
+			dataPackage.actionType = AuditLogEvent::MEMBER_BAN_ADD;
+			dataPackage.guildId = args->eventData.getGuildId();
+			dataPackage.limit = 25;
+			dataPackage.userId = args->eventData.getAuthorId();
 			
-			vector<Guild> guilds = args->eventData.discordCoreClient->guilds->getAllGuildsAsync().get();
+			AuditLogData auditLogData = args->eventData.discordCoreClient->guilds->getAuditLogDataAsync(dataPackage).get();
 
 			co_return;
 		}
