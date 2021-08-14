@@ -268,7 +268,7 @@ namespace DiscordCoreInternal {
 					this->voiceIp = payload.at("d").at("ip");
 					this->voicePort = to_string(payload.at("d").at("port"));
 					for (auto value : payload.at("d").at("modes")) {
-						if (value == "xsalsa20_poly1305_lite") {
+						if (value == "xsalsa20_poly1305") {
 							this->voiceEncryptionMode = value;
 						}
 					}
@@ -319,12 +319,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-			if (areWeWaitingForIp) {
-				areWeWaitingForIp = false;
+			if (this->areWeWaitingForIp) {
+				this->areWeWaitingForIp = false;
 				this->externalIp = message.substr(4, message.find('\u0000', 4) - 4);
 			}
-
-			//cout << "Message received from VoiceDatagramSocket: " << message.c_str() << endl << endl;
+			cout << "Message Size Is: " << message.size() << endl;
+			cout << "Message received from VoiceDatagramSocket: " << message.c_str() << endl << endl;
 		}
 
 		void terminate() {

@@ -488,10 +488,10 @@ namespace DiscordCoreAPI {
             }
 
             while (doWeQuit == false) {
-                Button button(event01);
+                ButtonManager button(event01);
 
-                ButtonInteractionData buttonIntData = button.getOurButtonData(false, waitForMaxMs);
-                if (button.getButtonId() == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
+                vector<ButtonResponse> buttonIntData = button.collectButtonData(false, waitForMaxMs);
+                if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
@@ -518,7 +518,7 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(dataPackage);
                     }
                 }
-                else if (button.getButtonId() == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
+                else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
                     newCurrentPageIndex += 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
@@ -545,7 +545,7 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(dataPackage);
                     }
                 }
-                else if (button.getButtonId() == "backwards" && (newCurrentPageIndex > 0)) {
+                else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
                     newCurrentPageIndex -= 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
@@ -572,7 +572,7 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(dataPackage);
                     }
                 }
-                else if (button.getButtonId() == "backwards" && (newCurrentPageIndex == 0)) {
+                else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
                     newCurrentPageIndex = (unsigned int)messageEmbeds.size() - 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
@@ -599,7 +599,7 @@ namespace DiscordCoreAPI {
                         event01 = InputEventManager::respondToEvent(dataPackage);
                     }
                 }
-                else if (button.getButtonId() == "exit" || button.getButtonId() == "") {
+                else if (buttonIntData.at(0).buttonId == "exit" || buttonIntData.at(0).buttonId == "") {
                     if (deleteAfter == true) {
                         InputEventManager::deleteInputEventResponseAsync(event01);
                     }
@@ -628,7 +628,7 @@ namespace DiscordCoreAPI {
                     doWeQuit = true;
                     return RecurseThroughMessagePagesData();
                 }
-                else if (button.getButtonId() == "select") {
+                else if (buttonIntData.at(0).buttonId == "select") {
                     if (deleteAfter == true) {
                         InputEventManager::deleteInputEventResponseAsync(event01);
                     }
@@ -658,7 +658,7 @@ namespace DiscordCoreAPI {
                     RecurseThroughMessagePagesData returnData;
                     returnData.currentPageIndex = newCurrentPageIndex;
                     returnData.inputEventData = event01;
-                    returnData.buttonId = button.getButtonId();
+                    returnData.buttonId = buttonIntData.at(0).buttonId;
                     return returnData;
                 }
             };

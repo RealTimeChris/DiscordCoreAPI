@@ -406,18 +406,33 @@ namespace DiscordCoreAPI {
 			DataReader dataReader00(finalFileOutput.GetInputStreamAt(4));
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
-			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
+			auto readBuffer01 = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
-			saveFile(filePath, fileName, readBuffer);
+			saveFile(filePath, fileName, readBuffer01);
 			vector<uint8_t> returnVector;
-			SongDecoder songDecoder(to_string(filePath), to_string(fileName));
-			//auto returnValue = songDecoder.decodeSong();
-			for (unsigned int x = 0; x < readBuffer.Length(); x += 1){
-				returnVector.push_back(readBuffer.data()[x]);
+			dataReader00 = DataReader(finalFileOutput.GetInputStreamAt(0));
+			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
+			auto readBuffer = dataReader00.ReadBuffer((uint32_t)8192 * 8);
+			InMemoryRandomAccessStream randomAccessStream{};
+			randomAccessStream.WriteAsync(readBuffer).get();
+			randomAccessStream.FlushAsync().get();
+			DataReader dataReader01(randomAccessStream.GetInputStreamAt(4));
+			SongDecoder songDecoder(dataReader01);
+			auto valueNew = songDecoder.getFrames();
+			auto readBuffer02 = dataReader00.ReadBuffer((uint32_t)8192 * 8);
+			songDecoder.collectMoreInput(readBuffer02);
+			for (auto value : valueNew) {
+				cout << "SAMPLE COUNT: " << value.sampleCount << " SIZE: " << value.data.size() << " PTS: " << value.timePoint << endl;
+			}
+			auto valueNew02 = songDecoder.getFrames();
+			for (auto value : valueNew02) {
+				cout << "SAMPLE COUNT: " << value.sampleCount << " SIZE: " << value.data.size() << " PTS: " << value.timePoint << endl;
+			}
+			for (unsigned int x = 0; x < readBuffer01.Length(); x += 1){
+				returnVector.push_back(readBuffer01.data()[x]);
 			}
 			this->songQueue.push_back(returnVector);
-			//this->songQueue.push_back(returnValue);
 			co_return;
 		}
 		/*
@@ -444,8 +459,16 @@ namespace DiscordCoreAPI {
 			for (auto value : demuxWebA(this->songQueue.at(0)).segment.clusters) {
 				for (auto value02 : value.simpleBlocks) {
 					vector<uint8_t> newVector;
+					bool doWeBreak = false;
 					for (auto value03 : value02.frame) {
+						if (value02.frame.size() == 3) {
+							doWeBreak = true;
+							break;
+						}
 						newVector.push_back(value03);
+					}
+					if (doWeBreak) {
+						continue;
 					}
 					audioData.audioData.push_back(newVector);
 				}

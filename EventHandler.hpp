@@ -92,8 +92,8 @@ namespace DiscordCoreAPI {
                     dataPackageNew.token = dataPackage.eventData.getInteractionToken();
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (Button::buttonInteractionMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        send(Button::buttonInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (ButtonManager::buttonInteractionMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
+                        send(ButtonManager::buttonInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::SELECT_MENU_INPUT) {
@@ -109,8 +109,8 @@ namespace DiscordCoreAPI {
                     dataPackageNew.values = dataPackage.eventData.getInteractionData().values;
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (SelectMenu::selectMenuInteractionMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        send(SelectMenu::selectMenuInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (SelectMenuManager::selectMenuInteractionMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
+                        send(SelectMenuManager::selectMenuInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 co_await mainThread;

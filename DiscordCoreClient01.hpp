@@ -67,8 +67,8 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->reactions->~ReactionManager();
 			DiscordCoreClient::thisPointer->interactions->~InteractionManager();
 			agent::wait(DiscordCoreClient::thisPointer->pWebSocketReceiverAgent.get());
-			SelectMenu::cleanup();
-			Button::cleanup();
+			SelectMenuManager::cleanup();
+			ButtonManager::cleanup();
 			InteractionManagerAgent::cleanup();
 			MessageManagerAgent::cleanup();
 			GuildManagerAgent::cleanup();
@@ -126,8 +126,8 @@ namespace DiscordCoreAPI {
 			GuildManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			Button::initialize(this->interactions);
-			SelectMenu::initialize(this->interactions);
+			ButtonManager::initialize(this->interactions);
+			SelectMenuManager::initialize(this->interactions);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
 			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());

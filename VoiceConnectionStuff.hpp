@@ -21,17 +21,6 @@ namespace DiscordCoreAPI {
 
 	class VoiceConnection : public agent {
 	public:
-		bool doWeQuit = false;
-		bool doWeWait = true;
-		bool areWePlaying = false;
-		unsigned int timestamp = 0;
-		unsigned short sequenceIndex = 0;
-		__int32 sequenceIndexLib = 0;
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
-		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
-		shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlock;
-		shared_ptr<unbounded_buffer<bool>> readyBuffer;
-		unbounded_buffer<bool> playPauseBuffer;
 		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew)
 			: agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			if (voiceConnectionDataNew.channelId != "") {
@@ -90,6 +79,17 @@ namespace DiscordCoreAPI {
 
 	protected:
 		friend class Guild;
+		bool doWeQuit = false;
+		bool doWeWait = true;
+		bool areWePlaying = false;
+		unsigned int timestamp = 0;
+		unsigned short sequenceIndex = 0;
+		__int32 sequenceIndexLib = 0;
+		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
+		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
+		shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlock;
+		shared_ptr<unbounded_buffer<bool>> readyBuffer;
+		unbounded_buffer<bool> playPauseBuffer;
 		OpusEncoder* encoder;
 		int nChannels = 2;
 
@@ -115,40 +115,113 @@ namespace DiscordCoreAPI {
 			newBuffer = nullptr;
 			return newVector;
 		}
+		/*
+		void sendSingleAudioQuantum(vector<uint8_t> bufferToSend) {
+			uint8_t* bufferToSendNew = new uint8_t[bufferToSend.size()];
+			for (unsigned int x = 0; x < bufferToSend.size(); x += 1) {
+				bufferToSendNew[x] = bufferToSend[x];
+			}
+			size_t audioDataPacketSize = bufferToSend.size() + crypto_secretbox_MACBYTES;
+			uint8_t* audioDataPacket = new uint8_t[audioDataPacketSize];
+			uint8_t* nonceForLibSodium = new uint8_t[crypto_secretbox_NONCEBYTES];
+			memcpy(nonceForLibSodium, &this->sequenceIndexLib, sizeof(uint32_t));
+			unsigned char* encryptionKeys = new unsigned char[crypto_secretbox_KEYBYTES];
+			for (unsigned int x = 0; x < crypto_secretbox_KEYBYTES; x += 1) {
+				encryptionKeys[x] = (unsigned char)this->voiceConnectionData.keys[x];
+			}
+			if (crypto_secretbox_easy(audioDataPacket,
+				bufferToSendNew, bufferToSend.size(),nonceForLibSodium, encryptionKeys) != 0) {
+				throw exception("ENCRYPTION FAILED!");
+			};
+			constexpr size_t headerSize = 12, nonceSize = 4;
+			size_t totalSize = audioDataPacketSize + headerSize + nonceSize;
+			uint8_t* audioDataPacketNew = new uint8_t[totalSize];
+			for (unsigned int x = headerSize; x < totalSize - nonceSize; x += 1) {
+				audioDataPacketNew[x] = audioDataPacket[x - headerSize];
+			}
+			uint8_t header01[2]{ 0x80 , 0x78 };
+			uint16_t header02[1]{ this->sequenceIndex };
+			uint32_t header03[2]{ (uint32_t)this->timestamp, (uint32_t)this->voiceConnectionData.audioSSRC };
 
+			cout << "HEADER 00" << std::dec << header01[0] << endl;
+			cout << "HEADER 01" << std::dec << header01[1] << endl;
+			cout << "HEADER 02" << std::dec << (uint16_t)header02[0] << endl;
+			cout << "HEADER 04" << std::dec << (uint32_t)header03[0] << endl;
+			cout << "HEADER 08" << std::dec << (uint32_t)header03[1] << endl;
+
+			uint8_t headerFinal[headerSize];
+			headerFinal[0] = header01[0];
+			headerFinal[1] = header01[1];
+			headerFinal[2] = (uint8_t)(header02[0] >> (8 * 1));
+			headerFinal[3] = (uint8_t)(header02[0] >> (8 * 0));
+			headerFinal[4] = (uint8_t)(header03[0] >> (8 * 3));
+			headerFinal[5] = (uint8_t)(header03[0] >> (8 * 2));
+			headerFinal[6] = (uint8_t)(header03[0] >> (8 * 1));
+			headerFinal[7] = (uint8_t)(header03[0] >> (8 * 0));
+			headerFinal[8] = (uint8_t)(header03[1] >> (8 * 3));
+			headerFinal[9] = (uint8_t)(header03[1] >> (8 * 2));
+			headerFinal[10] = (uint8_t)(header03[1] >> (8 * 1));
+			headerFinal[11] = (uint8_t)(header03[1] >> (8 * 0));
+			uint32_t nonceForDiscord[1] = {
+				(uint32_t)this->sequenceIndexLib
+			};
+
+			memcpy(audioDataPacketNew, headerFinal, headerSize);
+			memcpy(audioDataPacketNew + totalSize - nonceSize, nonceForDiscord, nonceSize);
+			vector<uint8_t> audioDataFinal;
+			audioDataFinal.resize(totalSize);
+			for (unsigned int x = 0; x < totalSize; x += 1) {
+				audioDataFinal[x] = audioDataPacketNew[x];
+			}
+
+			this->voicechannelWebSocketAgent->sendVoiceData(audioDataFinal);
+
+			this->sequenceIndex += 1;
+			this->sequenceIndexLib += 1;
+			this->timestamp += 20;
+		}
+		
 		void sendSingleAudioQuantum(vector<uint8_t> bufferToSend) {
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = 4;
-			const uint8_t header[headerSize] = {
-				0x80,
-				0x78,
-				static_cast<uint8_t>((this->sequenceIndex >> (8 * 1)) & 0xff),
-				static_cast<uint8_t>((this->sequenceIndex >> (8 * 0)) & 0xff),
-				static_cast<uint8_t>((this->timestamp >> (8 * 3)) & 0xff),
-				static_cast<uint8_t>((this->timestamp >> (8 * 2)) & 0xff),
-				static_cast<uint8_t>((this->timestamp >> (8 * 1)) & 0xff),
-				static_cast<uint8_t>((this->timestamp >> (8 * 0)) & 0xff),
-				static_cast<uint8_t>((this->voiceConnectionData.audioSSRC >> (8 * 3)) & 0xff),
-				static_cast<uint8_t>((this->voiceConnectionData.audioSSRC >> (8 * 2)) & 0xff),
-				static_cast<uint8_t>((this->voiceConnectionData.audioSSRC >> (8 * 1)) & 0xff),
-				static_cast<uint8_t>((this->voiceConnectionData.audioSSRC >> (8 * 0)) & 0xff)
+			uint8_t header01[2]{ 0x80 , 0x78 };
+			uint16_t header02[1]{ this->sequenceIndex };
+			uint32_t header03[2]{ (uint32_t)this->timestamp, (uint32_t)this->voiceConnectionData.audioSSRC };
+
+			cout << "HEADER 00" << std::dec << header01[0] << endl;
+			cout << "HEADER 01" << std::dec << header01[1] << endl;
+			cout << "HEADER 02" << std::dec << (uint16_t)header02[0] << endl;
+			cout << "HEADER 04" << std::dec << (uint32_t)header03[0] << endl;
+			cout << "HEADER 08" << std::dec << (uint32_t)header03[1] << endl;
+
+			uint8_t headerFinal[headerSize];
+			headerFinal[0] = header01[0];
+			headerFinal[1] = header01[1];
+			headerFinal[2] = (uint8_t)(header02[0] >> (8 * 1));
+			headerFinal[3] = (uint8_t)(header02[0] >> (8 * 0));
+			headerFinal[4] = (uint8_t)(header03[0] >> (8 * 3));
+			headerFinal[5] = (uint8_t)(header03[0] >> (8 * 2));
+			headerFinal[6] = (uint8_t)(header03[0] >> (8 * 1));
+			headerFinal[7] = (uint8_t)(header03[0] >> (8 * 0));
+			headerFinal[8] = (uint8_t)(header03[1] >> (8 * 3));
+			headerFinal[9] = (uint8_t)(header03[1] >> (8 * 2));
+			headerFinal[10] = (uint8_t)(header03[1] >> (8 * 1));
+			headerFinal[11] = (uint8_t)(header03[1] >> (8 * 0));
+			uint32_t nonceForDiscord[1] = {
+				(uint32_t)this->sequenceIndexLib
 			};
 
-			uint8_t nonceForDiscord[nonceSize] = {
-				static_cast<uint8_t>((this->sequenceIndex >> (8 * 1)) & 0xff),
-				static_cast<uint8_t>((this->sequenceIndex >> (8 * 0)) & 0xff)
-			};
-
-			uint8_t nonce[crypto_secretbox_NONCEBYTES] = {
-				static_cast<uint8_t>((this->sequenceIndex >> (8 * 1)) & 0xff),
-				static_cast<uint8_t>((this->sequenceIndex >> (8 * 0)) & 0xff)
-			};
+			uint8_t nonceForLibSodium[crypto_secretbox_NONCEBYTES];
+			memcpy(nonceForLibSodium + crypto_secretbox_NONCEBYTES - sizeof(uint32_t), (int*)&this->sequenceIndexLib, sizeof(uint32_t));
+			for (unsigned int x = 4; x < crypto_secretbox_NONCEBYTES; x += 1) {
+				nonceForLibSodium[x] = 0;
+			} 
 
 			cout << "BUFFER SIZE PRE: " << bufferToSend.size() << endl;
-			const size_t numOfBytes = headerSize + bufferToSend.size() + nonceSize + crypto_secretbox_MACBYTES;
-			std::vector<uint8_t> audioDataPacket(numOfBytes);
-			std::memcpy(audioDataPacket.data(), header, headerSize);
-			std::memcpy(audioDataPacket.data() + numOfBytes - nonceSize, nonceForDiscord, nonceSize);
+			size_t numOfBytes = headerSize + bufferToSend.size() + nonceSize + crypto_secretbox_MACBYTES;
+			uint8_t* audioDataPacket = new uint8_t[numOfBytes];
+			std::memcpy(audioDataPacket, headerFinal, headerSize);
+			std::memcpy(audioDataPacket + numOfBytes - nonceSize, nonceForDiscord, nonceSize);
 			unsigned char* encryptionKeys = new unsigned char[crypto_secretbox_KEYBYTES];
 			unsigned char* bufferToSendNew = new unsigned char[bufferToSend.size()];
 			cout << "KEYS SIZE: " << crypto_secretbox_KEYBYTES << sizeof(encryptionKeys) * sizeof(unsigned char) << endl;
@@ -159,12 +232,76 @@ namespace DiscordCoreAPI {
 			for (unsigned int x = 0; x < this->voiceConnectionData.keys.size(); x += 1) {
 				encryptionKeys[x] = (unsigned char)this->voiceConnectionData.keys[x];
 			}
-			if (crypto_secretbox_easy(audioDataPacket.data() + headerSize,
-				bufferToSendNew, bufferToSend.size(), nonce, encryptionKeys) != 0) {
+			if (crypto_secretbox_easy(audioDataPacket+ headerSize,
+				bufferToSendNew, bufferToSend.size(), nonceForLibSodium, encryptionKeys) != 0) {
 				throw exception("ENCRYPTION FAILED!");
 			};
+			vector<uint8_t> audioDataPacketNew;
+			for (unsigned int x = 0; x < numOfBytes; x += 1) {
+				audioDataPacketNew.push_back(audioDataPacket[x]);
+			}
+			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
+			this->sequenceIndex += 1;
+			this->sequenceIndexLib += 1;
+			this->timestamp += 20;
+		}
+		*/
+		void sendSingleAudioQuantum(vector<uint8_t> bufferToSend) {
+			constexpr int headerSize = 12;
+			constexpr int nonceSize = crypto_secretbox_NONCEBYTES;
+			uint8_t header01[2]{ 0x80 , 0x78 };
+			uint16_t header02[1]{ this->sequenceIndex };
+			uint32_t header03[2]{ (uint32_t)this->timestamp, (uint32_t)this->voiceConnectionData.audioSSRC };
 
-			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacket);
+			cout << "HEADER 00" << std::dec << header01[0] << endl;
+			cout << "HEADER 01" << std::dec << header01[1] << endl;
+			cout << "HEADER 02" << std::dec << (uint16_t)header02[0] << endl;
+			cout << "HEADER 04" << std::dec << (uint32_t)header03[0] << endl;
+			cout << "HEADER 08" << std::dec << (uint32_t)header03[1] << endl;
+
+			uint8_t headerFinal[headerSize];
+			headerFinal[0] = header01[0];
+			headerFinal[1] = header01[1];
+			headerFinal[2] = (uint8_t)(header02[0] >> (8 * 1));
+			headerFinal[3] = (uint8_t)(header02[0] >> (8 * 0));
+			headerFinal[4] = (uint8_t)(header03[0] >> (8 * 3));
+			headerFinal[5] = (uint8_t)(header03[0] >> (8 * 2));
+			headerFinal[6] = (uint8_t)(header03[0] >> (8 * 1));
+			headerFinal[7] = (uint8_t)(header03[0] >> (8 * 0));
+			headerFinal[8] = (uint8_t)(header03[1] >> (8 * 3));
+			headerFinal[9] = (uint8_t)(header03[1] >> (8 * 2));
+			headerFinal[10] = (uint8_t)(header03[1] >> (8 * 1));
+			headerFinal[11] = (uint8_t)(header03[1] >> (8 * 0));
+
+			uint8_t nonceForLibSodium[nonceSize];
+			memcpy(nonceForLibSodium, headerFinal, headerSize);
+			for (unsigned int x = headerSize; x < crypto_secretbox_NONCEBYTES; x += 1) {
+				nonceForLibSodium[x] = 0;
+			}
+
+			cout << "BUFFER SIZE PRE: " << bufferToSend.size() << endl;
+			size_t numOfBytes = headerSize + bufferToSend.size() + crypto_secretbox_MACBYTES;
+			uint8_t* audioDataPacket = new uint8_t[numOfBytes];
+			std::memcpy(audioDataPacket, headerFinal, headerSize);
+			unsigned char* encryptionKeys = new unsigned char[crypto_secretbox_KEYBYTES];
+			unsigned char* bufferToSendNew = new unsigned char[bufferToSend.size()];
+			cout << "KEYS SIZE: " << crypto_secretbox_KEYBYTES << sizeof(encryptionKeys) * sizeof(unsigned char) << endl;
+			cout << "BUFFER SIZE POST: " << numOfBytes << endl;
+			for (unsigned int x = 0; x < bufferToSend.size(); x += 1) {
+				bufferToSendNew[x] = bufferToSend[x];
+			}
+			for (unsigned int x = 0; x < this->voiceConnectionData.keys.size(); x += 1) {
+				encryptionKeys[x] = (unsigned char)this->voiceConnectionData.keys[x];
+			}
+			if (crypto_secretbox_easy(audioDataPacket + headerSize,
+				bufferToSendNew, bufferToSend.size(), nonceForLibSodium, encryptionKeys) != 0) {
+				throw exception("ENCRYPTION FAILED!");
+			};
+			vector<uint8_t> audioDataPacketNew;
+			for (unsigned int x = 0; x < numOfBytes; x += 1) {
+				audioDataPacketNew.push_back(audioDataPacket[x]);
+			}
+			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
 			this->sequenceIndex += 1;
 			this->sequenceIndexLib += 1;
 			this->timestamp += 20;
@@ -201,15 +338,14 @@ namespace DiscordCoreAPI {
 				sendSpeakingMessage(true);
 				int count = 0;
 				int startingCount = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				this->timestamp = (unsigned  int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				while (this->areWePlaying) {
 					count = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingCount;
 					if (count >= 20) {
 						startingCount = (unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						//auto value = encodeSingleAudioFrame(audioData.audioData.at(currentPosition));
-						//sendSingleAudioQuantum(value);
 						sendSingleAudioQuantum(audioData.audioData.at(currentPosition));
 						currentPosition += 1;
-						if (currentPosition == audioData.audioData.size()) {
+						if (currentPosition == audioData.audioData.size() - 1) {
 							this->areWePlaying = false;
 						}
 					}
