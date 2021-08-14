@@ -70,17 +70,17 @@ namespace DiscordCoreInternal {
 		void sendVoiceData(vector<uint8_t> data) {
 
 			vector<uint8_t> message = data;
-			if (message.size()==0) {
-				cout << "Please specify text to send" << endl;
+			if (message.size() == 0) {
+				cout << "Please specify voice data to send" << endl << endl;
 				return;
 			}
 
-			cout << "Sending Voice Data: ";
+			/*cout << "Sending Voice Data: ";
 			for (unsigned int x = 0; x < message.size();x+=1){
 				cout << message[x];
 			}
 			cout << endl;
-
+			*/
 			// Buffer any data we want to send.
 			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
 			DataWriter dataWriter(randomAccessStream);
@@ -92,10 +92,11 @@ namespace DiscordCoreInternal {
 				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
 				dataReader.LoadAsync((uint32_t)message.size()).get();
 				IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.size());
+				cout << "BUFFER SIZE: " << std::dec << buffer.Length() << endl;
 				this->voiceSocket.OutputStream().WriteAsync(buffer).get();
 				this->voiceSocket.OutputStream().FlushAsync().get();
 			}
-			cout << "Send Complete" << endl << endl;
+			//cout << "Send Complete" << endl << endl;
 			return;
 		}
 
@@ -142,7 +143,7 @@ namespace DiscordCoreInternal {
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		unbounded_buffer<exception> errorBuffer;
 		unbounded_buffer<bool> connectReadyBuffer;
-		string secretKey;
+		vector<uint8_t> secretKey;
 		int audioSSRC;
 		int heartbeatInterval = 0;
 		int lastNumberReceived = 0;
@@ -202,7 +203,6 @@ namespace DiscordCoreInternal {
 			auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voicePort)).get();
 			this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
 			this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
-			send(*this->readyBuffer, true);
 		}
 
 		void run() {
@@ -216,7 +216,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
-			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
 			if (args.Code() != 1000 && args.Code() != 4014) {
 				this->heartbeatTimer.Cancel();
 				send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
@@ -255,7 +255,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 			json payload = payload.parse(to_string(message));
-
 			cout << "Message received from Voice WebSocket: " << to_string(message) << endl << endl;
 
 			if (payload.contains("op")) {
@@ -283,9 +282,12 @@ namespace DiscordCoreInternal {
 
 				if (payload.at("op") == 4) {
 					for (unsigned int x = 0; x < payload.at("d").at("secret_key").size(); x += 1) {
-						this->secretKey.append(to_string(payload.at("d").at("secret_key").at(x).get<int>()));
-						this->voiceConnectionData.keys = this->secretKey;
+						this->secretKey.push_back(payload.at("d").at("secret_key").at(x).get<uint8_t>());
 					}
+					for (auto value : this->secretKey) {
+						this->voiceConnectionData.keys.push_back(value);
+					}
+					send(*this->readyBuffer, true);
 				}
 
 				if (payload.at("op") == 8) {
@@ -322,7 +324,7 @@ namespace DiscordCoreInternal {
 				this->externalIp = message.substr(4, message.find('\u0000', 4) - 4);
 			}
 
-			cout << "Message received from VoiceDatagramSocket: " << message << endl << endl;
+			//cout << "Message received from VoiceDatagramSocket: " << message.c_str() << endl << endl;
 		}
 
 		void terminate() {

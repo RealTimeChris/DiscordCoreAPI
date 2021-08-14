@@ -284,8 +284,9 @@ namespace DiscordCoreAPI {
                 frame = av_frame_alloc();
                 av_frame_free(&newFrame);
                 newFrame = av_frame_alloc();
-                if (ret < 0)
+                if (ret < 0) {
                     break;
+                }                    
             }
 
             /* flush the decoders */

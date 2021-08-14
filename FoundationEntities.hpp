@@ -3397,7 +3397,7 @@ namespace DiscordCoreAPI {
         string aitags = "";
     };
 
-    struct CreateGuildBanData{
+    struct CreateGuildBanData {
         string guildId;
         string guildMemberId;
         int deleteMessageDays;

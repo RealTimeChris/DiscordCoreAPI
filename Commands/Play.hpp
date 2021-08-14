@@ -8,7 +8,7 @@
 #ifndef _PLAY_
 #define _PLAY_
 
-#include "DiscordCoreClient02.hpp"
+#include "../DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -33,18 +33,18 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			InputEventManager::deleteInputEventResponseAsync(args->eventData);
-
+			InputEventManager::deleteInputEventResponseAsync(args->eventData).get();
+			
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
-			
+
 			InputEventData newEvent;
 			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				CreateDeferredInteractionResponseData dataPackage(args->eventData);
 				newEvent = InputEventManager::respondToEvent(dataPackage);
 			}
-
-			YouTubeAPI youtubeAPI;
+			auto guildBuffer = args->eventData.discordCoreClient->audioBuffersMap.at(args->eventData.getGuildId());
+			YouTubeAPI youtubeAPI(guildBuffer);
 			vector<YouTubeSearchResult> searchResults;
 			if (args->argumentsArray.size() > 0) {
 				searchResults = youtubeAPI.searchForVideo(args->argumentsArray[0]);
@@ -81,42 +81,28 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				if (args->eventData.eventType != InputEventType::REGULAR_MESSAGE) {
-					InputEventManager::deleteInputEventResponseAsync(newEvent);
+					InputEventManager::deleteInputEventResponseAsync(newEvent).get();
 				}
 				co_return;
 			}
 			GuildMember guildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
 			if (returnData.inputEventData.discordCoreClient != nullptr) {
 				if (guildMember.data.voiceData.channelId != "") {
-					auto guildBuffer = args->eventData.discordCoreClient->audioBuffersMap.at(args->eventData.getGuildId());
-					//auto searchResults01 = youtubeAPI.searchForVideo("Skrillex workin for it");
 					auto voiceConnection = guild.connectToVoice(guildMember.data.voiceData.channelId, args->eventData.discordCoreClient->pWebSocketConnectionAgent, guildBuffer);
-					//youtubeAPI.downloadAudio(searchResults01[0], guildBuffer);
-					youtubeAPI.downloadAudio(searchResults[returnData.currentPageIndex], guildBuffer).get();
+					youtubeAPI.downloadAudio(searchResults[returnData.currentPageIndex]).get();
+					youtubeAPI.sendNextSong();
+					//args->eventData.discordCoreClient->guildMembers->modifyGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(), .guildId = args->eventData.getGuildId(), .nick = guildMember.data.nick, .roleIds = guildMember.data.roles, .mute = false, .deaf = false, .newVoiceChannelId = "", .currentChannelId = guildMember.data.voiceData.channelId }).get();
 					voiceConnection->play(true);
 					agent::wait(voiceConnection.get());
 					guild.disconnectFromVoice();
-					cout << "WERE HERE WERE HERE WERE HERE" << endl;
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(args->eventData);
-						EmbedData newEmbed;
-						newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-						newEmbed.setColor("F3f3ae");
-						newEmbed.setDescription("__**TESTING COMPLETE**__");
-						newEmbed.setTimeStamp(getTimeAndDate());
-						newEmbed.setTitle("__**TEST STATUS**__");
-						dataPackage.embeds.push_back(newEmbed);
+						ReplyMessageData dataPackage(returnData.inputEventData);
+						dataPackage.embeds.push_back(returnData.inputEventData.getEmbeds().at(0));
 						newEvent = InputEventManager::respondToEvent(dataPackage);
 					}
 					else {
-						EditInteractionResponseData dataPackage(newEvent);
-						EmbedData newEmbed;
-						newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-						newEmbed.setColor("F3f3ae");
-						newEmbed.setDescription("__**TESTING COMPLETE**__");
-						newEmbed.setTimeStamp(getTimeAndDate());
-						newEmbed.setTitle("__**TEST STATUS**__");
-						dataPackage.embeds.push_back(newEmbed);
+						EditInteractionResponseData dataPackage(returnData.inputEventData);
+						dataPackage.embeds.push_back(returnData.inputEventData.getEmbeds().at(0));
 						newEvent = InputEventManager::respondToEvent(dataPackage);
 					}
 				}
@@ -125,7 +111,6 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-	Play play;
 }
 
 #endif

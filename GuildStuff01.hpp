@@ -125,11 +125,13 @@ namespace DiscordCoreAPI {
 	};
 
 	class GuildManagerAgent : agent {
-	public:
-		static overwrite_buffer<map<string, Guild>> cache;
 	protected:
 		friend class DiscordCoreClient;
 		friend class GuildManager;
+		friend class Guild;
+		friend class EventHandler;
+
+		static overwrite_buffer<map<string, Guild>> cache;
 
 		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer;
 		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer;

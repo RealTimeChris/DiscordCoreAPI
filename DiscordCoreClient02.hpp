@@ -3,8 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-
 #pragma once
+
 #ifndef _DISCORD_CORE_CLIENT_02_
 #define _DISCORD_CORE_CLIENT_02_
 
@@ -12,9 +12,9 @@
 
 namespace DiscordCoreAPI {
 
-    void DiscordCoreClient::finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* functionsToExecute = nullptr) {
+    void DiscordCoreClient::finalSetup(string botToken, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecute = nullptr) {
         try {
-            DiscordCoreAPI::commandPrefix = commandPrefix;
+            DiscordCoreAPI::commandPrefix = commandPrefixNew;
             DiscordCoreInternal::ThreadManager::intialize();
             shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
             DiscordCoreClient::thisPointer = pDiscordCoreClient;

@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 		if (isSpeaking) {
 			data = {
 			{"op", 5,},
-			{"d" ,{ {"speaking",1 << 0},
+			{"d" ,{ {"speaking",1},
 		{"delay" , delay},
 		{"ssrc" , ssrc}}} };
 		}

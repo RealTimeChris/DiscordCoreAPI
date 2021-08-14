@@ -16,13 +16,7 @@
 namespace DiscordCoreAPI {
 
 	struct AudioDataChunk {
-		vector<uint8_t> audioData;
-	};
-
-	class ThreadPoolTimerNew {
-	public:
-		ThreadPoolTimerNew() {};
-		ThreadPoolTimer threadPoolTimer{ nullptr };
+		vector<vector<uint8_t>> audioData;
 	};
 
 	class VoiceConnection : public agent {
@@ -30,8 +24,9 @@ namespace DiscordCoreAPI {
 		bool doWeQuit = false;
 		bool doWeWait = true;
 		bool areWePlaying = false;
-		__int32 timestamp;
-		__int16 sequenceIndex;
+		unsigned int timestamp = 0;
+		unsigned short sequenceIndex = 0;
+		__int32 sequenceIndexLib = 0;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlock;
@@ -96,7 +91,7 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class Guild;
 		OpusEncoder* encoder;
-		int frameSize = 960, nChannels = 2;
+		int nChannels = 2;
 
 		vector<uint8_t> encodeSingleAudioFrame(vector<uint8_t> inputFrame) {
 			uint8_t* oldBuffer;
@@ -105,10 +100,11 @@ namespace DiscordCoreAPI {
 				oldBuffer[x] = inputFrame[x];
 			}
 			uint8_t* newBuffer;
-			int bufferSize = frameSize * nChannels * sizeof(float);
+			int bufferSize = (int)inputFrame.size() * nChannels * sizeof(float);
 			newBuffer = new uint8_t[bufferSize];
-
-			int count = opus_encode_float(encoder, (float*)newBuffer, frameSize, newBuffer, bufferSize);
+			cout << "INPUT SIZE: " << inputFrame.size() << endl;
+			int count = opus_encode_float(encoder, (float*)oldBuffer, 960, newBuffer, bufferSize);
+			cout << "ENCODED COUNT: " << count << endl;
 			vector<uint8_t> newVector;
 			for (int x = 0; x< count; x += 1) {
 				newVector.push_back(newBuffer[x]);
@@ -123,9 +119,6 @@ namespace DiscordCoreAPI {
 		void sendSingleAudioQuantum(vector<uint8_t> bufferToSend) {
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = 4;
-			cout << "AUDIO SSRC: " << this->voiceConnectionData.audioSSRC << endl;
-			cout << "SEQUENCE INDEX: " << this->sequenceIndex << endl;
-			cout << "TIMESTAMP: " << this->timestamp<< endl;
 			const uint8_t header[headerSize] = {
 				0x80,
 				0x78,
@@ -141,31 +134,39 @@ namespace DiscordCoreAPI {
 				static_cast<uint8_t>((this->voiceConnectionData.audioSSRC >> (8 * 0)) & 0xff)
 			};
 
-			uint8_t nonce[nonceSize] =
-			{ (uint8_t)((this->sequenceIndex>> (8 * 3)) & 0xff),
-				(uint8_t)((this->sequenceIndex >> (8 * 2)) & 0xff),
-				(uint8_t)((this->sequenceIndex >> (8 * 1)) & 0xff),
-				(uint8_t)((this->sequenceIndex >> (8 * 0)) & 0xff) };
+			uint8_t nonceForDiscord[nonceSize] = {
+				static_cast<uint8_t>((this->sequenceIndex >> (8 * 1)) & 0xff),
+				static_cast<uint8_t>((this->sequenceIndex >> (8 * 0)) & 0xff)
+			};
 
-			const size_t numOfBytes = headerSize + nonceSize + bufferToSend.size() + crypto_secretbox_MACBYTES;
-			uint8_t* audioDataPacket;
-			audioDataPacket = new uint8_t[numOfBytes];
-			memcpy_s(audioDataPacket, headerSize, header, headerSize);
+			uint8_t nonce[crypto_secretbox_NONCEBYTES] = {
+				static_cast<uint8_t>((this->sequenceIndex >> (8 * 1)) & 0xff),
+				static_cast<uint8_t>((this->sequenceIndex >> (8 * 0)) & 0xff)
+			};
 
-			if (crypto_secretbox_easy(audioDataPacket + headerSize,
-				bufferToSend.data(), bufferToSend.size(), nonce, (unsigned char*)this->voiceConnectionData.keys.data()) != 0) {
+			cout << "BUFFER SIZE PRE: " << bufferToSend.size() << endl;
+			const size_t numOfBytes = headerSize + bufferToSend.size() + nonceSize + crypto_secretbox_MACBYTES;
+			std::vector<uint8_t> audioDataPacket(numOfBytes);
+			std::memcpy(audioDataPacket.data(), header, headerSize);
+			std::memcpy(audioDataPacket.data() + numOfBytes - nonceSize, nonceForDiscord, nonceSize);
+			unsigned char* encryptionKeys = new unsigned char[crypto_secretbox_KEYBYTES];
+			unsigned char* bufferToSendNew = new unsigned char[bufferToSend.size()];
+			cout << "KEYS SIZE: " << crypto_secretbox_KEYBYTES << sizeof(encryptionKeys) * sizeof(unsigned char) << endl;
+			cout << "BUFFER SIZE POST: " << numOfBytes << endl;
+			for (unsigned int x = 0; x < bufferToSend.size(); x += 1) {
+				bufferToSendNew[x] = bufferToSend[x];
+			}
+			for (unsigned int x = 0; x < this->voiceConnectionData.keys.size(); x += 1) {
+				encryptionKeys[x] = (unsigned char)this->voiceConnectionData.keys[x];
+			}
+			if (crypto_secretbox_easy(audioDataPacket.data() + headerSize,
+				bufferToSendNew, bufferToSend.size(), nonce, encryptionKeys) != 0) {
 				throw exception("ENCRYPTION FAILED!");
 			};
 
-			memcpy_s(audioDataPacket + (numOfBytes - nonceSize), nonceSize, nonce, nonceSize);
-			vector<uint8_t> audioDataPacketNew;
-			audioDataPacketNew.resize(numOfBytes);
-			for (unsigned int x = 0; x < numOfBytes; x += 1) {
-				audioDataPacketNew[x] = audioDataPacket[x];
-			}
-
+			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacket);
 			this->sequenceIndex += 1;
-			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
+			this->sequenceIndexLib += 1;
 			this->timestamp += 20;
 		}
 
@@ -189,8 +190,6 @@ namespace DiscordCoreAPI {
 		}
 
 		void run() {
-			vector<ThreadPoolTimerNew> sendTimers;
-			string playerId;
 			while (!this->doWeQuit) {
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
@@ -198,49 +197,26 @@ namespace DiscordCoreAPI {
 				auto audioData = receive(*this->bufferMessageBlock);
 				this->areWePlaying = true;
 
-				int currentPosition = 0, currentPositionPrev = 0;
-				vector<uint8_t> testVector;
-				//sendSpeakingMessage(true);
+				int currentPosition = 0;
+				sendSpeakingMessage(true);
 				int count = 0;
 				int startingCount = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				while (this->areWePlaying) {
 					count = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingCount;
 					if (count >= 20) {
 						startingCount = (unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						currentPosition += frameSize * nChannels * sizeof(float);
-						if (currentPosition > audioData.audioData.size()) {
-							currentPosition = (int)audioData.audioData.size();
-						}
-						vector<uint8_t> newVector;
-						for (int x = currentPositionPrev; x < currentPosition; x += 1) {
-							newVector.push_back(audioData.audioData[x]);
-						}
-						vector<uint8_t> encodedFrame = encodeSingleAudioFrame(newVector);
-						currentPositionPrev = currentPosition;
-
-						sendSingleAudioQuantum(encodedFrame);
-						for (auto value : encodedFrame) {
-							testVector.push_back(value);
-						}
-						if (currentPosition >= audioData.audioData.size()) {
+						//auto value = encodeSingleAudioFrame(audioData.audioData.at(currentPosition));
+						//sendSingleAudioQuantum(value);
+						sendSingleAudioQuantum(audioData.audioData.at(currentPosition));
+						currentPosition += 1;
+						if (currentPosition == audioData.audioData.size()) {
 							this->areWePlaying = false;
 						}
 					}
 				}
 				sendSpeakingMessage(false);
-				InMemoryRandomAccessStream randomStream;
-				DataWriter dataWriter(randomStream.GetOutputStreamAt(0));
-				dataWriter.WriteBytes(testVector);
-				
-				cout << "TEST VECTOR SIZE: " << testVector.size() << endl;
-				dataWriter.StoreAsync().get();
-				DataReader dataReader(randomStream.GetInputStreamAt(0));
-				dataReader.LoadAsync((uint32_t)randomStream.Size());
-				auto readBuffer = dataReader.ReadBuffer((uint32_t)randomStream.Size());
-				saveFile(L"C:\\Users\\Chris\\Downloads", L"TESTFILENAME.opus", readBuffer);
 
 			}
-			cout << "END OF VOICECONNECTION::PLAY: " << endl;
 			done();
 		}
 

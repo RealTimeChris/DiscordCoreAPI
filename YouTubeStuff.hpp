@@ -388,11 +388,6 @@ namespace DiscordCoreAPI {
 					remainingDownloadContentLength -= contentLengthCurrent;
 				}
 
-				DataReader dataReader00(outputStream.GetInputStreamAt(4));
-				dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
-				dataReader00.LoadAsync((uint32_t)outputStream.Size()-4).get();
-				auto readBuffer = dataReader00.ReadBuffer((uint32_t)outputStream.Size()-4);
-
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
 				}
@@ -401,32 +396,63 @@ namespace DiscordCoreAPI {
 				}
 				counter += 1;
 			}
-			vector<uint8_t> vector;
-			vector.push_back(0);
-			vector.push_back(0);
-			vector.push_back(0);
-			vector.push_back(0);
-			dataWriterOutput.WriteBytes(vector);
+			vector<uint8_t> vectorNew;
+			vectorNew.push_back(0);
+			vectorNew.push_back(0);
+			vectorNew.push_back(0);
+			vectorNew.push_back(0);
+			dataWriterOutput.WriteBytes(vectorNew);
 			dataWriterOutput.StoreAsync().get();
 			DataReader dataReader00(finalFileOutput.GetInputStreamAt(4));
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
 			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
-			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".m4a";
+			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
 			saveFile(filePath, fileName, readBuffer);
+			vector<uint8_t> returnVector;
 			SongDecoder songDecoder(to_string(filePath), to_string(fileName));
-			auto returnVector = songDecoder.decodeSong();
+			//auto returnValue = songDecoder.decodeSong();
+			for (unsigned int x = 0; x < readBuffer.Length(); x += 1){
+				returnVector.push_back(readBuffer.data()[x]);
+			}
 			this->songQueue.push_back(returnVector);
+			//this->songQueue.push_back(returnValue);
 			co_return;
 		}
-
+		/*
 		void sendNextSong() {
 			AudioDataChunk audioData;
-			audioData.audioData = songQueue.at(0);
+			int currentLimit = 4096;
+			int currentIndex = 0;
+			vector<uint8_t> newVector;
+			for (auto value : this->songQueue.at(0)) {
+				if (currentIndex == currentLimit - 1) {
+					audioData.audioData.push_back(newVector);
+					newVector = vector<uint8_t>();
+					currentIndex = 0;
+				}
+				newVector.push_back(value);
+				currentIndex += 1;
+			}
 			send(*this->sendAudioBuffer, audioData);
 		}
-
+		*/
+		
+		void sendNextSong() {
+			AudioDataChunk audioData;
+			for (auto value : demuxWebA(this->songQueue.at(0)).segment.clusters) {
+				for (auto value02 : value.simpleBlocks) {
+					vector<uint8_t> newVector;
+					for (auto value03 : value02.frame) {
+						newVector.push_back(value03);
+					}
+					audioData.audioData.push_back(newVector);
+				}
+			}			
+			send(*this->sendAudioBuffer, audioData);
+		}
+		
 	protected:
 		shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBuffer;
 		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
