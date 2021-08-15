@@ -474,9 +474,17 @@ namespace DiscordCoreAPI {
         protected:
             friend class InteractionManagerAgent;
             friend class DiscordCoreClient;
+            friend class SelectMenuManager;
 
             DiscordCoreInternal::HttpAgentResources agentResources;
             shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+    };
+
+    struct SelectMenuResponseData {
+        string userId;
+        string channelId;
+        string messageId;
+        string selectionId;
     };
 
     class SelectMenuManager : public agent {
@@ -508,7 +516,7 @@ namespace DiscordCoreAPI {
             return this->selectMenuId;
         }
 
-        SelectMenuInteractionData getOurSelectMenuData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
+        vector<SelectMenuResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
             if (targetUser != "") {
                 this->userId = targetUser;
             }
@@ -518,9 +526,9 @@ namespace DiscordCoreAPI {
             agent::wait(this);
             exception error;
             while (getError(error)) {
-                cout << "SelectMenu::run() Error: " << error.what() << endl;
+                cout << "Button::run() Error: " << error.what() << endl;
             }
-            return this->interactionData;
+            return this->responseVector;
         }
 
     protected:
@@ -536,6 +544,7 @@ namespace DiscordCoreAPI {
         string userId;
         string selectMenuId = "";
         bool doWeQuit = false;
+        vector<SelectMenuResponseData> responseVector;
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -563,17 +572,28 @@ namespace DiscordCoreAPI {
                             CreateInteractionResponseData dataPackage(selectMenuInteractionData);
                             dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
                             SelectMenuManager::interactions->createInteractionResponseAsync(dataPackage);
+                            SelectMenuResponseData response;
+                            response.selectionId = this->selectMenuId;
+                            response.channelId = this->channelId;
+                            response.messageId = this->messageId;
+                            response.userId = selectMenuInteractionData.user.id;
+                            this->responseVector.push_back(response);
                             doWeQuit = true;
                         }
                     }
                     else {
-                        SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
-                        this->interactionData = selectMenuInteractionData;
-                        this->selectMenuId = selectMenuInteractionData.customId;
-                        CreateInteractionResponseData dataPackage(selectMenuInteractionData);
+                        SelectMenuInteractionData buttonInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
+                        this->interactionData = buttonInteractionData;
+                        this->selectMenuId = buttonInteractionData.customId;
+                        SelectMenuResponseData response;
+                        response.selectionId = this->selectMenuId;
+                        response.channelId = this->channelId;
+                        response.messageId = this->messageId;
+                        response.userId = buttonInteractionData.user.id;
+                        this->responseVector.push_back(response);
+                        CreateInteractionResponseData dataPackage(buttonInteractionData);
                         dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
                         SelectMenuManager::interactions->createInteractionResponseAsync(dataPackage);
-                        doWeQuit = true;
                     }
                 }
                 done();
@@ -589,7 +609,7 @@ namespace DiscordCoreAPI {
         }
     };
 
-    struct ButtonResponse {
+    struct ButtonResponseData {
         string userId;
         string channelId;
         string messageId;
@@ -621,7 +641,7 @@ namespace DiscordCoreAPI {
             done();
         }
 
-        vector<ButtonResponse> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
+        vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
             if (targetUser != "") {
                 this->userId = targetUser;
             }
@@ -649,7 +669,7 @@ namespace DiscordCoreAPI {
         string userId;
         string buttonId = "";
         bool doWeQuit = false;
-        vector<ButtonResponse> responseVector;
+        vector<ButtonResponseData> responseVector;
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -677,7 +697,7 @@ namespace DiscordCoreAPI {
                             CreateInteractionResponseData dataPackage(buttonInteractionData);
                             dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
                             ButtonManager::interactions->createInteractionResponseAsync(dataPackage);
-                            ButtonResponse response;
+                            ButtonResponseData response;
                             response.buttonId = this->buttonId;
                             response.channelId = this->channelId;
                             response.messageId = this->messageId;
@@ -690,7 +710,7 @@ namespace DiscordCoreAPI {
                         ButtonInteractionData buttonInteractionData = receive(ButtonManager::buttonIncomingInteractionBuffer, this->maxTimeInMs);
                         this->interactionData = buttonInteractionData;
                         this->buttonId = buttonInteractionData.customId;
-                        ButtonResponse response;
+                        ButtonResponseData response;
                         response.buttonId = this->buttonId;
                         response.channelId = this->channelId;
                         response.messageId = this->messageId;

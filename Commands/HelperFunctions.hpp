@@ -490,7 +490,7 @@ namespace DiscordCoreAPI {
             while (doWeQuit == false) {
                 ButtonManager button(event01);
 
-                vector<ButtonResponse> buttonIntData = button.collectButtonData(false, waitForMaxMs);
+                vector<ButtonResponseData> buttonIntData = button.collectButtonData(false, waitForMaxMs);
                 if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
