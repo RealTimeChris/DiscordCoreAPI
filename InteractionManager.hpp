@@ -45,11 +45,11 @@ namespace DiscordCoreAPI {
             this->agentResources = agentResourcesNew;
         }
 
-        static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew){
+        static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
             InteractionManagerAgent::threadContext = threadContextNew;
         }
 
-        static void cleanup(){
+        static void cleanup() {
             InteractionManagerAgent::threadContext->releaseGroup();
         }
 
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
             return interactionResponseData;
         }
 
-        MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage){
+        MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
             else {
                 cout << "InteractionManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            return ;
+            return;
         }
 
         void postObjectData(DiscordCoreInternal::PostDeferredInteractionResponseData dataPackage) {
@@ -300,7 +300,7 @@ namespace DiscordCoreAPI {
                     postObjectData(dataPackage06);
                 }
                 DiscordCoreInternal::DeleteFollowUpMessageData dataPackage07;
-                if(try_receive(this->requestDeleteFollowUpMessageBuffer, dataPackage07)){
+                if (try_receive(this->requestDeleteFollowUpMessageBuffer, dataPackage07)) {
                     deleteObjectDataTimer(dataPackage07);
                 }
                 DiscordCoreInternal::GetInteractionResponseData dataPackage08;
@@ -317,7 +317,7 @@ namespace DiscordCoreAPI {
 
     };
 
-	class InteractionManager {
+    class InteractionManager {
     public:
 
         task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
                     messageData = receive(requestAgent.outInteractionResponseBuffer, 1000);
                 }
                 catch (exception&) {};
-            }            
+            }
             InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
             co_return messageData;
         }
@@ -471,13 +471,13 @@ namespace DiscordCoreAPI {
             this->threadContext->releaseGroup();
         }
 
-        protected:
-            friend class InteractionManagerAgent;
-            friend class DiscordCoreClient;
-            friend class SelectMenuManager;
+    protected:
+        friend class InteractionManagerAgent;
+        friend class DiscordCoreClient;
+        friend class SelectMenuManager;
 
-            DiscordCoreInternal::HttpAgentResources agentResources;
-            shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+        DiscordCoreInternal::HttpAgentResources agentResources;
+        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
     };
 
     struct SelectMenuResponseData {
@@ -485,6 +485,7 @@ namespace DiscordCoreAPI {
         string channelId;
         string messageId;
         string selectionId;
+        vector<string> values;
     };
 
     class SelectMenuManager : public agent {
@@ -516,7 +517,7 @@ namespace DiscordCoreAPI {
             return this->selectMenuId;
         }
 
-        vector<SelectMenuResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
+        vector<SelectMenuResponseData> collectSelectMenuData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
             if (targetUser != "") {
                 this->userId = targetUser;
             }
@@ -545,6 +546,7 @@ namespace DiscordCoreAPI {
         string selectMenuId = "";
         bool doWeQuit = false;
         vector<SelectMenuResponseData> responseVector;
+        vector<string> values;
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -568,6 +570,7 @@ namespace DiscordCoreAPI {
                         }
                         else {
                             this->interactionData = selectMenuInteractionData;
+                            this->values = selectMenuInteractionData.values;
                             this->selectMenuId = selectMenuInteractionData.customId;
                             CreateInteractionResponseData dataPackage(selectMenuInteractionData);
                             dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
@@ -577,21 +580,24 @@ namespace DiscordCoreAPI {
                             response.channelId = this->channelId;
                             response.messageId = this->messageId;
                             response.userId = selectMenuInteractionData.user.id;
+                            response.values = this->values;
                             this->responseVector.push_back(response);
                             doWeQuit = true;
                         }
                     }
                     else {
-                        SelectMenuInteractionData buttonInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
-                        this->interactionData = buttonInteractionData;
-                        this->selectMenuId = buttonInteractionData.customId;
+                        SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
+                        this->interactionData = selectMenuInteractionData;
+                        this->selectMenuId = selectMenuInteractionData.customId;
+                        this->values = selectMenuInteractionData.values;
                         SelectMenuResponseData response;
                         response.selectionId = this->selectMenuId;
                         response.channelId = this->channelId;
                         response.messageId = this->messageId;
-                        response.userId = buttonInteractionData.user.id;
+                        response.values = this->values;
+                        response.userId = selectMenuInteractionData.user.id;
                         this->responseVector.push_back(response);
-                        CreateInteractionResponseData dataPackage(buttonInteractionData);
+                        CreateInteractionResponseData dataPackage(selectMenuInteractionData);
                         dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
                         SelectMenuManager::interactions->createInteractionResponseAsync(dataPackage);
                     }
@@ -599,7 +605,7 @@ namespace DiscordCoreAPI {
                 done();
                 SelectMenuManager::selectMenuInteractionMap.erase(this->channelId + this->messageId);
             }
-            catch (exception&e) {
+            catch (exception& e) {
                 this->selectMenuId = "exit";
                 send(this->errorBuffer, e);
                 done();
@@ -616,7 +622,7 @@ namespace DiscordCoreAPI {
         string buttonId;
     };
 
-    class ButtonManager: public agent {
+    class ButtonManager : public agent {
     public:
         static map<string, unbounded_buffer<ButtonInteractionData>*> buttonInteractionMap;
 
@@ -724,7 +730,7 @@ namespace DiscordCoreAPI {
                 done();
                 ButtonManager::buttonInteractionMap.erase(this->channelId + this->messageId);
             }
-            catch (exception&e) {
+            catch (exception& e) {
                 this->buttonId = "exit";
                 send(this->errorBuffer, e);
                 done();
