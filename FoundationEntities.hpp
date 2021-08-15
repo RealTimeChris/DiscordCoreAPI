@@ -2034,6 +2034,29 @@ namespace DiscordCoreAPI {
     };
 
     struct EmbedData {
+
+        EmbedData(){}
+
+        EmbedData(const EmbedData& p1) {
+            this->author = p1.author;
+            this->description = p1.description;
+            for (auto value : p1.fields) {
+                this->fields.push_back(value);
+            }
+            this->footer = p1.footer;
+            this->hexColorValue = p1.hexColorValue;
+            this->image = p1.image;
+            this->provider=p1.provider;
+            this->thumbnail = p1.thumbnail;
+            this->timestampRaw = p1.timestampRaw;
+            this->timestamp = p1.timestampRaw;
+            this->title = p1.title;
+            this->type = p1.type;
+            this->url = p1.url;
+            this->video = p1.video;
+            return;
+        }
+
         operator DiscordCoreInternal::EmbedData() {
             DiscordCoreInternal::EmbedData newData;
             newData.author = this->author;
@@ -2046,7 +2069,7 @@ namespace DiscordCoreAPI {
             newData.image = this->image;
             newData.provider = this->provider;
             newData.thumbnail = this->thumbnail;
-            newData.timestamp = this->timestamp;
+            newData.timestamp = this->timestampRaw;
             newData.title = this->title;
             newData.type = this->type;
             newData.url = this->url;

@@ -406,15 +406,18 @@ namespace DiscordCoreAPI {
 			DataReader dataReader00(finalFileOutput.GetInputStreamAt(4));
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
-			auto readBuffer01 = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
+			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
-			saveFile(filePath, fileName, readBuffer01);
+			saveFile(filePath, fileName, readBuffer);
 			vector<uint8_t> returnVector;
-			dataReader00 = DataReader(finalFileOutput.GetInputStreamAt(0));
-			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
-			auto readBuffer = dataReader00.ReadBuffer((uint32_t)this->writeSize);
-			InMemoryRandomAccessStream randomAccessStream{};
+			//auto returnValue = songDecoder.decodeSong();
+			for (unsigned int x = 0; x < readBuffer.Length(); x += 1) {
+				returnVector.push_back(readBuffer.data()[x]);
+			}
+			this->songQueue.push_back(returnVector);
+			/*
+			* InMemoryRandomAccessStream randomAccessStream{};
 			randomAccessStream.WriteAsync(readBuffer).get();
 			randomAccessStream.FlushAsync().get();
 			DataReader dataReader01(randomAccessStream.GetInputStreamAt(4));
@@ -436,12 +439,13 @@ namespace DiscordCoreAPI {
 					frames.push_back(value);
 				}
 			}
+			
 			cout << "FRAME COUNT 01: " << frames.size() << endl;
 			for (auto value : frames) {
 				cout << "SAMPLE COUNT: " << value.sampleCount << " SIZE: " << value.data.size() << " PTS: " << value.timePoint << endl;
 			}
-			
-			this->songQueue.push_back(returnVector);
+			*/
+
 			co_return;
 		}
 		/*
@@ -465,23 +469,32 @@ namespace DiscordCoreAPI {
 		
 		void sendNextSong() {
 			AudioDataChunk audioData;
+			vector<vector<uint8_t>> returnVector;
 			for (auto value : demuxWebA(this->songQueue.at(0)).segment.clusters) {
 				for (auto value02 : value.simpleBlocks) {
 					vector<uint8_t> newVector;
-					bool doWeBreak = false;
-					for (auto value03 : value02.frame) {
-						if (value02.frame.size() == 3) {
-							doWeBreak = true;
-							break;
-						}
+					newVector.resize(value02.elementIdLength);
+					memcpy(newVector.data(), &value02.elementId, value02.elementIdLength);
+					newVector.resize(newVector.size() + value02.elementContentSizeLength);
+					memcpy(newVector.data() + value02.elementIdLength, &value02.elementContentSize, value02.elementContentSizeLength);
+					for (auto value03 : value02.trackNumber) {
 						newVector.push_back(value03);
 					}
-					if (doWeBreak) {
-						continue;
+					for (auto value03 : value02.relativeTimestamp) {
+						newVector.push_back(value03);
 					}
-					audioData.audioData.push_back(newVector);
+					for (auto value03 : value02.flags) {
+						newVector.push_back(value03);
+					}
+					for (auto value03 : value02.frame) {
+						newVector.push_back(value03);
+					}
+					returnVector.push_back(newVector);
 				}
-			}			
+				
+			}
+			audioData.audioData = returnVector;
+			cout << "THE SIZE: " << audioData.audioData.size() << endl;
 			send(*this->sendAudioBuffer, audioData);
 		}
 		
