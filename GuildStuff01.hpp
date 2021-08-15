@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 				cout << "GuildManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			GuildData guildData;
-			DiscordCoreInternal::parseObject(returnData.data, &guildData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &guildData);
 			Guild guildNew(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
 			return guildNew;
 		}
@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 				cout << "GuildManagerAgent::getObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			InviteData inviteData;
-			DiscordCoreInternal::parseObject(returnData.data, &inviteData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &inviteData);
 			return inviteData;
 		}
 
@@ -245,7 +245,7 @@ namespace DiscordCoreAPI {
 			vector<InviteData> inviteData;
 			for (auto value : returnData.data) {
 				InviteData inviteDataNew;
-				DiscordCoreInternal::parseObject(value, &inviteDataNew);
+				DiscordCoreInternal::DataParser::parseObject(value, &inviteDataNew);
 				inviteData.push_back(inviteDataNew);
 			}
 			return inviteData;
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 				cout << "GuildManagerAgent::getObjectData_03 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			InviteData inviteData;
-			DiscordCoreInternal::parseObject(returnData.data, &inviteData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &inviteData);
 			return inviteData;
 		}
 
@@ -311,7 +311,7 @@ namespace DiscordCoreAPI {
 				cout << "GuildManagerAgent::getObjectData_04 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			AuditLogData auditLogData;
-			DiscordCoreInternal::parseObject(returnData.data, &auditLogData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &auditLogData);
 			return auditLogData;
 		}
 
@@ -336,7 +336,7 @@ namespace DiscordCoreAPI {
 			else {
 				cout << "GuildManagerAgent::putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			DiscordCoreInternal::parseObject(returnData.data, &banData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &banData);
 			return banData;
 		}
 

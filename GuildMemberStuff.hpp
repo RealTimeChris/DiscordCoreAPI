@@ -16,6 +16,8 @@ namespace DiscordCoreAPI {
 
 	class GuildMemberManager;
 
+	class DiscordCoreClient;
+
 	class RoleManager;
 	
 	class UserManager;
@@ -123,7 +125,7 @@ namespace DiscordCoreAPI {
 				cout << "GuildMemberManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			GuildMemberData guildMemberData;
-			DiscordCoreInternal::parseObject(returnData.data, &guildMemberData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &guildMemberData);
 			GuildMember guildMemberNew(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			return guildMemberNew;
 		}
@@ -148,7 +150,7 @@ namespace DiscordCoreAPI {
 				cout << "GuildMemberManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			GuildMemberData guildMemberData;
-			DiscordCoreInternal::parseObject(returnData.data, &guildMemberData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &guildMemberData);
 			GuildMember guildMemberNew(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			return guildMemberNew;
 		}

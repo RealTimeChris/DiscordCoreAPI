@@ -132,9 +132,9 @@ namespace DiscordCoreAPI{
 		}
 
 		void showElementIdAndContentSize(){
-			cout << "Element Name: " + elementName + ", ";
-			cout << "Element Id: " << dec << this->elementId << ", ";
-			cout << "Content Size: " << dec << this->elementContentSize << " Bytes." << endl;
+			//cout << "Element Name: " + elementName + ", ";
+			//cout << "Element Id: " << dec << this->elementId << ", ";
+			//cout << "Content Size: " << dec << this->elementContentSize << " Bytes." << endl;
 			
 		}
 

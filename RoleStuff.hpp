@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 			vector<Role> roleVector;
 			for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
 				RoleData roleData;
-				DiscordCoreInternal::parseObject(returnData.data.at(x), &roleData);
+				DiscordCoreInternal::DataParser::parseObject(returnData.data.at(x), &roleData);
 				Role newRole(roleData, this->discordCoreClient);
 				roleVector.push_back(newRole);
 			}
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 			map<string, Role> cacheTemp = receive(RoleManagerAgent::cache, 1U);
 			for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
 				RoleData roleData;
-				DiscordCoreInternal::parseObject(returnData.data.at(x), &roleData);
+				DiscordCoreInternal::DataParser::parseObject(returnData.data.at(x), &roleData);
 				Role newRole(roleData, this->discordCoreClient);
 				cacheTemp.insert(make_pair(newRole.data.id, newRole));
 			}
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 				cout << "RoleManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			RoleData roleData;
-			DiscordCoreInternal::parseObject(returnData.data, &roleData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &roleData);
 			Role newRole(roleData, this->discordCoreClient);
 			return newRole;
 		}
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 			vector<Role> roleVector;
 			for (auto value : returnData.data) {
 				RoleData newRoleData;
-				DiscordCoreInternal::parseObject(value, &newRoleData);
+				DiscordCoreInternal::DataParser::parseObject(value, &newRoleData);
 				Role newRole(newRoleData, this->discordCoreClient);
 				roleVector.push_back(newRole);
 			}
@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 				cout << "RoleManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			RoleData roleData;
-			DiscordCoreInternal::parseObject(returnData.data, &roleData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &roleData);
 			Role newRole(roleData, this->discordCoreClient);
 			return newRole;
 		}
@@ -492,7 +492,7 @@ namespace DiscordCoreAPI {
 			vector<Role> rolesVector = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 			vector<Role> rolesVectorNew;
 			for (auto value : rolesVector) {
-				for (auto value2 : dataPackage.guildMember.data.roles) {
+				for (auto value2 : dataPackage.guildMember.data.roles){
 					if (value2 == value.data.id) {
 						rolesVectorNew.push_back(value);
 					}

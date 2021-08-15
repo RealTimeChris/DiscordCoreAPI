@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
                 cout << "InteractionManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreAPI::InteractionResponseData interactionResponseData;
-            DiscordCoreInternal::parseObject(returnData.data, &interactionResponseData);
+            DiscordCoreInternal::DataParser::parseObject(returnData.data, &interactionResponseData);
             return interactionResponseData;
         }
 
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
                 cout << "InteractionManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreAPI::MessageData messageData;
-            DiscordCoreInternal::parseObject(returnData.data, &messageData);
+            DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
             return messageData;
         }
 
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
                 cout << "InteractionManagerAgent::patchObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             MessageData messageData;
-            DiscordCoreInternal::parseObject(returnData.data, &messageData);
+            DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
             return messageData;
         }
 
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
                 cout << "InteractionManagerAgent::postObjectData_02 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             MessageData messageData;
-            DiscordCoreInternal::parseObject(returnData.data, &messageData);
+            DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
             return messageData;
         }
 

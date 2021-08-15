@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 				cout << "this->putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			ReactionData reactionData;
-			DiscordCoreInternal::parseObject(returnData.data, &reactionData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &reactionData);
 			Reaction reaction(reactionData, this->discordCoreClient);
 			return reaction;
 		}

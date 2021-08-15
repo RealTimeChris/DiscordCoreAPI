@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 				cout << "MessageManagerAgent::getObject_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			MessageData messageData;
-			DiscordCoreInternal::parseObject(returnData.data, &messageData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
 			messageData.requesterId = dataPackage.requesterId;
 			Message messageNew(messageData, this->discordCoreClient);
 			return messageNew;
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 			vector<Message> messagesVector{};
 			for (auto value : returnData.data) {
 				MessageData messageData;
-				DiscordCoreInternal::parseObject(value, &messageData);
+				DiscordCoreInternal::DataParser::parseObject(value, &messageData);
 				Message messageNew(messageData, this->discordCoreClient);
 				messagesVector.push_back(messageNew);
 			}
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 			vector<Message> messagesVector{};
 			for (auto value : returnData.data) {
 				MessageData messageData;
-				DiscordCoreInternal::parseObject(value, &messageData);
+				DiscordCoreInternal::DataParser::parseObject(value, &messageData);
 				Message messageNew(messageData, this->discordCoreClient);
 				messagesVector.push_back(messageNew);
 			}
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 			}
 			MessageData messageData;
 			messageData.requesterId = dataPackage.requesterId;
-			DiscordCoreInternal::parseObject(returnData.data, &messageData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
 			Message messageNew(messageData, this->discordCoreClient);
 			return messageNew;
 		}
@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 			}
 			MessageData messageData;
 			messageData.requesterId = dataPackage.requesterId;
-			DiscordCoreInternal::parseObject(returnData.data, &messageData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
 			Message messageNew(messageData, this->discordCoreClient);
 			return messageNew;
 		}
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 				cout << "MessageManagerAgent::postObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			MessageData messageData;
-			DiscordCoreInternal::parseObject(returnData.data, &messageData);
+			DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
 			Message messageNew(messageData, this->discordCoreClient);
 			return messageNew;
 		}

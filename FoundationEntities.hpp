@@ -92,6 +92,9 @@ namespace DiscordCoreAPI {
         }
     }
 
+    class GuildMember;
+    struct GuildMemberData;
+
 };
 
 namespace  DiscordCoreInternal {
@@ -361,6 +364,26 @@ namespace  DiscordCoreInternal {
         string createdAt;
     };
 
+    struct RoleTagsData {
+        string botId;
+        string integrationId;
+        string premiumSubscriber;
+    };
+
+    struct RoleData {
+        string id;
+        string name;
+        int color{ 0 };
+        bool hoist{ false };
+        int position{ 0 };
+        string permissions;
+        bool managed{ false };
+        bool mentionable{ false };
+        RoleTagsData tags;
+    };
+
+    struct DiscordCoreAPI::GuildMemberData;
+
     struct GuildMemberData {
         string guildId;
         UserData user;
@@ -372,7 +395,7 @@ namespace  DiscordCoreInternal {
         bool mute{ false };
         bool pending{ false };
         string permissions;
-        string userMention;
+        string userMention;        
     };
 
     struct WelcomeScreenChannelData {
@@ -413,24 +436,6 @@ namespace  DiscordCoreInternal {
     struct ButtonData {
         string label;
         string url;
-    };
-
-    struct RoleTagsData {
-        string botId;
-        string integrationId;
-        string premiumSubscriber;
-    };
-
-    struct RoleData {
-        string id;
-        string name;
-        int color{ 0 };
-        bool hoist{ false };
-        int position{ 0 };
-        string permissions;
-        bool managed{ false };
-        bool mentionable{ false };
-        RoleTagsData tags;
     };
 
     struct EmojiData {

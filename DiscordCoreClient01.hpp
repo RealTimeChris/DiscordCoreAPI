@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::CHANNEL_CREATE:
 					{
 						ChannelData channelData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &channelData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channelData);
 						Channel channel(channelData, DiscordCoreClient::thisPointer);
 						OnChannelCreationData channelCreationData;
 						channelCreationData.channel = channel;
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 						OnChannelUpdateData channelUpdateData;
 						Channel channel = this->channels->getChannelAsync({ .channelId = workload.payLoad.at("id") }).get();
 						channelUpdateData.channelOld = channel;
-						DiscordCoreInternal::parseObject(workload.payLoad, &channel.data);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channel.data);
 						channelUpdateData.channelNew = channel;
 						this->eventManager->onChannelUpdateEvent(channelUpdateData);
 						break;
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::CHANNEL_DELETE:
 					{
 						ChannelData channelData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &channelData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channelData);
 						Channel channel(channelData, DiscordCoreClient::thisPointer);
 						OnChannelDeletionData channelDeleteData;
 						channelDeleteData.channel = channel;
@@ -209,7 +209,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::GUILD_CREATE:
 					{
 						GuildData guildData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &guildData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildData);
 						Guild guild = createGuild(guildData);
 						DiscordCoreAPI::OnGuildCreationData guildCreationData;
 						guildCreationData.guild = guild;
@@ -222,7 +222,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreAPI::OnGuildUpdateData guildUpdateData;
 						Guild guild = this->guilds->getGuildAsync({ .guildId = workload.payLoad.at("id") }).get();
 						guildUpdateData.guildOld = guild;
-						DiscordCoreInternal::parseObject(workload.payLoad, &guild.data);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guild.data);
 						guildUpdateData.guildNew = guild;
 						this->eventManager->onGuildUpdateEvent(guildUpdateData);
 						break;
@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::GUILD_DELETE:
 					{
 						GuildData guildData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &guildData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildData);
 						removeGuild(guildData);
 						Guild guild(this->agentResources, guildData, DiscordCoreClient::thisPointer, DiscordCoreClient::thisPointer);
 						DiscordCoreAPI::OnGuildDeletionData guildDeletionData;
@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::GUILD_BAN_ADD:
 					{
 						UserData userData;
-						DiscordCoreInternal::parseObject(workload.payLoad.at("user"), &userData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("user"), &userData);
 						User user(userData, DiscordCoreClient::thisPointer);
 						DiscordCoreAPI::OnGuildBanAddData guildBanAddData;
 						guildBanAddData.user = user;
@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::GUILD_BAN_REMOVE:
 					{
 						UserData userData;
-						DiscordCoreInternal::parseObject(workload.payLoad.at("user"), &userData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("user"), &userData);
 						User user(userData, DiscordCoreClient::thisPointer);
 						DiscordCoreAPI::OnGuildBanRemoveData guildBanRemoveData;
 						guildBanRemoveData.user = user;
@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::GUILD_MEMBER_ADD:
 					{
 						GuildMemberData guildMemberData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &guildMemberData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildMemberData);
 						GuildMember guildMember(guildMemberData, workload.payLoad.at("guild_id").get<string>(), DiscordCoreClient::thisPointer);
 						DiscordCoreAPI::OnGuildMemberAddData guildMemberAddData;
 						guildMemberAddData.guildMember = guildMember;
@@ -273,7 +273,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::GUILD_MEMBER_REMOVE:
 					{
 						UserData userData;
-						DiscordCoreInternal::parseObject(workload.payLoad.at("user"), &userData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("user"), &userData);
 						User user(userData, DiscordCoreClient::thisPointer);
 						DiscordCoreAPI::OnGuildMemberRemoveData guildMemberRemoveData;
 						guildMemberRemoveData.user = user;
@@ -287,7 +287,7 @@ namespace DiscordCoreAPI {
 						GuildMember guildMemberOld = this->guildMembers->getGuildMemberAsync({ .guildId = workload.payLoad.at("guild_id"), .guildMemberId = workload.payLoad.at("user").at("id") }).get();
 						guildMemberUpdateData.guildMemberOld = guildMemberOld;
 						GuildMemberData guildMemberData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &guildMemberData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildMemberData);
 						GuildMember guildMemberNew(guildMemberData, workload.payLoad.at("guild_id"), DiscordCoreClient::thisPointer);
 						guildMemberUpdateData.guildMemberNew = guildMemberNew;
 						this->eventManager->onGuildMemberUpdateEvent(guildMemberUpdateData);
@@ -296,7 +296,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::ROLE_CREATE:
 					{
 						RoleData roleData;
-						DiscordCoreInternal::parseObject(workload.payLoad.at("role"), &roleData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("role"), &roleData);
 						Role role(roleData, DiscordCoreClient::thisPointer);
 						DiscordCoreAPI::OnRoleCreationData roleCreationData;
 						roleCreationData.role = role;
@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreAPI::OnRoleUpdateData roleUpdateData;
 						Role role = this->roles->getRoleAsync({ .guildId = workload.payLoad.at("guild_id"), .roleId = workload.payLoad.at("role").at("id") }).get();
 						roleUpdateData.roleOld = role;
-						DiscordCoreInternal::parseObject(workload.payLoad.at("role"), &role.data);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("role"), &role.data);
 						roleUpdateData.roleNew = role;
 						roleUpdateData.guildId = workload.payLoad.at("guild_id");
 						this->eventManager->onRoleUpdateEvent(roleUpdateData);
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::INVITE_CREATE:
 					{
 						InviteData inviteData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &inviteData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &inviteData);
 						OnInviteCreationData inviteCreationData;
 						inviteCreationData.invite = inviteData;
 						inviteCreationData.discordCoreClient = DiscordCoreClient::thisPointer;
@@ -350,7 +350,7 @@ namespace DiscordCoreAPI {
 					{
 						if (workload.payLoad.contains("user")) {
 							InteractionData interactionData(workload.payLoad.at("user").at("id").get<string>());
-							DiscordCoreInternal::parseObject(workload.payLoad, &interactionData);
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &interactionData);
 							InputEventData eventData;
 							if (interactionData.type == InteractionType::ApplicationCommand) {
 								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -388,7 +388,7 @@ namespace DiscordCoreAPI {
 						}
 						else if (workload.payLoad.contains("member")) {
 							InteractionData interactionData(workload.payLoad.at("member").at("user").at("id").get<string>());
-							DiscordCoreInternal::parseObject(workload.payLoad, &interactionData);
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &interactionData);
 							InputEventData eventData;
 							if (interactionData.type == InteractionType::ApplicationCommand) {
 								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::MESSAGE_CREATE:
 					{
 						MessageData messageData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &messageData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
 						if (InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
 							send(*InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
 						}
@@ -451,7 +451,7 @@ namespace DiscordCoreAPI {
 					{
 						DiscordCoreAPI::OnMessageUpdateData messageUpdateData;
 						MessageData messageData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &messageData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
 						Message message(messageData, DiscordCoreClient::thisPointer);
 						messageUpdateData.messageNew = message;
 						this->eventManager->onMessageUpdateEvent(messageUpdateData);
@@ -482,7 +482,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::REACTION_ADD:
 					{
 						ReactionAddData reactionAddDataNew;
-						DiscordCoreInternal::parseObject(workload.payLoad, &reactionAddDataNew);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &reactionAddDataNew);
 						ReactionData reactionData;
 						reactionData.channelId = reactionAddDataNew.channelId;
 						reactionData.emoji = reactionAddDataNew.emoji;
@@ -499,7 +499,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::REACTION_REMOVE:
 					{
 						ReactionRemoveData reactionRemoveDataNew;
-						DiscordCoreInternal::parseObject(workload.payLoad, &reactionRemoveDataNew);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &reactionRemoveDataNew);
 						reactionRemoveDataNew.discordCoreClient = this;
 						OnReactionRemoveData reactionRemoveData;
 						reactionRemoveData.reactionRemoveData = reactionRemoveDataNew;
@@ -522,7 +522,7 @@ namespace DiscordCoreAPI {
 						reactionRemoveEmojiData.guildId = workload.payLoad.at("guild_id");
 						reactionRemoveEmojiData.messageId = workload.payLoad.at("message_id");
 						EmojiData emojiData;
-						DiscordCoreInternal::parseObject(workload.payLoad.at("emoji"), &emojiData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("emoji"), &emojiData);
 						reactionRemoveEmojiData.emoji = emojiData;
 						this->eventManager->onReactionRemoveEmojiEvent(reactionRemoveEmojiData);
 						break;
@@ -531,7 +531,7 @@ namespace DiscordCoreAPI {
 					{
 						OnPresenceUpdateData presenceUpdateData;
 						PresenceUpdateData newData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &newData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &newData);
 						presenceUpdateData.presenceData = newData;
 						this->eventManager->onPresenceUpdateEvent(presenceUpdateData);
 						break;
@@ -540,7 +540,7 @@ namespace DiscordCoreAPI {
 					{
 						OnTypingStartData typingStartData;
 						TypingStartData newData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &newData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &newData);
 						typingStartData.typingStartData = newData;
 						this->eventManager->onTypingStartEvent(typingStartData);
 						break;
@@ -549,7 +549,7 @@ namespace DiscordCoreAPI {
 					{
 						OnUserUpdateData userUpdateData;
 						UserData newData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &newData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &newData);
 						User userOld = this->users->getUserAsync({ .userId = newData.id }).get();
 						User userNew(newData, DiscordCoreClient::thisPointer);
 						this->users->insertUserAsync(userNew).get();
@@ -562,7 +562,7 @@ namespace DiscordCoreAPI {
 					{
 						OnVoiceStateUpdateData voiceStateUpdateData;
 						VoiceStateData newData;
-						DiscordCoreInternal::parseObject(workload.payLoad, &newData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &newData);
 						voiceStateUpdateData.voiceStateData = newData;
 						this->eventManager->onVoiceStateUpdateEvent(voiceStateUpdateData);
 						break;

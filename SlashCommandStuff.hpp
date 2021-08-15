@@ -109,7 +109,7 @@ namespace DiscordCoreAPI {
                 cout << "SlashCommandManager::createGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreInternal::ApplicationCommandData appCommandData;
-            DiscordCoreInternal::parseObject(returnData.data, &appCommandData);
+            DiscordCoreInternal::DataParser::parseObject(returnData.data, &appCommandData);
             ApplicationCommand appCommand(appCommandData);
             co_return appCommandData;
 		}
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
             vector<ApplicationCommand> appCommands;
             for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
                 DiscordCoreInternal::ApplicationCommandData appCommandData;
-                DiscordCoreInternal::parseObject(returnData.data.at(x), &appCommandData);
+                DiscordCoreInternal::DataParser::parseObject(returnData.data.at(x), &appCommandData);
                 ApplicationCommand appCommand(appCommandData);
                 appCommands.push_back(appCommand);
             }
@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
                 cout << "SlashCommandManager::editGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreInternal::ApplicationCommandData appCommandData;
-            DiscordCoreInternal::parseObject(returnData.data, &appCommandData);
+            DiscordCoreInternal::DataParser::parseObject(returnData.data, &appCommandData);
             ApplicationCommand appCommand(appCommandData);
             co_return appCommand;
         }

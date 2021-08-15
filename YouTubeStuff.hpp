@@ -259,7 +259,7 @@ namespace DiscordCoreAPI {
 			for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
 				DiscordCoreAPI::YouTubeSearchResult searchResult;
 				if (value.contains("videoRenderer")) {
-					DiscordCoreInternal::parseObject(value.at("videoRenderer"), &searchResult);
+					DiscordCoreInternal::DataParser::parseObject(value.at("videoRenderer"), &searchResult);
 					searchResults.push_back(searchResult);
 				}
 			}
@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 			if (this->playerResponse != "") {
 				jsonObject = json::parse(this->playerResponse);
 			}
-			DiscordCoreInternal::parseObject(jsonObject, &videoSearchResult.formats);
+			DiscordCoreInternal::DataParser::parseObject(jsonObject, &videoSearchResult.formats);
 			YouTubeFormat format;
 			for (auto value : videoSearchResult.formats) {
 				//if (value.mimeType.find("mp4a.40.2") != string::npos) {
@@ -413,25 +413,34 @@ namespace DiscordCoreAPI {
 			vector<uint8_t> returnVector;
 			dataReader00 = DataReader(finalFileOutput.GetInputStreamAt(0));
 			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
-			auto readBuffer = dataReader00.ReadBuffer((uint32_t)8192 * 8);
+			auto readBuffer = dataReader00.ReadBuffer((uint32_t)this->writeSize);
 			InMemoryRandomAccessStream randomAccessStream{};
 			randomAccessStream.WriteAsync(readBuffer).get();
 			randomAccessStream.FlushAsync().get();
 			DataReader dataReader01(randomAccessStream.GetInputStreamAt(4));
-			SongDecoder songDecoder(dataReader01);
+			BuildSongDecoderData dataPackage;
+			dataPackage.dataReader = dataReader01;
+			dataPackage.initialBufferSize = (uint32_t)randomAccessStream.Size();
+			SongDecoder songDecoder(dataPackage);
 			auto valueNew = songDecoder.getFrames();
-			auto readBuffer02 = dataReader00.ReadBuffer((uint32_t)8192 * 8);
+			auto readBuffer02 = dataReader00.ReadBuffer((uint32_t)this->writeSize);
+			randomAccessStream.WriteAsync(readBuffer02).get();
+			randomAccessStream.FlushAsync().get();
 			songDecoder.collectMoreInput(readBuffer02);
-			for (auto value : valueNew) {
+			int frameCount = 1;
+			vector<RawFrame> frames;
+			while (frameCount >= 1) {
+				auto result = songDecoder.getFrames();
+				frameCount = (int)result.size();
+				for (auto value : result) {
+					frames.push_back(value);
+				}
+			}
+			cout << "FRAME COUNT 01: " << frames.size() << endl;
+			for (auto value : frames) {
 				cout << "SAMPLE COUNT: " << value.sampleCount << " SIZE: " << value.data.size() << " PTS: " << value.timePoint << endl;
 			}
-			auto valueNew02 = songDecoder.getFrames();
-			for (auto value : valueNew02) {
-				cout << "SAMPLE COUNT: " << value.sampleCount << " SIZE: " << value.data.size() << " PTS: " << value.timePoint << endl;
-			}
-			for (unsigned int x = 0; x < readBuffer01.Length(); x += 1){
-				returnVector.push_back(readBuffer01.data()[x]);
-			}
+			
 			this->songQueue.push_back(returnVector);
 			co_return;
 		}
@@ -487,6 +496,7 @@ namespace DiscordCoreAPI {
 		string playerResponse = "";
 		string html5PlayerFile = "";
 		string html5Player = "";
+		__int64 writeSize = 4096;
 	};
 };
 
