@@ -92,7 +92,6 @@ namespace DiscordCoreInternal {
 				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
 				dataReader.LoadAsync((uint32_t)message.size()).get();
 				IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.size());
-				cout << "BUFFER SIZE: " << std::dec << buffer.Length() << endl;
 				this->voiceSocket.OutputStream().WriteAsync(buffer).get();
 				this->voiceSocket.OutputStream().FlushAsync().get();
 			}

@@ -1142,19 +1142,26 @@ namespace DiscordCoreInternal {
 	}
 
 	string getCreateApplicationCommandPayload(CreateApplicationCommandData dataPackage) {
-		json data = {
+		json data;
+		if (dataPackage.type == ApplicationCommandType::MESSAGE || dataPackage.type == ApplicationCommandType::USER) {
+			data = { {"name", dataPackage.name},{"type", dataPackage.type} };
+		}
+		else {
+			data = {
 			{"name",dataPackage.name },
 			{"description", dataPackage.description},
-			{"default_permission", dataPackage.defaultPermission}
-		};
+			{"default_permission", dataPackage.defaultPermission},
+			{"type", dataPackage.type}
+			};
+			
+			json arrayValue;
 
-		json arrayValue;
+			data.emplace(make_pair("options", arrayValue));
 
-		data.emplace(make_pair("options", arrayValue));
-
-		if (dataPackage.options.size() > 0) {
-			for (unsigned int x = 0; x < dataPackage.options.size(); x += 1) {
-				addOptionsData(dataPackage.options.at(x), &data.at("options"));
+			if (dataPackage.options.size() > 0) {
+				for (unsigned int x = 0; x < dataPackage.options.size(); x += 1) {
+					addOptionsData(dataPackage.options.at(x), &data.at("options"));
+				}
 			}
 		}
 

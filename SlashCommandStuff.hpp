@@ -46,6 +46,7 @@ namespace DiscordCoreAPI {
     };
 
     struct CreateApplicationCommandData {
+        DiscordCoreInternal::ApplicationCommandType type;
         string name;
         string description;
         vector<ApplicationCommandOptionData> options;
@@ -82,19 +83,20 @@ namespace DiscordCoreAPI {
             this->threadContext->releaseGroup();
         }
 
-		task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData createApplicationCommandData) {
+		task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            DiscordCoreInternal::CreateApplicationCommandData createApplicationCommandDataNew;
-            createApplicationCommandDataNew.applicationId = this->applicationId;
-            createApplicationCommandDataNew.defaultPermission = createApplicationCommandData.defaultPermission;
-            createApplicationCommandDataNew.description = createApplicationCommandData.description;
-            createApplicationCommandDataNew.name = createApplicationCommandData.name;
-            copyOptionsData(&createApplicationCommandDataNew.options, createApplicationCommandData.options);
+            DiscordCoreInternal::CreateApplicationCommandData dataPackageNew;
+            dataPackageNew.applicationId = this->applicationId;
+            dataPackageNew.defaultPermission = dataPackage.defaultPermission;
+            dataPackageNew.description = dataPackage.description;
+            dataPackageNew.name = dataPackage.name;
+            dataPackageNew.type = dataPackage.type;
+            copyOptionsData(&dataPackageNew.options, dataPackage.options);
             DiscordCoreInternal::HttpWorkload workload;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_APPLICATION_COMMAND;
-            workload.content = DiscordCoreInternal::getCreateApplicationCommandPayload(createApplicationCommandDataNew);
+            workload.content = DiscordCoreInternal::getCreateApplicationCommandPayload(dataPackageNew);
             DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
@@ -142,14 +144,14 @@ namespace DiscordCoreAPI {
             return appCommands;
         }
 
-        task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData editApplicationCommandData) {
+        task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             vector<ApplicationCommand> appCommands = getGlobalApplicationCommands();
             bool isItFound = false;
             string appCommandId;
             for (auto const& [value] : appCommands) {
                 cout << value.name << endl;
-                if (value.name == editApplicationCommandData.name) {
+                if (value.name == dataPackage.name) {
                     appCommandId = value.id;
                     isItFound = true;
                 }
@@ -159,16 +161,16 @@ namespace DiscordCoreAPI {
                 ApplicationCommand appCommand;
                 co_return appCommand;
             }
-            DiscordCoreInternal::EditApplicationCommandData editAppCommandData;
-            editAppCommandData.defaultPermission = editApplicationCommandData.defaultPermission;
-            editAppCommandData.description = editApplicationCommandData.description;
-            editAppCommandData.name = editApplicationCommandData.name;
-            copyOptionsData(&editAppCommandData.options, editApplicationCommandData.options);
+            DiscordCoreInternal::EditApplicationCommandData dataPackageNew;
+            dataPackageNew.defaultPermission = dataPackage.defaultPermission;
+            dataPackageNew.description = dataPackage.description;
+            dataPackageNew.name = dataPackage.name;
+            copyOptionsData(&dataPackageNew.options, dataPackage.options);
             DiscordCoreInternal::HttpWorkload workload;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + appCommandId;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_SLASH_COMMAND;
-            workload.content = DiscordCoreInternal::getEditApplicationCommandPayload(editAppCommandData);
+            workload.content = DiscordCoreInternal::getEditApplicationCommandPayload(dataPackageNew);
             DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
@@ -188,13 +190,13 @@ namespace DiscordCoreAPI {
             co_return appCommand;
         }
 
-        task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData deleteApplicationCommandData) {
+        task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             vector<ApplicationCommand> appCommands = getGlobalApplicationCommands();
             string commandId;
             bool isItFound = false;
             for (auto const& [value] : appCommands) {
-                if (value.name == deleteApplicationCommandData.name) {
+                if (value.name == dataPackage.name) {
                     commandId = value.id;
                     isItFound = true;
                 }

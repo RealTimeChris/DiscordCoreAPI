@@ -12,19 +12,6 @@
 
 namespace DiscordCoreAPI {
 
-    string convertToLowerCase(string stringToConvert) {
-        string newString;
-        for (auto& value : stringToConvert) {
-            if (isupper(value)) {
-                newString += (char)tolower(value);
-            }
-            else {
-                newString += value;
-            }
-        }
-        return newString;
-    }
-
     bool areWeInADM(InputEventData eventData, Channel channel, bool displayResponse = false) {
         auto currentChannelType = channel.data.type;
         if (currentChannelType == ChannelType::DM) {

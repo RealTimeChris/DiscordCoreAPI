@@ -21,9 +21,9 @@ namespace DiscordCoreAPI {
 
     struct BuildSongDecoderData {
     public:
-        BuildSongDecoderData() :dataReader(nullptr) {};
+        BuildSongDecoderData() {};
         uint32_t initialBufferSize = 0;
-        DataReader dataReader;
+        IBuffer dataBuffer;
     };
 
     IBuffer loadFile(hstring filePath, hstring fileName) {
@@ -42,16 +42,20 @@ namespace DiscordCoreAPI {
     class SongDecoder {
     public:
 
+        SongDecoder(){}
+
         SongDecoder(BuildSongDecoderData dataPackage) {
-            this->fileStreamData = make_shared<DataReader>(dataPackage.dataReader);
-            dataPackage.initialBufferSize = this->fileStreamData->LoadAsync(dataPackage.initialBufferSize).get();
-            this->currentBufferReadSize = dataPackage.initialBufferSize;
+            vector<uint8_t> newVector;
+            for (unsigned int x = 0; x < dataPackage.dataBuffer.Length(); x += 1) {
+                newVector.push_back(dataPackage.dataBuffer.data()[x]);
+            }
+            this->currentBuffer = newVector;
             // Define your buffer 
 
             // A IStream - you choose where it comes from.
 
             // Alloc a buffer for the stream.
-            unsigned char* fileStreamBuffer = (unsigned char*)av_malloc(this->currentBufferReadSize);
+            unsigned char* fileStreamBuffer = (unsigned char*)av_malloc(this->currentBuffer.size());
             if (fileStreamBuffer == nullptr) {
                 // out of memory
             }
@@ -59,13 +63,14 @@ namespace DiscordCoreAPI {
             // Get a AVContext stream
             this->ioContext = avio_alloc_context(
                 fileStreamBuffer,    // Buffer
-                this->currentBufferReadSize,  // Buffer size
+                (int)this->currentBuffer.size(),  // Buffer size
                 0,                   // Buffer is only readable - set to 1 for read/write
                 this,      // User (your) specified data
                 FileStreamRead,      // Function - Reading Packets (see example)
                 0,                  // Function - Write Packets
                 FileStreamSeek       // Function - Seek to position in stream (see example)
             );
+
             if (this->ioContext == nullptr) {
                 // out of memory
             }
@@ -143,130 +148,134 @@ namespace DiscordCoreAPI {
             av_dump_format(this->formatContext, 0, "test", 0);
         }
 
-        void collectMoreInput(IBuffer readBuffer) {
+        uint32_t collectMoreInput(IBuffer readBuffer) {
+            vector<uint8_t> currentBufferNew;
+            uint32_t collectedBytes;
             uint8_t* oldBufferData;
             size_t remainingSize = this->ioContext->buffer_size - this->ioContext->pos;
             oldBufferData = new uint8_t[remainingSize];
             avio_read(this->ioContext, oldBufferData, (int)remainingSize);
             av_free(this->ioContext->buffer);
             size_t newBufferSize = readBuffer.Length() + remainingSize;
+            collectedBytes = (int)newBufferSize;
             this->ioContext->buffer = (unsigned char*)av_malloc(newBufferSize);
-            memcpy(this->ioContext, oldBufferData, (int)remainingSize);
-            avio_seek(this->ioContext, remainingSize, SEEK_SET);
-            this->fileStreamData->LoadAsync(readBuffer.Length()).get();
-            this->currentBufferReadSize = (int)newBufferSize; 
+            for (int x = 0; x < remainingSize; x += 1) {
+                currentBufferNew.push_back(oldBufferData[x]);
+            }
+            for (unsigned int x=0; x< readBuffer.Length(); x+=1){
+                currentBufferNew.push_back(readBuffer.data()[x]);
+            }
+            this->currentBuffer = currentBufferNew;
+            avio_seek(this->ioContext, 0, SEEK_SET);
+            return collectedBytes;
         }
 
         vector<RawFrame> getFrames() {
-            vector<RawFrame> frames{};
-            int ret = 0;
+            if (this->currentBuffer.size() >0){
+                vector<RawFrame> frames{};
+                int ret = 0;
 
-            this->packet = av_packet_alloc();
-            if (!this->packet) {
-                fprintf(stderr, "Error: Could not allocate packet\n");
-                return frames;
-            }
+                this->packet = av_packet_alloc();
+                if (!this->packet) {
+                    fprintf(stderr, "Error: Could not allocate packet\n");
+                    return frames;
+                }
 
-            // read frames from the file
-            while(av_read_frame(this->formatContext, this->packet) >= 0) {
+                this->frame = av_frame_alloc();
+                if (!this->frame) {
+                    fprintf(stderr, "Error: Could not allocate frame\n");
+                    return frames;
+                }
 
-                // check if the packet belongs to a stream we are interested in, otherwise
-                // skip it
-                if (this->packet->stream_index == this->audioStreamIndex) {
-                    // submit the packet to the decoder
-                    ret = avcodec_send_packet(this->audioDecodeContext, this->packet);
-                    if (ret < 0) {
-                        char charString[32];
-                        av_strerror(ret, charString, 32);
-                        fprintf(stderr, "Error submitting a packet for decoding (%s), %s.\n", to_string(ret).c_str(), charString);                        
-                        return frames;
-                    }
+                this->newFrame = av_frame_alloc();
+                if (!this->newFrame) {
+                    fprintf(stderr, "Error: Could not allocate frame\n");
+                    return frames;
+                }
 
-                    // get all the available frames from the decoder
-                    while (ret >= 0) {
+                // read frames from the file
+                while (av_read_frame(this->formatContext, this->packet) >= 0) {
 
-                        this->frame = av_frame_alloc();
-                        if (!this->frame) {
-                            fprintf(stderr, "Error: Could not allocate frame\n");
+                    // check if the packet belongs to a stream we are interested in, otherwise
+                    // skip it
+                    if (this->packet->stream_index == this->audioStreamIndex) {
+                        // submit the packet to the decoder
+                        ret = avcodec_send_packet(this->audioDecodeContext, this->packet);
+                        if (ret < 0) {
+                            char charString[32];
+                            av_strerror(ret, charString, 32);
+                            fprintf(stderr, "Error submitting a packet for decoding (%s), %s.\n", to_string(ret).c_str(), charString);
                             return frames;
                         }
 
-                        this->newFrame = av_frame_alloc();
-                        if (!this->newFrame) {
-                            fprintf(stderr, "Error: Could not allocate frame\n");
-                            return frames;
-                        }
+                        // get all the available frames from the decoder
+                        if (ret >= 0) {
 
-                        ret = avcodec_receive_frame(this->audioDecodeContext, this->frame);
-                        if (ret < 0|| ret == AVERROR_EOF || ret == AVERROR(EAGAIN)) {
-                            // those two return values are special and mean there is no output
-                            // frame available, but there were no errors during decoding.
-                            fprintf(stderr, "Error during decoding (%s)\n", to_string(ret).c_str());
-                            return frames;
-                        }
+                            ret = avcodec_receive_frame(this->audioDecodeContext, this->frame);
+                            if (ret < 0) {
+                                // those two return values are special and mean there is no output
+                                // frame available, but there were no errors during decoding.
+                                fprintf(stderr, "Error during decoding (%s)\n", to_string(ret).c_str());
+                                return frames;
+                            }
 
-                        this->audioFrameCount++;
-                        if (!swr_is_initialized(this->swrContext)) {
-                            swr_init(this->swrContext);
-                        }
-                        this->newFrame->channel_layout = AV_CH_LAYOUT_STEREO;
-                        this->newFrame->sample_rate = 48000;
-                        this->newFrame->format = AVSampleFormat::AV_SAMPLE_FMT_FLT;
-                        this->newFrame->nb_samples = frame->nb_samples;
-                        this->newFrame->pts = frame->pts;
-                        swr_convert_frame(this->swrContext, this->newFrame, this->frame);
-                        printf("Audio Frame #:%d Number of Samples:%d pts:%s\n", this->audioFrameCount, this->newFrame->nb_samples, to_string(this->newFrame->pts).c_str());
-                        size_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
-
-                        vector<uint8_t> newVector{};
-                        for (int x = 0; x < unpadded_linesize; x += 1) {
-                            newVector.push_back(this->newFrame->extended_data[0][x]);
-                        }
-
-                        RawFrame rawFrame{};
-                        rawFrame.data = newVector;
-                        rawFrame.timePoint = packet->pts;
-                        rawFrame.sampleCount = frame->nb_samples;
-                        frames.push_back(rawFrame);
-
-                        __int64 sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
-                        if (sampleCount > 0) {
+                            this->audioFrameCount++;
                             if (!swr_is_initialized(this->swrContext)) {
                                 swr_init(this->swrContext);
                             }
-                            swr_convert_frame(this->swrContext, this->newFrame, nullptr);
-                            vector<uint8_t> newVector02{};
-                            for (int x = 0; x < *this->newFrame->linesize; x += 1) {
-                                newVector02.push_back(*this->newFrame->extended_data[x]);
+                            this->newFrame->channel_layout = AV_CH_LAYOUT_STEREO;
+                            this->newFrame->sample_rate = 48000;
+                            this->newFrame->format = AVSampleFormat::AV_SAMPLE_FMT_FLT;
+                            this->newFrame->nb_samples = frame->nb_samples;
+                            this->newFrame->pts = frame->pts;
+                            swr_convert_frame(this->swrContext, this->newFrame, this->frame);
+                            printf("Audio Frame #:%d Number of Samples:%d pts:%s\n", this->audioFrameCount, this->newFrame->nb_samples, to_string(this->newFrame->pts).c_str());
+                            size_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
+
+                            vector<uint8_t> newVector{};
+                            for (int x = 0; x < unpadded_linesize; x += 1) {
+                                newVector.push_back(this->newFrame->extended_data[0][x]);
                             }
 
-                            RawFrame rawFrame02{};
-                            rawFrame02.data = newVector02;
-                            rawFrame02.timePoint = frame->pts;
-                            rawFrame02.sampleCount = frame->nb_samples;
-                            frames.push_back(rawFrame02);
+                            RawFrame rawFrame{};
+                            rawFrame.data = newVector;
+                            rawFrame.timePoint = packet->pts;
+                            rawFrame.sampleCount = frame->nb_samples;
+                            frames.push_back(rawFrame);
+
+                            __int64 sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
+                            if (sampleCount > 0) {
+                                if (!swr_is_initialized(this->swrContext)) {
+                                    swr_init(this->swrContext);
+                                }
+                                swr_convert_frame(this->swrContext, this->newFrame, nullptr);
+                                vector<uint8_t> newVector02{};
+                                for (int x = 0; x < *this->newFrame->linesize; x += 1) {
+                                    newVector02.push_back(*this->newFrame->extended_data[x]);
+                                }
+
+                                RawFrame rawFrame02{};
+                                rawFrame02.data = newVector02;
+                                rawFrame02.timePoint = frame->pts;
+                                rawFrame02.sampleCount = frame->nb_samples;
+                                frames.push_back(rawFrame02);
+                            }
+                            cout << "CURRENT BUFFER POSITION: " << this->ioContext->buf_ptr - this->ioContext->buffer << endl;
+                            if (ret < 0) {
+                                cout << "Return value is less than zero!" << endl << endl;
+                                return frames;
+                            }
                         }
-                        cout << "CURRENT BUFFER POSITION: " << this->ioContext->buf_ptr - this->ioContext->buffer << endl;
-                        if (ret < 0) {
-                            cout << "Return value is less than zero!" << endl << endl;
-                            return frames;
-                        }
-                        av_frame_free(&this->newFrame);
-                        av_frame_free(&this->frame);
                     }
-
                 }
-
                 av_packet_unref(this->packet);
                 av_packet_free(&this->packet);
-                this->packet = av_packet_alloc();
+                av_frame_unref(this->frame);
+                av_frame_free(&this->frame);
+                av_frame_unref(this->newFrame);
+                av_frame_free(&this->newFrame);
+                return frames;
             }
-            av_packet_unref(this->packet);
-            av_frame_unref(this->frame);
-            av_frame_free(&this->frame);
-            av_frame_unref(this->newFrame);
-            av_frame_free(&this->newFrame);
-            return frames;
         }
 
         ~SongDecoder() {
@@ -302,10 +311,10 @@ namespace DiscordCoreAPI {
         AVStream* audioStream = nullptr;
         SwrContext* swrContext = nullptr;
         AVCodec* dec = nullptr;
-        int  audioStreamIndex = 0, audioFrameIndex = 0, audioFrameCount = 0, baseBufferSize = 4096, currentBufferReadSize = 0;
+        int  audioStreamIndex = 0, audioFrameIndex = 0, audioFrameCount = 0, baseBufferSize = 4096;
         AVFrame* frame = nullptr, * newFrame = nullptr;
         AVPacket* packet = nullptr;
-        shared_ptr<DataReader> fileStreamData{ nullptr };
+        vector<uint8_t> currentBuffer{};
 
         static int64_t FileStreamSeek(void* ptr, int64_t pos, int) {
             // Your custom IStream
@@ -314,7 +323,7 @@ namespace DiscordCoreAPI {
             //   STREAM_SEEK_SET - relative to beginning of stream.
             //   STREAM_SEEK_CUR - relative to current position in stream.
             //   STREAM_SEEK_END - relative to end of stream;
-            auto returnVal = stream->fileStreamData->LoadAsync((uint32_t)pos).get();
+            auto returnVal = stream->currentBuffer[pos];
 
             // Return the new position
             return returnVal;
@@ -324,23 +333,19 @@ namespace DiscordCoreAPI {
         {
             // This is your IStream
             SongDecoder* stream = reinterpret_cast<SongDecoder*>(opaque);
-            IBuffer hr;
-            if (stream->fileStreamData->UnconsumedBufferLength() > 0) {
-                hr = stream->fileStreamData->ReadBuffer(stream->currentBufferReadSize);
+            int bytesRead;
+            if (stream->currentBuffer.size() > 0) {
+                bytesRead = (int)stream->currentBuffer.size();
             }
             else {
                 return AVERROR_EOF;
             }
 
-            for (unsigned int x = 0; x < hr.Length(); x += 1) {
-                buf[x] = hr.data()[x];
+            for (unsigned int x = 0; x < stream->currentBuffer.size(); x += 1) {
+                buf[x] = stream->currentBuffer[x];
             }
-
-            if (!hr) {
-                return -1;
-            }
-
-            return hr.Length();
+            stream->currentBuffer.erase(stream->currentBuffer.begin(), stream->currentBuffer.begin() + bytesRead);
+            return bytesRead;
         }
 
     };

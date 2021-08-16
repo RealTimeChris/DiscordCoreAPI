@@ -37,7 +37,10 @@ namespace DiscordCoreAPI {
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
 				int error;
 				encoder = opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error);
-
+				this->repacketizer = opus_repacketizer_create();
+				if (!repacketizer) {
+					cout << "Failed to create Opus repacketizer!";
+				}
 				if (error != OPUS_OK) {
 					cout << "Failed to create Opus encoder!";
 				}
@@ -91,7 +94,56 @@ namespace DiscordCoreAPI {
 		shared_ptr<unbounded_buffer<bool>> readyBuffer;
 		unbounded_buffer<bool> playPauseBuffer;
 		OpusEncoder* encoder;
+		OpusRepacketizer* repacketizer;
 		int nChannels = 2;
+		const int encodedBufferSize00 = 65536;
+		uint8_t encodeBuffer[65536];
+
+		vector<uint8_t> repacketizeSingleAudioFrame(vector<vector<uint8_t>> inputFrames) {
+			int outDataSize = 0;
+			int mEncFrameSize = 960;
+			int mEncFrameBytes = mEncFrameSize * 4;
+			
+			int inDataSize = 0;
+			vector<uint8_t> returnVector;
+			returnVector.resize(this->encodedBufferSize00);
+			for (auto value : inputFrames) {
+				inDataSize += (int)value.size();
+			}
+			uint8_t* input = new uint8_t[inDataSize];
+			if (0 == (inDataSize % mEncFrameBytes)) {
+				bool isOk = true;
+				size_t cur = 0;
+				uint8_t* out = returnVector.data();
+
+				memset(out, 0, sizeof(encodeBuffer));
+				repacketizer = opus_repacketizer_init(repacketizer);
+				for (size_t i = 0; i < (inDataSize / mEncFrameBytes); ++i) {
+					int ret;
+					int retval = opus_repacketizer_cat(repacketizer, out, ret);
+					if (retval != OPUS_OK) {
+						isOk = false;
+						cout << "opus_repacketizer_cat() : {}" << endl;
+						break;
+					}
+					out += ret;
+					cur += ret;
+				}
+				if (isOk) {
+					int ret = opus_repacketizer_out(repacketizer, returnVector.data(), 65536);
+					if (ret > 0) {
+						outDataSize = ret;
+					}
+					else {
+						cout << "opus_repacketizer_out(): {}" << endl;
+					}
+				}
+			}
+			else {
+				throw std::runtime_error(format("Invalid input data length: {}, must be n times of {}", inDataSize, mEncFrameBytes));
+			}
+			return returnVector;
+		}
 
 		vector<uint8_t> encodeSingleAudioFrame(vector<uint8_t> inputFrame) {
 			uint8_t* oldBuffer;
@@ -159,6 +211,7 @@ namespace DiscordCoreAPI {
 			cout << "BUFFER SIZE POST: " << numOfBytes << endl;
 			for (unsigned int x = 0; x < bufferToSend.size(); x += 1) {
 				bufferToSendNew[x] = bufferToSend[x];
+				cout << hex << bufferToSendNew[x];
 			}
 			for (unsigned int x = 0; x < this->voiceConnectionData.keys.size(); x += 1) {
 				encryptionKeys[x] = (unsigned char)this->voiceConnectionData.keys[x];
@@ -213,7 +266,8 @@ namespace DiscordCoreAPI {
 					count = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingCount;
 					if (count >= 20) {
 						startingCount = (unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						sendSingleAudioQuantum(audioData.audioData.at(currentPosition));
+						auto newAudioData = repacketizeSingleAudioFrame(audioData.audioData);
+						sendSingleAudioQuantum(newAudioData);
 						currentPosition += 1;
 						if (currentPosition == audioData.audioData.size() - 1) {
 							this->areWePlaying = false;

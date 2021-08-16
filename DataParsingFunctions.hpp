@@ -356,6 +356,143 @@ namespace DiscordCoreInternal {
             *pDataStructure = roleData;
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::UserCommandInteractionData* pDataStructure) {
+            DiscordCoreAPI::UserCommandInteractionData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("application_id") && !jsonObjectData.at("application_id").is_null()) {
+                newData.applicationId = jsonObjectData.at("application_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("channel_id") && !jsonObjectData.at("channel_id").is_null()) {
+                newData.channelId = jsonObjectData.at("channel_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("token") && !jsonObjectData.at("token").is_null()) {
+                newData.token = jsonObjectData.at("token").get<string>();
+            }
+
+            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                newData.interactionId = jsonObjectData.at("id").get<string>();
+            }
+
+            if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
+                newData.type = jsonObjectData.at("type").get<DiscordCoreAPI::ApplicationCommandType>();
+            }
+
+            if (jsonObjectData.contains("version") && !jsonObjectData.at("version").is_null()) {
+                newData.version = jsonObjectData.at("version").get<int>();
+            }
+
+            if (jsonObjectData.contains("member") && !jsonObjectData.at("member").is_null()) {
+                parseObject(jsonObjectData.at("member"), &newData.member);
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("id") && !jsonObjectData.at("data").at("id").is_null()) {
+                    newData.menuId = jsonObjectData.at("data").at("id").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("name") && !jsonObjectData.at("data").at("name").is_null()) {
+                    newData.name = jsonObjectData.at("data").at("name").get<string>();
+                    cout << "OUR NAME: " << newData.name << endl;
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("members") && !jsonObjectData.at("data").at("members").is_null()) {
+                    parseObject(jsonObjectData.at("data").at("members"), &newData.members);
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("users") && !jsonObjectData.at("data").at("users").is_null()) {
+                    parseObject(jsonObjectData.at("data").at("users"), &newData.users);
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("target_id") && !jsonObjectData.at("data").at("target_id").is_null()) {
+                    newData.targetId = jsonObjectData.at("data").at("target_id").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("type") && !jsonObjectData.at("data").at("type").is_null()) {
+                    newData.type = jsonObjectData.at("data").at("type").get<DiscordCoreAPI::ApplicationCommandType>();
+                }
+            }
+
+            *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::MessageCommandInteractionData* pDataStructure) {
+            DiscordCoreAPI::MessageCommandInteractionData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("application_id") && !jsonObjectData.at("application_id").is_null()) {
+                newData.applicationId = jsonObjectData.at("application_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("channel_id") && !jsonObjectData.at("channel_id").is_null()) {
+                newData.channelId = jsonObjectData.at("channel_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("token") && !jsonObjectData.at("token").is_null()) {
+                newData.token = jsonObjectData.at("token").get<string>();
+            }
+
+            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                newData.interactionId = jsonObjectData.at("id").get<string>();
+            }
+
+            if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
+                newData.type = jsonObjectData.at("type").get<DiscordCoreAPI::ApplicationCommandType>();
+            }
+
+            if (jsonObjectData.contains("version") && !jsonObjectData.at("version").is_null()) {
+                newData.version = jsonObjectData.at("version").get<int>();
+            }
+
+            if (jsonObjectData.contains("messages") && !jsonObjectData.at("messages").is_null()) {
+                parseObject(jsonObjectData.at("messages"), &newData.messages);
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("id") && !jsonObjectData.at("data").at("id").is_null()) {
+                    newData.menuId = jsonObjectData.at("data").at("id").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("name") && !jsonObjectData.at("data").at("name").is_null()) {
+                    newData.name = jsonObjectData.at("data").at("name").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("target_id") && !jsonObjectData.at("data").at("target_id").is_null()) {
+                    newData.targetId = jsonObjectData.at("data").at("target_id").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").contains("type") && !jsonObjectData.at("data").at("type").is_null()) {
+                    newData.type = jsonObjectData.at("data").at("type").get<DiscordCoreAPI::ApplicationCommandType>();
+                }
+            }
+
+            *pDataStructure = newData;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildMemberData* pDataStructure) {
             DiscordCoreAPI::GuildMemberData guildMemberData = *pDataStructure;
 

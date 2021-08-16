@@ -113,6 +113,17 @@ namespace DiscordCoreAPI {
                         send(SelectMenuManager::selectMenuInteractionMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
+                else if (dataPackage.eventData.eventType == InputEventType::MESSAGE_COMMAND_INTERACTION) {
+                    CommandData commandData(dataPackage.eventData);
+                    commandData.eventData = dataPackage.eventData;
+                    CommandCenter::checkForAndRunCommand(commandData);
+                }
+                else if (dataPackage.eventData.eventType == InputEventType::USER_COMMAND_INTERACTION) {
+                    cout << "THE NAME: " << dataPackage.eventData.userCommandInteractionData.name << endl;
+                    CommandData commandData(dataPackage.eventData);
+                    commandData.eventData = dataPackage.eventData;
+                    CommandCenter::checkForAndRunCommand(commandData);
+                }
                 co_await mainThread;
                 co_return;
             }
