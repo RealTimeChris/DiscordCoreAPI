@@ -119,7 +119,6 @@ namespace DiscordCoreAPI {
                     CommandCenter::checkForAndRunCommand(commandData);
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::USER_COMMAND_INTERACTION) {
-                    cout << "THE NAME: " << dataPackage.eventData.userCommandInteractionData.name << endl;
                     CommandData commandData(dataPackage.eventData);
                     commandData.eventData = dataPackage.eventData;
                     CommandCenter::checkForAndRunCommand(commandData);

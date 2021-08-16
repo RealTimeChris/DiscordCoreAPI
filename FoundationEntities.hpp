@@ -3583,7 +3583,6 @@ namespace DiscordCoreAPI {
                 else {
                     this->optionsArgs.push_back(inputEventData.userCommandInteractionData.members.user.id);
                 }
-                cout << "USER ID: " << inputEventData.userCommandInteractionData.members.user.id << endl;
             }
             else if (inputEventData.messageCommandInteractionData.name != "") {
                 this->commandName = convertToLowerCase(inputEventData.messageCommandInteractionData.name);
