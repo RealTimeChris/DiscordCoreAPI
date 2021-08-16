@@ -400,19 +400,22 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
                 if (jsonObjectData.at("data").contains("name") && !jsonObjectData.at("data").at("name").is_null()) {
                     newData.name = jsonObjectData.at("data").at("name").get<string>();
-                    cout << "OUR NAME: " << newData.name << endl;
                 }
             }
 
             if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
-                if (jsonObjectData.at("data").contains("members") && !jsonObjectData.at("data").at("members").is_null()) {
-                    parseObject(jsonObjectData.at("data").at("members"), &newData.members);
+                if (jsonObjectData.at("data").at("resolved").contains("members") && !jsonObjectData.at("data").at("resolved").at("members").is_null()) {
+                    for (auto value : jsonObjectData.at("data").at("resolved").at("members").items()) {
+                        parseObject(jsonObjectData.at("data").at("resolved").at("members").at(value.key()), &newData.members);
+                    }
                 }
             }
 
             if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
-                if (jsonObjectData.at("data").contains("users") && !jsonObjectData.at("data").at("users").is_null()) {
-                    parseObject(jsonObjectData.at("data").at("users"), &newData.users);
+                if (jsonObjectData.at("data").at("resolved").contains("users") && !jsonObjectData.at("data").at("resolved").at("users").is_null()) {
+                    for (auto value : jsonObjectData.at("data").at("resolved").at("users").items()) {
+                        parseObject(jsonObjectData.at("data").at("resolved").at("users").at(value.key()), &newData.users);
+                    }
                 }
             }
 
@@ -454,6 +457,10 @@ namespace DiscordCoreInternal {
                 newData.interactionId = jsonObjectData.at("id").get<string>();
             }
 
+            if (jsonObjectData.contains("member") && !jsonObjectData.at("member").is_null()) {
+                parseObject(jsonObjectData.at("member"), &newData.member);
+            }
+
             if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
                 newData.type = jsonObjectData.at("type").get<DiscordCoreAPI::ApplicationCommandType>();
             }
@@ -462,8 +469,12 @@ namespace DiscordCoreInternal {
                 newData.version = jsonObjectData.at("version").get<int>();
             }
 
-            if (jsonObjectData.contains("messages") && !jsonObjectData.at("messages").is_null()) {
-                parseObject(jsonObjectData.at("messages"), &newData.messages);
+            if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {
+                if (jsonObjectData.at("data").at("resolved").contains("messages") && !jsonObjectData.at("data").at("resolved").at("messages").is_null()) {
+                    for (auto value : jsonObjectData.at("data").at("resolved").at("messages").items()) {
+                        parseObject(jsonObjectData.at("data").at("resolved").at("messages").at(value.key()), &newData.messages);
+                    }
+                }
             }
 
             if (jsonObjectData.contains("data") && !jsonObjectData.at("data").is_null()) {

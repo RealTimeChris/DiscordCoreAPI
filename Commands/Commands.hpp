@@ -52,6 +52,10 @@ namespace DiscordCoreAPI {
 				functionPointer = CommandCenter::getCommand(convertToLowerCase(newCommandName), commandData);
 				messageOption = false;
 			}
+			else {
+				string newCommandName = commandData.eventData.discordCoreClient->discordUser->data.prefix + commandData.commandName;
+				functionPointer = CommandCenter::getCommand(newCommandName, commandData);
+			}
 
 			if (functionPointer == nullptr) {
 				return;

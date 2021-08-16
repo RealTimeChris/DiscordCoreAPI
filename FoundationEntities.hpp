@@ -3132,6 +3132,7 @@ namespace DiscordCoreAPI {
         string name;
         MessageData messages;
         string targetId;
+        GuildMemberData member;
         ApplicationCommandType type;
         string guildId;
         string token;
@@ -3230,19 +3231,39 @@ namespace DiscordCoreAPI {
             if (this->interactionData.applicationId == "") {
                 return this->messageData.application.id;
             }
-            else {
+            else if(this->interactionData.applicationId !=""){
                 return this->interactionData.applicationId;
+            }
+            else if (this->messageCommandInteractionData.applicationId != "") {
+                return this->messageCommandInteractionData.applicationId;
+            }
+            else {
+                return this->userCommandInteractionData.applicationId;
             }
         }
         string getInteractionToken() {
-            return this->interactionData.token;
+            if (this->interactionData.token != "") {
+                return this->interactionData.token;
+            }
+            else if (this->messageCommandInteractionData.token != "") {
+                return this->messageCommandInteractionData.token;
+            }
+            else {
+                return this->userCommandInteractionData.token;
+            }            
         }
         string getInteractionId() {
             if (this->interactionData.id == "") {
                 return this->messageData.interaction.id;
             }
-            else {
+            else if (this->interactionData.id != "") {
                 return this->interactionData.id;
+            }
+            else if (this->messageCommandInteractionData.interactionId != "") {
+                return this->messageCommandInteractionData.interactionId;
+            }
+            else {
+                return this->userCommandInteractionData.interactionId;
             }
         }
         string getUserName() {
@@ -3252,8 +3273,14 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.member.user.username == "" && this->interactionData.user.username != "") {
                 return this->interactionData.user.username;
             }
-            else {
+            else if (this->messageData.author.username != "") {
                 return this->messageData.author.username;
+            }
+            else if (this->messageCommandInteractionData.member.user.username != "") {
+                return this->messageCommandInteractionData.member.user.username;
+            }
+            else {
+                return this->userCommandInteractionData.member.user.username;
             }
         }
         string getAvatarURL() {
@@ -3263,8 +3290,14 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.member.user.avatar == "" && this->interactionData.user.avatar != "") {
                 return this->interactionData.user.avatar;
             }
-            else {
+            else if (this->messageData.author.avatar != "") {
                 return this->messageData.author.avatar;
+            }
+            else if (this->messageCommandInteractionData.member.user.avatar != "") {
+                return this->messageCommandInteractionData.member.user.avatar;
+            }
+            else {
+                return this->userCommandInteractionData.member.user.avatar;
             }
         }
         string getChannelId() {
@@ -3295,6 +3328,12 @@ namespace DiscordCoreAPI {
             }
             else if (this->messageData.author.id !=""){
                 return this->messageData.author.id;
+            }
+            else if (this->messageCommandInteractionData.member.user.id != "") {
+                return this->messageCommandInteractionData.member.user.id;
+            }
+            else {
+                return this->userCommandInteractionData.member.user.id;
             }
         }
         string getGuildId() {
@@ -3538,7 +3577,13 @@ namespace DiscordCoreAPI {
             this->eventData = inputEventData;
             if (inputEventData.userCommandInteractionData.name != "") {
                 this->commandName = convertToLowerCase(inputEventData.userCommandInteractionData.name);
-                this->optionsArgs.push_back(inputEventData.userCommandInteractionData.users.id);
+                if (inputEventData.userCommandInteractionData.users.id != "") {
+                    this->optionsArgs.push_back(inputEventData.userCommandInteractionData.users.id);
+                }
+                else {
+                    this->optionsArgs.push_back(inputEventData.userCommandInteractionData.members.user.id);
+                }
+                cout << "USER ID: " << inputEventData.userCommandInteractionData.members.user.id << endl;
             }
             else if (inputEventData.messageCommandInteractionData.name != "") {
                 this->commandName = convertToLowerCase(inputEventData.messageCommandInteractionData.name);
