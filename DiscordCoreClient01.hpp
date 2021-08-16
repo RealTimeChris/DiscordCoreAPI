@@ -154,13 +154,22 @@ namespace DiscordCoreAPI {
 
 		Guild createGuild(GuildData guildData) {
 			Guild guild(this->agentResources, guildData, (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, DiscordCoreClient::thisPointer);
+			auto valueNew = this->guilds->getAllGuildsAsync().get();
+			bool isItFound = false;
+			for (auto value : valueNew) {
+				if (guildData.id == value.data.id) {
+					isItFound = true;
+				}
+			}
 			DiscordGuild discordGuild(guild.data);
 			discordGuild.getDataFromDB();
 			discordGuild.writeDataToDB();
-			this->discordUser->data.guildCount += 1;
-			this->discordUser->writeDataToDB();
-			shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
-			this->audioBuffersMap.insert(make_pair(guild.data.id, thePtr));
+			if (!isItFound) {
+				this->discordUser->data.guildCount += 1;
+				this->discordUser->writeDataToDB();
+				shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
+				this->audioBuffersMap.insert(make_pair(guild.data.id, thePtr));
+			}
 			return guild;
 		}
 
