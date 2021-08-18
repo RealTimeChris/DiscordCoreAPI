@@ -18,6 +18,8 @@ namespace DiscordCoreAPI {
 		string imageURL;
 		string title;
 		string url;
+		string description;
+		string duration;
 	};
 
 	string between(string body, string left, string right) {
@@ -418,6 +420,8 @@ namespace DiscordCoreAPI {
 				YouTubeSong youtubeSong;
 				youtubeSong.frames = frames;
 				youtubeSong.imageURL = videoSearchResult.thumbNailURL;
+				youtubeSong.duration = videoSearchResult.duration;
+				youtubeSong.description = videoSearchResult.description;
 				youtubeSong.title = videoSearchResult.videoTitle;
 				youtubeSong.url = videoSearchResult.videoURL;
 
