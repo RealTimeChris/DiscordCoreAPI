@@ -246,8 +246,8 @@ namespace DiscordCoreAPI {
 			this->sendAudioBuffer = sendAudioBufferNew;
 		}
 
-		vector<YouTubeSong> getQueue() {
-			return this->songQueue;
+		vector<YouTubeSong>* getQueue() {
+			return &this->songQueue;
 		}
 
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
@@ -437,15 +437,21 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
+		YouTubeSong getCurrentSong() {
+			return this->currentSong;
+		}
+
 		bool sendNextSong() {
 			if (this->songQueue.size() > 0) {
+				this->currentSong = this->songQueue.at(0);
 				vector<RawFrame> frames;
 				frames = this->songQueue.at(0).frames;
-				this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
+				this->songQueue.erase(this->songQueue.begin());
 				send(*this->sendAudioBuffer, frames);
 				return true;
 			}
 			else if (this->songQueue.size() > 1) {
+				this->currentSong = this->songQueue.at(0);
 				vector<RawFrame> frames;
 				frames = this->songQueue.at(0).frames;
 				YouTubeSong songTemp;
@@ -472,6 +478,7 @@ namespace DiscordCoreAPI {
 		__int64 maxBufSize = 4096;
 		const string newLine = "\n\r";
 		vector<YouTubeSong> songQueue;
+		YouTubeSong currentSong;
 		string playerResponse = "";
 		string html5PlayerFile = "";
 		string html5Player = "";

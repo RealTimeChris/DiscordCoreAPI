@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildCreationData;
 		friend struct OnGuildUpdateData;
 		friend struct OnGuildDeletionData;
-
+		static map<string, shared_ptr<YouTubeAPI>> youtubeAPIMap;
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		shared_ptr<YouTubeAPI> youtubeAPI{ nullptr };
@@ -61,11 +61,13 @@ namespace DiscordCoreAPI {
 			this->discordCoreClientBase = discordCoreClientBaseNew;
 			this->data = dataNew;
 			if (this->discordCoreClientBase->audioBuffersMap.contains(this->data.id)) {
-				this->youtubeAPI = make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id));
+				Guild::youtubeAPIMap.insert(make_pair(this->data.id, make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id))));
+				this->youtubeAPI = Guild::youtubeAPIMap.at(this->data.id);
 			}
 			else {
 				this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<vector<RawFrame>>>()));
-				this->youtubeAPI = make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id));
+				Guild::youtubeAPIMap.insert(make_pair(this->data.id, make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id))));
+				this->youtubeAPI = Guild::youtubeAPIMap.at(this->data.id);
 			}
 			return;
 		}
@@ -599,5 +601,6 @@ namespace DiscordCoreAPI {
 	};
 	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache;
 	shared_ptr<DiscordCoreInternal::ThreadContext> GuildManagerAgent::threadContext;
+	map<string, shared_ptr<YouTubeAPI>> Guild::youtubeAPIMap;
 }
 #endif

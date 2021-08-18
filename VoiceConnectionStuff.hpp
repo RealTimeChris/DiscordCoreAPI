@@ -49,6 +49,10 @@ namespace DiscordCoreAPI {
 			return onSongCompletionEvent.add(handler);
 		}
 
+		void onSongCompletion(event_token const& token) {
+			onSongCompletionEvent.remove(token);
+		}
+
 		bool areWeConnected() {
 			if (this == nullptr) {
 				return false;
@@ -58,8 +62,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void onSongCompletion(event_token const& token) {
-			onSongCompletionEvent.remove(token);
+		void skipCurrentSong() {
+			this->areWePlaying = false;
+			this->areWeWaitingForAudioData = true;
+			this->doWeWait = false;
 		}
 
 		void stopPlaying() {
@@ -68,6 +74,9 @@ namespace DiscordCoreAPI {
 		}
 
 		bool areWeCurrentlyPlaying() {
+			if (this == nullptr) {
+				return false;
+			}
 			return this->areWePlaying;
 		}
 
