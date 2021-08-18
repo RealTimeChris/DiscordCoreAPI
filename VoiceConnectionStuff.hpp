@@ -62,14 +62,20 @@ namespace DiscordCoreAPI {
 			onSongCompletionEvent.remove(token);
 		}
 
+		void stopPlaying() {
+			this->areWePlaying = false;
+			this->areWeWaitingForAudioData = true;
+		}
+
 		bool areWeCurrentlyPlaying() {
 			return this->areWePlaying;
 		}
 
 		void play(bool doWeBlock = false) {
 			send(this->playPauseBuffer, true);
-			this->doWeWait = false;
+			this->doWeWait = true;
 			this->areWePlaying = false;
+			this->areWeWaitingForAudioData = true;
 			this->start();
 			if (doWeBlock) {
 				wait(this);
@@ -91,6 +97,7 @@ namespace DiscordCoreAPI {
 		bool doWeWait = true;
 		bool areWePlaying = false;
 		bool areWeConnectedBool = false;
+		bool areWeWaitingForAudioData = true;
 		unsigned int timestamp = 0;
 		unsigned short sequenceIndex = 0;
 		__int32 sequenceIndexLib = 0;
@@ -204,31 +211,41 @@ namespace DiscordCoreAPI {
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
 				}
-				auto audioData = receive(*this->bufferMessageBlock);
+				vector<RawFrame> audioData;
+				if (this->areWeWaitingForAudioData) {
+					audioData = receive(*this->bufferMessageBlock);
+					this->areWeWaitingForAudioData = false;
+				}
+				
 				this->areWePlaying = true;
 				sendSpeakingMessage(true);
+				int frameCounter = 0;
 				while (this->areWePlaying) {
 
-					int counter = 0;
+					int timeCounter = 0;
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					int intervalCount = 20;
 					for (auto value : audioData) {
-						while (counter < intervalCount) {
-							counter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+						while (timeCounter < intervalCount) {
+							timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 						}
-						counter = 0;
+						timeCounter = 0;
 						startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 						auto newVectorNew = encodeSingleAudioFrame(value);
 						sendSingleAudioFrame(newVectorNew);
-						if (this->areWePlaying == false) {
-							break;
+						frameCounter += 1;
+						if (frameCounter >= audioData.size() - 1) {
+							this->areWePlaying = false;
+							this->areWeWaitingForAudioData = true;
+							this->onSongCompletionEvent();
+							cout << "WERE HERE WERE HERE WERE HERE01010101" << endl;
+							frameCounter = 0;
 						}
 						if (this->areWePlaying == false) {
 							break;
 						}
 					}
-					this->onSongCompletionEvent();
-					this->areWePlaying = false;
+					
 				}
 				sendSpeakingMessage(false);
 			}

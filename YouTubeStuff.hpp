@@ -244,6 +244,10 @@ namespace DiscordCoreAPI {
 			this->sendAudioBuffer = sendAudioBufferNew;
 		}
 
+		vector<YouTubeSong> getQueue() {
+			return this->songQueue;
+		}
+
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
 			DiscordCoreInternal::HttpAgentResources agentResources;
 			agentResources.baseURL = to_string(this->baseSearchURL);
@@ -429,12 +433,16 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		void sendNextSong() {
+		bool sendNextSong() {
 			if (this->songQueue.size() > 0) {
 				auto frames = this->songQueue.at(0).frames;
 				this->songQueue.erase(this->songQueue.begin());
 				send(*this->sendAudioBuffer, frames);
-			}			
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 	protected:
