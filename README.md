@@ -10,6 +10,8 @@
 
 ## [Example "Game" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-GameHouse-Cpp)
 
+## [Example "Music" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-MusicHouse-Cpp)
+
 ## [Discord Server](https://discord.gg/W8RemUnqMm)
 
 ## Features
