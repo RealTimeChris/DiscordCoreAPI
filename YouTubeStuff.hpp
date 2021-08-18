@@ -350,68 +350,73 @@ namespace DiscordCoreAPI {
 			DataWriter streamDataWriter(outputStream);
 			streamDataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 			bool headersFinished = false;
+			this->maxBufSize = format.contentLength;
 			if (format.contentLength < this->maxBufSize) {
 				this->maxBufSize = format.contentLength;
 			}
 			__int64 remainingDownloadContentLength = format.contentLength;
 			__int64 contentLengthCurrent = this->maxBufSize;
-			__int64 currentPositionInReadStream = 0;
-			int counter = 0;
-			int bytesToRead = 0;
+			int bytesReadTotal = 0;
+			int bytesRead = 0;
+			int bytesWritten = 0;
 			string playerId = to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			SongDecoder songDecoder;
+			SongDecoder* songDecoder{ nullptr };
 			while (remainingDownloadContentLength > 0) {
 				if (contentLengthCurrent > 0) {
 					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
 				}
 				auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-
-				dataWriterOutput.UnicodeEncoding(UnicodeEncoding::Utf8);
 				IBuffer streamBuffer;
-				uint32_t bytesWritten;
-				if (!headersFinished) {
+				cout << "CONTENT LENGTH: " << format.contentLength << endl;
+				if (!headersFinished) { 
 					stringstream bufferStream;
 					bufferStream << buffer.data();
 					headers = bufferStream.str();
-					int headerLength = 0;
-					headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
+					int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
+					dataReader.LoadAsync(headerLength).get();
+					auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength);
 					headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
 					headersFinished = true;
+					
 					contentLengthCurrent -= headerLength;
-					remainingDownloadContentLength -= contentLengthCurrent;
-					dataWriterOutput.WriteBuffer(buffer, headerLength, (uint32_t)contentLengthCurrent);
+					dataWriterOutput.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4);
 					dataWriterOutput.StoreAsync().get();
-					streamDataWriter.WriteBuffer(buffer, headerLength, (uint32_t)contentLengthCurrent);
-					bytesWritten = streamDataWriter.StoreAsync().get();
-					bytesToRead += bytesWritten;
+					dataWriterOutput.WriteBuffer(buffer02, 0, (uint32_t)headerLength);
+					dataWriterOutput.StoreAsync().get();
+					streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4);
+					bytesWritten += streamDataWriter.StoreAsync().get();
+					streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength);
+					bytesWritten += streamDataWriter.StoreAsync().get();
+					vector<uint8_t> vectorNew;
+					vectorNew.push_back(0);
+					vectorNew.push_back(0);
+					vectorNew.push_back(0);
+					vectorNew.push_back(0);
+					streamDataWriter.WriteBytes(vectorNew);
+					bytesWritten += streamDataWriter.StoreAsync().get();
+					remainingDownloadContentLength -= bytesWritten;
 				}
 				else {
 					dataWriterOutput.WriteBuffer(buffer, 0, (uint32_t)buffer.Length());
 					dataWriterOutput.StoreAsync().get();
 					streamDataWriter.WriteBuffer(buffer, 0, (uint32_t)buffer.Length());
-					bytesWritten = streamDataWriter.StoreAsync().get();
-					bytesToRead += bytesWritten;
+					bytesWritten += streamDataWriter.StoreAsync().get();
 					remainingDownloadContentLength -= contentLengthCurrent;
 				}
-				DataReader streamDataReader(outputStream.GetInputStreamAt(currentPositionInReadStream - bytesToRead));
-				currentPositionInReadStream += bytesWritten;
-				if (counter % 5 == 0 && counter > 0 && counter <= 6) {
-					streamDataReader.LoadAsync(bytesToRead).get();
-					streamBuffer = streamDataReader.ReadBuffer(bytesToRead);
-					BuildSongDecoderData dataPackage;
-					dataPackage.dataBuffer = streamBuffer;
-					dataPackage.initialBufferSize = streamBuffer.Length();
-					SongDecoder songDecoder = SongDecoder(dataPackage);
-					auto frames = songDecoder.getFrames();
-					bytesToRead = 0;
-				}
-				else if (counter % 10 == 0 && counter > 0) {
-					streamDataReader.LoadAsync(bytesToRead).get();
-					streamBuffer = streamDataReader.ReadBuffer(bytesToRead);
-					songDecoder.collectMoreInput(streamBuffer);
-					auto frames = songDecoder.getFrames();
-					bytesToRead = 0;
-				}
+				DataReader streamDataReader(outputStream.GetInputStreamAt(bytesReadTotal));
+				cout << "BYTES TO READ: " << bytesWritten << endl;
+				bytesRead += streamDataReader.LoadAsync(bytesWritten).get();
+				bytesReadTotal += bytesRead;
+				streamBuffer = streamDataReader.ReadBuffer(bytesRead);
+				BuildSongDecoderData dataPackage;
+				dataPackage.dataBuffer = streamBuffer;
+				dataPackage.initialBufferSize = streamBuffer.Length();
+				dataPackage.totalFileSize = format.contentLength;
+				songDecoder = new SongDecoder(dataPackage);
+				auto frames = songDecoder->getFrames();
+				bytesWritten = 0;
+				bytesRead = 0;
+				YouTubeAPI::songQueue.push_back(frames);
 
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
@@ -419,8 +424,8 @@ namespace DiscordCoreAPI {
 				else {
 					contentLengthCurrent = remainingDownloadContentLength;
 				}
-				counter += 1;
 			}
+
 			vector<uint8_t> vectorNew;
 			vectorNew.push_back(0);
 			vectorNew.push_back(0);
@@ -428,10 +433,10 @@ namespace DiscordCoreAPI {
 			vectorNew.push_back(0);
 			dataWriterOutput.WriteBytes(vectorNew);
 			dataWriterOutput.StoreAsync().get();
-			DataReader dataReader00(finalFileOutput.GetInputStreamAt(4));
+			DataReader dataReader00(finalFileOutput.GetInputStreamAt(0));
 			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
-			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size() - 4).get();
-			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size() - 4);
+			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size()).get();
+			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size());
 			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
 			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
 			saveFile(filePath, fileName, readBuffer);
@@ -439,74 +444,13 @@ namespace DiscordCoreAPI {
 			for (unsigned int x = 0; x < readBuffer.Length(); x += 1) {
 				returnVector.push_back(readBuffer.data()[x]);
 			}
-			this->songQueue.push_back(returnVector);
-			
-			InMemoryRandomAccessStream randomAccessStream{};
-			randomAccessStream.WriteAsync(readBuffer).get();
-			cout << "READ BUFFER SIZE: " << readBuffer.Length() << endl;
-			randomAccessStream.FlushAsync().get();
-			DataReader dataReader01(randomAccessStream.GetInputStreamAt(0));
-			BuildSongDecoderData dataPackage;
-			dataPackage.dataBuffer = readBuffer;
-			dataReader01.LoadAsync(this->maxBufSize).get();
-			dataPackage.initialBufferSize = this->maxBufSize;
-			SongDecoder songDecoder02(dataPackage);
-			auto valueNew = songDecoder02.getFrames();
-			size_t collectedBytes = 1;
-			auto readBuffer02 = dataReader01.ReadBuffer((uint32_t)this->maxBufSize);
-			randomAccessStream.WriteAsync(readBuffer02).get();
-			randomAccessStream.FlushAsync().get();
-			while (collectedBytes > 0) {
-				int frameCount = 1;;
-				vector<RawFrame> frames;
-				while (frameCount >= 1) {
-					auto result = songDecoder02.getFrames();
-					frameCount = (int)result.size();
-					for (auto value : result) {
-						frames.push_back(value);
-					}
-				}
-
-				cout << "FRAME COUNT 01: " << frames.size() << endl;
-				for (auto value : frames) {
-					cout << "SAMPLE COUNT: " << value.sampleCount << " SIZE: " << value.data.size() << " PTS: " << value.timePoint << endl;
-				}
-				dataReader01.LoadAsync(this->maxBufSize).get();
-				readBuffer02 = dataReader01.ReadBuffer((uint32_t)this->maxBufSize);
-				collectedBytes = songDecoder.collectMoreInput(readBuffer02);
-				
-			};
 			co_return;
 		}
 		
 		void sendNextSong() {
 			AudioDataChunk audioData;
-			vector<vector<uint8_t>> returnVector;
-			for (auto value : demuxWebA(this->songQueue.at(0)).segment.clusters) {
-				for (auto value02 : value.simpleBlocks) {
-					vector<uint8_t> newVector;
-					newVector.resize(value02.elementIdLength);
-					memcpy(newVector.data(), &value02.elementId, value02.elementIdLength);
-					newVector.resize(newVector.size() + value02.elementContentSizeLength);
-					memcpy(newVector.data() + value02.elementIdLength, &value02.elementContentSize, value02.elementContentSizeLength);
-					for (auto value03 : value02.trackNumber) {
-						newVector.push_back(value03);
-					}
-					for (auto value03 : value02.relativeTimestamp) {
-						newVector.push_back(value03);
-					}
-					for (auto value03 : value02.flags) {
-						newVector.push_back(value03);
-					}
-					for (auto value03 : value02.frame) {
-						newVector.push_back(value03);
-					}
-					returnVector.push_back(newVector);
-				}
-				
-			}
-			audioData.audioData = returnVector;
-			cout << "THE SIZE: " << audioData.audioData.size() << endl;
+			audioData.audioData.push_back(YouTubeAPI::songQueue.at(0));
+			YouTubeAPI::songQueue.erase(YouTubeAPI::songQueue.begin());
 			send(*this->sendAudioBuffer, audioData);
 		}
 		
@@ -517,11 +461,12 @@ namespace DiscordCoreAPI {
 		const hstring baseURL = L"https://www.youtube.com";
 		__int64 maxBufSize = 4096;
 		const string newLine = "\n\r";
-		vector<vector<uint8_t>> songQueue;
+		static vector<vector<RawFrame>> songQueue;
 		string playerResponse = "";
 		string html5PlayerFile = "";
 		string html5Player = "";
 	};
+	vector<vector<RawFrame>> YouTubeAPI::songQueue;
 };
 
 #endif

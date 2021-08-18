@@ -9,14 +9,17 @@
 #define _DECODING_STUFF_
 
 #include "../pch.h"
-#include "DemuxingStuff.hpp"
 
 namespace DiscordCoreAPI {
 
     struct RawFrame {
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
-        int64_t timePoint = 0;
+    };
+
+    struct EncodedFrame {
+        vector<uint8_t> data{};
+        uint32_t sampleCount = 0;
     };
 
     struct BuildSongDecoderData {
@@ -24,6 +27,7 @@ namespace DiscordCoreAPI {
         BuildSongDecoderData() {};
         uint32_t initialBufferSize = 0;
         IBuffer dataBuffer;
+        size_t totalFileSize = 0;
     };
 
     IBuffer loadFile(hstring filePath, hstring fileName) {
@@ -50,6 +54,8 @@ namespace DiscordCoreAPI {
                 newVector.push_back(dataPackage.dataBuffer.data()[x]);
             }
             this->currentBuffer = newVector;
+            this->currentBufferSize = this->currentBuffer.size();
+            this->totalFileSize = (int)dataPackage.totalFileSize;
             // Define your buffer 
 
             // A IStream - you choose where it comes from.
@@ -68,7 +74,7 @@ namespace DiscordCoreAPI {
                 this,      // User (your) specified data
                 FileStreamRead,      // Function - Reading Packets (see example)
                 0,                  // Function - Write Packets
-                FileStreamSeek       // Function - Seek to position in stream (see example)
+                0   // Function - Seek to position in stream (see example)
             );
 
             if (this->ioContext == nullptr) {
@@ -140,6 +146,7 @@ namespace DiscordCoreAPI {
                     return;
                 }
                 this->audioStreamIndex = this->audioStreamIndex;
+                cout << "STREAM INDEX (ORIGIN):" << this->audioStreamIndex << endl;
                 this->swrContext = swr_alloc();
                 this->swrContext = swr_alloc_set_opts(NULL, AV_CH_LAYOUT_STEREO, av_get_alt_sample_fmt(this->audioDecodeContext->sample_fmt, 0), 48000, AV_CH_LAYOUT_STEREO, this->audioDecodeContext->sample_fmt, this->audioDecodeContext->sample_rate, 0, nullptr);
                 swr_init(this->swrContext);
@@ -152,25 +159,39 @@ namespace DiscordCoreAPI {
             vector<uint8_t> currentBufferNew;
             uint32_t collectedBytes;
             uint8_t* oldBufferData;
-            size_t remainingSize = this->ioContext->buffer_size - this->ioContext->pos;
+
+            size_t remainingSize = this->ioContext->buf_ptr_max - this->ioContext->buffer;
+            cout << "REMAINING SIZE: " << remainingSize << endl;
             oldBufferData = new uint8_t[remainingSize];
             avio_read(this->ioContext, oldBufferData, (int)remainingSize);
             av_free(this->ioContext->buffer);
             size_t newBufferSize = readBuffer.Length() + remainingSize;
             collectedBytes = (int)newBufferSize;
             this->ioContext->buffer = (unsigned char*)av_malloc(newBufferSize);
+            
             for (int x = 0; x < remainingSize; x += 1) {
                 currentBufferNew.push_back(oldBufferData[x]);
             }
+            
             for (unsigned int x=0; x< readBuffer.Length(); x+=1){
                 currentBufferNew.push_back(readBuffer.data()[x]);
             }
+            collectedBytes = (int)currentBufferNew.size();
+            //avio_seek(this->ioContext, 0, SEEK_SET);
             this->currentBuffer = currentBufferNew;
-            avio_seek(this->ioContext, 0, SEEK_SET);
+            this->currentMaxBufferSize = (int)currentBufferNew.size();
+            this->currentBufferSize = currentBufferNew.size();
             return collectedBytes;
         }
 
+        int avio_seek(AVIOContext* avContext, int offset, int ) {
+            avContext->buf_ptr = avContext->buffer + offset;
+            return offset;
+        }
+
         vector<RawFrame> getFrames() {
+            cout << "THE SIZE: " << this->currentBuffer.size() << endl;
+            this->currentMaxBufferSize = (int)this->currentBuffer.size();
             if (this->currentBuffer.size() >0){
                 vector<RawFrame> frames{};
                 int ret = 0;
@@ -181,21 +202,22 @@ namespace DiscordCoreAPI {
                     return frames;
                 }
 
-                this->frame = av_frame_alloc();
-                if (!this->frame) {
-                    fprintf(stderr, "Error: Could not allocate frame\n");
-                    return frames;
-                }
-
-                this->newFrame = av_frame_alloc();
-                if (!this->newFrame) {
-                    fprintf(stderr, "Error: Could not allocate frame\n");
-                    return frames;
-                }
-
+                cout << "WERE HERE WERE HERE" << endl;
                 // read frames from the file
                 while (av_read_frame(this->formatContext, this->packet) >= 0) {
+                    cout << "WERE HERE WERE HERE040404" << endl;
+                    this->frame = av_frame_alloc();
+                    if (!this->frame) {
+                        fprintf(stderr, "Error: Could not allocate frame\n");
+                        return frames;
+                    }
 
+                    this->newFrame = av_frame_alloc();
+                    if (!this->newFrame) {
+                        fprintf(stderr, "Error: Could not allocate frame\n");
+                        return frames;
+                    }
+                    cout << "STREAM INDEX:" << this->packet->stream_index << endl;
                     // check if the packet belongs to a stream we are interested in, otherwise
                     // skip it
                     if (this->packet->stream_index == this->audioStreamIndex) {
@@ -207,7 +229,7 @@ namespace DiscordCoreAPI {
                             fprintf(stderr, "Error submitting a packet for decoding (%s), %s.\n", to_string(ret).c_str(), charString);
                             return frames;
                         }
-
+                        cout << "CURRENT BUFFER SIZE 010101: " << this->currentBufferSize << endl;
                         // get all the available frames from the decoder
                         if (ret >= 0) {
 
@@ -239,7 +261,6 @@ namespace DiscordCoreAPI {
 
                             RawFrame rawFrame{};
                             rawFrame.data = newVector;
-                            rawFrame.timePoint = packet->pts;
                             rawFrame.sampleCount = frame->nb_samples;
                             frames.push_back(rawFrame);
 
@@ -251,25 +272,25 @@ namespace DiscordCoreAPI {
                                 swr_convert_frame(this->swrContext, this->newFrame, nullptr);
                                 vector<uint8_t> newVector02{};
                                 for (int x = 0; x < *this->newFrame->linesize; x += 1) {
-                                    newVector02.push_back(*this->newFrame->extended_data[x]);
+                                    newVector02.push_back(this->newFrame->extended_data[0][x]);
                                 }
 
                                 RawFrame rawFrame02{};
                                 rawFrame02.data = newVector02;
-                                rawFrame02.timePoint = frame->pts;
                                 rawFrame02.sampleCount = frame->nb_samples;
                                 frames.push_back(rawFrame02);
                             }
-                            cout << "CURRENT BUFFER POSITION: " << this->ioContext->buf_ptr - this->ioContext->buffer << endl;
                             if (ret < 0) {
                                 cout << "Return value is less than zero!" << endl << endl;
                                 return frames;
                             }
                         }
                     }
+                    av_packet_unref(this->packet);
+                    av_packet_free(&this->packet);
+                    this->packet = av_packet_alloc();
                 }
-                av_packet_unref(this->packet);
-                av_packet_free(&this->packet);
+                
                 av_frame_unref(this->frame);
                 av_frame_free(&this->frame);
                 av_frame_unref(this->newFrame);
@@ -311,41 +332,42 @@ namespace DiscordCoreAPI {
         AVStream* audioStream = nullptr;
         SwrContext* swrContext = nullptr;
         AVCodec* dec = nullptr;
-        int  audioStreamIndex = 0, audioFrameIndex = 0, audioFrameCount = 0, baseBufferSize = 4096;
+
+        int  audioStreamIndex = 0, audioFrameIndex = 0, audioFrameCount = 0, baseBufferSize = 4096, totalFileSize = 0, currentBufferSize = 0, currentMaxBufferSize = 0;
         AVFrame* frame = nullptr, * newFrame = nullptr;
         AVPacket* packet = nullptr;
         vector<uint8_t> currentBuffer{};
 
-        static int64_t FileStreamSeek(void* ptr, int64_t pos, int) {
+        static int64_t FileStreamSeek(void*, int64_t pos, int) {
             // Your custom IStream
-            SongDecoder* stream = reinterpret_cast<SongDecoder*>(ptr);
+            //SongDecoder* stream = reinterpret_cast<SongDecoder*>(ptr);
             // Origin is an item from STREAM_SEEK enum.
             //   STREAM_SEEK_SET - relative to beginning of stream.
             //   STREAM_SEEK_CUR - relative to current position in stream.
             //   STREAM_SEEK_END - relative to end of stream;
-            auto returnVal = stream->currentBuffer[pos];
-
             // Return the new position
-            return returnVal;
+            return pos;
         }
 
-        static int FileStreamRead(void* opaque, uint8_t* buf, int)
-        {
-            // This is your IStream
+        static int FileStreamRead(void* opaque, uint8_t* buf, int bufSize)
+        {   
             SongDecoder* stream = reinterpret_cast<SongDecoder*>(opaque);
+            cout << "CURRENT POSITION: " << stream->ioContext->buf_ptr - stream->ioContext->buffer << endl;
+            cout << "THE BUFFER SIZE: " << stream->currentBufferSize << endl;
             int bytesRead;
             if (stream->currentBuffer.size() > 0) {
                 bytesRead = (int)stream->currentBuffer.size();
             }
-            else {
+            if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->currentBufferSize) {
+                cout << "ENDING NOW" << endl;
                 return AVERROR_EOF;
             }
 
-            for (unsigned int x = 0; x < stream->currentBuffer.size(); x += 1) {
+            for (int x = 0; x < bufSize; x += 1) {
                 buf[x] = stream->currentBuffer[x];
             }
-            stream->currentBuffer.erase(stream->currentBuffer.begin(), stream->currentBuffer.begin() + bytesRead);
-            return bytesRead;
+
+            return bufSize;
         }
 
     };

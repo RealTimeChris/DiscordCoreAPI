@@ -10,13 +10,12 @@
 
 #include "../pch.h"
 #include "WebSocketStuff.hpp"
-#include "DemuxingStuff.hpp"
 #include "DecodingStuff.hpp"
 
 namespace DiscordCoreAPI {
 
 	struct AudioDataChunk {
-		vector<vector<uint8_t>> audioData;
+		vector<vector<RawFrame>> audioData;
 	};
 
 	class VoiceConnection : public agent {
@@ -37,10 +36,6 @@ namespace DiscordCoreAPI {
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
 				int error;
 				encoder = opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error);
-				this->repacketizer = opus_repacketizer_create();
-				if (!repacketizer) {
-					cout << "Failed to create Opus repacketizer!";
-				}
 				if (error != OPUS_OK) {
 					cout << "Failed to create Opus encoder!";
 				}
@@ -60,15 +55,11 @@ namespace DiscordCoreAPI {
 		void play(bool doWeBlock = false) {
 			send(this->playPauseBuffer, true);
 			this->doWeWait = false;
+			this->areWePlaying = false;
 			this->start();
 			if (doWeBlock) {
 				wait(this);
 			}
-		}
-
-		void startPlaying() {
-			send(this->playPauseBuffer, true);
-			this->doWeWait = false;
 		}
 
 		void pausePlaying() {
@@ -94,81 +85,35 @@ namespace DiscordCoreAPI {
 		shared_ptr<unbounded_buffer<bool>> readyBuffer;
 		unbounded_buffer<bool> playPauseBuffer;
 		OpusEncoder* encoder;
-		OpusRepacketizer* repacketizer;
 		int nChannels = 2;
-		const int encodedBufferSize00 = 65536;
-		uint8_t encodeBuffer[65536];
 
-		vector<uint8_t> repacketizeSingleAudioFrame(vector<vector<uint8_t>> inputFrames) {
-			int outDataSize = 0;
-			int mEncFrameSize = 960;
-			int mEncFrameBytes = mEncFrameSize * 4;
-			
-			int inDataSize = 0;
-			vector<uint8_t> returnVector;
-			returnVector.resize(this->encodedBufferSize00);
-			for (auto value : inputFrames) {
-				inDataSize += (int)value.size();
-			}
-			uint8_t* input = new uint8_t[inDataSize];
-			if (0 == (inDataSize % mEncFrameBytes)) {
-				bool isOk = true;
-				size_t cur = 0;
-				uint8_t* out = returnVector.data();
-
-				memset(out, 0, sizeof(encodeBuffer));
-				repacketizer = opus_repacketizer_init(repacketizer);
-				for (size_t i = 0; i < (inDataSize / mEncFrameBytes); ++i) {
-					int ret;
-					int retval = opus_repacketizer_cat(repacketizer, out, ret);
-					if (retval != OPUS_OK) {
-						isOk = false;
-						cout << "opus_repacketizer_cat() : {}" << endl;
-						break;
-					}
-					out += ret;
-					cur += ret;
-				}
-				if (isOk) {
-					int ret = opus_repacketizer_out(repacketizer, returnVector.data(), 65536);
-					if (ret > 0) {
-						outDataSize = ret;
-					}
-					else {
-						cout << "opus_repacketizer_out(): {}" << endl;
-					}
-				}
-			}
-			else {
-				throw std::runtime_error(format("Invalid input data length: {}, must be n times of {}", inDataSize, mEncFrameBytes));
-			}
-			return returnVector;
-		}
-
-		vector<uint8_t> encodeSingleAudioFrame(vector<uint8_t> inputFrame) {
+		EncodedFrame encodeSingleAudioFrame(RawFrame inputFrame) {
 			uint8_t* oldBuffer;
-			oldBuffer = new uint8_t[inputFrame.size()];
-			for (unsigned int x = 0; x < inputFrame.size(); x += 1) {
-				oldBuffer[x] = inputFrame[x];
+			oldBuffer = new uint8_t[inputFrame.data.size()];
+			for (unsigned int x = 0; x < inputFrame.data.size(); x += 1) {
+				oldBuffer[x] = inputFrame.data[x];
 			}
 			uint8_t* newBuffer;
-			int bufferSize = (int)inputFrame.size() * nChannels * sizeof(float);
+			int bufferSize = (int)inputFrame.data.size() * nChannels * sizeof(float);
 			newBuffer = new uint8_t[bufferSize];
-			cout << "INPUT SIZE: " << inputFrame.size() << endl;
+			//cout << "INPUT SIZE: " << inputFrame.data.size() << endl;
 			int count = opus_encode_float(encoder, (float*)oldBuffer, 960, newBuffer, bufferSize);
-			cout << "ENCODED COUNT: " << count << endl;
-			vector<uint8_t> newVector;
+			//cout << "ENCODED COUNT: " << count << endl;
+			vector<uint8_t> newVector{};
 			for (int x = 0; x< count; x += 1) {
 				newVector.push_back(newBuffer[x]);
 			}
+			EncodedFrame encodedFrame;
+			encodedFrame.data = newVector;
+			encodedFrame.sampleCount = inputFrame.sampleCount;
 			delete oldBuffer;
 			oldBuffer = nullptr;
 			delete newBuffer;
 			newBuffer = nullptr;
-			return newVector;
+			return encodedFrame;
 		}
 		
-		void sendSingleAudioQuantum(vector<uint8_t> bufferToSend) {
+		void sendSingleAudioQuantum(EncodedFrame bufferToSend) {
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = crypto_secretbox_NONCEBYTES;
 			uint8_t header01[2]{ 0x80 , 0x78 };
@@ -201,23 +146,23 @@ namespace DiscordCoreAPI {
 				nonceForLibSodium[x] = 0;
 			}
 
-			cout << "BUFFER SIZE PRE: " << bufferToSend.size() << endl;
-			size_t numOfBytes = headerSize + bufferToSend.size() + crypto_secretbox_MACBYTES;
+			cout << "BUFFER SIZE PRE: " << bufferToSend.data.size() << endl;
+			size_t numOfBytes = headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES;
 			uint8_t* audioDataPacket = new uint8_t[numOfBytes];
 			std::memcpy(audioDataPacket, headerFinal, headerSize);
 			unsigned char* encryptionKeys = new unsigned char[crypto_secretbox_KEYBYTES];
-			unsigned char* bufferToSendNew = new unsigned char[bufferToSend.size()];
+			unsigned char* bufferToSendNew = new unsigned char[bufferToSend.data.size()];
 			cout << "KEYS SIZE: " << crypto_secretbox_KEYBYTES << sizeof(encryptionKeys) * sizeof(unsigned char) << endl;
 			cout << "BUFFER SIZE POST: " << numOfBytes << endl;
-			for (unsigned int x = 0; x < bufferToSend.size(); x += 1) {
-				bufferToSendNew[x] = bufferToSend[x];
+			for (unsigned int x = 0; x < bufferToSend.data.size(); x += 1) {
+				bufferToSendNew[x] = bufferToSend.data[x];
 				cout << hex << bufferToSendNew[x];
 			}
 			for (unsigned int x = 0; x < this->voiceConnectionData.keys.size(); x += 1) {
 				encryptionKeys[x] = (unsigned char)this->voiceConnectionData.keys[x];
 			}
 			if (crypto_secretbox_easy(audioDataPacket + headerSize,
-				bufferToSendNew, bufferToSend.size(), nonceForLibSodium, encryptionKeys) != 0) {
+				bufferToSendNew, bufferToSend.data.size(), nonceForLibSodium, encryptionKeys) != 0){
 				throw exception("ENCRYPTION FAILED!");
 			};
 			vector<uint8_t> audioDataPacketNew;
@@ -227,7 +172,8 @@ namespace DiscordCoreAPI {
 			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
 			this->sequenceIndex += 1;
 			this->sequenceIndexLib += 1;
-			this->timestamp += 20;
+			cout << "CURRENT TIMESTAMP: " << this->timestamp << endl;
+			this->timestamp += (int)bufferToSend.sampleCount;
 		}
 
 		void sendSpeakingMessage(bool isSpeaking) {
@@ -256,23 +202,39 @@ namespace DiscordCoreAPI {
 				}
 				auto audioData = receive(*this->bufferMessageBlock);
 				this->areWePlaying = true;
-
-				int currentPosition = 0;
 				sendSpeakingMessage(true);
-				int count = 0;
-				int startingCount = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				this->timestamp = (unsigned  int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				while (this->areWePlaying) {
-					count = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingCount;
-					if (count >= 20) {
-						startingCount = (unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						auto newAudioData = repacketizeSingleAudioFrame(audioData.audioData);
-						sendSingleAudioQuantum(newAudioData);
-						currentPosition += 1;
-						if (currentPosition == audioData.audioData.size() - 1) {
-							this->areWePlaying = false;
+					vector<uint8_t> newVector;
+
+					for (auto value : audioData.audioData) {
+						for (auto value02 : value) {
+							auto newVectorNew = encodeSingleAudioFrame(value02);
+							sendSingleAudioQuantum(newVectorNew);
+							cout << "SIZE: " << value.size() << endl;
+							/*
+							for (auto value04 : newVectorNew.data) {
+								newVector.push_back(value04);
+							}
+							*/
+							if (this->areWePlaying == false) {
+								break;
+							}
+						}
+						if (this->areWePlaying == false) {
+							break;
 						}
 					}
+					InMemoryRandomAccessStream randomStream;
+					DataWriter writer{ randomStream };
+					writer.WriteBytes(newVector);
+					writer.StoreAsync().get();
+					DataReader reader{ randomStream.GetInputStreamAt(0) };
+					reader.LoadAsync((uint32_t)newVector.size()).get();
+					IBuffer buffer = reader.ReadBuffer((uint32_t)newVector.size());
+					saveFile(L"C:\\Users\\Chris\\Downloads\\", L"TestFile.wav", buffer);
+					//auto newAudioData = repacketizeSingleAudioFrame(audioData.audioData);
+					this->areWePlaying = false;
+					
 				}
 				sendSpeakingMessage(false);
 
