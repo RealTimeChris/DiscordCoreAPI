@@ -254,6 +254,7 @@ namespace DiscordCoreAPI {
 
 		void terminate() {
 			done();
+			this->areWePlaying = false;
 			this->doWeQuit = true;
 		}
 

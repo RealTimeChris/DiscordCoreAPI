@@ -54,13 +54,13 @@ namespace DiscordCoreInternal {
 	class VoiceChannelWebSocketAgent : public agent {
 	public:
 
-		static unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
+		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
 		DatagramSocket voiceSocket{ nullptr };
 		shared_ptr<unbounded_buffer<bool>> readyBuffer;
 		VoiceConnectionData voiceConnectionData;
 
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<bool>> readyBufferNew)
-			:agent(*threadContextNew->scheduler) {
+			:agent(*ThreadManager::getThreadContext().get()->scheduler) {
 			this->threadContext = threadContextNew;
 			this->voiceConnectionData = voiceConnectionDataNew;
 			this->readyBuffer = readyBufferNew;
@@ -576,6 +576,10 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
+		void setVoiceConnectionWebSocket(shared_ptr<VoiceChannelWebSocketAgent> websocketAgentNew) {
+			this->websocketAgent = websocketAgentNew;
+		}
+
 		void setSocketPath(string socketPathBase) {
 			std::wstringstream stream;
 			stream << DiscordCoreInternal::getSocketPath(to_hstring(socketPathBase)).c_str();
@@ -623,7 +627,7 @@ namespace DiscordCoreInternal {
 			string newString = getVoiceStateUpdatePayload(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newString);
-			VoiceConnectionData newData = receive(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer);
+			VoiceConnectionData newData = receive(this->voiceConnectionDataBuffer);
 			return newData;
 		}
 
@@ -636,6 +640,8 @@ namespace DiscordCoreInternal {
 		friend class VoiceConnection;
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreClient;
+		shared_ptr<VoiceChannelWebSocketAgent> websocketAgent{ nullptr };
+		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		event_token messageReceivedToken;
 		event_token closedToken;
@@ -775,9 +781,9 @@ namespace DiscordCoreInternal {
 						this->serverUpdateCollected = true;
 					}
 					else {
-						this->pVoiceConnectionData->endpoint =payload.at("d").at("endpoint").get<string>();
+						this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
 						this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
-						send(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer, *this->pVoiceConnectionData);
+						send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
 						delete this->pVoiceConnectionData;
 						this->pVoiceConnectionData = nullptr;
 						this->areWeCollectingData = false;
@@ -794,7 +800,7 @@ namespace DiscordCoreInternal {
 					}
 					else {
 						this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
-						send(VoiceChannelWebSocketAgent::voiceConnectionDataBuffer, *this->pVoiceConnectionData);
+						send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
 						delete this->pVoiceConnectionData;
 						this->pVoiceConnectionData = nullptr;
 						this->areWeCollectingData = false;
@@ -868,7 +874,6 @@ namespace DiscordCoreInternal {
 			}
 		};
 	};
-	unbounded_buffer<VoiceConnectionData> VoiceChannelWebSocketAgent::voiceConnectionDataBuffer;
 }
 #endif
 

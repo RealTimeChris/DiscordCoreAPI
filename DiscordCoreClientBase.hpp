@@ -19,6 +19,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClientBase {
 	public:
+		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
 		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreClientBase> thisPointer{ this };
 		shared_ptr<ChannelManager> channels{ nullptr };

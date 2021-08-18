@@ -33,7 +33,6 @@ namespace DiscordCoreAPI {
 	public:
 
 		static shared_ptr<DiscordCoreClient> thisPointer;
-		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
 		shared_ptr<EventManager> eventManager{ nullptr };

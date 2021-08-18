@@ -437,10 +437,16 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		bool sendNextSong() {
+		bool sendNextSong(bool removeNow = false) {
 			if (this->songQueue.size() > 0) {
-				auto frames = this->songQueue.at(0).frames;
-				this->songQueue.erase(this->songQueue.begin());
+				vector<RawFrame> frames;
+				if (removeNow) {
+					frames = this->songQueue.at(1).frames;
+					this->songQueue.erase(this->songQueue.begin());
+				}
+				else {
+					frames = this->songQueue.at(0).frames;
+				}
 				send(*this->sendAudioBuffer, frames);
 				return true;
 			}
