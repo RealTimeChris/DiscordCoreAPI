@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
                 newVector.push_back(dataPackage.dataBuffer.data()[x]);
             }
             this->currentBuffer = newVector;
-            this->currentBufferSize = this->currentBuffer.size();
+            this->currentBufferSize = (int)this->currentBuffer.size();
             this->totalFileSize = (int)dataPackage.totalFileSize;
             // Define your buffer 
 
@@ -155,42 +155,12 @@ namespace DiscordCoreAPI {
             av_dump_format(this->formatContext, 0, "test", 0);
         }
 
-        uint32_t collectMoreInput(IBuffer readBuffer) {
-            vector<uint8_t> currentBufferNew;
-            uint32_t collectedBytes;
-            uint8_t* oldBufferData;
-
-            size_t remainingSize = this->ioContext->buf_ptr_max - this->ioContext->buffer;
-            cout << "REMAINING SIZE: " << remainingSize << endl;
-            oldBufferData = new uint8_t[remainingSize];
-            avio_read(this->ioContext, oldBufferData, (int)remainingSize);
-            av_free(this->ioContext->buffer);
-            size_t newBufferSize = readBuffer.Length() + remainingSize;
-            collectedBytes = (int)newBufferSize;
-            this->ioContext->buffer = (unsigned char*)av_malloc(newBufferSize);
-            
-            for (int x = 0; x < remainingSize; x += 1) {
-                currentBufferNew.push_back(oldBufferData[x]);
-            }
-            
-            for (unsigned int x=0; x< readBuffer.Length(); x+=1){
-                currentBufferNew.push_back(readBuffer.data()[x]);
-            }
-            collectedBytes = (int)currentBufferNew.size();
-            //avio_seek(this->ioContext, 0, SEEK_SET);
-            this->currentBuffer = currentBufferNew;
-            this->currentMaxBufferSize = (int)currentBufferNew.size();
-            this->currentBufferSize = currentBufferNew.size();
-            return collectedBytes;
-        }
-
         int avio_seek(AVIOContext* avContext, int offset, int ) {
             avContext->buf_ptr = avContext->buffer + offset;
             return offset;
         }
 
         vector<RawFrame> getFrames() {
-            cout << "THE SIZE: " << this->currentBuffer.size() << endl;
             this->currentMaxBufferSize = (int)this->currentBuffer.size();
             if (this->currentBuffer.size() >0){
                 vector<RawFrame> frames{};
@@ -202,10 +172,8 @@ namespace DiscordCoreAPI {
                     return frames;
                 }
 
-                cout << "WERE HERE WERE HERE" << endl;
                 // read frames from the file
                 while (av_read_frame(this->formatContext, this->packet) >= 0) {
-                    cout << "WERE HERE WERE HERE040404" << endl;
                     this->frame = av_frame_alloc();
                     if (!this->frame) {
                         fprintf(stderr, "Error: Could not allocate frame\n");
@@ -217,7 +185,7 @@ namespace DiscordCoreAPI {
                         fprintf(stderr, "Error: Could not allocate frame\n");
                         return frames;
                     }
-                    cout << "STREAM INDEX:" << this->packet->stream_index << endl;
+
                     // check if the packet belongs to a stream we are interested in, otherwise
                     // skip it
                     if (this->packet->stream_index == this->audioStreamIndex) {
@@ -229,7 +197,6 @@ namespace DiscordCoreAPI {
                             fprintf(stderr, "Error submitting a packet for decoding (%s), %s.\n", to_string(ret).c_str(), charString);
                             return frames;
                         }
-                        cout << "CURRENT BUFFER SIZE 010101: " << this->currentBufferSize << endl;
                         // get all the available frames from the decoder
                         if (ret >= 0) {
 
@@ -253,7 +220,6 @@ namespace DiscordCoreAPI {
                             swr_convert_frame(this->swrContext, this->newFrame, this->frame);
                             printf("Audio Frame #:%d Number of Samples:%d pts:%s\n", this->audioFrameCount, this->newFrame->nb_samples, to_string(this->newFrame->pts).c_str());
                             size_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
-
                             vector<uint8_t> newVector{};
                             for (int x = 0; x < unpadded_linesize; x += 1) {
                                 newVector.push_back(this->newFrame->extended_data[0][x]);
@@ -297,6 +263,7 @@ namespace DiscordCoreAPI {
                 av_frame_free(&this->newFrame);
                 return frames;
             }
+            return vector<RawFrame>();
         }
 
         ~SongDecoder() {
@@ -338,28 +305,14 @@ namespace DiscordCoreAPI {
         AVPacket* packet = nullptr;
         vector<uint8_t> currentBuffer{};
 
-        static int64_t FileStreamSeek(void*, int64_t pos, int) {
-            // Your custom IStream
-            //SongDecoder* stream = reinterpret_cast<SongDecoder*>(ptr);
-            // Origin is an item from STREAM_SEEK enum.
-            //   STREAM_SEEK_SET - relative to beginning of stream.
-            //   STREAM_SEEK_CUR - relative to current position in stream.
-            //   STREAM_SEEK_END - relative to end of stream;
-            // Return the new position
-            return pos;
-        }
-
         static int FileStreamRead(void* opaque, uint8_t* buf, int bufSize)
         {   
             SongDecoder* stream = reinterpret_cast<SongDecoder*>(opaque);
-            cout << "CURRENT POSITION: " << stream->ioContext->buf_ptr - stream->ioContext->buffer << endl;
-            cout << "THE BUFFER SIZE: " << stream->currentBufferSize << endl;
             int bytesRead;
             if (stream->currentBuffer.size() > 0) {
                 bytesRead = (int)stream->currentBuffer.size();
             }
             if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->currentBufferSize) {
-                cout << "ENDING NOW" << endl;
                 return AVERROR_EOF;
             }
 

@@ -13,6 +13,13 @@
 
 namespace DiscordCoreAPI {
 
+	struct YouTubeSong {
+		vector<RawFrame> frames;
+		string imageURL;
+		string title;
+		string url;
+	};
+
 	string between(string body, string left, string right) {
 		int positionStart = (int)body.find(left) + (int)left.length();
 		int positionEnd = (int)body.find(right, positionStart);
@@ -233,7 +240,7 @@ namespace DiscordCoreAPI {
 	class YouTubeAPI {
 	public:
 
-		YouTubeAPI(shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBufferNew) {
+		YouTubeAPI(shared_ptr<unbounded_buffer<vector<RawFrame>>> sendAudioBufferNew) {
 			this->sendAudioBuffer = sendAudioBufferNew;
 		}
 
@@ -269,9 +276,18 @@ namespace DiscordCoreAPI {
 			return searchResults;
 		}
 
-		task<void> downloadAudio(YouTubeSearchResult videoSearchResult) {
-			apartment_context mainThread;
-			co_await resume_background();
+		task<void> modifyQueue(int songOldPosition, int songNewPosition) {
+			int currentSongCount = (int)this->songQueue.size();
+			for (int x = 0; x < currentSongCount; x += 1) {
+				YouTubeSong tempSong = this->songQueue.at(songOldPosition);
+				if (x < songNewPosition && x > songOldPosition) {
+					this->songQueue.at(x - 1) = this->songQueue.at(x);
+				}
+				this->songQueue.at(songNewPosition) = tempSong;
+			}
+		}
+
+		void downloadAudio(YouTubeSearchResult videoSearchResult) {
 			string watchHTMLURL = to_string(this->baseWatchURL) + videoSearchResult.videoId + "&hl=en";
 			Filters::HttpBaseProtocolFilter filter;
 			filter.AutomaticDecompression(true);
@@ -343,13 +359,9 @@ namespace DiscordCoreAPI {
 			dataWriter.WriteString(to_hstring(request));
 			dataWriter.StoreAsync().get();
 			string headers;
-			InMemoryRandomAccessStream finalFileOutput;
-			DataWriter dataWriterOutput(finalFileOutput);
-			dataWriterOutput.UnicodeEncoding(UnicodeEncoding::Utf8);
 			InMemoryRandomAccessStream outputStream;
 			DataWriter streamDataWriter(outputStream);
 			streamDataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-			bool headersFinished = false;
 			this->maxBufSize = format.contentLength;
 			if (format.contentLength < this->maxBufSize) {
 				this->maxBufSize = format.contentLength;
@@ -367,44 +379,27 @@ namespace DiscordCoreAPI {
 				}
 				auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
 				IBuffer streamBuffer;
-				cout << "CONTENT LENGTH: " << format.contentLength << endl;
-				if (!headersFinished) { 
-					stringstream bufferStream;
-					bufferStream << buffer.data();
-					headers = bufferStream.str();
-					int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
-					dataReader.LoadAsync(headerLength).get();
-					auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength);
-					headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
-					headersFinished = true;
-					
-					contentLengthCurrent -= headerLength;
-					dataWriterOutput.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4);
-					dataWriterOutput.StoreAsync().get();
-					dataWriterOutput.WriteBuffer(buffer02, 0, (uint32_t)headerLength);
-					dataWriterOutput.StoreAsync().get();
-					streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4);
-					bytesWritten += streamDataWriter.StoreAsync().get();
-					streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength);
-					bytesWritten += streamDataWriter.StoreAsync().get();
-					vector<uint8_t> vectorNew;
-					vectorNew.push_back(0);
-					vectorNew.push_back(0);
-					vectorNew.push_back(0);
-					vectorNew.push_back(0);
-					streamDataWriter.WriteBytes(vectorNew);
-					bytesWritten += streamDataWriter.StoreAsync().get();
-					remainingDownloadContentLength -= bytesWritten;
-				}
-				else {
-					dataWriterOutput.WriteBuffer(buffer, 0, (uint32_t)buffer.Length());
-					dataWriterOutput.StoreAsync().get();
-					streamDataWriter.WriteBuffer(buffer, 0, (uint32_t)buffer.Length());
-					bytesWritten += streamDataWriter.StoreAsync().get();
-					remainingDownloadContentLength -= contentLengthCurrent;
-				}
+				stringstream bufferStream;
+				bufferStream << buffer.data();
+				headers = bufferStream.str();
+				int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
+				dataReader.LoadAsync(headerLength).get();
+				auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength);
+				headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
+				contentLengthCurrent -= headerLength;
+				streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4);
+				bytesWritten += streamDataWriter.StoreAsync().get();
+				streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength);
+				bytesWritten += streamDataWriter.StoreAsync().get();
+				vector<uint8_t> vectorNew;
+				vectorNew.push_back(0);
+				vectorNew.push_back(0);
+				vectorNew.push_back(0);
+				vectorNew.push_back(0);
+				streamDataWriter.WriteBytes(vectorNew);
+				bytesWritten += streamDataWriter.StoreAsync().get();
+				remainingDownloadContentLength -= bytesWritten;
 				DataReader streamDataReader(outputStream.GetInputStreamAt(bytesReadTotal));
-				cout << "BYTES TO READ: " << bytesWritten << endl;
 				bytesRead += streamDataReader.LoadAsync(bytesWritten).get();
 				bytesReadTotal += bytesRead;
 				streamBuffer = streamDataReader.ReadBuffer(bytesRead);
@@ -416,7 +411,13 @@ namespace DiscordCoreAPI {
 				auto frames = songDecoder->getFrames();
 				bytesWritten = 0;
 				bytesRead = 0;
-				YouTubeAPI::songQueue.push_back(frames);
+				YouTubeSong youtubeSong;
+				youtubeSong.frames = frames;
+				youtubeSong.imageURL = videoSearchResult.thumbNailURL;
+				youtubeSong.title = videoSearchResult.videoTitle;
+				youtubeSong.url = videoSearchResult.videoURL;
+
+				YouTubeAPI::songQueue.push_back(youtubeSong);
 
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
@@ -425,48 +426,29 @@ namespace DiscordCoreAPI {
 					contentLengthCurrent = remainingDownloadContentLength;
 				}
 			}
+			return;
+		}
 
-			vector<uint8_t> vectorNew;
-			vectorNew.push_back(0);
-			vectorNew.push_back(0);
-			vectorNew.push_back(0);
-			vectorNew.push_back(0);
-			dataWriterOutput.WriteBytes(vectorNew);
-			dataWriterOutput.StoreAsync().get();
-			DataReader dataReader00(finalFileOutput.GetInputStreamAt(0));
-			dataReader00.UnicodeEncoding(UnicodeEncoding::Utf8);
-			dataReader00.LoadAsync((uint32_t)finalFileOutput.Size()).get();
-			auto readBuffer = dataReader00.ReadBuffer((uint32_t)finalFileOutput.Size());
-			hstring filePath = L"C:\\Users\\Chris\\Downloads\\";
-			hstring  fileName = to_hstring(videoSearchResult.videoTitle) + L" " + to_hstring(playerId) + L".webm";
-			saveFile(filePath, fileName, readBuffer);
-			vector<uint8_t> returnVector;
-			for (unsigned int x = 0; x < readBuffer.Length(); x += 1) {
-				returnVector.push_back(readBuffer.data()[x]);
-			}
-			co_return;
-		}
-		
 		void sendNextSong() {
-			AudioDataChunk audioData;
-			audioData.audioData.push_back(YouTubeAPI::songQueue.at(0));
-			YouTubeAPI::songQueue.erase(YouTubeAPI::songQueue.begin());
-			send(*this->sendAudioBuffer, audioData);
+			if (this->songQueue.size() > 0) {
+				auto frames = this->songQueue.at(0).frames;
+				this->songQueue.erase(this->songQueue.begin());
+				send(*this->sendAudioBuffer, frames);
+			}			
 		}
-		
+
 	protected:
-		shared_ptr<unbounded_buffer<AudioDataChunk>> sendAudioBuffer;
+		shared_ptr<unbounded_buffer<vector<RawFrame>>> sendAudioBuffer;
 		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
 		const hstring baseWatchURL = L"https://www.youtube.com/watch?v=";
 		const hstring baseURL = L"https://www.youtube.com";
 		__int64 maxBufSize = 4096;
 		const string newLine = "\n\r";
-		static vector<vector<RawFrame>> songQueue;
+		vector<YouTubeSong> songQueue;
 		string playerResponse = "";
 		string html5PlayerFile = "";
 		string html5Player = "";
 	};
-	vector<vector<RawFrame>> YouTubeAPI::songQueue;
 };
 
 #endif

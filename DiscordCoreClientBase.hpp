@@ -30,6 +30,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class WebSocketConnectionAgent;
 		friend class HttpRequestAgent;
+		map<string, shared_ptr<unbounded_buffer<vector<RawFrame>>>> audioBuffersMap;
 		hstring botToken;
 	};
 

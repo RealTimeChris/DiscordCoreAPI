@@ -24,7 +24,6 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
-
 			Channel channel = args->eventData.discordCoreClient->channels->getChannelAsync({ args->eventData.getChannelId() }).get();
 
 			bool areWeInADm = areWeInADM(args->eventData, channel);
@@ -43,11 +42,9 @@ namespace DiscordCoreAPI {
 				CreateDeferredInteractionResponseData dataPackage(args->eventData);
 				newEvent = InputEventManager::respondToEvent(dataPackage);
 			}
-			auto guildBuffer = args->eventData.discordCoreClient->audioBuffersMap.at(args->eventData.getGuildId());
-			YouTubeAPI youtubeAPI(guildBuffer);
 			vector<YouTubeSearchResult> searchResults;
 			if (args->argumentsArray.size() > 0) {
-				searchResults = youtubeAPI.searchForVideo(args->argumentsArray[0]);
+				searchResults = guild.getYouTubeAPI()->searchForVideo(args->argumentsArray[0]);
 			}
 
 			vector<EmbedData> embedsFromSearch;
@@ -88,11 +85,17 @@ namespace DiscordCoreAPI {
 			GuildMember guildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
 			if (returnData.inputEventData.discordCoreClient != nullptr) {
 				if (guildMember.data.voiceData.channelId != "") {
-					auto voiceConnection = guild.connectToVoice(guildMember.data.voiceData.channelId, args->eventData.discordCoreClient->pWebSocketConnectionAgent, guildBuffer);
-					youtubeAPI.downloadAudio(searchResults[returnData.currentPageIndex]).get();
-					youtubeAPI.sendNextSong();
+					auto voiceConnection = guild.connectToVoice(guildMember.data.voiceData.channelId, args->eventData.discordCoreClient->pWebSocketConnectionAgent);
+					shared_ptr<YouTubeAPI> youtubeAPI = guild.getYouTubeAPI();
+					args->eventData.discordCoreClient->currentUser->updateVoiceStatus({ .guildId = args->eventData.getGuildId(),.channelId = guildMember.data.voiceData.channelId,.selfDeaf = false });
+					youtubeAPI->downloadAudio(searchResults[returnData.currentPageIndex]);
+					
+					voiceConnection->onSongCompletion([&]() {youtubeAPI->sendNextSong(); });
 					//args->eventData.discordCoreClient->guildMembers->modifyGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(), .guildId = args->eventData.getGuildId(), .nick = guildMember.data.nick, .roleIds = guildMember.data.roles, .mute = false, .deaf = false, .newVoiceChannelId = "", .currentChannelId = guildMember.data.voiceData.channelId }).get();
-					voiceConnection->play(true);
+					if (!voiceConnection->areWeCurrentlyPlaying()) {
+						youtubeAPI->sendNextSong();
+						voiceConnection->play(true);
+					}					
 					agent::wait(voiceConnection.get());
 					guild.disconnectFromVoice();
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {

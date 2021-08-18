@@ -322,7 +322,6 @@ namespace DiscordCoreInternal {
 				this->areWeWaitingForIp = false;
 				this->externalIp = message.substr(4, message.find('\u0000', 4) - 4);
 			}
-			cout << "Message Size Is: " << message.size() << endl;
 			cout << "Message received from VoiceDatagramSocket: " << message.c_str() << endl << endl;
 		}
 

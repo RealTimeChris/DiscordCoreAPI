@@ -12,7 +12,7 @@
 
 namespace DiscordCoreAPI {
 
-	shared_ptr<VoiceConnection> Guild::connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew) {
+	shared_ptr<VoiceConnection> Guild::connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) {
 		if (channelId != "") {
 			if ((this->voiceConnection == nullptr || this->voiceConnection->voiceConnectionData.channelId != channelId)) {
 				auto voiceConnectData = websocketAgent->getVoiceConnectionData(channelId, this->data.id);
@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 				voiceConnectData.guildId = this->data.id;
 				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
 				voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
-				this->voiceConnection = make_shared<VoiceConnection>(voiceConnectData, bufferMessageBlockNew);
+				this->voiceConnection = make_shared<VoiceConnection>(voiceConnectData, this->discordCoreClientBase->audioBuffersMap.at(this->data.id));
 				map<string, Guild> guildMap;
 				try_receive(GuildManagerAgent::cache, guildMap);
 				if (guildMap.contains(this->data.id)) {

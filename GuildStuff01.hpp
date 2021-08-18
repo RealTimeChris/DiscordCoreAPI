@@ -19,6 +19,7 @@
 #include "RoleStuff.hpp"
 #include "VoiceConnectionStuff.hpp"
 #include "DiscordCoreClientBase.hpp"
+#include "YouTubeStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -27,7 +28,15 @@ namespace DiscordCoreAPI {
 		GuildData data;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		shared_ptr<VoiceConnection> connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew);
+		shared_ptr<VoiceConnection> connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent);
+
+		shared_ptr<VoiceConnection> getVoiceConnection() {
+			return this->voiceConnection;
+		};
+
+		shared_ptr<YouTubeAPI> getYouTubeAPI() {
+			return this->youtubeAPI;
+		}
 
 		void disconnectFromVoice();
 
@@ -43,6 +52,7 @@ namespace DiscordCoreAPI {
 
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+		shared_ptr<YouTubeAPI> youtubeAPI{ nullptr };
 
 		Guild() {};
 
@@ -50,6 +60,13 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = discordCoreClientNew;
 			this->discordCoreClientBase = discordCoreClientBaseNew;
 			this->data = dataNew;
+			if (this->discordCoreClientBase->audioBuffersMap.contains(this->data.id)) {
+				this->youtubeAPI = make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id));
+			}
+			else {
+				this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<vector<RawFrame>>>()));
+				this->youtubeAPI = make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id));
+			}
 			return;
 		}
 
@@ -70,7 +87,7 @@ namespace DiscordCoreAPI {
 						if (value.userId == guildMemberData.user.id) {
 							guildMemberData.voiceData = value;
 						}
-					}					
+					}
 					guildMemberData.guildId = this->data.id;
 					DiscordGuildMember discordGuildMember(guildMemberData);
 					discordGuildMember.writeDataToDB();

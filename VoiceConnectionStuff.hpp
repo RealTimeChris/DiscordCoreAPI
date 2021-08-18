@@ -14,13 +14,9 @@
 
 namespace DiscordCoreAPI {
 
-	struct AudioDataChunk {
-		vector<vector<RawFrame>> audioData;
-	};
-
 	class VoiceConnection : public agent {
 	public:
-		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlockNew)
+		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<vector<RawFrame>>> bufferMessageBlockNew)
 			: agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			if (voiceConnectionDataNew.channelId != "") {
 				if (sodium_init() == -1) {
@@ -45,11 +41,29 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void deleteFile(string filePath, string fileName) {
-			auto folder = winrt::Windows::Storage::KnownFolders::GetFolderAsync(winrt::Windows::Storage::KnownFolderId::MusicLibrary).get();
-			auto folder2 = folder.GetFolderFromPathAsync(to_hstring(filePath)).get();
-			winrt::Windows::Storage::StorageFile storageFile = folder2.GetFileAsync(to_hstring(fileName)).get();
-			storageFile.DeleteAsync().get();
+		string getChannelId() {
+			return this->voiceConnectionData.channelId;
+		}
+
+		event_token onSongCompletion(delegate<> const& handler) {
+			return onSongCompletionEvent.add(handler);
+		}
+
+		bool areWeConnected() {
+			if (this == nullptr) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+
+		void onSongCompletion(event_token const& token) {
+			onSongCompletionEvent.remove(token);
+		}
+
+		bool areWeCurrentlyPlaying() {
+			return this->areWePlaying;
 		}
 
 		void play(bool doWeBlock = false) {
@@ -76,16 +90,18 @@ namespace DiscordCoreAPI {
 		bool doWeQuit = false;
 		bool doWeWait = true;
 		bool areWePlaying = false;
+		bool areWeConnectedBool = false;
 		unsigned int timestamp = 0;
 		unsigned short sequenceIndex = 0;
 		__int32 sequenceIndexLib = 0;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
-		shared_ptr<unbounded_buffer<AudioDataChunk>> bufferMessageBlock;
+		shared_ptr<unbounded_buffer<vector<RawFrame>>> bufferMessageBlock;
 		shared_ptr<unbounded_buffer<bool>> readyBuffer;
 		unbounded_buffer<bool> playPauseBuffer;
 		OpusEncoder* encoder;
 		int nChannels = 2;
+		winrt::event<delegate<>> onSongCompletionEvent;
 
 		EncodedFrame encodeSingleAudioFrame(RawFrame inputFrame) {
 			uint8_t* oldBuffer;
@@ -96,9 +112,7 @@ namespace DiscordCoreAPI {
 			uint8_t* newBuffer;
 			int bufferSize = (int)inputFrame.data.size() * nChannels * sizeof(float);
 			newBuffer = new uint8_t[bufferSize];
-			//cout << "INPUT SIZE: " << inputFrame.data.size() << endl;
 			int count = opus_encode_float(encoder, (float*)oldBuffer, 960, newBuffer, bufferSize);
-			//cout << "ENCODED COUNT: " << count << endl;
 			vector<uint8_t> newVector{};
 			for (int x = 0; x< count; x += 1) {
 				newVector.push_back(newBuffer[x]);
@@ -113,18 +127,12 @@ namespace DiscordCoreAPI {
 			return encodedFrame;
 		}
 		
-		void sendSingleAudioQuantum(EncodedFrame bufferToSend) {
+		void sendSingleAudioFrame(EncodedFrame bufferToSend) {
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = crypto_secretbox_NONCEBYTES;
 			uint8_t header01[2]{ 0x80 , 0x78 };
 			uint16_t header02[1]{ this->sequenceIndex };
 			uint32_t header03[2]{ (uint32_t)this->timestamp, (uint32_t)this->voiceConnectionData.audioSSRC };
-
-			cout << "HEADER 00" << std::dec << header01[0] << endl;
-			cout << "HEADER 01" << std::dec << header01[1] << endl;
-			cout << "HEADER 02" << std::dec << (uint16_t)header02[0] << endl;
-			cout << "HEADER 04" << std::dec << (uint32_t)header03[0] << endl;
-			cout << "HEADER 08" << std::dec << (uint32_t)header03[1] << endl;
 
 			uint8_t headerFinal[headerSize];
 			headerFinal[0] = header01[0];
@@ -146,17 +154,13 @@ namespace DiscordCoreAPI {
 				nonceForLibSodium[x] = 0;
 			}
 
-			cout << "BUFFER SIZE PRE: " << bufferToSend.data.size() << endl;
 			size_t numOfBytes = headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES;
 			uint8_t* audioDataPacket = new uint8_t[numOfBytes];
 			std::memcpy(audioDataPacket, headerFinal, headerSize);
 			unsigned char* encryptionKeys = new unsigned char[crypto_secretbox_KEYBYTES];
 			unsigned char* bufferToSendNew = new unsigned char[bufferToSend.data.size()];
-			cout << "KEYS SIZE: " << crypto_secretbox_KEYBYTES << sizeof(encryptionKeys) * sizeof(unsigned char) << endl;
-			cout << "BUFFER SIZE POST: " << numOfBytes << endl;
 			for (unsigned int x = 0; x < bufferToSend.data.size(); x += 1) {
 				bufferToSendNew[x] = bufferToSend.data[x];
-				cout << hex << bufferToSendNew[x];
 			}
 			for (unsigned int x = 0; x < this->voiceConnectionData.keys.size(); x += 1) {
 				encryptionKeys[x] = (unsigned char)this->voiceConnectionData.keys[x];
@@ -172,7 +176,6 @@ namespace DiscordCoreAPI {
 			this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
 			this->sequenceIndex += 1;
 			this->sequenceIndexLib += 1;
-			cout << "CURRENT TIMESTAMP: " << this->timestamp << endl;
 			this->timestamp += (int)bufferToSend.sampleCount;
 		}
 
@@ -196,6 +199,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void run() {
+			this->areWeConnectedBool = true;
 			while (!this->doWeQuit) {
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
@@ -204,41 +208,31 @@ namespace DiscordCoreAPI {
 				this->areWePlaying = true;
 				sendSpeakingMessage(true);
 				while (this->areWePlaying) {
-					vector<uint8_t> newVector;
 
-					for (auto value : audioData.audioData) {
-						for (auto value02 : value) {
-							auto newVectorNew = encodeSingleAudioFrame(value02);
-							sendSingleAudioQuantum(newVectorNew);
-							cout << "SIZE: " << value.size() << endl;
-							/*
-							for (auto value04 : newVectorNew.data) {
-								newVector.push_back(value04);
-							}
-							*/
-							if (this->areWePlaying == false) {
-								break;
-							}
+					int counter = 0;
+					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+					int intervalCount = 20;
+					for (auto value : audioData) {
+						while (counter < intervalCount) {
+							counter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+						}
+						counter = 0;
+						startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+						auto newVectorNew = encodeSingleAudioFrame(value);
+						sendSingleAudioFrame(newVectorNew);
+						if (this->areWePlaying == false) {
+							break;
 						}
 						if (this->areWePlaying == false) {
 							break;
 						}
 					}
-					InMemoryRandomAccessStream randomStream;
-					DataWriter writer{ randomStream };
-					writer.WriteBytes(newVector);
-					writer.StoreAsync().get();
-					DataReader reader{ randomStream.GetInputStreamAt(0) };
-					reader.LoadAsync((uint32_t)newVector.size()).get();
-					IBuffer buffer = reader.ReadBuffer((uint32_t)newVector.size());
-					saveFile(L"C:\\Users\\Chris\\Downloads\\", L"TestFile.wav", buffer);
-					//auto newAudioData = repacketizeSingleAudioFrame(audioData.audioData);
+					this->onSongCompletionEvent();
 					this->areWePlaying = false;
-					
 				}
 				sendSpeakingMessage(false);
-
 			}
+			this->areWeConnectedBool = false;
 			done();
 		}
 

@@ -42,7 +42,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordUser> discordUser{ nullptr };
 		shared_ptr<GuildManager> guilds{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		map<string, shared_ptr<unbounded_buffer<AudioDataChunk>>> audioBuffersMap;
 
 		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			this->botToken = botTokenNew;
@@ -167,8 +166,6 @@ namespace DiscordCoreAPI {
 			if (!isItFound) {
 				this->discordUser->data.guildCount += 1;
 				this->discordUser->writeDataToDB();
-				shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
-				this->audioBuffersMap.insert(make_pair(guild.data.id, thePtr));
 			}
 			return guild;
 		}
@@ -176,7 +173,7 @@ namespace DiscordCoreAPI {
 		void removeGuild(GuildData guildData) {
 			//this->discordUser->data.guildCount -= 1;
 			this->discordUser->writeDataToDB();
-			shared_ptr<unbounded_buffer<AudioDataChunk>>thePtr = make_shared<unbounded_buffer<AudioDataChunk>>();
+			shared_ptr<unbounded_buffer<vector<RawFrame>>>thePtr = make_shared<unbounded_buffer<vector<RawFrame>>>();
 			this->audioBuffersMap.erase(guildData.id);
 		}
 
