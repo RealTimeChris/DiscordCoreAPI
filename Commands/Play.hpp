@@ -32,6 +32,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
+			
 			InputEventManager::deleteInputEventResponseAsync(args->eventData).get();
 
 			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
