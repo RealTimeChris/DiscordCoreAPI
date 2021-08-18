@@ -437,16 +437,25 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		bool sendNextSong(bool removeNow = false) {
+		bool sendNextSong() {
 			if (this->songQueue.size() > 0) {
 				vector<RawFrame> frames;
-				if (removeNow) {
-					frames = this->songQueue.at(1).frames;
-					this->songQueue.erase(this->songQueue.begin());
+				frames = this->songQueue.at(0).frames;
+				this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
+				send(*this->sendAudioBuffer, frames);
+				return true;
+			}
+			else if (this->songQueue.size() > 1) {
+				vector<RawFrame> frames;
+				frames = this->songQueue.at(0).frames;
+				YouTubeSong songTemp;
+				for (int x = 0; x < this->songQueue.size(); x += 1) {
+					if (x == this->songQueue.size() - 1) {
+						break;
+					}
+					this->songQueue.at(x) = this->songQueue.at(x + 1);
 				}
-				else {
-					frames = this->songQueue.at(0).frames;
-				}
+				this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
 				send(*this->sendAudioBuffer, frames);
 				return true;
 			}
