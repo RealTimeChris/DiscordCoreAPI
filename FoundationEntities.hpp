@@ -3491,6 +3491,7 @@ namespace DiscordCoreAPI {
         vector<UserData> users;
         vector<AuditLogEntryData> auditLogEntries;
         vector<IntegrationData> integrations;
+        vector<ChannelData> threads;
     };
 
     struct InviteData {

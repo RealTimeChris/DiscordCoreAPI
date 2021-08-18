@@ -3146,6 +3146,16 @@ namespace DiscordCoreInternal {
                 auditLogData.integrations = newVector;
             }
 
+            if (jsonObjectData.contains("threads") && !jsonObjectData.at("threads").is_null()) {
+                vector<DiscordCoreAPI::ChannelData> newVector;
+                for (auto newValue : jsonObjectData.at("threads")) {
+                    DiscordCoreAPI::ChannelData newData;
+                    parseObject(newValue, &newData);
+                    newVector.push_back(newData);
+                }
+                auditLogData.threads = newVector;
+            }
+
             *pDataStructure = auditLogData;
         }
 

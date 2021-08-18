@@ -238,7 +238,6 @@ namespace DiscordCoreAPI {
 							this->areWePlaying = false;
 							this->areWeWaitingForAudioData = true;
 							this->onSongCompletionEvent();
-							cout << "WERE HERE WERE HERE WERE HERE01010101" << endl;
 							frameCounter = 0;
 						}
 						if (this->areWePlaying == false) {
