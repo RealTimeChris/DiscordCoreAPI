@@ -31,7 +31,6 @@ namespace DiscordCoreAPI {
 			if (areWeInADm) {
 				co_return;
 			}
-
 			
 			InputEventManager::deleteInputEventResponseAsync(args->eventData).get();
 
