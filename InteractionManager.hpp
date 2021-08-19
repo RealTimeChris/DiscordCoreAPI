@@ -19,8 +19,6 @@ namespace DiscordCoreAPI {
 
     class InteractionManager;
 
-    class Button;
-
     class InteractionManagerAgent : public agent {
     public:
         static map<string, unbounded_buffer<MessageData>*> collectMessageDataBuffers;

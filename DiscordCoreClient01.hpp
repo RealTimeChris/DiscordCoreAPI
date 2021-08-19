@@ -88,6 +88,8 @@ namespace DiscordCoreAPI {
 		friend class PermissionsConverter;
 		friend class SlashCommandStuff;
 		friend class MessageStuff;
+		friend class InteractionStuff;
+		friend class ReactionStuff;
 		static unbounded_buffer<exception> errorBuffer;
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
@@ -935,6 +937,65 @@ namespace DiscordCoreAPI {
 
 		static task<void> editGlobalApplicationCommandAsync() {
 			return DiscordCoreClient::thisPointer->slashCommands->displayGlobalApplicationCommandsAsync();
+		}
+	};
+
+	class ReactionStuff {
+	public:
+		static task<Reaction> createReactionAsync(CreateReactionData dataPackage) {
+			return DiscordCoreClient::thisPointer->reactions->createReactionAsync(dataPackage);
+		}
+
+		static task<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->reactions->deleteAllReactionsAsync(dataPackage);
+		}
+
+		static task<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage) {
+			return DiscordCoreClient::thisPointer->reactions->deleteOwnReactionAsync(dataPackage);
+		}
+
+		static task<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage) {
+			return DiscordCoreClient::thisPointer->reactions->deleteReactionsByEmojiAsync(dataPackage);
+		}
+
+		static task<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage) {
+			return DiscordCoreClient::thisPointer->reactions->deleteUserReactionAsync(dataPackage);
+		}
+	};
+
+	class InteractionStuff {
+	public:
+
+		static task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->createInteractionResponseAsync(dataPackage);
+		}
+
+		static task<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->createFollowUpMessageAsync(dataPackage);
+		}
+
+		static task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->createDeferredInteractionResponseAsync(dataPackage);
+		}
+
+		static task<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->deleteFollowUpMessageAsync(dataPackage);
+		}
+
+		static task<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->deleteInteractionResponseAsync(dataPackage);
+		}
+
+		static task<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->editFollowUpMessageAsync(dataPackage);
+		}
+
+		static task<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->editInteractionResponseAsync(dataPackage);
+		}
+
+		static task<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
+			return DiscordCoreClient::thisPointer->interactions->getInteractionResponseAsync(dataPackage);
 		}
 	};
 }
