@@ -22,23 +22,23 @@
 - ### [Getting a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild.md)
 - ### [Getting Audit Logs](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Audit%20Logs.md)
 
-## Interaction Stuff:
-
-## Input-Event Stuff:
-
 ## Message Stuff:
+
+## User Stuff:
 
 ## Reaction Stuff:
 
 ## Role Stuff:
 
+## Input-Event Stuff:
+
 ## Slash-Command Stuff:
 - ### [Adding/Creating a Slash Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding-Creating%20a%20Slash-Command.md)
+
+## Interaction Stuff:
 
 ## Button Manager:
 
 ## Select-Menu Manager:
-
-## User Stuff:
 
 ## Voice:
