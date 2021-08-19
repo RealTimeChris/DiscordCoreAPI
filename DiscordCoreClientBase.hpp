@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 		friend class ChannelStuff;
 		friend class RoleStuff;
 		friend class UserStuff;
-		friend class InputEventManager;
+		friend class InputEventStuff;
 		friend class DiscordCoreClient;
 		friend class GuildMemberStuff;
 		static shared_ptr<DiscordCoreClientBase> thisPointerBase;

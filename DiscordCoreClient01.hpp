@@ -15,7 +15,7 @@
 #include "InteractionManager.hpp"
 #include "EventManager.hpp"
 #include "SlashCommandStuff.hpp"
-#include "InputEventManager.hpp"
+#include "InputEventStuff.hpp"
 #include "DatabaseStuff.hpp"
 #include "YouTubeStuff.hpp"
 #include "GuildStuff02.hpp"
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 			this->guilds = make_shared<GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, (shared_ptr<DiscordCoreClientBase>)DiscordCoreClient::thisPointerBase);
 			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointerBase->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->thisPointerBase->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			InputEventManager::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
+			InputEventStuff::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->thisPointerBase->currentUser->data.username, this->thisPointerBase->currentUser->data.id);
 			this->currentUser = this->thisPointerBase->currentUser;
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
