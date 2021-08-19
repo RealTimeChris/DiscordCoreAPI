@@ -625,8 +625,10 @@ namespace  DiscordCoreInternal {
         }
 
         void releaseGroup() {
-            this->schedulerGroup->Release();
-            this->schedulerGroup = nullptr;
+            if (this->schedulerGroup != nullptr) {
+                this->schedulerGroup->Release();
+                this->schedulerGroup = nullptr;
+            }
         };
 
         Scheduler* scheduler{ nullptr };

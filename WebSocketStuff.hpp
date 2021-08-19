@@ -311,10 +311,12 @@ namespace DiscordCoreInternal {
 			if (args.GetDataReader() != nullptr) {
 				dataReader = args.GetDataReader();
 				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+				vector<uint8_t> newVector(dataReader.UnconsumedBufferLength());
 				if (dataReader.UnconsumedBufferLength() > 0) {
-					for (unsigned int x = 0; x < dataReader.UnconsumedBufferLength(); x += 1) {
-						message.push_back(dataReader.ReadByte());
-					}
+					dataReader.ReadBytes(newVector);
+				}
+				for (auto value : newVector) {
+					message.push_back(value);
 				}
 			}
 
@@ -322,7 +324,7 @@ namespace DiscordCoreInternal {
 				this->areWeWaitingForIp = false;
 				this->externalIp = message.substr(4, message.find('\u0000', 4) - 4);
 			}
-			cout << "Message received from VoiceDatagramSocket: " << message.c_str() << endl << endl;
+			wcout << L"Message received from VoiceDatagramSocket: " << to_hstring(message).c_str() << endl << endl;
 		}
 
 		void terminate() {

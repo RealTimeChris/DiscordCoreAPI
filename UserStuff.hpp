@@ -89,6 +89,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
+		~BotUser() {}
+
 	protected:
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgent;
 	};

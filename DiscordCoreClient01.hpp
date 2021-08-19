@@ -51,6 +51,7 @@ namespace DiscordCoreAPI {
 		static void terminate() {
 			DiscordCoreClient::thisPointer->doWeQuit = true;
 			DatabaseManagerAgent::cleanup();
+			DiscordCoreClient::thisPointer->currentUser->~BotUser();
 			DiscordCoreClient::thisPointer->guilds->~GuildManager();
 			DiscordCoreClient::thisPointer->messages->~MessageManager();
 			DiscordCoreClient::thisPointer->reactions->~ReactionManager();
@@ -133,7 +134,7 @@ namespace DiscordCoreAPI {
 			InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			ButtonManager::initialize(this->interactions);
 			SelectMenuManager::initialize(this->interactions);
-			this->thisPointerBase->initialize(this->agentResources, this->thisPointer);
+			this->thisPointerBase->initialize(&this->webSocketIncWorkloadBuffer, this->agentResources, this->thisPointer, this->pWebSocketConnectionAgent);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
 			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
@@ -144,11 +145,11 @@ namespace DiscordCoreAPI {
 			this->guildMembers = make_shared<GuildMemberManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), DiscordCoreClient::thisPointer);
 			this->channels = make_shared<ChannelManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), DiscordCoreClient::thisPointer);
 			this->guilds = make_shared<GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, (shared_ptr<DiscordCoreClientBase>)DiscordCoreClient::thisPointerBase);
-			this->currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, DiscordCoreClient::thisPointer, this->pWebSocketConnectionAgent);
-			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->currentUser->data.id);
-			DatabaseManagerAgent::initialize(this->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointerBase->currentUser->data.id);
+			DatabaseManagerAgent::initialize(this->thisPointerBase->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			InputEventManager::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
-			this->discordUser = make_shared<DiscordUser>(this->currentUser->data.username, this->currentUser->data.id);
+			this->discordUser = make_shared<DiscordUser>(this->thisPointerBase->currentUser->data.username, this->thisPointerBase->currentUser->data.id);
+			this->currentUser = this->thisPointerBase->currentUser;
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
 			this->pWebSocketReceiverAgent->start();
