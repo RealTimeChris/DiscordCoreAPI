@@ -1,7 +1,7 @@
 ### **Getting a Direct-Message Channel:**
 ---
-- Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `channels` member.
-- Select, from the `channels` pointer, the `fetchDMChannelASync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::FetchDMChannelData`), or simply `{.userId = TARGETUSERIDHERE}`.
+- Access the `ChannelStuff` class of the `DiscordCoreAPI` namespace.
+- Select, from the `ChannelStuff` class, the `fetchDMChannelASync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::FetchDMChannelData`), or simply `{.userId = TARGETUSERIDHERE}`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			Channel channel = args->eventData.discordCoreClient->channels->fetchDMChannelAsync({ .userId = args->eventData.getAuthorId() }).get();
+			Channel channel = ChannelStuff::fetchDMChannelAsync({ .userId = args->eventData.getAuthorId() }).get();
 
 			co_return;
 		}
