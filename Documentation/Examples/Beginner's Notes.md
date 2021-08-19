@@ -10,11 +10,11 @@
     
     `DiscordCoreAPI::GuildStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->interactions = shared_ptr<DiscordCoreAPI::InteractionManager>`
+    `DiscordCoreAPI::InteractionStuff`
     
     `DiscordCoreAPI::MessageStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->reactions = shared_ptr<DiscordCoreAPI::ReactionManager>`
+    `DiscordCoreAPI::ReactionStuff`
     
     `DiscordCoreAPI::RoleStuff`
     
