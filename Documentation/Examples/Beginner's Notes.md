@@ -22,7 +22,7 @@
     
     `DiscordCoreAPI::UserStuff`
     
-    `DiscordCoreAPI::InputEventManager`
+    `DiscordCoreAPI::InputEventStuff`
     
     
 - Each of the functions in this library takes an argument that is of a type who's name is derived from the function - for example, the data structure that gets passed into `DiscordCoreAPI::GuildManager::getGuildAsync()` is `DiscordCoreAPI::GetGuildData`.
