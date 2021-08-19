@@ -24,7 +24,7 @@
 
 ## Interaction Stuff:
 
-## Input-Event Manager:
+## Input-Event Stuff:
 
 ## Message Stuff:
 
