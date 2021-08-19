@@ -15,7 +15,7 @@
 #include "./DiscordCoreAPI/DiscordCoreClient02.hpp"
 
 static void onBoot(shared_ptr<DiscordCoreAPI::DiscordCoreClient> dataPackage) {
-    vector<DiscordCoreAPI::Guild> guilds = dataPackage->guilds->getAllGuildsAsync().get();
+    vector<DiscordCoreAPI::Guild> guilds = DiscordCoreAPI::GuildStuff::getAllGuildsAsync().get();
     for (auto value : guilds) {
         DiscordCoreAPI::DiscordGuild discordGuild(value.data);
         discordGuild.getDataFromDB();

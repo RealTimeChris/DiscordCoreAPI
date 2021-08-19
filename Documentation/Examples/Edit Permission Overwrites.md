@@ -1,7 +1,7 @@
 ### **Edit Permission Overwrites:**
 ---
 - Create and populate a data structure by the name of `DiscordCoreAPI::EditPermissionOverwritesData`.
-- Dereference the `DiscordCoreAPI::ChannelManager` from your `DiscordCoreAPI::DiscordCoreClient` class, and execute `editPermissionOverWritesAsync` from it, after modifying the allow/deny permission strings using members from the `DiscordCoreAPI::PermissionsConverter` class, while having passed in the data structure.
+- Access the `ChannelStuff` class of the `DiscordCoreAPI` namespace, and execute `editPermissionOverWritesAsync` from it, after modifying the allow/deny permission strings using members from the `DiscordCoreAPI::PermissionsConverter` class, while having passed in the data structure.
 ```cpp
 // Test.hpp - Header for the "test" command.
 // https://github.com/RealTimeChris
@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 			dataPackage.type = EditChannelPermissionOverwritesType::User;
 			dataPackage.roleOrUserId = args->eventData.getAuthorId();
 			
-			args->eventData.discordCoreClient->channels->editChannelPermissionOverwritesAsync(dataPackage).get();
+			ChannelStuff::editChannelPermissionOverwritesAsync(dataPackage).get();
 
 			co_return;
 
