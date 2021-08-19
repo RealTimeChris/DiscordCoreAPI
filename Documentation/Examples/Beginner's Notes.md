@@ -2,7 +2,7 @@
 ---
 - All of the central class managers are classes that are filled with static methods that are a part of the `DiscordCoreAPI` namespace.
   ##### They are as Follows:
-    `DiscordCoreAPI::ChannelStuff`
+    [`DiscordCoreAPI::ChannelStuff`]()
     
     `DiscordCoreAPI::EventManager`
     
