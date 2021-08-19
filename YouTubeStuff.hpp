@@ -540,18 +540,7 @@ namespace DiscordCoreAPI {
 
 		bool sendNextSong(DiscordGuild discordGuild) {
 			discordGuild.getDataFromDB();
-			if (this->songQueue.size() > 0) {
-				discordGuild.data.playlist.currentSong = discordGuild.data.playlist.songs.at(0);
-				this->currentSong = this->songQueue.at(0);
-				vector<RawFrame> frames;
-				discordGuild.data.playlist.songs.erase(discordGuild.data.playlist.songs.begin());
-				frames = this->songQueue.at(0).frames;
-				this->songQueue.erase(this->songQueue.begin());
-				send(*this->sendAudioBuffer, frames);
-				return true;
-			}
-			else if (this->songQueue.size() > 1) {
-				discordGuild.getDataFromDB();
+			if (this->songQueue.size() > 1) {
 				discordGuild.data.playlist.currentSong = discordGuild.data.playlist.songs.at(0);
 				this->currentSong = this->songQueue.at(0);
 				vector<RawFrame> frames;
@@ -571,6 +560,17 @@ namespace DiscordCoreAPI {
 				}
 				discordGuild.data.playlist.songs.erase(discordGuild.data.playlist.songs.begin() + discordGuild.data.playlist.songs.size() - 1);
 				this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
+				send(*this->sendAudioBuffer, frames);
+				discordGuild.writeDataToDB();
+				return true;
+			}
+			else if (this->songQueue.size() > 0) {
+				discordGuild.data.playlist.currentSong = discordGuild.data.playlist.songs.at(0);
+				this->currentSong = this->songQueue.at(0);
+				vector<RawFrame> frames;
+				discordGuild.data.playlist.songs.erase(discordGuild.data.playlist.songs.begin());
+				frames = this->songQueue.at(0).frames;
+				this->songQueue.erase(this->songQueue.begin());
 				send(*this->sendAudioBuffer, frames);
 				discordGuild.writeDataToDB();
 				return true;
