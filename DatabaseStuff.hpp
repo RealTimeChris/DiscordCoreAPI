@@ -189,6 +189,15 @@ namespace DiscordCoreAPI {
         unsigned int timeOfLastDeposit = 0;
     };
 
+    struct Playlist {
+        vector<YouTubeSongDB> songs;
+        YouTubeSongDB currentSong;
+        string voiceChannelId;
+        string textChannelId;
+        bool loopAll;
+        bool loopSong;
+    };
+
     struct DiscordGuildData {
         string guildId = "";
         string guildName = "";
@@ -199,6 +208,9 @@ namespace DiscordCoreAPI {
         vector<string> gameChannelIds{};
         GuildShop guildShop{};
         Roulette rouletteGame{};
+        vector<string> musicChannelIds{};
+        string djRoleId;
+        Playlist playlist;
     };
 
     struct DiscordGuildMemberData {

@@ -3557,6 +3557,11 @@ namespace DiscordCoreAPI {
         bool failedDueToPerms = false;
     };
 
+    struct RawFrame {
+        vector<uint8_t> data{};
+        uint32_t sampleCount = 0;
+    };
+
     struct YouTubeSearchResult {
         string videoId;
         string thumbNailURL;
@@ -3565,6 +3570,28 @@ namespace DiscordCoreAPI {
         string description;
         string videoURL;
         vector<YouTubeFormat> formats;
+    };
+
+    struct YouTubeSong {
+        vector<RawFrame> frames;
+        string imageURL;
+        string title;
+        string formatDownloadURL;
+        string url;
+        string description;
+        string duration;
+        string videoId;
+    };
+
+    struct YouTubeSongDB {
+        string imageURL;
+        string title;
+        string formatDownloadURL;
+        string url;
+        string description;
+        string duration;
+        string videoId;
+        int contentLength;
     };
 
     static string commandPrefix;

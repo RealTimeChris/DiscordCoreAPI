@@ -88,12 +88,12 @@ namespace DiscordCoreAPI {
 					auto voiceConnection = guild.connectToVoice(guildMember.data.voiceData.channelId, args->eventData.discordCoreClient->pWebSocketConnectionAgent);
 					shared_ptr<YouTubeAPI> youtubeAPI = guild.getYouTubeAPI();
 					args->eventData.discordCoreClient->currentUser->updateVoiceStatus({ .guildId = args->eventData.getGuildId(),.channelId = guildMember.data.voiceData.channelId,.selfDeaf = false });
-					youtubeAPI->downloadAudio(searchResults[returnData.currentPageIndex]);
+					youtubeAPI->downloadAudio(searchResults[returnData.currentPageIndex], discordGuild);
 					
-					voiceConnection->onSongCompletion([&]() {youtubeAPI->sendNextSong(); });
+					voiceConnection->onSongCompletion([&]() {youtubeAPI->sendNextSong(discordGuild); });
 					//args->eventData.discordCoreClient->guildMembers->modifyGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(), .guildId = args->eventData.getGuildId(), .nick = guildMember.data.nick, .roleIds = guildMember.data.roles, .mute = false, .deaf = false, .newVoiceChannelId = "", .currentChannelId = guildMember.data.voiceData.channelId }).get();
 					if (!voiceConnection->areWeCurrentlyPlaying()) {
-						youtubeAPI->sendNextSong();
+						youtubeAPI->sendNextSong(discordGuild);
 						voiceConnection->play(true);
 					}					
 					agent::wait(voiceConnection.get());

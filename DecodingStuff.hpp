@@ -12,11 +12,6 @@
 
 namespace DiscordCoreAPI {
 
-    struct RawFrame {
-        vector<uint8_t> data{};
-        uint32_t sampleCount = 0;
-    };
-
     struct EncodedFrame {
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;

@@ -13,15 +13,6 @@
 
 namespace DiscordCoreAPI {
 
-	struct YouTubeSong {
-		vector<RawFrame> frames;
-		string imageURL;
-		string title;
-		string url;
-		string description;
-		string duration;
-	};
-
 	string between(string body, string left, string right) {
 		int positionStart = (int)body.find(left) + (int)left.length();
 		int positionEnd = (int)body.find(right, positionStart);
@@ -64,7 +55,7 @@ namespace DiscordCoreAPI {
 		inputVector[position] = first;
 		return inputVector;
 	}
-
+	
 	string joinString(vector<char> stringToJoin) {
 		string newString;
 		for (unsigned int x = 0; x < stringToJoin.size(); x += 1) {
@@ -293,7 +284,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void downloadAudio(YouTubeSearchResult videoSearchResult) {
+		void downloadAudio(YouTubeSearchResult videoSearchResult, DiscordGuild discordGuild) {
 			string watchHTMLURL = to_string(this->baseWatchURL) + videoSearchResult.videoId + "&hl=en";
 			Filters::HttpBaseProtocolFilter filter;
 			filter.AutomaticDecompression(true);
@@ -424,6 +415,112 @@ namespace DiscordCoreAPI {
 				youtubeSong.description = videoSearchResult.description;
 				youtubeSong.title = videoSearchResult.videoTitle;
 				youtubeSong.url = videoSearchResult.videoURL;
+				YouTubeSongDB youtubeSongDB;
+				youtubeSongDB.contentLength = (int)format.contentLength;
+				youtubeSongDB.description = videoSearchResult.description;
+				youtubeSongDB.duration = videoSearchResult.duration;
+				youtubeSongDB.formatDownloadURL = format.downloadURL;
+				youtubeSongDB.imageURL = videoSearchResult.thumbNailURL;
+				youtubeSongDB.title = videoSearchResult.videoTitle;
+				youtubeSongDB.url = videoSearchResult.videoURL;
+				youtubeSongDB.videoId = videoSearchResult.videoId;
+				discordGuild.data.playlist.songs.push_back(youtubeSongDB);
+				discordGuild.writeDataToDB();
+				YouTubeAPI::songQueue.push_back(youtubeSong);
+
+				if (remainingDownloadContentLength >= this->maxBufSize) {
+					contentLengthCurrent = this->maxBufSize;
+				}
+				else {
+					contentLengthCurrent = remainingDownloadContentLength;
+				}
+			}
+			return;
+		}
+		
+		void downloadAudio(YouTubeSongDB dataPackage01) {
+			string downloadBaseURL;
+			if (dataPackage01.formatDownloadURL.find("https://") != string::npos && dataPackage01.formatDownloadURL.find("/videoplayback?") != string::npos) {
+				downloadBaseURL = dataPackage01.formatDownloadURL.substr(dataPackage01.formatDownloadURL.find("https://") + to_string(L"https://").length(), dataPackage01.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
+			}
+
+			// Creates GET request.
+			string request = "GET " + dataPackage01.formatDownloadURL+ " HTTP/1.1" + newLine +
+				"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+				+ newLine + newLine;
+			StreamSocket streamSocket = StreamSocket();
+			streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
+			streamSocket.Control().NoDelay(true);
+			streamSocket.Control().SerializeConnectionAttempts(false);
+			winrt::Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
+			streamSocket.ConnectAsync(streamSocket.GetEndpointPairsAsync(hostName, L"443").get().First().Current()).get();
+			streamSocket.UpgradeToSslAsync(SocketProtectionLevel::Tls12, hostName).get();
+			DataReader dataReader(streamSocket.InputStream());
+			dataReader.InputStreamOptions(InputStreamOptions::None);
+			dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+			DataWriter dataWriter(streamSocket.OutputStream());
+			dataWriter.WriteString(to_hstring(request));
+			dataWriter.StoreAsync().get();
+			string headers;
+			InMemoryRandomAccessStream outputStream;
+			DataWriter streamDataWriter(outputStream);
+			streamDataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+			this->maxBufSize = dataPackage01.contentLength;
+			if (dataPackage01.contentLength < this->maxBufSize) {
+				this->maxBufSize = dataPackage01.contentLength;
+			}
+			__int64 remainingDownloadContentLength = dataPackage01.contentLength;
+			__int64 contentLengthCurrent = this->maxBufSize;
+			int bytesReadTotal = 0;
+			int bytesRead = 0;
+			int bytesWritten = 0;
+			string playerId = to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			SongDecoder* songDecoder{ nullptr };
+			while (remainingDownloadContentLength > 0) {
+				if (contentLengthCurrent > 0) {
+					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
+				}
+				auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+				IBuffer streamBuffer;
+				stringstream bufferStream;
+				bufferStream << buffer.data();
+				headers = bufferStream.str();
+				int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
+				dataReader.LoadAsync(headerLength).get();
+				auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength);
+				headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
+				contentLengthCurrent -= headerLength;
+				streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4);
+				bytesWritten += streamDataWriter.StoreAsync().get();
+				streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength);
+				bytesWritten += streamDataWriter.StoreAsync().get();
+				vector<uint8_t> vectorNew;
+				vectorNew.push_back(0);
+				vectorNew.push_back(0);
+				vectorNew.push_back(0);
+				vectorNew.push_back(0);
+				streamDataWriter.WriteBytes(vectorNew);
+				bytesWritten += streamDataWriter.StoreAsync().get();
+				remainingDownloadContentLength -= bytesWritten;
+				DataReader streamDataReader(outputStream.GetInputStreamAt(bytesReadTotal));
+				bytesRead += streamDataReader.LoadAsync(bytesWritten).get();
+				bytesReadTotal += bytesRead;
+				streamBuffer = streamDataReader.ReadBuffer(bytesRead);
+				BuildSongDecoderData dataPackage;
+				dataPackage.dataBuffer = streamBuffer;
+				dataPackage.initialBufferSize = streamBuffer.Length();
+				dataPackage.totalFileSize = dataPackage01.contentLength;
+				songDecoder = new SongDecoder(dataPackage);
+				auto frames = songDecoder->getFrames();
+				bytesWritten = 0;
+				bytesRead = 0;
+				YouTubeSong youtubeSong;
+				youtubeSong.frames = frames;
+				youtubeSong.imageURL = dataPackage01.imageURL;
+				youtubeSong.duration = dataPackage01.duration;
+				youtubeSong.description = dataPackage01.description;
+				youtubeSong.title = dataPackage01.title;
+				youtubeSong.url = dataPackage01.url;
 
 				YouTubeAPI::songQueue.push_back(youtubeSong);
 
@@ -441,16 +538,21 @@ namespace DiscordCoreAPI {
 			return this->currentSong;
 		}
 
-		bool sendNextSong() {
+		bool sendNextSong(DiscordGuild discordGuild) {
+			discordGuild.getDataFromDB();
 			if (this->songQueue.size() > 0) {
+				discordGuild.data.playlist.currentSong = discordGuild.data.playlist.songs.at(0);
 				this->currentSong = this->songQueue.at(0);
 				vector<RawFrame> frames;
+				discordGuild.data.playlist.songs.erase(discordGuild.data.playlist.songs.begin());
 				frames = this->songQueue.at(0).frames;
 				this->songQueue.erase(this->songQueue.begin());
 				send(*this->sendAudioBuffer, frames);
 				return true;
 			}
 			else if (this->songQueue.size() > 1) {
+				discordGuild.getDataFromDB();
+				discordGuild.data.playlist.currentSong = discordGuild.data.playlist.songs.at(0);
 				this->currentSong = this->songQueue.at(0);
 				vector<RawFrame> frames;
 				frames = this->songQueue.at(0).frames;
@@ -461,8 +563,16 @@ namespace DiscordCoreAPI {
 					}
 					this->songQueue.at(x) = this->songQueue.at(x + 1);
 				}
+				for (int x = 0; x < this->songQueue.size(); x += 1) {
+					if (x == this->songQueue.size() - 1) {
+						break;
+					}
+					discordGuild.data.playlist.songs.at(x) = discordGuild.data.playlist.songs.at(x + 1);
+				}
+				discordGuild.data.playlist.songs.erase(discordGuild.data.playlist.songs.begin() + discordGuild.data.playlist.songs.size() - 1);
 				this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
 				send(*this->sendAudioBuffer, frames);
+				discordGuild.writeDataToDB();
 				return true;
 			}
 			else {
