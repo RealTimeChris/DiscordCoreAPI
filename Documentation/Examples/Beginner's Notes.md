@@ -1,28 +1,28 @@
 ### **Beginner's Notes:**
 ---
-- All of the central class managers are either members of the class `DiscordCoreAPI::DiscordCoreClient` and are of type `shared_ptr<ManagerType>`, or members of the namespace `DiscordCoreAPI`.
+- All of the central class managers are either classes filled with static methods that are a part of the `DiscordCoreAPI` namespace, or members of the namespace `DiscordCoreAPI`.
   ##### They are as Follows:
-    `DiscordCoreAPI::DiscordCoreClient->channels = shared_ptr<DiscordCoreAPI::ChannelManager>`
+    `DiscordCoreAPI::ChannelStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->eventManager = shared_ptr<DiscordCoreAPI::EventManager>`
+    `DiscordCoreAPI::EventManager`
     
-    `DiscordCoreAPI::DiscordCoreClient->guildMembers = shared_ptr<DiscordCoreAPI::GuildMemberManager>`
+    `DiscordCoreAPI::GuildMemberStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->guilds = shared_ptr<DiscordCoreAPI::GuildManager>`
+    `DiscordCoreAPI::GuildStuff`
     
     `DiscordCoreAPI::DiscordCoreClient->interactions = shared_ptr<DiscordCoreAPI::InteractionManager>`
     
-    `DiscordCoreAPI::DiscordCoreClient->messages = shared_ptr<DiscordCoreAPI::MessageManager>`
+    `DiscordCoreAPI::MessageStuff`
     
     `DiscordCoreAPI::DiscordCoreClient->reactions = shared_ptr<DiscordCoreAPI::ReactionManager>`
     
-    `DiscordCoreAPI::DiscordCoreClient->roles = shared_ptr<DiscordCoreAPI::RoleManager>`
+    `DiscordCoreAPI::RoleStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->slashCommands = shared_ptr<DiscordCoreAPI::SlashCommandManager>`
+    `DiscordCoreAPI::SlashCommandStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->users = shared_ptr<DiscordCoreAPI::UserManager>`
+    `DiscordCoreAPI::UserStuff`
     
-    `DiscordCoreAPI::InputEventManager = DiscordCoreAPI::InputEventManager`
+    `DiscordCoreAPI::InputEventManager`
     
     
 - Each of the functions in this library takes an argument that is of a type who's name is derived from the function - for example, the data structure that gets passed into `DiscordCoreAPI::GuildManager::getGuildAsync()` is `DiscordCoreAPI::GetGuildData`.
