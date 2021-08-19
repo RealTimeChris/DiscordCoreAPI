@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		GuildData data;
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
-		shared_ptr<VoiceConnection> connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent);
+		shared_ptr<VoiceConnection> connectToVoice(string channelId);
 
 		shared_ptr<VoiceConnection> getVoiceConnection() {
 			return this->voiceConnection;

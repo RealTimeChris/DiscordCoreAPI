@@ -85,10 +85,10 @@ namespace DiscordCoreAPI {
 			GuildMember guildMember = GuildMemberStuff::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
 			if (returnData.inputEventData.discordCoreClient != nullptr) {
 				if (guildMember.data.voiceData.channelId != "") {
-					auto voiceConnection = guild.connectToVoice(guildMember.data.voiceData.channelId, args->eventData.discordCoreClient->pWebSocketConnectionAgent);
+					auto voiceConnection = guild.connectToVoice(guildMember.data.voiceData.channelId);
 					shared_ptr<YouTubeAPI> youtubeAPI = guild.getYouTubeAPI();
 					args->eventData.discordCoreClient->currentUser->updateVoiceStatus({ .guildId = args->eventData.getGuildId(),.channelId = guildMember.data.voiceData.channelId,.selfDeaf = false });
-					youtubeAPI->downloadAudio(searchResults[returnData.currentPageIndex], discordGuild);
+					youtubeAPI->downloadAudio(searchResults[returnData.currentPageIndex], discordGuild.data.);
 					
 					voiceConnection->onSongCompletion([&]() {youtubeAPI->sendNextSong(discordGuild); });
 					//args->eventData.discordCoreClient->guildMembers->modifyGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(), .guildId = args->eventData.getGuildId(), .nick = guildMember.data.nick, .roleIds = guildMember.data.roles, .mute = false, .deaf = false, .newVoiceChannelId = "", .currentChannelId = guildMember.data.voiceData.channelId }).get();

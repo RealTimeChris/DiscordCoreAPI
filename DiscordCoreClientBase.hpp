@@ -14,12 +14,12 @@
 #include "ChannelStuff.hpp"
 #include "MessageStuff.hpp"
 #include "GuildMemberStuff.hpp"
+#include "WebSocketStuff.hpp"
 
 namespace DiscordCoreAPI {
 
 	class DiscordCoreClientBase {
 	public:
-		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
 		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
 		shared_ptr<BotUser> currentUser{ nullptr };
 
@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 			this->roles = make_shared<RoleManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->users = make_shared<UserManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, discordCoreClientNew, pWebSocketConnectionAgentNew);
-			this->pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
+			DiscordCoreClientBase::pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
 		}
 
 		explicit DiscordCoreClientBase(DiscordCoreClientBase* dataPackage) {
@@ -49,6 +49,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class GuildMemberStuff;
 		map<string, shared_ptr<unbounded_buffer<vector<RawFrame>>>> audioBuffersMap;
+		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent;
 		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<ChannelManager> channels{ nullptr };
 		shared_ptr<RoleManager> roles{ nullptr };
@@ -56,5 +57,6 @@ namespace DiscordCoreAPI {
 		hstring botToken;
 	};
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
+	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::pWebSocketConnectionAgent{ nullptr };
 }
 #endif

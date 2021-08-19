@@ -9,13 +9,14 @@
 #define _GUILD_STUFF_02_
 
 #include "../pch.h"
+#include "../DiscordCoreAPI-main/DiscordCoreClientBase.hpp"
 
 namespace DiscordCoreAPI {
 
-	shared_ptr<VoiceConnection> Guild::connectToVoice(string channelId, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) {
+	shared_ptr<VoiceConnection> Guild::connectToVoice(string channelId) {
 		if (channelId != "") {
 			if ((this->voiceConnection == nullptr || this->voiceConnection->voiceConnectionData.channelId != channelId)) {
-				auto voiceConnectData = websocketAgent->getVoiceConnectionData(channelId, this->data.id);
+				auto voiceConnectData = DiscordCoreClientBase::pWebSocketConnectionAgent->getVoiceConnectionData(channelId, this->data.id);
 				voiceConnectData.channelId = channelId;
 				voiceConnectData.guildId = this->data.id;
 				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";

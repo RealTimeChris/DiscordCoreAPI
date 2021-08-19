@@ -42,10 +42,12 @@ namespace DiscordCoreAPI {
 		}
 
 		string getChannelId() {
-			return this->voiceConnectionData.channelId;
+			if (this != nullptr) {
+				return this->voiceConnectionData.channelId;
+			}
 		}
 
-		event_token onSongCompletion(delegate<> const& handler) {
+		event_token onSongCompletion(delegate<> const handler) {
 			return onSongCompletionEvent.add(handler);
 		}
 
@@ -63,14 +65,21 @@ namespace DiscordCoreAPI {
 		}
 
 		void skipCurrentSong() {
-			this->areWePlaying = false;
-			this->areWeWaitingForAudioData = true;
-			this->doWeWait = false;
+			if (this != nullptr) {
+				this->areWePlaying = false;
+				this->areWeWaitingForAudioData = true;
+				this->doWeWait = false;
+				this->clearAudioData();
+			}
 		}
 
 		void stopPlaying() {
-			this->areWePlaying = false;
-			this->areWeWaitingForAudioData = true;
+			if (this != nullptr) {
+				this->areWePlaying = false;
+				this->doWeWait = true;
+				this->areWeWaitingForAudioData = true;
+				this->clearAudioData();
+			}
 		}
 
 		bool areWeCurrentlyPlaying() {
@@ -81,18 +90,29 @@ namespace DiscordCoreAPI {
 		}
 
 		void play(bool doWeBlock = false) {
-			send(this->playPauseBuffer, true);
-			this->doWeWait = true;
-			this->areWePlaying = false;
-			this->areWeWaitingForAudioData = true;
-			this->start();
-			if (doWeBlock) {
-				wait(this);
+			if (this != nullptr) {
+				send(this->playPauseBuffer, true);
+				this->doWeWait = true;
+				this->areWePlaying = false;
+				this->areWeWaitingForAudioData = true;
+				this->start();
+				if (doWeBlock) {
+					wait(this);
+				}
 			}
 		}
 
-		void pausePlaying() {
-			this->doWeWait = true;
+		void pauseToggle() {
+			if (this != nullptr) {
+				if (this->doWeWait) {
+					send(this->playPauseBuffer, true);
+				}
+				else {
+					this->areWePlaying = false;
+					sendSpeakingMessage(false);
+					this->doWeWait = true;
+				}
+			}
 		}
 
 		~VoiceConnection() {
@@ -118,6 +138,7 @@ namespace DiscordCoreAPI {
 		OpusEncoder* encoder;
 		int nChannels = 2;
 		winrt::event<delegate<>> onSongCompletionEvent;
+		vector<RawFrame> audioData;
 
 		EncodedFrame encodeSingleAudioFrame(RawFrame inputFrame) {
 			uint8_t* oldBuffer;
@@ -142,7 +163,11 @@ namespace DiscordCoreAPI {
 			newBuffer = nullptr;
 			return encodedFrame;
 		}
-		
+
+		void clearAudioData() {
+			this->audioData = vector<RawFrame>();
+		}
+
 		void sendSingleAudioFrame(EncodedFrame bufferToSend) {
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = crypto_secretbox_NONCEBYTES;
@@ -151,8 +176,8 @@ namespace DiscordCoreAPI {
 			uint32_t header03[2]{ (uint32_t)this->timestamp, (uint32_t)this->voiceConnectionData.audioSSRC };
 
 			uint8_t headerFinal[headerSize];
-			headerFinal[0] = header01[0];
-			headerFinal[1] = header01[1];
+			headerFinal[0] = (uint8_t)header01[0];
+			headerFinal[1] = (uint8_t)header01[1];
 			headerFinal[2] = (uint8_t)(header02[0] >> (8 * 1));
 			headerFinal[3] = (uint8_t)(header02[0] >> (8 * 0));
 			headerFinal[4] = (uint8_t)(header03[0] >> (8 * 3));
@@ -172,7 +197,7 @@ namespace DiscordCoreAPI {
 
 			size_t numOfBytes = headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES;
 			uint8_t* audioDataPacket = new uint8_t[numOfBytes];
-			std::memcpy(audioDataPacket, headerFinal, headerSize);
+			memcpy(audioDataPacket, headerFinal, headerSize);
 			unsigned char* encryptionKeys = new unsigned char[crypto_secretbox_KEYBYTES];
 			unsigned char* bufferToSendNew = new unsigned char[bufferToSend.data.size()];
 			for (unsigned int x = 0; x < bufferToSend.data.size(); x += 1) {
@@ -220,49 +245,50 @@ namespace DiscordCoreAPI {
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
 				}
-				vector<RawFrame> audioData;
+				
 				if (this->areWeWaitingForAudioData) {
-					audioData = receive(*this->bufferMessageBlock);
+					this->audioData = receive(*this->bufferMessageBlock);
 					this->areWeWaitingForAudioData = false;
 				}
 				
 				this->areWePlaying = true;
-				sendSpeakingMessage(true);
+				this->sendSpeakingMessage(true);
 				int frameCounter = 0;
 				while (this->areWePlaying) {
 
 					int timeCounter = 0;
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					int intervalCount = 20;
-					for (auto value : audioData) {
+					for (auto value : this->audioData) {
+						if (this->areWePlaying == false) {
+							break;
+						}
 						while (timeCounter < intervalCount) {
 							timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 						}
 						timeCounter = 0;
 						startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						auto newVectorNew = encodeSingleAudioFrame(value);
-						sendSingleAudioFrame(newVectorNew);
+						if (this->areWePlaying) {
+							auto newVectorNew = encodeSingleAudioFrame(value);
+							this->sendSingleAudioFrame(newVectorNew);
+						}
 						frameCounter += 1;
-						if (frameCounter >= audioData.size() - 1) {
+						if (frameCounter >= this->audioData.size() - 1) {
 							this->areWePlaying = false;
 							this->areWeWaitingForAudioData = true;
 							this->onSongCompletionEvent();
 							frameCounter = 0;
 						}
-						if (this->areWePlaying == false) {
-							break;
-						}
 					}
 					
 				}
-				sendSpeakingMessage(false);
+				this->sendSpeakingMessage(false);
 			}
 			this->areWeConnectedBool = false;
-			done();
+			this->done();
 		}
 
 		void terminate() {
-			done();
 			this->areWePlaying = false;
 			this->doWeQuit = true;
 		}

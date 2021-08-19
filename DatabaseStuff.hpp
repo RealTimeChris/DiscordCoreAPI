@@ -208,9 +208,6 @@ namespace DiscordCoreAPI {
         vector<string> gameChannelIds{};
         GuildShop guildShop{};
         Roulette rouletteGame{};
-        vector<string> musicChannelIds{};
-        string djRoleId;
-        Playlist playlist;
     };
 
     struct DiscordGuildMemberData {
