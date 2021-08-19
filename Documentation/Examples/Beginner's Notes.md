@@ -6,11 +6,11 @@
     
     `DiscordCoreAPI::EventManager`
     
-    `DiscordCoreAPI::GuildMemberStuff`
+    [`DiscordCoreAPI::GuildMemberStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guildmember-stuff)
     
-    `DiscordCoreAPI::GuildStuff`
+    [`DiscordCoreAPI::GuildStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guild-manager)
     
-    `DiscordCoreAPI::InteractionStuff`
+    [`DiscordCoreAPI::InteractionStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guild-manager)
     
     `DiscordCoreAPI::MessageStuff`
     
