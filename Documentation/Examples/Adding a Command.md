@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 				dataPackage.guildId = args->eventData.getGuildId();
 				dataPackage.limit = 25;
 				dataPackage.userId = args->eventData.getAuthorId();
-				AuditLogData auditLogData = args->eventData.discordCoreClient->guilds->getAuditLogDataAsync(dataPackage).get();
+				AuditLogData auditLogData = GuildStuff::getAuditLogDataAsync(dataPackage).get();
 
 				for (auto value : auditLogData.auditLogEntries) {
 					for (auto value2 : value.changes) {
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 						cout << value2.oldValueString << endl;
 					}
 				}
-				auto messages = args->eventData.discordCoreClient->messages->fetchMessagesAsync({ .channelId = args->eventData.getChannelId(), .limit = 100, .beforeThisId = args->eventData.getMessageId() }).get();
+				auto messages = MessageStuff::fetchMessagesAsync({ .channelId = args->eventData.getChannelId(), .limit = 100, .beforeThisId = args->eventData.getMessageId() }).get();
 				vector<string> messageIds;
 				for (auto value : messages) {
 					messageIds.push_back(value.data.id);
@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 				DeleteMessagesBulkData dataPackage2;
 				dataPackage2.channelId = true;
 				dataPackage2.messageIds = messageIds;
-				args->eventData.discordCoreClient->messages->deleteMessasgeBulkAsync(dataPackage2).get();
+				MessageStuff::deleteMessasgeBulkAsync(dataPackage2).get();
 			}
 				co_return;
 			}
