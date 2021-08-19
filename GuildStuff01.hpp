@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 		string guildId;
 	};
 
-	struct GetAuditLogData {
+	struct FetchAuditLogData {
 		AuditLogEvent actionType;
 		string guildId;
 		unsigned int limit;
@@ -511,7 +511,7 @@ namespace DiscordCoreAPI {
 			co_return inviteData;
 		}
 
-		task<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage) {
+		task<AuditLogData> fetchAuditLogDataAsync(FetchAuditLogData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetAuditLogData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -570,7 +570,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend class GuildStuff;
 
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreInternal::HttpAgentResources agentResources;

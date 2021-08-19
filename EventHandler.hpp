@@ -18,57 +18,57 @@ namespace DiscordCoreAPI {
         static shared_ptr<DiscordCoreClient> discordCoreClient;
 
         static void onChannelCreation(OnChannelCreationData dataPackage) {
-            EventHandler::discordCoreClient->channels->insertChannelAsync(dataPackage.channel).get();
+            ChannelStuff::insertChannelAsync(dataPackage.channel).get();
         }
 
         static void onChannelUpdate(OnChannelUpdateData dataPackage) {
-            EventHandler::discordCoreClient->channels->insertChannelAsync(dataPackage.channelNew).get();
+            ChannelStuff::insertChannelAsync(dataPackage.channelNew).get();
         }
 
         static void onChannelDeletion(OnChannelDeletionData dataPackage) {
-            EventHandler::discordCoreClient->channels->removeChannelAsync(dataPackage.channel.data.id).get();
+            ChannelStuff::removeChannelAsync(dataPackage.channel.data.id).get();
         }
         
         static void onGuildCreation(OnGuildCreationData dataPackage) {
-            EventHandler::discordCoreClient->guilds->insertGuildAsync(dataPackage.guild).get();
-        }
-        
+            GuildStuff::insertGuildAsync(dataPackage.guild).get();
+        }        
+
         static void onGuildUpdate(OnGuildUpdateData dataPackage) {
-            EventHandler::discordCoreClient->guilds->insertGuildAsync(dataPackage.guildNew).get();
+            GuildStuff::insertGuildAsync(dataPackage.guildNew).get();
         }
 
         static void onGuildDeletion(OnGuildDeletionData dataPackage) {
-            EventHandler::discordCoreClient->guilds->removeGuildAsync(dataPackage.guild.data.id).get();
+            GuildStuff::removeGuildAsync(dataPackage.guild).get();
         }
 
         static void onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
-            EventHandler::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMember, dataPackage.guildMember.data.guildId).get();
-            Guild guild = dataPackage.guildMember.discordCoreClient->guilds->getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
+            GuildMemberStuff::insertGuildMemberAsync(dataPackage.guildMember).get();
+            Guild guild = GuildStuff::getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
             guild.data.memberCount += 1;
-            EventHandler::discordCoreClient->guilds->insertGuildAsync(guild).get();
+            GuildStuff::insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
-            EventHandler::discordCoreClient->guildMembers->removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
-            Guild guild = EventHandler::discordCoreClient->guilds->getGuildAsync({ dataPackage.guildId }).get();
+            GuildMemberStuff::removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
+            Guild guild = GuildStuff::getGuildAsync({ dataPackage.guildId }).get();
             guild.data.memberCount -= 1;
-            EventHandler::discordCoreClient->guilds->insertGuildAsync(guild).get();
+            GuildStuff::insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
-            EventHandler::discordCoreClient->guildMembers->insertGuildMemberAsync(dataPackage.guildMemberNew, dataPackage.guildMemberNew.data.guildId).get();
+            GuildMemberStuff::insertGuildMemberAsync(dataPackage.guildMemberNew).get();
         }
 
         static void onRoleCreation(OnRoleCreationData dataPackage) {
-            EventHandler::discordCoreClient->roles->insertRoleAsync(dataPackage.role).get();
+            RoleStuff::insertRoleAsync(dataPackage.role).get();
         }
 
         static void onRoleUpdate(OnRoleUpdateData dataPackage) {
-            EventHandler::discordCoreClient->roles->insertRoleAsync(dataPackage.roleNew).get();
+            RoleStuff::insertRoleAsync(dataPackage.roleNew).get();
         }
 
         static void onRoleDeletion(OnRoleDeletionData dataPackage) {
-            EventHandler::discordCoreClient->roles->removeRoleAsync(dataPackage.roleOld.data.id).get();
+            RoleStuff::removeRoleAsync(dataPackage.guildId).get();
         }
 
         static task<void> onInteractionCreation(OnInteractionCreationData dataPackage) {

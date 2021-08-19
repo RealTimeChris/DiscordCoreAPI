@@ -492,7 +492,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		task<void> deleteMessasgeBulkAsync(DeleteMessagesBulkData dataPackage) {
+		task<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteMessagesBulkData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;

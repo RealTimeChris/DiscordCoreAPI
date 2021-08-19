@@ -333,7 +333,7 @@ namespace DiscordCoreAPI {
                 return getAllPermissions();
             }
 
-            Guild guild = guildMember.discordCoreClient->guilds->getGuildAsync({ .guildId = guildMember.data.guildId }).get();
+            Guild guild = GuildStuff::getGuildAsync({ .guildId = guildMember.data.guildId }).get();
 
             DiscordCoreInternal::OverWriteData overwriteEveryone;
             if (channel.data.permissionOverwrites.contains(guild.data.id)) {

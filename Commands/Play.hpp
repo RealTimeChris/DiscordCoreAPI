@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
-			Channel channel = args->eventData.discordCoreClient->channels->getChannelAsync({ args->eventData.getChannelId() }).get();
+			Channel channel = ChannelStuff::getChannelAsync({ args->eventData.getChannelId() }).get();
 
 			bool areWeInADm = areWeInADM(args->eventData, channel);
 
@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 			
 			InputEventManager::deleteInputEventResponseAsync(args->eventData).get();
 
-			Guild guild = args->eventData.discordCoreClient->guilds->getGuildAsync({ args->eventData.getGuildId() }).get();
+			Guild guild = GuildStuff::getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
 
 			InputEventData newEvent;
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 				}
 				co_return;
 			}
-			GuildMember guildMember = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
+			GuildMember guildMember = GuildMemberStuff::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
 			if (returnData.inputEventData.discordCoreClient != nullptr) {
 				if (guildMember.data.voiceData.channelId != "") {
 					auto voiceConnection = guild.connectToVoice(guildMember.data.voiceData.channelId, args->eventData.discordCoreClient->pWebSocketConnectionAgent);

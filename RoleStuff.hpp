@@ -501,7 +501,7 @@ namespace DiscordCoreAPI {
 			return rolesVectorNew;
 		}
 
-		task<vector<Role>> getGuildRolesAsync(GetRolesData dataPackage) {
+		task<vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage) {
 			co_await resume_background();
 			if (dataPackage.guildId == "") {
 				exception failError("RoleManager::getRoleAsync() Error: Sorry, but you forgot to set the guildId!");
@@ -573,7 +573,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		task<void> removeRoleFromGuildAsync(DeleteGuildRoleData dataPackage) {
+		task<void> removeRoleFromGuildAsync(RemoveRoleFromGuildData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteGuildRoleData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -600,6 +600,7 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class DiscordCoreClientBase;
 		friend class DiscordCoreClient;
+		friend class RoleStuff;
 		friend class EventHandler;
 		friend class Guild;
 		

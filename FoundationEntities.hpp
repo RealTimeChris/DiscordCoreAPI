@@ -4311,7 +4311,7 @@ namespace DiscordCoreAPI {
         bool mentionable;
     };
 
-    struct GetRolesData {
+    struct GetGuildRolesData {
         string guildId;
     };
 
@@ -4337,7 +4337,7 @@ namespace DiscordCoreAPI {
         string roleId;
     };
 
-    struct DeleteGuildRoleData {
+    struct RemoveRoleFromGuildData {
         string guildId;
         string roleId;
     };

@@ -23,13 +23,13 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			GetAuditLogData dataPackage;
+			FetchAuditLogData dataPackage;
 			dataPackage.actionType = AuditLogEvent::MEMBER_BAN_ADD;
 			dataPackage.guildId = args->eventData.getGuildId();
 			dataPackage.limit = 25;
 			dataPackage.userId = args->eventData.getAuthorId();
-			
-			AuditLogData auditLogData = args->eventData.discordCoreClient->guilds->getAuditLogDataAsync(dataPackage).get();
+
+			AuditLogData auditLogData = DiscordCoreAPI::GuildStuff::fetchAuditLogDataAsync(dataPackage).get();
 
 			for (auto value : auditLogData.auditLogEntries) {
 				cout << "ACTION TYPE: " << to_string((int)value.actionType) << " TARGET: <@!" << value.targetId << ">." << endl;
