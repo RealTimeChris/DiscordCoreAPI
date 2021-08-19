@@ -8,21 +8,21 @@
     
     [`DiscordCoreAPI::GuildMemberStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guildmember-stuff)
     
-    [`DiscordCoreAPI::GuildStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guild-manager)
+    [`DiscordCoreAPI::GuildStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guild-stuff)
     
-    [`DiscordCoreAPI::InteractionStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guild-manager)
+    [`DiscordCoreAPI::InteractionStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#interaction-stuff)
     
-    `DiscordCoreAPI::MessageStuff`
+    [`DiscordCoreAPI::MessageStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#message-stuff)
     
-    `DiscordCoreAPI::ReactionStuff`
+    [`DiscordCoreAPI::ReactionStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#reaction-stuff)
     
-    `DiscordCoreAPI::RoleStuff`
+    [`DiscordCoreAPI::RoleStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#role-stuff)
     
-    `DiscordCoreAPI::SlashCommandStuff`
+    [`DiscordCoreAPI::SlashCommandStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#slash-command-stuff)
     
-    `DiscordCoreAPI::UserStuff`
+    [`DiscordCoreAPI::UserStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#user-stuff)
     
-    `DiscordCoreAPI::InputEventStuff`
+    [`DiscordCoreAPI::InputEventStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#input-event-stuff)
     
     
 - Each of the functions in this library takes an argument that is of a type who's name is derived from the function - for example, the data structure that gets passed into `DiscordCoreAPI::GuildManager::getGuildAsync()` is `DiscordCoreAPI::GetGuildData`.
