@@ -20,17 +20,18 @@ namespace DiscordCoreAPI {
 	class DiscordCoreClientBase {
 	public:
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent{ nullptr };
+		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
 		shared_ptr<BotUser> currentUser{ nullptr };
 
 		DiscordCoreClientBase() = default;
 
-		void initialize(unbounded_buffer<json>* webSocketIncWorkloadBufferNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgentNew) {
+		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgentNew) {
 			this->guildMembers = make_shared<GuildMemberManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->channels = make_shared<ChannelManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->roles = make_shared<RoleManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->users = make_shared<UserManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, discordCoreClientNew, pWebSocketConnectionAgentNew);
-			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(*webSocketIncWorkloadBufferNew, botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
 		}
 
 		explicit DiscordCoreClientBase(DiscordCoreClientBase* dataPackage) {
@@ -47,7 +48,6 @@ namespace DiscordCoreAPI {
 		friend class InputEventStuff;
 		friend class DiscordCoreClient;
 		friend class GuildMemberStuff;
-		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
 		map<string, shared_ptr<unbounded_buffer<vector<RawFrame>>>> audioBuffersMap;
 		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<ChannelManager> channels{ nullptr };

@@ -570,6 +570,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 		friend class DiscordCoreClient;
+		friend class EventHandler;
 		friend class GuildStuff;
 
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;

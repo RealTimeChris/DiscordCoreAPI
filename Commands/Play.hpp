@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 			
-			InputEventManager::deleteInputEventResponseAsync(args->eventData).get();
+			InputEventStuff::deleteInputEventResponseAsync(args->eventData).get();
 
 			Guild guild = GuildStuff::getGuildAsync({ args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild.data);
@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			InputEventData newEvent;
 			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				CreateDeferredInteractionResponseData dataPackage(args->eventData);
-				newEvent = InputEventManager::respondToEvent(dataPackage);
+				newEvent = InputEventStuff::respondToEvent(dataPackage);
 			}
 			vector<YouTubeSearchResult> searchResults;
 			if (args->argumentsArray.size() > 0) {
@@ -66,19 +66,19 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(args->eventData);
 					dataPackage.embeds.push_back(embedsFromSearch[0]);
-					newEvent = InputEventManager::respondToEvent(dataPackage);
+					newEvent = InputEventStuff::respondToEvent(dataPackage);
 				}
 				else {
 					EditInteractionResponseData dataPackage(newEvent);
 					dataPackage.embeds.push_back(embedsFromSearch[0]);
-					newEvent = InputEventManager::respondToEvent(dataPackage);
+					newEvent = InputEventStuff::respondToEvent(dataPackage);
 				}
 
 				returnData = recurseThroughMessagePages(args->eventData.getAuthorId(), newEvent, currentPageIndex, embedsFromSearch, false, 120000, true);
 			}
 			else {
 				if (args->eventData.eventType != InputEventType::REGULAR_MESSAGE) {
-					InputEventManager::deleteInputEventResponseAsync(newEvent).get();
+					InputEventStuff::deleteInputEventResponseAsync(newEvent).get();
 				}
 				co_return;
 			}
@@ -101,12 +101,12 @@ namespace DiscordCoreAPI {
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 						ReplyMessageData dataPackage(returnData.inputEventData);
 						dataPackage.embeds.push_back(returnData.inputEventData.getEmbeds().at(0));
-						newEvent = InputEventManager::respondToEvent(dataPackage);
+						newEvent = InputEventStuff::respondToEvent(dataPackage);
 					}
 					else {
 						EditInteractionResponseData dataPackage(returnData.inputEventData);
 						dataPackage.embeds.push_back(returnData.inputEventData.getEmbeds().at(0));
-						newEvent = InputEventManager::respondToEvent(dataPackage);
+						newEvent = InputEventStuff::respondToEvent(dataPackage);
 					}
 				}
 			}

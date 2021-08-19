@@ -100,8 +100,8 @@ namespace DiscordCoreAPI {
 		hstring baseURL = L"https://discord.com/api/v9";
 		hstring gatewayBaseURL = L"wss://gateway.discord.gg/?v=9";
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
-		unbounded_buffer<json> webSocketIncWorkloadBuffer;
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
+		unbounded_buffer<json> webSocketIncWorkloadBuffer;
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 			InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			ButtonManager::initialize(this->interactions);
 			SelectMenuManager::initialize(this->interactions);
-			this->thisPointerBase->initialize(&this->webSocketIncWorkloadBuffer, this->agentResources, this->thisPointer, this->pWebSocketConnectionAgent);
+			this->thisPointerBase->initialize(this->agentResources, this->thisPointer, this->pWebSocketConnectionAgent);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
 			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());

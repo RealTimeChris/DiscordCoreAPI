@@ -27,13 +27,13 @@ namespace DiscordCoreAPI {
                 if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                     ReplyMessageData responseData(eventData);
                     responseData.embeds.push_back(msgEmbed);
-                    event01 = InputEventManager::respondToEvent(responseData);
-                    InputEventManager::deleteInputEventResponseAsync(event01, 20000);
+                    event01 = InputEventStuff::respondToEvent(responseData);
+                    InputEventStuff::deleteInputEventResponseAsync(event01, 20000);
                 }
                 else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                     CreateEphemeralInteractionResponseData responseData(eventData);
                     responseData.data.embeds.push_back(msgEmbed);
-                    event01 = InputEventManager::respondToEvent(responseData);
+                    event01 = InputEventStuff::respondToEvent(responseData);
                 }
             }            
             return true;
@@ -413,14 +413,14 @@ namespace DiscordCoreAPI {
             if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 ReplyMessageData responseData(eventData);
                 responseData.embeds.push_back(msgEmbed);
-                InputEventData event01 = InputEventManager::respondToEvent(responseData);
-                InputEventManager::deleteInputEventResponseAsync(event01, 20000);
+                InputEventData event01 = InputEventStuff::respondToEvent(responseData);
+                InputEventStuff::deleteInputEventResponseAsync(event01, 20000);
             }
             else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                 CreateInteractionResponseData responseData(eventData);
                 responseData.data.embeds.push_back(msgEmbed);
-                InputEventData event = InputEventManager::respondToEvent(responseData);
-                InputEventManager::deleteInputEventResponseAsync(event, 20000);
+                InputEventData event = InputEventStuff::respondToEvent(responseData);
+                InputEventStuff::deleteInputEventResponseAsync(event, 20000);
             }
         }        
         return false;
@@ -448,7 +448,7 @@ namespace DiscordCoreAPI {
                 responseDataRegularMessage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
 
                 responseDataRegularMessage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
-                event01 = InputEventManager::respondToEvent(responseDataRegularMessage);
+                event01 = InputEventStuff::respondToEvent(responseDataRegularMessage);
             }
             else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                 || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
@@ -460,7 +460,7 @@ namespace DiscordCoreAPI {
                 editResponseData.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 editResponseData.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
                 editResponseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
-                event01 = InputEventManager::respondToEvent(editResponseData);
+                event01 = InputEventStuff::respondToEvent(editResponseData);
             }
             else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                 EditFollowUpMessageData dataPackage(event01);
@@ -471,7 +471,7 @@ namespace DiscordCoreAPI {
                 dataPackage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 dataPackage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
                 dataPackage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
-                event01 = InputEventManager::respondToEvent(dataPackage);
+                event01 = InputEventStuff::respondToEvent(dataPackage);
             }
 
             while (doWeQuit == false) {
@@ -485,7 +485,7 @@ namespace DiscordCoreAPI {
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData);
+                        event01 = InputEventStuff::respondToEvent(editMessageData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
@@ -494,7 +494,7 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData);
+                        event01 = InputEventStuff::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                         EditFollowUpMessageData dataPackage(event01);
@@ -502,7 +502,7 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         dataPackage.components = event01.getComponents();
                         dataPackage.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(dataPackage);
+                        event01 = InputEventStuff::respondToEvent(dataPackage);
                     }
                 }
                 else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
@@ -512,7 +512,7 @@ namespace DiscordCoreAPI {
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData);
+                        event01 = InputEventStuff::respondToEvent(editMessageData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
@@ -521,7 +521,7 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData);
+                        event01 = InputEventStuff::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                         EditFollowUpMessageData dataPackage(event01);
@@ -529,7 +529,7 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         dataPackage.components = event01.getComponents();
                         dataPackage.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(dataPackage);
+                        event01 = InputEventStuff::respondToEvent(dataPackage);
                     }
                 }
                 else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
@@ -539,7 +539,7 @@ namespace DiscordCoreAPI {
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData);
+                        event01 = InputEventStuff::respondToEvent(editMessageData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
@@ -548,7 +548,7 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData);
+                        event01 = InputEventStuff::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                         EditFollowUpMessageData dataPackage(event01);
@@ -556,7 +556,7 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         dataPackage.components = event01.getComponents();
                         dataPackage.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(dataPackage);
+                        event01 = InputEventStuff::respondToEvent(dataPackage);
                     }
                 }
                 else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
@@ -566,7 +566,7 @@ namespace DiscordCoreAPI {
                         EditMessageData editMessageData(event01);
                         editMessageData.components = event01.getComponents();
                         editMessageData.embeds.push_back(messageEmbed);
-                        event01 = InputEventManager::respondToEvent(editMessageData);
+                        event01 = InputEventStuff::respondToEvent(editMessageData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
@@ -575,7 +575,7 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         responseData.components = event01.getComponents();
                         responseData.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(responseData);
+                        event01 = InputEventStuff::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                         EditFollowUpMessageData dataPackage(event01);
@@ -583,33 +583,33 @@ namespace DiscordCoreAPI {
                         embeds.push_back(messageEmbed);
                         dataPackage.components = event01.getComponents();
                         dataPackage.embeds = embeds;
-                        event01 = InputEventManager::respondToEvent(dataPackage);
+                        event01 = InputEventStuff::respondToEvent(dataPackage);
                     }
                 }
                 else if (buttonIntData.at(0).buttonId == "exit" || buttonIntData.at(0).buttonId == "") {
                     if (deleteAfter == true) {
-                        InputEventManager::deleteInputEventResponseAsync(event01);
+                        InputEventStuff::deleteInputEventResponseAsync(event01);
                     }
                     else {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                             EditMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
                             dataPackage.components = vector<ActionRowData>();
-                            InputEventManager::respondToEvent(dataPackage);
+                            InputEventStuff::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                             EditInteractionResponseData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
                             dataPackage.components = vector<ActionRowData>();
-                            InputEventManager::respondToEvent(dataPackage);
+                            InputEventStuff::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                             EditFollowUpMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
                             dataPackage.components = vector<ActionRowData>();
                             dataPackage.content = "";
-                            InputEventManager::respondToEvent(dataPackage);
+                            InputEventStuff::respondToEvent(dataPackage);
                         }
                     }
                     doWeQuit = true;
@@ -617,28 +617,28 @@ namespace DiscordCoreAPI {
                 }
                 else if (buttonIntData.at(0).buttonId == "select") {
                     if (deleteAfter == true) {
-                        InputEventManager::deleteInputEventResponseAsync(event01);
+                        InputEventStuff::deleteInputEventResponseAsync(event01);
                     }
                     else {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
                             EditMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
                             dataPackage.components = vector<ActionRowData>();
-                            event01 = InputEventManager::respondToEvent(dataPackage);
+                            event01 = InputEventStuff::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                             EditInteractionResponseData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
                             dataPackage.components = vector<ActionRowData>();
-                            event01 = InputEventManager::respondToEvent(dataPackage);
+                            event01 = InputEventStuff::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                             EditFollowUpMessageData dataPackage(event01);
                             dataPackage.embeds = event01.getEmbeds();
                             dataPackage.components = vector<ActionRowData>();
                             dataPackage.content = "";
-                            event01 = InputEventManager::respondToEvent(dataPackage);
+                            event01 = InputEventStuff::respondToEvent(dataPackage);
                         }
                     }
                     doWeQuit = true;
