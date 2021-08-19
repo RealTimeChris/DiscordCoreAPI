@@ -1,28 +1,28 @@
 ### **Beginner's Notes:**
 ---
-- All of the central class managers are either members of the class `DiscordCoreAPI::DiscordCoreClient` and are of type `shared_ptr<ManagerType>`, or members of the namespace `DiscordCoreAPI`.
+- All of the central class managers are classes that are filled with static methods that are a part of the `DiscordCoreAPI` namespace.
   ##### They are as Follows:
-    `DiscordCoreAPI::DiscordCoreClient->channels = shared_ptr<DiscordCoreAPI::ChannelManager>`
+    [`DiscordCoreAPI::ChannelStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#channel-manager)
     
-    `DiscordCoreAPI::DiscordCoreClient->eventManager = shared_ptr<DiscordCoreAPI::EventManager>`
+    `DiscordCoreAPI::EventManager`
     
-    `DiscordCoreAPI::DiscordCoreClient->guildMembers = shared_ptr<DiscordCoreAPI::GuildMemberManager>`
+    [`DiscordCoreAPI::GuildMemberStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guildmember-stuff)
     
-    `DiscordCoreAPI::DiscordCoreClient->guilds = shared_ptr<DiscordCoreAPI::GuildManager>`
+    [`DiscordCoreAPI::GuildStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guild-manager)
     
-    `DiscordCoreAPI::DiscordCoreClient->interactions = shared_ptr<DiscordCoreAPI::InteractionManager>`
+    [`DiscordCoreAPI::InteractionStuff`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#guild-manager)
     
-    `DiscordCoreAPI::DiscordCoreClient->messages = shared_ptr<DiscordCoreAPI::MessageManager>`
+    `DiscordCoreAPI::MessageStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->reactions = shared_ptr<DiscordCoreAPI::ReactionManager>`
+    `DiscordCoreAPI::ReactionStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->roles = shared_ptr<DiscordCoreAPI::RoleManager>`
+    `DiscordCoreAPI::RoleStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->slashCommands = shared_ptr<DiscordCoreAPI::SlashCommandManager>`
+    `DiscordCoreAPI::SlashCommandStuff`
     
-    `DiscordCoreAPI::DiscordCoreClient->users = shared_ptr<DiscordCoreAPI::UserManager>`
+    `DiscordCoreAPI::UserStuff`
     
-    `DiscordCoreAPI::InputEventManager = DiscordCoreAPI::InputEventManager`
+    `DiscordCoreAPI::InputEventManager`
     
     
 - Each of the functions in this library takes an argument that is of a type who's name is derived from the function - for example, the data structure that gets passed into `DiscordCoreAPI::GuildManager::getGuildAsync()` is `DiscordCoreAPI::GetGuildData`.
