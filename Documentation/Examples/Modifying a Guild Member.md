@@ -1,8 +1,8 @@
 ### **Modifying a Guild Member:**
 ---
-- Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guildMembers` member.
+- Access the `GuildMemberStuff` of the `DiscordCoreAPI` namespace.
 - Populate a `DiscordCoreAPI::ModifyGuildMemberData` structure, to be passed in as an argument.
-- Select, from the `guildMembers` pointer, the `modifyGuildMemberAsync()` function.
+- Select, from the `GuildMemberStuff` class, the `modifyGuildMemberAsync()` function.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 			dataPackage01.guildId = args->eventData.getGuildId();
 			dataPackage01.guildMemberId = args->eventData.getAuthorId();
 
-			GuildMember guildMember01 = args->eventData.discordCoreClient->guildMembers->modifyGuildMemberAsync(dataPackage01).get();
+			GuildMember guildMember01 = GuildMemberStuff::modifyGuildMemberAsync(dataPackage01).get();
 
 			co_return;
 		}
