@@ -535,7 +535,15 @@ namespace DiscordCoreAPI {
 		}
 
 		YouTubeSong getCurrentSong() {
-			return this->currentSong;
+			if (this->currentSong.videoId != "") {
+				return this->currentSong;
+			}
+			else if (this->songQueue.size() > 0) {
+				return this->songQueue.at(0);
+			}
+			else {
+				return YouTubeSong();
+			}
 		}
 
 		void stopPlaying(Playlist dataPackage) {
@@ -547,8 +555,8 @@ namespace DiscordCoreAPI {
 		}
 
 		struct SendNextSongReturnData {
-			Playlist dataPackage;
-			bool didItSend;
+			Playlist dataPackage{};
+			bool didItSend = false;
 		};
 
 		SendNextSongReturnData sendNextSong(Playlist* dataPackage) {
@@ -581,7 +589,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			else if (dataPackage->loopAll) {
-				if (dataPackage->songs.size() > 0 && dataPackage->currentSong.videoId == "") {
+				if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0 && dataPackage->currentSong.videoId == "") {
 					this->currentSong = this->songQueue.at(0);
 					dataPackage->currentSong = dataPackage->songs.at(0);
 					for (int x = 0; x < dataPackage->songs.size(); x += 1) {
@@ -596,8 +604,8 @@ namespace DiscordCoreAPI {
 						}
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					this->songQueue.erase(this->songQueue.end());
-					dataPackage->songs.erase(dataPackage->songs.end());
+					//this->songQueue.erase(this->songQueue.end());
+					//dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
@@ -611,6 +619,11 @@ namespace DiscordCoreAPI {
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
+					return returnData;
+				}
+				else {
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = false;
 					return returnData;
 				}
 			}

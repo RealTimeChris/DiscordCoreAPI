@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreClientBase::pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
 		}
 
-		explicit DiscordCoreClientBase(DiscordCoreClientBase* dataPackage) {
+		DiscordCoreClientBase(DiscordCoreClientBase* dataPackage) {
 			*this = *dataPackage;
 		}
 
