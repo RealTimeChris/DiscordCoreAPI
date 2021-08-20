@@ -164,10 +164,6 @@ namespace DiscordCoreAPI {
 			return encodedFrame;
 		}
 
-		void clearAudioData() {
-			this->audioData = vector<RawFrame>();
-		}
-
 		void sendSingleAudioFrame(EncodedFrame bufferToSend) {
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = crypto_secretbox_NONCEBYTES;
@@ -278,7 +274,6 @@ namespace DiscordCoreAPI {
 							break;
 						}
 					}
-					
 				}
 				this->sendSpeakingMessage(false);
 			}

@@ -3594,6 +3594,86 @@ namespace DiscordCoreAPI {
         int contentLength = 0;
     };
 
+    struct Playlist {
+        string getVideoId() {
+            if (this->currentSong.videoId != "") {
+                return this->currentSong.videoId;
+            }
+            else if (this->songs.size() > 0) {
+                return this->songs.at(0).videoId;
+            }
+            else {
+                return string();
+            }
+        }
+        string getVideoURL() {
+            if (this->currentSong.url != "") {
+                return this->currentSong.url;
+            }
+            else if (this->songs.size() > 0) {
+                return this->songs.at(0).url;
+            }
+            else {
+                return string();
+            }
+        }
+        string getImageURL() {
+            if (this->currentSong.imageURL != "") {
+                return this->currentSong.imageURL;
+            }
+            else if (this->songs.size() > 0) {
+                return this->songs.at(0).imageURL;
+            }
+            else {
+                return string();
+            }
+        }
+        string getDuration() {
+            if (this->currentSong.duration != "") {
+                return this->currentSong.duration;
+            }
+            else if (this->songs.size() > 0) {
+                return this->songs.at(0).duration;
+            }
+            else {
+                return string();
+            }
+        }
+        string getDescription() {
+            if (this->currentSong.description != "") {
+                return this->currentSong.description;
+            }
+            else if (this->songs.size() > 0) {
+                return this->songs.at(0).description;
+            }
+            else {
+                return string();
+            }
+        }
+        string getTitle() {
+            if (this->currentSong.title != "") {
+                return this->currentSong.title;
+            }
+            else if (this->songs.size() > 0) {
+                return this->songs.at(0).title;
+            }
+            else {
+                return string();
+            }
+        }
+        vector<YouTubeSongDB> songs{};
+        YouTubeSongDB currentSong{};
+        string voiceChannelId = "";
+        string textChannelId = "";
+        bool loopAll = false;
+        bool loopSong = false;
+    };
+
+    struct SendNextSongReturnData {
+        Playlist dataPackage{};
+        bool didItSend = false;
+    };
+
     static string commandPrefix;
 
     struct RepeatedFunctionData {

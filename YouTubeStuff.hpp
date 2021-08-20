@@ -587,11 +587,6 @@ namespace DiscordCoreAPI {
 			return playlist;
 		}
 
-		struct SendNextSongReturnData {
-			Playlist dataPackage{};
-			bool didItSend = false;
-		};
-
 		SendNextSongReturnData sendNextSong(Playlist* dataPackage) {
 			SendNextSongReturnData returnData;
 			if (this->currentSong.videoId == "") {
