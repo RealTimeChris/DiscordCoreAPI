@@ -1,8 +1,8 @@
 
 ### **Getting All Guilds:**
 ---
-- Dereference your `DiscordCoreAPI::DiscordCoreClient` pointer, and select the `guilds` member.
-- Select, from the `guilds` pointer, the `getAllGuildsAsync()` function and execute it, with a return value of type `auto` or `vector<Guild>`.
+- Access the `GuildStuff` class of the `DiscordCoreAPI` namespace.
+- Select, from the `GuildStuff` class, the `getAllGuildsAsync()` function and execute it, with a return value of type `auto` or `vector<Guild>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			
-			vector<Guild> guilds = args->eventData.discordCoreClient->guilds->getAllGuildsAsync().get();
+			vector<Guild> guilds = GuildStuff::getAllGuildsAsync().get();
 
 			co_return;
 		}
