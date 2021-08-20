@@ -551,146 +551,109 @@ namespace DiscordCoreAPI {
 			bool didItSend;
 		};
 
-		SendNextSongReturnData sendNextSong(Playlist dataPackage) {
+		SendNextSongReturnData sendNextSong(Playlist* dataPackage) {
 			SendNextSongReturnData returnData;
-			if (dataPackage.loopSong) {
-				if (this->songQueue.size() > 0) {
-					if (dataPackage.currentSong.videoId != "") {
-						dataPackage.currentSong = dataPackage.currentSong;
-						this->currentSong = this->currentSong;
-					}
-					else {
-						dataPackage.currentSong = dataPackage.songs.at(0);
-						this->currentSong = this->songQueue.at(0);
-						dataPackage.songs.erase(dataPackage.songs.begin());
-						this->songQueue.erase(this->songQueue.begin());
-					}
-					vector<RawFrame> frames = this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = dataPackage;
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else if (this->songQueue.size() == 0 && this->currentSong.videoId != "") {
-					dataPackage.currentSong = dataPackage.currentSong;
+			if (dataPackage->loopSong) {
+				if (dataPackage->currentSong.videoId != "") {
+					dataPackage->currentSong = dataPackage->currentSong;
 					this->currentSong = this->currentSong;
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = dataPackage;
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else if (dataPackage->songs.size() > 0) {
+					dataPackage->currentSong = dataPackage->songs.at(0);
+					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
+					this->currentSong = this->songQueue.at(0);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					vector<RawFrame> frames = this->currentSong.frames;
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
 				else {
-					returnData.dataPackage = dataPackage;
+					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = false;
 					return returnData;
 				}
 			}
-			else if (dataPackage.loopAll) {
-				if (this->songQueue.size() > 1) {
-					auto tempSong = dataPackage.currentSong;
-					dataPackage.currentSong = dataPackage.songs.at(0);
-					for (int x = 0; x < dataPackage.songs.size(); x += 1) {
-						if (x == dataPackage.songs.size()) {
+			else if (dataPackage->loopAll) {
+				if (dataPackage->songs.size() > 0 && dataPackage->currentSong.videoId == "") {
+					this->currentSong = this->songQueue.at(0);
+					dataPackage->currentSong = dataPackage->songs.at(0);
+					for (int x = 0; x < dataPackage->songs.size(); x += 1) {
+						if (x == dataPackage->songs.size() - 1) {
 							break;
 						}
-						dataPackage.songs[x] = dataPackage.songs[x + 1];
+						dataPackage->songs[x] = dataPackage->songs[x + 1];
 					}
-					dataPackage.songs.insert(dataPackage.songs.end(), tempSong);
-					auto tempSong02 = this->currentSong;
-					this->currentSong = this->songQueue.at(0);
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
-						if (x == this->songQueue.size()) {
+						if (x == this->songQueue.size() - 1) {
 							break;
 						}
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					this->songQueue.insert(this->songQueue.end(), tempSong02);
+					this->songQueue.erase(this->songQueue.end());
+					dataPackage->songs.erase(dataPackage->songs.end());
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = dataPackage;
+					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
-				else if (this->songQueue.size() > 0) {
-					if (dataPackage.currentSong.title != "") {
-						YouTubeSongDB tempSong = dataPackage.currentSong;
-						dataPackage.currentSong = dataPackage.songs.at(0);
-						dataPackage.songs.at(0) = tempSong;
-						YouTubeSong tempSong02 = this->currentSong;
-						this->currentSong = this->songQueue.at(0);
-						this->songQueue.at(0) = tempSong02;
-						vector<RawFrame> frames = this->currentSong.frames;
-						send(*this->sendAudioBuffer, frames);
-					}
-					else {
-						dataPackage.currentSong = dataPackage.songs.at(0);
-						this->currentSong = this->songQueue.at(0);
-						vector<RawFrame> frames = this->currentSong.frames;
-						send(*this->sendAudioBuffer, frames);
-					}
-					returnData.dataPackage = dataPackage;
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else if (this->songQueue.size() == 0 && this->currentSong.videoId != "") {
-					dataPackage.currentSong = dataPackage.currentSong;
+				else if (dataPackage->songs.size() == 0 && this->currentSong.videoId != "") {
+					dataPackage->currentSong = dataPackage->currentSong;
 					this->currentSong = this->currentSong;
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = dataPackage;
+					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
-					return returnData;
-				}
-				else {
-					returnData.dataPackage = dataPackage;
-					returnData.didItSend = false;
 					return returnData;
 				}
 			}
+			else if (dataPackage->songs.size() > 1 && this->songQueue.size() > 0) {
+				dataPackage->currentSong = dataPackage->songs.at(0);
+				this->currentSong = this->songQueue.at(0);
+				vector<RawFrame> frames = this->songQueue.at(0).frames;
+				YouTubeSong songTemp;
+				for (int x = 0; x < this->songQueue.size(); x += 1) {
+					if (x == this->songQueue.size() - 1) {
+						break;
+					}
+					this->songQueue.at(x) = this->songQueue.at(x + 1);
+				}
+				for (int x = 0; x < this->songQueue.size(); x += 1) {
+					if (x == this->songQueue.size() - 1) {
+						break;
+					}
+					dataPackage->songs.at(x) = dataPackage->songs.at(x + 1);
+				}
+				dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
+				this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
+				send(*this->sendAudioBuffer, frames);
+				returnData.dataPackage = *dataPackage;
+				returnData.didItSend = true;
+				return returnData;
+			}
+			else if (dataPackage->songs.size() > 0) {
+				dataPackage->currentSong = dataPackage->songs.at(0);
+				this->currentSong = this->songQueue.at(0);
+				vector<RawFrame> frames;
+				dataPackage->songs.erase(dataPackage->songs.begin());
+				frames = this->songQueue.at(0).frames;
+				this->songQueue.erase(this->songQueue.begin());
+				send(*this->sendAudioBuffer, frames);
+				returnData.dataPackage = *dataPackage;
+				returnData.didItSend = true;
+				return returnData;
+			}
 			else {
-				if (this->songQueue.size() > 1) {
-					dataPackage.currentSong = dataPackage.songs.at(0);
-					this->currentSong = this->songQueue.at(0);
-					vector<RawFrame> frames;
-					frames = this->songQueue.at(0).frames;
-					YouTubeSong songTemp;
-					for (int x = 0; x < this->songQueue.size(); x += 1) {
-						if (x == this->songQueue.size() - 1) {
-							break;
-						}
-						this->songQueue.at(x) = this->songQueue.at(x + 1);
-					}
-					for (int x = 0; x < this->songQueue.size(); x += 1) {
-						if (x == this->songQueue.size() - 1) {
-							break;
-						}
-						dataPackage.songs.at(x) = dataPackage.songs.at(x + 1);
-					}
-					dataPackage.songs.erase(dataPackage.songs.begin() + dataPackage.songs.size() - 1);
-					this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = dataPackage;
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else if (this->songQueue.size() > 0) {
-					dataPackage.currentSong = dataPackage.songs.at(0);
-					this->currentSong = this->songQueue.at(0);
-					vector<RawFrame> frames;
-					dataPackage.songs.erase(dataPackage.songs.begin());
-					frames = this->songQueue.at(0).frames;
-					this->songQueue.erase(this->songQueue.begin());
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = dataPackage;
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else {
-					returnData.dataPackage = dataPackage;
-					returnData.didItSend = false;
-					return returnData;
-				}
+				returnData.dataPackage = *dataPackage;
+				returnData.didItSend = false;
+				return returnData;
 			}
 		}
 

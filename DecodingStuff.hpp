@@ -167,19 +167,20 @@ namespace DiscordCoreAPI {
                     return frames;
                 }
 
+                this->frame = av_frame_alloc();
+                if (!this->frame) {
+                    fprintf(stderr, "Error: Could not allocate frame\n");
+                    return frames;
+                }
+
+                this->newFrame = av_frame_alloc();
+                if (!this->newFrame) {
+                    fprintf(stderr, "Error: Could not allocate frame\n");
+                    return frames;
+                }
+
                 // read frames from the file
                 while (av_read_frame(this->formatContext, this->packet) >= 0) {
-                    this->frame = av_frame_alloc();
-                    if (!this->frame) {
-                        fprintf(stderr, "Error: Could not allocate frame\n");
-                        return frames;
-                    }
-
-                    this->newFrame = av_frame_alloc();
-                    if (!this->newFrame) {
-                        fprintf(stderr, "Error: Could not allocate frame\n");
-                        return frames;
-                    }
 
                     // check if the packet belongs to a stream we are interested in, otherwise
                     // skip it
@@ -248,14 +249,24 @@ namespace DiscordCoreAPI {
                         }
                     }
                     av_packet_unref(this->packet);
-                    av_packet_free(&this->packet);
-                    this->packet = av_packet_alloc();
+                    av_frame_unref(this->frame);
+                    av_frame_unref(this->newFrame);
                 }
-                
+
+                av_packet_unref(this->packet);
+                av_packet_free(&this->packet);
                 av_frame_unref(this->frame);
                 av_frame_free(&this->frame);
                 av_frame_unref(this->newFrame);
                 av_frame_free(&this->newFrame);
+                __int64 currentSize = 0;
+                for (auto value : frames) {
+                    for (auto value02 : value.data) {
+                        currentSize += sizeof(value02);
+                    }
+                    currentSize += sizeof(value.sampleCount);
+                }
+                cout << "FRAMES SIZE: " << currentSize << endl;
                 return frames;
             }
             return vector<RawFrame>();

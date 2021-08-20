@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 
     class InteractionManagerAgent : public agent {
     public:
-        static map<string, unbounded_buffer<MessageData>*> collectMessageDataBuffers;
+        static map<string, shared_ptr<unbounded_buffer<MessageData>>> collectMessageDataBuffers;
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer;
         unbounded_buffer<DiscordCoreInternal::PatchInteractionResponseData> requestPatchInteractionResponseBuffer;
@@ -342,17 +342,20 @@ namespace DiscordCoreAPI {
             dataPackageNew.agentResources = httpAgentResources;
             dataPackageNew.content = DiscordCoreInternal::getCreateInteractionResponsePayload(dataPackage);
             InteractionManagerAgent requestAgent(httpAgentResources);
-            InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, &requestAgent.outInteractionResponseBuffer));
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::createInteractionResponseAsync");
             MessageData messageData;
             if (dataPackage.type == InteractionCallbackType::ChannelMessage || dataPackage.type == InteractionCallbackType::ChannelMessageWithSource) {
-                try {
-                    messageData = receive(requestAgent.outInteractionResponseBuffer, 1000);
+                if (InteractionManagerAgent::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
+                    shared_ptr<unbounded_buffer<MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
+                    try {
+                        messageData = receive(*messageBlock, 1000);
+                    }
+                    catch (exception&) {};
                 }
-                catch (exception&) {};
+                
             }
             InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
             co_return messageData;
@@ -744,7 +747,7 @@ namespace DiscordCoreAPI {
     map<string, unbounded_buffer<SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionMap;
     shared_ptr<InteractionManager> SelectMenuManager::interactions{ nullptr };
     shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenuManager::threadContext{ nullptr };
-    map<string, unbounded_buffer<MessageData>*> InteractionManagerAgent::collectMessageDataBuffers;
+    map<string, shared_ptr<unbounded_buffer<MessageData>>> InteractionManagerAgent::collectMessageDataBuffers;
     shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext;
 };
 #endif

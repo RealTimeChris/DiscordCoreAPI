@@ -75,6 +75,9 @@ namespace DiscordCoreAPI {
             apartment_context mainThread;
             co_await resume_background();
             try {
+                shared_ptr<unbounded_buffer<MessageData>> bufferBlock = make_shared<unbounded_buffer<MessageData>>();
+                InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.eventData.getInteractionId(), bufferBlock));
+                send(*bufferBlock, dataPackage.eventData.getMessageData());
                 if (dataPackage.eventData.eventType == InputEventType::REGULAR_MESSAGE || dataPackage.eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                     CommandData commandData(dataPackage.eventData);
                     commandData.eventData = dataPackage.eventData;

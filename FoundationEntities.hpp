@@ -3563,35 +3563,35 @@ namespace DiscordCoreAPI {
     };
 
     struct YouTubeSearchResult {
-        string videoId;
-        string thumbNailURL;
-        string videoTitle;
-        string duration;
-        string description;
-        string videoURL;
-        vector<YouTubeFormat> formats;
+        string videoId = "";
+        string thumbNailURL = "";
+        string videoTitle = "";
+        string duration = "";
+        string description = "";
+        string videoURL = "";
+        vector<YouTubeFormat> formats{};
     };
 
     struct YouTubeSong {
-        vector<RawFrame> frames;
-        string imageURL;
-        string title;
-        string formatDownloadURL;
-        string url;
-        string description;
-        string duration;
-        string videoId;
+        vector<RawFrame> frames{};
+        string imageURL = "";
+        string title = "";
+        string formatDownloadURL = "";
+        string url = "";
+        string description = "";
+        string duration = "";
+        string videoId = "";
     };
 
     struct YouTubeSongDB {
-        string imageURL;
-        string title;
-        string formatDownloadURL;
-        string url;
-        string description;
-        string duration;
-        string videoId;
-        int contentLength;
+        string imageURL = "";
+        string title = "";
+        string formatDownloadURL = "";
+        string url = "";
+        string description = "";
+        string duration = "";
+        string videoId = "";
+        int contentLength = 0;
     };
 
     static string commandPrefix;
