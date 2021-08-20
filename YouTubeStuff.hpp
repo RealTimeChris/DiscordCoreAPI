@@ -424,8 +424,26 @@ namespace DiscordCoreAPI {
 				youtubeSongDB.title = videoSearchResult.videoTitle;
 				youtubeSongDB.url = videoSearchResult.videoURL;
 				youtubeSongDB.videoId = videoSearchResult.videoId;
-				dataPackage03.songs.push_back(youtubeSongDB);
-				this->songQueue.push_back(youtubeSong);
+				bool isItFound = false;
+				for (int x = 0; x < dataPackage03.songs.size(); x += 1) {
+					if (videoSearchResult.videoId == dataPackage03.songs[x].videoId) {
+						isItFound = true;
+						break;
+					}
+				}
+				if (!isItFound) {
+					dataPackage03.songs.push_back(youtubeSongDB);
+				}
+				isItFound = false;
+				for (auto value : this->songQueue) {
+					if (value.videoId == youtubeSongDB.videoId) {
+						isItFound = true;
+						break;
+					}
+				}
+				if (!isItFound) {
+					this->songQueue.push_back(youtubeSong);
+				}
 				this->currentSong = youtubeSong;
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
@@ -439,10 +457,11 @@ namespace DiscordCoreAPI {
 		
 		Playlist downloadAudio(YouTubeSongDB dataPackage01, Playlist playlist) {
 			string downloadBaseURL;
-			if (dataPackage01.formatDownloadURL.find("https://") != string::npos && dataPackage01.formatDownloadURL.find("/videoplayback?") != string::npos) {
-				downloadBaseURL = dataPackage01.formatDownloadURL.substr(dataPackage01.formatDownloadURL.find("https://") + to_string(L"https://").length(), dataPackage01.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
+			string downloadURLIntermed = dataPackage01.formatDownloadURL;
+			if (downloadURLIntermed.find("https://") != string::npos && downloadURLIntermed.find("/videoplayback?") != string::npos) {
+				downloadBaseURL = downloadURLIntermed.substr(downloadURLIntermed.find("https://") + to_string(L"https://").length(), downloadURLIntermed.find("/videoplayback?") - to_string(L"https://").length());
 			}
-
+			
 			// Creates GET request.
 			string request = "GET " + dataPackage01.formatDownloadURL+ " HTTP/1.1" + newLine +
 				"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -539,9 +558,17 @@ namespace DiscordCoreAPI {
 				if (!isItFound) {
 					dataPackage03.songs.push_back(youtubeSongDB);
 				}
+				isItFound = false;
+				for (auto value : this->songQueue) {
+					if (value.videoId == youtubeSongDB.videoId) {
+						isItFound = true;
+						break;
+					}
+				}
+				if (!isItFound) {
+					this->songQueue.push_back(youtubeSong);
+				}
 				this->currentSong = youtubeSong;
-				this->songQueue.push_back(youtubeSong);
-
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
 				}
@@ -652,11 +679,24 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0 && this->currentSong.videoId == "" && dataPackage->currentSong.videoId == "") {
-					cout << "WERE HERE WERE HER020202020" << endl;
-					dataPackage->currentSong = dataPackage->songs.at(0);
-					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
+					auto tempSong = this->songQueue.at(this->songQueue.size() - 1);
+					auto tempSong02 = dataPackage->songs.at(dataPackage->songs.size() - 1);
 					this->currentSong = this->songQueue.at(0);
-					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					dataPackage->currentSong = dataPackage->songs.at(0);
+					for (int x = 0; x < dataPackage->songs.size(); x += 1) {
+						if (x == dataPackage->songs.size() - 1) {
+							break;
+						}
+						dataPackage->songs[x] = dataPackage->songs[x + 1];
+					}
+					dataPackage->songs.at(dataPackage->songs.size() - 1) = tempSong02;
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[x + 1];
+					}
+					this->songQueue.at(this->songQueue.size() - 1) = tempSong;
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
