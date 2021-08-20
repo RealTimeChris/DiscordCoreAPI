@@ -35,6 +35,7 @@ namespace DiscordCoreAPI {
 				if (error != OPUS_OK) {
 					cout << "Failed to create Opus encoder!";
 				}
+				this->start();
 			}
 			else {
 				throw exception("Sorry, but you need to select a proper voice channel to connect to!");
@@ -68,17 +69,15 @@ namespace DiscordCoreAPI {
 			if (this != nullptr) {
 				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
-				this->doWeWait = false;
-				this->clearAudioData();
+				this->doWeWait = false;				
 			}
 		}
 
 		void stopPlaying() {
 			if (this != nullptr) {
 				this->areWePlaying = false;
-				this->doWeWait = true;
 				this->areWeWaitingForAudioData = true;
-				this->clearAudioData();
+				this->doWeWait = true;
 			}
 		}
 
@@ -86,7 +85,9 @@ namespace DiscordCoreAPI {
 			if (this == nullptr) {
 				return false;
 			}
-			return this->areWePlaying;
+			else {
+				return this->areWePlaying;
+			}
 		}
 
 		void play(bool doWeBlock = false) {
@@ -95,7 +96,6 @@ namespace DiscordCoreAPI {
 				this->doWeWait = true;
 				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
-				this->start();
 				if (doWeBlock) {
 					wait(this);
 				}
@@ -255,7 +255,6 @@ namespace DiscordCoreAPI {
 				this->sendSpeakingMessage(true);
 				int frameCounter = 0;
 				while (this->areWePlaying) {
-
 					int timeCounter = 0;
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					int intervalCount = 20;
@@ -268,16 +267,15 @@ namespace DiscordCoreAPI {
 						}
 						timeCounter = 0;
 						startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						if (this->areWePlaying) {
-							auto newVectorNew = encodeSingleAudioFrame(value);
-							this->sendSingleAudioFrame(newVectorNew);
-						}
+						auto newVectorNew = encodeSingleAudioFrame(value);
+						this->sendSingleAudioFrame(newVectorNew);
 						frameCounter += 1;
 						if (frameCounter >= this->audioData.size() - 1) {
 							this->areWePlaying = false;
 							this->areWeWaitingForAudioData = true;
 							this->onSongCompletionEvent();
 							frameCounter = 0;
+							break;
 						}
 					}
 					

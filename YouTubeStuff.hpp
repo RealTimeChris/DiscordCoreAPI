@@ -403,7 +403,6 @@ namespace DiscordCoreAPI {
 				streamBuffer = streamDataReader.ReadBuffer(bytesRead);
 				BuildSongDecoderData dataPackage;
 				dataPackage.dataBuffer = streamBuffer;
-				dataPackage.initialBufferSize = streamBuffer.Length();
 				dataPackage.totalFileSize = format.contentLength;
 				songDecoder = new SongDecoder(dataPackage);
 				auto frames = songDecoder->getFrames();
@@ -426,8 +425,8 @@ namespace DiscordCoreAPI {
 				youtubeSongDB.url = videoSearchResult.videoURL;
 				youtubeSongDB.videoId = videoSearchResult.videoId;
 				dataPackage03.songs.push_back(youtubeSongDB);
-				YouTubeAPI::songQueue.push_back(youtubeSong);
-
+				this->songQueue.push_back(youtubeSong);
+				this->currentSong = youtubeSong;
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
 				}
@@ -438,7 +437,7 @@ namespace DiscordCoreAPI {
 			return dataPackage03;
 		}
 		
-		void downloadAudio(YouTubeSongDB dataPackage01, Playlist playlist) {
+		Playlist downloadAudio(YouTubeSongDB dataPackage01, Playlist playlist) {
 			string downloadBaseURL;
 			if (dataPackage01.formatDownloadURL.find("https://") != string::npos && dataPackage01.formatDownloadURL.find("/videoplayback?") != string::npos) {
 				downloadBaseURL = dataPackage01.formatDownloadURL.substr(dataPackage01.formatDownloadURL.find("https://") + to_string(L"https://").length(), dataPackage01.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
@@ -476,6 +475,7 @@ namespace DiscordCoreAPI {
 			int bytesWritten = 0;
 			string playerId = to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			SongDecoder* songDecoder{ nullptr };
+			Playlist dataPackage03 = playlist;
 			while (remainingDownloadContentLength > 0) {
 				if (contentLengthCurrent > 0) {
 					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
@@ -508,7 +508,6 @@ namespace DiscordCoreAPI {
 				streamBuffer = streamDataReader.ReadBuffer(bytesRead);
 				BuildSongDecoderData dataPackage;
 				dataPackage.dataBuffer = streamBuffer;
-				dataPackage.initialBufferSize = streamBuffer.Length();
 				dataPackage.totalFileSize = dataPackage01.contentLength;
 				songDecoder = new SongDecoder(dataPackage);
 				auto frames = songDecoder->getFrames();
@@ -521,8 +520,27 @@ namespace DiscordCoreAPI {
 				youtubeSong.description = dataPackage01.description;
 				youtubeSong.title = dataPackage01.title;
 				youtubeSong.url = dataPackage01.url;
-
-				YouTubeAPI::songQueue.push_back(youtubeSong);
+				YouTubeSongDB youtubeSongDB;
+				youtubeSongDB.contentLength = (int)dataPackage01.contentLength;
+				youtubeSongDB.description = dataPackage01.description;
+				youtubeSongDB.duration = dataPackage01.duration;
+				youtubeSongDB.formatDownloadURL = dataPackage01.formatDownloadURL;
+				youtubeSongDB.imageURL = dataPackage01.imageURL;
+				youtubeSongDB.title = dataPackage01.title;
+				youtubeSongDB.url = dataPackage01.url;
+				youtubeSongDB.videoId = dataPackage01.videoId;
+				bool isItFound = false;
+				for (int x = 0; x < dataPackage03.songs.size();x+=1) {
+					if (dataPackage01.videoId == dataPackage03.songs[x].videoId) {
+						isItFound = true;
+						break;
+					}
+				}
+				if (!isItFound) {
+					dataPackage03.songs.push_back(youtubeSongDB);
+				}
+				this->currentSong = youtubeSong;
+				this->songQueue.push_back(youtubeSong);
 
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
@@ -531,7 +549,7 @@ namespace DiscordCoreAPI {
 					contentLengthCurrent = remainingDownloadContentLength;
 				}
 			}
-			return;
+			return dataPackage03;
 		}
 
 		YouTubeSong getCurrentSong() {
@@ -546,12 +564,27 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void stopPlaying(Playlist dataPackage) {
-			if (dataPackage.currentSong.title != "") {
-				auto it = dataPackage.songs.begin();
-				dataPackage.songs.insert(it, dataPackage.currentSong);
-				dataPackage.currentSong = YouTubeSongDB();
+		Playlist stopPlaying(Playlist dataPackage) {
+			vector<YouTubeSong> newVector;
+			newVector.push_back(this->currentSong);
+			for (auto value : this->songQueue) {
+				newVector.push_back(value);
 			}
+			this->songQueue = newVector;
+			this->currentSong = YouTubeSong();
+			vector<YouTubeSongDB> newVector02;
+			newVector02.push_back(dataPackage.currentSong);
+			for (auto value : dataPackage.songs) {
+				newVector02.push_back(value);
+			}
+			Playlist playlist;
+			playlist.songs = newVector02;
+			playlist.currentSong = YouTubeSongDB();
+			playlist.loopAll = dataPackage.loopAll;
+			playlist.loopSong = dataPackage.loopSong;
+			playlist.textChannelId = dataPackage.textChannelId;
+			playlist.voiceChannelId = dataPackage.voiceChannelId;
+			return playlist;
 		}
 
 		struct SendNextSongReturnData {
@@ -561,6 +594,11 @@ namespace DiscordCoreAPI {
 
 		SendNextSongReturnData sendNextSong(Playlist* dataPackage) {
 			SendNextSongReturnData returnData;
+			if (this->currentSong.videoId == "") {
+				if (this->songQueue.size() > 0) {
+					this->currentSong = this->songQueue.at(0);
+				}
+			}
 			if (dataPackage->loopSong) {
 				if (dataPackage->currentSong.videoId != "") {
 					dataPackage->currentSong = dataPackage->currentSong;
@@ -589,7 +627,13 @@ namespace DiscordCoreAPI {
 				}
 			}
 			else if (dataPackage->loopAll) {
-				if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0 && dataPackage->currentSong.videoId == "") {
+				cout << "DB SIZE: " << dataPackage->songs.size() << endl;
+				cout << "SIZE: " << this->songQueue.size() << endl;
+				cout << "DB ID: " << dataPackage->currentSong.videoId << endl;
+				cout << "ID: " << this->currentSong.videoId << endl;
+				if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0 && this->currentSong.videoId != "" && dataPackage->currentSong.videoId != "") {
+					auto tempSong = this->currentSong;
+					auto tempSong02 = dataPackage->currentSong;
 					this->currentSong = this->songQueue.at(0);
 					dataPackage->currentSong = dataPackage->songs.at(0);
 					for (int x = 0; x < dataPackage->songs.size(); x += 1) {
@@ -598,21 +642,34 @@ namespace DiscordCoreAPI {
 						}
 						dataPackage->songs[x] = dataPackage->songs[x + 1];
 					}
+					dataPackage->songs.at(dataPackage->songs.size() - 1) = tempSong02;
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
 						}
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					//this->songQueue.erase(this->songQueue.end());
-					//dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
+					this->songQueue.at(this->songQueue.size() - 1) = tempSong;
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
-				else if (dataPackage->songs.size() == 0 && this->currentSong.videoId != "") {
+				else if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0 && this->currentSong.videoId == "" && dataPackage->currentSong.videoId == "") {
+					cout << "WERE HERE WERE HER020202020" << endl;
+					dataPackage->currentSong = dataPackage->songs.at(0);
+					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
+					this->currentSong = this->songQueue.at(0);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					vector<RawFrame> frames = this->currentSong.frames;
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else if (this->currentSong.videoId != "" && dataPackage->currentSong.videoId != "") {
+					cout << "WERE HERE WERE HERE0303030303" << endl;
 					dataPackage->currentSong = dataPackage->currentSong;
 					this->currentSong = this->currentSong;
 					vector<RawFrame> frames = this->currentSong.frames;
@@ -627,46 +684,48 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 			}
-			else if (dataPackage->songs.size() > 1 && this->songQueue.size() > 0) {
-				dataPackage->currentSong = dataPackage->songs.at(0);
-				this->currentSong = this->songQueue.at(0);
-				vector<RawFrame> frames = this->songQueue.at(0).frames;
-				YouTubeSong songTemp;
-				for (int x = 0; x < this->songQueue.size(); x += 1) {
-					if (x == this->songQueue.size() - 1) {
-						break;
-					}
-					this->songQueue.at(x) = this->songQueue.at(x + 1);
-				}
-				for (int x = 0; x < this->songQueue.size(); x += 1) {
-					if (x == this->songQueue.size() - 1) {
-						break;
-					}
-					dataPackage->songs.at(x) = dataPackage->songs.at(x + 1);
-				}
-				dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
-				this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
-				send(*this->sendAudioBuffer, frames);
-				returnData.dataPackage = *dataPackage;
-				returnData.didItSend = true;
-				return returnData;
-			}
-			else if (dataPackage->songs.size() > 0) {
-				dataPackage->currentSong = dataPackage->songs.at(0);
-				this->currentSong = this->songQueue.at(0);
-				vector<RawFrame> frames;
-				dataPackage->songs.erase(dataPackage->songs.begin());
-				frames = this->songQueue.at(0).frames;
-				this->songQueue.erase(this->songQueue.begin());
-				send(*this->sendAudioBuffer, frames);
-				returnData.dataPackage = *dataPackage;
-				returnData.didItSend = true;
-				return returnData;
-			}
 			else {
-				returnData.dataPackage = *dataPackage;
-				returnData.didItSend = false;
-				return returnData;
+				if (dataPackage->songs.size() > 1 && this->songQueue.size() > 1) {
+					dataPackage->currentSong = dataPackage->songs.at(0);
+					this->currentSong = this->songQueue.at(0);
+					vector<RawFrame> frames = this->songQueue.at(0).frames;
+					YouTubeSong songTemp;
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue.at(x) = this->songQueue.at(x + 1);
+					}
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						dataPackage->songs.at(x) = dataPackage->songs.at(x + 1);
+					}
+					dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
+					this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
+					dataPackage->currentSong = dataPackage->songs.at(0);
+					this->currentSong = this->songQueue.at(0);
+					vector<RawFrame> frames;
+					dataPackage->songs.erase(dataPackage->songs.begin());
+					frames = this->songQueue.at(0).frames;
+					this->songQueue.erase(this->songQueue.begin());
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else {
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = false;
+					return returnData;
+				}
 			}
 		}
 

@@ -20,7 +20,6 @@ namespace DiscordCoreAPI {
     struct BuildSongDecoderData {
     public:
         BuildSongDecoderData() {};
-        uint32_t initialBufferSize = 0;
         IBuffer dataBuffer;
         size_t totalFileSize = 0;
     };
@@ -49,7 +48,6 @@ namespace DiscordCoreAPI {
                 newVector.push_back(dataPackage.dataBuffer.data()[x]);
             }
             this->currentBuffer = newVector;
-            this->currentBufferSize = (int)this->currentBuffer.size();
             this->totalFileSize = (int)dataPackage.totalFileSize;
             // Define your buffer 
 
@@ -156,7 +154,6 @@ namespace DiscordCoreAPI {
         }
 
         vector<RawFrame> getFrames() {
-            this->currentMaxBufferSize = (int)this->currentBuffer.size();
             if (this->currentBuffer.size() >0){
                 vector<RawFrame> frames{};
                 int ret = 0;
@@ -306,7 +303,7 @@ namespace DiscordCoreAPI {
         SwrContext* swrContext = nullptr;
         AVCodec* dec = nullptr;
 
-        int  audioStreamIndex = 0, audioFrameIndex = 0, audioFrameCount = 0, baseBufferSize = 4096, totalFileSize = 0, currentBufferSize = 0, currentMaxBufferSize = 0;
+        int  audioStreamIndex = 0, audioFrameCount = 0, totalFileSize = 0;
         AVFrame* frame = nullptr, * newFrame = nullptr;
         AVPacket* packet = nullptr;
         vector<uint8_t> currentBuffer{};
@@ -318,7 +315,7 @@ namespace DiscordCoreAPI {
             if (stream->currentBuffer.size() > 0) {
                 bytesRead = (int)stream->currentBuffer.size();
             }
-            if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->currentBufferSize) {
+            if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
                 return AVERROR_EOF;
             }
 
