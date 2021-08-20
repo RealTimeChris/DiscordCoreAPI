@@ -15,5 +15,5 @@ testCommandOptionOne.required = true;
 testCommandOptionOne.type = ApplicationCommandOptionType::STRING;
 testCommandOptionOne.description = "The first argument to be entered.";
 createTestCommandData.options.push_back(testCommandOptionOne);
-args->eventData.discordCoreClient->slashCommands->createGlobalApplicationCommandAsync(createTestCommandData).get();
+DiscordCoreAPI::SlashCommandStuff::createGlobalApplicationCommandAsync(createTestCommandData).get();
 ```
