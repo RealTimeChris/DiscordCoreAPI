@@ -1,6 +1,6 @@
 ### **Modifying a Guild Member:**
 ---
-- Access the `GuildMemberStuff` of the `DiscordCoreAPI` namespace.
+- Access the `GuildMemberStuff` class of the `DiscordCoreAPI` namespace.
 - Populate a `DiscordCoreAPI::ModifyGuildMemberData` structure, to be passed in as an argument.
 - Select, from the `GuildMemberStuff` class, the `modifyGuildMemberAsync()` function.
 - Call the function with `.get()` added to the end in order to wait for the results now.
