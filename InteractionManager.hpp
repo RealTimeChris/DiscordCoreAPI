@@ -475,7 +475,6 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class DiscordCoreClient;
-        friend class SelectMenuManager;
 
         DiscordCoreInternal::HttpAgentResources agentResources;
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
