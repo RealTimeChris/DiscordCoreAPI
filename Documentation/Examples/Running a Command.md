@@ -30,17 +30,17 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			InputEventStuff::deleteInputEventResponseAsync(args->eventData);
+			InputEvents::deleteInputEventResponseAsync(args->eventData);
 
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 				ReplyMessageData dataPackage(args->eventData);
 				dataPackage.content = "Test Message!";
-				InputEventStuff::respondToEvent(dataPackage);
+				InputEvents::respondToEvent(dataPackage);
 			}
 			else {
 				CreateInteractionResponseData dataPackage(args->eventData);
 				dataPackage.data.content = "Test Message!";
-				InputEventStuff::respondToEvent(dataPackage);
+				InputEvents::respondToEvent(dataPackage);
 			}
 
 			co_return;
