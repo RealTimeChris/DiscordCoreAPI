@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
         policy.SetPolicyValue(PolicyElementKey::WinRTInitialization, InitializeWinRTAsMTA);
         Scheduler* newScheduler = Scheduler::Create(policy);
         newScheduler->Attach();
-        shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>(newScheduler);
+        shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
         threadContext->scheduler = newScheduler;
         threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
         threadContext->schedulerGroup = threadContext->scheduler->CreateScheduleGroup();

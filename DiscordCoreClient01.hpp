@@ -51,6 +51,8 @@ namespace DiscordCoreAPI {
 		static void terminate() {
 			DiscordCoreClient::thisPointer->doWeQuit = true;
 			DatabaseManagerAgent::cleanup();
+			wait(DiscordCoreClient::thisPointer->pWebSocketConnectionAgent.get());
+			wait(DiscordCoreClient::thisPointer->pWebSocketReceiverAgent.get());
 			DiscordCoreClient::thisPointer->currentUser->~BotUser();
 			DiscordCoreClient::thisPointer->guilds->~GuildManager();
 			DiscordCoreClient::thisPointer->messages->~MessageManager();
@@ -960,7 +962,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class Interactions{
+	class Interactions {
 	public:
 
 		static task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
@@ -995,19 +997,12 @@ namespace DiscordCoreAPI {
 			return DiscordCoreClient::thisPointer->interactions->getInteractionResponseAsync(dataPackage);
 		}
 	};
-
-}
-
-namespace DiscordCoreAPI {
-
-	
 }
 
 #include "Commands/CommandsList.hpp"
 
 BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType) {
 	if (dwCtrlType == CTRL_C_EVENT || dwCtrlType == CTRL_CLOSE_EVENT) {
-		DiscordCoreAPI::DiscordCoreClient::terminate();
 		exit(0);
 	}
 	return true;
