@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<EventManager> eventManager{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources;
 
-		DiscordCoreClient(hstring botTokenNew) :agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
+		DiscordCoreClient(hstring botTokenNew) :DiscordCoreClientBase(this),agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			this->botToken = botTokenNew;
 		}
 

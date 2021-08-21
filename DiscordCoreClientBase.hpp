@@ -23,8 +23,6 @@ namespace DiscordCoreAPI {
 		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
 		shared_ptr<BotUser> currentUser{ nullptr };
 
-		DiscordCoreClientBase() = default;
-
 		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgentNew) {
 			this->guildMembers = make_shared<GuildMemberManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->channels = make_shared<ChannelManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
@@ -48,8 +46,8 @@ namespace DiscordCoreAPI {
 		friend class InputEvents;
 		friend class DiscordCoreClient;
 		friend class GuildMembers;
-		map<string, shared_ptr<unbounded_buffer<vector<RawFrame>>>> audioBuffersMap;
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent;
+		map<string, shared_ptr<unbounded_buffer<vector<RawFrame>>>> audioBuffersMap;
 		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<ChannelManager> channels{ nullptr };
 		shared_ptr<RoleManager> roles{ nullptr };
