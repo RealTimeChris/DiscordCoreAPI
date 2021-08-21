@@ -408,7 +408,7 @@ namespace  DiscordCoreInternal {
         bool mute{ false };
         bool pending{ false };
         string permissions;
-        string userMention;        
+        string userMention;
     };
 
     struct WelcomeScreenChannelData {
@@ -625,10 +625,8 @@ namespace  DiscordCoreInternal {
         }
 
         void releaseGroup() {
-            if (this->schedulerGroup != nullptr) {
-                this->schedulerGroup->Release();
-                this->schedulerGroup = nullptr;
-            }
+            this->schedulerGroup->Release();
+            this->schedulerGroup = nullptr;
         };
 
         Scheduler* scheduler{ nullptr };
@@ -2059,7 +2057,7 @@ namespace DiscordCoreAPI {
 
     struct EmbedData {
 
-        EmbedData(){}
+        EmbedData() {}
 
         EmbedData(const EmbedData& p1) {
             this->author = p1.author;
@@ -2070,7 +2068,7 @@ namespace DiscordCoreAPI {
             this->footer = p1.footer;
             this->hexColorValue = p1.hexColorValue;
             this->image = p1.image;
-            this->provider=p1.provider;
+            this->provider = p1.provider;
             this->thumbnail = p1.thumbnail;
             this->timestampRaw = p1.timestampRaw;
             this->timestamp = p1.timestampRaw;
@@ -3233,7 +3231,7 @@ namespace DiscordCoreAPI {
             if (this->interactionData.applicationId == "") {
                 return this->messageData.application.id;
             }
-            else if(this->interactionData.applicationId !=""){
+            else if (this->interactionData.applicationId != "") {
                 return this->interactionData.applicationId;
             }
             else if (this->messageCommandInteractionData.applicationId != "") {
@@ -3252,7 +3250,7 @@ namespace DiscordCoreAPI {
             }
             else {
                 return this->userCommandInteractionData.token;
-            }            
+            }
         }
         string getInteractionId() {
             if (this->interactionData.id == "") {
@@ -3309,7 +3307,7 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.channelId != "") {
                 return this->interactionData.channelId;
             }
-            else if (this->messageCommandInteractionData.channelId !="") {
+            else if (this->messageCommandInteractionData.channelId != "") {
                 return this->messageCommandInteractionData.channelId;
             }
             else {
@@ -3328,7 +3326,7 @@ namespace DiscordCoreAPI {
             if (this->messageData.author.id == "") {
                 return this->interactionData.user.id;
             }
-            else if (this->messageData.author.id !=""){
+            else if (this->messageData.author.id != "") {
                 return this->messageData.author.id;
             }
             else if (this->messageCommandInteractionData.member.user.id != "") {
@@ -3342,7 +3340,7 @@ namespace DiscordCoreAPI {
             if (this->messageData.guildId == "") {
                 return this->interactionData.guildId;
             }
-            else if(this->messageData.guildId != "") {
+            else if (this->messageData.guildId != "") {
                 return this->messageData.guildId;
             }
             else if (this->userCommandInteractionData.guildId != "") {

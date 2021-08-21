@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
         static mongocxx::collection collection;
         static mongocxx::instance* instance;
         static mongocxx::database dataBase;
-        static mongocxx::client client;
+        static mongocxx::client* client;
         static string botUserId;
         unbounded_buffer<DatabaseWorkload> requestBuffer;
         unbounded_buffer<DiscordUserData>discordUserOutputBuffer;
@@ -261,8 +261,8 @@ namespace DiscordCoreAPI {
             DatabaseManagerAgent::botUserId = botUserIdNew;
             DatabaseManagerAgent::threadContext = threadContextNew;
             DatabaseManagerAgent::instance = new mongocxx::instance();
-            DatabaseManagerAgent::client = mongocxx::client{ mongocxx::uri{} };
-            DatabaseManagerAgent::dataBase = DatabaseManagerAgent::client[DatabaseManagerAgent::botUserId];
+            DatabaseManagerAgent::client = new mongocxx::client{ mongocxx::uri{} };
+            DatabaseManagerAgent::dataBase = (*DatabaseManagerAgent::client)[DatabaseManagerAgent::botUserId];
             DatabaseManagerAgent::collection = DatabaseManagerAgent::dataBase[DatabaseManagerAgent::botUserId];
         }
 
@@ -824,7 +824,7 @@ namespace DiscordCoreAPI {
     mongocxx::instance* DatabaseManagerAgent::instance;
     mongocxx::collection DatabaseManagerAgent::collection;
     mongocxx::database DatabaseManagerAgent::dataBase;
-    mongocxx::client DatabaseManagerAgent::client;
+    mongocxx::client* DatabaseManagerAgent::client;
     shared_ptr<DiscordCoreInternal::ThreadContext> DatabaseManagerAgent::threadContext;
 };
 #endif
