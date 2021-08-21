@@ -234,19 +234,18 @@ namespace DiscordCoreAPI {
         DatabaseWorkloadType workloadType;
     };
 
-    class DatabaseManagerAgent : public agent {
+    class DatabaseManagerAgent : agent {
     protected:
         friend class DiscordCoreClient;
         friend class DiscordUser;
         friend class DiscordGuild;
         friend class DiscordGuildMember;
-        static string botUserId;
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-        static mongocxx::instance* instance;
         static mongocxx::collection collection;
+        static mongocxx::instance* instance;
         static mongocxx::database dataBase;
         static mongocxx::client client;
-        static unsigned int groupId;
+        static string botUserId;
         unbounded_buffer<DatabaseWorkload> requestBuffer;
         unbounded_buffer<DiscordUserData>discordUserOutputBuffer;
         unbounded_buffer<DiscordGuildData>discordGuildOutputBuffer;
@@ -256,9 +255,6 @@ namespace DiscordCoreAPI {
         DatabaseManagerAgent()
             : agent(*DatabaseManagerAgent::threadContext->scheduler) {
             this->botUserId = DatabaseManagerAgent::botUserId;
-        }
-
-        ~DatabaseManagerAgent() {
         }
 
         static void initialize(string botUserIdNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
@@ -274,11 +270,11 @@ namespace DiscordCoreAPI {
             DatabaseManagerAgent::threadContext->releaseGroup();
         }
 
-        bool getError(exception& error) {
-            if (try_receive(errorBuffer, error)) {
-                return true;
+        void getError(string stackTrace) {
+            exception error;
+            while (try_receive(errorBuffer, error)) {
+                cout << stackTrace << "Error: " << error.what() << endl << endl;
             }
-            return false;
         }
 
         static bsoncxx::builder::basic::document convertUserDataToDBDoc(DiscordUserData discordUserData) {
@@ -713,10 +709,7 @@ namespace DiscordCoreAPI {
             send(databaseManager.requestBuffer, workload);
             databaseManager.start();
             agent::wait(&databaseManager);
-            exception error;
-            while (databaseManager.getError(error)) {
-                cout << "DiscordUser::writeDataToDB() Error: " << error.what() << endl << endl;
-            }
+            databaseManager.getError("DiscordUser::writeDataToDB()");
             return;
         }
 
@@ -728,10 +721,7 @@ namespace DiscordCoreAPI {
             send(databaseManager.requestBuffer, workload);
             databaseManager.start();
             agent::wait(&databaseManager);
-            exception error;
-            while (databaseManager.getError(error)) {
-                cout << "DiscordUser::getDataFromDB() Error: " << error.what() << endl << endl;
-            }
+            databaseManager.getError("DiscordUser::getDataFromDB()");
             DiscordUserData userData;
             try_receive(databaseManager.discordUserOutputBuffer, userData);
             if (userData.userId != "") {
@@ -760,10 +750,7 @@ namespace DiscordCoreAPI {
             send(databaseManager.requestBuffer, workload);
             databaseManager.start();
             agent::wait(&databaseManager);
-            exception error;
-            while (databaseManager.getError(error)) {
-                cout << "DiscordGuild::writeDataToDB() Error: " << error.what() << endl << endl;
-            }
+            databaseManager.getError("DiscordGuild::writeDataToDB()");
             return;
         }
 
@@ -775,10 +762,7 @@ namespace DiscordCoreAPI {
             send(databaseManager.requestBuffer, workload);
             databaseManager.start();
             agent::wait(&databaseManager);
-            exception error;
-            while (databaseManager.getError(error)) {
-                cout << "DiscordGuild::getDataFromDB() Error: " << error.what() << endl << endl;
-            }
+            databaseManager.getError("DiscordGuild::getDataFromDB()");
             DiscordGuildData guildData;
             try_receive(databaseManager.discordGuildOutputBuffer, guildData);
             if (guildData.guildId != "") {
@@ -815,10 +799,7 @@ namespace DiscordCoreAPI {
             send(databaseManager.requestBuffer, workload);
             databaseManager.start();
             agent::wait(&databaseManager);
-            exception error;
-            while (databaseManager.getError(error)) {
-                cout << "DiscordGuildMember::writeDataToDB() Error: " << error.what() << endl << endl;
-            }
+            databaseManager.getError("DiscordGuildMember::writeDataToDB()");
             return;
         }
 
@@ -830,10 +811,7 @@ namespace DiscordCoreAPI {
             send(databaseManager.requestBuffer, workload);
             databaseManager.start();
             agent::wait(&databaseManager);
-            exception error;
-            while (databaseManager.getError(error)) {
-                cout << "DiscordGuildMember::getDataFromDB() Error: " << error.what() << endl << endl;
-            }
+            databaseManager.getError("DiscordGuildMember::getDataFromDB()");
             DiscordGuildMemberData guildMemberData;
             try_receive(databaseManager.discordGuildMemberOutputBuffer, guildMemberData);
             if (guildMemberData.globalId != "") {
@@ -848,6 +826,5 @@ namespace DiscordCoreAPI {
     mongocxx::database DatabaseManagerAgent::dataBase;
     mongocxx::client DatabaseManagerAgent::client;
     shared_ptr<DiscordCoreInternal::ThreadContext> DatabaseManagerAgent::threadContext;
-    unsigned int DatabaseManagerAgent::groupId;
 };
 #endif
