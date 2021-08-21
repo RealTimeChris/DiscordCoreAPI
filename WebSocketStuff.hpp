@@ -55,8 +55,6 @@ namespace DiscordCoreInternal {
 	public:
 
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
-		DatagramSocket voiceSocket{ nullptr };
-		shared_ptr<unbounded_buffer<bool>> readyBuffer;
 		VoiceConnectionData voiceConnectionData;
 
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<bool>> readyBufferNew)
@@ -75,12 +73,6 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			/*cout << "Sending Voice Data: ";
-			for (unsigned int x = 0; x < message.size();x+=1){
-				cout << message[x];
-			}
-			cout << endl;
-			*/
 			// Buffer any data we want to send.
 			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
 			DataWriter dataWriter(randomAccessStream);
@@ -95,7 +87,7 @@ namespace DiscordCoreInternal {
 				this->voiceSocket.OutputStream().WriteAsync(buffer).get();
 				this->voiceSocket.OutputStream().FlushAsync().get();
 			}
-			//cout << "Send Complete" << endl << endl;
+
 			return;
 		}
 
@@ -137,6 +129,8 @@ namespace DiscordCoreInternal {
 		friend class VoiceConnection;
 		friend class WebSocketConnectionAgent;
 		friend class Guild;
+		shared_ptr<unbounded_buffer<bool>> readyBuffer;
+		DatagramSocket voiceSocket{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
