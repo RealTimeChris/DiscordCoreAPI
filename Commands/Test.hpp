@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 			dataPackage.limit = 25;
 			dataPackage.userId = args->eventData.getAuthorId();
 
-			AuditLogData auditLogData = DiscordCoreAPI::GuildStuff::fetchAuditLogDataAsync(dataPackage).get();
+			AuditLogData auditLogData = DiscordCoreAPI::Guilds::fetchAuditLogDataAsync(dataPackage).get();
 
 			for (auto value : auditLogData.auditLogEntries) {
 				cout << "ACTION TYPE: " << to_string((int)value.actionType) << " TARGET: <@!" << value.targetId << ">." << endl;

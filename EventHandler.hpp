@@ -18,57 +18,57 @@ namespace DiscordCoreAPI {
         static shared_ptr<DiscordCoreClient> discordCoreClient;
 
         static void onChannelCreation(OnChannelCreationData dataPackage) {
-            ChannelStuff::insertChannelAsync(dataPackage.channel).get();
+            Channels::insertChannelAsync(dataPackage.channel).get();
         }
 
         static void onChannelUpdate(OnChannelUpdateData dataPackage) {
-            ChannelStuff::insertChannelAsync(dataPackage.channelNew).get();
+            Channels::insertChannelAsync(dataPackage.channelNew).get();
         }
 
         static void onChannelDeletion(OnChannelDeletionData dataPackage) {
-            ChannelStuff::removeChannelAsync(dataPackage.channel.data.id).get();
+            Channels::removeChannelAsync(dataPackage.channel.data.id).get();
         }
         
         static void onGuildCreation(OnGuildCreationData dataPackage) {
-            GuildStuff::insertGuildAsync(dataPackage.guild).get();
+            Guilds::insertGuildAsync(dataPackage.guild).get();
         }        
 
         static void onGuildUpdate(OnGuildUpdateData dataPackage) {
-            GuildStuff::insertGuildAsync(dataPackage.guildNew).get();
+            Guilds::insertGuildAsync(dataPackage.guildNew).get();
         }
 
         static void onGuildDeletion(OnGuildDeletionData dataPackage) {
-            GuildStuff::removeGuildAsync(dataPackage.guild).get();
+            Guilds::removeGuildAsync(dataPackage.guild).get();
         }
 
         static void onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
-            GuildMemberStuff::insertGuildMemberAsync(dataPackage.guildMember).get();
-            Guild guild = GuildStuff::getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
+            GuildMembers::insertGuildMemberAsync(dataPackage.guildMember).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.guildMember.data.guildId }).get();
             guild.data.memberCount += 1;
-            GuildStuff::insertGuildAsync(guild).get();
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
-            GuildMemberStuff::removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
-            Guild guild = GuildStuff::getGuildAsync({ dataPackage.guildId }).get();
+            GuildMembers::removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.data.id).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.guildId }).get();
             guild.data.memberCount -= 1;
-            GuildStuff::insertGuildAsync(guild).get();
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
-            GuildMemberStuff::insertGuildMemberAsync(dataPackage.guildMemberNew).get();
+            GuildMembers::insertGuildMemberAsync(dataPackage.guildMemberNew).get();
         }
 
         static void onRoleCreation(OnRoleCreationData dataPackage) {
-            RoleStuff::insertRoleAsync(dataPackage.role).get();
+            Roles::insertRoleAsync(dataPackage.role).get();
         }
 
         static void onRoleUpdate(OnRoleUpdateData dataPackage) {
-            RoleStuff::insertRoleAsync(dataPackage.roleNew).get();
+            Roles::insertRoleAsync(dataPackage.roleNew).get();
         }
 
         static void onRoleDeletion(OnRoleDeletionData dataPackage) {
-            RoleStuff::removeRoleAsync(dataPackage.guildId).get();
+            Roles::removeRoleAsync(dataPackage.guildId).get();
         }
 
         static task<void> onInteractionCreation(OnInteractionCreationData dataPackage) {

@@ -341,7 +341,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class ChannelManagerAgent;
 		friend class DiscordCoreClient;
-		friend class ChannelStuff;
+		friend class Channels;
 		friend class DiscordCoreClientBase;
 		friend class EventHandler;
 

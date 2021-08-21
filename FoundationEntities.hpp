@@ -1560,7 +1560,7 @@ namespace  DiscordCoreInternal {
         }
     protected:
         friend class CommandController;
-        friend class InputEventStuff;
+        friend class InputEvents;
         friend class DiscordCoreClient;
         InteractionData interactionData;
         MessageData messageData;
@@ -3360,7 +3360,7 @@ namespace DiscordCoreAPI {
         }
     protected:
         friend class CommandCenter;
-        friend class InputEventStuff;
+        friend class InputEvents;
         friend struct CommandData;
         friend class DiscordCoreClient;
         friend class EventHandler;
@@ -3785,7 +3785,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         friend struct CreateInteractionResponseData;
         InteractionPackageData interactionPackage;
         InteractionCallbackType type;
@@ -3807,7 +3807,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         InteractionPackageData interactionPackage;
         string guildId;
         string channelId;
@@ -3899,7 +3899,7 @@ namespace DiscordCoreAPI {
         CreateInteractionResponseData() {}
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         friend class Button;
         friend class SelectMenu;
         InteractionPackageData interactionPackage;
@@ -3919,7 +3919,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         InteractionCallbackType type;
         InteractionPackageData interactionPackage;
     };
@@ -3990,7 +3990,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         InteractionPackageData interactionPackage;
         string requesterId;
     };
@@ -4005,7 +4005,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         InteractionPackageData interactionPackage;
     };
 
@@ -4074,7 +4074,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         InteractionPackageData interactionPackage;
         string requesterId;
     };
@@ -4146,7 +4146,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         InteractionPackageData interactionPackage;
         MessagePackageData messagePackage;
     };
@@ -4167,7 +4167,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         InteractionPackageData interactionPackage;
         MessagePackageData messagePackage;
     };
@@ -4238,7 +4238,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         friend class MessageManager;
         friend class MessageManagerAgent;
         string requesterId;
@@ -4332,7 +4332,7 @@ namespace DiscordCoreAPI {
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
-        friend class InputEventStuff;
+        friend class InputEvents;
         friend class MessageManager;
         friend class MessageManagerAgent;
         MessageData replyingToMessageData;

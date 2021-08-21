@@ -80,16 +80,16 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class Guild;
 		friend class BotUser;
-		friend class GuildStuff;
-		friend class ChannelStuff;
-		friend class RoleStuff;
-		friend class UserStuff;
-		friend class GuildMemberStuff;
+		friend class Guilds;
+		friend class Channels;
+		friend class Roles;
+		friend class Users;
+		friend class GuildMembers;
 		friend class PermissionsConverter;
-		friend class SlashCommandStuff;
-		friend class MessageStuff;
-		friend class InteractionStuff;
-		friend class ReactionStuff;
+		friend class SlashCommands;
+		friend class Messages;
+		friend class Interactions;
+		friend class Reactions;
 		static unbounded_buffer<exception> errorBuffer;
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 			this->guilds = make_shared<GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, (shared_ptr<DiscordCoreClientBase>)DiscordCoreClient::thisPointerBase);
 			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointerBase->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->thisPointerBase->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			InputEventStuff::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
+			InputEvents::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->thisPointerBase->currentUser->data.username, this->thisPointerBase->currentUser->data.id);
 			this->currentUser = this->thisPointerBase->currentUser;
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
@@ -711,11 +711,8 @@ namespace DiscordCoreAPI {
 	};
 	unbounded_buffer<exception> DiscordCoreClient::errorBuffer;
 	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer{ nullptr };
-}
 
-namespace DiscordCoreAPI {
-
-	class GuildStuff {
+	class Guilds {
 	public:
 		static task<Guild> getGuildAsync(GetGuildData dataPackage) {
 			return DiscordCoreClient::thisPointer->guilds->getGuildAsync(dataPackage);
@@ -758,7 +755,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class ChannelStuff {
+	class Channels {
 	public:
 		static task<Channel> getChannelAsync(GetChannelData dataPackage) {
 			return DiscordCoreClient::thisPointer->channels->getChannelAsync(dataPackage);
@@ -789,7 +786,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class MessageStuff {
+	class Messages {
 	public:
 		static task<Message> fetchMessageAsync(FetchMessageData dataPackage) {
 			return DiscordCoreClient::thisPointer->messages->fetchAsync(dataPackage);
@@ -832,7 +829,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildMemberStuff {
+	class GuildMembers {
 	public:
 		static task<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage) {
 			return DiscordCoreClient::thisPointer->guildMembers->getGuildMemberAsync(dataPackage);
@@ -855,7 +852,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class UserStuff {
+	class Users {
 	public:
 		static task<User> getUserAsync(GetUserData dataPackage) {
 			return DiscordCoreClient::thisPointer->users->getUserAsync(dataPackage);
@@ -866,7 +863,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class RoleStuff {
+	class Roles {
 	public:
 		static task<Role> getRoleAsync(GetRoleData dataPackage) {
 			return DiscordCoreClient::thisPointer->roles->getRoleAsync(dataPackage);
@@ -917,7 +914,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class SlashCommandStuff {
+	class SlashCommands {
 	public:
 		static task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
 			return DiscordCoreClient::thisPointer->slashCommands->createGlobalApplicationCommandAsync(dataPackage);
@@ -940,7 +937,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class ReactionStuff {
+	class Reactions {
 	public:
 		static task<Reaction> createReactionAsync(CreateReactionData dataPackage) {
 			return DiscordCoreClient::thisPointer->reactions->createReactionAsync(dataPackage);
@@ -963,7 +960,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class InteractionStuff {
+	class Interactions{
 	public:
 
 		static task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
@@ -998,6 +995,12 @@ namespace DiscordCoreAPI {
 			return DiscordCoreClient::thisPointer->interactions->getInteractionResponseAsync(dataPackage);
 		}
 	};
+
+}
+
+namespace DiscordCoreAPI {
+
+	
 }
 
 #include "Commands/CommandsList.hpp"

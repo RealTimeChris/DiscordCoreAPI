@@ -45,9 +45,9 @@ namespace DiscordCoreAPI {
 		friend class ChannelStuff;
 		friend class RoleStuff;
 		friend class UserStuff;
-		friend class InputEventStuff;
+		friend class InputEvents;
 		friend class DiscordCoreClient;
-		friend class GuildMemberStuff;
+		friend class GuildMembers;
 		map<string, shared_ptr<unbounded_buffer<vector<RawFrame>>>> audioBuffersMap;
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent;
 		shared_ptr<GuildMemberManager> guildMembers{ nullptr };

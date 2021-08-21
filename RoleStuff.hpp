@@ -600,7 +600,7 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class DiscordCoreClientBase;
 		friend class DiscordCoreClient;
-		friend class RoleStuff;
+		friend class Roles;
 		friend class EventHandler;
 		friend class Guild;
 		

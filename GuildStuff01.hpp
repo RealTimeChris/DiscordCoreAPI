@@ -591,7 +591,7 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class DiscordCoreClient;
 		friend class EventHandler;
-		friend class GuildStuff;
+		friend class Guilds;
 
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		DiscordCoreInternal::HttpAgentResources agentResources;

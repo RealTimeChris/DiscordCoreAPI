@@ -617,8 +617,10 @@ namespace DiscordCoreAPI {
 		SendNextSongReturnData sendNextSong(Playlist* dataPackage) {
 			SendNextSongReturnData returnData;
 			if (this->currentSong.videoId == "") {
-				if (this->songQueue.size() > 0) {
-					this->currentSong = this->songQueue.at(0);
+				for (auto value : this->songQueue) {
+					if (value.videoId == dataPackage->currentSong.videoId) {
+						this->currentSong = value;
+					}
 				}
 			}
 			if (dataPackage->loopSong) {

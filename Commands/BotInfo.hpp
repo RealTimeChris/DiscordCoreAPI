@@ -24,14 +24,14 @@ namespace DiscordCoreAPI {
 
         virtual task<void>execute(shared_ptr<BaseFunctionArguments> args) {
 
-            if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE && ChannelStuff::getChannelAsync({ args->eventData.getChannelId() }).get().data.type != ChannelType::DM) {
-                InputEventStuff::deleteInputEventResponseAsync(args->eventData);
+            if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE && Channels::getChannelAsync({ args->eventData.getChannelId() }).get().data.type != ChannelType::DM) {
+                InputEvents::deleteInputEventResponseAsync(args->eventData);
             }
-            else if(ChannelStuff::getChannelAsync({ args->eventData.getChannelId() }).get().data.type == ChannelType::DM || args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
+            else if(Channels::getChannelAsync({ args->eventData.getChannelId() }).get().data.type == ChannelType::DM || args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
                 args->argumentsArray.push_back("gamehouse");
             }
 
-            Guild guild = GuildStuff::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
+            Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
             DiscordGuild discordGuild(guild.data);
 
             if (args->argumentsArray.size() == 0 || (args->argumentsArray.at(0) != "janny" && args->argumentsArray.at(0) != "musichouse" && args->argumentsArray.at(0) != "gamehouse")) {
@@ -45,14 +45,14 @@ namespace DiscordCoreAPI {
                 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                     ReplyMessageData dataPackage(args->eventData);
                     dataPackage.embeds.push_back(msgEmbed);
-                    auto eventNew = InputEventStuff::respondToEvent(dataPackage);
-                    InputEventStuff::deleteInputEventResponseAsync(eventNew, 20000);
+                    auto eventNew = InputEvents::respondToEvent(dataPackage);
+                    InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
                 }
                 else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                     CreateEphemeralInteractionResponseData responseData(args->eventData);
                     responseData.data.embeds.push_back(msgEmbed);
-                    auto eventNew = InputEventStuff::respondToEvent(responseData);
-                    InputEventStuff::deleteInputEventResponseAsync(eventNew, 20000);
+                    auto eventNew = InputEvents::respondToEvent(responseData);
+                    InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
                 }
                 co_return;
             }
@@ -73,12 +73,12 @@ namespace DiscordCoreAPI {
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 ReplyMessageData dataPackage(args->eventData);
                 dataPackage.embeds.push_back(messageEmbed);
-                auto eventNew = InputEventStuff::respondToEvent(dataPackage);
+                auto eventNew = InputEvents::respondToEvent(dataPackage);
             }
             else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                 CreateInteractionResponseData dataPackage(args->eventData);
                 dataPackage.data.embeds.push_back(messageEmbed);
-                auto eventNew = InputEventStuff::respondToEvent(dataPackage);
+                auto eventNew = InputEvents::respondToEvent(dataPackage);
             }
             co_return;
 		}
