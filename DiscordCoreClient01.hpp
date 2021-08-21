@@ -183,7 +183,6 @@ namespace DiscordCoreAPI {
 		}
 
 		void removeGuild(GuildData guildData) {
-			//this->discordUser->data.guildCount -= 1;
 			this->discordUser->writeDataToDB();
 			shared_ptr<unbounded_buffer<vector<RawFrame>>>thePtr = make_shared<unbounded_buffer<vector<RawFrame>>>();
 			this->audioBuffersMap.erase(guildData.id);
