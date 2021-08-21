@@ -438,7 +438,7 @@ namespace DiscordCoreAPI {
             }
         };
 
-        DiscordGuildData parseGuildData(bsoncxx::document::value docValue) {
+        static DiscordGuildData parseGuildData(bsoncxx::document::value docValue) {
             DiscordGuildData guildData;
             try {
                 guildData.guildId = docValue.view()["guildId"].get_utf8().value.to_string();
@@ -561,7 +561,7 @@ namespace DiscordCoreAPI {
             }
         };
 
-        DiscordGuildMemberData parseGuildMemberData(bsoncxx::document::value docValue) {
+        static DiscordGuildMemberData parseGuildMemberData(bsoncxx::document::value docValue) {
             DiscordGuildMemberData guildMemberData;
             try {
                 guildMemberData.guildMemberMention = docValue.view()["guildMemberMention"].get_utf8().value.to_string();
@@ -603,7 +603,8 @@ namespace DiscordCoreAPI {
             try {
                 DatabaseWorkload workload;
                 if (try_receive(this->requestBuffer, workload)) {
-                    if (workload.workloadType == DatabaseWorkloadType::DISCORD_USER_WRITE) {
+                    switch (workload.workloadType) {
+                    case(DatabaseWorkloadType::DISCORD_USER_WRITE): {
                         bsoncxx::builder::basic::document doc = DatabaseManagerAgent::convertUserDataToDBDoc(workload.userData);
                         mongocxx::v_noabi::options::find_one_and_update options;
                         options.return_document(mongocxx::v_noabi::options::return_document::k_after);
@@ -615,8 +616,9 @@ namespace DiscordCoreAPI {
                             //cout << "USER WRITE 02: " << bsoncxx::to_json(doc.view()) << endl << endl;
                             DatabaseManagerAgent::collection.insert_one(doc.view());
                         }
+                        break;
                     }
-                    if (workload.workloadType == DatabaseWorkloadType::DISCORD_USER_READ) {
+                    case(DatabaseWorkloadType::DISCORD_USER_READ): {
                         auto result = DatabaseManagerAgent::collection.find_one(bsoncxx::builder::stream::document{} << "_id" << workload.userData.userId << finalize);
                         if (result.get_ptr() != NULL) {
                             DiscordUserData userData = DatabaseManagerAgent::parseUserData(result.get());
@@ -626,8 +628,9 @@ namespace DiscordCoreAPI {
                             DiscordUserData userData;
                             send(this->discordUserOutputBuffer, userData);
                         }
+                        break;
                     }
-                    if (workload.workloadType == DatabaseWorkloadType::DISCORD_GUILD_WRITE) {
+                    case(DatabaseWorkloadType::DISCORD_GUILD_WRITE): {
                         bsoncxx::builder::basic::document doc = DatabaseManagerAgent::convertGuildDataToDBDoc(workload.guildData);
                         mongocxx::v_noabi::options::find_one_and_update options;
                         options.return_document(mongocxx::v_noabi::options::return_document::k_after);
@@ -639,8 +642,9 @@ namespace DiscordCoreAPI {
                             //cout << "GUILD WRITE 02: " << bsoncxx::to_json(doc.view()) << endl << endl;
                             DatabaseManagerAgent::collection.insert_one(doc.view());
                         }
+                        break;
                     }
-                    if (workload.workloadType == DatabaseWorkloadType::DISCORD_GUILD_READ) {
+                    case(DatabaseWorkloadType::DISCORD_GUILD_READ): {
                         auto result = DatabaseManagerAgent::collection.find_one(bsoncxx::builder::stream::document{} << "_id" << workload.guildData.guildId << finalize);
                         if (result.get_ptr() != NULL) {
                             DiscordGuildData guildData = DatabaseManagerAgent::parseGuildData(result.get());
@@ -650,8 +654,9 @@ namespace DiscordCoreAPI {
                             DiscordGuildData guildData;
                             send(this->discordGuildOutputBuffer, guildData);
                         }
+                        break;
                     }
-                    if (workload.workloadType == DatabaseWorkloadType::DISCORD_GUILD_MEMBER_WRITE) {
+                    case(DatabaseWorkloadType::DISCORD_GUILD_MEMBER_WRITE): {
                         bsoncxx::builder::basic::document doc = DatabaseManagerAgent::convertGuildMemberDataToDBDoc(workload.guildMemberData);
                         mongocxx::v_noabi::options::find_one_and_update options;
                         options.return_document(mongocxx::v_noabi::options::return_document::k_after);
@@ -663,8 +668,9 @@ namespace DiscordCoreAPI {
                             //cout << "GUILDMEMBER WRITE 02: " << bsoncxx::to_json(doc.view()) << endl << endl;
                             DatabaseManagerAgent::collection.insert_one(doc.view());
                         }
+                        break;
                     }
-                    if (workload.workloadType == DatabaseWorkloadType::DISCORD_GUILD_MEMBER_READ) {
+                    case(DatabaseWorkloadType::DISCORD_GUILD_MEMBER_READ): {
                         auto result = DatabaseManagerAgent::collection.find_one(bsoncxx::builder::stream::document{} << "_id" << workload.guildMemberData.globalId << finalize);
                         if (result.get_ptr() != NULL) {
                             DiscordGuildMemberData guildMemberData = DatabaseManagerAgent::parseGuildMemberData(result.get());
@@ -674,6 +680,11 @@ namespace DiscordCoreAPI {
                             DiscordGuildMemberData guildMemberData;
                             send(this->discordGuildMemberOutputBuffer, guildMemberData);
                         }
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
                     }
                 }
             }
