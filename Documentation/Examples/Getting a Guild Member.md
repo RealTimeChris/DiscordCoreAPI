@@ -1,7 +1,7 @@
 ### **Getting a Guild Member:**
 ---
-- Access the `GuildMemberStuff` class of the `DiscordCoreAPI` namespace.
-- Select, from the `GuildMemberStuff` class, the `getGuildMemberAsync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::GetGuildMemberData`, or `DiscordCoreAPI::FetchGuildMemberData`).
+- Access the `GuildMemberSs` class of the `DiscordCoreAPI` namespace.
+- Select, from the `GuildMembers` class, the `getGuildMemberAsync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::GetGuildMemberData`, or `DiscordCoreAPI::FetchGuildMemberData`).
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			dataPackage02.guildId = args->eventData.getGuildId();
 			dataPackage02.guildMemberId = args->eventData.getAuthorId();
 			
-			GuildMember guildMember02 = GuildMemberStuff::fetchAsync(dataPackage02).get();
+			GuildMember guildMember02 = GuildMembers::fetchAsync(dataPackage02).get();
 
 			co_return;
 		}
