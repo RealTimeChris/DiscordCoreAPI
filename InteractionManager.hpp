@@ -603,8 +603,8 @@ namespace DiscordCoreAPI {
                         SelectMenuManager::interactions->createInteractionResponseAsync(dataPackage);
                     }
                 }
-                done();
                 SelectMenuManager::selectMenuInteractionMap.erase(this->channelId + this->messageId);
+                done();
             }
             catch (exception& e) {
                 this->selectMenuId = "exit";
@@ -728,8 +728,8 @@ namespace DiscordCoreAPI {
                         ButtonManager::interactions->createInteractionResponseAsync(dataPackage);
                     }
                 }
-                done();
                 ButtonManager::buttonInteractionMap.erase(this->channelId + this->messageId);
+                done();
             }
             catch (exception& e) {
                 this->buttonId = "exit";
