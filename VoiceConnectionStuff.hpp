@@ -47,6 +47,9 @@ namespace DiscordCoreAPI {
 			if (this != nullptr) {
 				return this->voiceConnectionData.channelId;
 			}
+			else {
+				return string();
+			}
 		}
 
 		event_token onSongCompletion(delegate<> const handler) {
@@ -85,10 +88,11 @@ namespace DiscordCoreAPI {
 
 		void stopPlaying() {
 			if (this != nullptr) {
-				this->clearAudioData();
 				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
 				this->doWeWait = true;
+				this->areWeStopping = true;
+				bool trueReceive = receive(*this->readyBuffer);
 			}
 		}
 
@@ -135,6 +139,7 @@ namespace DiscordCoreAPI {
 		bool areWePlaying = false;
 		bool areWeConnectedBool = false;
 		bool areWeWaitingForAudioData = true;
+		bool areWeStopping = false;
 		unsigned int timestamp = 0;
 		unsigned short sequenceIndex = 0;
 		__int32 sequenceIndexLib = 0;
@@ -274,7 +279,7 @@ namespace DiscordCoreAPI {
 								if (try_receive(this->seekBuffer, newValue)) {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
 								};
-								if (this->areWePlaying == false) {
+								if (!this->areWePlaying) {
 									break;
 								}
 								while (timeCounter < intervalCount) {
@@ -284,12 +289,6 @@ namespace DiscordCoreAPI {
 								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
 								frameCounter += 1;
-								if (this->audioData == nullptr) {
-									this->areWePlaying = false;
-									this->areWeWaitingForAudioData = true;
-									frameCounter = 0;
-									break;
-								}
 								if (frameCounter >= this->audioData->encodedFrameData.size() - 1) {
 									this->clearAudioData();
 									this->areWePlaying = false;
@@ -307,7 +306,7 @@ namespace DiscordCoreAPI {
 								if (try_receive(this->seekBuffer, newValue)) {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->rawFrameData.size());
 								};
-								if (this->areWePlaying == false) {
+								if (!this->areWePlaying) {
 									break;
 								}
 								while (timeCounter < intervalCount) {
@@ -318,12 +317,6 @@ namespace DiscordCoreAPI {
 								auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
 								this->sendSingleAudioFrame(newVector);
 								frameCounter += 1;
-								if (this->audioData == nullptr) {
-									this->areWePlaying = false;
-									this->areWeWaitingForAudioData = true;
-									frameCounter = 0;
-									break;
-								}
 								if (frameCounter >= this->audioData->rawFrameData.size() - 1) {
 									this->clearAudioData();
 									this->areWePlaying = false;
@@ -334,8 +327,15 @@ namespace DiscordCoreAPI {
 								}
 							}
 						}
+						if (!this->areWePlaying) {
+							break;
+						}
 					}
 				}
+				if (this->areWeStopping) {
+					send(*this->readyBuffer, true);
+					this->areWeStopping = false;
+				}				
 				this->sendSpeakingMessage(false);
 			}
 			this->areWeConnectedBool = false;
@@ -350,4 +350,4 @@ namespace DiscordCoreAPI {
 	};
 
 }
-#endif
+#endif 

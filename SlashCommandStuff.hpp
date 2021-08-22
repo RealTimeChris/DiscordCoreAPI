@@ -97,7 +97,6 @@ namespace DiscordCoreAPI {
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_APPLICATION_COMMAND;
             workload.content = DiscordCoreInternal::getCreateApplicationCommandPayload(dataPackageNew);
-            cout << "THE STRING" << workload.content<< endl;
             DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
