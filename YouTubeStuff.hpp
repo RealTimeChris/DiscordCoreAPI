@@ -415,7 +415,7 @@ namespace DiscordCoreAPI {
 				SongEncoder songEncoder(dataPackage02);
 				auto encodedFrames = songEncoder.encodeSong();
 				youtubeSong.frames = encodedFrames;
-				youtubeSong.contentLength = format.contentLength;
+				youtubeSong.contentLength = (int)format.contentLength;
 				youtubeSong.imageURL = videoSearchResult.thumbNailURL;
 				youtubeSong.duration = videoSearchResult.duration;
 				youtubeSong.description = videoSearchResult.description;
@@ -432,7 +432,7 @@ namespace DiscordCoreAPI {
 				youtubeSongDB.imageURL = videoSearchResult.thumbNailURL;
 				youtubeSongDB.title = videoSearchResult.videoTitle;
 				youtubeSongDB.url = videoSearchResult.videoURL;
-				youtubeSongDB.songId = to_string((int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				youtubeSongDB.songId = youtubeSong.songId;
 				youtubeSongDB.videoId = videoSearchResult.videoId;
 				dataPackage03.songs.push_back(youtubeSongDB);
 				bool isItFound = false;

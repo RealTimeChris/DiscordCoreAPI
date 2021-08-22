@@ -66,6 +66,15 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+		void seek(int percentageIntoSong) {
+			if (0 <= percentageIntoSong && 100 >= percentageIntoSong) {
+				send(this->seekBuffer, percentageIntoSong);
+			}
+			else {
+				throw exception("Please, enter a valid value!");
+			}
+		}
+
 		void skipCurrentSong() {
 			if (this != nullptr) {
 				this->areWePlaying = false;
@@ -133,6 +142,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlock;
 		shared_ptr<unbounded_buffer<bool>> readyBuffer;
+		unbounded_buffer<int> seekBuffer;
 		unbounded_buffer<bool> playPauseBuffer;
 		OpusEncoder* encoder;
 		int nChannels = 2;
@@ -259,7 +269,11 @@ namespace DiscordCoreAPI {
 					int intervalCount = 20;
 					if (this->audioData != nullptr) {
 						if (this->audioData->type == AudioFrameType::Encoded) {
-							for (auto value : this->audioData->encodedFrameData) {
+							for (int x = 0; x < this->audioData->encodedFrameData.size(); x+=1) {
+								int newValue;
+								if (try_receive(this->seekBuffer, newValue)) {
+									x = (int)trunc(((float)x / (float)this->audioData->encodedFrameData.size())) * newValue;
+								};
 								if (this->areWePlaying == false) {
 									break;
 								}
@@ -268,7 +282,7 @@ namespace DiscordCoreAPI {
 								}
 								timeCounter = 0;
 								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-								this->sendSingleAudioFrame(value);
+								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
 								frameCounter += 1;
 								if (this->audioData == nullptr) {
 									this->areWePlaying = false;
@@ -288,7 +302,11 @@ namespace DiscordCoreAPI {
 
 						}
 						else {
-							for (auto value : this->audioData->rawFrameData) {
+							for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
+								int newValue;
+								if (try_receive(this->seekBuffer, newValue)) {
+									x = (int)trunc(((float)x / (float)this->audioData->rawFrameData.size())) * newValue;
+								};
 								if (this->areWePlaying == false) {
 									break;
 								}
@@ -297,7 +315,7 @@ namespace DiscordCoreAPI {
 								}
 								timeCounter = 0;
 								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-								auto newVector = encodeSingleAudioFrame(value);
+								auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
 								this->sendSingleAudioFrame(newVector);
 								frameCounter += 1;
 								if (this->audioData == nullptr) {
