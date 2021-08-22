@@ -646,7 +646,31 @@ namespace DiscordCoreAPI {
 				}
 			}
 			else if (dataPackage->loopAll) {
-				if (dataPackage->currentSong.videoId != "" && dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
+				if (this->currentSong.videoId != "" && this->songQueue.size() > 0) {
+					auto tempSong = this->currentSong;
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[x + 1];
+					}
+					this->songQueue.at(this->songQueue.size() - 1) = tempSong;
+					for (int x = 0; x < dataPackage->songs.size(); x += 1) {
+						if (x == dataPackage->songs.size() - 1) {
+							break;
+						}
+						dataPackage->songs[x] = dataPackage->songs[x + 1];
+					}
+					dataPackage->songs.at(dataPackage->songs.size() - 1) = tempSong;
+					dataPackage->currentSong = this->currentSong;
+					vector<RawFrame>* frames = &this->currentSong.frames;
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else if (dataPackage->currentSong.videoId != "" && dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
 					auto tempSong02 = dataPackage->currentSong;
 					auto tempSong = this->currentSong;
 					this->currentSong = this->songQueue.at(0);
@@ -672,18 +696,25 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (dataPackage->currentSong.videoId == "" && dataPackage->songs.size() > 0) {
-					dataPackage->currentSong = dataPackage->songs.at(0);
-					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
+					auto tempSong = this->currentSong;
 					this->currentSong = this->songQueue.at(0);
-					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					dataPackage->currentSong = this->currentSong;
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[x + 1];
+					}
+					this->songQueue.at(this->songQueue.size() - 1) = tempSong;
+					dataPackage->currentSong = this->songQueue.at(0);
+					this->currentSong = this->songQueue.at(0);
+					dataPackage->songs.push_back(this->songQueue.at(this->songQueue.size() - 1));
 					vector<RawFrame>* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
-				else if (dataPackage->songs.size() == 0) {
+				else if (dataPackage->songs.size() == 0 && this->songQueue.size() > 0) {
 					dataPackage->currentSong = dataPackage->currentSong;
 					this->currentSong = this->currentSong;
 					dataPackage->currentSong = this->currentSong;
