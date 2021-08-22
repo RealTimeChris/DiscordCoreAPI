@@ -761,7 +761,18 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
-					dataPackage->currentSong = dataPackage->songs[0];
+					dataPackage->currentSong = this->songQueue[0];
+					this->currentSong = this->songQueue[0];
+					dataPackage->songs.erase(dataPackage->songs.begin());
+					this->songQueue.erase(this->songQueue.begin());
+					AudioFrameData* frames = &this->currentSong.frames;
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else if (this->songQueue.size() > 0) {
+					dataPackage->currentSong = this->songQueue[0];
 					this->currentSong = this->songQueue[0];
 					dataPackage->songs.erase(dataPackage->songs.begin());
 					this->songQueue.erase(this->songQueue.begin());
