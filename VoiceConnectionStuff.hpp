@@ -88,7 +88,6 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			else {
-				cout << "ARE WE PLAYING: " << std::boolalpha << this->areWePlaying << endl;
 				return this->areWePlaying;
 			}
 		}
