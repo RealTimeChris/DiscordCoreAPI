@@ -415,6 +415,7 @@ namespace DiscordCoreAPI {
 				SongEncoder songEncoder(dataPackage02);
 				auto encodedFrames = songEncoder.encodeSong();
 				youtubeSong.frames = encodedFrames;
+				youtubeSong.contentLength = format.contentLength;
 				youtubeSong.imageURL = videoSearchResult.thumbNailURL;
 				youtubeSong.duration = videoSearchResult.duration;
 				youtubeSong.description = videoSearchResult.description;
@@ -538,6 +539,7 @@ namespace DiscordCoreAPI {
 				auto encodedFrames = songEncoder.encodeSong();
 				YouTubeSong youtubeSong;
 				youtubeSong.frames = encodedFrames;
+				youtubeSong.contentLength = dataPackage01.contentLength;
 				youtubeSong.imageURL = dataPackage01.imageURL;
 				youtubeSong.duration = dataPackage01.duration;
 				youtubeSong.description = dataPackage01.description;
@@ -763,6 +765,15 @@ namespace DiscordCoreAPI {
 					this->currentSong = this->songQueue[0];
 					dataPackage->songs.erase(dataPackage->songs.begin());
 					this->songQueue.erase(this->songQueue.begin());
+					AudioFrameData* frames = &this->currentSong.frames;
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else if (this->currentSong.videoId != "") {
+					this->currentSong = this->currentSong;
+					dataPackage->currentSong = this->currentSong;
 					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;

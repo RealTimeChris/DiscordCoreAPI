@@ -3600,7 +3600,7 @@ namespace DiscordCoreAPI {
     struct YouTubeSong {
         operator YouTubeSongDB() {
             YouTubeSongDB newData;
-            newData.contentLength = 0;
+            newData.contentLength = this->contentLength;
             newData.description = this->description;
             newData.duration = this->duration;
             newData.formatDownloadURL = this->formatDownloadURL;
@@ -3612,6 +3612,7 @@ namespace DiscordCoreAPI {
             return newData;
         }
         AudioFrameData frames{};
+        int contentLength = 0;
         string imageURL = "";
         string title = "";
         string formatDownloadURL = "";

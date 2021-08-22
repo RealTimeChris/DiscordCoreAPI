@@ -43,6 +43,15 @@ namespace DiscordCoreAPI {
 			return newData;
 		}
 
+		~SongEncoder() {
+			opus_encoder_destroy(this->encoder);
+		}
+
+	protected:
+		vector<RawFrameData>* rawFrames;
+		int nChannels = 2;
+		OpusEncoder* encoder;
+
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
 			uint8_t* oldBuffer;
 			oldBuffer = new uint8_t[inputFrame.data.size()];
@@ -67,15 +76,6 @@ namespace DiscordCoreAPI {
 			newBuffer = nullptr;
 			return encodedFrame;
 		}
-
-		~SongEncoder() {
-			opus_encoder_destroy(this->encoder);
-		}
-
-	protected:
-		vector<RawFrameData>* rawFrames;
-		int nChannels = 2;
-		OpusEncoder* encoder;
 	};
 
 }
