@@ -67,6 +67,7 @@ namespace DiscordCoreAPI {
 
 		void skipCurrentSong() {
 			if (this != nullptr) {
+				this->clearAudioData();
 				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
 				this->doWeWait = false;				
@@ -75,6 +76,7 @@ namespace DiscordCoreAPI {
 
 		void stopPlaying() {
 			if (this != nullptr) {
+				this->clearAudioData();
 				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
 				this->doWeWait = true;
@@ -140,11 +142,8 @@ namespace DiscordCoreAPI {
 		winrt::event<delegate<>> onSongCompletionEvent;
 		vector<RawFrame>* audioData;
 
-		void clearAudioBuffer() {
-			for (auto value : *this->audioData) {
-				value.data.clear();
-			}
-			this->audioData->clear();
+		void clearAudioData() {
+			this->audioData = nullptr;
 		}
 
 		EncodedFrame encodeSingleAudioFrame(RawFrame inputFrame) {
@@ -262,25 +261,27 @@ namespace DiscordCoreAPI {
 					int timeCounter = 0;
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					int intervalCount = 20;
-					for (auto value : *this->audioData) {
-						if (this->areWePlaying == false) {
-							break;
-						}
-						while (timeCounter < intervalCount) {
-							timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-						}
-						timeCounter = 0;
-						startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						auto newVectorNew = encodeSingleAudioFrame(value);
-						this->sendSingleAudioFrame(newVectorNew);
-						frameCounter += 1;
-						if (frameCounter >= this->audioData->size() - 1) {
-							this->clearAudioBuffer();
-							this->areWePlaying = false;
-							this->areWeWaitingForAudioData = true;
-							this->onSongCompletionEvent();
-							frameCounter = 0;
-							break;
+					if (this->audioData != nullptr) {
+						for (auto value : *this->audioData) {
+							if (this->areWePlaying == false) {
+								break;
+							}
+							while (timeCounter < intervalCount) {
+								timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+							}
+							timeCounter = 0;
+							startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+							auto newVectorNew = encodeSingleAudioFrame(value);
+							this->sendSingleAudioFrame(newVectorNew);
+							frameCounter += 1;
+							if (frameCounter >= this->audioData->size() - 1) {
+								this->clearAudioData();
+								this->areWePlaying = false;
+								this->areWeWaitingForAudioData = true;
+								this->onSongCompletionEvent();
+								frameCounter = 0;
+								break;
+							}
 						}
 					}
 				}
