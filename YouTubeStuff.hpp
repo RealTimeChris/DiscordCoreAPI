@@ -437,12 +437,6 @@ namespace DiscordCoreAPI {
 				if (!isItFound) {
 					this->songQueue.push_back(youtubeSong);
 				}
-				if (this->currentSong.videoId == "") {
-					this->currentSong = youtubeSong;
-				}
-				else {
-					this->songQueue.push_back(youtubeSong);
-				}
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
 				}
@@ -568,12 +562,6 @@ namespace DiscordCoreAPI {
 				if (!isItFound) {
 					this->songQueue.push_back(youtubeSong);
 				}
-				if (this->currentSong.videoId == "") {
-					this->currentSong = youtubeSong;
-				}
-				else {
-					this->songQueue.push_back(youtubeSong);
-				}				
 				if (remainingDownloadContentLength >= this->maxBufSize) {
 					contentLengthCurrent = this->maxBufSize;
 				}
