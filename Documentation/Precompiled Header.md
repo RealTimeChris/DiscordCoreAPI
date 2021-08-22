@@ -1,5 +1,4 @@
-```
-cpp
+```cpp
 // pch.h - Precomiled header.
 // https://github.com/RealTimeChris
 
@@ -11,10 +10,6 @@ cpp
 #ifndef WINRT_LEAN_AND_MEAN
 #define WINRT_LEAN_AND_MEAN
 #endif
-
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
 
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/exception/exception.hpp>
