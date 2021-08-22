@@ -415,6 +415,7 @@ namespace DiscordCoreAPI {
 				youtubeSong.description = videoSearchResult.description;
 				youtubeSong.title = videoSearchResult.videoTitle;
 				youtubeSong.url = videoSearchResult.videoURL;
+				youtubeSong.songId = to_string((int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				YouTubeSongDB youtubeSongDB;
 				youtubeSongDB.contentLength = (int)format.contentLength;
 				youtubeSongDB.description = videoSearchResult.description;
@@ -423,20 +424,12 @@ namespace DiscordCoreAPI {
 				youtubeSongDB.imageURL = videoSearchResult.thumbNailURL;
 				youtubeSongDB.title = videoSearchResult.videoTitle;
 				youtubeSongDB.url = videoSearchResult.videoURL;
+				youtubeSongDB.songId = to_string((int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				youtubeSongDB.videoId = videoSearchResult.videoId;
+				dataPackage03.songs.push_back(youtubeSongDB);
 				bool isItFound = false;
-				for (int x = 0; x < dataPackage03.songs.size(); x += 1) {
-					if (videoSearchResult.videoId == dataPackage03.songs[x].videoId) {
-						isItFound = true;
-						break;
-					}
-				}
-				if (!isItFound) {
-					dataPackage03.songs.push_back(youtubeSongDB);
-				}
-				isItFound = false;
 				for (auto value : this->songQueue) {
-					if (value.videoId == youtubeSongDB.videoId) {
+					if (value.songId == youtubeSongDB.songId) {
 						isItFound = true;
 						break;
 					}
@@ -538,6 +531,7 @@ namespace DiscordCoreAPI {
 				youtubeSong.duration = dataPackage01.duration;
 				youtubeSong.description = dataPackage01.description;
 				youtubeSong.title = dataPackage01.title;
+				youtubeSong.songId = dataPackage01.songId;
 				youtubeSong.url = dataPackage01.url;
 				YouTubeSongDB youtubeSongDB;
 				youtubeSongDB.contentLength = (int)dataPackage01.contentLength;
@@ -546,11 +540,12 @@ namespace DiscordCoreAPI {
 				youtubeSongDB.formatDownloadURL = dataPackage01.formatDownloadURL;
 				youtubeSongDB.imageURL = dataPackage01.imageURL;
 				youtubeSongDB.title = dataPackage01.title;
+				youtubeSongDB.songId = dataPackage01.songId;
 				youtubeSongDB.url = dataPackage01.url;
 				youtubeSongDB.videoId = dataPackage01.videoId;
 				bool isItFound = false;
 				for (int x = 0; x < dataPackage03.songs.size();x+=1) {
-					if (dataPackage01.videoId == dataPackage03.songs[x].videoId) {
+					if (dataPackage01.songId== dataPackage03.songs[x].songId) {
 						isItFound = true;
 						break;
 					}
@@ -560,7 +555,7 @@ namespace DiscordCoreAPI {
 				}
 				isItFound = false;
 				for (auto value : this->songQueue) {
-					if (value.videoId == youtubeSongDB.videoId) {
+					if (value.songId == youtubeSongDB.songId) {
 						isItFound = true;
 						break;
 					}
@@ -651,20 +646,45 @@ namespace DiscordCoreAPI {
 				}
 			}
 			else if (dataPackage->loopAll) {
-				if (dataPackage->currentSong.videoId != "") {
-					dataPackage->currentSong = dataPackage->currentSong;
-					this->currentSong = this->currentSong;
+				if (dataPackage->currentSong.videoId != "" && dataPackage->songs.size() > 0) {
+					auto tempSong = this->currentSong;
+					auto tempSong02 = dataPackage->currentSong;
+					dataPackage->currentSong = dataPackage->songs.at(0);
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[x + 1];
+					}
+					this->songQueue.at(this->songQueue.size() - 1) = tempSong;
+					for (int x = 0; x < dataPackage->songs.size(); x += 1) {
+						if (x == dataPackage->songs.size() - 1) {
+							break;
+						}
+						dataPackage->songs[x] = dataPackage->songs[x + 1];
+					}
+					dataPackage->songs.at(dataPackage->songs.size() - 1) = tempSong02;
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
-				else if (dataPackage->songs.size() > 0) {
+				else if (dataPackage->currentSong.videoId == "" && dataPackage->songs.size() > 0) {
 					dataPackage->currentSong = dataPackage->songs.at(0);
 					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					vector<RawFrame> frames = this->currentSong.frames;
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
+				else if (dataPackage->songs.size() == 0) {
+					dataPackage->currentSong = dataPackage->currentSong;
+					this->currentSong = this->currentSong;
 					vector<RawFrame> frames = this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;

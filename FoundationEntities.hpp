@@ -3578,6 +3578,7 @@ namespace DiscordCoreAPI {
         string description = "";
         string duration = "";
         string videoId = "";
+        string songId;
     };
 
     struct YouTubeSongDB {
@@ -3588,6 +3589,7 @@ namespace DiscordCoreAPI {
         string description = "";
         string duration = "";
         string videoId = "";
+        string songId;
         int contentLength = 0;
     };
 
