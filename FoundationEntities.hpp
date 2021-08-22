@@ -3569,18 +3569,6 @@ namespace DiscordCoreAPI {
         vector<YouTubeFormat> formats{};
     };
 
-    struct YouTubeSong {
-        vector<RawFrame> frames{};
-        string imageURL = "";
-        string title = "";
-        string formatDownloadURL = "";
-        string url = "";
-        string description = "";
-        string duration = "";
-        string videoId = "";
-        string songId;
-    };
-
     struct YouTubeSongDB {
         string imageURL = "";
         string title = "";
@@ -3591,6 +3579,31 @@ namespace DiscordCoreAPI {
         string videoId = "";
         string songId;
         int contentLength = 0;
+    };
+
+    struct YouTubeSong {
+        operator YouTubeSongDB() {
+            YouTubeSongDB newData;
+            newData.contentLength = 0;
+            newData.description = this->description;
+            newData.duration = this->duration;
+            newData.formatDownloadURL = this->formatDownloadURL;
+            newData.imageURL = this->imageURL;
+            newData.songId = this->songId;
+            newData.title = this->title;
+            newData.url = this->url;
+            newData.videoId = this->videoId;
+            return newData;
+        }
+        vector<RawFrame> frames{};
+        string imageURL = "";
+        string title = "";
+        string formatDownloadURL = "";
+        string url = "";
+        string description = "";
+        string duration = "";
+        string videoId = "";
+        string songId;
     };
 
     struct Playlist {
