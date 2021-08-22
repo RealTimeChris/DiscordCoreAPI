@@ -1,4 +1,4 @@
-// InputEvents.hpp - Header for the "input event" stuff.
+// InputEventStuff.hpp - Header for the "input event" stuff.
 // Aug 18, 2021
 // Chris M.
 // https://github.com/RealTimeChris
@@ -10,7 +10,7 @@
 
 #include "../pch.h"
 #include "MessageStuff.hpp"
-#include "InteractionManager.hpp"
+#include "InteractionStuff.hpp"
 #include "GuildStuff01.hpp"
 
 namespace DiscordCoreAPI {

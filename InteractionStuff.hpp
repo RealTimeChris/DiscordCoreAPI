@@ -1,12 +1,12 @@
-// InteractionManager.hpp - Header for the interaction manager class.
+// InteractionStuff.hpp - Header for the interaction manager class.
 // May 28, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _INTERACTION_MANAGER_
-#define _INTERACTION_MANAGER_
+#ifndef _INTERACTION_STUFF_
+#define _INTERACTION_STUFF_
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"

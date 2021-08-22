@@ -1,12 +1,12 @@
-// EventHandler.hpp - An index file to round everything up.
+// EventStuff02.hpp - An index file to round everything up.
 // Jun 7, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _EVENT_HANDLER_
-#define _EVENT_HANDLER_
+#ifndef _EVENT_STUFF_02_
+#define _EVENT_STUFF_02_
 
 #include "DiscordCoreClient01.hpp"
 #include "Commands\CommandsList.hpp"

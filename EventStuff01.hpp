@@ -1,12 +1,12 @@
-// EventManager.hpp - Header for the winrt::event-manager class.
+// EventStuff01.hpp - Header for the winrt::event-manager class.
 // Apr 26, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _EVENT_MANAGER_
-#define _EVENT_MANAGER_
+#ifndef _EVENT_STUFF_01_
+#define _EVENT_STUFF_01_
 
 #include "../pch.h"
 #include "GuildMemberStuff.hpp"
