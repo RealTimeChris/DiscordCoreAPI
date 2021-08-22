@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
 							for (int x = 0; x < this->audioData->encodedFrameData.size(); x+=1) {
 								int newValue;
 								if (try_receive(this->seekBuffer, newValue)) {
-									x = (int)trunc(((float)x / (float)this->audioData->encodedFrameData.size())) * newValue;
+									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
 								};
 								if (this->areWePlaying == false) {
 									break;
@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
 							for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
 								int newValue;
 								if (try_receive(this->seekBuffer, newValue)) {
-									x = (int)trunc(((float)x / (float)this->audioData->rawFrameData.size())) * newValue;
+									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->rawFrameData.size());
 								};
 								if (this->areWePlaying == false) {
 									break;

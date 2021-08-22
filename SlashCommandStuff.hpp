@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
     };
 
     struct CreateApplicationCommandData {
-        DiscordCoreInternal::ApplicationCommandType type;
+        ApplicationCommandType type;
         string name;
         string description;
         vector<ApplicationCommandOptionData> options;
@@ -90,13 +90,14 @@ namespace DiscordCoreAPI {
             dataPackageNew.defaultPermission = dataPackage.defaultPermission;
             dataPackageNew.description = dataPackage.description;
             dataPackageNew.name = dataPackage.name;
-            dataPackageNew.type = dataPackage.type;
+            dataPackageNew.type = (DiscordCoreInternal::ApplicationCommandType)dataPackage.type;
             copyOptionsData(&dataPackageNew.options, dataPackage.options);
             DiscordCoreInternal::HttpWorkload workload;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_APPLICATION_COMMAND;
             workload.content = DiscordCoreInternal::getCreateApplicationCommandPayload(dataPackageNew);
+            cout << "THE STRING" << workload.content<< endl;
             DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
