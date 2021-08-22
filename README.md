@@ -45,13 +45,13 @@ if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
 		DiscordCoreAPI::ReplyMessageData responseData(args->eventData);
 		responseData.embeds.push_back(messageEmbed);
 		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
-		DiscordCoreAPI::InputEventManager::deleteInputEventResponse(event01, 20000).get();
+		DiscordCoreAPI::InputEvents::deleteInputEventResponse(event01, 20000).get();
 	}
 	else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 		DiscordCoreAPI::CreateInteractionResponseData responseData(args->eventData);
 		responseData.data.embeds.push_back(messageEmbed);
 		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
-		DiscordCoreAPI::InputEventManager::deleteInputEventResponse(event01, 20000).get();
+		DiscordCoreAPI::InputEvents::deleteInputEventResponse(event01, 20000).get();
 	}
 	co_await mainThread;
 	co_return;
