@@ -771,6 +771,15 @@ namespace DiscordCoreAPI {
 					returnData.didItSend = true;
 					return returnData;
 				}
+				else if (dataPackage->songs.size() == 0 && this->songQueue.size() == 0) {
+					this->currentSong = this->currentSong;
+					dataPackage->currentSong = this->currentSong;
+					AudioFrameData* frames = &this->currentSong.frames;
+					send(*this->sendAudioBuffer, frames);
+					returnData.dataPackage = *dataPackage;
+					returnData.didItSend = true;
+					return returnData;
+				}
 				else if (this->currentSong.videoId != "") {
 					this->currentSong = this->currentSong;
 					dataPackage->currentSong = this->currentSong;
