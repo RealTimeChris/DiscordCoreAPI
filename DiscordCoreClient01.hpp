@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 
 		void removeGuild(GuildData guildData) {
 			this->discordUser->writeDataToDB();
-			shared_ptr<unbounded_buffer<vector<RawFrame>>>thePtr = make_shared<unbounded_buffer<vector<RawFrame>>>();
+			shared_ptr<unbounded_buffer<vector<RawFrameData>>>thePtr = make_shared<unbounded_buffer<vector<RawFrameData>>>();
 			this->audioBuffersMap.erase(guildData.id);
 		}
 

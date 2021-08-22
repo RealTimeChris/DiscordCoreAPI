@@ -3554,9 +3554,25 @@ namespace DiscordCoreAPI {
         bool failedDueToPerms = false;
     };
 
-    struct RawFrame {
+    struct RawFrameData {
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
+    };
+
+    struct EncodedFrameData {
+        vector<uint8_t> data{};
+        uint32_t sampleCount = 0;
+    };
+
+    enum class AudioFrameType {
+        Encoded = 0,
+        RawPCM = 1
+    };
+
+    struct AudioFrameData{
+        AudioFrameType type;
+        vector<EncodedFrameData> encodedFrameData;
+        vector<RawFrameData> rawFrameData;
     };
 
     struct YouTubeSearchResult {
@@ -3595,7 +3611,7 @@ namespace DiscordCoreAPI {
             newData.videoId = this->videoId;
             return newData;
         }
-        vector<RawFrame> frames{};
+        AudioFrameData frames{};
         string imageURL = "";
         string title = "";
         string formatDownloadURL = "";

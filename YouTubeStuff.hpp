@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 	class YouTubeAPI {
 	public:
 
-		YouTubeAPI(shared_ptr<unbounded_buffer<vector<RawFrame>*>> sendAudioBufferNew) {
+		YouTubeAPI(shared_ptr<unbounded_buffer<AudioFrameData*>> sendAudioBufferNew) {
 			this->sendAudioBuffer = sendAudioBufferNew;
 		}
 
@@ -408,8 +408,13 @@ namespace DiscordCoreAPI {
 				auto frames = songDecoder->getFrames();
 				bytesWritten = 0;
 				bytesRead = 0;
+				BuildSongEncoderData dataPackage02;
+				dataPackage02.rawFrames = &frames;
+				dataPackage02.totalFileSize = format.contentLength;
 				YouTubeSong youtubeSong;
-				youtubeSong.frames = frames;
+				SongEncoder songEncoder(dataPackage02);
+				auto encodedFrames = songEncoder.encodeSong();
+				youtubeSong.frames = encodedFrames;
 				youtubeSong.imageURL = videoSearchResult.thumbNailURL;
 				youtubeSong.duration = videoSearchResult.duration;
 				youtubeSong.description = videoSearchResult.description;
@@ -526,8 +531,13 @@ namespace DiscordCoreAPI {
 				auto frames = songDecoder->getFrames();
 				bytesWritten = 0;
 				bytesRead = 0;
+				BuildSongEncoderData dataPackage02;
+				dataPackage02.rawFrames = &frames;
+				dataPackage02.totalFileSize = dataPackage01.contentLength;
+				SongEncoder songEncoder(dataPackage02);
+				auto encodedFrames = songEncoder.encodeSong();
 				YouTubeSong youtubeSong;
-				youtubeSong.frames = frames;
+				youtubeSong.frames = encodedFrames;
 				youtubeSong.imageURL = dataPackage01.imageURL;
 				youtubeSong.duration = dataPackage01.duration;
 				youtubeSong.description = dataPackage01.description;
@@ -622,9 +632,9 @@ namespace DiscordCoreAPI {
 			}
 			if (dataPackage->loopSong) {
 				if (dataPackage->currentSong.videoId != "") {
-					dataPackage->currentSong = dataPackage->currentSong;
+					dataPackage->currentSong = this->currentSong;
 					this->currentSong = this->currentSong;
-					vector<RawFrame>* frames = &this->currentSong.frames;
+					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -634,8 +644,9 @@ namespace DiscordCoreAPI {
 					dataPackage->currentSong = dataPackage->songs.at(0);
 					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
 					this->currentSong = this->songQueue.at(0);
+					dataPackage->currentSong = this->currentSong;
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					vector<RawFrame>* frames = &this->currentSong.frames;
+					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -649,6 +660,7 @@ namespace DiscordCoreAPI {
 			}
 			else if (dataPackage->loopAll) {
 				if (this->currentSong.videoId != "" && dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
+					cout << "WERE HERE WERE HERE0101010" << endl;
 					auto tempSong02 = dataPackage->currentSong;
 					auto tempSong = this->currentSong;
 					this->currentSong = this->songQueue[0];
@@ -663,13 +675,14 @@ namespace DiscordCoreAPI {
 					dataPackage->songs[this->songQueue.size() - 1] = tempSong;
 					this->songQueue.at(this->songQueue.size() - 1) = tempSong;
 					dataPackage->currentSong = this->currentSong;
-					vector<RawFrame>* frames = &this->currentSong.frames;
+					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
 				else if (this->currentSong.videoId == "" && dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
+					cout << "WERE HERE WERE HERE02020202" << endl;
 					this->currentSong = this->songQueue[0];
 					dataPackage->songs.resize(this->songQueue.size());
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
@@ -682,13 +695,14 @@ namespace DiscordCoreAPI {
 					dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
 					this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
 					dataPackage->currentSong = this->currentSong;
-					vector<RawFrame>* frames = &this->currentSong.frames;
+					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
 				else if (dataPackage->songs.size() == 0 && this->songQueue.size() > 0) {
+					cout << "WERE HERE WERE HERE03030303" << endl;
 					auto tempSong = this->currentSong;
 					dataPackage->currentSong = this->songQueue[0];
 					this->currentSong = this->songQueue[0];
@@ -702,22 +716,24 @@ namespace DiscordCoreAPI {
 					}
 					dataPackage->songs[dataPackage->songs.size() - 1] = tempSong;
 					this->songQueue[this->songQueue.size() - 1] = tempSong;
-					vector<RawFrame>* frames = &this->currentSong.frames;
+					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
 				else if (dataPackage->songs.size() == 0 && this->songQueue.size() == 0) {
+					cout << "WERE HERE WERE HERE04040404" << endl;
 					dataPackage->currentSong = this->currentSong;
 					this->currentSong = this->currentSong;
-					vector<RawFrame>* frames = &this->currentSong.frames;
+					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
 					return returnData;
 				}
 				else {
+					cout << "WERE HERE WERE HERE05050505" << endl;
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = false;
 					return returnData;
@@ -727,7 +743,7 @@ namespace DiscordCoreAPI {
 				if (dataPackage->songs.size() > 1 && this->songQueue.size() > 1) {
 					dataPackage->currentSong = dataPackage->songs[0];
 					this->currentSong = this->songQueue[0];
-					vector<RawFrame>* frames = &this->songQueue[0].frames;
+					AudioFrameData* frames = &this->songQueue[0].frames;
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
@@ -752,7 +768,7 @@ namespace DiscordCoreAPI {
 					this->currentSong = this->songQueue[0];
 					dataPackage->songs.erase(dataPackage->songs.begin());
 					this->songQueue.erase(this->songQueue.begin());
-					vector<RawFrame>* frames = &this->currentSong.frames;
+					AudioFrameData* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -767,7 +783,7 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		shared_ptr<unbounded_buffer<vector<RawFrame>*>> sendAudioBuffer;
+		shared_ptr<unbounded_buffer<AudioFrameData*>> sendAudioBuffer;
 		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
 		const hstring baseWatchURL = L"https://www.youtube.com/watch?v=";
 		const hstring baseURL = L"https://www.youtube.com";

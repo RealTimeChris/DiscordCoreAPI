@@ -12,11 +12,6 @@
 
 namespace DiscordCoreAPI {
 
-    struct EncodedFrame {
-        vector<uint8_t> data{};
-        uint32_t sampleCount = 0;
-    };
-
     struct BuildSongDecoderData {
     public:
         BuildSongDecoderData() {};
@@ -153,9 +148,9 @@ namespace DiscordCoreAPI {
             return offset;
         }
 
-        vector<RawFrame> getFrames() {
+        vector<RawFrameData> getFrames() {
             if (this->currentBuffer.size() >0){
-                vector<RawFrame> frames{};
+                vector<RawFrameData> frames{};
                 int ret = 0;
 
                 this->packet = av_packet_alloc();
@@ -218,7 +213,7 @@ namespace DiscordCoreAPI {
                                 newVector.push_back(this->newFrame->extended_data[0][x]);
                             }
 
-                            RawFrame rawFrame{};
+                            RawFrameData rawFrame{};
                             rawFrame.data = newVector;
                             rawFrame.sampleCount = frame->nb_samples;
                             frames.push_back(rawFrame);
@@ -234,7 +229,7 @@ namespace DiscordCoreAPI {
                                     newVector02.push_back(this->newFrame->extended_data[0][x]);
                                 }
 
-                                RawFrame rawFrame02{};
+                                RawFrameData rawFrame02{};
                                 rawFrame02.data = newVector02;
                                 rawFrame02.sampleCount = frame->nb_samples;
                                 frames.push_back(rawFrame02);
@@ -266,7 +261,7 @@ namespace DiscordCoreAPI {
                 cout << "FRAMES SIZE: " << currentSize << endl;
                 return frames;
             }
-            return vector<RawFrame>();
+            return vector<RawFrameData>();
         }
 
         ~SongDecoder() {

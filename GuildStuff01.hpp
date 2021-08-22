@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			else {
-				this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<vector<RawFrame>*>>()));
+				this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<AudioFrameData*>>()));
 				if (Guild::youtubeAPIMap.contains(this->data.id)) {
 					this->youtubeAPI = Guild::youtubeAPIMap.at(this->data.id);
 				}
