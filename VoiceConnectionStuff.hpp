@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 
 	class VoiceConnection : public agent {
 	public:
-		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<vector<RawFrame>>> bufferMessageBlockNew)
+		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<vector<RawFrame>*>> bufferMessageBlockNew)
 			: agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			if (voiceConnectionDataNew.channelId != "") {
 				if (sodium_init() == -1) {
@@ -132,13 +132,13 @@ namespace DiscordCoreAPI {
 		__int32 sequenceIndexLib = 0;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
-		shared_ptr<unbounded_buffer<vector<RawFrame>>> bufferMessageBlock;
+		shared_ptr<unbounded_buffer<vector<RawFrame>*>> bufferMessageBlock;
 		shared_ptr<unbounded_buffer<bool>> readyBuffer;
 		unbounded_buffer<bool> playPauseBuffer;
 		OpusEncoder* encoder;
 		int nChannels = 2;
 		winrt::event<delegate<>> onSongCompletionEvent;
-		vector<RawFrame> audioData;
+		vector<RawFrame>* audioData;
 
 		EncodedFrame encodeSingleAudioFrame(RawFrame inputFrame) {
 			uint8_t* oldBuffer;
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 					int timeCounter = 0;
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					int intervalCount = 20;
-					for (auto value : this->audioData) {
+					for (auto value : *this->audioData) {
 						if (this->areWePlaying == false) {
 							break;
 						}
@@ -267,7 +267,7 @@ namespace DiscordCoreAPI {
 						auto newVectorNew = encodeSingleAudioFrame(value);
 						this->sendSingleAudioFrame(newVectorNew);
 						frameCounter += 1;
-						if (frameCounter >= this->audioData.size() - 1) {
+						if (frameCounter >= this->audioData->size() - 1) {
 							this->areWePlaying = false;
 							this->areWeWaitingForAudioData = true;
 							this->onSongCompletionEvent();

@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 	class YouTubeAPI {
 	public:
 
-		YouTubeAPI(shared_ptr<unbounded_buffer<vector<RawFrame>>> sendAudioBufferNew) {
+		YouTubeAPI(shared_ptr<unbounded_buffer<vector<RawFrame>*>> sendAudioBufferNew) {
 			this->sendAudioBuffer = sendAudioBufferNew;
 		}
 
@@ -622,7 +622,7 @@ namespace DiscordCoreAPI {
 				if (dataPackage->currentSong.videoId != "") {
 					dataPackage->currentSong = dataPackage->currentSong;
 					this->currentSong = this->currentSong;
-					vector<RawFrame> frames = this->currentSong.frames;
+					vector<RawFrame>* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -633,7 +633,7 @@ namespace DiscordCoreAPI {
 					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					vector<RawFrame> frames = this->currentSong.frames;
+					vector<RawFrame>* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -665,7 +665,7 @@ namespace DiscordCoreAPI {
 						dataPackage->songs[x] = dataPackage->songs[x + 1];
 					}
 					dataPackage->songs.at(dataPackage->songs.size() - 1) = tempSong02;
-					vector<RawFrame> frames = this->currentSong.frames;
+					vector<RawFrame>* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -676,7 +676,7 @@ namespace DiscordCoreAPI {
 					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					vector<RawFrame> frames = this->currentSong.frames;
+					vector<RawFrame>* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -685,7 +685,7 @@ namespace DiscordCoreAPI {
 				else if (dataPackage->songs.size() == 0) {
 					dataPackage->currentSong = dataPackage->currentSong;
 					this->currentSong = this->currentSong;
-					vector<RawFrame> frames = this->currentSong.frames;
+					vector<RawFrame>* frames = &this->currentSong.frames;
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
 					returnData.didItSend = true;
@@ -701,8 +701,7 @@ namespace DiscordCoreAPI {
 				if (dataPackage->songs.size() > 1 && this->songQueue.size() > 1) {
 					dataPackage->currentSong = dataPackage->songs.at(0);
 					this->currentSong = this->songQueue.at(0);
-					vector<RawFrame> frames = this->songQueue.at(0).frames;
-					YouTubeSong songTemp;
+					vector<RawFrame>* frames = &this->songQueue.at(0).frames;
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
@@ -725,9 +724,8 @@ namespace DiscordCoreAPI {
 				else if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
 					dataPackage->currentSong = dataPackage->songs.at(0);
 					this->currentSong = this->songQueue.at(0);
-					vector<RawFrame> frames;
 					dataPackage->songs.erase(dataPackage->songs.begin());
-					frames = this->songQueue.at(0).frames;
+					vector<RawFrame>* frames = &this->songQueue.at(0).frames;
 					this->songQueue.erase(this->songQueue.begin());
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
@@ -743,7 +741,7 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		shared_ptr<unbounded_buffer<vector<RawFrame>>> sendAudioBuffer;
+		shared_ptr<unbounded_buffer<vector<RawFrame>*>> sendAudioBuffer;
 		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
 		const hstring baseWatchURL = L"https://www.youtube.com/watch?v=";
 		const hstring baseURL = L"https://www.youtube.com";
