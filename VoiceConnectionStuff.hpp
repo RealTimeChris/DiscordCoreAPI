@@ -140,6 +140,13 @@ namespace DiscordCoreAPI {
 		winrt::event<delegate<>> onSongCompletionEvent;
 		vector<RawFrame>* audioData;
 
+		void clearAudioBuffer() {
+			for (auto value : *this->audioData) {
+				value.data.clear();
+			}
+			this->audioData->clear();
+		}
+
 		EncodedFrame encodeSingleAudioFrame(RawFrame inputFrame) {
 			uint8_t* oldBuffer;
 			oldBuffer = new uint8_t[inputFrame.data.size()];
@@ -268,6 +275,7 @@ namespace DiscordCoreAPI {
 						this->sendSingleAudioFrame(newVectorNew);
 						frameCounter += 1;
 						if (frameCounter >= this->audioData->size() - 1) {
+							this->clearAudioBuffer();
 							this->areWePlaying = false;
 							this->areWeWaitingForAudioData = true;
 							this->onSongCompletionEvent();
