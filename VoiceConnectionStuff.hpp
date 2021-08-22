@@ -88,6 +88,7 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			else {
+				cout << "ARE WE PLAYING: " << std::boolalpha << this->areWePlaying << endl;
 				return this->areWePlaying;
 			}
 		}
@@ -274,7 +275,7 @@ namespace DiscordCoreAPI {
 							auto newVectorNew = encodeSingleAudioFrame(value);
 							this->sendSingleAudioFrame(newVectorNew);
 							frameCounter += 1;
-							if (frameCounter >= this->audioData->size() - 1) {
+							if (this->audioData == nullptr || frameCounter >= this->audioData->size() - 1) {
 								this->clearAudioData();
 								this->areWePlaying = false;
 								this->areWeWaitingForAudioData = true;
