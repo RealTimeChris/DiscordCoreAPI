@@ -644,9 +644,9 @@ namespace DiscordCoreAPI {
 				}
 			}
 			else if (dataPackage->loopAll) {
-				if (dataPackage->currentSong.videoId != "" && dataPackage->songs.size() > 0) {
-					auto tempSong = this->currentSong;
+				if (dataPackage->currentSong.videoId != "" && dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
 					auto tempSong02 = dataPackage->currentSong;
+					auto tempSong = this->currentSong;
 					dataPackage->currentSong = dataPackage->songs.at(0);
 					this->currentSong = this->songQueue.at(0);
 					for (int x = 0; x < this->songQueue.size(); x += 1) {

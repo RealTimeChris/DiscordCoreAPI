@@ -562,7 +562,6 @@ namespace DiscordCoreInternal {
 
 	class WebSocketConnectionAgent : public agent {
 	public:
-		hstring botToken = L"";
 
 		WebSocketConnectionAgent(ITarget<json>& target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
 			: agent(*threadContextNew->scheduler),
@@ -641,6 +640,7 @@ namespace DiscordCoreInternal {
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		event_token messageReceivedToken;
 		event_token closedToken;
+		hstring botToken = L"";
 		MessageWebSocket webSocket{ nullptr };
 		DataWriter messageWriter{ nullptr };
 		hstring socketPath = L"";
@@ -688,7 +688,6 @@ namespace DiscordCoreInternal {
 		}
 
 		void terminate() {
-			this->done();
 			this->cleanup();
 		}
 
@@ -713,19 +712,14 @@ namespace DiscordCoreInternal {
 		}
 
 		void connect() {
-			try {
-				this->webSocket = MessageWebSocket();
-				this->messageWriter = DataWriter(this->webSocket.OutputStream());
-				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
-				this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-				this->closedToken = this->webSocket.Closed({ this, &WebSocketConnectionAgent::onClosed });
-				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
-				this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(this->socketPath)).get();
-				this->isThisConnected = true;
-			}
-			catch (hresult result) {
-				cout << result.value << endl;
-			}
+			this->webSocket = MessageWebSocket();
+			this->messageWriter = DataWriter(this->webSocket.OutputStream());
+			this->webSocket.Control().MessageType(SocketMessageType::Utf8);
+			this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+			this->closedToken = this->webSocket.Closed({ this, &WebSocketConnectionAgent::onClosed });
+			this->messageReceivedToken = this->webSocket.MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
+			this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(this->socketPath)).get();
+			this->isThisConnected = true;
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
