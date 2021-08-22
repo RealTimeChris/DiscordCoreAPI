@@ -327,15 +327,12 @@ namespace DiscordCoreAPI {
 								}
 							}
 						}
-						if (!this->areWePlaying) {
-							break;
-						}
 					}
 				}
 				if (this->areWeStopping) {
 					send(*this->readyBuffer, true);
 					this->areWeStopping = false;
-				}				
+				}
 				this->sendSpeakingMessage(false);
 			}
 			this->areWeConnectedBool = false;
