@@ -149,6 +149,7 @@ namespace DiscordCoreAPI {
 			uint8_t* newBuffer;
 			int bufferSize = (int)inputFrame.data.size() * nChannels * sizeof(float);
 			newBuffer = new uint8_t[bufferSize];
+
 			int count = opus_encode_float(encoder, (float*)oldBuffer, 960, newBuffer, bufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x< count; x += 1) {
