@@ -95,9 +95,6 @@ namespace DiscordCoreAPI {
 		void play(bool doWeBlock = false) {
 			if (this != nullptr) {
 				send(this->playPauseBuffer, true);
-				this->doWeWait = true;
-				this->areWePlaying = false;
-				this->areWeWaitingForAudioData = true;
 				if (doWeBlock) {
 					wait(this);
 				}
@@ -111,8 +108,8 @@ namespace DiscordCoreAPI {
 				}
 				else {
 					this->areWePlaying = false;
-					sendSpeakingMessage(false);
 					this->doWeWait = true;
+					sendSpeakingMessage(false);
 				}
 			}
 		}
@@ -245,11 +242,9 @@ namespace DiscordCoreAPI {
 		void run() {
 			this->areWeConnectedBool = true;
 			while (!this->doWeQuit) {
-				cout << "WERE HERE 034030303:" << endl;
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
 				}
-				cout << "WERE HERE 0020202:" << endl;
 				if (this->areWeWaitingForAudioData) {
 					this->audioData = receive(*this->bufferMessageBlock);
 					this->areWeWaitingForAudioData = false;
@@ -258,15 +253,12 @@ namespace DiscordCoreAPI {
 				this->areWePlaying = true;
 				this->sendSpeakingMessage(true);
 				int frameCounter = 0;
-				cout << "WERE HERE 05050505:" << endl;
 				while (this->areWePlaying) {
 					int timeCounter = 0;
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					int intervalCount = 20;
 					if (this->audioData != nullptr) {
-						cout << "WERE HERE 06060606:" << endl;
 						if (this->audioData->type == AudioFrameType::Encoded) {
-							cout << "WERE HERE 07070707:" << endl;
 							for (auto value : this->audioData->encodedFrameData) {
 								if (this->areWePlaying == false) {
 									break;
