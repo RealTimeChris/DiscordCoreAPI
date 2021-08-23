@@ -738,20 +738,20 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				if (dataPackage->songs.size() > 1 && this->songQueue.size() > 1) {
-					dataPackage->currentSong = dataPackage->songs[0];
+					dataPackage->currentSong = this->songQueue[0];
 					this->currentSong = this->songQueue[0];
 					AudioFrameData* frames = &this->songQueue[0].frames;
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						this->songQueue[x] = this->songQueue[x+1];
+						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						dataPackage->songs[x] = dataPackage->songs[x + 1];
+						dataPackage->songs[x] = this->songQueue[x + 1];
 					}
 					dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
 					this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
