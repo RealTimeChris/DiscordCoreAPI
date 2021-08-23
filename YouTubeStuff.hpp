@@ -409,7 +409,7 @@ namespace DiscordCoreAPI {
 				bytesWritten = 0;
 				bytesRead = 0;
 				BuildSongEncoderData dataPackage02;
-				dataPackage02.rawFrames = &frames;
+				dataPackage02.rawFrames = frames;
 				dataPackage02.totalFileSize = format.contentLength;
 				YouTubeSong youtubeSong;
 				SongEncoder songEncoder(dataPackage02);
@@ -533,7 +533,7 @@ namespace DiscordCoreAPI {
 				bytesWritten = 0;
 				bytesRead = 0;
 				BuildSongEncoderData dataPackage02;
-				dataPackage02.rawFrames = &frames;
+				dataPackage02.rawFrames = frames;
 				dataPackage02.totalFileSize = dataPackage01.contentLength;
 				SongEncoder songEncoder(dataPackage02);
 				auto encodedFrames = songEncoder.encodeSong();
@@ -774,30 +774,23 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() > 0) {
 					dataPackage->currentSong = this->songQueue[0];
 					this->currentSong = this->songQueue[0];
-					dataPackage->songs.erase(dataPackage->songs.begin());
+					if (dataPackage->songs.size() > 0) {
+						dataPackage->songs.erase(dataPackage->songs.begin());
+					}
 					this->songQueue.erase(this->songQueue.begin());
 					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
+					send(*this->sendAudioBuffer, frames);
 					returnData.didItSend = true;
 					return returnData;
 				}
-				else if (dataPackage->songs.size() == 0 && this->songQueue.size() == 0) {
-					this->currentSong = this->currentSong;
-					dataPackage->currentSong = this->currentSong;
+				else if (this->currentSong.videoId != "" || (dataPackage->songs.size() == 0 && this->songQueue.size() == 0)) {
 					AudioFrameData* frames = &this->currentSong.frames;
+					this->currentSong = YouTubeSong();
+					dataPackage->currentSong = YouTubeSongDB();
 					send(*this->sendAudioBuffer, frames);
 					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else if (this->currentSong.videoId != "") {
-					this->currentSong = this->currentSong;
-					dataPackage->currentSong = this->currentSong;
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
+					returnData.didItSend = false;
 					return returnData;
 				}
 				else {

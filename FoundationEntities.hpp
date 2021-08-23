@@ -3556,11 +3556,25 @@ namespace DiscordCoreAPI {
     };
 
     struct RawFrameData {
+        RawFrameData(){}
+        RawFrameData(const RawFrameData& copy) {
+            for (auto value : copy.data) {
+                this->data.push_back(value);
+            }
+            this->sampleCount = copy.sampleCount;
+        }
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
     };
 
     struct EncodedFrameData {
+        EncodedFrameData(){}
+        EncodedFrameData(const EncodedFrameData& copy) {
+            for (auto value : copy.data) {
+                this->data.push_back(value);
+            }
+            this->sampleCount = copy.sampleCount;
+        }
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
     };
@@ -3571,6 +3585,16 @@ namespace DiscordCoreAPI {
     };
 
     struct AudioFrameData{
+        AudioFrameData(){}
+        AudioFrameData(const AudioFrameData& copy) {
+            for (auto value : copy.encodedFrameData) {
+                this->encodedFrameData.push_back(value);
+            }
+            for (auto value : copy.rawFrameData) {
+                this->rawFrameData.push_back(value);
+            }
+            this->type = copy.type;
+        }
         AudioFrameType type;
         vector<EncodedFrameData> encodedFrameData;
         vector<RawFrameData> rawFrameData;

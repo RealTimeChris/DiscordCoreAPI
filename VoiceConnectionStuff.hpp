@@ -159,18 +159,16 @@ namespace DiscordCoreAPI {
 		}
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
-			uint8_t* oldBuffer;
-			oldBuffer = new uint8_t[inputFrame.data.size()];
-			for (unsigned int x = 0; x < inputFrame.data.size(); x += 1) {
-				oldBuffer[x] = inputFrame.data[x];
-			}
+			float* oldBuffer;
+			oldBuffer = new float[inputFrame.data.size() / sizeof(float)];
+			memcpy(oldBuffer, inputFrame.data.data(), inputFrame.data.size());
 			uint8_t* newBuffer;
 			int bufferSize = (int)inputFrame.data.size() * this->nChannels * sizeof(float);
 			newBuffer = new uint8_t[bufferSize];
 
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, 960, newBuffer, bufferSize);
+			int count = opus_encode_float(this->encoder, oldBuffer, 960, newBuffer, bufferSize);
 			vector<uint8_t> newVector{};
-			for (int x = 0; x< count; x += 1) {
+			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);
 			}
 			EncodedFrameData encodedFrame;
@@ -182,7 +180,7 @@ namespace DiscordCoreAPI {
 			newBuffer = nullptr;
 			return encodedFrame;
 		}
-
+		
 		void sendSingleAudioFrame(EncodedFrameData bufferToSend) {
 			constexpr int headerSize = 12;
 			constexpr int nonceSize = crypto_secretbox_NONCEBYTES;

@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
     struct BuildSongEncoderData {
     public:
 		BuildSongEncoderData() {};
-		vector<RawFrameData>* rawFrames;
+		vector<RawFrameData> rawFrames;
 		size_t totalFileSize = 0;
     };
 
@@ -33,10 +33,10 @@ namespace DiscordCoreAPI {
 
 		AudioFrameData encodeSong() {
 			vector<EncodedFrameData> newVector;
-			for (int x = 0; x < this->rawFrames->size(); x += 1) {
-				newVector.push_back(encodeSingleAudioFrame((*this->rawFrames)[x]));
+			for (int x = 0; x < this->rawFrames.size(); x += 1) {
+				newVector.push_back(encodeSingleAudioFrame(this->rawFrames[x]));
 			}
-			this->rawFrames->clear();
+			this->rawFrames.clear();
 			AudioFrameData newData;
 			newData.type = AudioFrameType::Encoded;
 			newData.encodedFrameData = newVector;
@@ -48,21 +48,22 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		vector<RawFrameData>* rawFrames;
+		vector<RawFrameData> rawFrames;
 		int nChannels = 2;
 		OpusEncoder* encoder;
+		int frameSize = 960;
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
 			uint8_t* oldBuffer;
 			oldBuffer = new uint8_t[inputFrame.data.size()];
-			for (unsigned int x = 0; x < inputFrame.data.size(); x += 1) {
+			for (int x = 0; x < inputFrame.data.size(); x += 1) {
 				oldBuffer[x] = inputFrame.data[x];
 			}
 			uint8_t* newBuffer;
-			int bufferSize = (int)inputFrame.data.size() * this->nChannels * sizeof(float);
+			int bufferSize = this->frameSize* this->nChannels * sizeof(float);
 			newBuffer = new uint8_t[bufferSize];
 
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, 960, newBuffer, bufferSize);
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, this->frameSize, newBuffer, bufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);
