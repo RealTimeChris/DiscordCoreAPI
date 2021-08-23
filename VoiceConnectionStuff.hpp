@@ -151,6 +151,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<bool> playPauseBuffer;
 		OpusEncoder* encoder;
 		int nChannels = 2;
+		int frameSize = 960;
 		winrt::event<delegate<>> onSongCompletionEvent;
 		AudioFrameData* audioData;
 
@@ -159,14 +160,16 @@ namespace DiscordCoreAPI {
 		}
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
-			float* oldBuffer;
-			oldBuffer = new float[inputFrame.data.size() / sizeof(float)];
-			memcpy(oldBuffer, inputFrame.data.data(), inputFrame.data.size());
+			uint8_t* oldBuffer;
+			oldBuffer = new uint8_t[inputFrame.data.size()];
+			for (int x = 0; x < inputFrame.data.size(); x += 1) {
+				oldBuffer[x] = inputFrame.data[x];
+			}
 			uint8_t* newBuffer;
-			int bufferSize = (int)inputFrame.data.size() * this->nChannels * sizeof(float);
+			int bufferSize = this->frameSize * this->nChannels * sizeof(float);
 			newBuffer = new uint8_t[bufferSize];
 
-			int count = opus_encode_float(this->encoder, oldBuffer, 960, newBuffer, bufferSize);
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, this->frameSize, newBuffer, bufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);

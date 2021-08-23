@@ -60,10 +60,10 @@ namespace DiscordCoreAPI {
 				oldBuffer[x] = inputFrame.data[x];
 			}
 			uint8_t* newBuffer;
-			int bufferSize = this->frameSize* this->nChannels * sizeof(float);
+			int bufferSize = 1276;
 			newBuffer = new uint8_t[bufferSize];
 
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, this->frameSize, newBuffer, bufferSize);
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, bufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);

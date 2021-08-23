@@ -2058,26 +2058,6 @@ namespace DiscordCoreAPI {
 
         EmbedData() {}
 
-        EmbedData(const EmbedData& p1) {
-            this->author = p1.author;
-            this->description = p1.description;
-            for (auto value : p1.fields) {
-                this->fields.push_back(value);
-            }
-            this->footer = p1.footer;
-            this->hexColorValue = p1.hexColorValue;
-            this->image = p1.image;
-            this->provider = p1.provider;
-            this->thumbnail = p1.thumbnail;
-            this->timestampRaw = p1.timestampRaw;
-            this->timestamp = p1.timestampRaw;
-            this->title = p1.title;
-            this->type = p1.type;
-            this->url = p1.url;
-            this->video = p1.video;
-            return;
-        }
-
         operator DiscordCoreInternal::EmbedData() {
             DiscordCoreInternal::EmbedData newData;
             newData.author = this->author;
@@ -3557,6 +3537,14 @@ namespace DiscordCoreAPI {
 
     struct RawFrameData {
         RawFrameData(){}
+        operator RawFrameData() {
+            RawFrameData newData;
+            for (auto value : this->data) {
+                newData.data.push_back(value);
+            }
+            newData.sampleCount = this->sampleCount;
+            return newData;
+        }
         RawFrameData(const RawFrameData& copy) {
             for (auto value : copy.data) {
                 this->data.push_back(value);
@@ -3569,6 +3557,14 @@ namespace DiscordCoreAPI {
 
     struct EncodedFrameData {
         EncodedFrameData(){}
+        operator EncodedFrameData() {
+            EncodedFrameData newData;
+            for (auto value : this->data) {
+                newData.data.push_back(value);
+            }
+            newData.sampleCount = this->sampleCount;
+            return newData;
+        }
         EncodedFrameData(const EncodedFrameData& copy) {
             for (auto value : copy.data) {
                 this->data.push_back(value);
@@ -3586,6 +3582,17 @@ namespace DiscordCoreAPI {
 
     struct AudioFrameData{
         AudioFrameData(){}
+        operator AudioFrameData() {
+            AudioFrameData newData;
+            for (auto value : this->encodedFrameData) {
+                newData.encodedFrameData.push_back(value);
+            }
+            for (auto value : this->rawFrameData) {
+                newData.rawFrameData.push_back(value);
+            }
+            newData.type = this->type;
+            return newData;
+        }
         AudioFrameData(const AudioFrameData& copy) {
             for (auto value : copy.encodedFrameData) {
                 this->encodedFrameData.push_back(value);
