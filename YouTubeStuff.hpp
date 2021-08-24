@@ -492,15 +492,12 @@ namespace DiscordCoreAPI {
 			int bytesReadTotal = 0;
 			int bytesRead = 0;
 			int bytesWritten = 0;
-			string playerId = to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			SongDecoder* songDecoder{ nullptr };
 			Playlist dataPackage03 = playlist;
 			while (remainingDownloadContentLength > 0) {
 				if (contentLengthCurrent > 0) {
 					dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
 				}
 				auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-				IBuffer streamBuffer;
 				stringstream bufferStream;
 				bufferStream << buffer.data();
 				headers = bufferStream.str();
@@ -524,12 +521,12 @@ namespace DiscordCoreAPI {
 				DataReader streamDataReader(outputStream.GetInputStreamAt(bytesReadTotal));
 				bytesRead += streamDataReader.LoadAsync(bytesWritten).get();
 				bytesReadTotal += bytesRead;
-				streamBuffer = streamDataReader.ReadBuffer(bytesRead);
+				IBuffer streamBuffer = streamDataReader.ReadBuffer(bytesRead);
 				BuildSongDecoderData dataPackage;
 				dataPackage.dataBuffer = streamBuffer;
 				dataPackage.totalFileSize = dataPackage01.contentLength;
-				songDecoder = new SongDecoder(dataPackage);
-				auto frames = songDecoder->getFrames();
+				SongDecoder songDecoder(dataPackage);
+				auto frames = songDecoder.getFrames();
 				bytesWritten = 0;
 				bytesRead = 0;
 				BuildSongEncoderData dataPackage02;
@@ -590,14 +587,15 @@ namespace DiscordCoreAPI {
 
 		YouTubeSong getCurrentSong() {
 			if (this->currentSong.videoId != "") {
+
 				return this->currentSong;
 			}
 			else if (this->songQueue.size() > 0) {
 				return this->songQueue.at(0);
 			}
-			else {
+			else { 
 				return YouTubeSong();
-			}
+			};
 		}
 
 		Playlist stopPlaying(Playlist dataPackage) {
@@ -636,10 +634,13 @@ namespace DiscordCoreAPI {
 					this->downloadAudio(value01, dataPackage.dataPackage);
 				}
 			}
+			cout << "THIS IS IT THIS IS IT 02020202" << endl;
 			SendNextSongReturnData returnData;
+			cout << "LOOPSONG: " << boolalpha << playlist.loopSong << endl;
+			cout << "LOOP ALL: " << boolalpha << playlist.loopAll << endl;
 			if (playlist.loopSong) {
 				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS IS010101" << endl;
+					cout << "THIS IS IS OT 010101" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					for (int x = 0; x < playlist.songs.size(); x += 1) {
 						if (x == playlist.songs.size() - 1) {
@@ -659,25 +660,33 @@ namespace DiscordCoreAPI {
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisEmpty = false;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
-					cout << "THIS IS IT 02020202" << endl;
+					cout << "THIS IS OT 02020202020202" << endl;
+					playlist.currentSong = playlist.currentSong;
+					this->currentSong = this->currentSong;
+					if (send(*this->sendAudioBuffer, &this->currentSong.frames)) {
+						cout << "WERE HERE 0303030303030303" << endl;
+					};
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
+				}
+				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0){
+					cout << "THIS IS OT 030303" << endl;
 					playlist.currentSong = playlist.currentSong;
 					this->currentSong = this->currentSong;
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
-					returnData.isThisEmpty = false;
-					returnData.isThisTheLastOne = false;
-				}
-				else if ((playlist.currentSong.description != "" && playlist.songs.size() == 0)){
-					cout << "THIS IS IT 030303" << endl;
-					playlist.currentSong = playlist.currentSong;
-					this->currentSong = this->currentSong;
-					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisTheLastOne = false;
 					returnData.isThisEmpty = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
-				else if (playlist.getVideoId() != "" && playlist.songs.size() == 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS IT 04040404" << endl;
+				else if (playlist.songs.size() == 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS OT 04040404" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					this->currentSong = this->songQueue.at(0);
 					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
@@ -685,16 +694,20 @@ namespace DiscordCoreAPI {
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisTheLastOne = false;
 					returnData.isThisEmpty = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
-				else if (playlist.getVideoId() == "") {
-					cout << "THIS IS IT 05050505" << endl;
+				else if (playlist.getVideoURL() == "") {
+					cout << "THIS IS OT 05050505" << endl;
 					returnData.isThisEmpty = true;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 			}
 			else if (playlist.loopAll) {
 				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS IT 06060606" << endl;
+					cout << "THIS IS OT 06060606" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					for (int x = 0; x < playlist.songs.size(); x += 1) {
 						if (x == playlist.songs.size() - 1) {
@@ -714,9 +727,11 @@ namespace DiscordCoreAPI {
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisEmpty = false;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
-					cout << "THIS IS IT 07070707" << endl;
+					cout << "THIS IS OT 07070707" << endl;
 					auto tempSong01 = playlist.currentSong;
 					auto tempSong02 = this->currentSong;
 					playlist.currentSong = playlist.songs.at(0);
@@ -738,17 +753,21 @@ namespace DiscordCoreAPI {
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisEmpty = false;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0) {
-					cout << "THIS IS IT 08080808" << endl;
+					cout << "THIS IS OT 08080808" << endl;
 					this->currentSong = this->currentSong;
 					playlist.currentSong = playlist.currentSong;
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisTheLastOne = false;
 					returnData.isThisEmpty = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
-				else if (playlist.getVideoId() != "" && playlist.songs.size() == 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS IT 09090909" << endl;
+				else if (playlist.songs.size() == 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS OT 09090909" << endl;
 					this->currentSong = this->songQueue.at(0);
 					playlist.currentSong = playlist.songs.at(0);
 					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
@@ -756,16 +775,20 @@ namespace DiscordCoreAPI {
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisTheLastOne = false;
 					returnData.isThisEmpty = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 				else if (playlist.getVideoId() == "") {
-					cout << "THIS IS IT 1010101010" << endl;
+					cout << "THIS IS OT 1010101010" << endl;
 					returnData.isThisEmpty = true;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 			}
 			else {
 				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS IT 11111111" << endl;
+					cout << "THIS IS OT 11111111" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					for (int x = 0; x < playlist.songs.size(); x += 1) {
 						if (x == playlist.songs.size() - 1) {
@@ -773,29 +796,7 @@ namespace DiscordCoreAPI {
 						}
 						playlist.songs[x] = playlist.songs[x + 1];
 					}
-					playlist.songs.erase(playlist.songs.end()-1, playlist.songs.end());
-					this->currentSong = this->songQueue.at(0);
-					for (int x = 0; x < this->songQueue.size(); x += 1) {
-						if (x == this->songQueue.size() - 1) {
-							break;
-						}
-						this->songQueue[x] = this->songQueue[x + 1];
-					}
-					this->songQueue.erase(this->songQueue.end()-1, this->songQueue.end());
-					send(*this->sendAudioBuffer, &this->currentSong.frames);
-					returnData.isThisEmpty = false;
-					returnData.isThisTheLastOne = false;
-				}
-				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
-					cout << "THIS IS IT 12121212" << endl;
-					playlist.currentSong = playlist.songs.at(0);
-					for (int x = 0; x < playlist.songs.size(); x += 1) {
-						if (x == playlist.songs.size() - 1) {
-							break;
-						}
-						playlist.songs[x] = playlist.songs[x + 1];
-					}
-					playlist.songs.erase(playlist.songs.end()-1, playlist.songs.end());
+					playlist.songs.erase(playlist.songs.end() - 1, playlist.songs.end());
 					this->currentSong = this->songQueue.at(0);
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
@@ -807,35 +808,68 @@ namespace DiscordCoreAPI {
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisEmpty = false;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
+				}
+				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
+					cout << "THIS IS OT 12121212" << endl;
+					playlist.currentSong = playlist.songs.at(0);
+					for (int x = 0; x < playlist.songs.size(); x += 1) {
+						if (x == playlist.songs.size() - 1) {
+							break;
+						}
+						playlist.songs[x] = playlist.songs[x + 1];
+					}
+					playlist.songs.erase(playlist.songs.end() - 1, playlist.songs.end());
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[x + 1];
+					}
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0) {
-					cout << "THIS IS IT 13131313" << endl;
+					cout << "THIS IS OT 13131313" << endl;
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					this->currentSong = YouTubeSong();
 					playlist.currentSong = YouTubeSongDB();
 					returnData.isThisEmpty = true;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
-				else if (playlist.getVideoId() != "" && playlist.songs.size() == 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS IT 14141414" << endl;
+				else if (playlist.songs.size() == 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS OT 14141414" << endl;
 					this->currentSong = this->songQueue.at(0);
 					playlist.currentSong = playlist.songs.at(0);
-					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin()+1);
-					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin()+1);
+					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisTheLastOne = true;
 					returnData.isThisEmpty = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 				else if (playlist.getVideoId() == "") {
-					cout << "THIS IS IT 15151515" << endl;
+					cout << "THIS IS OT 15151515" << endl;
 					returnData.isThisEmpty = true;
 					returnData.isThisTheLastOne = false;
+					returnData.dataPackage = playlist;
+					return returnData;
 				}
 			}
-			returnData.dataPackage = playlist;
 			return returnData;
 		}
 
 	protected:
+		friend class Guild;
 		shared_ptr<unbounded_buffer<AudioFrameData*>> sendAudioBuffer;
 		const hstring baseSearchURL = L"https://www.youtube.com/results?search_query=";
 		const hstring baseWatchURL = L"https://www.youtube.com/watch?v=";

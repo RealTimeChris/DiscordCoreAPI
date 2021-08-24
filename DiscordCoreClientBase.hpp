@@ -39,6 +39,8 @@ namespace DiscordCoreAPI {
 	protected:
 		friend class Guild;
 		friend class WebSocketConnectionAgent;
+		friend class YouTubeAPI;
+		friend class VoiceConnection;
 		friend class HttpRequestAgent;
 		friend class ChannelStuff;
 		friend class RoleStuff;
@@ -47,13 +49,14 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class GuildMembers;
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent;
-		map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> audioBuffersMap;
+		static map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> audioBuffersMap;
 		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<ChannelManager> channels{ nullptr };
 		shared_ptr<RoleManager> roles{ nullptr };
 		shared_ptr<UserManager> users{ nullptr };
 		hstring botToken;
 	};
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> DiscordCoreClientBase::audioBuffersMap;
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::pWebSocketConnectionAgent{ nullptr };
 }

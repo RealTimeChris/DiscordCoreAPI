@@ -3635,15 +3635,7 @@ namespace DiscordCoreAPI {
     };
 
     struct Playlist {
-        Playlist(){}
-        Playlist(Playlist* selfData) {
-            this->currentSong = selfData->currentSong;
-            this->loopAll = selfData->loopAll;
-            this->loopSong = selfData->loopSong;
-            this->songs = selfData->songs;
-            this->textChannelId = selfData->textChannelId;
-            this->voiceChannelId = selfData->voiceChannelId;
-        }
+        Playlist() {}
         string getVideoId() {
             if (this->currentSong.videoId != "") {
                 return this->currentSong.videoId;

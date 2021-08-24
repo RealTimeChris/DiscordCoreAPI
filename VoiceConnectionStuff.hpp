@@ -12,17 +12,20 @@
 #include "WebSocketStuff.hpp"
 #include "DecodingStuff.hpp"
 #include "EncodingStuff.hpp"
+#include "DiscordCoreClientBase.hpp"
+#include "GuildStuff01.hpp"
 
 namespace DiscordCoreAPI {
 
 	class VoiceConnection : public agent {
 	public:
-		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlockNew)
+		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlockNew, map<string, shared_ptr<VoiceConnection>>* pMapOfSelves)
 			: agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			if (voiceConnectionDataNew.channelId != "") {
 				if (sodium_init() == -1) {
 					cout << "LibSodium failed to initialize!" << endl << endl;
 				}
+				this->voiceConnectionMap = pMapOfSelves;
 				this->voiceConnectionData = voiceConnectionDataNew;
 				this->bufferMessageBlock = bufferMessageBlockNew;
 				this->readyBuffer = make_shared<unbounded_buffer<bool>>();
@@ -52,8 +55,16 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		event_token onSongCompletion(delegate<> const handler) {
-			return onSongCompletionEvent.add(handler);
+		event_token onSongCompletion(function<void(void)> function) {
+			if (!this->voiceConnectionMap->at(this->voiceConnectionData.guildId)->amIInstantiated) {
+				return this->onSongCompletionToBeWrapped(function);
+				auto voiceConnection = this->voiceConnectionMap->at(this->voiceConnectionData.guildId);
+				voiceConnection->amIInstantiated = true;
+				this->voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
+			}
+			else {
+				return event_token();
+			}
 		}
 
 		void onSongCompletion(event_token const& token) {
@@ -82,7 +93,7 @@ namespace DiscordCoreAPI {
 			if (this != nullptr) {
 				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
-				this->doWeWait = false;
+				this->doWeWait = true;
 			}
 		}
 
@@ -137,37 +148,42 @@ namespace DiscordCoreAPI {
 		bool areWeConnectedBool = false;
 		bool areWeWaitingForAudioData = true;
 		bool areWeStopping = false;
-		bool isThisFirstThread = true;
+		bool amIInstantiated = false;
 		unsigned int timestamp = 0;
 		unsigned short sequenceIndex = 0;
 		__int32 sequenceIndexLib = 0;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
+		map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap{ nullptr };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
-		shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlock;
-		shared_ptr<unbounded_buffer<bool>> readyBuffer;
-		unbounded_buffer<int> seekBuffer;
-		unbounded_buffer<bool> playPauseBuffer;
-		OpusEncoder* encoder;
+		shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlock{ nullptr };
+		shared_ptr<unbounded_buffer<bool>> readyBuffer{ nullptr };
+		unbounded_buffer<int> seekBuffer{ nullptr };
+		unbounded_buffer<bool> playPauseBuffer{ nullptr };
+		OpusEncoder* encoder{ nullptr };
 		int nChannels = 2;
 		int frameSize = 960;
+		int maxBufferSize = 1276;
 		winrt::event<delegate<>> onSongCompletionEvent;
-		AudioFrameData* audioData;
+		AudioFrameData* audioData{ nullptr };
+
+		event_token onSongCompletionToBeWrapped(delegate<> const handler) {
+			return onSongCompletionEvent.add(handler);
+		}
 
 		void clearAudioData() {
 			this->audioData = nullptr;
 		}
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
-			uint8_t* oldBuffer;
-			oldBuffer = new uint8_t[inputFrame.data.size()];
+			uint8_t* oldBuffer = new uint8_t[inputFrame.data.size()];
+
 			for (int x = 0; x < inputFrame.data.size(); x += 1) {
 				oldBuffer[x] = inputFrame.data[x];
 			}
-			uint8_t* newBuffer;
-			int bufferSize = this->frameSize * this->nChannels * sizeof(float);
-			newBuffer = new uint8_t[bufferSize];
 
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, this->frameSize, newBuffer, bufferSize);
+			uint8_t* newBuffer = new uint8_t[this->maxBufferSize];
+
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, this->maxBufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);
@@ -256,51 +272,39 @@ namespace DiscordCoreAPI {
 		void run() {
 			this->areWeConnectedBool = true;
 			while (!this->doWeQuit) {
-				cout << "WERE HERE 01010101" << endl;
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
 				}
-				cout << "WERE HERE 02020202" << endl;
 				if (this->areWeWaitingForAudioData) {
-					cout << "WERE HERE 02020202333" << endl;
 					this->audioData = receive(*this->bufferMessageBlock);
-					cout << "WERE HERE 020202024444" << endl;
 					this->areWeWaitingForAudioData = false;
-					cout << "WERE HERE 020202025555" << endl;
 				}
-				cout << "WERE HERE 03030303" << endl;
 				this->areWePlaying = true;
 				this->sendSpeakingMessage(true);
 				int frameCounter = 0;
-				cout << "WERE HERE 04040404" << endl;
 				while (this->areWePlaying) {
 					int timeCounter = 0;
-					cout << "WERE HERE 05050505" << endl;
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					int intervalCount = 20;
 					if (this->audioData != nullptr) {
 						if (this->audioData->type == AudioFrameType::Encoded) {
 							for (int x = 0; x < this->audioData->encodedFrameData.size(); x += 1) {
-								cout << "WERE HERE 06060606" << endl;
 								int newValue;
 								if (try_receive(this->seekBuffer, newValue)) {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
+									frameCounter = x;
 								};
 								if (!this->areWePlaying) {
 									break;
 								}
 								while (timeCounter < intervalCount) {
-									cout << "WERE HERE 07070707" << endl;
 									timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 								}
-								cout << "WERE HERE 08080808" << endl;
 								timeCounter = 0;
 								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
-								cout << "WERE HERE 09090909" << endl;
 								frameCounter += 1;
 								if (frameCounter >= this->audioData->encodedFrameData.size() - 1) {
-									cout << "WERE HERE 10101010101010101" << endl;
 									this->clearAudioData();
 									this->areWePlaying = false;
 									this->areWeWaitingForAudioData = true;
@@ -308,13 +312,10 @@ namespace DiscordCoreAPI {
 									frameCounter = 0;
 									break;
 								}
-								cout << "WERE HERE 1313131313" << endl;
 							}
-							cout << "WERE HERE 14141414" << endl;
 						}
 						else if (this->audioData->type == AudioFrameType::RawPCM) {
 							for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
-								cout << "WERE HERE 1111111111" << endl;
 								int newValue;
 								if (try_receive(this->seekBuffer, newValue)) {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->rawFrameData.size());
@@ -324,7 +325,6 @@ namespace DiscordCoreAPI {
 								}
 								while (timeCounter < intervalCount) {
 									timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-									cout << "WERE HERE 121212121212" << endl;
 								}
 								timeCounter = 0;
 								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -340,19 +340,13 @@ namespace DiscordCoreAPI {
 									break;
 								}
 							}
-							cout << "WERE HERE 121212121212" << endl;
 						}
-						cout << "WERE HERE 101010101010" << endl;
 					}
-					cout << "WERE HERE 111111111" << endl;
 				}
-				cout << "WERE HERE 1212121212" << endl;
 				if (this->areWeStopping) {
-					cout << "WERE HERE 1313131313" << endl;
 					send(*this->readyBuffer, true);
 					this->areWeStopping = false;
 				}
-				cout << "WERE HERE 14141414" << endl;
 				this->sendSpeakingMessage(false);
 			}
 			this->areWeConnectedBool = false;
@@ -360,6 +354,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void terminate() {
+			this->voiceConnectionMap->erase(this->voiceConnectionData.guildId);
 			this->areWePlaying = false;
 			this->doWeQuit = true;
 		}

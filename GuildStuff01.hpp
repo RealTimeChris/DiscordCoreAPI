@@ -25,19 +25,10 @@ namespace DiscordCoreAPI {
 
 	class Guild {
 	public:
-		GuildData data;
+		GuildData data{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		shared_ptr<VoiceConnection> connectToVoice(string channelId);
-
-		shared_ptr<VoiceConnection> getVoiceConnection() {
-			if (this->voiceConnection != nullptr) {
-				return this->voiceConnection;
-			}
-			else {
-				return nullptr;
-			}
-		};
 
 		shared_ptr<YouTubeAPI> getYouTubeAPI() {
 			if (this->youtubeAPI != nullptr) {
@@ -54,13 +45,14 @@ namespace DiscordCoreAPI {
 		friend class GuildManagerAgent;
 		friend class DiscordCoreClient;
 		friend class GuildManager;
+		friend class VoiceConnection;
 		friend class DiscordCoreClientBase;
 		friend struct concurrency::details::_ResultHolder<Guild>;
 		friend struct OnGuildCreationData;
 		friend struct OnGuildUpdateData;
 		friend struct OnGuildDeletionData;
-		static map<string, shared_ptr<YouTubeAPI>> youtubeAPIMap;
-		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
+		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
+		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		shared_ptr<YouTubeAPI> youtubeAPI{ nullptr };
 
@@ -70,23 +62,19 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = discordCoreClientNew;
 			this->discordCoreClientBase = discordCoreClientBaseNew;
 			this->data = dataNew;
-			if (this->discordCoreClientBase->audioBuffersMap.contains(this->data.id)) {
-				if (Guild::youtubeAPIMap.contains(this->data.id)) {
-					this->youtubeAPI = Guild::youtubeAPIMap.at(this->data.id);
-				}
-				else {
-					Guild::youtubeAPIMap.insert(make_pair(this->data.id, make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id))));
-					this->youtubeAPI = Guild::youtubeAPIMap.at(this->data.id);
-				}
+			if (Guild::youtubeAPIMap->contains(this->data.id)) {
+				this->youtubeAPI = Guild::youtubeAPIMap->at(this->data.id);
 			}
 			else {
-				this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<AudioFrameData*>>()));
-				if (Guild::youtubeAPIMap.contains(this->data.id)) {
-					this->youtubeAPI = Guild::youtubeAPIMap.at(this->data.id);
+				if (DiscordCoreClientBase::audioBuffersMap.contains(this->data.id)) {
+					this->youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+					Guild::youtubeAPIMap->insert_or_assign(this->data.id, this->youtubeAPI);
 				}
 				else {
-					Guild::youtubeAPIMap.insert(make_pair(this->data.id, make_shared<YouTubeAPI>(discordCoreClientBase->audioBuffersMap.at(this->data.id))));
-					this->youtubeAPI = Guild::youtubeAPIMap.at(this->data.id);
+					shared_ptr<unbounded_buffer<AudioFrameData*>> sharedPtr = make_shared<unbounded_buffer<AudioFrameData*>>();
+					DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtr));
+					this->youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+					Guild::youtubeAPIMap->insert_or_assign(this->data.id, this->youtubeAPI);
 				}
 			}
 			return;
@@ -622,6 +610,7 @@ namespace DiscordCoreAPI {
 	};
 	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache;
 	shared_ptr<DiscordCoreInternal::ThreadContext> GuildManagerAgent::threadContext;
-	map<string, shared_ptr<YouTubeAPI>> Guild::youtubeAPIMap;
+	map<string, shared_ptr<YouTubeAPI>>* Guild::youtubeAPIMap = new map<string, shared_ptr<YouTubeAPI>>();
+	map<string, shared_ptr<VoiceConnection>>* Guild::voiceConnectionMap = new map<string, shared_ptr<VoiceConnection>>();
 }
 #endif
