@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
 		VoiceConnectionData voiceConnectionData;
 
-		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<bool>> readyBufferNew)
+		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
 			:agent(*threadContextNew->scheduler) {
 			this->threadContext = threadContextNew;
 			this->voiceConnectionData = voiceConnectionDataNew;
@@ -72,7 +72,10 @@ namespace DiscordCoreInternal {
 				cout << "Please specify voice data to send" << endl << endl;
 				return;
 			}
-
+			string messageString;
+			for (auto value : message) {
+				messageString.push_back(value);
+			}
 			// Buffer any data we want to send.
 			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
 			DataWriter dataWriter(randomAccessStream);
@@ -88,6 +91,7 @@ namespace DiscordCoreInternal {
 				this->voiceSocket.OutputStream().FlushAsync().get();
 			}
 
+			cout << "Sending Voice Data: " << messageString << endl;
 			return;
 		}
 
@@ -129,15 +133,15 @@ namespace DiscordCoreInternal {
 		friend class VoiceConnection;
 		friend class WebSocketConnectionAgent;
 		friend class Guild;
-		shared_ptr<unbounded_buffer<bool>> readyBuffer;
+		unbounded_buffer<bool>* readyBuffer{ nullptr };
 		DatagramSocket voiceSocket{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
-		unbounded_buffer<exception> errorBuffer;
-		unbounded_buffer<bool> connectReadyBuffer;
-		vector<uint8_t> secretKey;
-		int audioSSRC;
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
+		vector<uint8_t> secretKey{};
+		int audioSSRC = 0;
 		int heartbeatInterval = 0;
 		int lastNumberReceived = 0;
 		bool didWeReceiveHeartbeatAck = true;
@@ -145,10 +149,10 @@ namespace DiscordCoreInternal {
 		event_token messageReceivedToken;
 		event_token closedToken;
 		bool areWeConnected = false;
-		string voiceIp;
-		string voicePort;
-		string externalIp;
-		string voiceEncryptionMode;
+		string voiceIp = "";
+		string voicePort = "";
+		string externalIp = "";
+		string voiceEncryptionMode = "";
 		bool areWeWaitingForIp = true;
 
 		void getError() {
@@ -160,19 +164,14 @@ namespace DiscordCoreInternal {
 		}
 
 		void connect() {
-			try {
-				this->voiceConnectionData = receive(this->voiceConnectionDataBuffer);
-				this->heartbeatTimer = ThreadPoolTimer(nullptr);
-				this->webSocket = MessageWebSocket();
-				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
-				this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
-				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
-				this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endpoint))).get();
-				this->areWeConnected = true;
-			}
-			catch (winrt::hresult_error& error) {
-				cout << "HRESULT Error: " << to_string(error.message()) << endl;
-			}
+			this->voiceConnectionData = receive(this->voiceConnectionDataBuffer);
+			this->heartbeatTimer = ThreadPoolTimer(nullptr);
+			this->webSocket = MessageWebSocket();
+			this->webSocket.Control().MessageType(SocketMessageType::Utf8);
+			this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
+			this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
+			this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endpoint))).get();
+			this->areWeConnected = true;
 		}
 
 		void collectExternalIP() {
@@ -204,8 +203,8 @@ namespace DiscordCoreInternal {
 			}
 			catch (const exception& e) {
 				send(errorBuffer, e);
-				run();
 			}
+			done();
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
@@ -220,20 +219,14 @@ namespace DiscordCoreInternal {
 		}
 
 		void sendHeartBeat(bool* didWeReceiveHeartbeatAckNew) {
-			try {
-				if (this->didWeReceiveHeartbeatAck == false) {
-					this->connect();
-					this->didWeReceiveHeartbeatAck = true;
-					return;
-				}
-				string heartbeatPayload = getVoiceHeartbeatPayload(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				this->sendMessage(heartbeatPayload);
-				*didWeReceiveHeartbeatAckNew = true;
+			if (this->didWeReceiveHeartbeatAck == false) {
+				this->connect();
+				this->didWeReceiveHeartbeatAck = true;
 				return;
 			}
-			catch (hresult_error error) {
-				wcout << error.message().c_str() << endl;
-			}
+			string heartbeatPayload = getVoiceHeartbeatPayload(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			this->sendMessage(heartbeatPayload);
+			*didWeReceiveHeartbeatAckNew = true;
 		}
 
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
@@ -384,7 +377,6 @@ namespace DiscordCoreInternal {
 			}
 			catch (const exception& e) {
 				send(errorBuffer, e);
-				run();
 			}
 			done();
 		}
@@ -394,163 +386,157 @@ namespace DiscordCoreInternal {
 		}
 
 		void onMessageReceived(json payload) {
-			try {
+			WebSocketWorkload workload;
+			workload.payLoad = payload.at("d");
 
-				WebSocketWorkload workload;
-				workload.payLoad = payload.at("d");
-
-				if (payload.at("t") == "CHANNEL_CREATE") {
-					workload.eventType = WebSocketEventType::CHANNEL_CREATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "CHANNEL_UPDATE") {
-					workload.eventType = WebSocketEventType::CHANNEL_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "CHANNEL_DELETE") {
-					workload.eventType = WebSocketEventType::CHANNEL_DELETE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_CREATE") {
-					workload.eventType = WebSocketEventType::GUILD_CREATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_UPDATE") {
-					workload.eventType = WebSocketEventType::GUILD_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_DELETE") {
-					workload.eventType = WebSocketEventType::GUILD_DELETE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_BAN_ADD") {
-					workload.eventType = WebSocketEventType::GUILD_BAN_ADD;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_BAN_REMOVE") {
-					workload.eventType = WebSocketEventType::GUILD_BAN_REMOVE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_MEMBER_ADD") {
-					workload.eventType = WebSocketEventType::GUILD_MEMBER_ADD;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_MEMBER_REMOVE") {
-					workload.eventType = WebSocketEventType::GUILD_MEMBER_REMOVE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_MEMBER_UPDATE") {
-					workload.eventType = WebSocketEventType::GUILD_MEMBER_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_ROLE_CREATE") {
-					workload.eventType = WebSocketEventType::ROLE_CREATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_ROLE_UPDATE") {
-					workload.eventType = WebSocketEventType::ROLE_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "GUILD_ROLE_DELETE") {
-					workload.eventType = WebSocketEventType::ROLE_DELETE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "INVITE_CREATE") {
-					workload.eventType = WebSocketEventType::INVITE_CREATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "INVITE_DELETE") {
-					workload.eventType = WebSocketEventType::INVITE_DELETE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "INTERACTION_CREATE") {
-					workload.eventType = WebSocketEventType::INTERACTION_CREATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_CREATE") {
-					workload.eventType = WebSocketEventType::MESSAGE_CREATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_UPDATE") {
-					workload.eventType = WebSocketEventType::MESSAGE_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_DELETE") {
-					workload.eventType = WebSocketEventType::MESSAGE_DELETE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_DELETE_BULK") {
-					workload.eventType = WebSocketEventType::MESSAGE_DELETE_BULK;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_REACTION_ADD") {
-					workload.eventType = WebSocketEventType::REACTION_ADD;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_REACTION_REMOVE") {
-					workload.eventType = WebSocketEventType::REACTION_REMOVE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_REACTION_REMOVE_ALL") {
-					workload.eventType = WebSocketEventType::REACTION_REMOVE_ALL;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "MESSAGE_REACTION_REMOVE_EMOJI") {
-					workload.eventType = WebSocketEventType::REACTION_REMOVE_EMOJI;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "PRESENCE_UPDATE") {
-					workload.eventType = WebSocketEventType::PRESENCE_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "TYPING_START") {
-					workload.eventType = WebSocketEventType::TYPING_START;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "USER_UPDATE") {
-					workload.eventType = WebSocketEventType::USER_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "VOICE_STATE_UPDATE") {
-					workload.eventType = WebSocketEventType::VOICE_STATE_UPDATE;
-					sendWorkload(workload);
-				}
-
-				if (payload.at("t") == "VOICE_SERVER_UPDATE") {
-					workload.eventType = WebSocketEventType::VOICE_SERVER_UPDATE;
-					sendWorkload(workload);
-				}
+			if (payload.at("t") == "CHANNEL_CREATE") {
+				workload.eventType = WebSocketEventType::CHANNEL_CREATE;
+				sendWorkload(workload);
 			}
-			catch (winrt::hresult_error const& ex) {
-				wcout << ex.message().c_str() << endl;
+
+			if (payload.at("t") == "CHANNEL_UPDATE") {
+				workload.eventType = WebSocketEventType::CHANNEL_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "CHANNEL_DELETE") {
+				workload.eventType = WebSocketEventType::CHANNEL_DELETE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_CREATE") {
+				workload.eventType = WebSocketEventType::GUILD_CREATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_UPDATE") {
+				workload.eventType = WebSocketEventType::GUILD_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_DELETE") {
+				workload.eventType = WebSocketEventType::GUILD_DELETE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_BAN_ADD") {
+				workload.eventType = WebSocketEventType::GUILD_BAN_ADD;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_BAN_REMOVE") {
+				workload.eventType = WebSocketEventType::GUILD_BAN_REMOVE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_MEMBER_ADD") {
+				workload.eventType = WebSocketEventType::GUILD_MEMBER_ADD;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_MEMBER_REMOVE") {
+				workload.eventType = WebSocketEventType::GUILD_MEMBER_REMOVE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_MEMBER_UPDATE") {
+				workload.eventType = WebSocketEventType::GUILD_MEMBER_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_ROLE_CREATE") {
+				workload.eventType = WebSocketEventType::ROLE_CREATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_ROLE_UPDATE") {
+				workload.eventType = WebSocketEventType::ROLE_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "GUILD_ROLE_DELETE") {
+				workload.eventType = WebSocketEventType::ROLE_DELETE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "INVITE_CREATE") {
+				workload.eventType = WebSocketEventType::INVITE_CREATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "INVITE_DELETE") {
+				workload.eventType = WebSocketEventType::INVITE_DELETE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "INTERACTION_CREATE") {
+				workload.eventType = WebSocketEventType::INTERACTION_CREATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_CREATE") {
+				workload.eventType = WebSocketEventType::MESSAGE_CREATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_UPDATE") {
+				workload.eventType = WebSocketEventType::MESSAGE_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_DELETE") {
+				workload.eventType = WebSocketEventType::MESSAGE_DELETE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_DELETE_BULK") {
+				workload.eventType = WebSocketEventType::MESSAGE_DELETE_BULK;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_REACTION_ADD") {
+				workload.eventType = WebSocketEventType::REACTION_ADD;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_REACTION_REMOVE") {
+				workload.eventType = WebSocketEventType::REACTION_REMOVE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_ALL") {
+				workload.eventType = WebSocketEventType::REACTION_REMOVE_ALL;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_EMOJI") {
+				workload.eventType = WebSocketEventType::REACTION_REMOVE_EMOJI;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "PRESENCE_UPDATE") {
+				workload.eventType = WebSocketEventType::PRESENCE_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "TYPING_START") {
+				workload.eventType = WebSocketEventType::TYPING_START;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "USER_UPDATE") {
+				workload.eventType = WebSocketEventType::USER_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "VOICE_STATE_UPDATE") {
+				workload.eventType = WebSocketEventType::VOICE_STATE_UPDATE;
+				sendWorkload(workload);
+			}
+
+			if (payload.at("t") == "VOICE_SERVER_UPDATE") {
+				workload.eventType = WebSocketEventType::VOICE_SERVER_UPDATE;
+				sendWorkload(workload);
 			}
 		}
 
@@ -599,14 +585,9 @@ namespace DiscordCoreInternal {
 				this->messageWriter.WriteString(to_hstring(message));
 			}
 
-			try {
-				// Send the data as one complete message.
-				if (this->messageWriter != nullptr) {
-					this->messageWriter.StoreAsync().get();
-				}
-			}
-			catch (hresult_error const& ex) {
-				wcout << ex.message().c_str() << endl << endl;
+			// Send the data as one complete message.
+			if (this->messageWriter != nullptr) {
+				this->messageWriter.StoreAsync().get();
 			}
 
 			cout << "Send Complete" << endl << endl;
@@ -672,19 +653,11 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				catch (const exception& e) {
-					cout << e.what() << endl;
-					concurrency::send(errorBuffer, e);
-					this->connect();
-					return;
-				}
-				catch (hresult& e) {
-					cout << e.value << endl;
-					exception eNew(to_string(e.value).c_str());
-					concurrency::send(errorBuffer, eNew);
-					this->connect();
+					send(errorBuffer, e);
 					return;
 				}
 			}
+			done();
 		}
 
 		void terminate() {
@@ -728,140 +701,130 @@ namespace DiscordCoreInternal {
 		}
 
 		void sendHeartBeat() {
-			try {
-				if (this->didWeReceiveHeartbeatAck == false) {
-					this->cleanup();
-					this->connect();
-					this->didWeReceiveHeartbeatAck = true;
-					return;
-				}
-				string heartbeat = getHeartbeatPayload(this->lastNumberReceived);
-				this->sendMessage(heartbeat);
-				this->didWeReceiveHeartbeatAck = false;
+			if (this->didWeReceiveHeartbeatAck == false) {
+				this->cleanup();
+				this->connect();
+				this->didWeReceiveHeartbeatAck = true;
+				return;
 			}
-			catch (hresult_error error) {
-				wcout << error.message().c_str() << endl;
-			}
+			string heartbeat = getHeartbeatPayload(this->lastNumberReceived);
+			this->sendMessage(heartbeat);
+			this->didWeReceiveHeartbeatAck = false;
 		}
 
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args) {
-			try {
-				DataReader dataReader{ nullptr };
-				hstring message;
-				if (args != nullptr) {
-					if (args.IsMessageComplete()) {
-						if (args.GetDataReader() != nullptr) {
-							dataReader = args.GetDataReader();
-							dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
-							if (dataReader.UnconsumedBufferLength() > 0) {
-								message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
-							}
+			DataReader dataReader{ nullptr };
+			hstring message;
+			if (args != nullptr) {
+				if (args.IsMessageComplete()) {
+					if (args.GetDataReader() != nullptr) {
+						dataReader = args.GetDataReader();
+						dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+						if (dataReader.UnconsumedBufferLength() > 0) {
+							message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
 						}
 					}
-				}				
-				json payload = payload.parse(to_string(message));
-
-				send(&this->webSocketMessageTarget, payload);
-
-				if (this->areWeCollectingData == true && payload.at("t")=="VOICE_SERVER_UPDATE"&&!this->serverUpdateCollected) {
-					if (this->serverUpdateCollected != true && this->stateUpdateCollected !=true) {
-						this->pVoiceConnectionData = new VoiceConnectionData;
-						this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
-						this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
-						this->serverUpdateCollected = true;
-					}
-					else {
-						this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
-						this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
-						send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
-						delete this->pVoiceConnectionData;
-						this->pVoiceConnectionData = nullptr;
-						this->areWeCollectingData = false;
-						this->serverUpdateCollected = false;
-						this->stateUpdateCollected = false;
-					}
 				}
-
-				if (this->areWeCollectingData == true && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected) {
-					if (this->stateUpdateCollected != true && this->serverUpdateCollected!= true) {
-						this->pVoiceConnectionData = new VoiceConnectionData;
-						this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
-						this->stateUpdateCollected = true;
-					}
-					else {
-						this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
-						send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
-						delete this->pVoiceConnectionData;
-						this->pVoiceConnectionData = nullptr;
-						this->areWeCollectingData = false;
-						this->serverUpdateCollected = false;
-						this->stateUpdateCollected = false;
-					}
-				}
-
-				if (payload.at("s") >= 0) {
-					this->lastNumberReceived = payload.at("s");
-				}
-
-				if (payload.at("t") == "PRESENCE_UPDATE") {
-					return;
-				}
-
-				if (payload.at("t") == "GUILD_CREATE") {
-					return;
-				}
-
-				if (payload.at("t") == "READY") {
-					string sessionIDTemp;
-					sessionIDTemp = payload.at("d").at("session_id");
-					this->sessionID = to_hstring(sessionIDTemp);
-				}
-
-				if (payload.at("op") == 1) {
-					this->sendHeartBeat();
-				}
-
-				if (payload.at("op") == 6) {
-					cout << "Resuming!" << endl << endl;
-					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-					this->sendMessage(resume);
-				}
-
-				if (payload.at("op") == 7) {
-					cout << "Reconnecting (Type 7)!" << endl << endl;
-					this->cleanup();
-					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-					this->sendMessage(resume);
-					this->connect();
-				}
-
-				if (payload.at("op") == 9) {
-					cout << "Reconnecting (Type 9)!" << endl << endl;
-					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-					this->sendMessage(resume);
-					this->connect();
-				}
-
-				if (payload.at("op") == 10) {
-					this->heartbeatInterval = payload.at("d").at("heartbeat_interval");
-					TimerElapsedHandler onHeartBeat = [this](ThreadPoolTimer timer) {
-						WebSocketConnectionAgent::sendHeartBeat();
-						return;
-					};
-					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
-					std::string identity = getIdentifyPayload(to_string(this->botToken), this->intentsValue);
-					this->sendMessage(identity);
-				}
-
-				if (payload.at("op") == 11) {
-					this->didWeReceiveHeartbeatAck = true;
-				}
-
-				cout << "Message received from WebSocket: " << to_string(message) << endl << endl;
 			}
-			catch (hresult_error & ex) {
-				cout << to_string(ex.message()) << endl;
+			json payload = payload.parse(to_string(message));
+
+			send(&this->webSocketMessageTarget, payload);
+
+			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
+				if (this->serverUpdateCollected != true && this->stateUpdateCollected != true) {
+					this->pVoiceConnectionData = new VoiceConnectionData;
+					this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
+					this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
+					this->serverUpdateCollected = true;
+				}
+				else {
+					this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
+					this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
+					send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
+					delete this->pVoiceConnectionData;
+					this->pVoiceConnectionData = nullptr;
+					this->areWeCollectingData = false;
+					this->serverUpdateCollected = false;
+					this->stateUpdateCollected = false;
+				}
 			}
+
+			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected) {
+				if (this->stateUpdateCollected != true && this->serverUpdateCollected != true) {
+					this->pVoiceConnectionData = new VoiceConnectionData;
+					this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
+					this->stateUpdateCollected = true;
+				}
+				else {
+					this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
+					send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
+					delete this->pVoiceConnectionData;
+					this->pVoiceConnectionData = nullptr;
+					this->areWeCollectingData = false;
+					this->serverUpdateCollected = false;
+					this->stateUpdateCollected = false;
+				}
+			}
+
+			if (payload.at("s") >= 0) {
+				this->lastNumberReceived = payload.at("s");
+			}
+
+			if (payload.at("t") == "PRESENCE_UPDATE") {
+				return;
+			}
+
+			if (payload.at("t") == "GUILD_CREATE") {
+				return;
+			}
+
+			if (payload.at("t") == "READY") {
+				string sessionIDTemp;
+				sessionIDTemp = payload.at("d").at("session_id");
+				this->sessionID = to_hstring(sessionIDTemp);
+			}
+
+			if (payload.at("op") == 1) {
+				this->sendHeartBeat();
+			}
+
+			if (payload.at("op") == 6) {
+				cout << "Resuming!" << endl << endl;
+				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+				this->sendMessage(resume);
+			}
+
+			if (payload.at("op") == 7) {
+				cout << "Reconnecting (Type 7)!" << endl << endl;
+				this->cleanup();
+				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+				this->sendMessage(resume);
+				this->connect();
+			}
+
+			if (payload.at("op") == 9) {
+				cout << "Reconnecting (Type 9)!" << endl << endl;
+				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+				this->sendMessage(resume);
+				this->connect();
+			}
+
+			if (payload.at("op") == 10) {
+				this->heartbeatInterval = payload.at("d").at("heartbeat_interval");
+				TimerElapsedHandler onHeartBeat = [this](ThreadPoolTimer timer) {
+					WebSocketConnectionAgent::sendHeartBeat();
+					return;
+				};
+				this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
+				std::string identity = getIdentifyPayload(to_string(this->botToken), this->intentsValue);
+				this->sendMessage(identity);
+			}
+
+			if (payload.at("op") == 11) {
+				this->didWeReceiveHeartbeatAck = true;
+			}
+
+			cout << "Message received from WebSocket: " << to_string(message) << endl << endl;
 		};
 	};
 }
