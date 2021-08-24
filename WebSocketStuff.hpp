@@ -58,7 +58,7 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData;
 
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<bool>> readyBufferNew)
-			:agent(*ThreadManager::getThreadContext().get()->scheduler) {
+			:agent(*threadContextNew->scheduler) {
 			this->threadContext = threadContextNew;
 			this->voiceConnectionData = voiceConnectionDataNew;
 			this->readyBuffer = readyBufferNew;

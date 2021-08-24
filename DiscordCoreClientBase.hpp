@@ -9,12 +9,14 @@
 #define _DISCORD_CORE_CLIENT_BASE_
 
 #include "../pch.h"
+#include "VoiceConnectionStuff.hpp"
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
 #include "ChannelStuff.hpp"
 #include "MessageStuff.hpp"
 #include "GuildMemberStuff.hpp"
 #include "WebSocketStuff.hpp"
+#include "YouTubeStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -50,12 +52,16 @@ namespace DiscordCoreAPI {
 		friend class GuildMembers;
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent;
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> audioBuffersMap;
+		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
+		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
 		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<ChannelManager> channels{ nullptr };
 		shared_ptr<RoleManager> roles{ nullptr };
 		shared_ptr<UserManager> users{ nullptr };
 		hstring botToken;
 	};
+	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap = new map<string, shared_ptr<YouTubeAPI>>();
+	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap = new map<string, shared_ptr<VoiceConnection>>();
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> DiscordCoreClientBase::audioBuffersMap;
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::pWebSocketConnectionAgent{ nullptr };

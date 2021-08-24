@@ -237,6 +237,15 @@ namespace DiscordCoreAPI {
 			this->sendAudioBuffer = sendAudioBufferNew;
 		}
 
+		bool isThereAnySongs() {
+			if (this->currentSong.songId == "" && this->songQueue.size() == 0) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+
 		vector<YouTubeSong>* getQueue() {
 			return &this->songQueue;
 		}

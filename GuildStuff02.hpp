@@ -15,9 +15,8 @@ namespace DiscordCoreAPI {
 
 	shared_ptr<VoiceConnection> Guild::connectToVoice(string channelId) {
 		shared_ptr<VoiceConnection> voiceConnectionPtr;
-		if (Guild::voiceConnectionMap->contains(this->data.id)) {
-			voiceConnectionPtr = Guild::voiceConnectionMap->at(this->data.id);
-			cout << "WERE HERE WERE HERE 020202312312313" << endl;
+		if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
+			voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->data.id);
 			return voiceConnectionPtr;
 		}
 		else if (channelId != "") {
@@ -28,14 +27,14 @@ namespace DiscordCoreAPI {
 				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
 				voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
 				if (this->discordCoreClientBase->audioBuffersMap.contains(this->data.id)) {
-					voiceConnectionPtr = make_shared<VoiceConnection>(voiceConnectData, this->discordCoreClientBase->audioBuffersMap.at(this->data.id), Guild::voiceConnectionMap);
+					voiceConnectionPtr = make_shared<VoiceConnection>(voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
 				}
 				else {
 					this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<AudioFrameData*>>()));
-					voiceConnectionPtr = make_shared<VoiceConnection>(voiceConnectData, this->discordCoreClientBase->audioBuffersMap.at(this->data.id), Guild::voiceConnectionMap);
+					voiceConnectionPtr = make_shared<VoiceConnection>(voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
 				}
-				this->discordCoreClientBase->pWebSocketConnectionAgent->setVoiceConnectionWebSocket(voiceConnectionPtr->voicechannelWebSocketAgent);
-				Guild::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
+				DiscordCoreClientBase::pWebSocketConnectionAgent->setVoiceConnectionWebSocket(voiceConnectionPtr->voicechannelWebSocketAgent);
+				DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
 				return voiceConnectionPtr;
 			}
 		}
@@ -43,8 +42,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guild::disconnectFromVoice() {
-		if (Guild::voiceConnectionMap->contains(this->data.id)) {
-			Guild::voiceConnectionMap->at(this->data.id)->terminate();
+		if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
+			DiscordCoreClientBase::voiceConnectionMap->at(this->data.id)->terminate();
 			this->discordCoreClientBase->currentUser->updateVoiceStatus({ .guildId = this->data.id,.channelId = "", .selfMute = false,.selfDeaf = false });
 			return;
 		}

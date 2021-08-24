@@ -3707,7 +3707,7 @@ namespace DiscordCoreAPI {
         string voiceChannelId{ "" };
         string textChannelId{ "" };
         bool loopAll{ false };
-        bool loopSong{ false };
+        bool loopSong{ true };
     };
 
     struct SendNextSongInputData {
