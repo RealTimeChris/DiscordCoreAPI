@@ -72,10 +72,7 @@ namespace DiscordCoreInternal {
 				cout << "Please specify voice data to send" << endl << endl;
 				return;
 			}
-			string messageString;
-			for (auto value : message) {
-				messageString.push_back(value);
-			}
+
 			// Buffer any data we want to send.
 			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
 			DataWriter dataWriter(randomAccessStream);
@@ -91,7 +88,6 @@ namespace DiscordCoreInternal {
 				this->voiceSocket.OutputStream().FlushAsync().get();
 			}
 
-			cout << "Sending Voice Data: " << messageString << endl;
 			return;
 		}
 
@@ -261,7 +257,7 @@ namespace DiscordCoreInternal {
 					send(this->connectReadyBuffer, true);
 					this->voiceConnect();
 					this->collectExternalIP();
-					while (areWeWaitingForIp) { cout<< "Were here!"<< endl; };
+					while (this->areWeWaitingForIp) { cout << "Were here!" << endl; };
 					string protocolPayloadSelectString = getSelectProtocolPayload(this->voicePort, this->externalIp, this->voiceEncryptionMode);
 					this->sendMessage(protocolPayloadSelectString);
 				}
@@ -273,7 +269,7 @@ namespace DiscordCoreInternal {
 					for (auto value : this->secretKey) {
 						this->voiceConnectionData.keys.push_back(value);
 					}
-					send(*this->readyBuffer, true);
+					send(this->readyBuffer, true);
 				}
 
 				if (payload.at("op") == 8) {

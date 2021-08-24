@@ -13,6 +13,19 @@
 namespace DiscordCoreAPI {
     class DiscordCoreClient;
 
+    void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
+        auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
+        winrt::Windows::Storage::StorageFile storageFile = folder.CreateFileAsync(fileName, CreationCollisionOption::ReplaceExisting).get();
+        winrt::Windows::Storage::FileIO::WriteBufferAsync(storageFile, readBuffer).get();
+    }
+
+    IBuffer loadFile(hstring filePath, hstring fileName) {
+        auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
+        winrt::Windows::Storage::StorageFile storageFile = folder.GetFileAsync(fileName).get();
+        auto returnBuffer = winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile).get();
+        return returnBuffer;
+    }
+
     string convertToLowerCase(string stringToConvert) {
         string newString;
         for (auto& value : stringToConvert) {

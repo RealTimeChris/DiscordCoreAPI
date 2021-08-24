@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 				this->areWeWaitingForAudioData = true;
 				this->doWeWait = true;
 				this->areWeStopping = true;
-				receive(this->readyBuffer);
+				bool receiveTrigger = receive(this->readyBuffer);
 				this->clearAudioData();
 			}
 		}
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 				this->areWeWaitingForAudioData = true;
 				this->doWeWait = true;
 				this->areWeStopping = true;
-				receive(this->readyBuffer);
+				bool receiveTrigger = receive(this->readyBuffer);
 				this->clearAudioData();
 			}
 		}
@@ -260,19 +260,6 @@ namespace DiscordCoreAPI {
 			this->voiceConnectionData.audioSSRC = this->voicechannelWebSocketAgent->voiceConnectionData.audioSSRC;
 			string newString = DiscordCoreInternal::getIsSpeakingPayload(isSpeaking, this->voiceConnectionData.audioSSRC, 0);
 			this->voicechannelWebSocketAgent->sendMessage(newString);
-		}
-
-		void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
-			auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
-			winrt::Windows::Storage::StorageFile storageFile = folder.CreateFileAsync(fileName, CreationCollisionOption::ReplaceExisting).get();
-			winrt::Windows::Storage::FileIO::WriteBufferAsync(storageFile, readBuffer).get();
-		}
-
-		IBuffer loadFile(hstring filePath, hstring fileName) {
-			auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
-			winrt::Windows::Storage::StorageFile storageFile = folder.GetFileAsync(fileName).get();
-			auto returnBuffer = winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile).get();
-			return returnBuffer;
 		}
 
 		void run() {
