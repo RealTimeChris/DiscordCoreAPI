@@ -27,11 +27,11 @@ namespace DiscordCoreAPI {
 				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
 				voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
 				if (this->discordCoreClientBase->audioBuffersMap.contains(this->data.id)) {
-					voiceConnectionPtr = make_shared<VoiceConnection>(voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+					voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
 				}
 				else {
 					this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<AudioFrameData*>>()));
-					voiceConnectionPtr = make_shared<VoiceConnection>(voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+					voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
 				}
 				DiscordCoreClientBase::pWebSocketConnectionAgent->setVoiceConnectionWebSocket(voiceConnectionPtr->voicechannelWebSocketAgent);
 				DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));

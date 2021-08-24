@@ -19,8 +19,8 @@ namespace DiscordCoreAPI {
 
 	class VoiceConnection : public agent {
 	public:
-		VoiceConnection(DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlockNew)
-			: agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
+		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlockNew)
+			: agent(*threadContextNew->scheduler) {
 			if (voiceConnectionDataNew.channelId != "") {
 				if (sodium_init() == -1) {
 					cout << "LibSodium failed to initialize!" << endl << endl;
@@ -31,6 +31,7 @@ namespace DiscordCoreAPI {
 					cout << "Failed to create Opus encoder!" << endl << endl;
 				}
 				this->voiceConnectionData = voiceConnectionDataNew;
+				this->threadContext = threadContextNew;
 				this->bufferMessageBlock = bufferMessageBlockNew;
 				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), this->voiceConnectionData, &this->readyBuffer);
 				send(this->voicechannelWebSocketAgent->voiceConnectionDataBuffer, this->voiceConnectionData);
@@ -141,8 +142,8 @@ namespace DiscordCoreAPI {
 		}
 
 		~VoiceConnection() {
-			cout << "WERE BEING CALLED WERE BEING CALLED!" << endl;
-			opus_encoder_destroy(encoder);
+			this->threadContext->releaseGroup();
+			opus_encoder_destroy(this->encoder);
 			this->terminate();
 		}
 
@@ -157,14 +158,13 @@ namespace DiscordCoreAPI {
 		unsigned int timestamp = 0;
 		unsigned short sequenceIndex = 0;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlock{ nullptr };
 		unbounded_buffer<bool> readyBuffer{ nullptr };
 		unbounded_buffer<int> seekBuffer{ nullptr };
 		unbounded_buffer<bool> playPauseBuffer{ nullptr };
 		OpusEncoder* encoder{ nullptr };
-		const int nChannels = 2;
-		const int frameSize = 960;
 		const int maxBufferSize = 1276;
 		winrt::event<delegate<>> onSongCompletionEvent;
 		AudioFrameData* audioData{ nullptr };
@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 
 			uint8_t* newBuffer = new uint8_t[this->maxBufferSize];
 
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, this->frameSize, newBuffer, this->maxBufferSize);
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, this->maxBufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);
@@ -277,18 +277,18 @@ namespace DiscordCoreAPI {
 				int frameCounter = 0;
 				while (this->areWePlaying) {
 					int timeCounter = 0;
-					int startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					const int intervalCount = 20;
+					int startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+					const int intervalCount = 20000;
 					if (this->audioData != nullptr) {
 						if (this->audioData->type == AudioFrameType::Encoded) {
 							size_t encodedFrameDataSize = this->audioData->encodedFrameData.size();
 							for (int x = 0; x < this->audioData->encodedFrameData.size(); x += 1) {
 								timeCounter = 0;
-								while (timeCounter < intervalCount) {
-									timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+								while (timeCounter <= intervalCount) {
+									timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 								}
+								startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
-								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 								int newValue;
 								if (try_receive(this->seekBuffer, newValue)) {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
@@ -311,13 +311,13 @@ namespace DiscordCoreAPI {
 						else if (this->audioData->type == AudioFrameType::RawPCM) {
 							size_t rawFrameDataSize = this->audioData->rawFrameData.size();
 							for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
-								while (timeCounter < intervalCount) {
-									timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-								}
 								timeCounter = 0;
+								while (timeCounter <= intervalCount) {
+									timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+								}
+								startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 								auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
 								this->sendSingleAudioFrame(newVector);
-								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 								int newValue;
 								if (try_receive(this->seekBuffer, newValue)) {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
