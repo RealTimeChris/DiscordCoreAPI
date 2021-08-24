@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 				}
 				this->voiceConnectionData = voiceConnectionDataNew;
 				this->bufferMessageBlock = bufferMessageBlockNew;
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->voiceConnectionData, &this->readyBuffer);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), this->voiceConnectionData, &this->readyBuffer);
 				send(this->voicechannelWebSocketAgent->voiceConnectionDataBuffer, this->voiceConnectionData);
 				this->voicechannelWebSocketAgent->start();
 				receive(this->readyBuffer);
@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 
 			uint8_t* newBuffer = new uint8_t[this->maxBufferSize];
 
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, this->maxBufferSize);
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, this->frameSize, newBuffer, this->maxBufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);
@@ -283,10 +283,10 @@ namespace DiscordCoreAPI {
 						if (this->audioData->type == AudioFrameType::Encoded) {
 							size_t encodedFrameDataSize = this->audioData->encodedFrameData.size();
 							for (int x = 0; x < this->audioData->encodedFrameData.size(); x += 1) {
+								timeCounter = 0;
 								while (timeCounter < intervalCount) {
 									timeCounter = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 								}
-								timeCounter = 0;
 								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
 								startingValue = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 								int newValue;

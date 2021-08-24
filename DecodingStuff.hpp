@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 
                             RawFrameData rawFrame{};
                             rawFrame.data = newVector;
-                            rawFrame.sampleCount = frame->nb_samples;
+                            rawFrame.sampleCount = newFrame->nb_samples;
                             frames.push_back(rawFrame);
 
                             __int64 sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 
                                 RawFrameData rawFrame02{};
                                 rawFrame02.data = newVector02;
-                                rawFrame02.sampleCount = frame->nb_samples;
+                                rawFrame02.sampleCount = newFrame->nb_samples;
                                 frames.push_back(rawFrame02);
                             }
                             if (ret < 0) {

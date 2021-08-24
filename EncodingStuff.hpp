@@ -49,21 +49,20 @@ namespace DiscordCoreAPI {
 
 	protected:
 		vector<RawFrameData> rawFrames;
-		int nChannels = 2;
 		OpusEncoder* encoder;
-		int frameSize = 960;
+		const int nChannels = 2;
+		const int bufferSize = 1276;
+		const int frameSize = 960;
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
-			uint8_t* oldBuffer;
-			oldBuffer = new uint8_t[inputFrame.data.size()];
+			uint8_t* oldBuffer = new uint8_t[inputFrame.data.size()];
 			for (int x = 0; x < inputFrame.data.size(); x += 1) {
 				oldBuffer[x] = inputFrame.data[x];
 			}
-			uint8_t* newBuffer;
-			int bufferSize = 1276;
-			newBuffer = new uint8_t[bufferSize];
+			
+			uint8_t* newBuffer = new uint8_t[this->bufferSize];
 
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, bufferSize);
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, this->bufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);

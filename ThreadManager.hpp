@@ -13,13 +13,18 @@
 
 namespace DiscordCoreInternal {
 
-    task<shared_ptr<ThreadContext>> createThreadContext();
+    enum class ThreadType {
+        Regular = 0,
+        Music = 1
+    };
+
+    task<shared_ptr<ThreadContext>> createThreadContext(ThreadType threadType);
 
     class ThreadManagerAgent :public agent {
     protected:
         friend class ThreadManager;
         static shared_ptr<ThreadContext> threadContext;
-        unbounded_buffer<bool> readyBuffer;
+        unbounded_buffer<ThreadType> readyBuffer;
         unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer;
         unbounded_buffer<exception> errorBuffer;
         ThreadManagerAgent():agent(*ThreadManagerAgent::threadContext->scheduler){
@@ -43,11 +48,10 @@ namespace DiscordCoreInternal {
 
         void run() {
             try {
-                if (receive(ThreadManagerAgent::readyBuffer)) {
-                    auto threadContextNew = createThreadContext().get();
-                    send(ThreadManagerAgent::outputBuffer, threadContextNew);
-                    done();
-                }
+                ThreadType threadType = receive(ThreadManagerAgent::readyBuffer);
+                auto threadContextNew = createThreadContext(threadType).get();
+                send(ThreadManagerAgent::outputBuffer, threadContextNew);
+                done();
             }
             catch (exception& e) {
                 send(this->errorBuffer, e);
@@ -61,15 +65,15 @@ namespace DiscordCoreInternal {
         static concurrent_vector<shared_ptr<ThreadContext>> threads;
 
         static task<void> intialize() {
-            shared_ptr<ThreadContext> threadContext = createThreadContext().get();
+            shared_ptr<ThreadContext> threadContext = createThreadContext(ThreadType::Regular).get();
             ThreadManager::threads.push_back(threadContext);
             ThreadManagerAgent::initialize(threadContext);
             co_return;
         }
 
-        static task<shared_ptr<ThreadContext>> getThreadContext() {
+        static task<shared_ptr<ThreadContext>> getThreadContext(ThreadType threadType = ThreadType::Regular) {
             ThreadManagerAgent requestAgent;
-            send(requestAgent.readyBuffer, true);
+            send(requestAgent.readyBuffer, threadType);
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError();
@@ -88,7 +92,7 @@ namespace DiscordCoreInternal {
 
     };
 
-    task<shared_ptr<ThreadContext>> createThreadContext() {
+    task<shared_ptr<ThreadContext>> createThreadContext(ThreadType threadType) {
         for (auto value : ThreadManager::threads) {
             if (value->schedulerGroup == nullptr) {
                 value->schedulerGroup = value->scheduler->CreateScheduleGroup();
@@ -109,7 +113,12 @@ namespace DiscordCoreInternal {
         co_await resume_foreground(threadQueue);
         SchedulerPolicy policy;
         policy.SetConcurrencyLimits(1, 1);
-        policy.SetPolicyValue(PolicyElementKey::ContextPriority, THREAD_PRIORITY_ABOVE_NORMAL);
+        if (threadType == ThreadType::Music) {
+            policy.SetPolicyValue(PolicyElementKey::ContextPriority, THREAD_PRIORITY_HIGHEST);
+        }
+        else {
+            policy.SetPolicyValue(PolicyElementKey::ContextPriority, THREAD_PRIORITY_ABOVE_NORMAL);
+        }
         policy.SetPolicyValue(PolicyElementKey::ContextStackSize, 0);
         policy.SetPolicyValue(PolicyElementKey::DynamicProgressFeedback, ProgressFeedbackEnabled);
         policy.SetPolicyValue(PolicyElementKey::LocalContextCacheSize, 0);
