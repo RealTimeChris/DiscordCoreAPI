@@ -26,7 +26,6 @@ namespace DiscordCoreAPI {
 			this->rawFrames = dataPackage.rawFrames;
 			int error;
 			this->encoder = opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error);
-			error = opus_encoder_ctl(this->encoder, OPUS_APPLICATION_AUDIO);
 			if (error != OPUS_OK) {
 				cout << "Failed to create Opus encoder!";
 			}
