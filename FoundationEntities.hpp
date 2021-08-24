@@ -3545,12 +3545,6 @@ namespace DiscordCoreAPI {
             newData.sampleCount = this->sampleCount;
             return newData;
         }
-        RawFrameData(const RawFrameData& copy) {
-            for (auto value : copy.data) {
-                this->data.push_back(value);
-            }
-            this->sampleCount = copy.sampleCount;
-        }
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
     };
@@ -3564,12 +3558,6 @@ namespace DiscordCoreAPI {
             }
             newData.sampleCount = this->sampleCount;
             return newData;
-        }
-        EncodedFrameData(const EncodedFrameData& copy) {
-            for (auto value : copy.data) {
-                this->data.push_back(value);
-            }
-            this->sampleCount = copy.sampleCount;
         }
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
@@ -3593,40 +3581,31 @@ namespace DiscordCoreAPI {
             newData.type = this->type;
             return newData;
         }
-        AudioFrameData(const AudioFrameData& copy) {
-            for (auto value : copy.encodedFrameData) {
-                this->encodedFrameData.push_back(value);
-            }
-            for (auto value : copy.rawFrameData) {
-                this->rawFrameData.push_back(value);
-            }
-            this->type = copy.type;
-        }
-        AudioFrameType type;
-        vector<EncodedFrameData> encodedFrameData;
-        vector<RawFrameData> rawFrameData;
+        AudioFrameType type{ AudioFrameType::Encoded };
+        vector<EncodedFrameData> encodedFrameData{};
+        vector<RawFrameData> rawFrameData{};
     };
 
     struct YouTubeSearchResult {
-        string videoId = "";
-        string thumbNailURL = "";
-        string videoTitle = "";
-        string duration = "";
-        string description = "";
-        string videoURL = "";
+        string videoId{ "" };
+        string thumbNailURL{ "" };
+        string videoTitle{ "" };
+        string duration{ "" };
+        string description{ "" };
+        string videoURL{ "" };
         vector<YouTubeFormat> formats{};
     };
 
     struct YouTubeSongDB {
-        string imageURL = "";
-        string title = "";
-        string formatDownloadURL = "";
-        string url = "";
-        string description = "";
-        string duration = "";
-        string videoId = "";
-        string songId;
-        int contentLength = 0;
+        string imageURL{ "" };
+        string title{ "" };
+        string formatDownloadURL{ "" };
+        string url{ "" };
+        string description{ "" };
+        string duration{ "" };
+        string videoId{ "" };
+        string songId{ "" };
+        int contentLength{ 0 };
     };
 
     struct YouTubeSong {
@@ -3644,18 +3623,27 @@ namespace DiscordCoreAPI {
             return newData;
         }
         AudioFrameData frames{};
-        int contentLength = 0;
-        string imageURL = "";
-        string title = "";
-        string formatDownloadURL = "";
-        string url = "";
-        string description = "";
-        string duration = "";
-        string videoId = "";
-        string songId;
+        int contentLength{ 0 };
+        string imageURL{ "" };
+        string title{ "" };
+        string formatDownloadURL{ "" };
+        string url{ "" };
+        string description{ "" };
+        string duration{ "" };
+        string videoId{ "" };
+        string songId{ "" };
     };
 
     struct Playlist {
+        Playlist(){}
+        Playlist(Playlist* selfData) {
+            this->currentSong = selfData->currentSong;
+            this->loopAll = selfData->loopAll;
+            this->loopSong = selfData->loopSong;
+            this->songs = selfData->songs;
+            this->textChannelId = selfData->textChannelId;
+            this->voiceChannelId = selfData->voiceChannelId;
+        }
         string getVideoId() {
             if (this->currentSong.videoId != "") {
                 return this->currentSong.videoId;
@@ -3664,7 +3652,7 @@ namespace DiscordCoreAPI {
                 return this->songs.at(0).videoId;
             }
             else {
-                return string();
+                return string{};
             }
         }
         string getVideoURL() {
@@ -3675,7 +3663,7 @@ namespace DiscordCoreAPI {
                 return this->songs.at(0).url;
             }
             else {
-                return string();
+                return string{};
             }
         }
         string getImageURL() {
@@ -3686,7 +3674,7 @@ namespace DiscordCoreAPI {
                 return this->songs.at(0).imageURL;
             }
             else {
-                return string();
+                return string{};
             }
         }
         string getDuration() {
@@ -3697,7 +3685,7 @@ namespace DiscordCoreAPI {
                 return this->songs.at(0).duration;
             }
             else {
-                return string();
+                return string{};
             }
         }
         string getDescription() {
@@ -3708,7 +3696,7 @@ namespace DiscordCoreAPI {
                 return this->songs.at(0).description;
             }
             else {
-                return string();
+                return string{};
             }
         }
         string getTitle() {
@@ -3719,28 +3707,34 @@ namespace DiscordCoreAPI {
                 return this->songs.at(0).title;
             }
             else {
-                return string();
+                return string{};
             }
         }
         vector<YouTubeSongDB> songs{};
         YouTubeSongDB currentSong{};
-        string voiceChannelId = "";
-        string textChannelId = "";
-        bool loopAll = false;
-        bool loopSong = false;
+        string voiceChannelId{ "" };
+        string textChannelId{ "" };
+        bool loopAll{ false };
+        bool loopSong{ false };
+    };
+
+    struct SendNextSongInputData {
+        Playlist dataPackage{};
     };
 
     struct SendNextSongReturnData {
+    public:
         Playlist dataPackage{};
-        bool didItSend = false;
+        bool isThisTheLastOne{ false };
+        bool isThisEmpty{ false };
     };
 
     static string commandPrefix;
 
     struct RepeatedFunctionData {
-        function<void(shared_ptr<DiscordCoreClient>)> function;
-        bool repeated;
-        int intervalInMs;
+        function<void(shared_ptr<DiscordCoreClient>)> function{ nullptr };
+        bool repeated{ false };
+        int intervalInMs{ 0 };
     };
 
     struct CommandData {

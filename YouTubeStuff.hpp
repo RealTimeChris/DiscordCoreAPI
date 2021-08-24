@@ -623,182 +623,216 @@ namespace DiscordCoreAPI {
 			return playlist;
 		}
 
-		SendNextSongReturnData sendNextSong(Playlist* dataPackage) {
-			SendNextSongReturnData returnData;
-			if (this->currentSong.videoId == "") {
+		SendNextSongReturnData sendNextSong(SendNextSongInputData dataPackage) {
+			Playlist playlist = dataPackage.dataPackage;
+			for (auto value01 : playlist.songs) {
+				bool isItFound = false;
 				for (auto value : this->songQueue) {
-					if (value.videoId == dataPackage->currentSong.videoId) {
-						this->currentSong = value;
+					if (value.songId == value01.songId) {
+						isItFound = true;
 					}
 				}
-			}
-			if (dataPackage->loopSong) {
-				if (dataPackage->currentSong.videoId != "") {
-					dataPackage->currentSong = this->currentSong;
-					this->currentSong = this->currentSong;
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
+				if (!isItFound) {
+					this->downloadAudio(value01, dataPackage.dataPackage);
 				}
-				else if (dataPackage->songs.size() > 0) {
-					dataPackage->currentSong = dataPackage->songs.at(0);
-					dataPackage->songs.erase(dataPackage->songs.begin(), dataPackage->songs.begin() + 1);
+			}
+			SendNextSongReturnData returnData;
+			if (playlist.loopSong) {
+				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS IS010101" << endl;
+					playlist.currentSong = playlist.songs.at(0);
+					for (int x = 0; x < playlist.songs.size(); x += 1) {
+						if (x == playlist.songs.size() - 1) {
+							break;
+						}
+						playlist.songs[x] = playlist.songs[x + 1];
+					}
+					playlist.songs.erase(playlist.songs.end() - 1, playlist.songs.end());
 					this->currentSong = this->songQueue.at(0);
-					dataPackage->currentSong = this->currentSong;
-					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[x + 1];
+					}
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
 				}
-				else {
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = false;
-					return returnData;
+				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
+					cout << "THIS IS IT 02020202" << endl;
+					playlist.currentSong = playlist.currentSong;
+					this->currentSong = this->currentSong;
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
+				}
+				else if ((playlist.currentSong.description != "" && playlist.songs.size() == 0)){
+					cout << "THIS IS IT 030303" << endl;
+					playlist.currentSong = playlist.currentSong;
+					this->currentSong = this->currentSong;
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisTheLastOne = false;
+					returnData.isThisEmpty = false;
+				}
+				else if (playlist.getVideoId() != "" && playlist.songs.size() == 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS IT 04040404" << endl;
+					playlist.currentSong = playlist.songs.at(0);
+					this->currentSong = this->songQueue.at(0);
+					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisTheLastOne = false;
+					returnData.isThisEmpty = false;
+				}
+				else if (playlist.getVideoId() == "") {
+					cout << "THIS IS IT 05050505" << endl;
+					returnData.isThisEmpty = true;
+					returnData.isThisTheLastOne = false;
 				}
 			}
-			else if (dataPackage->loopAll) {
-				if (this->currentSong.videoId != "" && dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
-					auto tempSong02 = dataPackage->currentSong;
-					auto tempSong = this->currentSong;
-					this->currentSong = this->songQueue[0];
-					dataPackage->songs.resize(this->songQueue.size());
+			else if (playlist.loopAll) {
+				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS IT 06060606" << endl;
+					playlist.currentSong = playlist.songs.at(0);
+					for (int x = 0; x < playlist.songs.size(); x += 1) {
+						if (x == playlist.songs.size() - 1) {
+							break;
+						}
+						playlist.songs[x] = playlist.songs[x + 1];
+					}
+					playlist.songs.erase(playlist.songs.end() - 1, playlist.songs.end());
+					this->currentSong = this->songQueue.at(0);
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						dataPackage->songs[x] = this->songQueue[x + 1];
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					dataPackage->songs[this->songQueue.size() - 1] = tempSong;
-					this->songQueue.at(this->songQueue.size() - 1) = tempSong;
-					dataPackage->currentSong = this->currentSong;
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
 				}
-				else if (this->currentSong.videoId == "" && dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
-					this->currentSong = this->songQueue[0];
-					dataPackage->songs.resize(this->songQueue.size());
+				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
+					cout << "THIS IS IT 07070707" << endl;
+					auto tempSong01 = playlist.currentSong;
+					auto tempSong02 = this->currentSong;
+					playlist.currentSong = playlist.songs.at(0);
+					for (int x = 0; x < playlist.songs.size(); x += 1) {
+						if (x == playlist.songs.size() - 1) {
+							break;
+						}
+						playlist.songs[x] = playlist.songs[x + 1];
+					}
+					playlist.songs.at(playlist.songs.size() - 1) = tempSong01;
+					this->currentSong = this->songQueue.at(0);
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						dataPackage->songs[x] = this->songQueue[x + 1];
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
-					this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
-					dataPackage->currentSong = this->currentSong;
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
+					this->songQueue.at(this->songQueue.size() - 1) = tempSong02;
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
 				}
-				else if (dataPackage->songs.size() == 0 && this->songQueue.size() > 0) {
-					auto tempSong = this->currentSong;
-					dataPackage->currentSong = this->songQueue[0];
-					this->currentSong = this->songQueue[0];
-					dataPackage->songs.resize(this->songQueue.size());
-					for (int x = 0; x < this->songQueue.size(); x += 1) {
-						if (x == this->songQueue.size() - 1) {
-							break;
-						}
-						dataPackage->songs[x] = this->songQueue[x + 1];
-						this->songQueue[x] = this->songQueue[x + 1];
-					}
-					dataPackage->songs[dataPackage->songs.size() - 1] = tempSong;
-					this->songQueue[this->songQueue.size() - 1] = tempSong;
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else if (dataPackage->songs.size() == 0 && this->songQueue.size() == 0) {
-					dataPackage->currentSong = this->currentSong;
+				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0) {
+					cout << "THIS IS IT 08080808" << endl;
 					this->currentSong = this->currentSong;
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
+					playlist.currentSong = playlist.currentSong;
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisTheLastOne = false;
+					returnData.isThisEmpty = false;
 				}
-				else {
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = false;
-					return returnData;
+				else if (playlist.getVideoId() != "" && playlist.songs.size() == 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS IT 09090909" << endl;
+					this->currentSong = this->songQueue.at(0);
+					playlist.currentSong = playlist.songs.at(0);
+					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisTheLastOne = false;
+					returnData.isThisEmpty = false;
+				}
+				else if (playlist.getVideoId() == "") {
+					cout << "THIS IS IT 1010101010" << endl;
+					returnData.isThisEmpty = true;
+					returnData.isThisTheLastOne = false;
 				}
 			}
 			else {
-				if (dataPackage->songs.size() > 1 && this->songQueue.size() > 1) {
-					dataPackage->currentSong = this->songQueue[0];
-					this->currentSong = this->songQueue[0];
-					AudioFrameData* frames = &this->songQueue[0].frames;
+				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS IT 11111111" << endl;
+					playlist.currentSong = playlist.songs.at(0);
+					for (int x = 0; x < playlist.songs.size(); x += 1) {
+						if (x == playlist.songs.size() - 1) {
+							break;
+						}
+						playlist.songs[x] = playlist.songs[x + 1];
+					}
+					playlist.songs.erase(playlist.songs.end()-1, playlist.songs.end());
+					this->currentSong = this->songQueue.at(0);
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
 						}
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
+					this->songQueue.erase(this->songQueue.end()-1, this->songQueue.end());
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
+				}
+				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
+					cout << "THIS IS IT 12121212" << endl;
+					playlist.currentSong = playlist.songs.at(0);
+					for (int x = 0; x < playlist.songs.size(); x += 1) {
+						if (x == playlist.songs.size() - 1) {
+							break;
+						}
+						playlist.songs[x] = playlist.songs[x + 1];
+					}
+					playlist.songs.erase(playlist.songs.end()-1, playlist.songs.end());
+					this->currentSong = this->songQueue.at(0);
 					for (int x = 0; x < this->songQueue.size(); x += 1) {
 						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						dataPackage->songs[x] = this->songQueue[x + 1];
+						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					dataPackage->songs.erase(dataPackage->songs.begin() + dataPackage->songs.size() - 1);
-					this->songQueue.erase(this->songQueue.begin() + this->songQueue.size() - 1);
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisEmpty = false;
+					returnData.isThisTheLastOne = false;
 				}
-				else if (dataPackage->songs.size() > 0 && this->songQueue.size() > 0) {
-					dataPackage->currentSong = this->songQueue[0];
-					this->currentSong = this->songQueue[0];
-					dataPackage->songs.erase(dataPackage->songs.begin());
-					this->songQueue.erase(this->songQueue.begin());
-					AudioFrameData* frames = &this->currentSong.frames;
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else if (this->songQueue.size() > 0) {
-					dataPackage->currentSong = this->songQueue[0];
-					this->currentSong = this->songQueue[0];
-					if (dataPackage->songs.size() > 0) {
-						dataPackage->songs.erase(dataPackage->songs.begin());
-					}
-					this->songQueue.erase(this->songQueue.begin());
-					AudioFrameData* frames = &this->currentSong.frames;
-					returnData.dataPackage = *dataPackage;
-					send(*this->sendAudioBuffer, frames);
-					returnData.didItSend = true;
-					return returnData;
-				}
-				else if (this->currentSong.videoId != "" || (dataPackage->songs.size() == 0 && this->songQueue.size() == 0)) {
-					AudioFrameData* frames = &this->currentSong.frames;
+				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0) {
+					cout << "THIS IS IT 13131313" << endl;
 					this->currentSong = YouTubeSong();
-					dataPackage->currentSong = YouTubeSongDB();
-					send(*this->sendAudioBuffer, frames);
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = false;
-					return returnData;
+					playlist.currentSong = YouTubeSongDB();
+					returnData.isThisEmpty = true;
+					returnData.isThisTheLastOne = false;
 				}
-				else {
-					returnData.dataPackage = *dataPackage;
-					returnData.didItSend = false;
-					return returnData;
+				else if (playlist.getVideoId() != "" && playlist.songs.size() == 1 && playlist.currentSong.description == "") {
+					cout << "THIS IS IT 14141414" << endl;
+					this->currentSong = this->songQueue.at(0);
+					playlist.currentSong = playlist.songs.at(0);
+					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin()+1);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin()+1);
+					send(*this->sendAudioBuffer, &this->currentSong.frames);
+					returnData.isThisTheLastOne = true;
+					returnData.isThisEmpty = false;
+				}
+				else if (playlist.getVideoId() == "") {
+					cout << "THIS IS IT 15151515" << endl;
+					returnData.isThisEmpty = true;
+					returnData.isThisTheLastOne = false;
 				}
 			}
+			returnData.dataPackage = playlist;
+			return returnData;
 		}
 
 	protected:

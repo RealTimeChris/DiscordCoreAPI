@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 				|| dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED) {
 				DeleteInteractionResponseData dataPackageNewer(dataPackage);
 				dataPackageNewer.timeDelay = timeDelayNew;
-				InputEvents::interactions->deleteInteractionResponseAsync(dataPackageNewer).get();
+				//InputEvents::interactions->deleteInteractionResponseAsync(dataPackageNewer).get();
 			}
 			co_await mainThread;
 			co_return;

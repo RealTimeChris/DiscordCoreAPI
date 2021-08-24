@@ -21,7 +21,13 @@ namespace DiscordCoreAPI {
 				voiceConnectData.guildId = this->data.id;
 				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
 				voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
-				this->voiceConnection = make_shared<VoiceConnection>(voiceConnectData, this->discordCoreClientBase->audioBuffersMap.at(this->data.id));
+				if (this->discordCoreClientBase->audioBuffersMap.contains(this->data.id)) {
+					this->voiceConnection = make_shared<VoiceConnection>(voiceConnectData, this->discordCoreClientBase->audioBuffersMap.at(this->data.id));
+				}
+				else {
+					this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<AudioFrameData*>>()));
+					this->voiceConnection = make_shared<VoiceConnection>(voiceConnectData, this->discordCoreClientBase->audioBuffersMap.at(this->data.id));
+				}				
 				this->discordCoreClientBase->pWebSocketConnectionAgent->setVoiceConnectionWebSocket(this->voiceConnection->voicechannelWebSocketAgent);
 				map<string, Guild> guildMap;
 				try_receive(GuildManagerAgent::cache, guildMap);
