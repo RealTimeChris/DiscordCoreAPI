@@ -223,6 +223,8 @@ namespace DiscordCoreInternal {
 			string returnMessage = to_string(httpResponse.Content().ReadAsStringAsync().get());
 			getData.returnCode = (unsigned int)httpResponse.StatusCode();
 			getData.returnMessage = returnMessage;
+			string returnHeaders = to_string(httpResponse.Headers().ToString());
+			cout << returnHeaders << endl;
 			cout << returnMessage << endl;
 			json jsonValue;
 			if (returnMessage != "") {
