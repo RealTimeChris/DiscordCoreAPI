@@ -12,7 +12,7 @@
 #include "WebSocketStuff.hpp"
 #include "DecodingStuff.hpp"
 #include "EncodingStuff.hpp"
-#include "GuildStuff01.hpp"
+#include "GuildStuff.hpp"
 #include "DiscordCoreClientBase.hpp"
 
 namespace DiscordCoreAPI {

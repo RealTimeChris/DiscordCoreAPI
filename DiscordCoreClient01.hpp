@@ -11,14 +11,13 @@
 #include "../pch.h"
 #include "ThreadManager.hpp"
 #include "HttpStuff.hpp"
-#include "GuildStuff01.hpp"
+#include "GuildStuff.hpp"
 #include "InteractionStuff.hpp"
 #include "EventStuff01.hpp"
 #include "SlashCommandStuff.hpp"
 #include "InputEventStuff.hpp"
 #include "DatabaseStuff.hpp"
 #include "YouTubeStuff.hpp"
-#include "GuildStuff02.hpp"
 
 void myPurecallHandler(void) {
 	cout << "CURRENT THREAD: " << this_thread::get_id() << endl;
@@ -35,7 +34,7 @@ namespace DiscordCoreAPI {
 		static shared_ptr<DiscordCoreClient> thisPointer;
 		shared_ptr<DiscordUser> discordUser{ nullptr };
 		shared_ptr<EventManager> eventManager{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources;
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 
 		DiscordCoreClient(hstring botTokenNew) :DiscordCoreClientBase(this),agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			this->botToken = botTokenNew;

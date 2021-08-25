@@ -11,7 +11,7 @@
 #include "../pch.h"
 #include "MessageStuff.hpp"
 #include "InteractionStuff.hpp"
-#include "GuildStuff01.hpp"
+#include "GuildStuff.hpp"
 
 namespace DiscordCoreAPI {
 
