@@ -120,14 +120,12 @@ namespace DiscordCoreAPI {
                         av_get_media_type_string(type));
                     return;
                 }
-                this->audioStreamIndex = this->audioStreamIndex;
-                cout << "STREAM INDEX (ORIGIN):" << this->audioStreamIndex << endl;
                 this->swrContext = swr_alloc();
                 this->swrContext = swr_alloc_set_opts(NULL, AV_CH_LAYOUT_STEREO, av_get_alt_sample_fmt(this->audioDecodeContext->sample_fmt, 0), 48000, AV_CH_LAYOUT_STEREO, this->audioDecodeContext->sample_fmt, this->audioDecodeContext->sample_rate, 0, nullptr);
                 swr_init(this->swrContext);
 
             }
-            av_dump_format(this->formatContext, 0, "test", 0);
+            av_dump_format(this->formatContext, 0, "Memory-Input", 0);
         }
 
         int avio_seek(AVIOContext* avContext, int offset, int ) {
@@ -172,13 +170,10 @@ namespace DiscordCoreAPI {
                             fprintf(stderr, "Error submitting a packet for decoding (%s), %s.\n", to_string(ret).c_str(), charString);
                             return frames;
                         }
-                        // get all the available frames from the decoder
                         if (ret >= 0) {
 
                             ret = avcodec_receive_frame(this->audioDecodeContext, this->frame);
                             if (ret < 0) {
-                                // those two return values are special and mean there is no output
-                                // frame available, but there were no errors during decoding.
                                 fprintf(stderr, "Error during decoding (%s)\n", to_string(ret).c_str());
                                 return frames;
                             }
@@ -193,7 +188,7 @@ namespace DiscordCoreAPI {
                             this->newFrame->nb_samples = frame->nb_samples;
                             this->newFrame->pts = frame->pts;
                             swr_convert_frame(this->swrContext, this->newFrame, this->frame);
-                            //printf("Audio Frame #:%d Number of Samples:%d pts:%s\n", this->audioFrameCount, this->newFrame->nb_samples, to_string(this->newFrame->pts).c_str());
+                            printf("Audio Frame #:%d Number of Samples:%d pts:%s\n", this->audioFrameCount, this->newFrame->nb_samples, to_string(this->newFrame->pts).c_str());
                             size_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
                             vector<uint8_t> newVector{};
                             for (int x = 0; x < unpadded_linesize; x += 1) {
@@ -231,21 +226,12 @@ namespace DiscordCoreAPI {
                     av_frame_unref(this->frame);
                     av_frame_unref(this->newFrame);
                 }
-
                 av_packet_unref(this->packet);
                 av_packet_free(&this->packet);
                 av_frame_unref(this->frame);
                 av_frame_free(&this->frame);
                 av_frame_unref(this->newFrame);
                 av_frame_free(&this->newFrame);
-                __int64 currentSize = 0;
-                for (auto value : frames) {
-                    for (auto value02 : value.data) {
-                        currentSize += sizeof(value02);
-                    }
-                    currentSize += sizeof(value.sampleCount);
-                }
-                cout << "FRAMES SIZE: " << currentSize << endl;
                 return frames;
             }
             return vector<RawFrameData>();
@@ -278,16 +264,16 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        AVIOContext* ioContext = nullptr;
-        AVFormatContext* formatContext = nullptr;
-        AVCodecContext* audioDecodeContext = nullptr;
-        AVStream* audioStream = nullptr;
-        SwrContext* swrContext = nullptr;
-        AVCodec* dec = nullptr;
+        AVIOContext* ioContext{ nullptr };
+        AVFormatContext* formatContext{ nullptr };
+        AVCodecContext* audioDecodeContext{ nullptr };
+        AVStream* audioStream{ nullptr };
+        SwrContext* swrContext{ nullptr };
+        AVCodec* dec{ nullptr };
 
-        int  audioStreamIndex = 0, audioFrameCount = 0, totalFileSize = 0;
-        AVFrame* frame = nullptr, * newFrame = nullptr;
-        AVPacket* packet = nullptr;
+        int  audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 };
+        AVFrame* frame{ nullptr }, * newFrame{ nullptr };
+        AVPacket* packet{ nullptr };
         vector<uint8_t> currentBuffer{};
 
         static int FileStreamRead(void* opaque, uint8_t* buf, int bufSize)

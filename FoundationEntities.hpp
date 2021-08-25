@@ -538,6 +538,21 @@ namespace  DiscordCoreInternal {
         string channelId;
     };
 
+    struct ThreadMetadataData {
+        bool archived;
+        string archiverId;
+        int autoArchiveDuration;
+        string archiveTimestamp;
+        bool locked;
+    };
+
+    struct ThreadMemberData {
+        string id;
+        string userId;
+        string joinTimestamp;
+        int flags;
+    };
+
     struct ChannelData {
         string id;
         ChannelType type = ChannelType::DM;
@@ -559,6 +574,8 @@ namespace  DiscordCoreInternal {
         string lastPinTimestamp;
         string rtcRegion;
         int videoQualityMode = -1;
+        ThreadMetadataData threadMetadata;
+        ThreadMemberData member;
     };
 
     struct VoiceStateData {
@@ -2280,6 +2297,15 @@ namespace DiscordCoreAPI {
     };
 
     struct ThreadMetadataData {
+        operator DiscordCoreInternal::ThreadMetadataData(){
+            DiscordCoreInternal::ThreadMetadataData newData;
+            newData.archived = this->archived;
+            newData.archiverId = this->archiverId;
+            newData.archiveTimestamp = this->archiveTimestamp;
+            newData.autoArchiveDuration = this->autoArchiveDuration;
+            newData.locked = this->locked;
+            return newData;
+        };
         bool archived;
         string archiverId;
         int autoArchiveDuration;
@@ -2287,7 +2313,15 @@ namespace DiscordCoreAPI {
         bool locked;
     };
 
-    struct ThreadMember {
+    struct ThreadMemberData {
+        operator DiscordCoreInternal::ThreadMemberData() {
+            DiscordCoreInternal::ThreadMemberData newData;
+            newData.flags = this->flags;
+            newData.id = this->id;
+            newData.joinTimestamp = this->joinTimestamp;
+            newData.userId = this->userId;
+            return newData;
+        }
         string id;
         string userId;
         string joinTimestamp;
@@ -2321,6 +2355,8 @@ namespace DiscordCoreAPI {
             newData.type = (DiscordCoreInternal::ChannelType)this->type;
             newData.userLimit = this->userLimit;
             newData.videoQualityMode = this->videoQualityMode;
+            newData.member = this->member;
+            newData.threadMetadata = this->threadMetadata;
             return newData;
         }
         string id;
@@ -2346,7 +2382,7 @@ namespace DiscordCoreAPI {
         int messageCount;
         int memberCount;
         ThreadMetadataData threadMetadata;
-        ThreadMember member;
+        ThreadMemberData member;
     };
 
     struct VoiceStateData {
@@ -3549,29 +3585,13 @@ namespace DiscordCoreAPI {
     };
 
     struct RawFrameData {
-        RawFrameData(){}
-        operator RawFrameData() {
-            RawFrameData newData;
-            for (auto value : this->data) {
-                newData.data.push_back(value);
-            }
-            newData.sampleCount = this->sampleCount;
-            return newData;
-        }
+        RawFrameData() {}
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
     };
 
     struct EncodedFrameData {
-        EncodedFrameData(){}
-        operator EncodedFrameData() {
-            EncodedFrameData newData;
-            for (auto value : this->data) {
-                newData.data.push_back(value);
-            }
-            newData.sampleCount = this->sampleCount;
-            return newData;
-        }
+        EncodedFrameData() {}
         vector<uint8_t> data{};
         uint32_t sampleCount = 0;
     };
@@ -3582,18 +3602,7 @@ namespace DiscordCoreAPI {
     };
 
     struct AudioFrameData{
-        AudioFrameData(){}
-        operator AudioFrameData() {
-            AudioFrameData newData;
-            for (auto value : this->encodedFrameData) {
-                newData.encodedFrameData.push_back(value);
-            }
-            for (auto value : this->rawFrameData) {
-                newData.rawFrameData.push_back(value);
-            }
-            newData.type = this->type;
-            return newData;
-        }
+        AudioFrameData() {}
         AudioFrameType type{ AudioFrameType::Encoded };
         vector<EncodedFrameData> encodedFrameData{};
         vector<RawFrameData> rawFrameData{};

@@ -160,8 +160,8 @@ namespace DiscordCoreInternal {
             *pDataStructure = threadMetadata;
         }
 
-        static void parseObject(json jsonObjectData, DiscordCoreAPI::ThreadMember* pDataStructure) {
-            DiscordCoreAPI::ThreadMember threadMember = *pDataStructure;
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ThreadMemberData* pDataStructure) {
+            DiscordCoreAPI::ThreadMemberData threadMember = *pDataStructure;
 
             if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
                 threadMember.id = jsonObjectData.at("id").get<string>();

@@ -246,6 +246,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+		void setQueue(vector<YouTubeSong> dataPackage) {
+			this->songQueue = dataPackage;
+		}
+
 		vector<YouTubeSong>* getQueue() {
 			return &this->songQueue;
 		}
@@ -419,7 +423,6 @@ namespace DiscordCoreAPI {
 				bytesRead = 0;
 				BuildSongEncoderData dataPackage02;
 				dataPackage02.rawFrames = frames;
-				dataPackage02.totalFileSize = format.contentLength;
 				YouTubeSong youtubeSong;
 				SongEncoder songEncoder(dataPackage02);
 				auto encodedFrames = songEncoder.encodeSong();
@@ -540,7 +543,6 @@ namespace DiscordCoreAPI {
 				bytesRead = 0;
 				BuildSongEncoderData dataPackage02;
 				dataPackage02.rawFrames = frames;
-				dataPackage02.totalFileSize = dataPackage01.contentLength;
 				SongEncoder songEncoder(dataPackage02);
 				auto encodedFrames = songEncoder.encodeSong();
 				YouTubeSong youtubeSong;
@@ -609,14 +611,18 @@ namespace DiscordCoreAPI {
 
 		Playlist stopPlaying(Playlist dataPackage) {
 			vector<YouTubeSong> newVector;
-			newVector.push_back(this->currentSong);
+			if (this->currentSong.songId != "") {
+				newVector.push_back(this->currentSong);
+			}			
 			for (auto value : this->songQueue) {
 				newVector.push_back(value);
 			}
 			this->songQueue = newVector;
 			this->currentSong = YouTubeSong();
 			vector<YouTubeSongDB> newVector02;
-			newVector02.push_back(dataPackage.currentSong);
+			if (dataPackage.currentSong.songId != "") {
+				newVector02.push_back(dataPackage.currentSong);
+			}			
 			for (auto value : dataPackage.songs) {
 				newVector02.push_back(value);
 			}

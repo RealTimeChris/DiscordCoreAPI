@@ -17,7 +17,6 @@ namespace DiscordCoreAPI {
     public:
 		BuildSongEncoderData() {};
 		vector<RawFrameData> rawFrames;
-		size_t totalFileSize = 0;
     };
 
 	class SongEncoder {
@@ -25,7 +24,7 @@ namespace DiscordCoreAPI {
         SongEncoder(BuildSongEncoderData dataPackage) {
 			this->rawFrames = dataPackage.rawFrames;
 			int error;
-			this->encoder = opus_encoder_create(48000, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
+			this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 			if (error != OPUS_OK) {
 				cout << "Failed to create Opus encoder!";
 			}
@@ -48,11 +47,11 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		vector<RawFrameData> rawFrames;
-		OpusEncoder* encoder;
-		const int nChannels = 2;
-		const int bufferSize = 1276;
-		//const int frameSize = 960;
+		vector<RawFrameData> rawFrames{};
+		OpusEncoder* encoder{ nullptr };
+		const int nChannels{ 2 };
+		const int maxBufferSize{ 1276 };
+		const int sampleRate{ 48000 };
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
 			int sampleCount = inputFrame.sampleCount;
@@ -61,9 +60,9 @@ namespace DiscordCoreAPI {
 				oldBuffer[x] = inputFrame.data[x];
 			}
 			
-			uint8_t* newBuffer = new uint8_t[this->bufferSize];
-
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, sampleCount , newBuffer, this->bufferSize);
+			uint8_t* newBuffer = new uint8_t[this->maxBufferSize];
+			
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, sampleCount, newBuffer, this->maxBufferSize);
 			vector<uint8_t> newVector{};
 			for (int x = 0; x < count; x += 1) {
 				newVector.push_back(newBuffer[x]);
