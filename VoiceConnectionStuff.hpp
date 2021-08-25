@@ -285,7 +285,7 @@ namespace DiscordCoreAPI {
 						else {
 							frameDataSize = this->audioData->rawFrameData.size();
 						}
-						for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
+						for (int x = 0; x < frameDataSize; x += 1) {
 							timeCounter = 0;
 							while (timeCounter <= intervalCount) {
 								timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
