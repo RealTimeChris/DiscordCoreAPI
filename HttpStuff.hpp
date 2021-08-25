@@ -223,6 +223,7 @@ namespace DiscordCoreInternal {
 			string returnMessage = to_string(httpResponse.Content().ReadAsStringAsync().get());
 			getData.returnCode = (unsigned int)httpResponse.StatusCode();
 			getData.returnMessage = returnMessage;
+			cout << returnMessage << endl;
 			json jsonValue;
 			if (returnMessage != "") {
 				if (returnMessage.find("var ytInitialData = ") != string::npos) {
