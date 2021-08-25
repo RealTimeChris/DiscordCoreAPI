@@ -155,6 +155,7 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 
 		static overwrite_buffer<map<string, Guild>> cache;
+		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 
 		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer{ nullptr };
@@ -170,9 +171,8 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<BanData> outBanBuffer{ nullptr };
 		unbounded_buffer<Guild> outGuildBuffer{ nullptr };
 		concurrent_queue<Guild> guildsToInsert{};
-
-		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
@@ -578,7 +578,7 @@ namespace DiscordCoreAPI {
 		friend class Guilds;
 
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 

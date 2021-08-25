@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<Reaction> outReactionBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew)
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 		friend class Message;
 		friend class ReactionManagerAgent;
 		friend class DiscordCoreClient;
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 	};

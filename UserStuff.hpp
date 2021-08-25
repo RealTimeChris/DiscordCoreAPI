@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<User> outUserBuffer{ nullptr };
 		concurrent_queue<User> usersToInsert{};
 
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> coreClientNew)
@@ -281,6 +281,12 @@ namespace DiscordCoreAPI {
 	class UserManager {
 	public:
 
+		UserManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->threadContext = threadContextNew;
+			this->agentResources = agentResourcesNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
+
 		task<User> fetchAsync(FetchUserData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetUserData dataPackageNew;
@@ -358,12 +364,6 @@ namespace DiscordCoreAPI {
 			co_return application;
 		}
 
-		UserManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->threadContext = threadContextNew;
-			this->agentResources = agentResourcesNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
 		~UserManager() {
 			this->threadContext->releaseGroup();
 		}
@@ -374,8 +374,8 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources{};
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		task<void> insertUserAsync(User user) {
@@ -390,7 +390,7 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-	overwrite_buffer<map<string, User>> UserManagerAgent::cache;
-	shared_ptr<DiscordCoreInternal::ThreadContext> UserManagerAgent::threadContext;
+	overwrite_buffer<map<string, User>> UserManagerAgent::cache{ nullptr };
+	shared_ptr<DiscordCoreInternal::ThreadContext> UserManagerAgent::threadContext{ nullptr };
 }
 #endif

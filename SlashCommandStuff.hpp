@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
         }
 
 	protected:
-        DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+        DiscordCoreInternal::HttpAgentResources agentResources{};
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
         string applicationId{ "" };
 

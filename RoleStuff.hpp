@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<Role> outRoleBuffer{ nullptr };
 		concurrent_queue<Role> rolesToInsert{};
 
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		RoleManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew)
@@ -605,7 +605,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		task<void> insertRoleAsync(Role role) {

@@ -42,7 +42,8 @@ namespace DiscordCoreAPI {
 		friend class ChannelManager;
 
 		static overwrite_buffer<map<string, Channel>> cache;
-		
+		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+
 		unbounded_buffer<DiscordCoreInternal::DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::CollectChannelData> requestCollectChannelBuffer{ nullptr };
@@ -52,8 +53,7 @@ namespace DiscordCoreAPI {
 		concurrent_queue<Channel>channelsToInsert{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 
-		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> coreClientNew)
@@ -346,7 +346,7 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		task<void> insertChannelAsync(Channel channel) {

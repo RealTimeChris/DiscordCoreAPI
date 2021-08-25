@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
         unbounded_buffer<MessageData> outInteractionResponseBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
-        DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+        DiscordCoreInternal::HttpAgentResources agentResources{};
         ScheduleGroup* pScheduleGroup{ nullptr };
 
         InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)
@@ -478,7 +478,7 @@ namespace DiscordCoreAPI {
         friend class InteractionManagerAgent;
         friend class DiscordCoreClient;
 
-        DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+        DiscordCoreInternal::HttpAgentResources agentResources{};
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
     };
 

@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 		concurrent_queue<GuildMember> guildMembersToInsert{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		GuildMemberManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew)
@@ -289,7 +289,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClientBase;
 		friend class EventHandler;
 		friend class GuildMembers;
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 

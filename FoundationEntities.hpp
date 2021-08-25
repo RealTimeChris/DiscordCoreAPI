@@ -664,8 +664,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct HttpAgentResources {
-        string baseURL = "";
-        hstring userAgent = L"";
+        string baseURL{ "" };
+        hstring userAgent{ L"" };
     };
 
     struct DeleteInteractionResponseData {

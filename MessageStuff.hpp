@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<Message> outMessageBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew)
@@ -595,7 +595,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class DiscordCoreClient;
 
-		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 	};
