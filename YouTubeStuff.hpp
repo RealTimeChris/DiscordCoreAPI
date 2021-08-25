@@ -326,7 +326,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::DataParser::parseObject(jsonObject, &videoSearchResult.formats);
 			YouTubeFormat format;
 			for (auto value : videoSearchResult.formats) {
-				//if (value.mimeType.find("mp4a.40.2") != string::npos) {
 				if (value.mimeType.find("opus") != string::npos) {
 					format = value;
 					if (value.audioQuality == "AUDIO_QUALITY_MEDIUM" && format.audioQuality == "AUDIO_QUALITY_LOW") {
@@ -649,13 +648,9 @@ namespace DiscordCoreAPI {
 					this->downloadAudio(value01, dataPackage.dataPackage);
 				}
 			}
-			cout << "THIS IS IT THIS IS IT 02020202" << endl;
 			SendNextSongReturnData returnData;
-			cout << "LOOPSONG: " << boolalpha << playlist.loopSong << endl;
-			cout << "LOOP ALL: " << boolalpha << playlist.loopAll << endl;
 			if (playlist.loopSong) {
 				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS IS OT 010101" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					for (int x = 0; x < playlist.songs.size(); x += 1) {
 						if (x == playlist.songs.size() - 1) {
@@ -679,11 +674,9 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
-					cout << "THIS IS OT 02020202020202" << endl;
 					playlist.currentSong = playlist.currentSong;
 					this->currentSong = this->currentSong;
 					if (send(*this->sendAudioBuffer, &this->currentSong.frames)) {
-						cout << "WERE HERE 0303030303030303" << endl;
 					};
 					returnData.isThisEmpty = false;
 					returnData.isThisTheLastOne = false;
@@ -691,7 +684,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0){
-					cout << "THIS IS OT 030303" << endl;
 					playlist.currentSong = playlist.currentSong;
 					this->currentSong = this->currentSong;
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
@@ -701,7 +693,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.songs.size() == 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS OT 04040404" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					this->currentSong = this->songQueue.at(0);
 					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
@@ -713,7 +704,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.getVideoURL() == "") {
-					cout << "THIS IS OT 05050505" << endl;
 					returnData.isThisEmpty = true;
 					returnData.isThisTheLastOne = false;
 					returnData.dataPackage = playlist;
@@ -722,7 +712,6 @@ namespace DiscordCoreAPI {
 			}
 			else if (playlist.loopAll) {
 				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS OT 06060606" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					for (int x = 0; x < playlist.songs.size(); x += 1) {
 						if (x == playlist.songs.size() - 1) {
@@ -746,7 +735,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
-					cout << "THIS IS OT 07070707" << endl;
 					auto tempSong01 = playlist.currentSong;
 					auto tempSong02 = this->currentSong;
 					playlist.currentSong = playlist.songs.at(0);
@@ -772,7 +760,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0) {
-					cout << "THIS IS OT 08080808" << endl;
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisTheLastOne = false;
 					returnData.isThisEmpty = false;
@@ -780,7 +767,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.songs.size() == 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS OT 09090909" << endl;
 					this->currentSong = this->songQueue.at(0);
 					playlist.currentSong = playlist.songs.at(0);
 					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
@@ -792,7 +778,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.getVideoId() == "") {
-					cout << "THIS IS OT 1010101010" << endl;
 					returnData.isThisEmpty = true;
 					returnData.isThisTheLastOne = false;
 					returnData.dataPackage = playlist;
@@ -801,7 +786,6 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				if (playlist.songs.size() > 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS OT 11111111" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					for (int x = 0; x < playlist.songs.size(); x += 1) {
 						if (x == playlist.songs.size() - 1) {
@@ -825,7 +809,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.songs.size() > 0 && playlist.currentSong.description != "") {
-					cout << "THIS IS OT 12121212" << endl;
 					playlist.currentSong = playlist.songs.at(0);
 					for (int x = 0; x < playlist.songs.size(); x += 1) {
 						if (x == playlist.songs.size() - 1) {
@@ -849,7 +832,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0) {
-					cout << "THIS IS OT 13131313" << endl;
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					this->currentSong = YouTubeSong();
 					playlist.currentSong = YouTubeSongDB();
@@ -859,7 +841,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.songs.size() == 1 && playlist.currentSong.description == "") {
-					cout << "THIS IS OT 14141414" << endl;
 					this->currentSong = this->songQueue.at(0);
 					playlist.currentSong = playlist.songs.at(0);
 					playlist.songs.erase(playlist.songs.begin(), playlist.songs.begin() + 1);
@@ -871,7 +852,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (playlist.getVideoId() == "") {
-					cout << "THIS IS OT 15151515" << endl;
 					returnData.isThisEmpty = true;
 					returnData.isThisTheLastOne = false;
 					returnData.dataPackage = playlist;
