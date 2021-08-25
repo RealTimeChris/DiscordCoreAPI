@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 			DatabaseManagerAgent::cleanup();
 			wait(DiscordCoreClient::thisPointer->pWebSocketConnectionAgent.get());
 			wait(DiscordCoreClient::thisPointer->pWebSocketReceiverAgent.get());
-			DiscordCoreClient::thisPointer->currentUser->~BotUser();
+			DiscordCoreClientBase::currentUser->~BotUser();
 			DiscordCoreClient::thisPointer->guilds->~GuildManager();
 			DiscordCoreClient::thisPointer->messages->~MessageManager();
 			DiscordCoreClient::thisPointer->reactions->~ReactionManager();
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 			DatabaseManagerAgent::initialize(this->thisPointerBase->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			InputEvents::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->thisPointerBase->currentUser->data.username, this->thisPointerBase->currentUser->data.id);
-			this->currentUser = this->thisPointerBase->currentUser;
+			DiscordCoreClientBase::currentUser = this->thisPointerBase->currentUser;
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
 			this->pWebSocketReceiverAgent->start();

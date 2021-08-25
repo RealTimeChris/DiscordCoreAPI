@@ -23,14 +23,14 @@ namespace DiscordCoreAPI {
 	class DiscordCoreClientBase {
 	public:
 		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
-		shared_ptr<BotUser> currentUser{ nullptr };
+		static shared_ptr<BotUser> currentUser;
 
 		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgentNew) {
 			this->guildMembers = make_shared<GuildMemberManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->channels = make_shared<ChannelManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->roles = make_shared<RoleManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			this->users = make_shared<UserManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
-			this->currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, discordCoreClientNew, pWebSocketConnectionAgentNew);
+			DiscordCoreClientBase::currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, discordCoreClientNew, pWebSocketConnectionAgentNew);
 			DiscordCoreClientBase::pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
 		}
 
@@ -63,6 +63,7 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> DiscordCoreClientBase::audioBuffersMap{};
+	shared_ptr<BotUser> DiscordCoreClientBase::currentUser{};
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::pWebSocketConnectionAgent{ nullptr };
 }

@@ -40,14 +40,6 @@ namespace DiscordCoreAPI {
 		}
 		return voiceConnectionPtr;
 	}
-
-	void Guild::disconnectFromVoice() {
-		if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
-			DiscordCoreClientBase::voiceConnectionMap->at(this->data.id)->terminate();
-			this->discordCoreClientBase->currentUser->updateVoiceStatus({ .guildId = this->data.id,.channelId = "", .selfMute = false,.selfDeaf = false });
-			return;
-		}
-	}
 	
 }
 

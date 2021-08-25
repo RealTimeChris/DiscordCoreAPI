@@ -31,15 +31,13 @@ namespace DiscordCoreAPI {
 		shared_ptr<VoiceConnection> connectToVoice(string channelId);
 
 		shared_ptr<YouTubeAPI> getYouTubeAPI() {
-			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->data.id)){
+			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->data.id)) {
 				return DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
 			}
 			else {
 				return nullptr;
 			}
 		}
-
-		void disconnectFromVoice();
 
 	protected:
 		friend class GuildManagerAgent;

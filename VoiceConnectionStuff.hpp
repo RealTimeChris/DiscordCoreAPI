@@ -129,6 +129,14 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+		void disconnect(){
+			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->voiceConnectionData.guildId)) {
+				DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId)->terminate();
+				DiscordCoreClientBase::currentUser->updateVoiceStatus({ .guildId = this->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
+				return;
+			}
+		}
+
 		~VoiceConnection() {
 			this->threadContext->releaseGroup();
 			opus_encoder_destroy(this->encoder);

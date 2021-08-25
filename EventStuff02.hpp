@@ -158,7 +158,8 @@ namespace DiscordCoreAPI {
                 if (dataPackage.voiceStateData.userId == EventHandler::discordCoreClient->currentUser->data.id) {
                     if (dataPackage.voiceStateData.channelId == "") {
                         Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
-                        guild.disconnectFromVoice();
+                        auto voiceConnection = guild.connectToVoice(dataPackage.voiceStateData.channelId);
+                        voiceConnection->disconnect();
                         guildMap.erase(dataPackage.voiceStateData.guildId);
                         guildMap.insert(make_pair(dataPackage.voiceStateData.guildId, guild));
                     }
