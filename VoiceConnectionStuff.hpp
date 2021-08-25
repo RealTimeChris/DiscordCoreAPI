@@ -55,9 +55,7 @@ namespace DiscordCoreAPI {
 		}
 
 		event_token onSongCompletion(delegate<> const& handler) {
-			cout << "WERE HERE YES WE ARE" << endl;
 			if (!DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId)->amIInstantiated) {
-				cout << "WERE HERE YES WE ARE020202" << endl;
 				auto voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId);
 				voiceConnection->amIInstantiated = true;
 				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
@@ -123,6 +121,7 @@ namespace DiscordCoreAPI {
 
 		void play() {
 			if (this != nullptr) {
+				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
 				send(this->playPauseBuffer, true);
 			}
@@ -175,8 +174,6 @@ namespace DiscordCoreAPI {
 
 		void clearAudioData() {
 			if (this->audioData != nullptr) {
-				this->audioData->encodedFrameData.clear();
-				this->audioData->rawFrameData.clear();
 				this->audioData = nullptr;
 			}
 		}
@@ -268,12 +265,13 @@ namespace DiscordCoreAPI {
 				if (this->doWeWait) {
 					receive(this->playPauseBuffer);
 				}
+
 				if (this->areWeWaitingForAudioData) {
 					this->audioData = receive(*this->bufferMessageBlock);
 					this->areWeWaitingForAudioData = false;
 				}
-				this->areWePlaying = true;
 				this->sendSpeakingMessage(true);
+				this->areWePlaying = true;
 				int frameCounter = 0;
 				while (this->areWePlaying) {
 					int timeCounter = 0;
@@ -298,7 +296,7 @@ namespace DiscordCoreAPI {
 									break;
 								};
 								frameCounter += 1;
-								if (frameCounter >= encodedFrameDataSize - 1) {
+								if (frameCounter >= encodedFrameDataSize - 1 || this->audioData->encodedFrameData.size() == 0) {
 									this->clearAudioData();
 									this->areWePlaying = false;
 									this->areWeWaitingForAudioData = true;
@@ -327,7 +325,7 @@ namespace DiscordCoreAPI {
 									break;
 								};
 								frameCounter += 1;
-								if (frameCounter >= rawFrameDataSize - 1) {
+								if (frameCounter >= rawFrameDataSize - 1 || this->audioData->rawFrameData.size() == 0) {
 									this->clearAudioData();
 									this->areWePlaying = false;
 									this->areWeWaitingForAudioData = true;
@@ -336,6 +334,12 @@ namespace DiscordCoreAPI {
 									break;
 								}
 							}
+						}
+						if (this->audioData == nullptr || (this->audioData->encodedFrameData.size() == 0 && this->audioData->rawFrameData.size() == 0)) {
+							this->doWeWait = false;
+							this->areWePlaying = false;
+							this->areWeWaitingForAudioData = true;
+							break;
 						}
 					}
 				}

@@ -773,8 +773,6 @@ namespace DiscordCoreAPI {
 				}
 				else if (playlist.currentSong.description != "" && playlist.songs.size() == 0) {
 					cout << "THIS IS OT 08080808" << endl;
-					this->currentSong = this->currentSong;
-					playlist.currentSong = playlist.currentSong;
 					send(*this->sendAudioBuffer, &this->currentSong.frames);
 					returnData.isThisTheLastOne = false;
 					returnData.isThisEmpty = false;
