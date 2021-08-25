@@ -188,13 +188,12 @@ namespace DiscordCoreAPI {
                             this->newFrame->nb_samples = frame->nb_samples;
                             this->newFrame->pts = frame->pts;
                             swr_convert_frame(this->swrContext, this->newFrame, this->frame);
-                            printf("Audio Frame #:%d Number of Samples:%d pts:%s\n", this->audioFrameCount, this->newFrame->nb_samples, to_string(this->newFrame->pts).c_str());
+                            //printf("Audio Frame #:%d Number of Samples:%d pts:%s\n", this->audioFrameCount, this->newFrame->nb_samples, to_string(this->newFrame->pts).c_str());
                             size_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
                             vector<uint8_t> newVector{};
                             for (int x = 0; x < unpadded_linesize; x += 1) {
                                 newVector.push_back(this->newFrame->extended_data[0][x]);
                             }
-
                             RawFrameData rawFrame{};
                             rawFrame.data = newVector;
                             rawFrame.sampleCount = newFrame->nb_samples;
@@ -232,6 +231,7 @@ namespace DiscordCoreAPI {
                 av_frame_free(&this->frame);
                 av_frame_unref(this->newFrame);
                 av_frame_free(&this->newFrame);
+                cout << "Completed decoding!" << endl << endl;
                 return frames;
             }
             return vector<RawFrameData>();
