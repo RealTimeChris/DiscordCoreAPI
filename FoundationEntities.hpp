@@ -1995,9 +1995,9 @@ namespace DiscordCoreAPI {
             newData.text = this->text;
             return newData;
         };
-        string iconUrl;
-        string text;
-        string proxyIconUrl;
+        string iconUrl{ "" };
+        string text{ "" };
+        string proxyIconUrl{ "" };
     };
 
     struct EmbedImageData {
@@ -2009,10 +2009,10 @@ namespace DiscordCoreAPI {
             newData.width = this->width;
             return newData;
         }
-        string url;
-        string proxyUrl;
-        int height;
-        int width;
+        string url{ "" };
+        string proxyUrl{ "" };
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedThumbnailData {
@@ -2024,10 +2024,10 @@ namespace DiscordCoreAPI {
             newData.width = this->width;
             return newData;
         }
-        string url;
-        string proxyUrl;
-        int height;
-        int width;
+        string url{ "" };
+        string proxyUrl{ "" };
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedVideoData {
@@ -2039,10 +2039,10 @@ namespace DiscordCoreAPI {
             newData.width = this->width;
             return newData;
         }
-        string url;
-        string proxyUrl;
-        int height;
-        int width;
+        string url{ "" };
+        string proxyUrl{ "" };
+        int height{ 0 };
+        int width{ 0 };
     };
 
     struct EmbedProviderData {
@@ -2052,8 +2052,8 @@ namespace DiscordCoreAPI {
             newData.url = this->url;
             return newData;
         }
-        string name;
-        string url;
+        string name{ "" };
+        string url{ "" };
     };
 
     struct EmbedAuthorData {
@@ -2065,10 +2065,10 @@ namespace DiscordCoreAPI {
             newData.url = this->url;
             return newData;
         };
-        string name;
-        string url;
-        string iconUrl;
-        string proxyIconUrl;
+        string name{ "" };
+        string url{ "" };
+        string iconUrl{ "" };
+        string proxyIconUrl{ "" };
     };
 
     struct EmbedFieldData {
@@ -2079,9 +2079,9 @@ namespace DiscordCoreAPI {
             newData.value = this->value;
             return newData;
         }
-        string name;
-        string value;
-        bool Inline;
+        string name{ "" };
+        string value{ "" };
+        bool Inline{ false };
     };
 
     struct EmbedData {
@@ -2149,20 +2149,20 @@ namespace DiscordCoreAPI {
             this->fields.push_back(embedFieldData);
             return this;
         }
-        string title;
-        string type;
-        string description;
-        string url;
-        string timestamp;
-        string hexColorValue;
-        EmbedFooterData footer;
-        EmbedImageData image;
-        EmbedThumbnailData thumbnail;
-        string timestampRaw;
-        EmbedVideoData video;
-        EmbedProviderData provider;
-        EmbedAuthorData author;
-        vector<EmbedFieldData> fields;
+        string title{ "" };
+        string type{ "" };
+        string description{ "" };
+        string url{ "" };
+        string timestamp{ "" };
+        string hexColorValue{ "" };
+        EmbedFooterData footer{};
+        EmbedImageData image{};
+        EmbedThumbnailData thumbnail{};
+        string timestampRaw{ "" };
+        EmbedVideoData video{};
+        EmbedProviderData provider{};
+        EmbedAuthorData author{};
+        vector<EmbedFieldData> fields{};
     };
 
     struct ActionRowData {
@@ -2200,10 +2200,10 @@ namespace DiscordCoreAPI {
             newData.users = this->users;
             return newData;
         }
-        vector<string> parse;
-        vector<string> roles;
-        vector<string> users;
-        bool repliedUser;
+        vector<string> parse{};
+        vector<string> roles{};
+        vector<string> users{};
+        bool repliedUser{ false };
     };
 
     struct InteractionApplicationCommandCallbackData {
@@ -2221,12 +2221,12 @@ namespace DiscordCoreAPI {
             newData.tts = this->tts;
             return newData;
         }
-        bool tts;
-        string content;
-        vector<EmbedData> embeds;
-        AllowedMentionsData allowedMentions;
+        bool tts{ false };
+        string content{ "" };
+        vector<EmbedData> embeds{};
+        AllowedMentionsData allowedMentions{};
         int flags{ 0 };
-        vector<ActionRowData> components;
+        vector<ActionRowData> components{};
     };
 
     enum class InteractionCallbackType {
@@ -2481,12 +2481,12 @@ namespace DiscordCoreAPI {
             newData.valueString = this->valueString;
             return newData;
         }
-        string name;
-        ApplicationCommandOptionType type;
-        bool valueBool;
-        string valueString;
-        int valueInt;
-        vector<ApplicationCommandInteractionDataOption> options;
+        string name{ "" };
+        ApplicationCommandOptionType type{};
+        bool valueBool{ false };
+        string valueString{ "" };
+        int valueInt{ 0 };
+        vector<ApplicationCommandInteractionDataOption> options{};
     };
 
     vector<DiscordCoreInternal::ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions) {
@@ -2512,12 +2512,12 @@ namespace DiscordCoreAPI {
             newData.resolved = this->resolved;
             return newData;
         }
-        string name;
-        string id;
-        ApplicationCommandInteractionDataResolved resolved;
-        vector<ApplicationCommandInteractionDataOption> options;
-        string customId;
-        int componentType;
+        string name{ "" };
+        string id{ "" };
+        ApplicationCommandInteractionDataResolved resolved{};
+        vector<ApplicationCommandInteractionDataOption> options{};
+        string customId{ "" };
+        int componentType{ 0 };
     };
 
     struct ChannelMentionData {
@@ -2842,23 +2842,23 @@ namespace DiscordCoreAPI {
             newData.values = this->values;
             return newData;
         }
-        string id;
-        string applicationId;
-        InteractionType type;
-        ApplicationCommandInteractionData data;
-        ComponentType componentType;
-        json dataRaw;
-        string guildId;
-        string channelId;
-        GuildMemberData member;
-        string name;
-        UserData user;
-        string token;
-        int version;
-        MessageData message;
-        string customId;
-        vector<string> values;
-        string requesterId;
+        string id{ "" };
+        string applicationId{ "" };
+        InteractionType type{};
+        ApplicationCommandInteractionData data{};
+        ComponentType componentType{};
+        json dataRaw{};
+        string guildId{ "" };
+        string channelId{ "" };
+        GuildMemberData member{};
+        string name{ "" };
+        UserData user{};
+        string token{ "" };
+        int version{ 0 };
+        MessageData message{};
+        string customId{ "" };
+        vector<string> values{};
+        string requesterId{ "" };
     };
 
     struct PartyData {
@@ -3113,14 +3113,14 @@ namespace DiscordCoreAPI {
     };
 
     struct InteractionPackageData {
-        string applicationId;
-        string interactionId;
-        string interactionToken;
+        string applicationId{ "" };
+        string interactionId{ "" };
+        string interactionToken{ "" };
     };
 
     struct MessagePackageData {
-        string channelId;
-        string messageId;
+        string channelId{ "" };
+        string messageId{ "" };
     };
 
     enum class InputEventType {
@@ -3139,34 +3139,34 @@ namespace DiscordCoreAPI {
     };
 
     struct UserCommandInteractionData {
-        string applicationId;
-        string channelId;
-        string menuId;
-        string name;
-        GuildMemberData members;
-        GuildMemberData member;
-        UserData users;
-        string targetId;
-        ApplicationCommandType type;
-        string guildId;
-        string token;
-        string interactionId;
-        int version;
+        string applicationId{ "" };
+        string channelId{ "" };
+        string menuId{ "" };
+        string name{ "" };
+        GuildMemberData members{};
+        GuildMemberData member{};
+        UserData users{};
+        string targetId{ "" };
+        ApplicationCommandType type{};
+        string guildId{ "" };
+        string token{ "" };
+        string interactionId{ "" };
+        int version{ 0 };
     };
 
     struct MessageCommandInteractionData {
-        string applicationId;
-        string channelId;
-        string menuId;
-        string name;
-        MessageData messages;
-        string targetId;
-        GuildMemberData member;
-        ApplicationCommandType type;
-        string guildId;
-        string token;
-        string interactionId;
-        int version;
+        string applicationId{ "" };
+        string channelId{ "" };
+        string menuId{ "" };
+        string name{ "" };
+        MessageData messages{};
+        string targetId{ "" };
+        GuildMemberData member{};
+        ApplicationCommandType type{};
+        string guildId{ "" };
+        string token{ "" };
+        string interactionId{ "" };
+        int version{ 0 };
     };
 
     struct InputEventData {
@@ -3216,8 +3216,8 @@ namespace DiscordCoreAPI {
             }
         }
         shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-        InputEventType eventType;
-        InputEventResponseType inputEventResponseType;
+        InputEventType eventType{};
+        InputEventResponseType inputEventResponseType{};
         InteractionData getInteractionData() {
             return this->interactionData;
         }
@@ -3391,11 +3391,11 @@ namespace DiscordCoreAPI {
         friend struct CommandData;
         friend class DiscordCoreClient;
         friend class EventHandler;
-        InteractionData interactionData;
-        UserCommandInteractionData userCommandInteractionData;
-        MessageCommandInteractionData messageCommandInteractionData;
-        MessageData messageData;
-        string requesterId;
+        InteractionData interactionData{};
+        UserCommandInteractionData userCommandInteractionData{};
+        MessageCommandInteractionData messageCommandInteractionData{};
+        MessageData messageData{};
+        string requesterId{ "" };
     };
 
     struct WebhookData {
@@ -3524,76 +3524,74 @@ namespace DiscordCoreAPI {
     };
 
     struct InviteData {
-        string channelId;
-        string guildId;
-        ChannelData channel;
-        string code;
-        string createdAt;
-        string expiresAt;
-        GuildData guild;
-        UserData inviter;
-        int maxAge = 0;
-        int maxUses = 0;
-        int targetType = 0;
-        UserData targetUser;
-        int approximatePresenceCount;
-        int approximateMemberCount;
-        ApplicationData targetApplication;
-        StageInstanceData stageInstance;
-        bool temporary;
-        int uses = 0;
+        string channelId{ "" };
+        string guildId{ "" };
+        ChannelData channel{};
+        string code{ "" };
+        string createdAt{ "" };
+        string expiresAt{ "" };
+        GuildData guild{};
+        UserData inviter{};
+        int maxAge{ 0 };
+        int maxUses{ 0 };
+        int targetType{ 0 };
+        UserData targetUser{};
+        int approximatePresenceCount{ 0 };
+        int approximateMemberCount{ 0 };
+        ApplicationData targetApplication{};
+        StageInstanceData stageInstance{};
+        bool temporary{ false };
+        int uses{ 0 };
     };
 
     struct TypingStartData {
-        std::string channelId;
-        std::string guildId;
-        std::string userId;
-        int timestamp;
-        GuildMemberData member;
+        string channelId{ "" };
+        string guildId{ "" };
+        string userId{ "" };
+        int timestamp{ 0 };
+        GuildMemberData member{};
     };
 
     struct YouTubeFormat {
-        int itag = 0;
-        string mimeType = "";
-        string codecs = "";
-        int bitrate = 0;
-        int width = 0;
-        int height = 0;
-        string quality = "";
-        int fps = 0;
-        string audioQuality = "";
-        string signatureCipher = "";
-        string audioSampleRate = "";
-        int averageBitrate = 0;
-        __int64 contentLength = 0;
-        string downloadURL = "";
-        string signature = "";
-        string aitags = "";
+        int itag{ 0 };
+        string mimeType{ "" };
+        string codecs{ "" };
+        int bitrate{ 0 };
+        int width{ 0 };
+        int height{ 0 };
+        string quality{ "" };
+        int fps{ 0 };
+        string audioQuality{ "" };
+        string signatureCipher{ "" };
+        string audioSampleRate{ "" };
+        int averageBitrate{ 0 };
+        __int64 contentLength{ 0 };
+        string downloadURL{ "" };
+        string signature{ "" };
+        string aitags{ "" };
     };
 
     struct CreateGuildBanData {
-        string guildId;
-        string guildMemberId;
-        int deleteMessageDays;
-        string reason;
+        string guildId{ "" };
+        string guildMemberId{ "" };
+        int deleteMessageDays{ 0 };
+        string reason{ "" };
     };
 
     struct BanData {
-        string reason;
-        UserData user;
-        bool failedDueToPerms = false;
+        string reason{ "" };
+        UserData user{};
+        bool failedDueToPerms{ false };
     };
 
     struct RawFrameData {
-        RawFrameData() {}
         vector<uint8_t> data{};
-        uint32_t sampleCount = 0;
+        uint32_t sampleCount{ 0 };
     };
 
     struct EncodedFrameData {
-        EncodedFrameData() {}
         vector<uint8_t> data{};
-        uint32_t sampleCount = 0;
+        uint32_t sampleCount{ 0 };
     };
 
     enum class AudioFrameType {
@@ -3601,9 +3599,8 @@ namespace DiscordCoreAPI {
         RawPCM = 1
     };
 
-    struct AudioFrameData{
-        AudioFrameData() {}
-        AudioFrameType type{ AudioFrameType::Encoded };
+    struct AudioFrameData {
+        AudioFrameType type{};
         vector<EncodedFrameData> encodedFrameData{};
         vector<RawFrameData> rawFrameData{};
     };
@@ -3768,9 +3765,9 @@ namespace DiscordCoreAPI {
                 this->optionsArgs.push_back(inputEventData.messageCommandInteractionData.messages.id);
             }
         }
-        vector<string> optionsArgs;
-        string commandName;
-        InputEventData eventData;
+        vector<string> optionsArgs{};
+        string commandName{ "" };
+        InputEventData eventData{};
     };
 
     string constructStringContent(CommandData commandData) {
@@ -3856,9 +3853,9 @@ namespace DiscordCoreAPI {
         friend class InteractionManager;
         friend class InputEvents;
         friend struct CreateInteractionResponseData;
-        InteractionPackageData interactionPackage;
-        InteractionCallbackType type;
-        InputEventResponseType responseType;
+        InteractionPackageData interactionPackage{};
+        InteractionCallbackType type{};
+        InputEventResponseType responseType{};
     };
 
     struct CreateDeferredInteractionResponseData {
@@ -3872,14 +3869,14 @@ namespace DiscordCoreAPI {
             this->guildId = dataPackage.getGuildId();
         }
         string requesterId;
-        InteractionCallbackType type;
+        InteractionCallbackType type{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage;
-        string guildId;
-        string channelId;
+        InteractionPackageData interactionPackage{};
+        string guildId{ "" };
+        string channelId{ "" };
     };
 
     struct CreateInteractionResponseData {
@@ -3961,9 +3958,9 @@ namespace DiscordCoreAPI {
 
             }
         }
-        InteractionApplicationCommandCallbackData data;
-        string requesterId;
-        InteractionCallbackType type;
+        InteractionApplicationCommandCallbackData data{};
+        string requesterId{ "" };
+        InteractionCallbackType type{};
     protected:
         CreateInteractionResponseData() {}
         friend class InteractionManagerAgent;
@@ -3971,7 +3968,7 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
         friend class Button;
         friend class SelectMenu;
-        InteractionPackageData interactionPackage;
+        InteractionPackageData interactionPackage{};
     };
 
     struct CreateEphemeralInteractionResponseData {
@@ -3983,14 +3980,14 @@ namespace DiscordCoreAPI {
             this->type = InteractionCallbackType::ChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
         }
-        InteractionApplicationCommandCallbackData data;
+        InteractionApplicationCommandCallbackData data{};
         string requesterId;
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionCallbackType type;
-        InteractionPackageData interactionPackage;
+        InteractionCallbackType type{};
+        InteractionPackageData interactionPackage{};
     };
 
     struct EditInteractionResponseData {
@@ -4049,19 +4046,19 @@ namespace DiscordCoreAPI {
 
             }
         }
-        string content;
-        vector<EmbedData> embeds;
-        AllowedMentionsData allowedMentions;
-        vector<AttachmentData> attachments;
-        vector<ActionRowData>components;
-        int flags;
-        InteractionCallbackType type;
+        string content{ "" };
+        vector<EmbedData> embeds{};
+        AllowedMentionsData allowedMentions{};
+        vector<AttachmentData> attachments{};
+        vector<ActionRowData>components{};
+        int flags{ 0 };
+        InteractionCallbackType type{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage;
-        string requesterId;
+        InteractionPackageData interactionPackage{};
+        string requesterId{ "" };
     };
 
     struct DeleteInteractionResponseData {
@@ -4070,12 +4067,12 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
         }
-        unsigned int timeDelay = 0;
+        unsigned int timeDelay{ 0 };
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage;
+        InteractionPackageData interactionPackage{};
     };
 
     struct CreateFollowUpMessageData {
@@ -4132,20 +4129,20 @@ namespace DiscordCoreAPI {
                 }
             }
         }
-        string content;
-        string username;
-        string avatarUrl;
-        bool tts;
-        vector<EmbedData> embeds;
-        DiscordCoreInternal::AllowedMentionsData allowedMentions;
-        vector<ActionRowData> components;
+        string content{ "" };
+        string username{ "" };
+        string avatarUrl{ "" };
+        bool tts{ false };
+        vector<EmbedData> embeds{};
+        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
+        vector<ActionRowData> components{};
         int flags = 0;
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage;
-        string requesterId;
+        InteractionPackageData interactionPackage{};
+        string requesterId{ "" };
     };
 
     struct EditFollowUpMessageData {
@@ -4203,26 +4200,26 @@ namespace DiscordCoreAPI {
                 }
             }
         }
-        string content;
-        string username;
-        string avatarUrl;
-        bool tts;
-        vector<EmbedData> embeds;
-        DiscordCoreInternal::AllowedMentionsData allowedMentions;
-        vector<ActionRowData> components;
-        int flags;
-        string requesterId;
+        string content{ "" };
+        string username{ "" };
+        string avatarUrl{ "" };
+        bool tts{ false };
+        vector<EmbedData> embeds{};
+        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
+        vector<ActionRowData> components{};
+        int flags{ 0 };
+        string requesterId{ "" };
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage;
-        MessagePackageData messagePackage;
+        InteractionPackageData interactionPackage{};
+        MessagePackageData messagePackage{};
     };
 
     struct GetInteractionResponseData {
-        string applicationId;
-        string interactionToken;
+        string applicationId{ "" };
+        string interactionToken{ "" };
     };
 
     struct DeleteFollowUpMessageData {
@@ -4232,13 +4229,13 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->messagePackage.messageId = dataPackage.getMessageId();
         }
-        unsigned int timeDelay = 0;
+        unsigned int timeDelay{ 0 };
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage;
-        MessagePackageData messagePackage;
+        InteractionPackageData interactionPackage{};
+        MessagePackageData messagePackage{};
     };
 
     struct EditMessageData {
@@ -4296,23 +4293,23 @@ namespace DiscordCoreAPI {
 
             }
         }
-        string content = "";
-        vector<EmbedData> embeds;
-        int flags = 0;
-        vector<AttachmentData> attachments;
-        AllowedMentionsData allowedMentions;
-        MessageData originalMessageData;
-        vector<ActionRowData> components;
-        MessageReferenceData messageReference;
+        string content{ "" };
+        vector<EmbedData> embeds{};
+        int flags{ 0 };
+        vector<AttachmentData> attachments{};
+        AllowedMentionsData allowedMentions{};
+        MessageData originalMessageData{};
+        vector<ActionRowData> components{};
+        MessageReferenceData messageReference{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
         friend class MessageManager;
         friend class MessageManagerAgent;
-        string requesterId;
-        string channelId;
-        string messageId;
+        string requesterId{ "" };
+        string channelId{ "" };
+        string messageId{ "" };
     };
 
     struct CreateMessageData {
@@ -4321,17 +4318,17 @@ namespace DiscordCoreAPI {
             this->channelId = dataPackage.getChannelId();
             this->requesterId = dataPackage.getRequesterId();
         }
-        AllowedMentionsData allowedMentions;
-        string content = "";
-        vector<EmbedData> embeds;
-        MessageReferenceData messageReference;
-        vector<ActionRowData> components;
-        int nonce;
-        bool tts = false;
-        string channelId;
+        AllowedMentionsData allowedMentions{};
+        string content{ "" };
+        vector<EmbedData> embeds{};
+        MessageReferenceData messageReference{};
+        vector<ActionRowData> components{};
+        int nonce{ 0 };
+        bool tts{ false };
+        string channelId{ "" };
     protected:
         friend class MessageManager;
-        string requesterId;
+        string requesterId{ "" };
     };
 
     struct ReplyMessageData {
@@ -4391,149 +4388,149 @@ namespace DiscordCoreAPI {
 
             }
         }
-        string content = "";
-        bool tts = false;
-        vector<EmbedData> embeds;
-        AllowedMentionsData allowedMentions;
-        MessageReferenceData messageReference;
-        vector<ActionRowData> components;
-        int nonce;
+        string content{ "" };
+        bool tts{ false };
+        vector<EmbedData> embeds{};
+        AllowedMentionsData allowedMentions{};
+        MessageReferenceData messageReference{};
+        vector<ActionRowData> components{};
+        int nonce{ 0 };
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
         friend class MessageManager;
         friend class MessageManagerAgent;
-        MessageData replyingToMessageData;
-        string requesterId;
+        MessageData replyingToMessageData{};
+        string requesterId{ "" };
     };
 
     // Channel Stuff.
 
     struct EditChannelPermissionOverwritesData {
-        string allow;
-        string deny;
-        EditChannelPermissionOverwritesType type;
-        string roleOrUserId;
-        string channelId;
+        string allow{ "" };
+        string deny{ "" };
+        EditChannelPermissionOverwritesType type{};
+        string roleOrUserId{ "" };
+        string channelId{ "" };
     };
 
     struct FetchChannelData {
-        string channelId;
+        string channelId{ "" };
     };
 
     struct GetChannelData {
-        string channelId;
+        string channelId{ "" };
     };
 
     struct DeleteChannelPermissionOverwritesData {
-        string channelId;
-        string roleOrUserId;
+        string channelId{ "" };
+        string roleOrUserId{ "" };
     };
 
     struct FetchDMChannelData {
-        string userId;
+        string userId{ "" };
     };
 
     // Message Stuff.
 
     struct SendDMData {
         SendDMData(InputEventData dataPackage) : messageData(dataPackage) {}
-        string channelId;
-        string userId;
-        CreateMessageData messageData;
+        string channelId{ "" };
+        string userId{ "" };
+        CreateMessageData messageData{};
     };
 
     struct FetchPinnedMessagesData {
-        string channelId;
+        string channelId{ "" };
     };
 
     struct FetchMessagesData {
-        string channelId;
-        unsigned int limit;
-        string beforeThisId = "";
-        string afterThisId = "";
-        string aroundThisId = "";
+        string channelId{ "" };
+        unsigned int limit{ 0 };
+        string beforeThisId{ "" };
+        string afterThisId{ "" };
+        string aroundThisId{ "" };
     };
 
     struct FetchMessageData {
-        string requesterId;
-        string channelId;
-        string id;
+        string requesterId{ "" };
+        string channelId{ "" };
+        string id{ "" };
     };
 
     struct PinMessageData {
-        string channelId;
-        string messageId;
+        string channelId{ "" };
+        string messageId{ "" };
     };
 
     struct DeleteMessageData {
-        unsigned int timeDelay = 0;
-        string channelId;
-        string messageId;
+        unsigned int timeDelay{ 0 };
+        string channelId{ "" };
+        string messageId{ "" };
     };
 
     struct DeleteMessagesBulkData {
-        string channelId;
-        vector<string> messageIds;
+        string channelId{ "" };
+        vector<string> messageIds{};
     };
 
     // Role Stuff.
     struct UpdateRoleData {
-        string guildId;
-        string roleId;
-        string name;
-        string permissions;
-        string hexColorValue;
-        bool hoist;
-        bool mentionable;
+        string guildId{ "" };
+        string roleId{ "" };
+        string name{ "" };
+        string permissions{ "" };
+        string hexColorValue{ "" };
+        bool hoist{ false };
+        bool mentionable{ false };
     };
 
     struct GetGuildRolesData {
-        string guildId;
+        string guildId{ "" };
     };
 
     struct FetchRoleData {
-        string guildId;
-        string roleId;
+        string guildId{ "" };
+        string roleId{ "" };
     };
 
     struct UpdateRolePositionData {
-        string guildId;
-        string roleId;
-        int newPosition;
+        string guildId{ "" };
+        string roleId{ "" };
+        int newPosition{ 0 };
     };
 
     struct RemoveRoleFromGuildMemberData {
-        string guildId;
-        string userId;
-        string roleId;
+        string guildId{ "" };
+        string userId{ "" };
+        string roleId{ "" };
     };
 
     struct GetRoleData {
-        string guildId;
-        string roleId;
+        string guildId{ "" };
+        string roleId{ "" };
     };
 
     struct RemoveRoleFromGuildData {
-        string guildId;
-        string roleId;
+        string guildId{ "" };
+        string roleId{ "" };
     };
 
     struct AddRoleToGuildMemberData {
-        string guildId;
-        string userId;
-        string roleId;
+        string guildId{ "" };
+        string userId{ "" };
+        string roleId{ "" };
     };
 
     struct CreateRoleData {
-        string name;
-        string permissions = "0";
-        string hexColorValue;
-        bool hoist;
-        bool mentionable;
-        string guildId;
-        int position;
+        string name{ "" };
+        string permissions{ "0" };
+        string hexColorValue{ "" };
+        bool hoist{ false };
+        bool mentionable{ false };
+        string guildId{ "" };
+        int position{ 0 };
     };
 };
 
