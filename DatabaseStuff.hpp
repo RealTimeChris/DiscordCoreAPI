@@ -17,26 +17,26 @@ namespace DiscordCoreAPI {
     class DatabaseManagerAgent;
 
     struct DiscordUserData {
-        vector<string> botCommanders = { "", "", "" };
-        string currencyName = "MBux";
-        int32_t guildCount = 0;
-        int32_t hoursOfDrugSaleCooldown = 3;
-        int32_t hoursOfDepositCooldown = 24;
-        float hoursOfRobberyCooldown = 0.100f;
-        string prefix = "!";
-        string userId = "";
-        string userName = "";
+        vector<string> botCommanders{ "", "", "" };
+        string currencyName{ "MBux" };
+        int32_t guildCount{ 0 };
+        int32_t hoursOfDrugSaleCooldown{ 3 };
+        int32_t hoursOfDepositCooldown{ 24 };
+        float hoursOfRobberyCooldown{ 0.100f };
+        string prefix{ "!" };
+        string userId{ "" };
+        string userName{ "" };
     };
 
     struct Card {
-        string suit = "";
-        string type = "";
-        unsigned int value = 0;
+        string suit{ "" };
+        string type{ "" };
+        unsigned int value{ 0 };
     };
 
     class Deck {
     public:
-        vector<Card> cards;
+        vector<Card> cards{};
 
         Deck() {
             this->cards.resize(52);
@@ -132,50 +132,50 @@ namespace DiscordCoreAPI {
     };
 
     struct RouletteBet {
-        unsigned int betAmount = 0;
-        string betOptions = "";
-        string betType = "";
-        unsigned int payoutAmount = 0;
-        string userId = "";
-        vector<string> winningNumbers;
+        unsigned int betAmount{ 0 };
+        string betOptions{ "" };
+        string betType{ "" };
+        unsigned int payoutAmount{ 0 };
+        string userId{ "" };
+        vector<string> winningNumbers{};
     };
 
     struct Roulette {
-        bool currentlySpinning = false;
+        bool currentlySpinning{ false };
         vector<RouletteBet> rouletteBets{};
     };
 
     struct LargestPayout {
-        int amount = 0;
-        string timeStamp = "";
-        string userId = "";
-        string userName = "";
+        int amount{ 0 };
+        string timeStamp{ "" };
+        string userId{ "" };
+        string userName{ "" };
     };
 
     struct CasinoStats {
         LargestPayout largestBlackjackPayout{};
-        int totalBlackjackPayout = 0;
+        int totalBlackjackPayout{ 0 };
         LargestPayout largestCoinFlipPayout{};
-        int totalCoinFlipPayout = 0;
+        int totalCoinFlipPayout{ 0 };
         LargestPayout largestRoulettePayout{};
-        int totalRoulettePayout = 0;
+        int totalRoulettePayout{ 0 };
         LargestPayout largestSlotsPayout{};
-        int totalSlotsPayout = 0;
-        int totalPayout = 0;
+        int totalSlotsPayout{ 0 };
+        int totalPayout{ 0 };
     };
 
     struct InventoryItem {
-        string emoji = "";
-        unsigned int itemCost = 0;
-        string itemName = "";
-        int oppMod = 0;
-        unsigned int selfMod = 0;
+        string emoji{ "" };
+        unsigned int itemCost{ 0 };
+        string itemName{ "" };
+        int oppMod{ 0 };
+        unsigned int selfMod{ 0 };
     };
 
     struct InventoryRole {
-        unsigned int roleCost = 0;
-        string roleId = "";
-        string roleName = "";
+        unsigned int roleCost{ 0 };
+        string roleId{ "" };
+        string roleName{ "" };
     };
 
     struct GuildShop {
@@ -184,17 +184,17 @@ namespace DiscordCoreAPI {
     };
 
     struct Currency {
-        unsigned int bank = 10000;
-        unsigned int wallet = 10000;
-        unsigned int timeOfLastDeposit = 0;
+        unsigned int bank{ 10000 };
+        unsigned int wallet{ 10000 };
+        unsigned int timeOfLastDeposit{ 0 };
     };
 
     struct DiscordGuildData {
-        string guildId = "";
-        string guildName = "";
-        unsigned int memberCount = 0;
+        string guildId{ "" };
+        string guildName{ "" };
+        unsigned int memberCount{ 0 };
         vector<Card> blackjackStack{};
-        string  borderColor = "FEFEFE";
+        string  borderColor{ "FEFEFE" };
         CasinoStats casinoStats{};
         vector<string> gameChannelIds{};
         GuildShop guildShop{};
@@ -202,17 +202,17 @@ namespace DiscordCoreAPI {
     };
 
     struct DiscordGuildMemberData {
-        string guildMemberMention = "";
-        string guildMemberId = "";
-        string displayName = "";
-        string guildId = "";
-        string globalId = "";
-        string userName = "";
+        string guildMemberMention{ "" };
+        string guildMemberId{ "" };
+        string displayName{ "" };
+        string guildId{ "" };
+        string globalId{ "" };
+        string userName{ "" };
         Currency currency{};
         vector<InventoryItem> items{};
         vector<InventoryRole> roles{};
-        unsigned int lastTimeRobbed = 0;
-        unsigned int lastTimeWorked = 0;
+        unsigned int lastTimeRobbed{ 0 };
+        unsigned int lastTimeWorked{ 0 };
     };
 
     enum class DatabaseWorkloadType {
@@ -225,13 +225,13 @@ namespace DiscordCoreAPI {
     };
 
     struct DatabaseWorkload {
-        DiscordGuildData guildData;
-        DiscordUserData userData;
-        DiscordGuildMemberData guildMemberData;
-        string globalId = "";
-        string guildId = "";
-        string guildMemberId = "";
-        DatabaseWorkloadType workloadType;
+        DiscordGuildData guildData{};
+        DiscordUserData userData{};
+        DiscordGuildMemberData guildMemberData{};
+        string globalId{ "" };
+        string guildId{ "" };
+        string guildMemberId{ "" };
+        DatabaseWorkloadType workloadType{};
     };
 
     class DatabaseManagerAgent : agent {
@@ -246,11 +246,11 @@ namespace DiscordCoreAPI {
         static mongocxx::database dataBase;
         static mongocxx::client* client;
         static string botUserId;
-        unbounded_buffer<DatabaseWorkload> requestBuffer;
-        unbounded_buffer<DiscordUserData>discordUserOutputBuffer;
-        unbounded_buffer<DiscordGuildData>discordGuildOutputBuffer;
-        unbounded_buffer<DiscordGuildMemberData>discordGuildMemberOutputBuffer;
-        unbounded_buffer<exception>errorBuffer;
+        unbounded_buffer<DatabaseWorkload> requestBuffer{ nullptr };
+        unbounded_buffer<DiscordUserData>discordUserOutputBuffer{ nullptr };
+        unbounded_buffer<DiscordGuildData>discordGuildOutputBuffer{ nullptr };
+        unbounded_buffer<DiscordGuildMemberData>discordGuildMemberOutputBuffer{ nullptr };
+        unbounded_buffer<exception>errorBuffer{ nullptr };
 
         DatabaseManagerAgent()
             : agent(*DatabaseManagerAgent::threadContext->scheduler) {
