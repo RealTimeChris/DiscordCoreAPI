@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 
 	class Message {
 	public:
-		MessageData data;
+		MessageData data{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		Message() {};
@@ -40,21 +40,22 @@ namespace DiscordCoreAPI {
 		friend class MessageManager;
 		friend class InteractionManager;
 
-		unbounded_buffer<DiscordCoreInternal::DeleteMessagesBulkData> requestDeleteMultMessagesBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetPinnedMessagesData> requestGetPinnedMessagesBuffer;
-		unbounded_buffer<DiscordCoreInternal::DeleteMessageData> requestDeleteMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::PutPinMessageData> requestPutPinMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::PatchMessageData> requestPatchMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::PostMessageData> requestPostMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetMessagesData> requestGetMessagesBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetMessageData> requestGetMessageBuffer;
-		unbounded_buffer<DiscordCoreInternal::PostDMData> requestPostDMMessageBuffer;
-		unbounded_buffer<vector<Message>> outMultMessagesBuffer;
-		unbounded_buffer<Message> outMessageBuffer;
-		unbounded_buffer<exception> errorBuffer;
-
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+
+		unbounded_buffer<DiscordCoreInternal::DeleteMessagesBulkData> requestDeleteMultMessagesBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetPinnedMessagesData> requestGetPinnedMessagesBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::DeleteMessageData> requestDeleteMessageBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PutPinMessageData> requestPutPinMessageBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PatchMessageData> requestPatchMessageBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PostMessageData> requestPostMessageBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetMessagesData> requestGetMessagesBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetMessageData> requestGetMessageBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PostDMData> requestPostDMMessageBuffer{ nullptr };
+		unbounded_buffer<vector<Message>> outMultMessagesBuffer{ nullptr };
+		unbounded_buffer<Message> outMessageBuffer{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		MessageManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew)
@@ -393,6 +394,12 @@ namespace DiscordCoreAPI {
 	class MessageManager {
 	public:
 
+		MessageManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
+			this->threadContext = threadContextNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
+
 		task<Message> replyAsync(ReplyMessageData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::PostMessageData dataPackageNew;
@@ -579,12 +586,6 @@ namespace DiscordCoreAPI {
 			co_return messageNew;
 		}
 
-		MessageManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
 		~MessageManager() {
 			this->threadContext->releaseGroup();
 		}
@@ -594,11 +595,11 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class DiscordCoreClient;
 
-		DiscordCoreInternal::HttpAgentResources agentResources;
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 	};
 
-	shared_ptr<DiscordCoreInternal::ThreadContext> MessageManagerAgent::threadContext;
+	shared_ptr<DiscordCoreInternal::ThreadContext> MessageManagerAgent::threadContext{ nullptr };
 }
 #endif

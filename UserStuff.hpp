@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 
 	class Application {
 	public:
-		DiscordCoreInternal::ApplicationData data;
+		DiscordCoreInternal::ApplicationData data{};
 
 		Application() {};
 
@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 	class User {
 	public:
 
-		DiscordCoreInternal::UserData data;
+		DiscordCoreInternal::UserData data{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		User() {};
@@ -45,20 +45,21 @@ namespace DiscordCoreAPI {
 	};
 
 	struct UpdatePresenceData {
-		vector<ActivityData> activities;
-		string status;
-		bool afk;
+		vector<ActivityData> activities{};
+		string status{ "" };
+		bool afk{ false };
 	};
 
 	struct UpdateVoiceStateData {
-		string guildId;
-		string channelId;
-		bool selfMute;
-		bool selfDeaf;
+		string guildId{ "" };
+		string channelId{ "" };
+		bool selfMute{ false };
+		bool selfDeaf{ false };
 	};
 
 	class BotUser: public User {
 	public:
+
 		BotUser(DiscordCoreInternal::UserData userDataNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
 			this->pConnectionWebSocketAgent = pConnectionWebSocketAgentNew;
 			this->data = userDataNew;
@@ -92,19 +93,19 @@ namespace DiscordCoreAPI {
 		~BotUser() {}
 
 	protected:
-		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgent;
+		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgent{ nullptr };
 	};
 
 	struct GetUserData {
-		string userId;
+		string userId{ "" };
 	};
 
 	struct FetchUserData {
-		string userId;
+		string userId{ "" };
 	};
 
 	struct LeaveGuildData {
-		string guildId;
+		string guildId{ "" };
 	};
 
 	class UserManagerAgent : agent {
@@ -113,18 +114,18 @@ namespace DiscordCoreAPI {
 		friend class UserManager;
 
 		static overwrite_buffer<map<string, User>> cache;
-
-		unbounded_buffer<DiscordCoreInternal::GetApplicationData> requestGetApplicationBuffer;
-		unbounded_buffer<DiscordCoreInternal::LeaveGuildData> requestLeaveGuildBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetUserData> requestGetUserBuffer;
-		unbounded_buffer<DiscordCoreInternal::CollectUserData> requestCollectUserBuffer;
-		unbounded_buffer<Application> outApplicationBuffer;
-		unbounded_buffer<exception> errorBuffer;
-		unbounded_buffer<User> outUserBuffer;
-		concurrent_queue<User> usersToInsert;
-
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+
+		unbounded_buffer<DiscordCoreInternal::GetApplicationData> requestGetApplicationBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::LeaveGuildData> requestLeaveGuildBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetUserData> requestGetUserBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::CollectUserData> requestCollectUserBuffer{ nullptr };
+		unbounded_buffer<Application> outApplicationBuffer{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<User> outUserBuffer{ nullptr };
+		concurrent_queue<User> usersToInsert{};
+
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> coreClientNew)

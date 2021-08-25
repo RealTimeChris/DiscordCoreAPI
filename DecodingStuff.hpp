@@ -14,9 +14,8 @@ namespace DiscordCoreAPI {
 
     struct BuildSongDecoderData {
     public:
-        BuildSongDecoderData() {};
-        IBuffer dataBuffer;
-        size_t totalFileSize = 0;
+        IBuffer dataBuffer{};
+        size_t totalFileSize{ 0 };
     };
 
     class SongDecoder {
@@ -270,11 +269,10 @@ namespace DiscordCoreAPI {
         AVStream* audioStream{ nullptr };
         SwrContext* swrContext{ nullptr };
         AVCodec* dec{ nullptr };
-
-        int  audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 };
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         AVPacket* packet{ nullptr };
         vector<uint8_t> currentBuffer{};
+        int  audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 };
 
         static int FileStreamRead(void* opaque, uint8_t* buf, int bufSize)
         {   

@@ -98,12 +98,12 @@ namespace DiscordCoreAPI {
 		shared_ptr<ReactionManager> reactions{ nullptr };
 		shared_ptr<MessageManager> messages{ nullptr };
 		shared_ptr<GuildManager> guilds{ nullptr };
-		bool doWeQuit = false;
-		hstring baseURL = L"https://discord.com/api/v9";
-		hstring gatewayBaseURL = L"wss://gateway.discord.gg/?v=9";
+		bool doWeQuit{ false };
+		hstring baseURL{ L"https://discord.com/api/v9" };
+		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer;
-		unbounded_buffer<json> webSocketIncWorkloadBuffer;
+		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer{ nullptr };
+		unbounded_buffer<json> webSocketIncWorkloadBuffer{ nullptr };
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
@@ -186,6 +186,13 @@ namespace DiscordCoreAPI {
 			this->discordUser->writeDataToDB();
 			shared_ptr<unbounded_buffer<vector<RawFrameData>>>thePtr = make_shared<unbounded_buffer<vector<RawFrameData>>>();
 			this->audioBuffersMap.erase(guildData.id);
+		}
+
+		static void getError() {
+			exception error;
+			while (try_receive(DiscordCoreClient::errorBuffer, error)) {
+				cout << "DiscordCoreClient Error: " << error.what() << endl;
+			}
 		}
 
 		void run() {
@@ -625,15 +632,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		static void getError() {
-			exception error;
-			while (try_receive(DiscordCoreClient::errorBuffer, error)) {
-				cout << "DiscordCoreClient Error: " << error.what() << endl;
-			}
-		}
-
 	};
-	unbounded_buffer<exception> DiscordCoreClient::errorBuffer;
+	unbounded_buffer<exception> DiscordCoreClient::errorBuffer{ nullptr };
 	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer{ nullptr };
 
 	class Guilds {

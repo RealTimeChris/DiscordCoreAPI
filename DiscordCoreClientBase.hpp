@@ -58,11 +58,11 @@ namespace DiscordCoreAPI {
 		shared_ptr<ChannelManager> channels{ nullptr };
 		shared_ptr<RoleManager> roles{ nullptr };
 		shared_ptr<UserManager> users{ nullptr };
-		hstring botToken;
+		hstring botToken{ L"" };
 	};
-	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap = new map<string, shared_ptr<YouTubeAPI>>();
-	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap = new map<string, shared_ptr<VoiceConnection>>();
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> DiscordCoreClientBase::audioBuffersMap;
+	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
+	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> DiscordCoreClientBase::audioBuffersMap{};
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::pWebSocketConnectionAgent{ nullptr };
 }

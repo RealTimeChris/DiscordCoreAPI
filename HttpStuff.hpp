@@ -16,16 +16,11 @@ namespace DiscordCoreInternal {
 	class HttpRequestAgent : shared_ptr<ThreadContext>,  public agent {
 	public:
 
-		static void initialize(string botTokenNew, string baseURLNew) {
-			HttpRequestAgent::botToken = botTokenNew;
-			HttpRequestAgent::baseURL = baseURLNew;
-		};
-
-		unbounded_buffer<HttpWorkload> workSubmissionBuffer;
-		unbounded_buffer<HttpData> workReturnBuffer;
 		static string botToken;
 		static string baseURL;
-		string baseURLInd;
+		unbounded_buffer<HttpWorkload> workSubmissionBuffer{ nullptr };
+		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
+		string baseURLInd{ "" };
  
 		HttpRequestAgent(HttpAgentResources agentResources) 
 			:  agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup) , shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
@@ -88,6 +83,11 @@ namespace DiscordCoreInternal {
 			}
 		}
 
+		static void initialize(string botTokenNew, string baseURLNew) {
+			HttpRequestAgent::botToken = botTokenNew;
+			HttpRequestAgent::baseURL = baseURLNew;
+		};
+
 		void getError(string stackTrace){
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -107,8 +107,8 @@ namespace DiscordCoreInternal {
 	protected:
 		static concurrent_unordered_map<string, RateLimitData> rateLimitData;
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		unbounded_buffer<exception> errorBuffer;
-		unbounded_buffer<hresult_error> errorhBuffer;
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<hresult_error> errorhBuffer{ nullptr };
 
 		static bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew) {
 			if (rateLimitDataNew->getsRemaining <= 0) {
@@ -551,15 +551,15 @@ namespace DiscordCoreInternal {
 		HttpRequestHeaderCollection postHeaders{ nullptr };
 		HttpRequestHeaderCollection patchHeaders{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
-		HttpClient getHttpClient;
-		HttpClient putHttpClient;
-		HttpClient postHttpClient;
-		HttpClient patchHttpClient;
-		HttpClient deleteHttpClient;
+		HttpClient getHttpClient{ nullptr };
+		HttpClient putHttpClient{ nullptr };
+		HttpClient postHttpClient{ nullptr };
+		HttpClient patchHttpClient{ nullptr };
+		HttpClient deleteHttpClient{ nullptr };
 	};
-	concurrent_unordered_map<HttpWorkloadType, string> HttpRequestAgent::rateLimitDataBucketValues;
-	concurrent_unordered_map<string, RateLimitData> HttpRequestAgent::rateLimitData;
-	string HttpRequestAgent::botToken;
-	string HttpRequestAgent::baseURL;
+	concurrent_unordered_map<HttpWorkloadType, string> HttpRequestAgent::rateLimitDataBucketValues{};
+	concurrent_unordered_map<string, RateLimitData> HttpRequestAgent::rateLimitData{};
+	string HttpRequestAgent::botToken{ "" };
+	string HttpRequestAgent::baseURL{ "" };
 }
 #endif

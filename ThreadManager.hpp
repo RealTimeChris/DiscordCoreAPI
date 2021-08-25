@@ -24,11 +24,11 @@ namespace DiscordCoreInternal {
     protected:
         friend class ThreadManager;
         static shared_ptr<ThreadContext> threadContext;
-        unbounded_buffer<ThreadType> readyBuffer;
-        unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer;
-        unbounded_buffer<exception> errorBuffer;
-        ThreadManagerAgent():agent(*ThreadManagerAgent::threadContext->scheduler){
-        }
+        unbounded_buffer<ThreadType> readyBuffer{ nullptr };
+        unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer{ nullptr };
+        unbounded_buffer<exception> errorBuffer{ nullptr };
+
+        ThreadManagerAgent():agent(*ThreadManagerAgent::threadContext->scheduler){}
 
         void getError() {
             exception error;
@@ -134,8 +134,7 @@ namespace DiscordCoreInternal {
         threadContext->schedulerGroup = threadContext->scheduler->CreateScheduleGroup();
         co_return threadContext;
     }
-
-    concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads;
+    concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads{};
     shared_ptr<ThreadContext> ThreadManagerAgent::threadContext{ nullptr };
 }
 #endif

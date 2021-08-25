@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 	
 	class Role {
 	public:
-		RoleData data;
+		RoleData data{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		Role() {};
@@ -35,8 +35,8 @@ namespace DiscordCoreAPI {
 	};
 
 	struct GetGuildMemberRolesData {
-		string guildId;
-		GuildMember guildMember;
+		string guildId{ "" };
+		GuildMember guildMember{};
 	};
 
 	class RoleManagerAgent : agent {
@@ -46,23 +46,23 @@ namespace DiscordCoreAPI {
 		friend class RoleManager;
 
 		static overwrite_buffer<map<string, Role>> cache;
-
-		unbounded_buffer<DiscordCoreInternal::UpdateRolePositionData> requestPatchGuildRolesBuffer;
-		unbounded_buffer<DiscordCoreInternal::DeleteGuildMemberRoleData> requestDeleteRoleBuffer;
-		unbounded_buffer<DiscordCoreInternal::DeleteGuildRoleData> requestDeleteGuildRoleBuffer;
-		unbounded_buffer<DiscordCoreInternal::CollectRoleData> requestCollectRoleBuffer;
-		unbounded_buffer<DiscordCoreInternal::PatchRoleData> requestPatchRoleBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetRolesData> requestGetRolesBuffer;
-		unbounded_buffer<DiscordCoreInternal::PostRoleData> requestPostRoleBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetRoleData> requestGetRoleBuffer;
-		unbounded_buffer<DiscordCoreInternal::PutRoleData> requestPutRoleBuffer;
-		unbounded_buffer<vector<Role>> outRolesBuffer;
-		unbounded_buffer<exception> errorBuffer;
-		unbounded_buffer<Role> outRoleBuffer;
-		concurrent_queue<Role> rolesToInsert;
-
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+
+		unbounded_buffer<DiscordCoreInternal::UpdateRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::DeleteGuildMemberRoleData> requestDeleteRoleBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::DeleteGuildRoleData> requestDeleteGuildRoleBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::CollectRoleData> requestCollectRoleBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PatchRoleData> requestPatchRoleBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetRolesData> requestGetRolesBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PostRoleData> requestPostRoleBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetRoleData> requestGetRoleBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PutRoleData> requestPutRoleBuffer{ nullptr };
+		unbounded_buffer<vector<Role>> outRolesBuffer{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<Role> outRoleBuffer{ nullptr };
+		concurrent_queue<Role> rolesToInsert{};
+
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		RoleManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> discordCoreClientNew)
@@ -388,6 +388,12 @@ namespace DiscordCoreAPI {
 	class RoleManager {
 	public:
 
+		RoleManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
+			this->threadContext = threadContextNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
+
 		task<Role> fetchAsync(FetchRoleData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			if (dataPackage.guildId == "") {
@@ -587,12 +593,6 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		RoleManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
 		~RoleManager() {
 			this->threadContext->releaseGroup();
 		}
@@ -604,8 +604,8 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 		
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		task<void> insertRoleAsync(Role role) {
@@ -631,7 +631,7 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-	overwrite_buffer<map<string, Role>> RoleManagerAgent::cache;
-	shared_ptr<DiscordCoreInternal::ThreadContext> RoleManagerAgent::threadContext;
+	overwrite_buffer<map<string, Role>> RoleManagerAgent::cache{ nullptr };
+	shared_ptr<DiscordCoreInternal::ThreadContext> RoleManagerAgent::threadContext{ nullptr };
 }
 #endif

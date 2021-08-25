@@ -121,30 +121,30 @@ namespace DiscordCoreAPI {
 	};
 
 	struct GetGuildData {
-		string guildId;
+		string guildId{ "" };
 	};
 
 	struct FetchVanityInviteData {
-		string guildId;
+		string guildId{ "" };
 	};
 
 	struct FetchGuildData {
-		string guildId;
+		string guildId{ "" };
 	};
 
 	struct FetchAuditLogData {
-		AuditLogEvent actionType;
-		string guildId;
-		unsigned int limit;
-		string userId;
+		AuditLogEvent actionType{};
+		string guildId{ "" };
+		unsigned int limit{ 0 };
+		string userId{ "" };
 	};
 
 	struct FetchInviteData {
-		string inviteId;
+		string inviteId{ "" };
 	};
 
 	struct FetchInvitesData {
-		string guildId;
+		string guildId{ "" };
 	};
 
 	class GuildManagerAgent : agent {
@@ -156,23 +156,23 @@ namespace DiscordCoreAPI {
 
 		static overwrite_buffer<map<string, Guild>> cache;
 
-		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer;
-		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetAuditLogData> requestGetAuditLogBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetInvitesData> requestGetInvitesBuffer;
-		unbounded_buffer<DiscordCoreInternal::GetInviteData> requestGetInviteBuffer;
-		unbounded_buffer<DiscordCoreInternal::CollectGuildData> requestCollectGuildBuffer;
-		unbounded_buffer<vector<InviteData>> outInvitesBuffer;
-		unbounded_buffer<AuditLogData> outAuditLogBuffer;
-		unbounded_buffer<InviteData> outInviteBuffer;
-		unbounded_buffer<exception> errorBuffer;
-		unbounded_buffer<BanData> outBanBuffer;
-		unbounded_buffer<Guild> outGuildBuffer;
-		concurrent_queue<Guild> guildsToInsert;
+		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetAuditLogData> requestGetAuditLogBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetInvitesData> requestGetInvitesBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetInviteData> requestGetInviteBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::CollectGuildData> requestCollectGuildBuffer{ nullptr };
+		unbounded_buffer<vector<InviteData>> outInvitesBuffer{ nullptr };
+		unbounded_buffer<AuditLogData> outAuditLogBuffer{ nullptr };
+		unbounded_buffer<InviteData> outInviteBuffer{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<BanData> outBanBuffer{ nullptr };
+		unbounded_buffer<Guild> outGuildBuffer{ nullptr };
+		concurrent_queue<Guild> guildsToInsert{};
 
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
@@ -436,6 +436,13 @@ namespace DiscordCoreAPI {
 	class GuildManager {
 	public:
 
+		GuildManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreClientBase> coreClientBaseNew) {
+			this->threadContext = threadContextNew;
+			this->agentResources = agentResourcesNew;
+			this->discordCoreClient = coreClientNew;
+			this->discordCoreClientBase = coreClientBaseNew;
+		}
+
 		task<Guild> fetchAsync(FetchGuildData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetGuildData dataPackageNew;
@@ -561,13 +568,6 @@ namespace DiscordCoreAPI {
 			co_return guildVector;
 		}
 
-		GuildManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreClientBase> coreClientBaseNew) {
-			this->threadContext = threadContextNew;
-			this->agentResources = agentResourcesNew;
-			this->discordCoreClient = coreClientNew;
-			this->discordCoreClientBase = coreClientBaseNew;
-		}
-
 		~GuildManager() {
 			this->threadContext->releaseGroup();
 		}
@@ -577,8 +577,8 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guilds;
 
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 
@@ -604,7 +604,7 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache;
-	shared_ptr<DiscordCoreInternal::ThreadContext> GuildManagerAgent::threadContext;
+	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache{ nullptr };
+	shared_ptr<DiscordCoreInternal::ThreadContext> GuildManagerAgent::threadContext{ nullptr };
 }
 #endif

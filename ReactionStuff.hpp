@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	class Reaction {
 	public:
 
-		DiscordCoreInternal::ReactionData data;
+		DiscordCoreInternal::ReactionData data{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		Reaction() {};
@@ -33,52 +33,52 @@ namespace DiscordCoreAPI {
 	};
 
 	struct CreateReactionData {
-		string channelId;
-		string messageId;
-		string emojiName;
-		string emojiId;
+		string channelId{ "" };
+		string messageId{ "" };
+		string emojiName{ "" };
+		string emojiId{ "" };
 	};
 
 	struct DeleteUserReactionData {
-		string channelId;
-		string messageId;
-		string userId;
-		string emojiName;
-		string emojiId;
+		string channelId{ "" };
+		string messageId{ "" };
+		string userId{ "" };
+		string emojiName{ "" };
+		string emojiId{ "" };
 	};
 
 	struct DeleteOwnReactionData {
-		string channelId;
-		string messageId;
-		string emojiName;
-		string emojiId;
+		string channelId{ "" };
+		string messageId{ "" };
+		string emojiName{ "" };
+		string emojiId{ "" };
 	};
 	
 	struct DeleteReactionsByEmojiData {
-		string channelId;
-		string messageId;
-		string emojiName;
-		string emojiId;
+		string channelId{ "" };
+		string messageId{ "" };
+		string emojiName{ "" };
+		string emojiId{ "" };
 	};
 
 	struct DeleteAllReactionsData {
-		string channelId;
-		string messageId;
+		string channelId{ "" };
+		string messageId{ "" };
 	};
 
 	class ReactionManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
 		friend class ReactionManager;
-		friend class IndexHost;
-
-		unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll> requestDeleteReactionBuffer;
-		unbounded_buffer<DiscordCoreInternal::PutReactionData> requestPutReactionBuffer;
-		unbounded_buffer<Reaction> outReactionBuffer;
-		unbounded_buffer<exception> errorBuffer;
 
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+
+		unbounded_buffer<DiscordCoreInternal::DeleteReactionDataAll> requestDeleteReactionBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PutReactionData> requestPutReactionBuffer{ nullptr };
+		unbounded_buffer<Reaction> outReactionBuffer{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		ReactionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew)
@@ -180,6 +180,12 @@ namespace DiscordCoreAPI {
 
 	class ReactionManager {
 	public:
+
+		ReactionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
+			this->threadContext = threadContextNew;
+			this->discordCoreClient = discordCoreClientNew;
+		}
 
 		task<Reaction> createReactionAsync(CreateReactionData dataPackage){
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
@@ -312,12 +318,6 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		ReactionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
 		~ReactionManager() {
 			this->threadContext->releaseGroup();
 		}
@@ -326,10 +326,10 @@ namespace DiscordCoreAPI {
 		friend class Message;
 		friend class ReactionManagerAgent;
 		friend class DiscordCoreClient;
-		DiscordCoreInternal::HttpAgentResources agentResources;
+		DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 	};
-	shared_ptr<DiscordCoreInternal::ThreadContext> ReactionManagerAgent::threadContext;
+	shared_ptr<DiscordCoreInternal::ThreadContext> ReactionManagerAgent::threadContext{ nullptr };
 }
 #endif

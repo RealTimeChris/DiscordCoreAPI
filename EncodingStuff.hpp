@@ -15,8 +15,7 @@ namespace DiscordCoreAPI {
 
     struct BuildSongEncoderData {
     public:
-		BuildSongEncoderData() {};
-		vector<RawFrameData> rawFrames;
+		vector<RawFrameData> rawFrames{};
     };
 
 	class SongEncoder {

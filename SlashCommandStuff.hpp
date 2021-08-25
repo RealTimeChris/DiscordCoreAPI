@@ -16,50 +16,50 @@
 namespace DiscordCoreAPI {
 
     struct ApplicationCommandOptionChoiceData {
-        string name;
-        int	valueInt = 0;
-        string valueString = "";
+        string name{ "" };
+        int	valueInt{ 0 };
+        string valueString{ "" };
     };
 
     struct ApplicationCommandOptionData {
-        ApplicationCommandOptionType type;
-        string name;
-        string description;
-        bool required;
-        vector<ApplicationCommandOptionChoiceData>	choices;
-        vector<ApplicationCommandOptionData> options;
+        ApplicationCommandOptionType type{};
+        string name{ "" };
+        string description{ "" };
+        bool required{ false };
+        vector<ApplicationCommandOptionChoiceData>	choices{};
+        vector<ApplicationCommandOptionData> options{};
     };
 
     struct ApplicationCommandData {
-        string id;
-        string name;
-        string description;
-        vector<ApplicationCommandOptionData> options;
-        bool defaultPermission;
+        string id{ "" };
+        string name{ "" };
+        string description{ "" };
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ false };
     };
 
     struct EditApplicationCommandData {
-        string name;
-        string description;
-        vector<ApplicationCommandOptionData> options;
-        bool defaultPermission;
+        string name{ "" };
+        string description{ "" };
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ false };
     };
 
     struct CreateApplicationCommandData {
-        ApplicationCommandType type;
-        string name;
-        string description;
-        vector<ApplicationCommandOptionData> options;
-        bool defaultPermission = true;
+        ApplicationCommandType type{};
+        string name{ "" };
+        string description{ "" };
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ true };
     };
 
     struct DeleteApplicationCommandData {
-        string name;
+        string name{ "" };
     };
 
     class ApplicationCommand {
     public:
-        DiscordCoreInternal::ApplicationCommandData data;
+        DiscordCoreInternal::ApplicationCommandData data{};
 
         ApplicationCommand() {};
 
@@ -73,14 +73,11 @@ namespace DiscordCoreAPI {
 
 	class SlashCommandManager {
 	public:
-		SlashCommandManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, string applicationIdNew) {
+
+        SlashCommandManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, string applicationIdNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;
             this->applicationId = applicationIdNew;
-		}
-
-        ~SlashCommandManager() {
-            this->threadContext->releaseGroup();
         }
 
 		task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
@@ -236,10 +233,14 @@ namespace DiscordCoreAPI {
             co_return;
         }
 
+        ~SlashCommandManager() {
+            this->threadContext->releaseGroup();
+        }
+
 	protected:
-        DiscordCoreInternal::HttpAgentResources agentResources;
-        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-        string applicationId;
+        DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
+        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+        string applicationId{ "" };
 
         void displayOptions(vector<DiscordCoreInternal::ApplicationCommandOptionData> applicationCommandOptionData) {
             for (unsigned int x = 0; x < applicationCommandOptionData.size(); x += 1) {

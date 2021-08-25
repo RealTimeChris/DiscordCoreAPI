@@ -14,149 +14,149 @@
 namespace DiscordCoreAPI {
 
 	struct OnChannelCreationData {
-		Channel channel;
+		Channel channel{};
 	};
 
 	struct OnChannelUpdateData {
-		Channel channelOld;
-		Channel channelNew;
+		Channel channelOld{};
+		Channel channelNew{};
 	};
 
 	struct OnChannelDeletionData {
-		Channel channel;
+		Channel channel{};
 	};
 
 	struct OnGuildCreationData {
-		Guild guild;
+		Guild guild{};
 	};
 
 	struct OnGuildUpdateData {
-		Guild guildOld;
-		Guild guildNew;
+		Guild guildOld{};
+		Guild guildNew{};
 	};
 
 	struct OnGuildDeletionData {
-		Guild guild;
+		Guild guild{};
 	};
 
 	struct OnGuildBanAddData {
-		string guildId;
-		User user;
+		string guildId{ "" };
+		User user{};
 	};
 
 	struct OnGuildBanRemoveData {
-		string guildId;
-		User user;
+		string guildId{ "" };
+		User user{};
 	};
 
 	struct OnGuildMemberAddData {
-		GuildMember guildMember;
+		GuildMember guildMember{};
 	};
 
 	struct OnGuildMemberRemoveData {
-		User user;
-		string guildId;
+		User user{};
+		string guildId{ "" };
 	};
 
 	struct OnGuildMemberUpdateData {
-		GuildMember guildMemberOld;
-		GuildMember guildMemberNew;
+		GuildMember guildMemberOld{};
+		GuildMember guildMemberNew{};
 	};
 
 	struct OnRoleCreationData {
-		Role role;
-		string guildId;
+		Role role{};
+		string guildId{ "" };
 	};
 
 	struct OnRoleUpdateData {
-		Role roleOld;
-		Role roleNew;
-		string guildId;
+		Role roleOld{};
+		Role roleNew{};
+		string guildId{ "" };
 	};
 
 	struct OnRoleDeletionData {
-		Role roleOld;
-		string guildId;
+		Role roleOld{};
+		string guildId{ "" };
 	};
 
 	struct OnInviteCreationData {
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		InviteData invite;
+		InviteData invite{};
 	};
 
 	struct OnInviteDeletionData {
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		string channelId;
-		string guildId;
-		string code;
+		string channelId{ "" };
+		string guildId{ "" };
+		string code{ "" };
 	};
 
 	struct OnInteractionCreationData {
-		InputEventData eventData;
+		InputEventData eventData{};
 	};
 
 	struct OnMessageCreationData {
-		Message message;
+		Message message{};
 	};
 
 	struct OnMessageUpdateData {
-		Message messageNew;
+		Message messageNew{};
 	};
 
 	struct OnMessageDeletionData {
-		string messageId;
-		string channelId;
-		string guildId;
+		string messageId{ "" };
+		string channelId{ "" };
+		string guildId{ "" };
 	};
 
 	struct OnMessageDeleteBulkData {
-		vector<string> ids;
-		string channelId;
-		string guildId;
+		vector<string> ids{};
+		string channelId{ "" };
+		string guildId{ "" };
 	};
 
 	struct OnReactionAddData {
-		Reaction reaction;
+		Reaction reaction{};
 	};
 
 	struct OnReactionRemoveData {
-		ReactionRemoveData reactionRemoveData;
+		ReactionRemoveData reactionRemoveData{};
 	};
 
 	struct OnReactionRemoveAllData {
-		string channelId;
-		string messageId;
-		string guildId;
+		string channelId{ "" };
+		string messageId{ "" };
+		string guildId{ "" };
 	};
 
 	struct OnReactionRemoveEmojiData {
-		string channelId;
-		string guildId;
-		string messageId;
-		EmojiData emoji;
+		string channelId{ "" };
+		string guildId{ "" };
+		string messageId{ "" };
+		EmojiData emoji{};
 	};
 
 	struct OnPresenceUpdateData {
-		PresenceUpdateData presenceData;
+		PresenceUpdateData presenceData{};
 	};
 
 	struct OnTypingStartData {
-		TypingStartData typingStartData;
+		TypingStartData typingStartData{};
 	};
 
 	struct OnUserUpdateData {
-		User userOld;
-		User userNew;
+		User userOld{};
+		User userNew{};
 	};
 
 	struct OnVoiceStateUpdateData {
-		VoiceStateData voiceStateData;
+		VoiceStateData voiceStateData{};
 	};
 
 	struct OnVoiceServerUpdateData {
-		string token;
-		string guildId;
-		string endpoint;
+		string token{ "" };
+		string guildId{ "" };
+		string endpoint{ "" };
 	};
 
 	class EventManager {

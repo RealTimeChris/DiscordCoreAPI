@@ -21,21 +21,23 @@ namespace DiscordCoreAPI {
 
     class InteractionManagerAgent : public agent {
     public:
-        static map<string, shared_ptr<unbounded_buffer<MessageData>>> collectMessageDataBuffers;
-        unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::PatchInteractionResponseData> requestPatchInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::PostInteractionResponseData> requestPostInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::GetInteractionResponseData> requestGetInteractionResponseBuffer;
-        unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer;
-        unbounded_buffer<DiscordCoreInternal::PatchFollowUpMessageData> requestPatchFollowUpMessageBuffer;
-        unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer;
-        unbounded_buffer<InteractionResponseData> outInteractionresponseDataBuffer;
-        unbounded_buffer<MessageData> outInteractionResponseBuffer;
-        unbounded_buffer<exception> errorBuffer;
 
+        static map<string, shared_ptr<unbounded_buffer<MessageData>>> collectMessageDataBuffers;
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-        DiscordCoreInternal::HttpAgentResources agentResources;
+
+        unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::PatchInteractionResponseData> requestPatchInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::PostInteractionResponseData> requestPostInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::GetInteractionResponseData> requestGetInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::PatchFollowUpMessageData> requestPatchFollowUpMessageBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
+        unbounded_buffer<InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
+        unbounded_buffer<MessageData> outInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<exception> errorBuffer{ nullptr };
+
+        DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
         ScheduleGroup* pScheduleGroup{ nullptr };
 
         InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)
@@ -318,6 +320,11 @@ namespace DiscordCoreAPI {
     class InteractionManager {
     public:
 
+        InteractionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+            this->agentResources = agentResourcesNew;
+            this->threadContext = threadContextNew;
+        }
+
         task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostDeferredInteractionResponseData dataPackageNew;
@@ -463,11 +470,6 @@ namespace DiscordCoreAPI {
             co_return;
         }
 
-        InteractionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
-            this->agentResources = agentResourcesNew;
-            this->threadContext = threadContextNew;
-        }
-
         ~InteractionManager() {
             this->threadContext->releaseGroup();
         }
@@ -476,16 +478,16 @@ namespace DiscordCoreAPI {
         friend class InteractionManagerAgent;
         friend class DiscordCoreClient;
 
-        DiscordCoreInternal::HttpAgentResources agentResources;
+        DiscordCoreInternal::HttpAgentResources agentResources{ nullptr };
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
     };
 
     struct SelectMenuResponseData {
-        string userId;
-        string channelId;
-        string messageId;
-        string selectionId;
-        vector<string> values;
+        string userId{ "" };
+        string channelId{ "" };
+        string messageId{ "" };
+        string selectionId{ "" };
+        vector<string> values{};
     };
 
     class SelectMenuManager : public agent {
@@ -509,10 +511,6 @@ namespace DiscordCoreAPI {
             SelectMenuManager::threadContext->releaseGroup();
         }
 
-        ~SelectMenuManager() {
-            done();
-        }
-
         string getSelectMenuId() {
             return this->selectMenuId;
         }
@@ -532,21 +530,25 @@ namespace DiscordCoreAPI {
             return this->responseVector;
         }
 
+        ~SelectMenuManager() {
+            done();
+        }
+
     protected:
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static shared_ptr<InteractionManager> interactions;
-        unsigned int maxTimeInMs;
-        bool getButtonDataForAll;
-        SelectMenuInteractionData interactionData;
+        unsigned int maxTimeInMs{ 0 };
+        bool getButtonDataForAll{ false };
+        SelectMenuInteractionData interactionData{};
         unbounded_buffer<SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
-        unbounded_buffer<exception> errorBuffer;
-        string channelId;
-        string messageId;
-        string userId;
-        string selectMenuId = "";
-        bool doWeQuit = false;
-        vector<SelectMenuResponseData> responseVector;
-        vector<string> values;
+        unbounded_buffer<exception> errorBuffer{ nullptr };
+        string channelId{ "" };
+        string messageId{ "" };
+        string userId{ "" };
+        string selectMenuId{ "" };
+        bool doWeQuit{ false };
+        vector<SelectMenuResponseData> responseVector{};
+        vector<string> values{};
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -616,10 +618,10 @@ namespace DiscordCoreAPI {
     };
 
     struct ButtonResponseData {
-        string userId;
-        string channelId;
-        string messageId;
-        string buttonId;
+        string userId{ "" };
+        string channelId{ "" };
+        string messageId{ "" };
+        string buttonId{ "" };
     };
 
     class ButtonManager : public agent {
@@ -643,10 +645,6 @@ namespace DiscordCoreAPI {
             ButtonManager::threadContext->releaseGroup();
         }
 
-        ~ButtonManager() {
-            done();
-        }
-
         vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
             if (targetUser != "") {
                 this->userId = targetUser;
@@ -662,20 +660,24 @@ namespace DiscordCoreAPI {
             return this->responseVector;
         }
 
+        ~ButtonManager() {
+            done();
+        }
+
     protected:
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static shared_ptr<InteractionManager> interactions;
-        unsigned int maxTimeInMs;
-        bool getButtonDataForAll;
-        ButtonInteractionData interactionData;
+        unsigned int maxTimeInMs{ 0 };
+        bool getButtonDataForAll{ false };
+        ButtonInteractionData interactionData{};
         unbounded_buffer<ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
-        unbounded_buffer<exception> errorBuffer;
-        string channelId;
-        string messageId;
-        string userId;
-        string buttonId = "";
-        bool doWeQuit = false;
-        vector<ButtonResponseData> responseVector;
+        unbounded_buffer<exception> errorBuffer{ nullptr };
+        string channelId{ "" };
+        string messageId{ "" };
+        string userId{ "" };
+        string buttonId{ "" };
+        bool doWeQuit{ false };
+        vector<ButtonResponseData> responseVector{};
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -740,13 +742,13 @@ namespace DiscordCoreAPI {
             }
         }
     };
-    map<string, unbounded_buffer<ButtonInteractionData>*> ButtonManager::buttonInteractionMap;
+    map<string, unbounded_buffer<ButtonInteractionData>*> ButtonManager::buttonInteractionMap{};
     shared_ptr<InteractionManager> ButtonManager::interactions{ nullptr };
     shared_ptr<DiscordCoreInternal::ThreadContext> ButtonManager::threadContext{ nullptr };
-    map<string, unbounded_buffer<SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionMap;
+    map<string, unbounded_buffer<SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionMap{};
     shared_ptr<InteractionManager> SelectMenuManager::interactions{ nullptr };
     shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenuManager::threadContext{ nullptr };
-    map<string, shared_ptr<unbounded_buffer<MessageData>>> InteractionManagerAgent::collectMessageDataBuffers;
-    shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext;
+    map<string, shared_ptr<unbounded_buffer<MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
+    shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
 };
 #endif

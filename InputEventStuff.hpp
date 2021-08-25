@@ -203,10 +203,10 @@ namespace DiscordCoreAPI {
 		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
 	};
-	shared_ptr<MessageManager> InputEvents::messages;
-	shared_ptr<InteractionManager> InputEvents::interactions;
-	shared_ptr<DiscordCoreClientBase> InputEvents::discordCoreClientBase;
-	shared_ptr< DiscordCoreClient> InputEvents::discordCoreClient;
+	shared_ptr<MessageManager> InputEvents::messages{ nullptr };
+	shared_ptr<InteractionManager> InputEvents::interactions{ nullptr };
+	shared_ptr<DiscordCoreClientBase> InputEvents::discordCoreClientBase{ nullptr };
+	shared_ptr< DiscordCoreClient> InputEvents::discordCoreClient{ nullptr };
 }
 
 #endif
