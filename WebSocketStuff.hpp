@@ -54,8 +54,8 @@ namespace DiscordCoreInternal {
 	class VoiceChannelWebSocketAgent : public agent {
 	public:
 
-		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
-		VoiceConnectionData voiceConnectionData;
+		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
+		VoiceConnectionData voiceConnectionData{};
 
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
 			:agent(*threadContextNew->scheduler) {
@@ -137,19 +137,19 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
 		vector<uint8_t> secretKey{};
-		int audioSSRC = 0;
-		int heartbeatInterval = 0;
-		int lastNumberReceived = 0;
-		bool didWeReceiveHeartbeatAck = true;
-		event_token voiceDataReceivedToken;
-		event_token messageReceivedToken;
-		event_token closedToken;
-		bool areWeConnected = false;
-		string voiceIp = "";
-		string voicePort = "";
-		string externalIp = "";
-		string voiceEncryptionMode = "";
-		bool areWeWaitingForIp = true;
+		int audioSSRC{ 0 };
+		int heartbeatInterval{ 0 };
+		int lastNumberReceived{ 0 };
+		bool didWeReceiveHeartbeatAck{ true };
+		event_token voiceDataReceivedToken{};
+		event_token messageReceivedToken{};
+		event_token closedToken{};
+		bool areWeConnected{ false };
+		string voiceIp{ "" };
+		string voicePort{ "" };
+		string externalIp{ "" };
+		string voiceEncryptionMode{ "" };
+		bool areWeWaitingForIp{ true };
 
 		void getError() {
 			exception error;
@@ -353,8 +353,8 @@ namespace DiscordCoreInternal {
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		ISource<json>& workloadSource;
 		ITarget<WebSocketWorkload>& workloadTarget;
-		unbounded_buffer<exception> errorBuffer;
-		bool doWeQuit = false;
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		bool doWeQuit{ false };
 
 		void getError() {
 			exception error;
@@ -613,27 +613,27 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreClient;
 		shared_ptr<VoiceChannelWebSocketAgent> websocketAgent{ nullptr };
-		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer;
+		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
-		event_token messageReceivedToken;
-		event_token closedToken;
-		hstring botToken = L"";
+		event_token messageReceivedToken{};
+		event_token closedToken{};
+		hstring botToken{ L"" };
 		MessageWebSocket webSocket{ nullptr };
 		DataWriter messageWriter{ nullptr };
-		hstring socketPath = L"";
-		hstring sessionID = L"";
-		int heartbeatInterval = 0;
-		int lastNumberReceived = 0;
-		int intentsValue = ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14));
-		bool didWeReceiveHeartbeatAck = true;
+		hstring socketPath{ L"" };
+		hstring sessionID{ L"" };
+		int heartbeatInterval{ 0 };
+		int lastNumberReceived{ 0 };
+		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		bool didWeReceiveHeartbeatAck{ true };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		ITarget<json>& webSocketMessageTarget;
-		unbounded_buffer<exception> errorBuffer;
-		bool isThisConnected = false;
-		bool areWeCollectingData = false;
-		bool stateUpdateCollected = false;
-		bool serverUpdateCollected = false;
-		VoiceConnectionData* pVoiceConnectionData;
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		bool isThisConnected{ false };
+		bool areWeCollectingData{ false };
+		bool stateUpdateCollected{ false };
+		bool serverUpdateCollected{ false };
+		VoiceConnectionData* pVoiceConnectionData{ nullptr };
 
 		void getError() {
 			exception error;

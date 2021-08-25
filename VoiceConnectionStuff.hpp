@@ -88,24 +88,13 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void skipCurrentSong() {
+		void stop() {
 			if (this != nullptr) {
 				this->areWePlaying = false;
 				this->areWeWaitingForAudioData = true;
 				this->doWeWait = true;
 				this->areWeStopping = true;
-				bool receiveTrigger = receive(this->readyBuffer);
-				this->clearAudioData();
-			}
-		}
-
-		void stopPlaying() {
-			if (this != nullptr) {
-				this->areWePlaying = false;
-				this->areWeWaitingForAudioData = true;
-				this->doWeWait = true;
-				this->areWeStopping = true;
-				bool receiveTrigger = receive(this->readyBuffer);
+				receive(this->readyBuffer);
 				this->clearAudioData();
 			}
 		}
@@ -148,15 +137,15 @@ namespace DiscordCoreAPI {
 
 	protected:
 		friend class Guild;
-		bool doWeQuit = false;
-		bool doWeWait = true;
-		bool areWePlaying = false;
-		bool areWeWaitingForAudioData = true;
-		bool areWeStopping = false;
-		bool amIInstantiated = false;
-		unsigned int timestamp = 0;
-		unsigned short sequenceIndex = 0;
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionData;
+		bool doWeQuit{ false };
+		bool doWeWait{ true };
+		bool areWePlaying{ false };
+		bool areWeWaitingForAudioData{ true };
+		bool areWeStopping{ false };
+		bool amIInstantiated{ false };
+		unsigned int timestamp{ 0 };
+		unsigned short sequenceIndex{ 0 };
+		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData*>> bufferMessageBlock{ nullptr };
@@ -164,7 +153,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<int> seekBuffer{ nullptr };
 		unbounded_buffer<bool> playPauseBuffer{ nullptr };
 		OpusEncoder* encoder{ nullptr };
-		const int maxBufferSize = 1276;
+		const int maxBufferSize{ 1276 };
 		winrt::event<delegate<>> onSongCompletionEvent;
 		AudioFrameData* audioData{ nullptr };
 
