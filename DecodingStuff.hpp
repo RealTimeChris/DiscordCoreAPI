@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
                 swr_init(this->swrContext);
 
             }
-            av_dump_format(this->formatContext, 0, "Memory-Input", 0);
+            av_dump_format(this->formatContext, 0, "memory", 0);
         }
 
         int avio_seek(AVIOContext* avContext, int offset, int ) {
