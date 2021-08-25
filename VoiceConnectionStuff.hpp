@@ -278,43 +278,61 @@ namespace DiscordCoreAPI {
 					int startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					const int intervalCount = 20000;
 					if (this->audioData != nullptr) {
-						size_t frameDataSize;
 						if (this->audioData->type == AudioFrameType::Encoded) {
-							frameDataSize = this->audioData->encodedFrameData.size();
+							size_t encodedFrameDataSize = this->audioData->encodedFrameData.size();
+							for (int x = 0; x < this->audioData->encodedFrameData.size(); x += 1) {
+								timeCounter = 0;
+								while (timeCounter <= intervalCount) {
+									timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+								}
+								startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
+								int newValue;
+								if (try_receive(this->seekBuffer, newValue)) {
+									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
+									frameCounter = x;
+								}
+								if (!this->areWePlaying) {
+									break;
+								};
+								frameCounter += 1;
+								if (frameCounter >= encodedFrameDataSize - 1 || this->audioData->encodedFrameData.size() == 0) {
+									this->clearAudioData();
+									this->areWePlaying = false;
+									this->areWeWaitingForAudioData = true;
+									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								}
+							}
 						}
-						else {
-							frameDataSize = this->audioData->rawFrameData.size();
-						}
-						for (int x = 0; x < frameDataSize; x += 1) {
-							timeCounter = 0;
-							while (timeCounter <= intervalCount) {
-								timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-							}
-							startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-							EncodedFrameData newVector;
-							if (this->audioData->type == AudioFrameType::RawPCM) {
-								newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
-							}
-							else {
-								newVector = this->audioData->encodedFrameData[x];
-							}
-							this->sendSingleAudioFrame(newVector);
-							int newValue;
-							if (try_receive(this->seekBuffer, newValue)) {
-								x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
-								frameCounter = x;
-							}
-							if (!this->areWePlaying) {
-								break;
-							};
-							frameCounter += 1;
-							if (frameCounter >= frameDataSize - 1 || this->audioData->rawFrameData.size() == 0) {
-								this->clearAudioData();
-								this->areWePlaying = false;
-								this->areWeWaitingForAudioData = true;
-								this->onSongCompletionEvent();
-								frameCounter = 0;
-								break;
+						else if (this->audioData->type == AudioFrameType::RawPCM) {
+							size_t rawFrameDataSize = this->audioData->rawFrameData.size();
+							for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
+								timeCounter = 0;
+								while (timeCounter <= intervalCount) {
+									timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+								}
+								startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+								auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
+								this->sendSingleAudioFrame(newVector);
+								int newValue;
+								if (try_receive(this->seekBuffer, newValue)) {
+									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
+									frameCounter = x;
+								}
+								if (!this->areWePlaying) {
+									break;
+								};
+								frameCounter += 1;
+								if (frameCounter >= rawFrameDataSize - 1 || this->audioData->rawFrameData.size() == 0) {
+									this->clearAudioData();
+									this->areWePlaying = false;
+									this->areWeWaitingForAudioData = true;
+									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								}
 							}
 						}
 						if (this->audioData == nullptr || (this->audioData->encodedFrameData.size() == 0 && this->audioData->rawFrameData.size() == 0)) {
