@@ -889,7 +889,8 @@ namespace  DiscordCoreInternal {
         GET_VANITY_INVITE = 51,
         PUT_PIN_MESSAGE = 52,
         PUT_GUILD_BAN = 53,
-        DELETE_LEAVE_GUILD = 54
+        DELETE_LEAVE_GUILD = 54,
+        SOUNDCLOUD_SEARCH = 55
     };
 
     struct GetApplicationData {
@@ -3597,6 +3598,15 @@ namespace DiscordCoreAPI {
     enum class AudioFrameType {
         Encoded = 0,
         RawPCM = 1
+    };
+
+    struct SoundCloudSearchResult{
+        string songId{ "" };
+        string thumbNailURL{ "" };
+        string songTitle{ "" };
+        string duration{ "" };
+        string description{ "" };
+        string songURL{ "" };
     };
 
     struct AudioFrameData {

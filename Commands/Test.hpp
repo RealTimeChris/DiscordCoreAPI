@@ -28,7 +28,8 @@ namespace DiscordCoreAPI {
 			dataPackage.guildId = args->eventData.getGuildId();
 			dataPackage.limit = 25;
 			dataPackage.userId = args->eventData.getAuthorId();
-
+			SoundCloudAPI soundCloudAPI{};
+			soundCloudAPI.searchForSong("Skrillex");
 			AuditLogData auditLogData = DiscordCoreAPI::Guilds::fetchAuditLogDataAsync(dataPackage).get();
 
 			for (auto value : auditLogData.auditLogEntries) {
