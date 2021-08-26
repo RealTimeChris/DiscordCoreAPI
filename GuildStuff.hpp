@@ -30,7 +30,6 @@ namespace DiscordCoreAPI {
 			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
 				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->data.id);
-				cout << "THIS IS IT WERE HERE THIS IS IT WERE HERE" << endl;
 				return voiceConnectionPtr;
 			}
 			else if (channelId != "") {

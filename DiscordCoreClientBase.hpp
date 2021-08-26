@@ -38,8 +38,6 @@ namespace DiscordCoreAPI {
 			*this = *dataPackage;
 		}
 
-		void disconnect(string guildId);
-
 	protected:
 		friend class Guild;
 		friend class WebSocketConnectionAgent;

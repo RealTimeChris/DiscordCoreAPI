@@ -144,16 +144,50 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void disconnect(){
+		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->voiceConnectionData.guildId)) {
-				this->discordCoreClientBase->disconnect(this->voiceConnectionData.guildId);
-				return;
+				shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId);
+				if (!voiceConnection->hasTerminateRun) {
+					if (voiceConnection->areWePlaying) {
+						voiceConnection->areWePlaying = false;
+						voiceConnection->areWeStopping = true;
+						cout << "HERE 0000000" << endl;
+						receive(voiceConnection->stopBuffer);
+					}
+					cout << "HERE 1111111" << endl;
+					if (voiceConnection->areWeWaitingForAudioData) {
+						cout << "HERE 2222222" << endl;
+						voiceConnection->clearAudioData();
+						AudioFrameData* frameData;
+						while (try_receive(*voiceConnection->audioDataBuffer, frameData)) {};
+						AudioFrameData audioFrameData{};
+						send(*voiceConnection->audioDataBuffer, &audioFrameData);
+					}
+					voiceConnection->doWeQuit = true;
+					cout << "HERE 3333333" << endl;
+					DiscordCoreClientBase::currentUser->updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
+					cout << "HERE 3333333" << endl;
+					cout << "HERE 4444444" << endl;
+					if (voiceConnection->threadContext->schedulerGroup != nullptr) {
+						cout << "HERE 5555555" << endl;
+						voiceConnection->threadContext->releaseGroup();
+					}
+					cout << "HERE 6666666" << endl;
+					if (voiceConnection->encoder != nullptr) {
+						opus_encoder_destroy(voiceConnection->encoder);
+						cout << "HERE 7777777" << endl;
+						voiceConnection->encoder = nullptr;
+					}
+					voiceConnection->hasTerminateRun = true;
+					DiscordCoreClientBase::audioBuffersMap.erase(voiceConnection->voiceConnectionData.guildId);
+					DiscordCoreClientBase::voiceConnectionMap->erase(voiceConnection->voiceConnectionData.guildId);
+					cout << "HERE 888888" << endl;
+				}
 			}
 		}
 
 		~VoiceConnection() {
-			cout << "THIS IS IT THIS IS TI4680" << endl;
-			this->discordCoreClientBase->disconnect(this->voiceConnectionData.guildId);
+			this->disconnect();
 		}
 
 	protected:
@@ -409,50 +443,6 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-
-	void DiscordCoreAPI::DiscordCoreClientBase::disconnect(string guildId) {
-		
-		if (DiscordCoreClientBase::voiceConnectionMap->contains(guildId)) {
-			shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(guildId);
-			if (!voiceConnection->hasTerminateRun) {
-				if (voiceConnection->areWePlaying) {
-					voiceConnection->areWePlaying = false;
-					voiceConnection->areWeStopping = true;
-					cout << "HERE 0000000" << endl;
-					receive(voiceConnection->stopBuffer);
-				}
-				cout << "HERE 1111111" << endl;
-				if (voiceConnection->areWeWaitingForAudioData) {
-					cout << "HERE 2222222" << endl;
-					voiceConnection->clearAudioData();
-					AudioFrameData* frameData;
-					while (try_receive(*voiceConnection->audioDataBuffer, frameData)) {};
-					AudioFrameData audioFrameData{};
-					send(*voiceConnection->audioDataBuffer, &audioFrameData);
-				}
-				voiceConnection->doWeQuit = true;
-				cout << "HERE 3333333" << endl;
-				DiscordCoreClientBase::currentUser->updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
-				cout << "HERE 3333333" << endl;
-				cout << "HERE 4444444" << endl;
-				if (voiceConnection->threadContext->schedulerGroup != nullptr) {
-					cout << "HERE 5555555" << endl;
-					voiceConnection->threadContext->releaseGroup();
-				}
-				cout << "HERE 6666666" << endl;
-				if (voiceConnection->encoder != nullptr) {
-					opus_encoder_destroy(voiceConnection->encoder);
-					cout << "HERE 7777777" << endl;
-					voiceConnection->encoder = nullptr;
-				}
-				voiceConnection->hasTerminateRun = true;
-				DiscordCoreClientBase::audioBuffersMap.erase(voiceConnection->voiceConnectionData.guildId);
-				DiscordCoreClientBase::voiceConnectionMap->erase(voiceConnection->voiceConnectionData.guildId);
-				cout << "HERE 888888" << endl;
-			}
-		}
-		
-	}
 
 }
 #endif
