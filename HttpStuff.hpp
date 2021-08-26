@@ -22,8 +22,8 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
 		string baseURLInd{ "" };
  
-		HttpRequestAgent(HttpAgentResources agentResources) 
-			:  agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup) , shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
+		HttpRequestAgent(HttpAgentResources agentResources)
+			: agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup), shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
 		{
 			try {
 				if (agentResources.baseURL == ""){
@@ -109,6 +109,16 @@ namespace DiscordCoreInternal {
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<hresult_error> errorhBuffer{ nullptr };
+		HttpRequestHeaderCollection getHeaders{ nullptr };
+		HttpRequestHeaderCollection putHeaders{ nullptr };
+		HttpRequestHeaderCollection postHeaders{ nullptr };
+		HttpRequestHeaderCollection patchHeaders{ nullptr };
+		HttpRequestHeaderCollection deleteHeaders{ nullptr };
+		HttpClient getHttpClient{ nullptr };
+		HttpClient putHttpClient{ nullptr };
+		HttpClient postHttpClient{ nullptr };
+		HttpClient patchHttpClient{ nullptr };
+		HttpClient deleteHttpClient{ nullptr };
 
 		static bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew) {
 			if (rateLimitDataNew->getsRemaining <= 0) {
@@ -545,17 +555,6 @@ namespace DiscordCoreInternal {
 			return deleteData;
 		}
 
-		winrt::Windows::Foundation::Uri baseURI{ nullptr };
-		HttpRequestHeaderCollection getHeaders{ nullptr };
-		HttpRequestHeaderCollection putHeaders{ nullptr };
-		HttpRequestHeaderCollection postHeaders{ nullptr };
-		HttpRequestHeaderCollection patchHeaders{ nullptr };
-		HttpRequestHeaderCollection deleteHeaders{ nullptr };
-		HttpClient getHttpClient{ nullptr };
-		HttpClient putHttpClient{ nullptr };
-		HttpClient postHttpClient{ nullptr };
-		HttpClient patchHttpClient{ nullptr };
-		HttpClient deleteHttpClient{ nullptr };
 	};
 	concurrent_unordered_map<HttpWorkloadType, string> HttpRequestAgent::rateLimitDataBucketValues{};
 	concurrent_unordered_map<string, RateLimitData> HttpRequestAgent::rateLimitData{};

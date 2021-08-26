@@ -56,6 +56,8 @@ namespace DiscordCoreInternal {
 
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		DatagramSocket voiceSocket{ nullptr };
+		MessageWebSocket webSocket{ nullptr };
 
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
 			:agent(*threadContextNew->scheduler) {
@@ -130,9 +132,7 @@ namespace DiscordCoreInternal {
 		friend class WebSocketConnectionAgent;
 		friend class Guild;
 		unbounded_buffer<bool>* readyBuffer{ nullptr };
-		DatagramSocket voiceSocket{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
-		MessageWebSocket webSocket{ nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };

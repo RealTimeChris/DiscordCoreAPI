@@ -9,6 +9,7 @@
 #define _GUILD_STUFF_
 
 #include "../pch.h"
+#include "VoiceConnectionStuff.hpp"
 #include "DataParsingFunctions.hpp"
 #include "HttpStuff.hpp"
 #include "ChannelStuff.hpp"
@@ -16,20 +17,20 @@
 #include "GuildMemberStuff.hpp"
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
-#include "VoiceConnectionStuff.hpp"
 #include "YouTubeStuff.hpp"
 
 namespace DiscordCoreAPI {
 
 	class Guild {
 	public:
-		GuildData data{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		GuildData data{};
 
 		shared_ptr<VoiceConnection> connectToVoice(string channelId) {
 			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
 				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->data.id);
+				cout << "THIS IS IT WERE HERE THIS IS IT WERE HERE" << endl;
 				return voiceConnectionPtr;
 			}
 			else if (channelId != "") {
@@ -39,12 +40,17 @@ namespace DiscordCoreAPI {
 					voiceConnectData.guildId = this->data.id;
 					voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
 					voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
-					if (this->discordCoreClientBase->audioBuffersMap.contains(this->data.id)) {
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+					if (DiscordCoreClientBase::audioBuffersMap.contains(this->data.id)) {
+						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
+						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
+						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
 					}
 					else {
-						this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<AudioFrameData*>>()));
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData*>>();
+						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtr));
+						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
+						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
+						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
 					}
 					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
 					return voiceConnectionPtr;
@@ -63,15 +69,15 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
+		friend struct concurrency::details::_ResultHolder<Guild>;
+		friend class DiscordCoreClientBase;
+		friend struct OnGuildCreationData;
+		friend struct OnGuildDeletionData;
+		friend struct OnGuildUpdateData;
 		friend class GuildManagerAgent;
 		friend class DiscordCoreClient;
-		friend class GuildManager;
 		friend class VoiceConnection;
-		friend class DiscordCoreClientBase;
-		friend struct concurrency::details::_ResultHolder<Guild>;
-		friend struct OnGuildCreationData;
-		friend struct OnGuildUpdateData;
-		friend struct OnGuildDeletionData;
+		friend class GuildManager;
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 
 		Guild() {};
@@ -171,32 +177,31 @@ namespace DiscordCoreAPI {
 	class GuildManagerAgent : agent {
 	protected:
 		friend class DiscordCoreClient;
+		friend class EventHandler;
 		friend class GuildManager;
 		friend class Guild;
-		friend class EventHandler;
 
-		static overwrite_buffer<map<string, Guild>> cache;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		static overwrite_buffer<map<string, Guild>> cache;
 
 		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::CollectGuildData> requestCollectGuildBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::GetAuditLogData> requestGetAuditLogBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::GetInvitesData> requestGetInvitesBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::GetInviteData> requestGetInviteBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::CollectGuildData> requestCollectGuildBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer{ nullptr };
+		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		unbounded_buffer<vector<InviteData>> outInvitesBuffer{ nullptr };
 		unbounded_buffer<AuditLogData> outAuditLogBuffer{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		unbounded_buffer<InviteData> outInviteBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<BanData> outBanBuffer{ nullptr };
 		unbounded_buffer<Guild> outGuildBuffer{ nullptr };
 		concurrent_queue<Guild> guildsToInsert{};
 		
-		DiscordCoreInternal::HttpAgentResources agentResources{};
-		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-
 		GuildManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreClientBase> coreClientBaseNew)
 			:agent(*GuildManagerAgent::threadContext->scheduler) {
 			this->agentResources = agentResourcesNew;
@@ -599,10 +604,10 @@ namespace DiscordCoreAPI {
 		friend class Guilds;
 
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{};
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
-
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
+		
 		task<void> insertGuildAsync(Guild guild) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -625,7 +630,7 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache{ nullptr };
 	shared_ptr<DiscordCoreInternal::ThreadContext> GuildManagerAgent::threadContext{ nullptr };
+	overwrite_buffer<map<string, Guild>> GuildManagerAgent::cache{ nullptr };
 }
 #endif

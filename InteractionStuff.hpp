@@ -35,10 +35,8 @@ namespace DiscordCoreAPI {
         unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<MessageData> outInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<exception> errorBuffer{ nullptr };
-
         DiscordCoreInternal::HttpAgentResources agentResources{};
-        ScheduleGroup* pScheduleGroup{ nullptr };
+        unbounded_buffer<exception> errorBuffer{ nullptr };
 
         InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)
             :agent(*InteractionManagerAgent::threadContext->scheduler) {
@@ -478,28 +476,28 @@ namespace DiscordCoreAPI {
         friend class InteractionManagerAgent;
         friend class DiscordCoreClient;
 
-        DiscordCoreInternal::HttpAgentResources agentResources{};
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+        DiscordCoreInternal::HttpAgentResources agentResources{};
     };
 
     struct SelectMenuResponseData {
-        string userId{ "" };
-        string channelId{ "" };
-        string messageId{ "" };
         string selectionId{ "" };
         vector<string> values{};
+        string channelId{ "" };
+        string messageId{ "" };
+        string userId{ "" };
     };
 
     class SelectMenuManager : public agent {
     public:
-        static map<string, unbounded_buffer<SelectMenuInteractionData>*>selectMenuInteractionMap;
+        static map<string, unbounded_buffer<SelectMenuInteractionData>*>selectMenuInteractionBufferMap;
 
         SelectMenuManager(InputEventData dataPackage) : agent(*SelectMenuManager::threadContext->schedulerGroup) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
             this->selectMenuIncomingInteractionBuffer = new unbounded_buffer<SelectMenuInteractionData>;
-            SelectMenuManager::selectMenuInteractionMap.insert(make_pair(this->channelId + this->messageId, this->selectMenuIncomingInteractionBuffer));
+            SelectMenuManager::selectMenuInteractionBufferMap.insert(make_pair(this->channelId + this->messageId, this->selectMenuIncomingInteractionBuffer));
         }
 
         static void initialize(shared_ptr<InteractionManager> interactionsNew) {
@@ -525,7 +523,7 @@ namespace DiscordCoreAPI {
             agent::wait(this);
             exception error;
             while (getError(error)) {
-                cout << "Button::run() Error: " << error.what() << endl;
+                cout << "SelectMenuManager::run() Error: " << error.what() << endl;
             }
             return this->responseVector;
         }
@@ -537,18 +535,18 @@ namespace DiscordCoreAPI {
     protected:
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static shared_ptr<InteractionManager> interactions;
-        unsigned int maxTimeInMs{ 0 };
-        bool getButtonDataForAll{ false };
-        SelectMenuInteractionData interactionData{};
         unbounded_buffer<SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
+        vector<SelectMenuResponseData> responseVector{};
+        SelectMenuInteractionData interactionData{};
+        bool getButtonDataForAll{ false };
+        unsigned int maxTimeInMs{ 0 };
+        string selectMenuId{ "" };
+        vector<string> values{};
+        bool doWeQuit{ false };
         string channelId{ "" };
         string messageId{ "" };
         string userId{ "" };
-        string selectMenuId{ "" };
-        bool doWeQuit{ false };
-        vector<SelectMenuResponseData> responseVector{};
-        vector<string> values{};
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -604,36 +602,36 @@ namespace DiscordCoreAPI {
                         SelectMenuManager::interactions->createInteractionResponseAsync(dataPackage);
                     }
                 }
-                SelectMenuManager::selectMenuInteractionMap.erase(this->channelId + this->messageId);
+                SelectMenuManager::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
                 done();
             }
             catch (exception& e) {
                 this->selectMenuId = "exit";
                 send(this->errorBuffer, e);
                 done();
-                SelectMenuManager::selectMenuInteractionMap.erase(this->channelId + this->messageId);
+                SelectMenuManager::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
             }
         }
     };
 
     struct ButtonResponseData {
-        string userId{ "" };
         string channelId{ "" };
         string messageId{ "" };
         string buttonId{ "" };
+        string userId{ "" };
     };
 
     class ButtonManager : public agent {
     public:
-        static map<string, unbounded_buffer<ButtonInteractionData>*> buttonInteractionMap;
+        static map<string, unbounded_buffer<ButtonInteractionData>*> buttonInteractionBufferMap;
 
         ButtonManager(InputEventData dataPackage) : agent(*ButtonManager::threadContext->scheduler) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
             this->buttonIncomingInteractionBuffer = new unbounded_buffer<ButtonInteractionData>;
-            ButtonManager::buttonInteractionMap.insert(make_pair(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer));
+            ButtonManager::buttonInteractionBufferMap.insert(make_pair(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer));
         }
 
         static void initialize(shared_ptr<InteractionManager> interactionsNew) {
@@ -643,6 +641,10 @@ namespace DiscordCoreAPI {
 
         static void cleanup() {
             ButtonManager::threadContext->releaseGroup();
+        }
+
+        string getButtonId() {
+            return this->buttonId;
         }
 
         vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
@@ -655,7 +657,7 @@ namespace DiscordCoreAPI {
             agent::wait(this);
             exception error;
             while (getError(error)) {
-                cout << "Button::run() Error: " << error.what() << endl;
+                cout << "ButtonManager::run() Error: " << error.what() << endl;
             }
             return this->responseVector;
         }
@@ -667,17 +669,17 @@ namespace DiscordCoreAPI {
     protected:
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static shared_ptr<InteractionManager> interactions;
-        unsigned int maxTimeInMs{ 0 };
-        bool getButtonDataForAll{ false };
-        ButtonInteractionData interactionData{};
         unbounded_buffer<ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
+        vector<ButtonResponseData> responseVector{};
+        ButtonInteractionData interactionData{};
+        bool getButtonDataForAll{ false };
+        unsigned int maxTimeInMs{ 0 };
         string channelId{ "" };
         string messageId{ "" };
-        string userId{ "" };
-        string buttonId{ "" };
         bool doWeQuit{ false };
-        vector<ButtonResponseData> responseVector{};
+        string buttonId{ "" };
+        string userId{ "" };
 
         bool getError(exception& error) {
             return try_receive(this->errorBuffer, error);
@@ -729,7 +731,7 @@ namespace DiscordCoreAPI {
                         ButtonManager::interactions->createInteractionResponseAsync(dataPackage);
                     }
                 }
-                ButtonManager::buttonInteractionMap.erase(this->channelId + this->messageId);
+                ButtonManager::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
                 done();
             }
             catch (exception& e) {
@@ -737,17 +739,17 @@ namespace DiscordCoreAPI {
                 send(this->errorBuffer, e);
                 done();
 
-                ButtonManager::buttonInteractionMap.erase(this->channelId + this->messageId);
+                ButtonManager::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
             }
         }
     };
-    map<string, unbounded_buffer<ButtonInteractionData>*> ButtonManager::buttonInteractionMap{};
-    shared_ptr<InteractionManager> ButtonManager::interactions{ nullptr };
+    map<string, unbounded_buffer<ButtonInteractionData>*> ButtonManager::buttonInteractionBufferMap{};
     shared_ptr<DiscordCoreInternal::ThreadContext> ButtonManager::threadContext{ nullptr };
-    map<string, unbounded_buffer<SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionMap{};
-    shared_ptr<InteractionManager> SelectMenuManager::interactions{ nullptr };
+    shared_ptr<InteractionManager> ButtonManager::interactions{ nullptr };
+    map<string, unbounded_buffer<SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionBufferMap{};
     shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenuManager::threadContext{ nullptr };
+    shared_ptr<InteractionManager> SelectMenuManager::interactions{ nullptr };
     map<string, shared_ptr<unbounded_buffer<MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
     shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
 };

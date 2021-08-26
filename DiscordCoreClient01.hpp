@@ -23,7 +23,6 @@
 
 void myPurecallHandler(void) {
 	cout << "CURRENT THREAD: " << this_thread::get_id() << endl;
-	return;
 }
 
 BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
@@ -34,19 +33,19 @@ namespace DiscordCoreAPI {
 	public:
 
 		static shared_ptr<DiscordCoreClient> thisPointer;
-		shared_ptr<DiscordUser> discordUser{ nullptr };
-		shared_ptr<EventManager> eventManager{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources{};
-
+		shared_ptr<EventManager> eventManager{ nullptr };
+		shared_ptr<DiscordUser> discordUser{ nullptr };
+		
 		DiscordCoreClient(hstring botTokenNew) :DiscordCoreClientBase(this),agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler) {
 			this->botToken = botTokenNew;
 		}
 
-		static void finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* lambda);
+		static void finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* functionVector);
 
 		static void runBot() {
 			wait((agent*)DiscordCoreClient::thisPointer.get());
-			DiscordCoreClient::getError();
+			DiscordCoreClient::thisPointer->getError();
 		}
 
 		static void terminate() {
@@ -93,18 +92,18 @@ namespace DiscordCoreAPI {
 		friend class Messages;
 		friend class Interactions;
 		friend class Reactions;
-		static unbounded_buffer<exception> errorBuffer;
+		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
+		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
 		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
 		shared_ptr<ReactionManager> reactions{ nullptr };
+		hstring baseURL{ L"https://discord.com/api/v9" };
 		shared_ptr<MessageManager> messages{ nullptr };
 		shared_ptr<GuildManager> guilds{ nullptr };
 		bool doWeQuit{ false };
-		hstring baseURL{ L"https://discord.com/api/v9" };
-		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
-		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
-		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
-
+		
 		task<void> initialize() {
 			PHANDLER_ROUTINE handlerRoutine(&HandlerRoutine);
 			SetConsoleCtrlHandler(handlerRoutine, true);
@@ -187,9 +186,9 @@ namespace DiscordCoreAPI {
 			this->audioBuffersMap.erase(guildData.id);
 		}
 
-		static void getError() {
+		void getError() {
 			exception error;
-			while (try_receive(DiscordCoreClient::errorBuffer, error)) {
+			while (try_receive(this->errorBuffer, error)) {
 				cout << "DiscordCoreClient Error: " << error.what() << endl;
 			}
 		}
@@ -625,14 +624,13 @@ namespace DiscordCoreAPI {
 				start();
 			}
 			catch (const exception& e) {
-				send(DiscordCoreClient::errorBuffer, e);
+				send(this->errorBuffer, e);
 			}
 			done();
 			return;
 		}
 
 	};
-	unbounded_buffer<exception> DiscordCoreClient::errorBuffer{ nullptr };
 	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer{ nullptr };
 
 	class Guilds {
