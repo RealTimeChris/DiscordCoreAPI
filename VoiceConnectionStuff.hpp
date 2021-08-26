@@ -329,7 +329,7 @@ namespace DiscordCoreAPI {
 				this->sendSpeakingMessage(true);
 
 				cout << "WAS HAT 5555555" << endl;
-				const int intervalCount = 20000;
+				const int intervalCount = 19800;
 				int frameCounter = 0;
 				int timeCounter = 0;
 				int startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
