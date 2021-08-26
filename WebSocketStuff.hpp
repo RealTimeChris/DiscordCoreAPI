@@ -289,6 +289,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onVoiceDataReceived(DatagramSocket const& , DatagramSocketMessageReceivedEventArgs const& args) {
+
 			string message;
 			DataReader dataReader{ nullptr };
 			if (args.GetDataReader() != nullptr) {
@@ -303,11 +304,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 
+			wcout << L"Message received from VoiceDatagramSocket: " << to_hstring(message).c_str() << endl << endl;
+
 			if (this->areWeWaitingForIp) {
 				this->areWeWaitingForIp = false;
 				this->externalIp = message.substr(4, message.find('\u0000', 4) - 4);
 			}
-			wcout << L"Message received from VoiceDatagramSocket: " << to_hstring(message).c_str() << endl << endl;
 		}
 
 		void terminate() {

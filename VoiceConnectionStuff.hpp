@@ -136,6 +136,8 @@ namespace DiscordCoreAPI {
 
 		void disconnect(){
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->voiceConnectionData.guildId)) {
+				this->stop();
+				DiscordCoreClientBase::voiceConnectionMap->erase(this->voiceConnectionData.guildId);
 				DiscordCoreClientBase::currentUser->updateVoiceStatus({ .guildId = this->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
 				return;
 			}

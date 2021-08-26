@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
 		shared_ptr<VoiceConnection> connectToVoice(string channelId) {
-			shared_ptr<VoiceConnection> voiceConnectionPtr;
+			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
 				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->data.id);
 				return voiceConnectionPtr;
