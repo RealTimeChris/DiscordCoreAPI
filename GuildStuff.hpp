@@ -11,14 +11,12 @@
 #include "../pch.h"
 #include "DataParsingFunctions.hpp"
 #include "HttpStuff.hpp"
-#include "WebSocketStuff.hpp"
 #include "ChannelStuff.hpp"
 #include "MessageStuff.hpp"
 #include "GuildMemberStuff.hpp"
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
 #include "VoiceConnectionStuff.hpp"
-#include "DiscordCoreClientBase.hpp"
 #include "YouTubeStuff.hpp"
 
 namespace DiscordCoreAPI {
@@ -48,7 +46,6 @@ namespace DiscordCoreAPI {
 						this->discordCoreClientBase->audioBuffersMap.insert(make_pair(this->data.id, make_shared<unbounded_buffer<AudioFrameData*>>()));
 						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
 					}
-					DiscordCoreClientBase::pWebSocketConnectionAgent->setVoiceConnectionWebSocket(voiceConnectionPtr->voicechannelWebSocketAgent);
 					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
 					return voiceConnectionPtr;
 				}

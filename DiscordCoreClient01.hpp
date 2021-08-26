@@ -19,6 +19,7 @@
 #include "DatabaseStuff.hpp"
 #include "YouTubeStuff.hpp"
 #include "SoundCloudStuff.hpp"
+#include "WebSocketStuff.hpp"
 
 void myPurecallHandler(void) {
 	cout << "CURRENT THREAD: " << this_thread::get_id() << endl;
@@ -102,8 +103,6 @@ namespace DiscordCoreAPI {
 		hstring baseURL{ L"https://discord.com/api/v9" };
 		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkCollectionBuffer{ nullptr };
-		unbounded_buffer<json> webSocketIncWorkloadBuffer{ nullptr };
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 
 		task<void> initialize() {
@@ -115,7 +114,8 @@ namespace DiscordCoreAPI {
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
-			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->webSocketIncWorkloadBuffer, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->pWebSocketReceiverAgent->workloadSource, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
 			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
@@ -140,7 +140,6 @@ namespace DiscordCoreAPI {
 			SelectMenuManager::initialize(this->interactions);
 			this->thisPointerBase->initialize(this->agentResources, this->thisPointer, this->pWebSocketConnectionAgent);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
-			this->pWebSocketReceiverAgent = make_shared<DiscordCoreInternal::WebSocketReceiverAgent>(this->webSocketIncWorkloadBuffer, this->webSocketWorkCollectionBuffer, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->reactions = make_shared<ReactionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), DiscordCoreClient::thisPointer);
 			this->users = this->thisPointerBase->users;
@@ -198,7 +197,7 @@ namespace DiscordCoreAPI {
 		void run() {
 			try {
 				while (doWeQuit == false) {
-					DiscordCoreInternal::WebSocketWorkload workload = receive(this->webSocketWorkCollectionBuffer, INFINITE);
+					DiscordCoreInternal::WebSocketWorkload workload = receive(this->pWebSocketReceiverAgent->workloadTarget, INFINITE);
 					switch (workload.eventType) {
 					case DiscordCoreInternal::WebSocketEventType::CHANNEL_CREATE:
 					{

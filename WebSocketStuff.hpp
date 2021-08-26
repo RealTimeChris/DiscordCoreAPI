@@ -336,9 +336,10 @@ namespace DiscordCoreInternal {
 	class WebSocketReceiverAgent : public agent {
 	public:
 
-		WebSocketReceiverAgent(ISource<json>& pWorkloadSource, ITarget<WebSocketWorkload>& pWorkloadTarget, shared_ptr<ThreadContext> threadContextNew)
-			:workloadSource(pWorkloadSource),
-			workloadTarget(pWorkloadTarget),
+		unbounded_buffer<WebSocketWorkload> workloadTarget{ nullptr };
+		unbounded_buffer<json> workloadSource{ nullptr };
+
+		WebSocketReceiverAgent(shared_ptr<ThreadContext> threadContextNew):
 			agent(*threadContextNew->scheduler)
 		{
 			this->threadContext = threadContextNew;
@@ -352,9 +353,10 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
+		friend class DiscordCoreClientBase;
+		friend class DiscordCoreClient;
+		friend class WebSocketConnectionAgent;
 		shared_ptr<ThreadContext> threadContext{ nullptr };
-		ISource<json>& workloadSource;
-		ITarget<WebSocketWorkload>& workloadTarget;
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		bool doWeQuit{ false };
 
@@ -547,16 +549,12 @@ namespace DiscordCoreInternal {
 	class WebSocketConnectionAgent : public agent {
 	public:
 
-		WebSocketConnectionAgent(ITarget<json>& target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
-			: agent(*threadContextNew->scheduler),
-			webSocketMessageTarget(target) {
+		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
+			: agent(*threadContextNew->scheduler) {
 			this->threadContext = threadContextNew;
+			this->webSocketMessageTarget = target;
 			this->botToken = botTokenNew;
 			return;
-		}
-
-		void setVoiceConnectionWebSocket(shared_ptr<VoiceChannelWebSocketAgent> websocketAgentNew) {
-			this->websocketAgent = websocketAgentNew;
 		}
 
 		void setSocketPath(string socketPathBase) {
@@ -614,7 +612,6 @@ namespace DiscordCoreInternal {
 		friend class VoiceConnection;
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreClient;
-		shared_ptr<VoiceChannelWebSocketAgent> websocketAgent{ nullptr };
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		event_token messageReceivedToken{};
@@ -629,7 +626,7 @@ namespace DiscordCoreInternal {
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		bool didWeReceiveHeartbeatAck{ true };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
-		ITarget<json>& webSocketMessageTarget;
+		unbounded_buffer<json>* webSocketMessageTarget{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		bool isThisConnected{ false };
 		bool areWeCollectingData{ false };
@@ -726,7 +723,7 @@ namespace DiscordCoreInternal {
 			}
 			json payload = payload.parse(to_string(message));
 
-			send(&this->webSocketMessageTarget, payload);
+			send(*this->webSocketMessageTarget, payload);
 
 			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
 				if (this->serverUpdateCollected != true && this->stateUpdateCollected != true) {
