@@ -35,11 +35,13 @@ namespace DiscordCoreAPI {
 				this->threadContext = threadContextNew;
 				this->voiceConnectionData = voiceConnectionDataNew;
 				this->audioDataBuffer = bufferMessageBlockNew;
+				this->audioDataBufferOutput = make_shared<unbounded_buffer<AudioFrameData*>>();
 				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), this->voiceConnectionData, &this->readyBuffer);
 				send(this->voicechannelWebSocketAgent->voiceConnectionDataBuffer, this->voiceConnectionData);
 				this->voicechannelWebSocketAgent->start();
 				receive(this->readyBuffer);
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
+				this->areWeConnectedBool = true;
 			}
 			else {
 				throw exception("Sorry, but you need to select a proper voice channel to connect to!");
@@ -56,7 +58,10 @@ namespace DiscordCoreAPI {
 		}
 
 		event_token onSongCompletion(delegate<> const& handler) {
-			if (!DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId)->areWeConnected()) {
+			shared_ptr<VoiceConnection> sharedPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId);
+			if (!sharedPtr->areWeInstantiated) {
+				sharedPtr->areWeInstantiated = true;
+				this->start();
 				return onSongCompletionEvent.add(handler);
 			}
 			else {
@@ -106,12 +111,21 @@ namespace DiscordCoreAPI {
 
 		void play() {
 			if (this != nullptr) {
-				this->areWePlaying = false;
-				this->areWeWaitingForAudioData = true;
-				this->areWeStopping = false;
-				if (!this->areWeConnectedBool) {
-					this->areWeConnectedBool = true;
-					this->start();
+				AudioFrameData* dataPackage;
+				if (try_receive(*this->audioDataBuffer, dataPackage)) {
+					if (dataPackage->type == AudioFrameType::Encoded) {
+						if (dataPackage->encodedFrameData.size() > 0) {
+							send(*this->audioDataBufferOutput, dataPackage);
+						}
+					}
+					else {
+						if (dataPackage->rawFrameData.size() > 0) {
+							send(*this->audioDataBufferOutput, dataPackage);
+						}
+					}
+				};
+				if (!this->areWeWaiting) {
+					this->areWeWaiting = true;
 					wait(this);
 				}
 			}
@@ -146,6 +160,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class DiscordCoreClientBase;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
+		shared_ptr<unbounded_buffer<AudioFrameData*>> audioDataBufferOutput{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData*>> audioDataBuffer{ nullptr };
 		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
@@ -161,9 +176,11 @@ namespace DiscordCoreAPI {
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		const int maxBufferSize{ 1276 };
+		bool areWeInstantiated{ false };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		unsigned int timestamp{ 0 };
+		bool areWeWaiting{ false };
 		bool areWePlaying{ false };
 		bool areWePaused{ false };
 		bool doWeQuit{ false };
@@ -266,106 +283,119 @@ namespace DiscordCoreAPI {
 		void run() {
 			cout << "WAS HAT 00000" << endl;
 			while (!this->doWeQuit) {
-				cout << "WAS HAT 00000" << endl;
+				cout << "WAS HAT 111111" << endl;
 
-				cout << "WAS HAT 222222" << endl;
 				if (this->areWeWaitingForAudioData) {
+					cout << "WAS HAT 222222" << endl;
+					this->audioData = receive(*this->audioDataBufferOutput);
 					cout << "WAS HAT 3333333" << endl;
-					this->audioData = receive(*this->audioDataBuffer);
-					cout << "WAS HAT 4444444" << endl;
 					this->areWeWaitingForAudioData = false;
 				}
-				cout << "WAS HAT 5555555" << endl;
+				cout << "WAS HAT 4444444" << endl;
 				this->sendSpeakingMessage(true);
 
-				cout << "WAS HAT 7777777" << endl;
+				cout << "WAS HAT 5555555" << endl;
 				const int intervalCount = 20000;
 				int frameCounter = 0;
 				int timeCounter = 0;
 				int startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				if (this->audioData->type == AudioFrameType::Encoded) {
-					if (this->audioData->encodedFrameData.size() > 0) {
+				if (this->audioData != nullptr) {
+					if (this->audioData->type == AudioFrameType::Encoded&&this->audioData->encodedFrameData.size()>0) {
 						this->areWePlaying = true;
+						cout << "WAS HAT 6666666" << endl;
+						if (this->areWePlaying) {
+							cout << "WAS HAT 77777777" << endl;
+							cout << "WAS HAT 88888888" << endl;
+							size_t encodedFrameDataSize = this->audioData->encodedFrameData.size();
+							for (int x = 0; x < this->audioData->encodedFrameData.size(); x += 1) {
+								cout << "WAS HAT 9999999" << endl;
+								int newValue;
+								if (try_receive(this->seekBuffer, newValue)) {
+									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
+									frameCounter = x;
+								}
+								if (!this->areWePlaying) {
+									this->clearAudioData();
+									this->areWeWaitingForAudioData = true;
+									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								};
+								if (this->areWePaused) {
+									receive(this->pauseBuffer);
+									this->areWePaused = false;
+								}
+								frameCounter += 1;
+								if (frameCounter >= encodedFrameDataSize - 1 || this->audioData->encodedFrameData.size() == 0) {
+									this->clearAudioData();
+									this->areWePlaying = false;
+									this->areWeWaitingForAudioData = true;
+									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								}
+								timeCounter = 0;
+								while (timeCounter <= intervalCount) {
+									timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+								}
+								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
+								startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+							}
+						}
+						else {
+							this->areWeWaitingForAudioData = true;
+						}
 					}
-					if (this->areWePlaying && this->audioData != nullptr) {
-						size_t encodedFrameDataSize = this->audioData->encodedFrameData.size();
-						for (int x = 0; x < this->audioData->encodedFrameData.size(); x += 1) {
-							timeCounter = 0;
-							while (timeCounter <= intervalCount) {
-								timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+					else if (this->audioData->type == AudioFrameType::RawPCM && this->audioData->rawFrameData.size() > 0) {
+						this->areWePlaying = true;
+						cout << "WAS HAT 6666666" << endl;
+						if (this->areWePlaying) {
+							cout << "WAS HAT 77777777" << endl;
+							cout << "WAS HAT 88888888" << endl;
+							size_t rawFrameDataSize = this->audioData->rawFrameData.size();
+							for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
+								cout << "WAS HAT 9999999" << endl;
+								int newValue;
+								if (try_receive(this->seekBuffer, newValue)) {
+									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
+									frameCounter = x;
+								}
+								if (!this->areWePlaying) {
+									this->clearAudioData();
+									this->areWeWaitingForAudioData = true;
+									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								};
+								if (this->areWePaused) {
+									receive(this->pauseBuffer);
+									this->areWePaused = false;
+								}
+								frameCounter += 1;
+								if (frameCounter >= rawFrameDataSize - 1 || this->audioData->rawFrameData.size() == 0) {
+									this->clearAudioData();
+									this->areWePlaying = false;
+									this->areWeWaitingForAudioData = true;
+									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								}
+								timeCounter = 0;
+								while (timeCounter <= intervalCount) {
+									timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+								}
+								auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
+								this->sendSingleAudioFrame(newVector);
+								startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 							}
-							this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
-							startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-							int newValue;
-							if (try_receive(this->seekBuffer, newValue)) {
-								x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
-								frameCounter = x;
-							}
-							if (!this->areWePlaying) {
-								this->clearAudioData();
-								this->areWeWaitingForAudioData = true;
-								this->onSongCompletionEvent();
-								frameCounter = 0;
-								break;
-							};
-							if (this->areWePaused) {
-								receive(this->pauseBuffer);
-								this->areWePaused = false;
-							}
-							frameCounter += 1;
-							if (frameCounter >= encodedFrameDataSize - 1 || this->audioData->encodedFrameData.size() == 0) {
-								this->clearAudioData();
-								this->areWePlaying = false;
-								this->areWeWaitingForAudioData = true;
-								this->onSongCompletionEvent();
-								frameCounter = 0;
-								break;
-							}
+						}
+						else {
+							this->areWeWaitingForAudioData = true;
 						}
 					}
 				}
-				else if (this->audioData->type == AudioFrameType::RawPCM) {
-					if (this->audioData->rawFrameData.size() > 0) {
-						this->areWePlaying = true;
-					}
-					if (this->areWePlaying && this->audioData != nullptr) {
-						size_t rawFrameDataSize = this->audioData->rawFrameData.size();
-						for (int x = 0; x < this->audioData->rawFrameData.size(); x += 1) {
-							timeCounter = 0;
-							while (timeCounter <= intervalCount) {
-								timeCounter = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-							}
-							auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
-							this->sendSingleAudioFrame(newVector);
-							startingValue = (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-							int newValue;
-							if (try_receive(this->seekBuffer, newValue)) {
-								x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
-								frameCounter = x;
-							}
-							if (!this->areWePlaying) {
-								this->clearAudioData();
-								this->areWeWaitingForAudioData = true;
-								this->onSongCompletionEvent();
-								frameCounter = 0;
-								break;
-							};
-							if (this->areWePaused) {
-								receive(this->pauseBuffer);
-								this->areWePaused = false;
-							}
-							frameCounter += 1;
-							if (frameCounter >= rawFrameDataSize - 1 || this->audioData->rawFrameData.size() == 0) {
-								this->clearAudioData();
-								this->areWePlaying = false;
-								this->areWeWaitingForAudioData = true;
-								this->onSongCompletionEvent();
-								frameCounter = 0;
-								break;
-							}
-
-						}
-					}
+				else {
+					this->areWeWaitingForAudioData = true;
 				}
 				if (this->areWeStopping) {
 					this->clearAudioData();
@@ -385,23 +415,23 @@ namespace DiscordCoreAPI {
 		if (DiscordCoreClientBase::voiceConnectionMap->contains(guildId)) {
 			shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(guildId);
 			if (!voiceConnection->hasTerminateRun) {
-				voiceConnection->hasTerminateRun = true;
 				if (voiceConnection->areWePlaying) {
 					voiceConnection->areWePlaying = false;
 					voiceConnection->areWeStopping = true;
+					cout << "HERE 0000000" << endl;
 					receive(voiceConnection->stopBuffer);
 				}
-				cout << "HERE 0000000" << endl;
+				cout << "HERE 1111111" << endl;
 				if (voiceConnection->areWeWaitingForAudioData) {
+					cout << "HERE 2222222" << endl;
+					voiceConnection->clearAudioData();
+					AudioFrameData* frameData;
+					while (try_receive(*voiceConnection->audioDataBuffer, frameData)) {};
 					AudioFrameData audioFrameData{};
 					send(*voiceConnection->audioDataBuffer, &audioFrameData);
 				}
 				voiceConnection->doWeQuit = true;
-				cout << "HERE 7777777" << endl;
-				cout << "HERE 888888" << endl;
-				
-				cout << "HERE 2222222" << endl;
-
+				cout << "HERE 3333333" << endl;
 				DiscordCoreClientBase::currentUser->updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
 				cout << "HERE 3333333" << endl;
 				cout << "HERE 4444444" << endl;
@@ -412,11 +442,12 @@ namespace DiscordCoreAPI {
 				cout << "HERE 6666666" << endl;
 				if (voiceConnection->encoder != nullptr) {
 					opus_encoder_destroy(voiceConnection->encoder);
+					cout << "HERE 7777777" << endl;
 					voiceConnection->encoder = nullptr;
 				}
+				voiceConnection->hasTerminateRun = true;
 				DiscordCoreClientBase::audioBuffersMap.erase(voiceConnection->voiceConnectionData.guildId);
 				DiscordCoreClientBase::voiceConnectionMap->erase(voiceConnection->voiceConnectionData.guildId);
-				cout << "HERE 7777777" << endl;
 				cout << "HERE 888888" << endl;
 			}
 		}
