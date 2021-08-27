@@ -522,7 +522,10 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
     class InteractionManagerAgent : public agent {
-    public:
+    protected:
+        friend class DiscordCoreAPI::DiscordCoreClient;
+        friend class DiscordCoreAPI::EventHandler;
+        friend class InteractionManager;
 
         static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
@@ -1007,14 +1010,9 @@ namespace DiscordCoreInternal {
         }
 
     protected:
-        friend class InteractionManagerAgent;
-        friend class DiscordCoreAPI::DiscordCoreClient;
-        friend class Interactions;
-
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
         DiscordCoreInternal::HttpAgentResources agentResources{};
     };
-
     map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
     shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
 };
@@ -1074,12 +1072,12 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
+        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
+        DiscordCoreAPI::SelectMenuInteractionData interactionData{};
         unbounded_buffer<exception> errorBuffer{ nullptr };
         vector<SelectMenuResponseData> responseVector{};
-        DiscordCoreAPI::SelectMenuInteractionData interactionData{};
         bool getButtonDataForAll{ false };
         unsigned int maxTimeInMs{ 0 };
         string selectMenuId{ "" };
@@ -1208,12 +1206,12 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
+        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
+        DiscordCoreAPI::ButtonInteractionData interactionData{};
         unbounded_buffer<exception> errorBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};
-        DiscordCoreAPI::ButtonInteractionData interactionData{};
         bool getButtonDataForAll{ false };
         unsigned int maxTimeInMs{ 0 };
         string channelId{ "" };
@@ -1285,11 +1283,11 @@ namespace DiscordCoreAPI {
             }
         }
     };
-    map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> ButtonManager::buttonInteractionBufferMap{};
-    shared_ptr<DiscordCoreInternal::ThreadContext> ButtonManager::threadContext{ nullptr };
-    shared_ptr<DiscordCoreInternal::InteractionManager> ButtonManager::interactions{ nullptr };
     map<string, unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionBufferMap{};
-    shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenuManager::threadContext{ nullptr };
+    map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> ButtonManager::buttonInteractionBufferMap{};
     shared_ptr<DiscordCoreInternal::InteractionManager> SelectMenuManager::interactions{ nullptr };
+    shared_ptr<DiscordCoreInternal::InteractionManager> ButtonManager::interactions{ nullptr };
+    shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenuManager::threadContext{ nullptr };
+    shared_ptr<DiscordCoreInternal::ThreadContext> ButtonManager::threadContext{ nullptr };
 };
 #endif

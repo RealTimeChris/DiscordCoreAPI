@@ -1,4 +1,3 @@
-// GuildStuff.hpp - First header for the "Guild Stuff" of the DiscordCore library.
 // May 12, 2021
 // Chris M.
 // https://github.com/RealTimeChris
@@ -19,14 +18,73 @@
 #include "RoleStuff.hpp"
 #include "YouTubeStuff.hpp"
 
+namespace DiscordCoreInternal {
+
+	class GuildManagerAgent;
+	class GuildManager;
+
+};
+
 namespace DiscordCoreAPI {
+
+	class EventHandler;
+	class Guilds;
 
 	class Guild {
 	public:
+		friend class DiscordCoreInternal::GuildManagerAgent;
+		friend class DiscordCoreInternal::GuildManager;
+		friend class DiscordCoreClient;
+
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		GuildData data{};
 
 		Guild() {};
+
+		shared_ptr<VoiceConnection> connectToVoice(string channelId) {
+			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
+			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
+				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->data.id);
+				return voiceConnectionPtr;
+			}
+			else if (channelId != "") {
+				if ((voiceConnectionPtr == nullptr || voiceConnectionPtr->voiceConnectionData.channelId != channelId)) {
+					auto voiceConnectData = DiscordCoreClientBase::pWebSocketConnectionAgent->getVoiceConnectionData(channelId, this->data.id);
+					voiceConnectData.channelId = channelId;
+					voiceConnectData.guildId = this->data.id;
+					voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
+					voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
+					if (DiscordCoreClientBase::audioBuffersMap.contains(this->data.id)) {
+						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
+						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
+						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+					}
+					else {
+						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData*>>();
+						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtr));
+						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
+						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
+						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+					}
+					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
+					return voiceConnectionPtr;
+				}
+			}
+			return voiceConnectionPtr;
+		}
+
+		shared_ptr<YouTubeAPI> getYouTubeAPI() {
+			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->data.id)) {
+				return DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
+			}
+			else {
+				return nullptr;
+			}
+		}
+
+	protected:
+
+		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 
 		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) {
 			this->discordCoreClient = discordCoreClientNew;
@@ -91,57 +149,6 @@ namespace DiscordCoreAPI {
 			}
 			return;
 		}
-
-		shared_ptr<VoiceConnection> connectToVoice(string channelId) {
-			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
-			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
-				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->data.id);
-				return voiceConnectionPtr;
-			}
-			else if (channelId != "") {
-				if ((voiceConnectionPtr == nullptr || voiceConnectionPtr->voiceConnectionData.channelId != channelId)) {
-					auto voiceConnectData = DiscordCoreClientBase::pWebSocketConnectionAgent->getVoiceConnectionData(channelId, this->data.id);
-					voiceConnectData.channelId = channelId;
-					voiceConnectData.guildId = this->data.id;
-					voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
-					voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
-					if (DiscordCoreClientBase::audioBuffersMap.contains(this->data.id)) {
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
-						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
-						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
-					}
-					else {
-						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData*>>();
-						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtr));
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
-						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
-						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
-					}
-					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
-					return voiceConnectionPtr;
-				}
-			}
-			return voiceConnectionPtr;
-		}
-
-		shared_ptr<YouTubeAPI> getYouTubeAPI() {
-			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->data.id)) {
-				return DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
-			}
-			else {
-				return nullptr;
-			}
-		}
-
-	protected:
-		friend struct concurrency::details::_ResultHolder<Guild>;
-		friend class DiscordCoreClientBase;
-		friend struct OnGuildCreationData;
-		friend struct OnGuildDeletionData;
-		friend struct OnGuildUpdateData;
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 	};
 
 	struct CreateGuildBanData {
@@ -186,30 +193,29 @@ namespace DiscordCoreInternal	{
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildManager;
-		friend class DiscordCoreAPI::Guild;
 
-		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		static overwrite_buffer<map<string, DiscordCoreAPI::Guild>> cache;
+		static shared_ptr<ThreadContext> threadContext;
 
-		unbounded_buffer<DiscordCoreInternal::GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::CollectGuildData> requestCollectGuildBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::PutGuildBanData> requestPutGuildBanBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetAuditLogData> requestGetAuditLogBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetInvitesData> requestGetInvitesBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetInviteData> requestGetInviteBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetGuildData> requestGetGuildBuffer{ nullptr };
 		shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::InviteData>> outInvitesBuffer{ nullptr };
+		unbounded_buffer<GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::AuditLogData> outAuditLogBuffer{ nullptr };
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{};
 		unbounded_buffer<DiscordCoreAPI::InviteData> outInviteBuffer{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<CollectGuildData> requestCollectGuildBuffer{ nullptr };
+		unbounded_buffer<PutGuildBanData> requestPutGuildBanBuffer{ nullptr };
+		unbounded_buffer<GetAuditLogData> requestGetAuditLogBuffer{ nullptr };
+		unbounded_buffer<GetInvitesData> requestGetInvitesBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::BanData> outBanBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Guild> outGuildBuffer{ nullptr };
+		unbounded_buffer<GetInviteData> requestGetInviteBuffer{ nullptr };
+		unbounded_buffer<GetGuildData> requestGetGuildBuffer{ nullptr };
 		concurrent_queue<DiscordCoreAPI::Guild> guildsToInsert{};
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		HttpAgentResources agentResources{};		
 		
-		GuildManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew)
+		GuildManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew)
 			:agent(*GuildManagerAgent::threadContext->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
@@ -217,7 +223,7 @@ namespace DiscordCoreInternal	{
 			return;
 		}
 
-		static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+		static void initialize(shared_ptr<ThreadContext> threadContextNew) {
 			GuildManagerAgent::threadContext = threadContextNew;
 		}
 
@@ -233,17 +239,17 @@ namespace DiscordCoreInternal	{
 			return;
 		}
 
-		DiscordCoreAPI::Guild getObjectData(DiscordCoreInternal::GetGuildData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_GUILD;
+		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_GUILD;
 			workload.relativePath = "/guilds/" + dataPackage.guildId;
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManagerAgent::getObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -252,22 +258,22 @@ namespace DiscordCoreInternal	{
 				cout << "GuildManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::GuildData guildData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &guildData);
+			DataParser::parseObject(returnData.data, &guildData);
 			DiscordCoreAPI::Guild guildNew(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
 			return guildNew;
 		}
 
-		DiscordCoreAPI::InviteData getObjectData(DiscordCoreInternal::GetInviteData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_INVITE;
+		DiscordCoreAPI::InviteData getObjectData(GetInviteData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_INVITE;
 			workload.relativePath = "/invites/" + dataPackage.inviteId + "?with_counts=true&with_expiration=true";
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManagerAgent::getObjectData_01");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -276,21 +282,21 @@ namespace DiscordCoreInternal	{
 				cout << "GuildManagerAgent::getObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::InviteData inviteData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &inviteData);
+			DataParser::parseObject(returnData.data, &inviteData);
 			return inviteData;
 		}
 
-		vector<DiscordCoreAPI::InviteData> getObjectData(DiscordCoreInternal::GetInvitesData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_INVITES;
+		vector<DiscordCoreAPI::InviteData> getObjectData(GetInvitesData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_INVITES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/invites";
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManagerAgent::getObjectData_02");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -301,23 +307,23 @@ namespace DiscordCoreInternal	{
 			vector<DiscordCoreAPI::InviteData> inviteData;
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::InviteData inviteDataNew;
-				DiscordCoreInternal::DataParser::parseObject(value, &inviteDataNew);
+				DataParser::parseObject(value, &inviteDataNew);
 				inviteData.push_back(inviteDataNew);
 			}
 			return inviteData;
 		}
 
-		DiscordCoreAPI::InviteData getObjectData(DiscordCoreInternal::GetVanityInviteData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_VANITY_INVITE;
+		DiscordCoreAPI::InviteData getObjectData(GetVanityInviteData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_VANITY_INVITE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/vanity-url";
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManagerAgent::getObjectData_03");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_03 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -326,14 +332,14 @@ namespace DiscordCoreInternal	{
 				cout << "GuildManagerAgent::getObjectData_03 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::InviteData inviteData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &inviteData);
+			DataParser::parseObject(returnData.data, &inviteData);
 			return inviteData;
 		}
 
-		DiscordCoreAPI::AuditLogData getObjectData(DiscordCoreInternal::GetAuditLogData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_AUDIT_LOG;
+		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_AUDIT_LOG;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/audit-logs";
 			if (dataPackage.userId != "") {
 				workload.relativePath += "?user_id=" + dataPackage.userId;
@@ -353,12 +359,12 @@ namespace DiscordCoreInternal	{
 			else if (dataPackage.limit != 0) {
 				workload.relativePath += "?limit=" + to_string(dataPackage.limit);
 			}
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManagerAgent::getObjectData_04");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_04 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -367,22 +373,22 @@ namespace DiscordCoreInternal	{
 				cout << "GuildManagerAgent::getObjectData_04 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::AuditLogData auditLogData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &auditLogData);
+			DataParser::parseObject(returnData.data, &auditLogData);
 			return auditLogData;
 		}
 
-		DiscordCoreAPI::BanData putObjectData(DiscordCoreInternal::PutGuildBanData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PUT;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PUT_GUILD_BAN;
+		DiscordCoreAPI::BanData putObjectData(PutGuildBanData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::PUT;
+			workload.workloadType = HttpWorkloadType::PUT_GUILD_BAN;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.guildMemberId;
-			workload.content = DiscordCoreInternal::getAddBanPayload(dataPackage);
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			workload.content = getAddBanPayload(dataPackage);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManagerAgent::putObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			DiscordCoreAPI::BanData banData;
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -392,13 +398,13 @@ namespace DiscordCoreInternal	{
 			else {
 				cout << "GuildManagerAgent::putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &banData);
+			DataParser::parseObject(returnData.data, &banData);
 			return banData;
 		}
 
 		void run() {
 			try {
-				DiscordCoreInternal::CollectGuildData dataPackage01;
+				CollectGuildData dataPackage01;
 				if (try_receive(this->requestCollectGuildBuffer, dataPackage01)) {
 					map<string, DiscordCoreAPI::Guild> cacheTemp;
 					if (try_receive(GuildManagerAgent::cache, cacheTemp)) {
@@ -408,7 +414,7 @@ namespace DiscordCoreInternal	{
 						}
 					}
 				}
-				DiscordCoreInternal::GetGuildData dataPackage02;
+				GetGuildData dataPackage02;
 				if (try_receive(this->requestGetGuildBuffer, dataPackage02)) {
 					map<string, DiscordCoreAPI::Guild> cacheTemp;
 					if (try_receive(GuildManagerAgent::cache, cacheTemp)) {
@@ -421,27 +427,27 @@ namespace DiscordCoreInternal	{
 					send(this->outGuildBuffer, guild);
 					send(GuildManagerAgent::cache, cacheTemp);
 				}
-				DiscordCoreInternal::GetAuditLogData dataPackage03;
+				GetAuditLogData dataPackage03;
 				if (try_receive(this->requestGetAuditLogBuffer, dataPackage03)) {
 					DiscordCoreAPI::AuditLogData auditLog = getObjectData(dataPackage03);
 					send(this->outAuditLogBuffer, auditLog);
 				}
-				DiscordCoreInternal::GetInvitesData dataPackage04;
+				GetInvitesData dataPackage04;
 				if (try_receive(this->requestGetInvitesBuffer, dataPackage04)) {
 					vector<DiscordCoreAPI::InviteData> inviteData = getObjectData(dataPackage04);
 					send(this->outInvitesBuffer, inviteData);
 				}
-				DiscordCoreInternal::GetInviteData dataPackage05;
+				GetInviteData dataPackage05;
 				if (try_receive(this->requestGetInviteBuffer, dataPackage05)) {
 					DiscordCoreAPI::InviteData inviteData = getObjectData(dataPackage05);
 					send(this->outInviteBuffer, inviteData);
 				}
-				DiscordCoreInternal::GetVanityInviteData dataPackage06;
+				GetVanityInviteData dataPackage06;
 				if (try_receive(this->requestGetVanityInviteBuffer, dataPackage06)) {
 					DiscordCoreAPI::InviteData inviteData = getObjectData(dataPackage06);
 					send(this->outInviteBuffer, inviteData);
 				}
-				DiscordCoreInternal::PutGuildBanData dataPackage07;
+				PutGuildBanData dataPackage07;
 				if (try_receive(this->requestPutGuildBanBuffer, dataPackage07)) {
 					DiscordCoreAPI::BanData inviteData = putObjectData(dataPackage07);
 					send(this->outBanBuffer, inviteData);
@@ -468,17 +474,18 @@ namespace DiscordCoreInternal	{
 
 	class GuildManager {
 	public:
+		friend class DiscordCoreAPI::Guilds;
 
-		GuildManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew) {
-			this->threadContext = threadContextNew;
+		GuildManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew) {
+			this->discordCoreClientBase = coreClientBaseNew;
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
-			this->discordCoreClientBase = coreClientBaseNew;
+			this->threadContext = threadContextNew;
 		}
 
 		task<DiscordCoreAPI::Guild> fetchAsync(DiscordCoreAPI::FetchGuildData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetGuildData dataPackageNew;
+			GetGuildData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -494,7 +501,7 @@ namespace DiscordCoreInternal	{
 
 		task<vector<DiscordCoreAPI::InviteData>> fetchInvitesAsync(DiscordCoreAPI::FetchInvitesData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetInvitesData dataPackageNew;
+			GetInvitesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -509,7 +516,7 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::BanData> createGuildBanAsync(DiscordCoreAPI::CreateGuildBanData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::PutGuildBanData dataPackageNew;
+			PutGuildBanData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.guildMemberId = dataPackage.guildMemberId;
@@ -527,7 +534,7 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::InviteData> fetchVanityInviteAsync(DiscordCoreAPI::FetchVanityInviteData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetVanityInviteData dataPackageNew;
+			GetVanityInviteData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -542,7 +549,7 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::InviteData> fetchInviteAsync(DiscordCoreAPI::FetchInviteData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetInviteData dataPackageNew;
+			GetInviteData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.inviteId = dataPackage.inviteId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -557,10 +564,10 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::AuditLogData> fetchAuditLogDataAsync(DiscordCoreAPI::FetchAuditLogData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetAuditLogData dataPackageNew;
+			GetAuditLogData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
-			dataPackageNew.actionType = (DiscordCoreInternal::AuditLogEvent)dataPackage.actionType;
+			dataPackageNew.actionType = (AuditLogEvent)dataPackage.actionType;
 			dataPackageNew.limit = dataPackage.limit;
 			dataPackageNew.userId = dataPackage.userId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -575,7 +582,7 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::Guild> getGuildAsync(DiscordCoreAPI::GetGuildData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::CollectGuildData dataPackageNew;
+			CollectGuildData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -601,6 +608,16 @@ namespace DiscordCoreInternal	{
 			co_return guildVector;
 		}
 
+		~GuildManager() {
+			this->threadContext->releaseGroup();
+		}
+
+	protected:
+		shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
+
 		task<void> insertGuildAsync(DiscordCoreAPI::Guild guild) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
@@ -622,21 +639,8 @@ namespace DiscordCoreInternal	{
 			co_return;
 		}
 
-		~GuildManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class EventHandler;
-
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{};
-
 	};
-	shared_ptr<DiscordCoreInternal::ThreadContext> GuildManagerAgent::threadContext{ nullptr };
+	shared_ptr<ThreadContext> GuildManagerAgent::threadContext{ nullptr };
 	overwrite_buffer<map<string, DiscordCoreAPI::Guild>> GuildManagerAgent::cache{ nullptr };
 }
 #endif

@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 				}
 				this->sendSpeakingMessage(true);
 
-				int intervalCount = 19800;
+				int intervalCount = 20000;
 				int frameCounter = 0;
 				int timeCounter = 0;
 				int totalTime = 0;

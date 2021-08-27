@@ -917,19 +917,19 @@ namespace DiscordCoreAPI {
 
 	protected:
 		friend class Guild;
-		shared_ptr<unbounded_buffer<AudioFrameData*>> sendAudioBuffer{ nullptr };
 		const hstring baseSearchURL{ L"https://www.youtube.com/results?search_query=" };
+		shared_ptr<unbounded_buffer<AudioFrameData*>> sendAudioBuffer{ nullptr };
 		const hstring baseWatchURL{ L"https://www.youtube.com/watch?v=" };
-		const hstring baseURL{ L"https://www.youtube.com" };
-		__int64 maxBufSize{ 4096 };
-		string guildId{ "" };
-		const string newLine{ "\n\r" };
-		vector<YouTubeSong> songQueue{};
 		map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap{ nullptr };
-		YouTubeSong currentSong{};
-		string playerResponse{ "" };
+		const hstring baseURL{ L"https://www.youtube.com" };
+		vector<YouTubeSong> songQueue{};
+		const string newLine{ "\n\r" };
 		string html5PlayerFile{ "" };
+		string playerResponse{ "" };
+		__int64 maxBufSize{ 4096 };
+		YouTubeSong currentSong{};
 		string html5Player{ "" };
+		string guildId{ "" };
 	};
 };
 #endif

@@ -12,26 +12,34 @@
 #include "FoundationEntities.hpp"
 #include "HttpStuff.hpp"
 
+namespace DiscordCoreInternal {
+	class ChannelManagerAgent;
+	class ChannelManager;
+}
+
 namespace DiscordCoreAPI {
+
+	class Channels;
 
 	class Channel {
 	public:
-		ChannelData data{};
+		friend class DiscordCoreInternal::ChannelManagerAgent;
+		friend class DiscordCoreInternal::ChannelManager;
+		friend class DiscordCoreClient;
+		friend class Guild;
+
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		ChannelData data{};
 
 		Channel() {};
 
+	protected:
+
 		Channel(ChannelData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->data = dataNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->data = dataNew;
 			return;
 		}
-
-	protected:
-		friend class DiscordCoreClient;
-		friend class ChannelManager;
-		friend class Guild;
-		friend class UserManagerAgent;
 	};
 
 	struct EditChannelPermissionOverwritesData {
@@ -61,34 +69,33 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreInternal	{
+
 	class ChannelManagerAgent : agent {
 	protected:
 		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class Guild;
 		friend class ChannelManager;
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::Channel>> cache;
-		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		static shared_ptr<ThreadContext> threadContext;
 
-		unbounded_buffer<DiscordCoreInternal::DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::CollectChannelData> requestCollectChannelBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetDMChannelData>requestGetDMChannelBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetChannelData> requestGetChannelBuffer{ nullptr };
+		unbounded_buffer<DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
+		unbounded_buffer<PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
+		unbounded_buffer<CollectChannelData> requestCollectChannelBuffer{ nullptr };
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		unbounded_buffer<GetDMChannelData>requestGetDMChannelBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Channel> outChannelBuffer{ nullptr };
+		unbounded_buffer<GetChannelData> requestGetChannelBuffer{ nullptr };
 		concurrent_queue<DiscordCoreAPI::Channel>channelsToInsert{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
+		HttpAgentResources agentResources{};
 
-		DiscordCoreInternal::HttpAgentResources agentResources{};
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-
-		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
+		ChannelManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
 			:agent(*ChannelManagerAgent::threadContext->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 		}
 
-		static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+		static void initialize(shared_ptr<ThreadContext> threadContextNew) {
 			ChannelManagerAgent::threadContext = threadContextNew;
 		}
 
@@ -104,17 +111,17 @@ namespace DiscordCoreInternal	{
 			return;
 		}
 
-		DiscordCoreAPI::Channel getObjectData(DiscordCoreInternal::GetChannelData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_CHANNEL;
+		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_CHANNEL;
 			workload.relativePath = "/channels/" + dataPackage.channelId;
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManagerAgent::getObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -123,24 +130,24 @@ namespace DiscordCoreInternal	{
 				cout << "ChannelManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::ChannelData channelData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &channelData);
+			DataParser::parseObject(returnData.data, &channelData);
 			DiscordCoreAPI::Channel channelNew(channelData, this->discordCoreClient);
 			return channelNew;
 		}
 
-		DiscordCoreAPI::Channel postObjectData(DiscordCoreInternal::GetDMChannelData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_USER_DM;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
+		DiscordCoreAPI::Channel postObjectData(GetDMChannelData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadType = HttpWorkloadType::POST_USER_DM;
+			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.relativePath = "/users/@me/channels";
 			json theValue = { {"recipient_id", dataPackage.userId } };
 			workload.content = theValue.dump();
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManagerAgent::postObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -149,23 +156,23 @@ namespace DiscordCoreInternal	{
 				cout << "ChannelManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::ChannelData channelData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &channelData);
+			DataParser::parseObject(returnData.data, &channelData);
 			DiscordCoreAPI::Channel channelNew(channelData, this->discordCoreClient);
 			return channelNew;
 		}
 
-		void putObjectData(DiscordCoreInternal::PutPermissionOverwritesData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PUT_CHANNEL_PERMISSION_OVERWRITES;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PUT;
+		void putObjectData(PutPermissionOverwritesData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadType = HttpWorkloadType::PUT_CHANNEL_PERMISSION_OVERWRITES;
+			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
-			workload.content = DiscordCoreInternal::getEditChannelPermissionOverwritesPayload(dataPackage);
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			workload.content = getEditChannelPermissionOverwritesPayload(dataPackage);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManagerAgent::putObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -176,17 +183,17 @@ namespace DiscordCoreInternal	{
 			return;
 		}
 
-		void deleteObjectData(DiscordCoreInternal::DeleteChannelPermissionOverwritesData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_CHANNEL_PERMISSION_OVERWRITES;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
+		void deleteObjectData(DeleteChannelPermissionOverwritesData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadType = HttpWorkloadType::DELETE_CHANNEL_PERMISSION_OVERWRITES;
+			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManagerAgent::deleteObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -199,7 +206,7 @@ namespace DiscordCoreInternal	{
 
 		void run() {
 			try {
-				DiscordCoreInternal::CollectChannelData dataPackage01;
+				CollectChannelData dataPackage01;
 				if (try_receive(this->requestCollectChannelBuffer, dataPackage01)) {
 					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
@@ -209,7 +216,7 @@ namespace DiscordCoreInternal	{
 						}
 					}
 				}
-				DiscordCoreInternal::GetChannelData dataPackage02;
+				GetChannelData dataPackage02;
 				if (try_receive(this->requestGetChannelBuffer, dataPackage02)) {
 					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
@@ -222,15 +229,15 @@ namespace DiscordCoreInternal	{
 					send(this->outChannelBuffer, channel);
 					send(cache, cacheTemp);
 				}
-				DiscordCoreInternal::PutPermissionOverwritesData dataPackage03;
+				PutPermissionOverwritesData dataPackage03;
 				if (try_receive(this->requestPutChannelPermOWsBuffer, dataPackage03)) {
 					putObjectData(dataPackage03);
 				}
-				DiscordCoreInternal::DeleteChannelPermissionOverwritesData dataPackage04;
+				DeleteChannelPermissionOverwritesData dataPackage04;
 				if (try_receive(this->requestDeleteChannelPermOWsBuffer, dataPackage04)) {
 					deleteObjectData(dataPackage04);
 				}
-				DiscordCoreInternal::GetDMChannelData dataPackage05;
+				GetDMChannelData dataPackage05;
 				if (try_receive(this->requestGetDMChannelBuffer, dataPackage05)) {
 					DiscordCoreAPI::Channel channel = postObjectData(dataPackage05);
 					map<string, DiscordCoreAPI::Channel> cacheTemp;
@@ -275,8 +282,10 @@ namespace DiscordCoreInternal	{
 
 	class ChannelManager {
 	public:
+		friend class DiscordCoreAPI::Channels;
+		friend class DiscordCoreAPI::Guild;
 
-		ChannelManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		ChannelManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -284,7 +293,7 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::Channel> fetchAsync(DiscordCoreAPI::FetchChannelData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetChannelData dataPackageNew;
+			GetChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -300,7 +309,7 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::CollectChannelData dataPackageNew;
+			CollectChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -316,7 +325,7 @@ namespace DiscordCoreInternal	{
 
 		task<DiscordCoreAPI::Channel> fetchDMChannelAsync(DiscordCoreAPI::FetchDMChannelData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetDMChannelData dataPackageNew;
+			GetDMChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -332,12 +341,12 @@ namespace DiscordCoreInternal	{
 
 		task<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::PutPermissionOverwritesData dataPackageNew;
+			PutPermissionOverwritesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.allow = dataPackage.allow;
 			dataPackageNew.deny = dataPackage.deny;
-			dataPackageNew.type = (DiscordCoreInternal::EditChannelPermissionOverwritesType)dataPackage.type;
+			dataPackageNew.type = (EditChannelPermissionOverwritesType)dataPackage.type;
 			dataPackageNew.roleOrUserId = dataPackage.roleOrUserId;
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			send(requestAgent.requestPutChannelPermOWsBuffer, dataPackageNew);
@@ -349,7 +358,7 @@ namespace DiscordCoreInternal	{
 
 		task<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::DeleteChannelPermissionOverwritesData dataPackageNew;
+			DeleteChannelPermissionOverwritesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.roleOrUserId = dataPackage.roleOrUserId;
@@ -360,6 +369,15 @@ namespace DiscordCoreInternal	{
 			requestAgent.getError("ChannelManager::deleteChannelPermissionOverwritesAsync");
 			co_return;
 		}
+
+		~ChannelManager() {
+			this->threadContext->releaseGroup();
+		}
+
+	protected:
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
 
 		task<void> insertChannelAsync(DiscordCoreAPI::Channel channel) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
@@ -381,24 +399,8 @@ namespace DiscordCoreInternal	{
 			send(ChannelManagerAgent::cache, cache);
 			co_return;
 		}
-
-		~ChannelManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		friend class Guild;
-		friend class ChannelManagerAgent;
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreClientBase;
-		friend class EventHandler;
-
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{};
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-				
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Channel>> ChannelManagerAgent::cache{ nullptr };
-	shared_ptr<DiscordCoreInternal::ThreadContext> ChannelManagerAgent::threadContext{ nullptr };
+	shared_ptr<ThreadContext> ChannelManagerAgent::threadContext{ nullptr };
 }
 #endif

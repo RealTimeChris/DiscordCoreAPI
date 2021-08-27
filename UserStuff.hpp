@@ -13,7 +13,16 @@
 #include "DataParsingFunctions.hpp"
 #include "WebSocketStuff.hpp"
 
+namespace DiscordCoreInternal {
+
+	class UserManagerAgent;
+	class UserManager;
+
+};
+
 namespace DiscordCoreAPI {
+
+	class Users;
 
 	class Application {
 	public:
@@ -32,11 +41,17 @@ namespace DiscordCoreAPI {
 
 	class User {
 	public:
+		friend class DiscordCoreInternal::UserManagerAgent;
+		friend class DiscordCoreInternal::UserManager;
+		friend class DiscordCoreClient;
+		friend class Guild;
 
-		DiscordCoreInternal::UserData data{};
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		DiscordCoreInternal::UserData data{};
 
 		User() {};
+
+	protected:
 
 		User(DiscordCoreInternal::UserData dataNew, shared_ptr<DiscordCoreClient> coreClientNew) {
 			this->data = dataNew;
@@ -116,27 +131,26 @@ namespace DiscordCoreInternal {
 		friend class UserManager;
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::User>> cache;
-		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+		static shared_ptr<ThreadContext> threadContext;
 
-		unbounded_buffer<DiscordCoreInternal::GetApplicationData> requestGetApplicationBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::LeaveGuildData> requestLeaveGuildBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::GetUserData> requestGetUserBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::CollectUserData> requestCollectUserBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Application> outApplicationBuffer{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::User> outUserBuffer{ nullptr };
-		concurrent_queue<DiscordCoreAPI::User> usersToInsert{};
-
-		DiscordCoreInternal::HttpAgentResources agentResources{};
+		unbounded_buffer<GetApplicationData> requestGetApplicationBuffer{ nullptr };
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		unbounded_buffer<CollectUserData> requestCollectUserBuffer{ nullptr };
+		unbounded_buffer<LeaveGuildData> requestLeaveGuildBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreAPI::User> outUserBuffer{ nullptr };
+		unbounded_buffer<GetUserData> requestGetUserBuffer{ nullptr };		
+		concurrent_queue<DiscordCoreAPI::User> usersToInsert{};
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		HttpAgentResources agentResources{};
 
-		UserManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
+		UserManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
 			:agent(*UserManagerAgent::threadContext->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 		}
 
-		static void intialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+		static void intialize(shared_ptr<ThreadContext> threadContextNew) {
 			UserManagerAgent::threadContext = threadContextNew;
 		}
 
@@ -152,22 +166,22 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		DiscordCoreAPI::User getObjectData(DiscordCoreInternal::GetUserData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_GUILD;
-			if (dataPackage.userType == DiscordCoreInternal::GetUserDataType::USER) {
+		DiscordCoreAPI::User getObjectData(GetUserData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_GUILD;
+			if (dataPackage.userType == GetUserDataType::USER) {
 				workload.relativePath = "/users/" + dataPackage.userId;
 			}
-			else if (dataPackage.userType == DiscordCoreInternal::GetUserDataType::SELF) {
+			else if (dataPackage.userType == GetUserDataType::SELF) {
 				workload.relativePath = "/users/@me";
 			}
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManagerAgent::getObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "UserManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -176,22 +190,22 @@ namespace DiscordCoreInternal {
 				cout << "UserManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::UserData userData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &userData);
+			DataParser::parseObject(returnData.data, &userData);
 			DiscordCoreAPI::User userNew(userData, this->discordCoreClient);
 			return userNew;
 		}
 
-		DiscordCoreAPI::Application getObjectData(DiscordCoreInternal::GetApplicationData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_APPLICATION;
+		DiscordCoreAPI::Application getObjectData(GetApplicationData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::GET;
+			workload.workloadType = HttpWorkloadType::GET_APPLICATION;
 			workload.relativePath = "/oauth2/applications/@me";
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManagerAgent::getObjectData_01");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "UserManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -200,22 +214,22 @@ namespace DiscordCoreInternal {
 				cout << "UserManagerAgent::getObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::ApplicationData applicationData;
-			DiscordCoreInternal::DataParser::parseObject(returnData.data, &applicationData);
+			DataParser::parseObject(returnData.data, &applicationData);
 			DiscordCoreAPI::Application application(applicationData);
 			return application;
 		}
 
-		void deleteObjectData(DiscordCoreInternal::LeaveGuildData dataPackage) {
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_LEAVE_GUILD;
+		void deleteObjectData(LeaveGuildData dataPackage) {
+			HttpWorkload workload;
+			workload.workloadClass = HttpWorkloadClass::DELETED;
+			workload.workloadType = HttpWorkloadType::DELETE_LEAVE_GUILD;
 			workload.relativePath = "/users/@me/guilds/" + dataPackage.guildId;
-			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManagerAgent::deleteObjectData_00");
-			DiscordCoreInternal::HttpData returnData;
+			HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "UserManagerAgent::deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -227,7 +241,7 @@ namespace DiscordCoreInternal {
 
 		void run() {
 			try {
-				DiscordCoreInternal::CollectUserData dataPackage01;
+				CollectUserData dataPackage01;
 				if (try_receive(this->requestCollectUserBuffer, dataPackage01)) {
 					map<string, DiscordCoreAPI::User> cacheTemp;
 					if (try_receive(UserManagerAgent::cache, cacheTemp)) {
@@ -237,7 +251,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				DiscordCoreInternal::GetUserData dataPackage02;
+				GetUserData dataPackage02;
 				if (try_receive(this->requestGetUserBuffer, dataPackage02)) {
 					map<string, DiscordCoreAPI::User> cacheTemp;
 					if (try_receive(UserManagerAgent::cache, cacheTemp)) {
@@ -250,16 +264,16 @@ namespace DiscordCoreInternal {
 					send(this->outUserBuffer, user);
 					send(UserManagerAgent::cache, cacheTemp);
 				}
-				DiscordCoreInternal::GetApplicationData dataPackage03;
+				GetApplicationData dataPackage03;
 				if (try_receive(this->requestGetApplicationBuffer, dataPackage03)) {
 					DiscordCoreAPI::Application application = getObjectData(dataPackage03);
 					send(this->outApplicationBuffer, application);
 				}
-				DiscordCoreInternal::LeaveGuildData dataPackage04;
+				LeaveGuildData dataPackage04;
 				if (try_receive(this->requestLeaveGuildBuffer, dataPackage04)) {
 					deleteObjectData(dataPackage04);
 				}
-				DiscordCoreInternal::UserData dataPackage05;
+				UserData dataPackage05;
 				DiscordCoreAPI::User user(dataPackage05, this->discordCoreClient);
 				while (this->usersToInsert.try_pop(user)) {
 					map<string, DiscordCoreAPI::User> cacheTemp;
@@ -282,8 +296,11 @@ namespace DiscordCoreInternal {
 
 	class UserManager {
 	public:
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::Users;
+		friend class DiscordCoreAPI::Guild;
 
-		UserManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		UserManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -291,16 +308,16 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::User> fetchAsync(DiscordCoreAPI::FetchUserData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetUserData dataPackageNew;
+			GetUserData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
-			dataPackageNew.userType = DiscordCoreInternal::GetUserDataType::USER;
+			dataPackageNew.userType = GetUserDataType::USER;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestGetUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::fetchAsync");
-			DiscordCoreInternal::UserData userData;
+			UserData userData;
 			DiscordCoreAPI::User user(userData, this->discordCoreClient);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
@@ -308,15 +325,15 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::User> fetchCurrentUserAsync() {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetUserData dataPackageNew;
+			GetUserData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
-			dataPackageNew.userType = DiscordCoreInternal::GetUserDataType::SELF;
+			dataPackageNew.userType = GetUserDataType::SELF;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestGetUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::fetchCurrentUserAsync");
-			DiscordCoreInternal::UserData userData;
+			UserData userData;
 			DiscordCoreAPI::User user(userData, this->discordCoreClient);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
@@ -324,7 +341,7 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::User> getUserAsync(DiscordCoreAPI::GetUserData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::CollectUserData dataPackageNew;
+			CollectUserData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
@@ -332,7 +349,7 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::getUserAsync");
-			DiscordCoreInternal::UserData userData;
+			UserData userData;
 			DiscordCoreAPI::User user(userData, this->discordCoreClient);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
@@ -340,7 +357,7 @@ namespace DiscordCoreInternal {
 
 		task<void> leaveGuildAsync(DiscordCoreAPI::LeaveGuildData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::LeaveGuildData dataPackageNew;
+			LeaveGuildData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
@@ -353,19 +370,28 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::Application> fetchApplicationDataAsync() {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::GetApplicationData dataPackageNew;
+			GetApplicationData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			UserManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestGetApplicationBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::fetchApplicationAsync");
-			DiscordCoreInternal::ApplicationData applicationData;
+			ApplicationData applicationData;
 			DiscordCoreAPI::Application application(applicationData);
 			try_receive(requestAgent.outApplicationBuffer, application);
 			co_return application;
 		}
 
+		~UserManager() {
+			this->threadContext->releaseGroup();
+		}
+
+	protected:
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
+		
 		task<void> insertUserAsync(DiscordCoreAPI::User user) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			UserManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -377,22 +403,8 @@ namespace DiscordCoreInternal {
 			co_return;
 		}
 
-		~UserManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		friend class DiscordCoreClientBase;
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class EventHandler;
-		friend class Guild;
-
-		DiscordCoreInternal::HttpAgentResources agentResources{};
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::User>> UserManagerAgent::cache{ nullptr };
-	shared_ptr<DiscordCoreInternal::ThreadContext> UserManagerAgent::threadContext{ nullptr };
+	shared_ptr<ThreadContext> UserManagerAgent::threadContext{ nullptr };
 }
 #endif

@@ -2022,7 +2022,7 @@ namespace DiscordCoreAPI {
         string url{ "" };
         string placeholder{ "" };
         bool disabled{ false };
-        vector<SelectOptionData> options;
+        vector<SelectOptionData> options{};
         int maxValues{ 0 };
         int minValues{ 0 };
     };
@@ -2704,10 +2704,10 @@ namespace DiscordCoreAPI {
             newData.user = this->user;
             return newData;
         }
-        int membershipState;
-        vector<string> permissions;
-        string teamId;
-        UserData user;
+        int membershipState{ 0 };
+        vector<string> permissions{};
+        string teamId{ "" };
+        UserData user{};
     };
 
     struct TeamObjectData {
@@ -3125,20 +3125,20 @@ namespace DiscordCoreAPI {
         bool owner{ false };
         int afkTimeOut{ 0 };
         bool widgetEnabled{ false };
-        VerificationLevel verificationLevel{ VerificationLevel::NONE };
-        DefaultMessageNotificationLevel defaultMessageNotifications{ DefaultMessageNotificationLevel::ALL_MESSAGES };
-        ExplicitContentFilterLevel explicitContentFilter{ ExplicitContentFilterLevel::DISABLED };
+        VerificationLevel verificationLevel{};
+        DefaultMessageNotificationLevel defaultMessageNotifications{};
+        ExplicitContentFilterLevel explicitContentFilter{};
         vector<EmojiData> emoji{};
         vector<RoleData> roles{};
         int systemChannelFlags{ 0 };
-        MFALevel mfaLevel = MFALevel::NONE;
+        MFALevel mfaLevel{};
         bool large{ false };
         vector<VoiceStateData> voiceStates{};
         vector<PresenceUpdateData> presences{};
         int maxPresences{ 0 };
         int maxMembers{ 0 };
         int premiumSubscriptionCount{ 0 };
-        PremiumTier premiumTier = PremiumTier::NONE;
+        PremiumTier premiumTier{};
         int maxVideoChannelUsers{ 0 };
         int approximateMemberCount{ 0 };
         bool unavailable{ false };

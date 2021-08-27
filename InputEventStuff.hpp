@@ -199,8 +199,8 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		static shared_ptr<DiscordCoreInternal::MessageManager> messages;
 		static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
+		static shared_ptr<DiscordCoreInternal::MessageManager> messages;
 		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
 	};

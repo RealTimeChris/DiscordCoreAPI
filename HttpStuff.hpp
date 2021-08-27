@@ -107,19 +107,20 @@ namespace DiscordCoreInternal {
 	protected:
 		static concurrent_unordered_map<string, RateLimitData> rateLimitData;
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		unbounded_buffer<exception> errorBuffer{ nullptr };
+		
 		unbounded_buffer<hresult_error> errorhBuffer{ nullptr };
-		HttpRequestHeaderCollection getHeaders{ nullptr };
-		HttpRequestHeaderCollection putHeaders{ nullptr };
-		HttpRequestHeaderCollection postHeaders{ nullptr };
-		HttpRequestHeaderCollection patchHeaders{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
-		HttpClient getHttpClient{ nullptr };
-		HttpClient putHttpClient{ nullptr };
-		HttpClient postHttpClient{ nullptr };
-		HttpClient patchHttpClient{ nullptr };
+		HttpRequestHeaderCollection patchHeaders{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		HttpRequestHeaderCollection postHeaders{ nullptr };
+		HttpRequestHeaderCollection putHeaders{ nullptr };
+		HttpRequestHeaderCollection getHeaders{ nullptr };
 		HttpClient deleteHttpClient{ nullptr };
-
+		HttpClient patchHttpClient{ nullptr };
+		HttpClient postHttpClient{ nullptr };
+		HttpClient putHttpClient{ nullptr };
+		HttpClient getHttpClient{ nullptr };
+		
 		static bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew) {
 			if (rateLimitDataNew->getsRemaining <= 0) {
 				float loopStartTime = rateLimitDataNew->timeStartedAt;
