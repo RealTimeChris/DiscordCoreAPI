@@ -427,6 +427,9 @@ namespace DiscordCoreAPI {
 							this->areWeWaitingForAudioData = true;
 						}
 					}
+					else {
+						this->areWeWaitingForAudioData = true;
+					}
 				}
 				else {
 					this->areWeWaitingForAudioData = true;

@@ -1,48 +1,46 @@
-// SlashCommandStuff.hpp - Stuff for slash commands.
-// May 23, 2021
+// ApplicationCommandStuff.hpp - Header for the "application command" stuff.
+// Aug 25, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _SLASH_COMMAND_STUFF_
-#define _SLASH_COMMAND_STUFF_
+#ifndef _APPLICATION_COMMAND_STUFF_
+#define _APPLICATION_COMMAND_STUFF_
 
-#include "pch.h"
-#include "JSONifier.hpp"
-#include "HttpStuff.hpp"
-#include "UserStuff.hpp"
+#include "../pch.h"
+#include "DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
 
     struct ApplicationCommandOptionChoiceData {
-        string name{ "" };
-        int	valueInt{ 0 };
         string valueString{ "" };
+        int	valueInt{ 0 };
+        string name{ "" };
     };
 
     struct ApplicationCommandOptionData {
-        ApplicationCommandOptionType type{};
-        string name{ "" };
-        string description{ "" };
-        bool required{ false };
         vector<ApplicationCommandOptionChoiceData>	choices{};
         vector<ApplicationCommandOptionData> options{};
+        ApplicationCommandOptionType type{};
+        string description{ "" };
+        bool required{ false };
+        string name{ "" };
     };
 
     struct ApplicationCommandData {
-        string id{ "" };
-        string name{ "" };
-        string description{ "" };
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ false };
+        string description{ "" };
+        string name{ "" };
+        string id{ "" };
     };
 
     struct EditApplicationCommandData {
-        string name{ "" };
-        string description{ "" };
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ false };
+        string description{ "" };
+        string name{ "" };
     };
 
     struct CreateApplicationCommandData {
@@ -64,25 +62,25 @@ namespace DiscordCoreAPI {
         ApplicationCommand() {};
 
     protected:
-        friend class SlashCommandManager;
-        
+        friend class ApplicationCommandManager;
+
         ApplicationCommand(DiscordCoreInternal::ApplicationCommandData dataNew) {
             this->data = dataNew;
         }
     };
 
-	class SlashCommandManager {
-	public:
+    class ApplicationCommandManager {
+    public:
 
-        SlashCommandManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, string applicationIdNew) {
+        ApplicationCommandManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, string applicationIdNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;
             this->applicationId = applicationIdNew;
         }
 
-		task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
+        task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            DiscordCoreInternal::CreateApplicationCommandData dataPackageNew;
+            DiscordCoreInternal::PostApplicationCommandData dataPackageNew;
             dataPackageNew.applicationId = this->applicationId;
             dataPackageNew.defaultPermission = dataPackage.defaultPermission;
             dataPackageNew.description = dataPackage.description;
@@ -98,20 +96,20 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("SlashCommandManager::createGlobalApplicationCommandAsync");
+            requestAgent.getError("ApplicationCommandManager::createGlobalApplicationCommandAsync");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "SlashCommandManager::createGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "SlashCommandManager::createGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreInternal::ApplicationCommandData appCommandData;
             DiscordCoreInternal::DataParser::parseObject(returnData.data, &appCommandData);
             ApplicationCommand appCommand(appCommandData);
             co_return appCommandData;
-		}
+        }
 
         vector<ApplicationCommand> getGlobalApplicationCommands() {
             DiscordCoreInternal::HttpWorkload workload;
@@ -122,14 +120,14 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("SlashCommandManager::getGlobalApplicationCommands");
+            requestAgent.getError("ApplicationCommandManager::getGlobalApplicationCommands");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "SlashCommandManager::getGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "SlashCommandManager::getGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             vector<ApplicationCommand> appCommands;
             for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
@@ -154,11 +152,11 @@ namespace DiscordCoreAPI {
                 }
             }
             if (isItFound == false) {
-                cout << "SlashCommandManager::editGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
+                cout << "ApplicationCommandManager::editGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
                 ApplicationCommand appCommand;
                 co_return appCommand;
             }
-            DiscordCoreInternal::EditApplicationCommandData dataPackageNew;
+            DiscordCoreInternal::PatchApplicationCommandData dataPackageNew;
             dataPackageNew.defaultPermission = dataPackage.defaultPermission;
             dataPackageNew.description = dataPackage.description;
             dataPackageNew.name = dataPackage.name;
@@ -172,14 +170,14 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("SlashCommandManager::editGlobalApplicationCommandAsync");
+            requestAgent.getError("ApplicationCommandManager::editGlobalApplicationCommandAsync");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "SlashCommandManager::editGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::editGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "SlashCommandManager::editGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::editGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreInternal::ApplicationCommandData appCommandData;
             DiscordCoreInternal::DataParser::parseObject(returnData.data, &appCommandData);
@@ -199,7 +197,7 @@ namespace DiscordCoreAPI {
                 }
             }
             if (isItFound == false) {
-                cout << "SlashCommandManager::deleteGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
+                cout << "ApplicationCommandManager::deleteGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
                 co_return;
             }
             DiscordCoreInternal::HttpWorkload workload;
@@ -210,14 +208,14 @@ namespace DiscordCoreAPI {
             send(requestAgent.workSubmissionBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("SlashCommandManager::deleteGlobalApplicationCommandAsync");
+            requestAgent.getError("ApplicationCommandManager::deleteGlobalApplicationCommandAsync");
             DiscordCoreInternal::HttpData returnData;
             try_receive(requestAgent.workReturnBuffer, returnData);
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "SlashCommandManager::deleteGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::deleteGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "SlashCommandManager::deleteGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::deleteGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             co_return;
         }
@@ -233,11 +231,11 @@ namespace DiscordCoreAPI {
             co_return;
         }
 
-        ~SlashCommandManager() {
+        ~ApplicationCommandManager() {
             this->threadContext->releaseGroup();
         }
 
-	protected:
+    protected:
         DiscordCoreInternal::HttpAgentResources agentResources{};
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
         string applicationId{ "" };
@@ -261,7 +259,7 @@ namespace DiscordCoreAPI {
                         }
                         else {
                             cout << "         " << "Command Option Choice #" << y << " Value: " << applicationCommandOptionData.at(x).choices.at(y).valueInt << endl;
-                        }                        
+                        }
                     }
                 }
                 if (applicationCommandOptionData.at(x).type == DiscordCoreInternal::ApplicationCommandOptionType::SUB_COMMAND || applicationCommandOptionData.at(x).type == DiscordCoreInternal::ApplicationCommandOptionType::SUB_COMMAND_GROUP) {
@@ -271,7 +269,7 @@ namespace DiscordCoreAPI {
         }
 
         void copyOptionsData(vector<DiscordCoreInternal::ApplicationCommandOptionData>* appCommandOptionData, vector<ApplicationCommandOptionData> appCommandOptionDataSource) {
-            
+
             if (appCommandOptionDataSource.size() > 0) {
                 for (unsigned int x = 0; x < appCommandOptionDataSource.size(); x += 1) {
                     DiscordCoreInternal::ApplicationCommandOptionData appCommandOptionDataNew;
@@ -292,13 +290,15 @@ namespace DiscordCoreAPI {
                         copyOptionsData(&appCommandOptionDataNew.options, appCommandOptionDataSource.at(x).options);
                     }
                     appCommandOptionData->push_back(appCommandOptionDataNew);
-                    
+
                 }
 
-            }            
-                
+            }
+
         }
 
-	};
+    };
+
 }
+
 #endif

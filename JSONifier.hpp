@@ -184,7 +184,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	string getModifyGuildMemberPayload(ModifyGuildMemberData dataPackage) {
+	string getModifyGuildMemberPayload(PatchGuildMemberData dataPackage) {
 		json roleIdArray = json::array();
 
 		for (auto value : dataPackage.roleIds) {
@@ -268,14 +268,14 @@ namespace DiscordCoreInternal {
 		return finalValue;
 	};
 
-	string getCreateMessagePayload(DiscordCoreAPI::CreateMessageData dataPackage) {
+	string getCreateMessagePayload(PostMessageData dataPackage) {
 		auto componentsActionRow = json::array();
 
 		for (auto& value : dataPackage.components) {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+				if (valueNew.type == ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+				else if (valueNew.type == ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -479,7 +479,7 @@ namespace DiscordCoreInternal {
 		
 	}
 
-	string getCreateMessagePayload(DiscordCoreAPI::SendDMData dataPackage) {
+	string getCreateMessagePayload(PostDMData dataPackage) {
 
 		auto componentsActionRow = json::array();
 
@@ -487,7 +487,7 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+				if (valueNew.type == ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -518,7 +518,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+				else if (valueNew.type == ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -695,7 +695,7 @@ namespace DiscordCoreInternal {
 
 	}
 
-	string getReplyMessagePayload(DiscordCoreAPI::ReplyMessageData dataPackage) {
+	string getReplyMessagePayload(PostMessageData dataPackage) {
 
 		auto componentsActionRow = json::array();
 
@@ -703,7 +703,7 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+				if (valueNew.type == ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -734,7 +734,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+				else if (valueNew.type == ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -913,17 +913,16 @@ namespace DiscordCoreInternal {
 					return data.dump();
 				}
 			}
-
 	}
 
-	string getEditMessagePayload(DiscordCoreAPI::EditMessageData dataPackage) {
+	string getEditMessagePayload(PatchMessageData dataPackage) {
 		auto componentsActionRow = json::array();
 
 		for (auto& value : dataPackage.components) {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+				if (valueNew.type == ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -954,7 +953,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+				else if (valueNew.type == ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -1141,7 +1140,7 @@ namespace DiscordCoreInternal {
 		pJSONData->emplace_back(newOption);
 	}
 
-	string getCreateApplicationCommandPayload(CreateApplicationCommandData dataPackage) {
+	string getCreateApplicationCommandPayload(PostApplicationCommandData dataPackage) {
 		json data;
 		if (dataPackage.type == ApplicationCommandType::MESSAGE || dataPackage.type == ApplicationCommandType::USER) {
 			data = { {"name", dataPackage.name},{"type", dataPackage.type} };
@@ -1168,7 +1167,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	string getEditApplicationCommandPayload(EditApplicationCommandData dataPackage) {
+	string getEditApplicationCommandPayload(PatchApplicationCommandData dataPackage) {
 		json data = {
 			{"name",dataPackage.name },
 			{"description", dataPackage.description},
@@ -1188,7 +1187,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 	
-	string	getEditFollowUpMessagePayload(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
+	string	getEditFollowUpMessagePayload(PatchFollowUpMessageData dataPackage) {
 		auto embedsArray = json::array();
 
 		for (auto& value : dataPackage.embeds) {
@@ -1266,7 +1265,7 @@ namespace DiscordCoreInternal {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
-				if (valueNew.type ==DiscordCoreAPI::ComponentType::Button) {
+				if (valueNew.type == ComponentType::Button) {
 					if (valueNew.emoji.id == "") {
 						json component = { {"custom_id", valueNew.customId},
 						{"disabled", valueNew.disabled},
@@ -1297,7 +1296,7 @@ namespace DiscordCoreInternal {
 						components.push_back(component);
 					}
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+				else if (valueNew.type == ComponentType::SelectMenu) {
 					json optionsArray = json::array();
 					for (auto value01 : valueNew.options) {
 						if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -1363,7 +1362,7 @@ namespace DiscordCoreInternal {
 		};
 	}
 
-		string	getEditInteractionResponsePayload(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
+		string	getEditInteractionResponsePayload(PatchInteractionResponseData dataPackage) {
 			auto embedsArray = json::array();
 
 			for (auto& value : dataPackage.embeds) {
@@ -1441,7 +1440,7 @@ namespace DiscordCoreInternal {
 				auto components = json::array();
 
 				for (auto& valueNew : value.components) {
-					if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+					if (valueNew.type == ComponentType::Button) {
 						if (valueNew.emoji.id == "") {
 							json component = { {"custom_id", valueNew.customId},
 							{"disabled", valueNew.disabled},
@@ -1472,7 +1471,7 @@ namespace DiscordCoreInternal {
 							components.push_back(component);
 						}
 					}
-					else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+					else if (valueNew.type == ComponentType::SelectMenu) {
 						json optionsArray = json::array();
 						for (auto value01 : valueNew.options) {
 							if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -1543,14 +1542,14 @@ namespace DiscordCoreInternal {
 			};
 		}
 
-		string getCreateDeferredInteractionResponsePayload(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
+		string getCreateDeferredInteractionResponsePayload(PostDeferredInteractionResponseData dataPackage) {
 
 			json data = { {"type", dataPackage.type}
 			};
 			return data.dump();
 		}
 
-		string getCreateInteractionResponsePayload(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
+		string getCreateInteractionResponsePayload(PostInteractionResponseData dataPackage) {
 
 			auto embedsArray = json::array();
 
@@ -1629,7 +1628,7 @@ namespace DiscordCoreInternal {
 				auto components = json::array();
 
 				for (auto& valueNew : value.components) {
-					if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+					if (valueNew.type == ComponentType::Button) {
 						if (valueNew.emoji.id == "") {
 							json component = { {"custom_id", valueNew.customId},
 							{"disabled", valueNew.disabled},
@@ -1660,7 +1659,7 @@ namespace DiscordCoreInternal {
 							components.push_back(component);
 						}
 					}
-					else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+					else if (valueNew.type == ComponentType::SelectMenu) {
 						json optionsArray = json::array();
 						for (auto value01 : valueNew.options) {
 							if (value01.emoji.id == "" && value01.emoji.name == "") {
@@ -1750,7 +1749,7 @@ namespace DiscordCoreInternal {
 			 return data.dump();
 		 };
 
-		 string getUpdateRolePositionsPayload(UpdateRolePositionData dataPackage) {
+		 string getUpdateRolePositionsPayload(PatchRolePositionData dataPackage) {
 			 json dataArray = json::array();
 
 			 for (auto value : dataPackage.rolePositions) {
@@ -1760,7 +1759,7 @@ namespace DiscordCoreInternal {
 			 return dataArray.dump();
 		 };
 
-		 string getEditChannelPermissionOverwritesPayload(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
+		 string getEditChannelPermissionOverwritesPayload(PutPermissionOverwritesData dataPackage) {
 			 json data = { {"allow", stoll(dataPackage.allow)},
 				 {"deny", stoll(dataPackage.deny)},
 				 {"type", dataPackage.type} };
@@ -1768,7 +1767,7 @@ namespace DiscordCoreInternal {
 			 return data.dump();
 		 }
 
-		 string getPostFollowUpMessagePayload(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
+		 string getPostFollowUpMessagePayload(PostFollowUpMessageData dataPackage) {
 			 auto embedsArray = json::array();
 
 			 for (auto& value : dataPackage.embeds) {
@@ -1846,7 +1845,7 @@ namespace DiscordCoreInternal {
 				 auto components = json::array();
 
 				 for (auto& valueNew : value.components) {
-					 if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+					 if (valueNew.type == ComponentType::Button) {
 						 if (valueNew.emoji.id == "") {
 							 json component = { {"custom_id", valueNew.customId},
 							 {"disabled", valueNew.disabled},
@@ -1877,7 +1876,7 @@ namespace DiscordCoreInternal {
 							 components.push_back(component);
 						 }
 					 }
-					 else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+					 else if (valueNew.type == ComponentType::SelectMenu) {
 						 json optionsArray = json::array();
 						 for (auto value01 : valueNew.options) {
 							 if (value01.emoji.id == "" && value01.emoji.name == "") {

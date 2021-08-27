@@ -146,6 +146,13 @@ namespace DiscordCoreAPI {
 		}
 	};
 
+	struct CreateGuildBanData {
+		string guildId{ "" };
+		string guildMemberId{ "" };
+		int deleteMessageDays{ 0 };
+		string reason{ "" };
+	};
+
 	struct GetGuildData {
 		string guildId{ "" };
 	};

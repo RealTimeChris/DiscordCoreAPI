@@ -34,6 +34,63 @@ namespace DiscordCoreAPI {
 		}
 	};
 
+	struct UpdateRoleData {
+		string guildId{ "" };
+		string roleId{ "" };
+		string name{ "" };
+		string permissions{ "" };
+		string hexColorValue{ "" };
+		bool hoist{ false };
+		bool mentionable{ false };
+	};
+
+	struct GetGuildRolesData {
+		string guildId{ "" };
+	};
+
+	struct FetchRoleData {
+		string guildId{ "" };
+		string roleId{ "" };
+	};
+
+	struct UpdateRolePositionData {
+		string guildId{ "" };
+		string roleId{ "" };
+		int newPosition{ 0 };
+	};
+
+	struct RemoveRoleFromGuildMemberData {
+		string guildId{ "" };
+		string userId{ "" };
+		string roleId{ "" };
+	};
+
+	struct GetRoleData {
+		string guildId{ "" };
+		string roleId{ "" };
+	};
+
+	struct RemoveRoleFromGuildData {
+		string guildId{ "" };
+		string roleId{ "" };
+	};
+
+	struct AddRoleToGuildMemberData {
+		string guildId{ "" };
+		string userId{ "" };
+		string roleId{ "" };
+	};
+
+	struct CreateRoleData {
+		string name{ "" };
+		string permissions{ "0" };
+		string hexColorValue{ "" };
+		bool hoist{ false };
+		bool mentionable{ false };
+		string guildId{ "" };
+		int position{ 0 };
+	};
+
 	struct GetGuildMemberRolesData {
 		string guildId{ "" };
 		GuildMember guildMember{};
@@ -48,7 +105,7 @@ namespace DiscordCoreAPI {
 		static overwrite_buffer<map<string, Role>> cache;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 
-		unbounded_buffer<DiscordCoreInternal::UpdateRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PatchRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::DeleteGuildMemberRoleData> requestDeleteRoleBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::DeleteGuildRoleData> requestDeleteGuildRoleBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::CollectRoleData> requestCollectRoleBuffer{ nullptr };
@@ -155,7 +212,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
-			workload.content = dataPackage.content;
+			workload.content = DiscordCoreInternal::getModifyRolePayload(dataPackage);
 			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
@@ -175,12 +232,12 @@ namespace DiscordCoreAPI {
 			return newRole;
 		}
 
-		vector<Role> patchObjectData(DiscordCoreInternal::UpdateRolePositionData dataPackage) {
+		vector<Role> patchObjectData(DiscordCoreInternal::PatchRolePositionData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_GUILD_ROLES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-			workload.content = dataPackage.content;
+			workload.content = DiscordCoreInternal::getUpdateRolePositionsPayload(dataPackage);
 			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
@@ -209,7 +266,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-			workload.content = dataPackage.content;
+			workload.content = DiscordCoreInternal::getCreateRolePayload(dataPackage);
 			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
@@ -347,7 +404,7 @@ namespace DiscordCoreAPI {
 					vector<Role> roles = getObjectData(dataPackage07);
 					send(this->outRolesBuffer, roles);
 				}
-				DiscordCoreInternal::UpdateRolePositionData dataPackage08;
+				DiscordCoreInternal::PatchRolePositionData dataPackage08;
 				if (try_receive(this->requestPatchGuildRolesBuffer, dataPackage08)) {
 					vector<Role> roles = patchObjectData(dataPackage08);
 					send(this->outRolesBuffer, roles);
@@ -444,7 +501,6 @@ namespace DiscordCoreAPI {
 			dataPackageNew.mentionable = dataPackage.mentionable;
 			dataPackageNew.name = dataPackage.name;
 			dataPackageNew.permissions = dataPackage.permissions;
-			dataPackageNew.content = DiscordCoreInternal::getModifyRolePayload(dataPackageNew);
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.roleId = dataPackage.roleId;
@@ -462,7 +518,7 @@ namespace DiscordCoreAPI {
 		vector<Role> updateRolePositions(UpdateRolePositionData dataPackage) {
 			vector<Role> currentRoles = this->getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 			Role newRole = this->getRoleAsync({ .guildId = dataPackage.guildId, .roleId = dataPackage.roleId }).get();
-			DiscordCoreInternal::UpdateRolePositionData dataPackageNew;
+			DiscordCoreInternal::PatchRolePositionData dataPackageNew;
 			int positionBeforeMoving = newRole.data.position;
 			for (auto value : currentRoles) {
 				DiscordCoreInternal::RolePositionData newData;
@@ -483,7 +539,6 @@ namespace DiscordCoreAPI {
 			dataPackageNew.rolePositions.push_back(newData);
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
-			dataPackageNew.content = DiscordCoreInternal::getUpdateRolePositionsPayload(dataPackageNew);
 			RoleManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			send(requestAgent.requestPatchGuildRolesBuffer, dataPackageNew);
 			requestAgent.start();
@@ -536,7 +591,6 @@ namespace DiscordCoreAPI {
 			dataPackageNew.mentionable = dataPackage.mentionable;
 			dataPackageNew.name = dataPackage.name;
 			dataPackageNew.permissions = stoll(dataPackage.permissions);
-			dataPackageNew.content = DiscordCoreInternal::getCreateRolePayload(dataPackageNew);
 			RoleManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostRoleBuffer, dataPackageNew);
 			requestAgent.start();

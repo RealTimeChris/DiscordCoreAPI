@@ -893,47 +893,16 @@ namespace  DiscordCoreInternal {
         SOUNDCLOUD_SEARCH = 55
     };
 
-    struct GetApplicationData {
-        HttpAgentResources agentResources{};
+    enum class MessageStickerItemType {
+        PNG = 1,
+        APNG = 2,
+        LOTTIE = 3
     };
 
-    struct PatchInteractionResponseData {
-        HttpAgentResources agentResources{};
-        string  content{ "" };
-        string applicationId{ "" };
-        string interactionToken{ "" };
-    };
-
-    struct InteractionResponseData {
-        InteractionApplicationCommandCallbackData data{};
-        InteractionCallbackType type{};
-    };
-
-    struct PostInteractionResponseData {
-        HttpAgentResources agentResources{};
-        string content{ "" };
-        string interactionId{ "" };
-        string interactionToken{ "" };
-    };
-
-    struct PostFollowUpMessageData {
-        HttpAgentResources agentResources{};
-        string content{ "" };
-        string applicationId{ "" };
-        string interactionToken{ "" };
-    };
-
-    struct GetInteractionResponseData {
-        HttpAgentResources agentResources{};
-        string applicationId{ "" };
-        string interactionToken{ "" };
-    };
-
-    struct PostDeferredInteractionResponseData {
-        HttpAgentResources agentResources{};
-        string interactionId{ "" };
-        string interactionToken{ "" };
-        string content{ "" };
+    struct MessageStickerItemData {
+        string id{ "" };
+        string name{ "" };
+        MessageStickerItemType formatType{};
     };
 
     enum class InteractionType {
@@ -947,47 +916,6 @@ namespace  DiscordCoreInternal {
         InteractionType type{};
         string name{ "" };
         UserData user{};
-    };
-
-    struct HttpData {
-        unsigned int returnCode{ 0 };
-        string returnMessage{ "" };
-        json data{};
-    };
-
-    struct GetMessagesData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-        unsigned int limit{ 0 };
-        string beforeThisId{ "" };
-        string afterThisId{ "" };
-        string aroundThisId{ "" };
-    };
-
-    struct DeleteMessagesBulkData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-        vector<string> messageIds{};
-        string content{ "" };
-    };
-
-    struct HttpWorkload {
-        HttpWorkloadClass workloadClass{};
-        HttpWorkloadType workloadType{};
-        string relativePath{ "" };
-        string content{ "" };
-    };
-
-    enum class MessageStickerItemType {
-        PNG = 1,
-        APNG = 2,
-        LOTTIE = 3
-    };
-
-    struct MessageStickerItemData {
-        string id{ "" };
-        string name{ "" };
-        MessageStickerItemType formatType{};
     };
 
     struct MessageDataOld {
@@ -1029,266 +957,11 @@ namespace  DiscordCoreInternal {
         string requesterId{ "" };
     };
 
-    struct RateLimitData {
-        HttpWorkloadType workloadType{};
-        int getsRemaining{ 1 };
-        float msRemain{ 0.0f };
-        float timeStartedAt{ 0.0f };
-        string bucket{ "" };
-        float nextExecutionTime{ 0.0f };
-    };
-
-    struct CollectGuildData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-    };
-
-    struct GetGuildData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-    };
-
-    struct PutReactionData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-        string messageId{ "" };
-        string emoji{ "" };
-    };
-
-    enum class ReactionDeletionType {
-        SELF_DELETE = 0,
-        USER_DELETE = 1,
-        EMOJI_DELETE = 2,
-        ALL_DELETE = 3
-    };
-
-    struct DeleteReactionDataAll {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-        string messageId{ "" };
-        string encodedEmoji{ "" };
-        string userId{ "" };
-        ReactionDeletionType deletionType{};
-    };
-
-    struct GetReactionData {
-        string channelId{ "" };
-        string messageId{ "" };
-        string userId{ "" };
-        string emojiName{ "" };
-    };
-
-    struct CollectChannelData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-    };
-
-    struct GetChannelData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-    };
-
-    struct PutPermissionOverwritesData {
-        HttpAgentResources agentResources{};
-        string roleOrUserId{ "" };
-        string content{ "" };
-        string channelId{ "" };
-    };
-
-    struct DeleteChannelPermissionOverwritesData {
-        HttpAgentResources agentResources{};
-        string roleOrUserId{ "" };
-        string channelId{ "" };
-    };
-
-    struct GetDMChannelData {
-        HttpAgentResources agentResources{};
-        string userId{ "" };
-    };
-
-    struct GetMessageData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-        string messageId{ "" };
-        string requesterId{ "" };
-    };
-
-    struct PutPinMessageData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    enum class GetUserDataType {
-        SELF = 0,
-        USER = 1
-    };
-
-    struct CollectUserData {
-        HttpAgentResources agentResources{};
-        string userId{ "" };
-        GetUserDataType userType{};
-    };
-
-    struct LeaveGuildData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-    };
-
-    struct GetUserData {
-        HttpAgentResources agentResources{};
-        string userId{ "" };
-        GetUserDataType userType{};
-    };
-
-    struct GetPinnedMessagesData {
-        HttpAgentResources agentResources{};
-        string channelId{ "" };
-    };
-
-    struct PostMessageData {
-        HttpAgentResources agentResources{};
-        string requesterId{ "" };
-        string channelId{ "" };
-        string content{ "" };
-    };
-
-    struct PatchMessageData {
-        HttpAgentResources agentResources{};
-        string content{ "" };
-        string channelId{ "" };
-        string messageId{ "" };
-        string requesterId{ "" };
-    };
-
-    struct DeleteMessageData {
-        HttpAgentResources agentResources{};
-        unsigned int timeDelay{ 0 };
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    struct PostDMData {
-        HttpAgentResources agentResources{};
-        string userId{ "" };
-        string channelId{ "" };
-        string finalContent{ "" };
-        string content{ "" };
-        int nonce{ 0 };
-        bool tts{ false };
-        vector<EmbedData> embeds{};
-        AllowedMentionsData allowedMentions{};
-        MessageReferenceData messageReference{};
-        vector<ActionRowData> components{};
-    };
-
-    struct CollectGuildMemberData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string guildMemberId{ "" };
-    };
-
-    struct GetGuildMemberData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string guildMemberId{ "" };
-    };
-
-    struct GetGuildMemberRolesData {
-        HttpAgentResources agentResources{};
-        vector<string> roleIds{};
-    };
-
-    struct ModifyGuildMemberData {
-        HttpAgentResources agentResources{};
-        string guildMemberId{ "" };
-        string guildId{ "" };
-        string nick{ "" };
-        vector<string> roleIds{};
-        bool mute{ false };
-        bool deaf{ false };
-        string newVoiceChannelId{ "" };
-        string currentChannelId{ "" };
-    };
-
-    struct UpdateVoiceStateData {
-        string guildId{ "" };
-        string channelId{ "" };
-        bool selfMute{ false };
-        bool selfDeaf{ false };
-    };
-
-    struct GetRolesData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-    };
-
-    struct GetRoleData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct DeleteGuildMemberRoleData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string userId{ "" };
-        string roleId{ "" };
-    };
-
-    struct DeleteGuildRoleData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct RolePositionData {
-        string roleId{ "" };
-        unsigned int rolePosition{ 0 };
-    };
-
-    struct UpdateRolePositionData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        vector<RolePositionData> rolePositions{};
-        string content;
-    };
-
-    struct CollectRoleData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct PostRoleData {
-        HttpAgentResources agentResources{};
-        string content{ "" };
-        string guildId{ "" };
-        string roleId{ "" };
-        string name{ "" };
-        __int64 permissions{ 0 };
-        string hexColorValue{ "" };
-        bool hoist{ false };
-        bool mentionable{ false };
-    };
-
-    struct PutRoleData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string userId{ "" };
-        string roleId{ "" };
-    };
-
-    struct PatchRoleData {
-        HttpAgentResources agentResources{};
-        string guildId{ "" };
-        string roleId{ "" };
-        string content{ "" };
-        string name{ "" };
-        string permissions{ "" };
-        string hexColorValue{ "" };
-        bool hoist{ false };
-        bool mentionable{ false };
+    struct ApplicationCommandInteractionDataResolved {
+        map<string, UserData> users{};
+        map<string, GuildMemberData> members{};
+        map<string, RoleData> roles{};
+        map<string, ChannelData> channels{};
     };
 
     enum class ApplicationCommandOptionType {
@@ -1300,62 +973,8 @@ namespace  DiscordCoreInternal {
         USER = 6,
         CHANNEL = 7,
         ROLE = 8,
-        MENTIONABLE = 9
-    };
-
-    struct ApplicationCommandOptionChoiceData {
-        string name{ "" };
-        int	valueInt{ 0 };
-        string valueString{ "" };
-    };
-
-    struct ApplicationCommandOptionData {
-        ApplicationCommandOptionType type{};
-        string name{ "" };
-        string description{ "" };
-        bool required{ false };
-        vector<ApplicationCommandOptionChoiceData>	choices{};
-        vector<ApplicationCommandOptionData> options{};
-    };
-
-    enum class ApplicationCommandType {
-        CHAT_INPUT = 1,
-        USER = 2,
-        MESSAGE = 3
-    };
-
-    struct ApplicationCommandData {
-        string id{ "" };
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string guildId{ "" };
-        string name{ "" };
-        string description{ "" };
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-    };
-
-    struct EditApplicationCommandData {
-        string name{ "" };
-        string description{ "" };
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-    };
-
-    struct CreateApplicationCommandData {
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string name{ "" };
-        string description{ "" };
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-    };
-
-    struct ApplicationCommandInteractionDataResolved {
-        map<string, UserData> users{};
-        map<string, GuildMemberData> members{};
-        map<string, RoleData> roles{};
-        map<string, ChannelData> channels{};
+        MENTIONABLE = 9,
+        NUMBER = 10
     };
 
     struct ApplicationCommandInteractionDataOption {
@@ -1376,6 +995,24 @@ namespace  DiscordCoreInternal {
         int componentType{ -1 };
     };
 
+    enum class ApplicationCommandPermissionType {
+        Role = 1,
+        User = 2
+    };
+
+    struct ApplicationCommandPermissionData {
+        string id{ "" };
+        ApplicationCommandPermissionType type;
+        bool permission{ false };
+    };
+
+    struct GuildApplicationCommandPermissionData {
+        string id{ "" };
+        string applicationId{ "" };
+        string guildId{ "" };
+        vector<ApplicationCommandPermissionData> permissions{};
+    };
+
     struct InteractionData {
         string id{ "" };
         string applicationId{ "" };
@@ -1393,11 +1030,6 @@ namespace  DiscordCoreInternal {
         string customId{ "" };
         string requesterId{ "" };
         vector<string> values{};
-    };
-
-    struct InteractionResponseFullData {
-        InteractionData interactionData{};
-        PostInteractionResponseData interactionResponseData{};
     };
 
     enum class InputEventType {
@@ -1595,12 +1227,442 @@ namespace  DiscordCoreInternal {
         string requesterId{ "" };
     };
 
+    struct GetApplicationData {
+        HttpAgentResources agentResources{};
+    };
+
+    struct PatchInteractionResponseData {
+        HttpAgentResources agentResources{};
+        string applicationId{ "" };
+        string interactionToken{ "" };
+        string content{ "" };
+        vector<EmbedData> embeds{};
+        AllowedMentionsData allowedMentions{};
+        vector<AttachmentData> attachments{};
+        vector<ActionRowData>components{};
+        int flags{ 0 };
+        InteractionCallbackType type{};
+    };
+
+    struct InteractionResponseData {
+        InteractionApplicationCommandCallbackData data{};
+        InteractionCallbackType type{};
+    };
+
+    struct PostInteractionResponseData {
+        HttpAgentResources agentResources{};
+        string interactionId{ "" };
+        string interactionToken{ "" };
+        InteractionApplicationCommandCallbackData data{};
+        InteractionCallbackType type{};
+    };
+
+    struct PostFollowUpMessageData {
+        HttpAgentResources agentResources{};
+        string applicationId{ "" };
+        string interactionToken{ "" };
+        string content{ "" };
+        bool tts{ false };
+        vector<EmbedData> embeds{};
+        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
+        vector<ActionRowData> components{};
+        int flags{ 0 };
+    };
+
+    struct GetInteractionResponseData {
+        HttpAgentResources agentResources{};
+        string applicationId{ "" };
+        string interactionToken{ "" };
+    };
+
+    struct PostDeferredInteractionResponseData {
+        InteractionCallbackType type{};
+        HttpAgentResources agentResources{};
+        string interactionId{ "" };
+        string interactionToken{ "" };
+    };
+
+    struct HttpData {
+        unsigned int returnCode{ 0 };
+        string returnMessage{ "" };
+        json data{};
+    };
+
+    struct GetMessagesData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+        unsigned int limit{ 0 };
+        string beforeThisId{ "" };
+        string afterThisId{ "" };
+        string aroundThisId{ "" };
+    };
+
+    struct DeleteMessagesBulkData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+        vector<string> messageIds{};
+        string content{ "" };
+    };
+
+    struct HttpWorkload {
+        HttpWorkloadClass workloadClass{};
+        HttpWorkloadType workloadType{};
+        string relativePath{ "" };
+        string content{ "" };
+    };
+
+    struct RateLimitData {
+        HttpWorkloadType workloadType{};
+        int getsRemaining{ 1 };
+        float msRemain{ 0.0f };
+        float timeStartedAt{ 0.0f };
+        string bucket{ "" };
+        float nextExecutionTime{ 0.0f };
+    };
+
+    struct CollectGuildData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+    };
+
+    struct GetGuildData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+    };
+
+    struct PutReactionData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+        string messageId{ "" };
+        string emoji{ "" };
+    };
+
+    enum class ReactionDeletionType {
+        SELF_DELETE = 0,
+        USER_DELETE = 1,
+        EMOJI_DELETE = 2,
+        ALL_DELETE = 3
+    };
+
+    struct DeleteReactionDataAll {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+        string messageId{ "" };
+        string encodedEmoji{ "" };
+        string userId{ "" };
+        ReactionDeletionType deletionType{};
+    };
+
+    struct GetReactionData {
+        string channelId{ "" };
+        string messageId{ "" };
+        string userId{ "" };
+        string emojiName{ "" };
+    };
+
+    struct CollectChannelData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+    };
+
+    struct GetChannelData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+    };
+
+    struct PutPermissionOverwritesData {
+        HttpAgentResources agentResources{};
+        string roleOrUserId{ "" };
+        string allow{ "" };
+        string deny{ "" };
+        EditChannelPermissionOverwritesType type{};
+        string channelId{ "" };
+    };
+
+    struct DeleteChannelPermissionOverwritesData {
+        HttpAgentResources agentResources{};
+        string roleOrUserId{ "" };
+        string channelId{ "" };
+    };
+
+    struct GetDMChannelData {
+        HttpAgentResources agentResources{};
+        string userId{ "" };
+    };
+
+    struct GetMessageData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+        string messageId{ "" };
+        string requesterId{ "" };
+    };
+
+    struct PutPinMessageData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+        string messageId{ "" };
+    };
+
+    enum class GetUserDataType {
+        SELF = 0,
+        USER = 1
+    };
+
+    struct CollectUserData {
+        HttpAgentResources agentResources{};
+        string userId{ "" };
+        GetUserDataType userType{};
+    };
+
+    struct LeaveGuildData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+    };
+
+    struct GetUserData {
+        HttpAgentResources agentResources{};
+        string userId{ "" };
+        GetUserDataType userType{};
+    };
+
+    struct GetPinnedMessagesData {
+        HttpAgentResources agentResources{};
+        string channelId{ "" };
+    };
+
+    struct PostMessageData {
+        HttpAgentResources agentResources{};
+        string requesterId{ "" };
+        string channelId{ "" };
+        string content{ "" };
+        bool tts{ false };
+        vector<EmbedData> embeds{};
+        AllowedMentionsData allowedMentions{};
+        MessageReferenceData messageReference{};
+        vector<ActionRowData> components{};
+        int nonce{ 0 };
+    };
+
+    struct PatchMessageData {
+        HttpAgentResources agentResources{};
+        string content{ "" };
+        string channelId{ "" };
+        string messageId{ "" };
+        string requesterId{ "" };
+        vector<EmbedData> embeds{};
+        int flags{ 0 };
+        vector<AttachmentData> attachments{};
+        AllowedMentionsData allowedMentions{};
+        MessageData originalMessageData{};
+        vector<ActionRowData> components{};
+        MessageReferenceData messageReference{};
+    };
+
+    struct DeleteMessageData {
+        HttpAgentResources agentResources{};
+        unsigned int timeDelay{ 0 };
+        string channelId{ "" };
+        string messageId{ "" };
+    };
+
+    struct CreateMessageData {
+        CreateMessageData() {}
+        CreateMessageData(InputEventData dataPackage) {
+            this->channelId = dataPackage.getChannelId();
+            this->requesterId = dataPackage.getRequesterId();
+        }
+        AllowedMentionsData allowedMentions{};
+        string content{ "" };
+        vector<EmbedData> embeds{};
+        MessageReferenceData messageReference{};
+        vector<ActionRowData> components{};
+        int nonce{ 0 };
+        bool tts{ false };
+        string channelId{ "" };
+    protected:
+        friend class MessageManager;
+        string requesterId{ "" };
+    };
+
+    struct PostDMData {
+        HttpAgentResources agentResources{};
+        string userId{ "" };
+        string channelId{ "" };
+        CreateMessageData messageData{};
+    };
+
+    struct CollectGuildMemberData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string guildMemberId{ "" };
+    };
+
+    struct GetGuildMemberData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string guildMemberId{ "" };
+    };
+
+    struct GetGuildMemberRolesData {
+        HttpAgentResources agentResources{};
+        vector<string> roleIds{};
+    };
+
+    struct PatchGuildMemberData {
+        HttpAgentResources agentResources{};
+        string guildMemberId{ "" };
+        string guildId{ "" };
+        string nick{ "" };
+        vector<string> roleIds{};
+        bool mute{ false };
+        bool deaf{ false };
+        string newVoiceChannelId{ "" };
+        string currentChannelId{ "" };
+    };
+
+    struct UpdateVoiceStateData {
+        string guildId{ "" };
+        string channelId{ "" };
+        bool selfMute{ false };
+        bool selfDeaf{ false };
+    };
+
+    struct GetRolesData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+    };
+
+    struct GetRoleData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string roleId{ "" };
+    };
+
+    struct DeleteGuildMemberRoleData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string userId{ "" };
+        string roleId{ "" };
+    };
+
+    struct DeleteGuildRoleData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string roleId{ "" };
+    };
+
+    struct RolePositionData {
+        string roleId{ "" };
+        unsigned int rolePosition{ 0 };
+    };
+
+    struct PatchRolePositionData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        vector<RolePositionData> rolePositions{};
+    };
+
+    struct CollectRoleData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string roleId{ "" };
+    };
+
+    struct PostRoleData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string roleId{ "" };
+        string name{ "" };
+        __int64 permissions{ 0 };
+        string hexColorValue{ "" };
+        bool hoist{ false };
+        bool mentionable{ false };
+    };
+
+    struct PutRoleData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string userId{ "" };
+        string roleId{ "" };
+    };
+
+    struct PatchRoleData {
+        HttpAgentResources agentResources{};
+        string guildId{ "" };
+        string roleId{ "" };
+        string content{ "" };
+        string name{ "" };
+        string permissions{ "" };
+        string hexColorValue{ "" };
+        bool hoist{ false };
+        bool mentionable{ false };
+    };
+
+    struct ApplicationCommandOptionChoiceData {
+        string name{ "" };
+        int	valueInt{ 0 };
+        string valueString{ "" };
+    };
+
+    struct ApplicationCommandOptionData {
+        ApplicationCommandOptionType type{};
+        string name{ "" };
+        string description{ "" };
+        bool required{ false };
+        vector<ApplicationCommandOptionChoiceData>	choices{};
+        vector<ApplicationCommandOptionData> options{};
+    };
+
+    enum class ApplicationCommandType {
+        CHAT_INPUT = 1,
+        USER = 2,
+        MESSAGE = 3
+    };
+
+    struct ApplicationCommandData {
+        string id{ "" };
+        ApplicationCommandType type{};
+        string applicationId{ "" };
+        string guildId{ "" };
+        string name{ "" };
+        string description{ "" };
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ true };
+    };
+
+    struct PatchApplicationCommandData {
+        string name{ "" };
+        string description{ "" };
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ true };
+    };
+
+    struct PostApplicationCommandData {
+        ApplicationCommandType type{};
+        string applicationId{ "" };
+        string name{ "" };
+        string description{ "" };
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ true };
+    };
+
+    struct InteractionResponseFullData {
+        InteractionData interactionData{};
+        PostInteractionResponseData interactionResponseData{};
+    };
+
     struct PatchFollowUpMessageData {
         HttpAgentResources agentResources{};
         string applicationId{ "" };
         string interactionToken{ "" };
         string messageId{ "" };
         string content{ "" };
+        bool tts{ false };
+        vector<EmbedData> embeds{};
+        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
+        vector<ActionRowData> components{};
+        int flags{ 0 };
+        string requesterId{ "" };
     };
 
     enum class AuditLogEvent {
@@ -3572,13 +3634,6 @@ namespace DiscordCoreAPI {
         string aitags{ "" };
     };
 
-    struct CreateGuildBanData {
-        string guildId{ "" };
-        string guildMemberId{ "" };
-        int deleteMessageDays{ 0 };
-        string reason{ "" };
-    };
-
     struct BanData {
         string reason{ "" };
         UserData user{};
@@ -3787,760 +3842,6 @@ namespace DiscordCoreAPI {
             finalCommandString += value + ", ";
         }
         return finalCommandString;
-    };
-
-    // Interaction Stuff.
-
-    struct ButtonInteractionData {
-        ButtonInteractionData() {}
-        ButtonInteractionData(const ButtonInteractionData& dataPackage) {
-            this->applicationId = dataPackage.applicationId;
-            this->channelId = dataPackage.channelId;
-            this->customId = dataPackage.customId;
-            this->guildId = dataPackage.guildId;
-            this->id = dataPackage.id;
-            this->isItForHere = dataPackage.isItForHere;
-            this->member = dataPackage.member;
-            this->message = dataPackage.message;
-            this->token = dataPackage.token;
-            this->type = dataPackage.type;
-            this->user = dataPackage.user;
-        }
-        bool isItForHere{ false };
-        string token{ "" };
-        string id{ "" };
-        string applicationId{ "" };
-        InteractionType type{};
-        string customId{ "" };
-        GuildMemberData member{};
-        UserData user{};
-        MessageData message{};
-        string channelId{ "" };
-        string guildId{ "" };
-    };
-
-    struct SelectMenuInteractionData {
-        SelectMenuInteractionData() {}
-        SelectMenuInteractionData(const SelectMenuInteractionData& dataPackage) {
-            this->applicationId = dataPackage.applicationId;
-            this->channelId = dataPackage.channelId;
-            this->customId = dataPackage.customId;
-            this->guildId = dataPackage.guildId;
-            this->id = dataPackage.id;
-            this->isItForHere = dataPackage.isItForHere;
-            this->values = dataPackage.values;
-            this->member = dataPackage.member;
-            this->message = dataPackage.message;
-            this->token = dataPackage.token;
-            this->type = dataPackage.type;
-            this->user = dataPackage.user;
-        }
-        bool isItForHere{ false };
-        string token{ "" };
-        string id{ "" };
-        vector<string> values{};
-        string applicationId{ "" };
-        InteractionType type{};
-        string customId{ "" };
-        GuildMemberData member{};
-        UserData user{};
-        MessageData message{};
-        string channelId{ "" };
-        string guildId{ "" };
-
-    };
-
-    struct DeferComponentResponseData {
-        DeferComponentResponseData(InteractionData dataPackage) {
-            this->type = InteractionCallbackType::DeferredUpdateMessage;
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.applicationId = dataPackage.applicationId;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-        }
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        friend struct CreateInteractionResponseData;
-        InteractionPackageData interactionPackage{};
-        InteractionCallbackType type{};
-        InputEventResponseType responseType{};
-    };
-
-    struct CreateDeferredInteractionResponseData {
-        CreateDeferredInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->type = InteractionCallbackType::DeferredChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-            this->channelId = dataPackage.getChannelId();
-            this->guildId = dataPackage.getGuildId();
-        }
-        string requesterId;
-        InteractionCallbackType type{};
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-        string guildId{ "" };
-        string channelId{ "" };
-    };
-
-    struct CreateInteractionResponseData {
-    public:
-        CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            if (dataPackage.member.user.id != "") {
-                this->requesterId = dataPackage.message.member.user.id;
-            }
-            else {
-                this->requesterId = dataPackage.user.id;
-            }
-        }
-        CreateInteractionResponseData(ButtonInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            if (dataPackage.member.user.id != "") {
-                this->requesterId = dataPackage.message.member.user.id;
-            }
-            else {
-                this->requesterId = dataPackage.user.id;
-            }
-        }
-        CreateInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.components.push_back(actionRowData);
-            }
-            if (this->data.components.size() < 5) {
-                if (this->data.components.at(this->data.components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->data.components.at(this->data.components.size() - 1).components.push_back(component);
-                }
-                else if (this->data.components.at(this->data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.components.push_back(actionRowData);
-            }
-            if (this->data.components.size() < 5) {
-                if (this->data.components.at(this->data.components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->data.components.at(this->data.components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->data.components.at(this->data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.components.push_back(actionRowData);
-                }
-
-            }
-        }
-        InteractionApplicationCommandCallbackData data{};
-        string requesterId{ "" };
-        InteractionCallbackType type{};
-    protected:
-        CreateInteractionResponseData() {}
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        friend class Button;
-        friend class SelectMenu;
-        InteractionPackageData interactionPackage{};
-    };
-
-    struct CreateEphemeralInteractionResponseData {
-    public:
-        CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        InteractionApplicationCommandCallbackData data{};
-        string requesterId{ "" };
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        InteractionCallbackType type{};
-        InteractionPackageData interactionPackage{};
-    };
-
-    struct EditInteractionResponseData {
-        EditInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->type = InteractionCallbackType::UpdateMessage;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-
-            }
-        }
-        string content{ "" };
-        vector<EmbedData> embeds{};
-        AllowedMentionsData allowedMentions{};
-        vector<AttachmentData> attachments{};
-        vector<ActionRowData>components{};
-        int flags{ 0 };
-        InteractionCallbackType type{};
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-        string requesterId{ "" };
-    };
-
-    struct DeleteInteractionResponseData {
-        DeleteInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-        }
-        unsigned int timeDelay{ 0 };
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-    };
-
-    struct CreateFollowUpMessageData {
-        CreateFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        string content{ "" };
-        string username{ "" };
-        string avatarUrl{ "" };
-        bool tts{ false };
-        vector<EmbedData> embeds{};
-        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
-        int flags{ 0 };
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-        string requesterId{ "" };
-    };
-
-    struct EditFollowUpMessageData {
-        EditFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->messagePackage.messageId = dataPackage.getMessageId();
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        string content{ "" };
-        string username{ "" };
-        string avatarUrl{ "" };
-        bool tts{ false };
-        vector<EmbedData> embeds{};
-        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
-        int flags{ 0 };
-        string requesterId{ "" };
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-        MessagePackageData messagePackage{};
-    };
-
-    struct GetInteractionResponseData {
-        string applicationId{ "" };
-        string interactionToken{ "" };
-    };
-
-    struct DeleteFollowUpMessageData {
-        DeleteFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->messagePackage.messageId = dataPackage.getMessageId();
-        }
-        unsigned int timeDelay{ 0 };
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-        MessagePackageData messagePackage{};
-    };
-
-    struct EditMessageData {
-        EditMessageData(InputEventData dataPackage) {
-            this->channelId = dataPackage.getChannelId();
-            this->messageId = dataPackage.getMessageId();
-            this->originalMessageData = dataPackage.getMessageData();
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-
-            }
-        }
-        string content{ "" };
-        vector<EmbedData> embeds{};
-        int flags{ 0 };
-        vector<AttachmentData> attachments{};
-        AllowedMentionsData allowedMentions{};
-        MessageData originalMessageData{};
-        vector<ActionRowData> components{};
-        MessageReferenceData messageReference{};
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        friend class MessageManager;
-        friend class MessageManagerAgent;
-        string requesterId{ "" };
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    struct CreateMessageData {
-        CreateMessageData() {}
-        CreateMessageData(InputEventData dataPackage) {
-            this->channelId = dataPackage.getChannelId();
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        AllowedMentionsData allowedMentions{};
-        string content{ "" };
-        vector<EmbedData> embeds{};
-        MessageReferenceData messageReference{};
-        vector<ActionRowData> components{};
-        int nonce{ 0 };
-        bool tts{ false };
-        string channelId{ "" };
-    protected:
-        friend class MessageManager;
-        string requesterId{ "" };
-    };
-
-    struct ReplyMessageData {
-        ReplyMessageData(InputEventData dataPackage) {
-            this->replyingToMessageData = dataPackage.getMessageData();
-            this->messageReference.channelId = dataPackage.getChannelId();
-            this->messageReference.failIfNotExists = false;
-            this->messageReference.guildId = dataPackage.getGuildId();
-            this->messageReference.messageId = dataPackage.getMessageId();
-            this->requesterId = dataPackage.getRequesterId();
-        }
-        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.url = url;
-                    component.type = ComponentType::Button;
-                    this->components.at(this->components.size() - 1).components.push_back(component);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-            }
-        }
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
-            if (this->components.size() == 0) {
-                ActionRowData actionRowData;
-                this->components.push_back(actionRowData);
-            }
-            if (this->components.size() < 5) {
-                if (this->components.at(this->components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    this->components.at(this->components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->components.push_back(actionRowData);
-                }
-
-            }
-        }
-        string content{ "" };
-        bool tts{ false };
-        vector<EmbedData> embeds{};
-        AllowedMentionsData allowedMentions{};
-        MessageReferenceData messageReference{};
-        vector<ActionRowData> components{};
-        int nonce{ 0 };
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
-        friend class MessageManager;
-        friend class MessageManagerAgent;
-        MessageData replyingToMessageData{};
-        string requesterId{ "" };
-    };
-
-    // Channel Stuff.
-
-    struct EditChannelPermissionOverwritesData {
-        string allow{ "" };
-        string deny{ "" };
-        EditChannelPermissionOverwritesType type{};
-        string roleOrUserId{ "" };
-        string channelId{ "" };
-    };
-
-    struct FetchChannelData {
-        string channelId{ "" };
-    };
-
-    struct GetChannelData {
-        string channelId{ "" };
-    };
-
-    struct DeleteChannelPermissionOverwritesData {
-        string channelId{ "" };
-        string roleOrUserId{ "" };
-    };
-
-    struct FetchDMChannelData {
-        string userId{ "" };
-    };
-
-    // Message Stuff.
-
-    struct SendDMData {
-        SendDMData(InputEventData dataPackage) : messageData(dataPackage) {}
-        string channelId{ "" };
-        string userId{ "" };
-        CreateMessageData messageData{};
-    };
-
-    struct FetchPinnedMessagesData {
-        string channelId{ "" };
-    };
-
-    struct FetchMessagesData {
-        string channelId{ "" };
-        unsigned int limit{ 0 };
-        string beforeThisId{ "" };
-        string afterThisId{ "" };
-        string aroundThisId{ "" };
-    };
-
-    struct FetchMessageData {
-        string requesterId{ "" };
-        string channelId{ "" };
-        string id{ "" };
-    };
-
-    struct PinMessageData {
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    struct DeleteMessageData {
-        unsigned int timeDelay{ 0 };
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    struct DeleteMessagesBulkData {
-        string channelId{ "" };
-        vector<string> messageIds{};
-    };
-
-    // Role Stuff.
-    struct UpdateRoleData {
-        string guildId{ "" };
-        string roleId{ "" };
-        string name{ "" };
-        string permissions{ "" };
-        string hexColorValue{ "" };
-        bool hoist{ false };
-        bool mentionable{ false };
-    };
-
-    struct GetGuildRolesData {
-        string guildId{ "" };
-    };
-
-    struct FetchRoleData {
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct UpdateRolePositionData {
-        string guildId{ "" };
-        string roleId{ "" };
-        int newPosition{ 0 };
-    };
-
-    struct RemoveRoleFromGuildMemberData {
-        string guildId{ "" };
-        string userId{ "" };
-        string roleId{ "" };
-    };
-
-    struct GetRoleData {
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct RemoveRoleFromGuildData {
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct AddRoleToGuildMemberData {
-        string guildId{ "" };
-        string userId{ "" };
-        string roleId{ "" };
-    };
-
-    struct CreateRoleData {
-        string name{ "" };
-        string permissions{ "0" };
-        string hexColorValue{ "" };
-        bool hoist{ false };
-        bool mentionable{ false };
-        string guildId{ "" };
-        int position{ 0 };
     };
 };
 

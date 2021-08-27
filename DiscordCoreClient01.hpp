@@ -14,7 +14,7 @@
 #include "GuildStuff.hpp"
 #include "InteractionStuff.hpp"
 #include "EventStuff01.hpp"
-#include "SlashCommandStuff.hpp"
+#include "ApplicationCommandStuff.hpp"
 #include "InputEventStuff.hpp"
 #include "DatabaseStuff.hpp"
 #include "YouTubeStuff.hpp"
@@ -88,14 +88,14 @@ namespace DiscordCoreAPI {
 		friend class Users;
 		friend class GuildMembers;
 		friend class PermissionsConverter;
-		friend class SlashCommands;
+		friend class ApplicationCommands;
 		friend class Messages;
 		friend class Interactions;
 		friend class Reactions;
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
-		shared_ptr<SlashCommandManager> slashCommands{ nullptr };
+		shared_ptr<ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<InteractionManager> interactions{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		shared_ptr<ReactionManager> reactions{ nullptr };
@@ -147,7 +147,7 @@ namespace DiscordCoreAPI {
 			this->guildMembers = this->thisPointerBase->guildMembers;
 			this->channels = this->thisPointerBase->channels;
 			this->guilds = make_shared<GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, (shared_ptr<DiscordCoreClientBase>)DiscordCoreClient::thisPointerBase);
-			this->slashCommands = make_shared<SlashCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointerBase->currentUser->data.id);
+			this->applicationCommands = make_shared<ApplicationCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointerBase->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->thisPointerBase->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			InputEvents::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			this->discordUser = make_shared<DiscordUser>(this->thisPointerBase->currentUser->data.username, this->thisPointerBase->currentUser->data.id);
@@ -835,26 +835,26 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class SlashCommands {
+	class ApplicationCommands {
 	public:
 		static task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
-			return DiscordCoreClient::thisPointer->slashCommands->createGlobalApplicationCommandAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->applicationCommands->createGlobalApplicationCommandAsync(dataPackage);
 		}
 
 		static task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData dataPackage) {
-			return DiscordCoreClient::thisPointer->slashCommands->deleteGlobalApplicationCommandAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->applicationCommands->deleteGlobalApplicationCommandAsync(dataPackage);
 		}
 
 		static task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData dataPackage) {
-			return DiscordCoreClient::thisPointer->slashCommands->editGlobalApplicationCommandAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->applicationCommands->editGlobalApplicationCommandAsync(dataPackage);
 		}
 
 		static vector<ApplicationCommand> getGlobalApplicationCommands() {
-			return DiscordCoreClient::thisPointer->slashCommands->getGlobalApplicationCommands();
+			return DiscordCoreClient::thisPointer->applicationCommands->getGlobalApplicationCommands();
 		}
 
 		static task<void> editGlobalApplicationCommandAsync() {
-			return DiscordCoreClient::thisPointer->slashCommands->displayGlobalApplicationCommandsAsync();
+			return DiscordCoreClient::thisPointer->applicationCommands->displayGlobalApplicationCommandsAsync();
 		}
 	};
 

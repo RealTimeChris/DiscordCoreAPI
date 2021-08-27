@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<DiscordCoreInternal::GetGuildMemberData> requestGetGuildMemberBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::CollectGuildMemberData> requestCollectGuildMemberBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::GetGuildMemberRolesData> requestGetRolesBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreInternal::ModifyGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::PatchGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
 		unbounded_buffer<GuildMember> outGuildMemberBuffer{ nullptr };
 		concurrent_queue<GuildMember> guildMembersToInsert{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 			return guildMemberNew;
 		}
 
-		GuildMember patchObjectData(DiscordCoreInternal::ModifyGuildMemberData dataPackage) {
+		GuildMember patchObjectData(DiscordCoreInternal::PatchGuildMemberData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_GUILD_MEMBER;
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 					send(this->outGuildMemberBuffer, GuildMember);
 					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
-				DiscordCoreInternal::ModifyGuildMemberData dataPackage03;
+				DiscordCoreInternal::PatchGuildMemberData dataPackage03;
 				if (try_receive(this->requestPatchGuildMemberBuffer, dataPackage03)) {
 					map<string, GuildMember> cacheTemp;
 					if (try_receive(GuildMemberManagerAgent::cache, cacheTemp)) {
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 
 		task<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			DiscordCoreInternal::ModifyGuildMemberData dataPackageNew;
+			DiscordCoreInternal::PatchGuildMemberData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.deaf = dataPackage.deaf;
 			dataPackageNew.mute = dataPackage.mute;

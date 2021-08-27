@@ -34,6 +34,31 @@ namespace DiscordCoreAPI {
 			return;
 		}
 	};
+	
+	struct EditChannelPermissionOverwritesData {
+		string allow{ "" };
+		string deny{ "" };
+		EditChannelPermissionOverwritesType type{};
+		string roleOrUserId{ "" };
+		string channelId{ "" };
+	};
+
+	struct FetchChannelData {
+		string channelId{ "" };
+	};
+
+	struct GetChannelData {
+		string channelId{ "" };
+	};
+
+	struct DeleteChannelPermissionOverwritesData {
+		string channelId{ "" };
+		string roleOrUserId{ "" };
+	};
+
+	struct FetchDMChannelData {
+		string userId{ "" };
+	};
 
 	class ChannelManagerAgent : agent {
 	protected:
@@ -133,7 +158,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PUT_CHANNEL_PERMISSION_OVERWRITES;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PUT;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
-			workload.content = dataPackage.content;
+			workload.content = DiscordCoreInternal::getEditChannelPermissionOverwritesPayload(dataPackage);
 			DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
 			send(requestAgent.workSubmissionBuffer, workload);
 			requestAgent.start();
@@ -309,8 +334,10 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::PutPermissionOverwritesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
+			dataPackageNew.allow = dataPackage.allow;
+			dataPackageNew.deny = dataPackage.deny;
+			dataPackageNew.type = (DiscordCoreInternal::EditChannelPermissionOverwritesType)dataPackage.type;
 			dataPackageNew.roleOrUserId = dataPackage.roleOrUserId;
-			dataPackageNew.content = DiscordCoreInternal::getEditChannelPermissionOverwritesPayload(dataPackage);
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			send(requestAgent.requestPutChannelPermOWsBuffer, dataPackageNew);
 			requestAgent.start();
