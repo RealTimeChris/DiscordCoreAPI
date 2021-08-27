@@ -214,8 +214,57 @@ namespace DiscordCoreAPI {
             this->type = InteractionCallbackType::ChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
         }
+        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.name = emojiName;
+                    component.emoji.id = emojiId;
+                    component.label = buttonLabel;
+                    component.style = buttonStyle;
+                    component.url = url;
+                    component.type = ComponentType::Button;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+        }
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    this->components.at(this->components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+
+            }
+        }
         InteractionApplicationCommandCallbackData data{};
         string requesterId{ "" };
+        vector<ActionRowData>components{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;

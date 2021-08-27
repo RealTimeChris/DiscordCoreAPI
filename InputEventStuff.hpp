@@ -102,6 +102,7 @@ namespace DiscordCoreAPI {
 			CreateInteractionResponseData newData;
 			newData.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			newData.interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+			newData.data.components = dataPackage.components;
 			newData.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 			newData.data = dataPackage.data;
 			newData.data.flags = 64;
