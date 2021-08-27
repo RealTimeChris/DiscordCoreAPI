@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
             co_await resume_background();
             try {
                 shared_ptr<unbounded_buffer<MessageData>> bufferBlock = make_shared<unbounded_buffer<MessageData>>();
-                InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.eventData.getInteractionId(), bufferBlock));
+                DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.eventData.getInteractionId(), bufferBlock));
                 send(*bufferBlock, dataPackage.eventData.getMessageData());
                 if (dataPackage.eventData.eventType == InputEventType::REGULAR_MESSAGE || dataPackage.eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                     CommandData commandData(dataPackage.eventData);
@@ -144,17 +144,17 @@ namespace DiscordCoreAPI {
 
         static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
             map<string, GuildMember> guildMemberMap;
-            if (try_receive(GuildMemberManagerAgent::cache, guildMemberMap)) {
+            if (try_receive(DiscordCoreInternal::GuildMemberManagerAgent::cache, guildMemberMap)) {
                 if (guildMemberMap.contains(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId)) {
                     GuildMember guildMember = guildMemberMap.at(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId);
                     guildMemberMap.erase(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId);
                     guildMember.data.voiceData = dataPackage.voiceStateData;
                     guildMemberMap.insert(std::make_pair(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId, guildMember));
                 }
-                send(GuildMemberManagerAgent::cache, guildMemberMap);
+                send(DiscordCoreInternal::GuildMemberManagerAgent::cache, guildMemberMap);
             }
             map<string, Guild> guildMap;
-            if (try_receive(GuildManagerAgent::cache, guildMap)) {
+            if (try_receive(DiscordCoreInternal::GuildManagerAgent::cache, guildMap)) {
                 if (dataPackage.voiceStateData.userId == EventHandler::discordCoreClient->currentUser->data.id) {
                     if (dataPackage.voiceStateData.channelId == "") {
                         Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
                         guildMap.insert(make_pair(dataPackage.voiceStateData.guildId, guild));
                     }
                 }
-                send(GuildManagerAgent::cache, guildMap);
+                send(DiscordCoreInternal::GuildManagerAgent::cache, guildMap);
             }
         }
     };

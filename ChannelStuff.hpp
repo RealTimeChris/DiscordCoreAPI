@@ -21,20 +21,19 @@ namespace DiscordCoreAPI {
 
 		Channel() {};
 
-	protected:
-		friend class DiscordCoreClient;
-		friend class ChannelManagerAgent;
-		friend class ChannelManager;
-		friend class Guild;
-		friend class UserManagerAgent;
-
 		Channel(ChannelData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = dataNew;
 			this->discordCoreClient = discordCoreClientNew;
 			return;
 		}
+
+	protected:
+		friend class DiscordCoreClient;
+		friend class ChannelManager;
+		friend class Guild;
+		friend class UserManagerAgent;
 	};
-	
+
 	struct EditChannelPermissionOverwritesData {
 		string allow{ "" };
 		string deny{ "" };
@@ -59,14 +58,16 @@ namespace DiscordCoreAPI {
 	struct FetchDMChannelData {
 		string userId{ "" };
 	};
+};
 
+namespace DiscordCoreInternal	{
 	class ChannelManagerAgent : agent {
 	protected:
-		friend class DiscordCoreClient;
+		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class Guild;
 		friend class ChannelManager;
 
-		static overwrite_buffer<map<string, Channel>> cache;
+		static overwrite_buffer<map<string, DiscordCoreAPI::Channel>> cache;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 
 		unbounded_buffer<DiscordCoreInternal::DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
@@ -74,14 +75,14 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<DiscordCoreInternal::CollectChannelData> requestCollectChannelBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::GetDMChannelData>requestGetDMChannelBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreInternal::GetChannelData> requestGetChannelBuffer{ nullptr };
-		unbounded_buffer<Channel> outChannelBuffer{ nullptr };
-		concurrent_queue<Channel>channelsToInsert{};
+		unbounded_buffer<DiscordCoreAPI::Channel> outChannelBuffer{ nullptr };
+		concurrent_queue<DiscordCoreAPI::Channel>channelsToInsert{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 
 		DiscordCoreInternal::HttpAgentResources agentResources{};
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 
-		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> coreClientNew)
+		ChannelManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
 			:agent(*ChannelManagerAgent::threadContext->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
@@ -103,7 +104,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		Channel getObjectData(DiscordCoreInternal::GetChannelData dataPackage) {
+		DiscordCoreAPI::Channel getObjectData(DiscordCoreInternal::GetChannelData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_CHANNEL;
@@ -121,13 +122,13 @@ namespace DiscordCoreAPI {
 			else {
 				cout << "ChannelManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			ChannelData channelData;
+			DiscordCoreAPI::ChannelData channelData;
 			DiscordCoreInternal::DataParser::parseObject(returnData.data, &channelData);
-			Channel channelNew(channelData, this->discordCoreClient);
+			DiscordCoreAPI::Channel channelNew(channelData, this->discordCoreClient);
 			return channelNew;
 		}
 
-		Channel postObjectData(DiscordCoreInternal::GetDMChannelData dataPackage) {
+		DiscordCoreAPI::Channel postObjectData(DiscordCoreInternal::GetDMChannelData dataPackage) {
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_USER_DM;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
@@ -147,9 +148,9 @@ namespace DiscordCoreAPI {
 			else {
 				cout << "ChannelManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			ChannelData channelData;
+			DiscordCoreAPI::ChannelData channelData;
 			DiscordCoreInternal::DataParser::parseObject(returnData.data, &channelData);
-			Channel channelNew(channelData, this->discordCoreClient);
+			DiscordCoreAPI::Channel channelNew(channelData, this->discordCoreClient);
 			return channelNew;
 		}
 
@@ -200,23 +201,23 @@ namespace DiscordCoreAPI {
 			try {
 				DiscordCoreInternal::CollectChannelData dataPackage01;
 				if (try_receive(this->requestCollectChannelBuffer, dataPackage01)) {
-					map<string, Channel> cacheTemp;
+					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage01.channelId)) {
-							Channel channel = cacheTemp.at(dataPackage01.channelId);
+							DiscordCoreAPI::Channel channel = cacheTemp.at(dataPackage01.channelId);
 							send(this->outChannelBuffer, channel);
 						}
 					}
 				}
 				DiscordCoreInternal::GetChannelData dataPackage02;
 				if (try_receive(this->requestGetChannelBuffer, dataPackage02)) {
-					map<string, Channel> cacheTemp;
+					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(dataPackage02.channelId)) {
 							cacheTemp.erase(dataPackage02.channelId);
 						}
 					}
-					Channel channel = getObjectData (dataPackage02);
+					DiscordCoreAPI::Channel channel = getObjectData (dataPackage02);
 					cacheTemp.insert(make_pair(dataPackage02.channelId, channel));
 					send(this->outChannelBuffer, channel);
 					send(cache, cacheTemp);
@@ -231,8 +232,8 @@ namespace DiscordCoreAPI {
 				}
 				DiscordCoreInternal::GetDMChannelData dataPackage05;
 				if (try_receive(this->requestGetDMChannelBuffer, dataPackage05)) {
-					Channel channel = postObjectData(dataPackage05);
-					map<string, Channel> cacheTemp;
+					DiscordCoreAPI::Channel channel = postObjectData(dataPackage05);
+					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(channel.data.id)) {
 							cacheTemp.erase(channel.data.id);
@@ -252,10 +253,10 @@ namespace DiscordCoreAPI {
 						send(cache, cacheTemp);
 					}
 				}
-				ChannelData dataPackage06;
-				Channel channelNew(dataPackage06, this->discordCoreClient);
+				DiscordCoreAPI::ChannelData dataPackage06;
+				DiscordCoreAPI::Channel channelNew(dataPackage06, this->discordCoreClient);
 				while (this->channelsToInsert.try_pop(channelNew)) {
-					map<string, Channel> cacheTemp;
+					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
 						if (cacheTemp.contains(channelNew.data.id)) {
 							cacheTemp.erase(channelNew.data.id);
@@ -275,13 +276,13 @@ namespace DiscordCoreAPI {
 	class ChannelManager {
 	public:
 
-		ChannelManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
+		ChannelManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->threadContext = threadContextNew;
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
 		}
 
-		task<Channel> fetchAsync(FetchChannelData dataPackage) {
+		task<DiscordCoreAPI::Channel> fetchAsync(DiscordCoreAPI::FetchChannelData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -291,13 +292,13 @@ namespace DiscordCoreAPI {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::fetchAsync");
-			ChannelData channelData;
-			Channel channel(channelData, this->discordCoreClient);
+			DiscordCoreAPI::ChannelData channelData;
+			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
 			co_return channel;
 		}
 
-		task<Channel> getChannelAsync(GetChannelData dataPackage) {
+		task<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::CollectChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -307,13 +308,13 @@ namespace DiscordCoreAPI {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::getChannelAsync");
-			ChannelData channelData;
-			Channel channel(channelData, this->discordCoreClient);
+			DiscordCoreAPI::ChannelData channelData;
+			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
 			co_return channel;
 		}
 
-		task<Channel> fetchDMChannelAsync(FetchDMChannelData dataPackage) {
+		task<DiscordCoreAPI::Channel> fetchDMChannelAsync(DiscordCoreAPI::FetchDMChannelData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::GetDMChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -323,13 +324,13 @@ namespace DiscordCoreAPI {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::fetchDMChannelAsync");
-			ChannelData channelData;
-			Channel channel(channelData, this->discordCoreClient);
+			DiscordCoreAPI::ChannelData channelData;
+			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
 			co_return channel;
 		}
 
-		task<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage) {
+		task<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::PutPermissionOverwritesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -346,7 +347,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		task<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage) {
+		task<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DiscordCoreInternal::DeleteChannelPermissionOverwritesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -360,23 +361,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		~ChannelManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		friend class Guild;
-		friend class ChannelManagerAgent;
-		friend class DiscordCoreClient;
-		friend class Channels;
-		friend class DiscordCoreClientBase;
-		friend class EventHandler;
-
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-		DiscordCoreInternal::HttpAgentResources agentResources{};
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-
-		task<void> insertChannelAsync(Channel channel) {
+		task<void> insertChannelAsync(DiscordCoreAPI::Channel channel) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			requestAgent.channelsToInsert.push(channel);
@@ -388,7 +373,7 @@ namespace DiscordCoreAPI {
 
 		task<void> removeChannelAsync(string channelId) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-			map<string, Channel> cache;
+			map<string, DiscordCoreAPI::Channel> cache;
 			try_receive(ChannelManagerAgent::cache, cache);
 			if (cache.contains(channelId)) {
 				cache.erase(channelId);
@@ -396,9 +381,24 @@ namespace DiscordCoreAPI {
 			send(ChannelManagerAgent::cache, cache);
 			co_return;
 		}
+
+		~ChannelManager() {
+			this->threadContext->releaseGroup();
+		}
+
+	protected:
+		friend class Guild;
+		friend class ChannelManagerAgent;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreClientBase;
+		friend class EventHandler;
+
+		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 				
 	};
-	overwrite_buffer<map<string, Channel>> ChannelManagerAgent::cache{ nullptr };
+	overwrite_buffer<map<string, DiscordCoreAPI::Channel>> ChannelManagerAgent::cache{ nullptr };
 	shared_ptr<DiscordCoreInternal::ThreadContext> ChannelManagerAgent::threadContext{ nullptr };
 }
 #endif

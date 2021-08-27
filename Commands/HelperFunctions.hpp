@@ -303,7 +303,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        static string computeBasePermissions(GuildMember guildMember, shared_ptr<GuildManager> guilds, shared_ptr<RoleManager> roles) {
+        static string computeBasePermissions(GuildMember guildMember, shared_ptr<DiscordCoreInternal::GuildManager> guilds, shared_ptr<DiscordCoreInternal::RoleManager> roles) {
             Guild guild = guilds->getGuildAsync({ guildMember.data.guildId }).get();
 
             if (guild.data.ownerID == guildMember.data.user.id) {

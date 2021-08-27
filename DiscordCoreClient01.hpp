@@ -64,14 +64,14 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->interactions->~InteractionManager();
 			SelectMenuManager::cleanup();
 			ButtonManager::cleanup();
-			InteractionManagerAgent::cleanup();
-			MessageManagerAgent::cleanup();
-			GuildManagerAgent::cleanup();
-			RoleManagerAgent::cleanup();
-			UserManagerAgent::cleanup();
-			ReactionManagerAgent::cleanup();
-			ChannelManagerAgent::cleanup();
-			GuildMemberManagerAgent::cleanup();
+			DiscordCoreInternal::InteractionManagerAgent::cleanup();
+			DiscordCoreInternal::MessageManagerAgent::cleanup();
+			DiscordCoreInternal::GuildManagerAgent::cleanup();
+			DiscordCoreInternal::RoleManagerAgent::cleanup();
+			DiscordCoreInternal::UserManagerAgent::cleanup();
+			DiscordCoreInternal::ReactionManagerAgent::cleanup();
+			DiscordCoreInternal::ChannelManagerAgent::cleanup();
+			DiscordCoreInternal::GuildMemberManagerAgent::cleanup();
 			DiscordCoreClient::thisPointer->mainThreadContext->releaseGroup();
 		}
 
@@ -96,12 +96,12 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
 		shared_ptr<ApplicationCommandManager> applicationCommands{ nullptr };
-		shared_ptr<InteractionManager> interactions{ nullptr };
+		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		shared_ptr<ReactionManager> reactions{ nullptr };
+		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
 		hstring baseURL{ L"https://discord.com/api/v9" };
-		shared_ptr<MessageManager> messages{ nullptr };
-		shared_ptr<GuildManager> guilds{ nullptr };
+		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
+		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		bool doWeQuit{ false };
 		
 		task<void> initialize() {
@@ -127,26 +127,26 @@ namespace DiscordCoreAPI {
 			requestAgent.getError("DiscordCoreClient::initialize()");
 			DiscordCoreInternal::HttpData returnData;
 			try_receive(requestAgent.workReturnBuffer, returnData);
-			GuildMemberManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			ChannelManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			ReactionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			UserManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			RoleManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			GuildManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::GuildMemberManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::ChannelManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::ReactionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::UserManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::RoleManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::GuildManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			ButtonManager::initialize(this->interactions);
 			SelectMenuManager::initialize(this->interactions);
 			this->thisPointerBase->initialize(this->agentResources, this->thisPointer, this->pWebSocketConnectionAgent);
 			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
-			this->interactions = make_shared<InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			this->reactions = make_shared<ReactionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), DiscordCoreClient::thisPointer);
+			this->interactions = make_shared<DiscordCoreInternal::InteractionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->reactions = make_shared<DiscordCoreInternal::ReactionManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), DiscordCoreClient::thisPointer);
 			this->users = this->thisPointerBase->users;
-			this->messages = make_shared<MessageManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), DiscordCoreClient::thisPointer);
+			this->messages = make_shared<DiscordCoreInternal::MessageManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), DiscordCoreClient::thisPointer);
 			this->roles = this->thisPointerBase->roles;
 			this->guildMembers = this->thisPointerBase->guildMembers;
 			this->channels = this->thisPointerBase->channels;
-			this->guilds = make_shared<GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, (shared_ptr<DiscordCoreClientBase>)DiscordCoreClient::thisPointerBase);
+			this->guilds = make_shared<DiscordCoreInternal::GuildManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), (shared_ptr<DiscordCoreClient>)DiscordCoreClient::thisPointer, (shared_ptr<DiscordCoreClientBase>)DiscordCoreClient::thisPointerBase);
 			this->applicationCommands = make_shared<ApplicationCommandManager>(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointerBase->currentUser->data.id);
 			DatabaseManagerAgent::initialize(this->thisPointerBase->currentUser->data.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			InputEvents::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
@@ -464,8 +464,8 @@ namespace DiscordCoreAPI {
 					{
 						MessageData messageData;
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
-						if (InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
-							send(*InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
+						if (DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
+							send(*DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
 						}
 						Message message(messageData, DiscordCoreClient::thisPointer);
 						OnMessageCreationData messageCreationData;

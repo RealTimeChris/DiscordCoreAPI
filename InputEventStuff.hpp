@@ -19,7 +19,7 @@ namespace DiscordCoreAPI {
 	public:
 		InputEvents() {}
 
-		static void initialize(shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<MessageManager> messagesNew, shared_ptr<InteractionManager> interactionsNew) {
+		static void initialize(shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreInternal::MessageManager> messagesNew, shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
 			InputEvents::messages = messagesNew;
 			InputEvents::discordCoreClient = discordCoreClientNew;
 			InputEvents::discordCoreClientBase = discordCoreClientBaseNew;
@@ -199,13 +199,13 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		static shared_ptr<MessageManager> messages;
-		static shared_ptr<InteractionManager> interactions;
+		static shared_ptr<DiscordCoreInternal::MessageManager> messages;
+		static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
 		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
 	};
-	shared_ptr<MessageManager> InputEvents::messages{ nullptr };
-	shared_ptr<InteractionManager> InputEvents::interactions{ nullptr };
+	shared_ptr<DiscordCoreInternal::MessageManager> InputEvents::messages{ nullptr };
+	shared_ptr<DiscordCoreInternal::InteractionManager> InputEvents::interactions{ nullptr };
 	shared_ptr<DiscordCoreClientBase> InputEvents::discordCoreClientBase{ nullptr };
 	shared_ptr< DiscordCoreClient> InputEvents::discordCoreClient{ nullptr };
 }

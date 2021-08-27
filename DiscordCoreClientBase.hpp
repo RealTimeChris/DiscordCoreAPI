@@ -26,10 +26,10 @@ namespace DiscordCoreAPI {
 		static shared_ptr<BotUser> currentUser;
 
 		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgentNew) {
-			this->guildMembers = make_shared<GuildMemberManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
-			this->channels = make_shared<ChannelManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
-			this->roles = make_shared<RoleManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
-			this->users = make_shared<UserManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
+			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
+			this->channels = make_shared<DiscordCoreInternal::ChannelManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
+			this->roles = make_shared<DiscordCoreInternal::RoleManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
+			this->users = make_shared<DiscordCoreInternal::UserManager>(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClientNew);
 			DiscordCoreClientBase::currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, discordCoreClientNew, pWebSocketConnectionAgentNew);
 			DiscordCoreClientBase::pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
 		}
@@ -54,10 +54,10 @@ namespace DiscordCoreAPI {
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData*>>> audioBuffersMap;
 		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
-		shared_ptr<GuildMemberManager> guildMembers{ nullptr };
-		shared_ptr<ChannelManager> channels{ nullptr };
-		shared_ptr<RoleManager> roles{ nullptr };
-		shared_ptr<UserManager> users{ nullptr };
+		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
+		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
+		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
+		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 		hstring botToken{ L"" };
 	};
 	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };

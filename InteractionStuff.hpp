@@ -104,11 +104,9 @@ namespace DiscordCoreAPI {
         }
         string requesterId;
         InteractionCallbackType type{};
-    protected:
-        friend class InteractionManagerAgent;
-        friend class InteractionManager;
-        friend class InputEvents;
         InteractionPackageData interactionPackage{};
+    protected:
+        friend class InputEvents;
         string guildId{ "" };
         string channelId{ "" };
     };
@@ -195,6 +193,7 @@ namespace DiscordCoreAPI {
         InteractionApplicationCommandCallbackData data{};
         string requesterId{ "" };
         InteractionCallbackType type{};
+        InteractionPackageData interactionPackage{};
     protected:
         CreateInteractionResponseData() {}
         friend class InteractionManagerAgent;
@@ -202,7 +201,6 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
         friend class Button;
         friend class SelectMenu;
-        InteractionPackageData interactionPackage{};
     };
 
     struct CreateEphemeralInteractionResponseData {
@@ -336,11 +334,11 @@ namespace DiscordCoreAPI {
         vector<ActionRowData>components{};
         int flags{ 0 };
         InteractionCallbackType type{};
+        InteractionPackageData interactionPackage{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage{};
         string requesterId{ "" };
     };
 
@@ -351,11 +349,11 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
         }
         unsigned int timeDelay{ 0 };
+        InteractionPackageData interactionPackage{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage{};
     };
 
     struct CreateFollowUpMessageData {
@@ -420,11 +418,11 @@ namespace DiscordCoreAPI {
         DiscordCoreInternal::AllowedMentionsData allowedMentions{};
         vector<ActionRowData> components{};
         int flags{ 0 };
+        InteractionPackageData interactionPackage{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage{};
         string requesterId{ "" };
     };
 
@@ -492,12 +490,12 @@ namespace DiscordCoreAPI {
         vector<ActionRowData> components{};
         int flags{ 0 };
         string requesterId{ "" };
+        InteractionPackageData interactionPackage{};
+        MessagePackageData messagePackage{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-        MessagePackageData messagePackage{};
     };
 
     struct GetInteractionResponseData {
@@ -513,18 +511,20 @@ namespace DiscordCoreAPI {
             this->messagePackage.messageId = dataPackage.getMessageId();
         }
         unsigned int timeDelay{ 0 };
+        InteractionPackageData interactionPackage{};
+        MessagePackageData messagePackage{};
     protected:
         friend class InteractionManagerAgent;
         friend class InteractionManager;
         friend class InputEvents;
-        InteractionPackageData interactionPackage{};
-        MessagePackageData messagePackage{};
     };
+};
 
+namespace DiscordCoreInternal {
     class InteractionManagerAgent : public agent {
     public:
 
-        static map<string, shared_ptr<unbounded_buffer<MessageData>>> collectMessageDataBuffers;
+        static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
@@ -535,8 +535,8 @@ namespace DiscordCoreAPI {
         unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::PatchFollowUpMessageData> requestPatchFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
-        unbounded_buffer<InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
-        unbounded_buffer<MessageData> outInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
         DiscordCoreInternal::HttpAgentResources agentResources{};
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
@@ -561,7 +561,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
+        DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
@@ -584,7 +584,7 @@ namespace DiscordCoreAPI {
             return interactionResponseData;
         }
 
-        MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage) {
+        DiscordCoreAPI::MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
@@ -608,7 +608,7 @@ namespace DiscordCoreAPI {
             return messageData;
         }
 
-        MessageData patchObjectData(DiscordCoreInternal::PatchInteractionResponseData dataPackage) {
+        DiscordCoreAPI::MessageData patchObjectData(DiscordCoreInternal::PatchInteractionResponseData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
@@ -627,7 +627,7 @@ namespace DiscordCoreAPI {
             else {
                 cout << "InteractionManagerAgent::patchObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            MessageData messageData;
+            DiscordCoreAPI::MessageData messageData;
             DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
             return messageData;
         }
@@ -676,7 +676,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        MessageData postObjectData(DiscordCoreInternal::PostFollowUpMessageData dataPackage) {
+        DiscordCoreAPI::MessageData postObjectData(DiscordCoreInternal::PostFollowUpMessageData dataPackage) {
             DiscordCoreInternal::HttpWorkload workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
@@ -695,7 +695,7 @@ namespace DiscordCoreAPI {
             else {
                 cout << "InteractionManagerAgent::postObjectData_02 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            MessageData messageData;
+            DiscordCoreAPI::MessageData messageData;
             DiscordCoreInternal::DataParser::parseObject(returnData.data, &messageData);
             return messageData;
         }
@@ -774,7 +774,7 @@ namespace DiscordCoreAPI {
             try {
                 DiscordCoreInternal::PatchInteractionResponseData dataPackage01;
                 if (try_receive(this->requestPatchInteractionResponseBuffer, dataPackage01)) {
-                    MessageData messageData = patchObjectData(dataPackage01);
+                    DiscordCoreAPI::MessageData messageData = patchObjectData(dataPackage01);
                     send(this->outInteractionResponseBuffer, messageData);
                 }
                 DiscordCoreInternal::PostInteractionResponseData dataPackage02;
@@ -783,7 +783,7 @@ namespace DiscordCoreAPI {
                 }
                 DiscordCoreInternal::PostFollowUpMessageData dataPackage03;
                 if (try_receive(this->requestPostFollowUpMessageBuffer, dataPackage03)) {
-                    MessageData messageData = postObjectData(dataPackage03);
+                    DiscordCoreAPI::MessageData messageData = postObjectData(dataPackage03);
                     send(this->outInteractionResponseBuffer, messageData);
                 }
                 DiscordCoreInternal::DeleteInteractionResponseData dataPackage04;
@@ -792,7 +792,7 @@ namespace DiscordCoreAPI {
                 }
                 DiscordCoreInternal::PatchFollowUpMessageData dataPackage05;
                 if (try_receive(this->requestPatchFollowUpMessageBuffer, dataPackage05)) {
-                    MessageData messageData = patchObjectData(dataPackage05);
+                    DiscordCoreAPI::MessageData messageData = patchObjectData(dataPackage05);
                     send(this->outInteractionResponseBuffer, messageData);
                 }
                 DiscordCoreInternal::PostDeferredInteractionResponseData dataPackage06;
@@ -825,7 +825,7 @@ namespace DiscordCoreAPI {
             this->threadContext = threadContextNew;
         }
 
-        task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
+        task<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostDeferredInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
@@ -840,7 +840,7 @@ namespace DiscordCoreAPI {
             co_return;
         }
 
-        task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
+        task<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
             co_await resume_background();
             DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
@@ -854,22 +854,22 @@ namespace DiscordCoreAPI {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::createInteractionResponseAsync");
-            MessageData messageData;
-            if (dataPackage.type == InteractionCallbackType::ChannelMessage || dataPackage.type == InteractionCallbackType::ChannelMessageWithSource) {
+            DiscordCoreAPI::MessageData messageData;
+            if (dataPackage.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessage || dataPackage.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessageWithSource) {
                 if (InteractionManagerAgent::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
-                    shared_ptr<unbounded_buffer<MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
+                    shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
                     try {
                         messageData = receive(*messageBlock, 1000);
                     }
                     catch (exception&) {};
                 }
-                
+
             }
             InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
             co_return messageData;
         }
 
-        task<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
+        task<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::GetInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.applicationId;
@@ -880,12 +880,12 @@ namespace DiscordCoreAPI {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::getInteractionResponseAsync");
-            InteractionResponseData outData;
+            DiscordCoreAPI::InteractionResponseData outData;
             try_receive(requestAgent.outInteractionresponseDataBuffer, outData);
             co_return outData;
         }
 
-        task<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
+        task<DiscordCoreAPI::MessageData> editInteractionResponseAsync(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PatchInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -910,12 +910,12 @@ namespace DiscordCoreAPI {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::editInteractionResponseAsync");
-            MessageData messageData;
+            DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_return messageData;
         }
 
-        task<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
+        task<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::DeleteInteractionResponseData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -930,7 +930,7 @@ namespace DiscordCoreAPI {
             co_return;
         }
 
-        task<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
+        task<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -952,12 +952,12 @@ namespace DiscordCoreAPI {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::createFollowUpMessageAsync");
-            MessageData messageData;
+            DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_return messageData;
         }
 
-        task<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
+        task<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PatchFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -981,12 +981,12 @@ namespace DiscordCoreAPI {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::editFollowUpMessageAsync");
-            MessageData messageData;
+            DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_return messageData;
         }
 
-        task<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
+        task<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage) {
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::DeleteFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -1008,11 +1008,18 @@ namespace DiscordCoreAPI {
 
     protected:
         friend class InteractionManagerAgent;
-        friend class DiscordCoreClient;
+        friend class DiscordCoreAPI::DiscordCoreClient;
+        friend class Interactions;
 
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
         DiscordCoreInternal::HttpAgentResources agentResources{};
     };
+
+    map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
+    shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
+};
+
+namespace DiscordCoreAPI {
 
     struct SelectMenuResponseData {
         string selectionId{ "" };
@@ -1024,17 +1031,17 @@ namespace DiscordCoreAPI {
 
     class SelectMenuManager : public agent {
     public:
-        static map<string, unbounded_buffer<SelectMenuInteractionData>*>selectMenuInteractionBufferMap;
+        static map<string, unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>*>selectMenuInteractionBufferMap;
 
         SelectMenuManager(InputEventData dataPackage) : agent(*SelectMenuManager::threadContext->schedulerGroup) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
-            this->selectMenuIncomingInteractionBuffer = new unbounded_buffer<SelectMenuInteractionData>;
+            this->selectMenuIncomingInteractionBuffer = new unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>;
             SelectMenuManager::selectMenuInteractionBufferMap.insert(make_pair(this->channelId + this->messageId, this->selectMenuIncomingInteractionBuffer));
         }
 
-        static void initialize(shared_ptr<InteractionManager> interactionsNew) {
+        static void initialize(shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
             SelectMenuManager::interactions = interactionsNew;
             SelectMenuManager::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
         }
@@ -1068,11 +1075,11 @@ namespace DiscordCoreAPI {
 
     protected:
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-        static shared_ptr<InteractionManager> interactions;
-        unbounded_buffer<SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
+        static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
+        unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
         vector<SelectMenuResponseData> responseVector{};
-        SelectMenuInteractionData interactionData{};
+        DiscordCoreAPI::SelectMenuInteractionData interactionData{};
         bool getButtonDataForAll{ false };
         unsigned int maxTimeInMs{ 0 };
         string selectMenuId{ "" };
@@ -1090,11 +1097,11 @@ namespace DiscordCoreAPI {
             try {
                 while (doWeQuit == false) {
                     if (this->getButtonDataForAll == false) {
-                        SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
+                        DiscordCoreAPI::SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
                         if (selectMenuInteractionData.user.id != this->userId) {
-                            CreateInteractionResponseData createResponseData(selectMenuInteractionData);
+                            DiscordCoreAPI::CreateInteractionResponseData createResponseData(selectMenuInteractionData);
                             createResponseData.data.flags = 64;
-                            EmbedData embedData;
+                            DiscordCoreAPI::EmbedData embedData;
                             embedData.setColor("FEFEFE");
                             embedData.setTitle("__**Permission Issue:**__");
                             embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
@@ -1106,8 +1113,8 @@ namespace DiscordCoreAPI {
                             this->interactionData = selectMenuInteractionData;
                             this->values = selectMenuInteractionData.values;
                             this->selectMenuId = selectMenuInteractionData.customId;
-                            CreateInteractionResponseData dataPackage(selectMenuInteractionData);
-                            dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
+                            DiscordCoreAPI::CreateInteractionResponseData dataPackage(selectMenuInteractionData);
+                            dataPackage.type = DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage;
                             SelectMenuManager::interactions->createInteractionResponseAsync(dataPackage);
                             SelectMenuResponseData response;
                             response.selectionId = this->selectMenuId;
@@ -1120,7 +1127,7 @@ namespace DiscordCoreAPI {
                         }
                     }
                     else {
-                        SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
+                        DiscordCoreAPI::SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenuManager::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
                         this->interactionData = selectMenuInteractionData;
                         this->selectMenuId = selectMenuInteractionData.customId;
                         this->values = selectMenuInteractionData.values;
@@ -1131,8 +1138,8 @@ namespace DiscordCoreAPI {
                         response.values = this->values;
                         response.userId = selectMenuInteractionData.user.id;
                         this->responseVector.push_back(response);
-                        CreateInteractionResponseData dataPackage(selectMenuInteractionData);
-                        dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
+                        DiscordCoreAPI::CreateInteractionResponseData dataPackage(selectMenuInteractionData);
+                        dataPackage.type = DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage;
                         SelectMenuManager::interactions->createInteractionResponseAsync(dataPackage);
                     }
                 }
@@ -1158,17 +1165,17 @@ namespace DiscordCoreAPI {
 
     class ButtonManager : public agent {
     public:
-        static map<string, unbounded_buffer<ButtonInteractionData>*> buttonInteractionBufferMap;
+        static map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> buttonInteractionBufferMap;
 
-        ButtonManager(InputEventData dataPackage) : agent(*ButtonManager::threadContext->scheduler) {
+        ButtonManager(DiscordCoreAPI::InputEventData dataPackage) : agent(*ButtonManager::threadContext->scheduler) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
-            this->buttonIncomingInteractionBuffer = new unbounded_buffer<ButtonInteractionData>;
+            this->buttonIncomingInteractionBuffer = new unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>;
             ButtonManager::buttonInteractionBufferMap.insert(make_pair(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer));
         }
 
-        static void initialize(shared_ptr<InteractionManager> interactionsNew) {
+        static void initialize(shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
             ButtonManager::interactions = interactionsNew;
             ButtonManager::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
         }
@@ -1202,11 +1209,11 @@ namespace DiscordCoreAPI {
 
     protected:
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
-        static shared_ptr<InteractionManager> interactions;
-        unbounded_buffer<ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
+        static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
+        unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};
-        ButtonInteractionData interactionData{};
+        DiscordCoreAPI::ButtonInteractionData interactionData{};
         bool getButtonDataForAll{ false };
         unsigned int maxTimeInMs{ 0 };
         string channelId{ "" };
@@ -1223,11 +1230,11 @@ namespace DiscordCoreAPI {
             try {
                 while (doWeQuit == false) {
                     if (this->getButtonDataForAll == false) {
-                        ButtonInteractionData buttonInteractionData = receive(ButtonManager::buttonIncomingInteractionBuffer, this->maxTimeInMs);
+                        DiscordCoreAPI::ButtonInteractionData buttonInteractionData = receive(ButtonManager::buttonIncomingInteractionBuffer, this->maxTimeInMs);
                         if (buttonInteractionData.user.id != this->userId) {
-                            CreateInteractionResponseData createResponseData(buttonInteractionData);
+                            DiscordCoreAPI::CreateInteractionResponseData createResponseData(buttonInteractionData);
                             createResponseData.data.flags = 64;
-                            EmbedData embedData;
+                            DiscordCoreAPI::EmbedData embedData;
                             embedData.setColor("FEFEFE");
                             embedData.setTitle("__**Permission Issue:**__");
                             embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
@@ -1238,8 +1245,8 @@ namespace DiscordCoreAPI {
                         else {
                             this->interactionData = buttonInteractionData;
                             this->buttonId = buttonInteractionData.customId;
-                            CreateInteractionResponseData dataPackage(buttonInteractionData);
-                            dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
+                            DiscordCoreAPI::CreateInteractionResponseData dataPackage(buttonInteractionData);
+                            dataPackage.type = DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage;
                             ButtonManager::interactions->createInteractionResponseAsync(dataPackage);
                             ButtonResponseData response;
                             response.buttonId = this->buttonId;
@@ -1251,7 +1258,7 @@ namespace DiscordCoreAPI {
                         }
                     }
                     else {
-                        ButtonInteractionData buttonInteractionData = receive(ButtonManager::buttonIncomingInteractionBuffer, this->maxTimeInMs);
+                        DiscordCoreAPI::ButtonInteractionData buttonInteractionData = receive(ButtonManager::buttonIncomingInteractionBuffer, this->maxTimeInMs);
                         this->interactionData = buttonInteractionData;
                         this->buttonId = buttonInteractionData.customId;
                         ButtonResponseData response;
@@ -1260,8 +1267,8 @@ namespace DiscordCoreAPI {
                         response.messageId = this->messageId;
                         response.userId = buttonInteractionData.user.id;
                         this->responseVector.push_back(response);
-                        CreateInteractionResponseData dataPackage(buttonInteractionData);
-                        dataPackage.type = InteractionCallbackType::DeferredUpdateMessage;
+                        DiscordCoreAPI::CreateInteractionResponseData dataPackage(buttonInteractionData);
+                        dataPackage.type = DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage;
                         ButtonManager::interactions->createInteractionResponseAsync(dataPackage);
                     }
                 }
@@ -1278,13 +1285,11 @@ namespace DiscordCoreAPI {
             }
         }
     };
-    map<string, unbounded_buffer<ButtonInteractionData>*> ButtonManager::buttonInteractionBufferMap{};
+    map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> ButtonManager::buttonInteractionBufferMap{};
     shared_ptr<DiscordCoreInternal::ThreadContext> ButtonManager::threadContext{ nullptr };
-    shared_ptr<InteractionManager> ButtonManager::interactions{ nullptr };
-    map<string, unbounded_buffer<SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionBufferMap{};
+    shared_ptr<DiscordCoreInternal::InteractionManager> ButtonManager::interactions{ nullptr };
+    map<string, unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>*> SelectMenuManager::selectMenuInteractionBufferMap{};
     shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenuManager::threadContext{ nullptr };
-    shared_ptr<InteractionManager> SelectMenuManager::interactions{ nullptr };
-    map<string, shared_ptr<unbounded_buffer<MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
-    shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
+    shared_ptr<DiscordCoreInternal::InteractionManager> SelectMenuManager::interactions{ nullptr };
 };
 #endif
