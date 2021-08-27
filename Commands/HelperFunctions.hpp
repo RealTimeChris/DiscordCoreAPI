@@ -478,6 +478,35 @@ namespace DiscordCoreAPI {
                 ButtonManager button(event01);
 
                 vector<ButtonResponseData> buttonIntData = button.collectButtonData(false, waitForMaxMs);
+                if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "exit" || buttonIntData.at(0).buttonId == "") {
+                    if (deleteAfter == true) {
+                        InputEvents::deleteInputEventResponseAsync(event01);
+                    }
+                    else {
+                        if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
+                            EditMessageData dataPackage(event01);
+                            dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
+                            InputEvents::respondToEvent(dataPackage);
+                        }
+                        else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
+                            || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
+                            EditInteractionResponseData dataPackage(event01);
+                            dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
+                            InputEvents::respondToEvent(dataPackage);
+                        }
+                        else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+                            EditFollowUpMessageData dataPackage(event01);
+                            dataPackage.embeds = event01.getEmbeds();
+                            dataPackage.components = vector<ActionRowData>();
+                            dataPackage.content = "";
+                            InputEvents::respondToEvent(dataPackage);
+                        }
+                    }
+                    doWeQuit = true;
+                    return RecurseThroughMessagePagesData();
+                }
                 if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
@@ -585,35 +614,6 @@ namespace DiscordCoreAPI {
                         dataPackage.embeds = embeds;
                         event01 = InputEvents::respondToEvent(dataPackage);
                     }
-                }
-                else if (buttonIntData.at(0).buttonId == "exit" || buttonIntData.at(0).buttonId == "") {
-                    if (deleteAfter == true) {
-                        InputEvents::deleteInputEventResponseAsync(event01);
-                    }
-                    else {
-                        if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                            EditMessageData dataPackage(event01);
-                            dataPackage.embeds = event01.getEmbeds();
-                            dataPackage.components = vector<ActionRowData>();
-                            InputEvents::respondToEvent(dataPackage);
-                        }
-                        else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
-                            || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                            EditInteractionResponseData dataPackage(event01);
-                            dataPackage.embeds = event01.getEmbeds();
-                            dataPackage.components = vector<ActionRowData>();
-                            InputEvents::respondToEvent(dataPackage);
-                        }
-                        else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                            EditFollowUpMessageData dataPackage(event01);
-                            dataPackage.embeds = event01.getEmbeds();
-                            dataPackage.components = vector<ActionRowData>();
-                            dataPackage.content = "";
-                            InputEvents::respondToEvent(dataPackage);
-                        }
-                    }
-                    doWeQuit = true;
-                    return RecurseThroughMessagePagesData();
                 }
                 else if (buttonIntData.at(0).buttonId == "select") {
                     if (deleteAfter == true) {
