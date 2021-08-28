@@ -1705,6 +1705,7 @@ namespace DiscordCoreInternal {
 
 			if (dataPackage.data.content == "") {
 				json data = { {"type", dataPackage.type},
+					{"tts", dataPackage.data.tts},
 					{"data",{{"embeds", embedsArray},
 					{"flags", dataPackage.data.flags },
 				{"allowed_mentions",
@@ -1719,6 +1720,7 @@ namespace DiscordCoreInternal {
 			}
 			else {
 				json data = { {"type", dataPackage.type},
+					{"tts", dataPackage.data.tts},
 					{"data",{{"embeds", embedsArray},
 					{"flags", dataPackage.data.flags },
 					{"content", dataPackage.data.content},
@@ -1730,7 +1732,6 @@ namespace DiscordCoreInternal {
 					{"components", componentsActionRow},
 					}}
 				};
-				cout << data.dump() << endl;
 				return data.dump();
 			};
 		 }
