@@ -1232,21 +1232,16 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources{};
     };
 
+    struct InteractionResponseData {
+        InteractionApplicationCommandCallbackData data{};
+        InteractionCallbackType type{};
+    };
+
     struct PatchInteractionResponseData {
         HttpAgentResources agentResources{};
         string applicationId{ "" };
         string interactionToken{ "" };
-        string content{ "" };
-        vector<EmbedData> embeds{};
-        AllowedMentionsData allowedMentions{};
-        vector<ActionRowData>components{};
-        int flags{ 0 };
-        InteractionCallbackType type{};
-    };
-
-    struct InteractionResponseData {
-        InteractionApplicationCommandCallbackData data{};
-        InteractionCallbackType type{};
+        InteractionResponseData data;
     };
 
     struct PostInteractionResponseData {
@@ -1261,12 +1256,12 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources{};
         string applicationId{ "" };
         string interactionToken{ "" };
-        string content{ "" };
         bool tts{ false };
+        string content{ "" };
         vector<EmbedData> embeds{};
-        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
+        AllowedMentionsData allowedMentions{};
         int flags{ 0 };
+        vector<ActionRowData> components{};
     };
 
     struct GetInteractionResponseData {

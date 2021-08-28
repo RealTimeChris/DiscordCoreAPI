@@ -27,7 +27,26 @@ namespace DiscordCoreAPI {
 		}
 
 		static InputEventData respondToEvent(CreateFollowUpMessageData dataPackage) {
+			dataPackage.data.data.flags = 64;
 			MessageData messageData = InputEvents::interactions->createFollowUpMessageAsync(dataPackage).get();
+			InputEventData dataPackageNewer;
+			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
+			dataPackageNewer.messageData = messageData;
+			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE;
+			dataPackageNewer.requesterId = dataPackage.requesterId;
+			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
+			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
+			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
+			return dataPackageNewer;
+		}
+
+		static InputEventData respondToEvent(CreateEphemeralFollowUpMessageData dataPackage) {
+			CreateFollowUpMessageData dataPackageNew;
+			dataPackageNew.data = dataPackage.data;
+			dataPackageNew.interactionPackage = dataPackage.interactionPackage;
+			dataPackageNew.requesterId = dataPackage.requesterId;
+			MessageData messageData = InputEvents::interactions->createFollowUpMessageAsync(dataPackageNew).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 			dataPackageNewer.messageData = messageData;

@@ -1365,7 +1365,7 @@ namespace DiscordCoreInternal {
 		string	getEditInteractionResponsePayload(PatchInteractionResponseData dataPackage) {
 			auto embedsArray = json::array();
 
-			for (auto& value : dataPackage.embeds) {
+			for (auto& value : dataPackage.data.data.embeds) {
 
 				auto fields = json::array();
 
@@ -1420,23 +1420,23 @@ namespace DiscordCoreInternal {
 			}
 
 			auto parseArray = json::array();
-			for (auto& value : dataPackage.allowedMentions.parse) {
+			for (auto& value : dataPackage.data.data.allowedMentions.parse) {
 				parseArray.push_back(value);
 			};
 
 			auto rolesArray = json::array();
-			for (auto& value : dataPackage.allowedMentions.roles) {
+			for (auto& value : dataPackage.data.data.allowedMentions.roles) {
 				rolesArray.push_back(value);
 			}
 
 			auto usersArray = json::array();
-			for (auto& value : dataPackage.allowedMentions.users) {
+			for (auto& value : dataPackage.data.data.allowedMentions.users) {
 				usersArray.push_back(value);
 			}
 
 			auto componentsActionRow = json::array();
 
-			for (auto& value : dataPackage.components) {
+			for (auto& value : dataPackage.data.data.components) {
 				auto components = json::array();
 
 				for (auto& valueNew : value.components) {
@@ -1513,30 +1513,32 @@ namespace DiscordCoreInternal {
 				componentsActionRow.push_back(componentActionRow);
 			}
 
-			if (dataPackage.content == "") {
-				json data = { 
-					{"flags", dataPackage.flags}, 
-					{"type", dataPackage.type},
+			if (dataPackage.data.data.content == "") {
+				json data = {
+					{"flags", dataPackage.data.data.flags},
+					{"tts", dataPackage.data.data.tts},
+					{"type", dataPackage.data.type},
 				{"embeds", embedsArray},
 				{"allowed_mentions",
 				{{"parse", parseArray},
 		{"roles", rolesArray},
 		{"users", usersArray},
-		{"repliedUser", dataPackage.allowedMentions.repliedUser}}},
+		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
 					{"components", componentsActionRow} };
 				return data.dump();
 			}
 			else {
 				json data = { 
-					{"flags", dataPackage.flags},{"flags", dataPackage.flags},
-					{"type", dataPackage.type},
-					{"content", dataPackage.content},
+					{"flags", dataPackage.data.data.flags},
+					{"tts", dataPackage.data.data.tts},
+					{"type", dataPackage.data.type},
+					{"content", dataPackage.data.data.content},
 					{"embeds", embedsArray},
 					{"allowed_mentions",
 					{{"parse", parseArray},
 			{"roles", rolesArray},
 			{"users", usersArray},
-			{"repliedUser", dataPackage.allowedMentions.repliedUser}},
+			{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}},
 				},{"components", componentsActionRow} };
 				return data.dump();
 			};
@@ -1917,7 +1919,7 @@ namespace DiscordCoreInternal {
 						 "components", components} };
 				 componentsActionRow.push_back(componentActionRow);
 			 }
-
+			 cout << "FLAGS VALUE: " << dataPackage.flags << endl;
 			 if (dataPackage.content == "") {
 				 json data = {
 					 {"tts", dataPackage.tts},

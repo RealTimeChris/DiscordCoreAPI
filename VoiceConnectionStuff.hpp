@@ -101,32 +101,54 @@ namespace DiscordCoreAPI {
 		}
 
 		bool stop() {
-			if (this != nullptr) {
-				if (this->areWePaused) {
+			shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId);
+			if (voiceConnection.get() != nullptr) {
+				if (voiceConnection->areWePaused) {
+					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
 					return false;
 				}
-				if (this->areWePlaying) {
-					this->areWeStopping = true;
-					this->areWePlaying = false;
-					this->areWeWaitingForAudioData = true;
-					receive(this->stopBuffer);
+				if (voiceConnection->areWePlaying) {
+					voiceConnection->areWeStopping = true;
+					voiceConnection->areWeWaitingForAudioData = true;
+					voiceConnection->areWePlaying = false;
+					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
+					receive(voiceConnection->stopBuffer);
 					return true;
 				}
+				else {
+					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
+					return false;
+				}
+			}
+			else {
+				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
+				return false;
 			}
 		}
 
 		bool skip() {
+			shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId);
 			if (this != nullptr) {
-				if (this->areWePaused) {
+				if (voiceConnection->areWePaused) {
+					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
 					return false;
 				}
-				if (this->areWePlaying) {
-					this->areWeSkipping = true;
-					this->areWePlaying = false;
-					this->areWeWaitingForAudioData = true;
-					receive(this->skipBuffer);
+				if (voiceConnection->areWePlaying) {
+					voiceConnection->areWeSkipping = true;
+					voiceConnection->areWeWaitingForAudioData = true;
+					voiceConnection->areWePlaying = false;
+					receive(voiceConnection->skipBuffer);
+					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
 					return true;
 				}
+				else {
+					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
+					return false;
+				}
+			}
+			else {
+				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->voiceConnectionData.guildId, voiceConnection);
+				return false;
 			}
 		}
 
@@ -381,7 +403,9 @@ namespace DiscordCoreAPI {
 									timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 								}
 								int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-								this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
+								if (this->audioData != nullptr) {
+									this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
+								}
 								totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
 								int totalTimeAverage = totalTime / frameCounter;
 								intervalCount = 20000 - totalTimeAverage;
