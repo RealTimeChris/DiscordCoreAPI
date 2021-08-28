@@ -27,7 +27,6 @@ namespace DiscordCoreAPI {
 		}
 
 		static InputEventData respondToEvent(CreateFollowUpMessageData dataPackage) {
-			dataPackage.data.data.flags = 64;
 			MessageData messageData = InputEvents::interactions->createFollowUpMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;

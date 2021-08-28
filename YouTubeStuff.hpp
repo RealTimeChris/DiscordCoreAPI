@@ -479,7 +479,7 @@ namespace DiscordCoreAPI {
 			catch (hresult_out_of_bounds& e) {
 				retryCount += 1;
 				if (retryCount < 5) {
-					cout << "YouTubeAPI::downloadAudio()::Out of bounds" << to_string(e.message()) << endl;
+					cout << "YouTubeAPI::downloadAudio()::Out of bounds " << to_string(e.message()) << endl;
 					downloadAudio(videoSearchResult, playlist, retryCount);
 				}
 				else {

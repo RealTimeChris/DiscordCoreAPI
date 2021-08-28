@@ -403,8 +403,14 @@ namespace DiscordCoreAPI {
 									timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 								}
 								int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-								if (this->audioData != nullptr) {
+								if (this->audioData->encodedFrameData.size() != 0) {
 									this->sendSingleAudioFrame(this->audioData->encodedFrameData[x]);
+								}
+								else {
+									this->areWePlaying = false;
+									this->areWeWaitingForAudioData = true;
+									frameCounter = 0;
+									break;
 								}
 								totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
 								int totalTimeAverage = totalTime / frameCounter;
@@ -455,8 +461,16 @@ namespace DiscordCoreAPI {
 									timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 								}
 								int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-								auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
-								this->sendSingleAudioFrame(newVector);
+								if (this->audioData->encodedFrameData.size() != 0) {
+									auto newVector = encodeSingleAudioFrame(this->audioData->rawFrameData[x]);
+									this->sendSingleAudioFrame(newVector);
+								}
+								else {
+									this->areWePlaying = false;
+									this->areWeWaitingForAudioData = true;
+									frameCounter = 0;
+									break;
+								}
 								totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
 								int totalTimeAverage = totalTime / frameCounter;
 								intervalCount = 20000 - totalTimeAverage;
