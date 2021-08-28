@@ -32,7 +32,8 @@
 
 ## Input-Event Stuff:
 
-## Slash-Command Stuff:
+## Application-Command Stuff:
+- ### [Getting Global Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Global%20Application%20Commands.md)
 - ### [Adding/Creating a Slash Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding-Creating%20a%20Slash-Command.md)
 
 ## Interaction Stuff:
