@@ -2,7 +2,7 @@
 ### **Creating a Global Application Command:**
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
-- Select, from the `ApplicationCommands` class, the `createGlobalApplicationCommandAsync()` function and execute it, while passing in a data structure of type `CreateApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
+- Select, from the `ApplicationCommands` class, the `createGlobalApplicationCommandAsync()` function and execute it, while passing in a data structure of type `CreateApplicationCommandData` (IMPORTANT #1: Notes on which kind of types to set can be found [here](https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups).) (IMPORTANT #2: Be sure to set the order of the arguments up to be equivalent to what they are in the normal version of the command, so that they can be parsed properly.), with a return value of type `auto` or `ApplicationCommand`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
