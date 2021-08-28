@@ -102,10 +102,23 @@ namespace DiscordCoreAPI {
 
 		void stop() {
 			if (this != nullptr) {
-				this->areWePlaying = false;
-				this->areWeWaitingForAudioData = true;
-				this->areWeStopping = true;
-				receive(this->stopBuffer);
+				if (this->areWePlaying) {
+					this->areWeStopping = true;
+					this->areWePlaying = false;
+					this->areWeWaitingForAudioData = true;
+					receive(this->stopBuffer);
+				}
+			}
+		}
+
+		void skip() {
+			if (this != nullptr) {
+				if (this->areWePlaying) {
+					this->areWeSkipping = true;
+					this->areWePlaying = false;
+					this->areWeWaitingForAudioData = true;
+					receive(this->skipBuffer);
+				}
 			}
 		}
 
@@ -193,6 +206,7 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<bool> readyBuffer{ nullptr };
 		unbounded_buffer<bool> pauseBuffer{ nullptr };
 		unbounded_buffer<bool> stopBuffer{ nullptr };
+		unbounded_buffer<bool> skipBuffer{ nullptr };
 		unbounded_buffer<int> seekBuffer{ nullptr };
 		bool areWeWaitingForAudioData{ true };
 		AudioFrameData* audioData{ nullptr };
@@ -203,6 +217,7 @@ namespace DiscordCoreAPI {
 		bool areWeInstantiated{ false };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
+		bool areWeSkipping{ false };
 		unsigned int timestamp{ 0 };
 		bool areWeWaiting{ false };
 		bool areWePlaying{ false };
@@ -329,10 +344,14 @@ namespace DiscordCoreAPI {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
 									frameCounter = x;
 								}
-								if (!this->areWePlaying) {
-									this->clearAudioData();
+								if (this->areWeSkipping) {
 									this->areWeWaitingForAudioData = true;
 									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								};
+								if (this->areWeStopping) {
+									this->areWeWaitingForAudioData = true;
 									frameCounter = 0;
 									break;
 								};
@@ -375,10 +394,14 @@ namespace DiscordCoreAPI {
 									x = (int)trunc(((float)newValue / (float)100) * (float)this->audioData->encodedFrameData.size());
 									frameCounter = x;
 								}
-								if (!this->areWePlaying) {
-									this->clearAudioData();
+								if (this->areWeSkipping) {
 									this->areWeWaitingForAudioData = true;
 									this->onSongCompletionEvent();
+									frameCounter = 0;
+									break;
+								};
+								if (this->areWeStopping) {
+									this->areWeWaitingForAudioData = true;
 									frameCounter = 0;
 									break;
 								};
@@ -423,6 +446,11 @@ namespace DiscordCoreAPI {
 					this->clearAudioData();
 					send(this->stopBuffer, true);
 					this->areWeStopping = false;
+				}
+				if (this->areWeSkipping) {
+					this->clearAudioData();
+					send(this->skipBuffer, true);
+					this->areWeSkipping = false;
 				}
 				this->sendSpeakingMessage(false);
 			}
