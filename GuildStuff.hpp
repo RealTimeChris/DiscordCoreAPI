@@ -474,6 +474,7 @@ namespace DiscordCoreInternal	{
 
 	class GuildManager {
 	public:
+		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Guilds;
 
 		GuildManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew) {
