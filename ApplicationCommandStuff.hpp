@@ -13,7 +13,7 @@
 
 namespace DiscordCoreAPI {
 
-    struct EditGlobalApplicationCommandData {
+    struct EditApplicationCommandData {
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ false };
         string description{ "" };
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
             co_return appCommandData;
         }
 
-        task<ApplicationCommand> editGlobalApplicationCommandAsync(EditGlobalApplicationCommandData dataPackage) {
+        task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData dataPackage) {
             apartment_context mainThread;
             co_await resume_background();
             vector<ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync().get();
