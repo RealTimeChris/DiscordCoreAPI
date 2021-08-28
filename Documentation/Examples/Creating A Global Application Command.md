@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 			createBotInfoCommandData.description = "Displays info about the current bot.";
 			createBotInfoCommandData.name = "botinfo";
 			createBotInfoCommandData.type = ApplicationCommandType::CHAT_INPUT;
-			ApplicationCommands::createGlobalApplicationCommandAsync(createBotInfoCommandData);
+			
 			auto globalApplicationCommands = ApplicationCommands::createGlobalApplicationCommandAsync(createBotInfoCommandData).get();
 
 			cout << globalApplicationCommands.data.name << endl;
