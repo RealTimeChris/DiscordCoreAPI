@@ -231,6 +231,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::GuildMember> fetchAsync(DiscordCoreAPI::FetchGuildMemberData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetGuildMemberData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -245,10 +246,12 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
 			guildMember.data.guildId = dataPackage.guildId;
+			co_await mainThread;
 			co_return guildMember;
 		}
 
 		task<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			PatchGuildMemberData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -269,10 +272,12 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
 			guildMember.data.guildId = dataPackage.guildId;
+			co_await mainThread;
 			co_return guildMember;
 		}
 
 		task<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			CollectGuildMemberData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -287,6 +292,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
 			guildMember.data.guildId = dataPackage.guildId;
+			co_await mainThread;
 			co_return guildMember;
 		}
 
@@ -297,16 +303,19 @@ namespace DiscordCoreInternal {
 	protected:
 
 		task<void> insertGuildMemberAsync(DiscordCoreAPI::GuildMember guildMember, string guildId) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GuildMemberManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			requestAgent.guildMembersToInsert.push(guildMember);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildMemberManager::insertGuildMemberAsync");
+			co_await mainThread;
 			co_return;
 		}
 
 		task<void> removeGuildMemberAsync(string guildId, string guildMemberId) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			map<string, DiscordCoreAPI::GuildMember> cache;
 			try_receive(GuildMemberManagerAgent::cache, cache);
@@ -315,6 +324,7 @@ namespace DiscordCoreInternal {
 				cache.erase(guildId + guildMemberId);
 			}
 			send(GuildMemberManagerAgent::cache, cache);
+			co_await mainThread;
 			co_return;
 		}
 

@@ -292,6 +292,7 @@ namespace DiscordCoreInternal	{
 		}
 
 		task<DiscordCoreAPI::Channel> fetchAsync(DiscordCoreAPI::FetchChannelData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -304,10 +305,12 @@ namespace DiscordCoreInternal	{
 			DiscordCoreAPI::ChannelData channelData;
 			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
+			co_await mainThread;
 			co_return channel;
 		}
 
 		task<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			CollectChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -320,10 +323,12 @@ namespace DiscordCoreInternal	{
 			DiscordCoreAPI::ChannelData channelData;
 			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
+			co_await mainThread;
 			co_return channel;
 		}
 
 		task<DiscordCoreAPI::Channel> fetchDMChannelAsync(DiscordCoreAPI::FetchDMChannelData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetDMChannelData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -336,10 +341,12 @@ namespace DiscordCoreInternal	{
 			DiscordCoreAPI::ChannelData channelData;
 			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
 			try_receive(requestAgent.outChannelBuffer, channel);
+			co_await mainThread;
 			co_return channel;
 		}
 
 		task<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			PutPermissionOverwritesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -353,10 +360,12 @@ namespace DiscordCoreInternal	{
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::editChannelPermissionOverwritesAsync");
+			co_await mainThread;
 			co_return;
 		}
 
 		task<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DeleteChannelPermissionOverwritesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -367,6 +376,7 @@ namespace DiscordCoreInternal	{
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::deleteChannelPermissionOverwritesAsync");
+			co_await mainThread;
 			co_return;
 		}
 
@@ -380,16 +390,19 @@ namespace DiscordCoreInternal	{
 		HttpAgentResources agentResources{};
 
 		task<void> insertChannelAsync(DiscordCoreAPI::Channel channel) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			ChannelManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
 			requestAgent.channelsToInsert.push(channel);
 			requestAgent.start();
 			requestAgent.wait(&requestAgent);
 			requestAgent.getError("ChannelManager::inserChannelAsync");
+			co_await mainThread;
 			co_return;
 		}
 
 		task<void> removeChannelAsync(string channelId) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			map<string, DiscordCoreAPI::Channel> cache;
 			try_receive(ChannelManagerAgent::cache, cache);
@@ -397,6 +410,7 @@ namespace DiscordCoreInternal	{
 				cache.erase(channelId);
 			}
 			send(ChannelManagerAgent::cache, cache);
+			co_await mainThread;
 			co_return;
 		}
 	};

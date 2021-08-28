@@ -197,6 +197,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::Reaction> createReactionAsync(DiscordCoreAPI::CreateReactionData dataPackage){
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			PutReactionData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -223,10 +224,12 @@ namespace DiscordCoreInternal {
 			ReactionData reactionData;
 			DiscordCoreAPI::Reaction reaction(reactionData, this->discordCoreClient);
 			try_receive(requestAgent.outReactionBuffer, reaction);
+			co_await mainThread;
 			co_return reaction;
 		}
 
 		task<void> deleteUserReactionAsync(DiscordCoreAPI::DeleteUserReactionData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -253,10 +256,12 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ReactionManager::deleteUserReactionAsync");
+			co_await mainThread;
 			co_return;
 		}
 
 		task<void> deleteOwnReactionAsync(DiscordCoreAPI::DeleteOwnReactionData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -281,10 +286,12 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ReactionManager::deleteOwnReactionAsync");
+			co_await mainThread;
 			co_return;
 		}
 
 		task<void> deleteReactionsByEmojiAsync(DiscordCoreAPI::DeleteReactionsByEmojiData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -309,10 +316,12 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ReactionManager::deleteReactionByEmojiAsync");
+			co_await mainThread;
 			co_return;
 		}
 
 		task<void> deleteAllReactionsAsync(DiscordCoreAPI::DeleteAllReactionsData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -324,6 +333,7 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ReactionManager::deleteAllReactionsAsync");
+			co_await mainThread;
 			co_return;
 		}
 

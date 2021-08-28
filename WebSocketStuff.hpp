@@ -315,7 +315,9 @@ namespace DiscordCoreInternal {
 		void terminate() {
 			done();
 			if (this != nullptr) {
-				this->threadContext->releaseGroup();
+				if (this->threadContext->schedulerGroup != nullptr) {
+					this->threadContext->releaseGroup();
+				}				
 				if (this->webSocket != nullptr) {
 					this->webSocket.Close(1000, L"Disconnecting.");
 					this->webSocket = nullptr;

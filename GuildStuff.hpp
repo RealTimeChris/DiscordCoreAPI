@@ -485,6 +485,7 @@ namespace DiscordCoreInternal	{
 		}
 
 		task<DiscordCoreAPI::Guild> fetchAsync(DiscordCoreAPI::FetchGuildData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetGuildData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -497,10 +498,12 @@ namespace DiscordCoreInternal	{
 			DiscordCoreAPI::GuildData guildData;
 			DiscordCoreAPI::Guild guild(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
 			try_receive(requestAgent.outGuildBuffer, guild);
+			co_await mainThread;
 			co_return guild;
 		}
 
 		task<vector<DiscordCoreAPI::InviteData>> fetchInvitesAsync(DiscordCoreAPI::FetchInvitesData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetInvitesData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -512,10 +515,12 @@ namespace DiscordCoreInternal	{
 			requestAgent.getError("GuildManager::getInvitesAsync");
 			vector<DiscordCoreAPI::InviteData> inviteData;
 			try_receive(requestAgent.outInvitesBuffer, inviteData);
+			co_await mainThread;
 			co_return inviteData;
 		}
 
 		task<DiscordCoreAPI::BanData> createGuildBanAsync(DiscordCoreAPI::CreateGuildBanData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			PutGuildBanData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -530,10 +535,12 @@ namespace DiscordCoreInternal	{
 			requestAgent.getError("GuildManager::createGuildBanAsync");
 			DiscordCoreAPI::BanData banData;
 			try_receive(requestAgent.outBanBuffer, banData);
+			co_await mainThread;
 			co_return banData;
 		}
 
 		task<DiscordCoreAPI::InviteData> fetchVanityInviteAsync(DiscordCoreAPI::FetchVanityInviteData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetVanityInviteData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -545,10 +552,12 @@ namespace DiscordCoreInternal	{
 			requestAgent.getError("GuildManager::getVanityInviteAsync");
 			DiscordCoreAPI::InviteData inviteData;
 			try_receive(requestAgent.outInviteBuffer, inviteData);
+			co_await mainThread;
 			co_return inviteData;
 		}
 
 		task<DiscordCoreAPI::InviteData> fetchInviteAsync(DiscordCoreAPI::FetchInviteData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetInviteData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -560,10 +569,12 @@ namespace DiscordCoreInternal	{
 			requestAgent.getError("GuildManager::getInviteAsync");
 			DiscordCoreAPI::InviteData inviteData;
 			try_receive(requestAgent.outInviteBuffer, inviteData);
+			co_await mainThread;
 			co_return inviteData;
 		}
 
 		task<DiscordCoreAPI::AuditLogData> fetchAuditLogDataAsync(DiscordCoreAPI::FetchAuditLogData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GetAuditLogData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -578,10 +589,12 @@ namespace DiscordCoreInternal	{
 			requestAgent.getError("GuildManager::getAuditLogDataAsync");
 			DiscordCoreAPI::AuditLogData auditLog;
 			try_receive(requestAgent.outAuditLogBuffer, auditLog);
+			co_await mainThread;
 			co_return auditLog;
 		}
 
 		task<DiscordCoreAPI::Guild> getGuildAsync(DiscordCoreAPI::GetGuildData dataPackage) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			CollectGuildData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
@@ -594,10 +607,12 @@ namespace DiscordCoreInternal	{
 			DiscordCoreAPI::GuildData guildData;
 			DiscordCoreAPI::Guild guild(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
 			try_receive(requestAgent.outGuildBuffer, guild);
+			co_await mainThread;
 			co_return guild;
 		}
 
 		task<vector<DiscordCoreAPI::Guild>> getAllGuildsAsync() {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			map<string, DiscordCoreAPI::Guild>cache;
 			try_receive(GuildManagerAgent::cache, cache);
@@ -606,6 +621,7 @@ namespace DiscordCoreInternal	{
 				guildVector.push_back(value);
 			}
 			send(GuildManagerAgent::cache, cache);
+			co_await mainThread;
 			co_return guildVector;
 		}
 
@@ -620,16 +636,19 @@ namespace DiscordCoreInternal	{
 		HttpAgentResources agentResources{};
 
 		task<void> insertGuildAsync(DiscordCoreAPI::Guild guild) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			GuildManagerAgent requestAgent(this->agentResources, this->discordCoreClient, this->discordCoreClientBase);
 			requestAgent.guildsToInsert.push(guild);
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManager::insertGuildAsync");
+			co_await mainThread;
 			co_return;
 		}
 
 		task<void> removeGuildAsync(string guildId) {
+			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			map<string, DiscordCoreAPI::Guild> cache;
 			try_receive(GuildManagerAgent::cache, cache);
@@ -637,6 +656,7 @@ namespace DiscordCoreInternal	{
 				cache.erase(guildId);
 			}
 			send(GuildManagerAgent::cache, cache);
+			co_await mainThread;
 			co_return;
 		}
 

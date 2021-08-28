@@ -934,6 +934,7 @@ namespace DiscordCoreInternal {
         }
 
         task<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostDeferredInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
@@ -946,11 +947,13 @@ namespace DiscordCoreInternal {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::createDeferredInteractionResponseAsync");
+            co_await mainThread;
             co_return;
         }
 
         task<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
-            co_await resume_background();
+            apartment_context mainThread;
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -975,11 +978,13 @@ namespace DiscordCoreInternal {
 
             }
             InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
+            co_await mainThread;
             co_return messageData;
         }
 
         task<DiscordCoreAPI::MessageData> createEphemeralInteractionResponseAsync(DiscordCoreAPI::CreateEphemeralInteractionResponseData dataPackage) {
-            co_await resume_background();
+            apartment_context mainThread;
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -1004,10 +1009,12 @@ namespace DiscordCoreInternal {
 
             }
             InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
+            co_await mainThread;
             co_return messageData;
         }
 
         task<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::GetInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.applicationId;
@@ -1020,10 +1027,12 @@ namespace DiscordCoreInternal {
             requestAgent.getError("InteractionManager::getInteractionResponseAsync");
             DiscordCoreAPI::InteractionResponseData outData;
             try_receive(requestAgent.outInteractionresponseDataBuffer, outData);
+            co_await mainThread;
             co_return outData;
         }
 
         task<DiscordCoreAPI::MessageData> editInteractionResponseAsync(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PatchInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1047,10 +1056,12 @@ namespace DiscordCoreInternal {
             requestAgent.getError("InteractionManager::editInteractionResponseAsync");
             DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
+            co_await mainThread;
             co_return messageData;
         }
 
         task<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::DeleteInteractionResponseData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -1062,10 +1073,12 @@ namespace DiscordCoreInternal {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::deleteInteractionResponseAsync");
+            co_await mainThread;
             co_return;
         }
 
         task<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -1089,10 +1102,12 @@ namespace DiscordCoreInternal {
             requestAgent.getError("InteractionManager::createFollowUpMessageAsync");
             DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
+            co_await mainThread;
             co_return messageData;
         }
 
         task<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PatchFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -1118,10 +1133,12 @@ namespace DiscordCoreInternal {
             requestAgent.getError("InteractionManager::editFollowUpMessageAsync");
             DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
+            co_await mainThread;
             co_return messageData;
         }
 
         task<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::DeleteFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
@@ -1134,6 +1151,7 @@ namespace DiscordCoreInternal {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::deleteFollowUpMessageAsync");
+            co_await mainThread;
             co_return;
         }
 
