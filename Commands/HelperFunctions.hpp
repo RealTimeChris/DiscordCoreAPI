@@ -507,7 +507,9 @@ namespace DiscordCoreAPI {
                         }
                     }
                     doWeQuit = true;
-                    return RecurseThroughMessagePagesData();
+                    RecurseThroughMessagePagesData dataPackage;
+                    dataPackage.buttonId = "exit";
+                    return dataPackage;
                 }
                 if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
                     newCurrentPageIndex = 0;
