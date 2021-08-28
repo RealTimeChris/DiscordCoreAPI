@@ -833,11 +833,10 @@ namespace DiscordCoreInternal {
 
         void deleteObjectDataTimer(DiscordCoreInternal::DeleteInteractionResponseData dataPackage) {
             if (dataPackage.timeDelayInMs > 0) {
-                ThreadPoolTimer threadPoolTimer = ThreadPoolTimer(nullptr);
-                TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimerNew) {
+                auto onSend = [=]() {
                     deleteObjectData(dataPackage);
                 };
-                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, winrt::Windows::Foundation::TimeSpan(dataPackage.timeDelayInMs * 10000));
+                DiscordCoreAPI::executeFunctionAfterTimePeriod(onSend, dataPackage.timeDelayInMs, false);
             }
             else {
                 deleteObjectData(dataPackage);
@@ -867,11 +866,10 @@ namespace DiscordCoreInternal {
 
         void deleteObjectDataTimer(DiscordCoreInternal::DeleteFollowUpMessageData dataPackage) {
             if (dataPackage.timeDelayInMs > 0) {
-                ThreadPoolTimer threadPoolTimer = ThreadPoolTimer(nullptr);
-                TimerElapsedHandler onSend = [=](ThreadPoolTimer threadPoolTimerNew) {
+                auto onSend = [=]() {
                     deleteObjectData(dataPackage);
                 };
-                threadPoolTimer = threadPoolTimer.CreateTimer(onSend, winrt::Windows::Foundation::TimeSpan(dataPackage.timeDelayInMs * 10000));
+                DiscordCoreAPI::executeFunctionAfterTimePeriod(onSend, dataPackage.timeDelayInMs, false);
             }
             else {
                 deleteObjectData(dataPackage);

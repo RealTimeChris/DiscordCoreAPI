@@ -640,15 +640,15 @@ namespace DiscordCoreAPI {
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
                             EditInteractionResponseData dataPackage(event01);
-                            for (auto value : event01.getComponents()) {
-                                dataPackage.addComponentRow(value);
+                            for (auto value : event01.getEmbeds()) {
+                                dataPackage.addMessageEmbed(value);
                             }
                             event01 = InputEvents::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                             EditFollowUpMessageData dataPackage(event01);
-                            for (auto value : event01.getComponents()) {
-                                dataPackage.addComponentRow(value);
+                            for (auto value : event01.getEmbeds()) {
+                                dataPackage.addMessageEmbed(value);
                             }
                             event01 = InputEvents::respondToEvent(dataPackage);
                         }
