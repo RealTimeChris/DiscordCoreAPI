@@ -12,7 +12,7 @@
 
 namespace DiscordCoreAPI {
 
-    bool areWeInADM(InputEventData eventData, Channel channel, bool displayResponse = false) {
+    bool areWeInADM(InputEventData eventData, Channel channel, bool displayResponse = true) {
         auto currentChannelType = channel.data.type;
         if (currentChannelType == ChannelType::DM) {
             if (displayResponse) {
@@ -389,7 +389,7 @@ namespace DiscordCoreAPI {
         return false;
     }
 
-    bool doWeHaveAdminPermissions(InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember, bool displayResponse = false) {
+    bool doWeHaveAdminPermissions(InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember, bool displayResponse = true) {
         bool doWeHaveAdmin = PermissionsConverter::checkForPermission(guildMember, channel, Permissions::ADMINISTRATOR);
 
         if (doWeHaveAdmin) {
