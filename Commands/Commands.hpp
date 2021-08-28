@@ -35,8 +35,10 @@ namespace DiscordCoreAPI {
 	public:
 		static map<string, BaseFunction*> functions;
 
-		static void registerFunction(string functionName, BaseFunction* baseFunction) {
-			CommandCenter::functions.insert(make_pair(functionName, baseFunction));
+		static void registerFunction(vector<string> functionNames, BaseFunction* baseFunction) {
+			for (auto value : functionNames) {
+				CommandCenter::functions.insert(make_pair(value, baseFunction));
+			}
 		}
 
 		static void checkForAndRunCommand(CommandData commandData) {
@@ -94,6 +96,7 @@ namespace DiscordCoreAPI {
 							lowestValue = value;
 							functionName = messageContents.substr(currentPosition, key.length());
 						}
+						
 					}
 				}
 				if (isItFound) {

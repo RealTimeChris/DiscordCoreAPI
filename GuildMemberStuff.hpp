@@ -244,6 +244,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
+			guildMember.data.guildId = dataPackage.guildId;
 			co_return guildMember;
 		}
 
@@ -267,6 +268,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId, this->discordCoreClient);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
+			guildMember.data.guildId = dataPackage.guildId;
 			co_return guildMember;
 		}
 

@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-			//cout << "Message received from VoiceDatagramSocket: " << message.c_str() << endl << endl;
+			//cout << "Message received from VoiceDatagramSocket: " << to_string(to_hstring(message.c_str())) << endl << endl;
 
 			if (this->areWeWaitingForIp) {
 				this->areWeWaitingForIp = false;

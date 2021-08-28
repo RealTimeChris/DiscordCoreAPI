@@ -3817,7 +3817,7 @@ namespace DiscordCoreAPI {
         CommandData(InputEventData inputEventData) {
             this->eventData = inputEventData;
             if (inputEventData.userCommandInteractionData.name != "") {
-                this->commandName = convertToLowerCase(inputEventData.userCommandInteractionData.name);
+                this->commandName = inputEventData.userCommandInteractionData.name;
                 if (inputEventData.userCommandInteractionData.users.id != "") {
                     this->optionsArgs.push_back(inputEventData.userCommandInteractionData.users.id);
                 }
@@ -3826,7 +3826,7 @@ namespace DiscordCoreAPI {
                 }
             }
             else if (inputEventData.messageCommandInteractionData.name != "") {
-                this->commandName = convertToLowerCase(inputEventData.messageCommandInteractionData.name);
+                this->commandName = inputEventData.messageCommandInteractionData.name;
                 this->optionsArgs.push_back(inputEventData.messageCommandInteractionData.messages.id);
             }
         }
