@@ -2,7 +2,7 @@
 ### **Editing a Global Application Command:**
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
-- Select, from the `ApplicationCommands` class, the `editGlobalApplicationCommandAsync()` function and execute it, while passing in a data structure of type `EditGlobalApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
+- Select, from the `ApplicationCommands` class, the `editGlobalApplicationCommandAsync()` function and execute it, while passing in a data structure of type `EditApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 
-			EditGlobalApplicationCommandData dataPackage;
+			EditApplicationCommandData dataPackage;
 			dataPackage.defaultPermission = true;
 			dataPackage.description = "Displays info about the current bot.";
 			dataPackage.name = "botinfo";
