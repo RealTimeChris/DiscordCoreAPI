@@ -100,24 +100,32 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void stop() {
+		bool stop() {
 			if (this != nullptr) {
+				if (this->areWePaused) {
+					return false;
+				}
 				if (this->areWePlaying) {
 					this->areWeStopping = true;
 					this->areWePlaying = false;
 					this->areWeWaitingForAudioData = true;
 					receive(this->stopBuffer);
+					return true;
 				}
 			}
 		}
 
-		void skip() {
+		bool skip() {
 			if (this != nullptr) {
+				if (this->areWePaused) {
+					return false;
+				}
 				if (this->areWePlaying) {
 					this->areWeSkipping = true;
 					this->areWePlaying = false;
 					this->areWeWaitingForAudioData = true;
 					receive(this->skipBuffer);
+					return true;
 				}
 			}
 		}
@@ -443,14 +451,14 @@ namespace DiscordCoreAPI {
 					this->areWeWaitingForAudioData = true;
 				}
 				if (this->areWeStopping) {
-					this->clearAudioData();
 					send(this->stopBuffer, true);
 					this->areWeStopping = false;
+					this->clearAudioData();
 				}
 				if (this->areWeSkipping) {
-					this->clearAudioData();
 					send(this->skipBuffer, true);
 					this->areWeSkipping = false;
+					this->clearAudioData();
 				}
 				this->sendSpeakingMessage(false);
 			}
