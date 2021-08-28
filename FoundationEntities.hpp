@@ -1238,7 +1238,6 @@ namespace  DiscordCoreInternal {
         string content{ "" };
         vector<EmbedData> embeds{};
         AllowedMentionsData allowedMentions{};
-        vector<AttachmentData> attachments{};
         vector<ActionRowData>components{};
         int flags{ 0 };
         InteractionCallbackType type{};
@@ -1280,6 +1279,7 @@ namespace  DiscordCoreInternal {
         HttpAgentResources agentResources{};
         string interactionId{ "" };
         string interactionToken{ "" };
+        int flags{ 0 };
     };
 
     struct HttpData {
@@ -2284,12 +2284,12 @@ namespace DiscordCoreAPI {
             newData.tts = this->tts;
             return newData;
         }
-        bool tts{ false };
-        string content{ "" };
-        vector<EmbedData> embeds{};
         AllowedMentionsData allowedMentions{};
-        int flags{ 0 };
         vector<ActionRowData> components{};
+        vector<EmbedData> embeds{};
+        string content{ "" };
+        bool tts{ false };
+        int flags{ 0 };
     };
 
     enum class InteractionCallbackType {

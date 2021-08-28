@@ -1544,7 +1544,7 @@ namespace DiscordCoreInternal {
 
 		string getCreateDeferredInteractionResponsePayload(PostDeferredInteractionResponseData dataPackage) {
 
-			json data = { {"type", dataPackage.type}
+			json data = { {"type", dataPackage.type},{"flags", dataPackage.flags}
 			};
 			return data.dump();
 		}

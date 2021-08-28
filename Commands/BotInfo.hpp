@@ -44,13 +44,13 @@ namespace DiscordCoreAPI {
                 msgEmbed.setTitle("__**Invalid Or Missing Arguments:**__");
                 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                     ReplyMessageData dataPackage(args->eventData);
-                    dataPackage.embeds.push_back(msgEmbed);
+                    dataPackage.addMessageEmbed(msgEmbed);
                     auto eventNew = InputEvents::respondToEvent(dataPackage);
                     InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
                 }
                 else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                     CreateEphemeralInteractionResponseData responseData(args->eventData);
-                    responseData.data.embeds.push_back(msgEmbed);
+                    responseData.addMessageEmbed(msgEmbed);
                     auto eventNew = InputEvents::respondToEvent(responseData);
                     InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
                 }
@@ -72,12 +72,12 @@ namespace DiscordCoreAPI {
             messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser->data.createdAt, true);
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 ReplyMessageData dataPackage(args->eventData);
-                dataPackage.embeds.push_back(messageEmbed);
+                dataPackage.addMessageEmbed(messageEmbed);
                 auto eventNew = InputEvents::respondToEvent(dataPackage);
             }
             else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
                 CreateInteractionResponseData dataPackage(args->eventData);
-                dataPackage.data.embeds.push_back(messageEmbed);
+                dataPackage.addMessageEmbed(messageEmbed);
                 auto eventNew = InputEvents::respondToEvent(dataPackage);
             }
             co_return;

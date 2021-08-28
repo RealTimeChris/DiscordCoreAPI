@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.messageData = messageData;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_RESPONSE;
-			dataPackageNewer.interactionData.message.components = dataPackage.data.components;
+			dataPackageNewer.interactionData.message.components = dataPackage.data.data.components;
 			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
@@ -76,9 +76,7 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_RESPONSE_DEFERRED;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
-			dataPackageNewer.interactionData.channelId = dataPackage.channelId;
 			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-			dataPackageNewer.interactionData.guildId = dataPackage.guildId;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			return dataPackageNewer;
@@ -102,11 +100,11 @@ namespace DiscordCoreAPI {
 			CreateInteractionResponseData newData;
 			newData.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			newData.interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
-			newData.data.components = dataPackage.components;
+			newData.data.data.components = dataPackage.data.data.components;
 			newData.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 			newData.data = dataPackage.data;
-			newData.data.flags = 64;
-			newData.type = dataPackage.type;
+			newData.data.data.flags = 64;
+			newData.data.type = dataPackage.data.type;
 			InputEvents::interactions->createInteractionResponseAsync(newData).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
@@ -168,7 +166,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			dataPackageNew.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNew.interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-			dataPackageNew.type = dataPackage.type;
+			dataPackageNew.data.type = dataPackage.type;
 			InputEvents::interactions->createInteractionResponseAsync(dataPackageNew).get();
 			return;
 		}
