@@ -37,7 +37,6 @@
 - ### [Creating a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Global%20Application%20Command.md)
 - ### [Getting a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Global%20Application%20Command.md)
 - ### [Editing a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Global%20Application%20Command.md)
-- ### [Adding/Creating a Slash Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding-Creating%20a%20Slash-Command.md)
 
 ## Interaction Stuff:
 
