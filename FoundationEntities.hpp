@@ -858,7 +858,7 @@ namespace  DiscordCoreInternal {
         PATCH_ROLE = 19,
         GET_APPLICATION = 20,
         POST_APPLICATION_COMMAND = 21,
-        GET_SLASH_COMMANDS = 22,
+        GET_APPLICATION_COMMANDS = 22,
         GET_SOCKET_PATH = 23,
         DELETE_SLASH_COMMAND = 24,
         PATCH_SLASH_COMMAND = 25,
@@ -890,7 +890,8 @@ namespace  DiscordCoreInternal {
         PUT_PIN_MESSAGE = 52,
         PUT_GUILD_BAN = 53,
         DELETE_LEAVE_GUILD = 54,
-        SOUNDCLOUD_SEARCH = 55
+        SOUNDCLOUD_SEARCH = 55,
+        GET_APPLICATION_COMMAND = 56
     };
 
     enum class MessageStickerItemType {
@@ -3199,6 +3200,30 @@ namespace DiscordCoreAPI {
         CHAT_INPUT = 1,
         USER = 2,
         MESSAGE = 3
+    };
+
+    struct ApplicationCommandOptionChoiceData {
+        string valueString{ "" };
+        int	valueInt{ 0 };
+        string name{ "" };
+    };
+
+    struct ApplicationCommandOptionData {
+        vector<ApplicationCommandOptionChoiceData>	choices{};
+        vector<ApplicationCommandOptionData> options{};
+        ApplicationCommandOptionType type{};
+        string description{ "" };
+        bool required{ false };
+        string name{ "" };
+    };
+
+    struct ApplicationCommandData {
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ false };
+        string applicationId{ "" };
+        string description{ "" };
+        string name{ "" };
+        string id{ "" };
     };
 
     struct UserCommandInteractionData {

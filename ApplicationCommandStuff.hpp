@@ -13,30 +13,7 @@
 
 namespace DiscordCoreAPI {
 
-    struct ApplicationCommandOptionChoiceData {
-        string valueString{ "" };
-        int	valueInt{ 0 };
-        string name{ "" };
-    };
-
-    struct ApplicationCommandOptionData {
-        vector<ApplicationCommandOptionChoiceData>	choices{};
-        vector<ApplicationCommandOptionData> options{};
-        ApplicationCommandOptionType type{};
-        string description{ "" };
-        bool required{ false };
-        string name{ "" };
-    };
-
-    struct ApplicationCommandData {
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ false };
-        string description{ "" };
-        string name{ "" };
-        string id{ "" };
-    };
-
-    struct EditApplicationCommandData {
+    struct EditGlobalApplicationCommandData {
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ false };
         string description{ "" };
@@ -51,20 +28,24 @@ namespace DiscordCoreAPI {
         bool defaultPermission{ true };
     };
 
+    struct GetGlobalApplicationCommandData {
+        string commandId{ "" };
+    };
+
     struct DeleteApplicationCommandData {
         string name{ "" };
     };
 
     class ApplicationCommand {
     public:
-        DiscordCoreInternal::ApplicationCommandData data{};
+        friend class ApplicationCommandManager;
+        ApplicationCommandData data{};
 
         ApplicationCommand() {};
 
     protected:
-        friend class ApplicationCommandManager;
 
-        ApplicationCommand(DiscordCoreInternal::ApplicationCommandData dataNew) {
+        ApplicationCommand(ApplicationCommandData dataNew) {
             this->data = dataNew;
         }
     };
@@ -78,7 +59,66 @@ namespace DiscordCoreAPI {
             this->applicationId = applicationIdNew;
         }
 
+        task<ApplicationCommand> getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage) {
+            apartment_context mainThread;
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            DiscordCoreInternal::HttpWorkload workload;
+            workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+            workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_APPLICATION_COMMAND;
+            workload.relativePath = "/applications/" + this->applicationId + "/commands/" + dataPackage.commandId;
+            DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
+            send(requestAgent.workSubmissionBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("ApplicationCommandManager::getGlobalApplicationCommandAsync");
+            DiscordCoreInternal::HttpData returnData;
+            try_receive(requestAgent.workReturnBuffer, returnData);
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::getGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::getGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            ApplicationCommandData appCommandData;
+            DiscordCoreInternal::DataParser::parseObject(returnData.data, &appCommandData);
+            ApplicationCommand appCommand(appCommandData);
+            co_await mainThread;
+            co_return appCommand;
+        }
+
+        task<vector<ApplicationCommand>> getGlobalApplicationCommandsAsync() {
+            apartment_context mainThread;
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            DiscordCoreInternal::HttpWorkload workload;
+            workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+            workload.relativePath = "/applications/" + this->applicationId + "/commands";
+            workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_APPLICATION_COMMANDS;
+            DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
+            send(requestAgent.workSubmissionBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("ApplicationCommandManager::getGlobalApplicationCommands");
+            DiscordCoreInternal::HttpData returnData;
+            try_receive(requestAgent.workReturnBuffer, returnData);
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            vector<ApplicationCommand> appCommands;
+            for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
+                ApplicationCommandData appCommandData;
+                DiscordCoreInternal::DataParser::parseObject(returnData.data.at(x), &appCommandData);
+                ApplicationCommand appCommand(appCommandData);
+                appCommands.push_back(appCommand);
+            }
+            co_await mainThread;
+            co_return appCommands;
+        }
+
         task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
             DiscordCoreInternal::PostApplicationCommandData dataPackageNew;
             dataPackageNew.applicationId = this->applicationId;
@@ -105,43 +145,17 @@ namespace DiscordCoreAPI {
             else {
                 cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            DiscordCoreInternal::ApplicationCommandData appCommandData;
+            ApplicationCommandData appCommandData;
             DiscordCoreInternal::DataParser::parseObject(returnData.data, &appCommandData);
             ApplicationCommand appCommand(appCommandData);
+            co_await mainThread;
             co_return appCommandData;
         }
 
-        vector<ApplicationCommand> getGlobalApplicationCommands() {
-            DiscordCoreInternal::HttpWorkload workload;
-            workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-            workload.relativePath = "/applications/" + this->applicationId + "/commands";
-            workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SLASH_COMMANDS;
-            DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
-            send(requestAgent.workSubmissionBuffer, workload);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            requestAgent.getError("ApplicationCommandManager::getGlobalApplicationCommands");
-            DiscordCoreInternal::HttpData returnData;
-            try_receive(requestAgent.workReturnBuffer, returnData);
-            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
-            }
-            else {
-                cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
-            }
-            vector<ApplicationCommand> appCommands;
-            for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
-                DiscordCoreInternal::ApplicationCommandData appCommandData;
-                DiscordCoreInternal::DataParser::parseObject(returnData.data.at(x), &appCommandData);
-                ApplicationCommand appCommand(appCommandData);
-                appCommands.push_back(appCommand);
-            }
-            return appCommands;
-        }
-
-        task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData dataPackage) {
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            vector<ApplicationCommand> appCommands = getGlobalApplicationCommands();
+        task<ApplicationCommand> editGlobalApplicationCommandAsync(EditGlobalApplicationCommandData dataPackage) {
+            apartment_context mainThread;
+            co_await resume_background();
+            vector<ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync().get();
             bool isItFound = false;
             string appCommandId;
             for (auto const& [value] : appCommands) {
@@ -154,6 +168,7 @@ namespace DiscordCoreAPI {
             if (isItFound == false) {
                 cout << "ApplicationCommandManager::editGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
                 ApplicationCommand appCommand;
+                co_await mainThread;
                 co_return appCommand;
             }
             DiscordCoreInternal::PatchApplicationCommandData dataPackageNew;
@@ -179,15 +194,17 @@ namespace DiscordCoreAPI {
             else {
                 cout << "ApplicationCommandManager::editGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            DiscordCoreInternal::ApplicationCommandData appCommandData;
+            ApplicationCommandData appCommandData;
             DiscordCoreInternal::DataParser::parseObject(returnData.data, &appCommandData);
             ApplicationCommand appCommand(appCommandData);
+            co_await mainThread;
             co_return appCommand;
         }
 
         task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData dataPackage) {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            vector<ApplicationCommand> appCommands = getGlobalApplicationCommands();
+            vector<ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync().get();
             string commandId;
             bool isItFound = false;
             for (auto const& [value] : appCommands) {
@@ -198,6 +215,7 @@ namespace DiscordCoreAPI {
             }
             if (isItFound == false) {
                 cout << "ApplicationCommandManager::deleteGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
+                co_await mainThread;
                 co_return;
             }
             DiscordCoreInternal::HttpWorkload workload;
@@ -217,17 +235,20 @@ namespace DiscordCoreAPI {
             else {
                 cout << "ApplicationCommandManager::deleteGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
+            co_await mainThread;
             co_return;
         }
 
         task<void> displayGlobalApplicationCommandsAsync() {
+            apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            vector<ApplicationCommand> applicationCommands = getGlobalApplicationCommands();
+            vector<ApplicationCommand> applicationCommands = getGlobalApplicationCommandsAsync().get();
             for (unsigned int x = 0; x < applicationCommands.size(); x += 1) {
                 cout << "Command Name: " << applicationCommands.at(x).data.name << endl;
                 cout << "Command Description: " << applicationCommands.at(x).data.description << endl;
                 displayOptions(applicationCommands.at(x).data.options);
             }
+            co_await mainThread;
             co_return;
         }
 
@@ -240,13 +261,13 @@ namespace DiscordCoreAPI {
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
         string applicationId{ "" };
 
-        void displayOptions(vector<DiscordCoreInternal::ApplicationCommandOptionData> applicationCommandOptionData) {
+        void displayOptions(vector<DiscordCoreAPI::ApplicationCommandOptionData> applicationCommandOptionData) {
             for (unsigned int x = 0; x < applicationCommandOptionData.size(); x += 1) {
                 string indentAmount;
-                if (applicationCommandOptionData.at(x).type == DiscordCoreInternal::ApplicationCommandOptionType::SUB_COMMAND_GROUP) {
+                if (applicationCommandOptionData.at(x).type == ApplicationCommandOptionType::SUB_COMMAND_GROUP) {
                     indentAmount += "   ";
                 }
-                if (applicationCommandOptionData.at(x).type == DiscordCoreInternal::ApplicationCommandOptionType::SUB_COMMAND) {
+                if (applicationCommandOptionData.at(x).type == ApplicationCommandOptionType::SUB_COMMAND) {
                     indentAmount += "      ";
                 }
                 cout << indentAmount + "Command Option Name: " << applicationCommandOptionData.at(x).name << endl;
@@ -262,7 +283,7 @@ namespace DiscordCoreAPI {
                         }
                     }
                 }
-                if (applicationCommandOptionData.at(x).type == DiscordCoreInternal::ApplicationCommandOptionType::SUB_COMMAND || applicationCommandOptionData.at(x).type == DiscordCoreInternal::ApplicationCommandOptionType::SUB_COMMAND_GROUP) {
+                if (applicationCommandOptionData.at(x).type == ApplicationCommandOptionType::SUB_COMMAND || applicationCommandOptionData.at(x).type == ApplicationCommandOptionType::SUB_COMMAND_GROUP) {
                     displayOptions(applicationCommandOptionData.at(x).options);
                 }
             }

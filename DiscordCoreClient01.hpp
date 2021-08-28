@@ -841,24 +841,24 @@ namespace DiscordCoreAPI {
 
 	class ApplicationCommands {
 	public:
+		static task<vector<ApplicationCommand>> getGlobalApplicationCommandsAsync() {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGlobalApplicationCommandsAsync();
+		}
+
 		static task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->createGlobalApplicationCommandAsync(dataPackage);
 		}
 
-		static task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData dataPackage) {
-			return DiscordCoreClient::thisPointer->applicationCommands->deleteGlobalApplicationCommandAsync(dataPackage);
+		static task<ApplicationCommand> getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGlobalApplicationCommandAsync(dataPackage);
 		}
 
-		static task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData dataPackage) {
+		static task<ApplicationCommand> editGlobalApplicationCommandAsync(EditGlobalApplicationCommandData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->editGlobalApplicationCommandAsync(dataPackage);
 		}
 
-		static vector<ApplicationCommand> getGlobalApplicationCommands() {
-			return DiscordCoreClient::thisPointer->applicationCommands->getGlobalApplicationCommands();
-		}
-
-		static task<void> editGlobalApplicationCommandAsync() {
-			return DiscordCoreClient::thisPointer->applicationCommands->displayGlobalApplicationCommandsAsync();
+		static task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->deleteGlobalApplicationCommandAsync(dataPackage);
 		}
 	};
 

@@ -2410,8 +2410,8 @@ namespace DiscordCoreInternal {
             *pDataStructure = messageData;
         }
 
-        static void parseObject(json jsonObjectData, ApplicationCommandOptionChoiceData* pDataStructure) {
-            ApplicationCommandOptionChoiceData appCommandOptionChoiceData = *pDataStructure;
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandOptionChoiceData* pDataStructure) {
+            DiscordCoreAPI::ApplicationCommandOptionChoiceData appCommandOptionChoiceData = *pDataStructure;
 
             if (jsonObjectData.contains("name") && !jsonObjectData.at("name").is_null()) {
                 appCommandOptionChoiceData.name = jsonObjectData.at("name").get<string>();
@@ -2428,8 +2428,8 @@ namespace DiscordCoreInternal {
             *pDataStructure = appCommandOptionChoiceData;
         }
 
-        static void parseObject(json jsonObjectData, ApplicationCommandOptionData* pDataStructure) {
-            ApplicationCommandOptionData appCommandOptionData = *pDataStructure;
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandOptionData* pDataStructure) {
+            DiscordCoreAPI::ApplicationCommandOptionData appCommandOptionData = *pDataStructure;
 
             if (jsonObjectData.contains("name") && !jsonObjectData.at("name").is_null()) {
                 appCommandOptionData.name = jsonObjectData.at("name").get<string>();
@@ -2444,14 +2444,14 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
-                appCommandOptionData.type = jsonObjectData.at("type").get<ApplicationCommandOptionType>();
+                appCommandOptionData.type = jsonObjectData.at("type").get<DiscordCoreAPI::ApplicationCommandOptionType>();
             }
 
-            if (appCommandOptionData.type == ApplicationCommandOptionType::SUB_COMMAND_GROUP || appCommandOptionData.type == ApplicationCommandOptionType::SUB_COMMAND) {
+            if (appCommandOptionData.type == DiscordCoreAPI::ApplicationCommandOptionType::SUB_COMMAND_GROUP || appCommandOptionData.type == DiscordCoreAPI::ApplicationCommandOptionType::SUB_COMMAND) {
                 if (jsonObjectData.contains("options") && !jsonObjectData.at("options").is_null()) {
-                    vector<ApplicationCommandOptionData> newVector;
+                    vector<DiscordCoreAPI::ApplicationCommandOptionData> newVector;
                     for (auto newValue : jsonObjectData.at("options")) {
-                        ApplicationCommandOptionData appCommandOptionDataNew;
+                        DiscordCoreAPI::ApplicationCommandOptionData appCommandOptionDataNew;
                         parseObject(newValue, &appCommandOptionDataNew);
                         newVector.push_back(appCommandOptionDataNew);
                     }
@@ -2460,9 +2460,9 @@ namespace DiscordCoreInternal {
             }
             else {
                 if (jsonObjectData.contains("choices") && !jsonObjectData.at("choices").is_null()) {
-                    vector<ApplicationCommandOptionChoiceData> newVector;
+                    vector<DiscordCoreAPI::ApplicationCommandOptionChoiceData> newVector;
                     for (auto newValue : jsonObjectData.at("choices")) {
-                        ApplicationCommandOptionChoiceData appCommandChoiceData;
+                        DiscordCoreAPI::ApplicationCommandOptionChoiceData appCommandChoiceData;
                         parseObject(newValue, &appCommandChoiceData);
                         newVector.push_back(appCommandChoiceData);
                     }
@@ -2473,8 +2473,8 @@ namespace DiscordCoreInternal {
             *pDataStructure = appCommandOptionData;
         }
 
-        static void parseObject(json jsonObjectData, ApplicationCommandData* pDataStructure) {
-            ApplicationCommandData appCommandData = *pDataStructure;
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandData* pDataStructure) {
+            DiscordCoreAPI::ApplicationCommandData appCommandData = *pDataStructure;
 
             if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
                 appCommandData.id = jsonObjectData.at("id").get<string>();
@@ -2497,9 +2497,9 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("options") && !jsonObjectData.at("options").is_null()) {
-                vector<ApplicationCommandOptionData> newVector;
+                vector<DiscordCoreAPI::ApplicationCommandOptionData> newVector;
                 for (auto newValue : jsonObjectData.at("options")) {
-                    ApplicationCommandOptionData appCommandOptionData;
+                    DiscordCoreAPI::ApplicationCommandOptionData appCommandOptionData;
                     parseObject(newValue, &appCommandOptionData);
                     newVector.push_back(appCommandOptionData);
                 }
