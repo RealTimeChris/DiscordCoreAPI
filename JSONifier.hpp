@@ -1920,7 +1920,7 @@ namespace DiscordCoreInternal {
 						 "components", components} };
 				 componentsActionRow.push_back(componentActionRow);
 			 }
-			 cout << "FLAGS VALUE: " << dataPackage.flags << endl;
+
 			 if (dataPackage.content == "") {
 				 json data = {
 					 {"tts", dataPackage.tts},

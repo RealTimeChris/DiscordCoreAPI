@@ -3700,32 +3700,7 @@ namespace DiscordCoreAPI {
         vector<YouTubeFormat> formats{};
     };
 
-    struct YouTubeSongDB {
-        string imageURL{ "" };
-        string title{ "" };
-        string formatDownloadURL{ "" };
-        string url{ "" };
-        string description{ "" };
-        string duration{ "" };
-        string videoId{ "" };
-        string songId{ "" };
-        int contentLength{ 0 };
-    };
-
     struct YouTubeSong {
-        operator YouTubeSongDB() {
-            YouTubeSongDB newData;
-            newData.contentLength = this->contentLength;
-            newData.description = this->description;
-            newData.duration = this->duration;
-            newData.formatDownloadURL = this->formatDownloadURL;
-            newData.imageURL = this->imageURL;
-            newData.songId = this->songId;
-            newData.title = this->title;
-            newData.url = this->url;
-            newData.videoId = this->videoId;
-            return newData;
-        }
         AudioFrameData frames{};
         int contentLength{ 0 };
         string imageURL{ "" };
@@ -3738,91 +3713,11 @@ namespace DiscordCoreAPI {
         string songId{ "" };
     };
 
-    struct Playlist {
-        Playlist() {}
-        string getVideoId() {
-            if (this->currentSong.videoId != "") {
-                return this->currentSong.videoId;
-            }
-            else if (this->songs.size() > 0) {
-                return this->songs.at(0).videoId;
-            }
-            else {
-                return string{};
-            }
-        }
-        string getVideoURL() {
-            if (this->currentSong.url != "") {
-                return this->currentSong.url;
-            }
-            else if (this->songs.size() > 0) {
-                return this->songs.at(0).url;
-            }
-            else {
-                return string{};
-            }
-        }
-        string getImageURL() {
-            if (this->currentSong.imageURL != "") {
-                return this->currentSong.imageURL;
-            }
-            else if (this->songs.size() > 0) {
-                return this->songs.at(0).imageURL;
-            }
-            else {
-                return string{};
-            }
-        }
-        string getDuration() {
-            if (this->currentSong.duration != "") {
-                return this->currentSong.duration;
-            }
-            else if (this->songs.size() > 0) {
-                return this->songs.at(0).duration;
-            }
-            else {
-                return string{};
-            }
-        }
-        string getDescription() {
-            if (this->currentSong.description != "") {
-                return this->currentSong.description;
-            }
-            else if (this->songs.size() > 0) {
-                return this->songs.at(0).description;
-            }
-            else {
-                return string{};
-            }
-        }
-        string getTitle() {
-            if (this->currentSong.title != "") {
-                return this->currentSong.title;
-            }
-            else if (this->songs.size() > 0) {
-                return this->songs.at(0).title;
-            }
-            else {
-                return string{};
-            }
-        }
-        vector<YouTubeSongDB> songs{};
-        YouTubeSongDB currentSong{};
-        string voiceChannelId{ "" };
-        string textChannelId{ "" };
-        bool loopAll{ false };
-        bool loopSong{ true };
-    };
-
-    struct SendNextSongInputData {
-        Playlist dataPackage{};
-    };
-
     struct SendNextSongReturnData {
     public:
-        Playlist dataPackage{};
         bool isThisTheLastOne{ false };
         bool isThisEmpty{ false };
+        YouTubeSong currentSong{};
     };
 
     static string commandPrefix;

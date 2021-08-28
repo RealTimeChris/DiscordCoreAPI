@@ -74,20 +74,9 @@ namespace DiscordCoreInternal {
 				cout << "Please specify voice data to send" << endl << endl;
 				return;
 			}
-
-			// Buffer any data we want to send.
-			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
-			DataWriter dataWriter(randomAccessStream);
-			dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-			dataWriter.WriteBytes(message);
-			dataWriter.StoreAsync().get();
-			if (randomAccessStream.CanRead()) {
-				DataReader dataReader(randomAccessStream.GetInputStreamAt(0));
-				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
-				dataReader.LoadAsync((uint32_t)message.size()).get();
-				IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.size());
-				this->voiceSocket.OutputStream().WriteAsync(buffer).get();
-				this->voiceSocket.OutputStream().FlushAsync().get();
+			else {
+				this->dataWriter.WriteBytes(message);
+				this->dataWriter.StoreAsync().get();
 			}
 
 			return;
@@ -106,10 +95,10 @@ namespace DiscordCoreInternal {
 
 			// Buffer any data we want to send.
 			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
-			DataWriter dataWriter(randomAccessStream);
-			dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-			dataWriter.WriteString(to_hstring(message));
-			dataWriter.StoreAsync().get();
+			DataWriter dataWriterMessage(randomAccessStream);
+			dataWriterMessage.UnicodeEncoding(UnicodeEncoding::Utf8);
+			dataWriterMessage.WriteString(to_hstring(message));
+			dataWriterMessage.StoreAsync().get();
 			randomAccessStream.FlushAsync().get();
 			if (randomAccessStream.CanRead()) {
 				DataReader dataReader(randomAccessStream.GetInputStreamAt(0));
@@ -137,6 +126,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
 		vector<uint8_t> secretKey{};
+		DataWriter dataWriter{ nullptr };
 		int audioSSRC{ 0 };
 		int heartbeatInterval{ 0 };
 		int lastNumberReceived{ 0 };
@@ -191,6 +181,8 @@ namespace DiscordCoreInternal {
 			auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voicePort)).get();
 			this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
 			this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
+			this->dataWriter = DataWriter(this->voiceSocket.GetOutputStreamAsync(hostName, to_hstring(this->voicePort)).get());
+			this->dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 		}
 
 		void run() {
