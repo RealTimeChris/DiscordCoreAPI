@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 
-			DiscordCoreAPI::CreateApplicationCommandData createBotInfoCommandData;
+			CreateApplicationCommandData createBotInfoCommandData;
 			createBotInfoCommandData.defaultPermission = true;
 			createBotInfoCommandData.description = "Displays info about the current bot.";
 			createBotInfoCommandData.name = "botinfo";
