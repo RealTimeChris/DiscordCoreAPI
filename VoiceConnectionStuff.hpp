@@ -100,6 +100,9 @@ namespace DiscordCoreAPI {
 				this->clearAudioData();
 				return true;
 			}
+			else {
+				return false;
+			}
 		}
 
 		bool skip() {
@@ -111,6 +114,9 @@ namespace DiscordCoreAPI {
 				receive(this->skipBuffer);
 				this->clearAudioData();
 				return true;
+			}
+			else {
+				return false;
 			}
 		}
 
