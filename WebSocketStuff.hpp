@@ -78,7 +78,6 @@ namespace DiscordCoreInternal {
 				this->dataWriter.WriteBytes(message);
 				this->dataWriter.StoreAsync().get();
 			}
-
 			return;
 		}
 

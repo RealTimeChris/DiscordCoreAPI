@@ -1054,7 +1054,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct InputEventData {
-        InputEventData() {}
         InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
             this->messageData = messageData;
             this->interactionData = interactionData;
@@ -1747,7 +1746,7 @@ namespace  DiscordCoreInternal {
         int deleteMessageDays{ 0 };
         string reason{ "" };
     };
-}
+};
 
 namespace DiscordCoreAPI {
 
@@ -3253,7 +3252,13 @@ namespace DiscordCoreAPI {
     };
 
     struct InputEventData {
-        InputEventData() {}
+        friend struct RecurseThroughMessagePagesData;
+        friend struct OnInteractionCreationData;
+        friend struct BaseFunctionArguments;
+        friend class DiscordCoreClient;
+        friend struct CommandData;
+        friend class InputEvents;
+        
         InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
             this->messageData = messageData;
             this->interactionData = interactionData;
@@ -3469,16 +3474,13 @@ namespace DiscordCoreAPI {
             return this->requesterId;
         }
     protected:
-        friend class CommandCenter;
-        friend class InputEvents;
-        friend struct CommandData;
-        friend class DiscordCoreClient;
-        friend class EventHandler;
         InteractionData interactionData{};
         UserCommandInteractionData userCommandInteractionData{};
         MessageCommandInteractionData messageCommandInteractionData{};
         MessageData messageData{};
         string requesterId{ "" };
+
+        InputEventData(){}
     };
 
     struct WebhookData {
@@ -3662,23 +3664,24 @@ namespace DiscordCoreAPI {
 
     struct RawFrameData {
         vector<uint8_t> data{};
-        uint32_t sampleCount{ 0 };
+        int32_t sampleCount{ -1 };
     };
 
     struct EncodedFrameData {
         vector<uint8_t> data{};
-        uint32_t sampleCount{ 0 };
+        int32_t sampleCount{ -1 };
     };
 
     enum class AudioFrameType {
-        Encoded = 0,
-        RawPCM = 1
+        Unset = 0,
+        Encoded = 1,
+        RawPCM = 2
     };
 
     struct AudioFrameData {
         AudioFrameType type{};
-        vector<EncodedFrameData> encodedFrameData{};
-        vector<RawFrameData> rawFrameData{};
+        EncodedFrameData encodedFrameData{};
+        RawFrameData rawFrameData{};
     };
 
     struct SoundCloudSearchResult {
@@ -3715,8 +3718,6 @@ namespace DiscordCoreAPI {
 
     struct SendNextSongReturnData {
     public:
-        bool isThisTheLastOne{ false };
-        bool isThisEmpty{ false };
         YouTubeSong currentSong{};
     };
 

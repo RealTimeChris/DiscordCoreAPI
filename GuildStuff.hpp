@@ -57,14 +57,14 @@ namespace DiscordCoreAPI {
 					if (DiscordCoreClientBase::audioBuffersMap.contains(this->data.id)) {
 						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
 						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
-						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, youtubeAPI);
 					}
 					else {
-						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData*>>();
+						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData>>();
 						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtr));
 						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
 						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
-						youtubeAPI->setAudioBuffer(DiscordCoreClientBase::audioBuffersMap.at(this->data.id));
+						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, youtubeAPI);
 					}
 					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
 					return voiceConnectionPtr;
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, sharedPtr);
 				}
 				else {
-					shared_ptr<unbounded_buffer<AudioFrameData*>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData*>>();
+					shared_ptr<unbounded_buffer<AudioFrameData>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
 					DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtrBuffer));
 					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->data.id, DiscordCoreClientBase::youtubeAPIMap);
 					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, sharedPtr);

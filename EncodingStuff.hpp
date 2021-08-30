@@ -13,15 +13,9 @@
 
 namespace DiscordCoreAPI {
 
-    struct BuildSongEncoderData {
-    public:
-		vector<RawFrameData> rawFrames{};
-    };
-
 	class SongEncoder {
 	public:
-        SongEncoder(BuildSongEncoderData dataPackage) {
-			this->rawFrames = dataPackage.rawFrames;
+        SongEncoder() {
 			int error;
 			this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 			if (error != OPUS_OK) {
@@ -29,15 +23,15 @@ namespace DiscordCoreAPI {
 			}
         }
 
-		AudioFrameData encodeSong() {
-			vector<EncodedFrameData> newVector;
-			for (int x = 0; x < this->rawFrames.size(); x += 1) {
-				newVector.push_back(encodeSingleAudioFrame(this->rawFrames[x]));
+		vector<AudioFrameData> encodeFrames(vector<RawFrameData> rawFrames) {
+			vector<AudioFrameData> newData;
+			for (int x = 0; x < rawFrames.size(); x += 1) {
+				AudioFrameData frameData;
+				frameData.type = AudioFrameType::Encoded;
+				frameData.encodedFrameData = encodeSingleAudioFrame(rawFrames[x]);
+				newData.push_back(frameData);
 			}
-			this->rawFrames.clear();
-			AudioFrameData newData;
-			newData.type = AudioFrameType::Encoded;
-			newData.encodedFrameData = newVector;
+			rawFrames.clear();
 			return newData;
 		}
 
@@ -46,7 +40,6 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		vector<RawFrameData> rawFrames{};
 		OpusEncoder* encoder{ nullptr };
 		const int nChannels{ 2 };
 		const int maxBufferSize{ 1276 };
@@ -69,6 +62,7 @@ namespace DiscordCoreAPI {
 			EncodedFrameData encodedFrame;
 			encodedFrame.data = newVector;
 			encodedFrame.sampleCount = sampleCount;
+			cout << "DATA SIZE: " << encodedFrame.data.size() << endl;
 			delete oldBuffer;
 			oldBuffer = nullptr;
 			delete newBuffer;
