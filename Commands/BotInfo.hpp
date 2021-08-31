@@ -62,14 +62,14 @@ namespace DiscordCoreAPI {
 
             EmbedData messageEmbed;
             messageEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-            messageEmbed.setImage(args->eventData.discordCoreClient->currentUser->data.avatar);
+            messageEmbed.setImage(args->eventData.discordCoreClient->currentUser.avatar);
             messageEmbed.setColor("FEFEFE");
             messageEmbed.setTitle("__**Bot Info:**__");
             messageEmbed.setTimeStamp(getTimeAndDate());
-            messageEmbed.addField("__Bot Name:__", args->eventData.discordCoreClient->currentUser->data.username, true);
-            messageEmbed.addField("__Bot ID:__", args->eventData.discordCoreClient->currentUser->data.id, true);
+            messageEmbed.addField("__Bot Name:__", args->eventData.discordCoreClient->currentUser.username, true);
+            messageEmbed.addField("__Bot ID:__", args->eventData.discordCoreClient->currentUser.id, true);
             messageEmbed.addField("__Guild Count:__", to_string(args->eventData.discordCoreClient->discordUser->data.guildCount), true);
-            messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser->data.createdAt, true);
+            messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser.createdAt, true);
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 ReplyMessageData dataPackage(args->eventData);
                 dataPackage.addMessageEmbed(messageEmbed);
