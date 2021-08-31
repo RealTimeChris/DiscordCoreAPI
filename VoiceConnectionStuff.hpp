@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 					}
 
 					voiceConnection->doWeQuit = true;
-					DiscordCoreClientBase::currentUser->updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
+					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
 					if (voiceConnection->threadContext->schedulerGroup != nullptr) {
 						voiceConnection->threadContext->releaseGroup();
 					}

@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
-		static shared_ptr<BotUser> currentUser;
+		static BotUser currentUser;
 
 		DiscordCoreClientBase() {};
 
@@ -41,7 +41,8 @@ namespace DiscordCoreAPI {
 			this->roles->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
 			this->users = make_shared<DiscordCoreInternal::UserManager>(nullptr);
 			this->users->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
-			DiscordCoreClientBase::currentUser = make_shared<BotUser>(this->users->fetchCurrentUserAsync().get().data, discordCoreClient, pWebSocketConnectionAgentNew);
+			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
+			DiscordCoreClientBase::currentUser.Initialize(pWebSocketConnectionAgentNew);
 			DiscordCoreClientBase::pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
 		}
 
@@ -59,7 +60,7 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> DiscordCoreClientBase::audioBuffersMap{};
-	shared_ptr<BotUser> DiscordCoreClientBase::currentUser{};
+	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::pWebSocketConnectionAgent{ nullptr };
 }

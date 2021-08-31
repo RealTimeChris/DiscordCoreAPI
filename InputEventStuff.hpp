@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
-			dataPackageNewer.messageData = message.data;
+			dataPackageNewer.messageData = message;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			return dataPackageNewer;
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
-			dataPackageNewer.messageData = message.data;
+			dataPackageNewer.messageData = message;
 			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			return dataPackageNewer;
 		}
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 			Message message = InputEvents::messages->editMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
-			dataPackageNewer.messageData = message.data;
+			dataPackageNewer.messageData = message;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_EDIT;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
@@ -168,11 +168,11 @@ namespace DiscordCoreAPI {
 
 		static InputEventData respondToEvent(SendDMData dataPackage) {
 			Channel dmChannel = InputEvents::discordCoreClientBase->channels->fetchDMChannelAsync({ .userId = dataPackage.userId }).get();
-			dataPackage.channelId = dmChannel.data.id;
+			dataPackage.channelId = dmChannel.id;
 			Message message = InputEvents::messages->sendDMAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
-			dataPackageNewer.messageData = message.data;
+			dataPackageNewer.messageData = message;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
 			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			return dataPackageNewer;

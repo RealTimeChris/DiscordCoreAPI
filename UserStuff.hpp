@@ -25,23 +25,25 @@ namespace DiscordCoreAPI {
 	class Guild;
 	class Users;
 
-	class Application {
+	class Application : public ApplicationData {
 	public:
-		DiscordCoreInternal::ApplicationData data{};
+
+		friend struct Concurrency::details::_ResultHolder<Application>;
+		friend class DiscordCoreInternal::UserManagerAgent;
+		friend class DiscordCoreInternal::UserManager;
+
+	protected:
 
 		Application() {};
 
 		Application(DiscordCoreInternal::ApplicationData dataNew) {
-			this->data = dataNew;
+			*this = dataNew;
 		}
-
-	protected:
-		friend class UserManager;
-		friend class UserManagerAgent;
 	};
 
-	class User {
+	class User : public UserData {
 	public:
+
 		friend struct Concurrency::details::_ResultHolder<User>;
 		friend class DiscordCoreInternal::UserManagerAgent;
 		friend class DiscordCoreInternal::UserManager;
@@ -52,16 +54,26 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class Guild;
 
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		DiscordCoreInternal::UserData data{};
-
 	protected:
 
 		User() {};
 
-		User(DiscordCoreInternal::UserData dataNew, shared_ptr<DiscordCoreClient> coreClientNew) {
-			this->data = dataNew;
-			this->discordCoreClient = coreClientNew;
+		User(UserData dataNew) {
+			this->avatar = dataNew.avatar;
+			this->bot = dataNew.bot;
+			this->createdAt = dataNew.createdAt;
+			this->discordCoreClient = dataNew.discordCoreClient;
+			this->discriminator = dataNew.discriminator;
+			this->email = dataNew.email;
+			this->flags = dataNew.flags;
+			this->id = dataNew.id;
+			this->locale = dataNew.locale;
+			this->mfaEnabled = dataNew.mfaEnabled;
+			this->premiumType = dataNew.premiumType;
+			this->publicFlags = dataNew.publicFlags;
+			this->system = dataNew.system;
+			this->username = dataNew.username;
+			this->verified = dataNew.verified;
 		}
 	};
 
@@ -78,13 +90,34 @@ namespace DiscordCoreAPI {
 		bool selfDeaf{ false };
 	};
 
-	class BotUser : public User {
+	class BotUser : public UserData {
 	public:
 
-		BotUser(DiscordCoreInternal::UserData userDataNew, shared_ptr<DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
+		friend class DiscordCoreClientBase;
+		friend class DiscordCoreClient;
+
+		BotUser(BotUser* dataPackage) {
+			if (dataPackage != nullptr) {
+				this->avatar = dataPackage->avatar;
+				this->bot = dataPackage->bot;
+				this->createdAt = dataPackage->createdAt;
+				this->discordCoreClient = dataPackage->discordCoreClient;
+				this->discriminator = dataPackage->discriminator;
+				this->email = dataPackage->email;
+				this->flags = dataPackage->flags;
+				this->id = dataPackage->id;
+				this->locale = dataPackage->locale;
+				this->mfaEnabled = dataPackage->mfaEnabled;
+				this->premiumType = dataPackage->premiumType;
+				this->publicFlags = dataPackage->publicFlags;
+				this->system = dataPackage->system;
+				this->username = dataPackage->username;
+				this->verified = dataPackage->verified;
+			}
+		}
+
+		void Initialize(shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
 			this->pConnectionWebSocketAgent = pConnectionWebSocketAgentNew;
-			this->data = userDataNew;
-			this->discordCoreClient = coreClientNew;
 		}
 
 		void updateVoiceStatus(UpdateVoiceStateData dataPackage) {
@@ -111,9 +144,28 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		~BotUser() {}
-
 	protected:
+
+		~BotUser() {};
+
+		BotUser(UserData dataPackage) {
+			this->avatar = dataPackage.avatar;
+			this->bot = dataPackage.bot;
+			this->createdAt = dataPackage.createdAt;
+			this->discordCoreClient = dataPackage.discordCoreClient;
+			this->discriminator = dataPackage.discriminator;
+			this->email = dataPackage.email;
+			this->flags = dataPackage.flags;
+			this->id = dataPackage.id;
+			this->locale = dataPackage.locale;
+			this->mfaEnabled = dataPackage.mfaEnabled;
+			this->premiumType = dataPackage.premiumType;
+			this->publicFlags = dataPackage.publicFlags;
+			this->system = dataPackage.system;
+			this->username = dataPackage.username;
+			this->verified = dataPackage.verified;
+		}
+
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgent{ nullptr };
 	};
 
@@ -131,8 +183,10 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreInternal {
+
 	class UserManagerAgent : agent {
 	protected:
+
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class UserManager;
 
@@ -196,8 +250,9 @@ namespace DiscordCoreInternal {
 				cout << "UserManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::UserData userData;
+			userData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &userData);
-			DiscordCoreAPI::User userNew(userData, this->discordCoreClient);
+			DiscordCoreAPI::User userNew(userData);
 			return userNew;
 		}
 
@@ -279,16 +334,17 @@ namespace DiscordCoreInternal {
 				if (try_receive(this->requestLeaveGuildBuffer, dataPackage04)) {
 					deleteObjectData(dataPackage04);
 				}
-				UserData dataPackage05;
-				DiscordCoreAPI::User user(dataPackage05, this->discordCoreClient);
+				DiscordCoreAPI::UserData dataPackage05;
+				dataPackage05.discordCoreClient = this->discordCoreClient;
+				DiscordCoreAPI::User user(dataPackage05);
 				while (this->usersToInsert.try_pop(user)) {
 					map<string, DiscordCoreAPI::User> cacheTemp;
 					if (try_receive(UserManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(user.data.id)) {
-							cacheTemp.erase(user.data.id);
+						if (cacheTemp.contains(user.id)) {
+							cacheTemp.erase(user.id);
 						}
 					}
-					cacheTemp.insert(make_pair(user.data.id, user));
+					cacheTemp.insert(make_pair(user.id, user));
 					send(UserManagerAgent::cache, cacheTemp);
 				}
 
@@ -353,8 +409,9 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::fetchAsync");
-			UserData userData;
-			DiscordCoreAPI::User user(userData, this->discordCoreClient);
+			DiscordCoreAPI::UserData userData;
+			userData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::User user(userData);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
 		}
@@ -369,8 +426,9 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::fetchCurrentUserAsync");
-			UserData userData;
-			DiscordCoreAPI::User user(userData, this->discordCoreClient);
+			DiscordCoreAPI::UserData userData;
+			userData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::User user(userData);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
 		}
@@ -385,8 +443,9 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::getUserAsync");
-			UserData userData;
-			DiscordCoreAPI::User user(userData, this->discordCoreClient);
+			DiscordCoreAPI::UserData userData;
+			userData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::User user(userData);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
 		}

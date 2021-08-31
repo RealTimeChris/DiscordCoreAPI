@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 	class EventHandler;
 	class Guilds;
 
-	class Guild {
+	class Guild :public GuildData {
 	public:
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::GuildManagerAgent;
@@ -41,35 +41,32 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildUpdateData;
 		friend class DiscordCoreClient;
 
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		GuildData data{};
-
 		shared_ptr<VoiceConnection> connectToVoice(string channelId) {
 			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
-			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->data.id)) {
-				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->data.id);
+			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
+				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 				return voiceConnectionPtr;
 			}
 			else if (channelId != "") {
 				if ((voiceConnectionPtr == nullptr || voiceConnectionPtr->voiceConnectionData.channelId != channelId)) {
-					auto voiceConnectData = DiscordCoreClientBase::pWebSocketConnectionAgent->getVoiceConnectionData(channelId, this->data.id);
+					auto voiceConnectData = DiscordCoreClientBase::pWebSocketConnectionAgent->getVoiceConnectionData(channelId, this->id);
 					voiceConnectData.channelId = channelId;
-					voiceConnectData.guildId = this->data.id;
+					voiceConnectData.guildId = this->id;
 					voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
-					voiceConnectData.userId = this->discordCoreClientBase->currentUser->data.id;
-					if (DiscordCoreClientBase::audioBuffersMap.contains(this->data.id)) {
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
-						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
-						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, youtubeAPI);
+					voiceConnectData.userId = this->discordCoreClientBase->currentUser.id;
+					if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
+						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->id), this->discordCoreClientBase);
+						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
+						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
 					else {
 						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData>>();
-						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtr));
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->discordCoreClientBase);
-						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
-						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, youtubeAPI);
+						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtr));
+						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->id), this->discordCoreClientBase);
+						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
+						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
-					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->data.id, voiceConnectionPtr));
+					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->id, voiceConnectionPtr));
 					return voiceConnectionPtr;
 				}
 			}
@@ -77,8 +74,8 @@ namespace DiscordCoreAPI {
 		}
 
 		shared_ptr<YouTubeAPI> getYouTubeAPI() {
-			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->data.id)) {
-				return DiscordCoreClientBase::youtubeAPIMap->at(this->data.id);
+			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
+				return DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 			}
 			else {
 				return nullptr;
@@ -87,26 +84,73 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
-
 		Guild() {};
 
-		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->discordCoreClientBase = discordCoreClientBaseNew;
-			this->data = dataNew;
-			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->data.id)) {
+		Guild(GuildData dataNew) {
+			this->icon = dataNew.icon;
+			this->name = dataNew.name;
+			this->id = dataNew.id;
+			this->iconHash = dataNew.iconHash;
+			this->splash = dataNew.splash;
+			this->discoverySplash = dataNew.discoverySplash;
+			this->preferredLocale = dataNew.preferredLocale;
+			this->publicUpdatesChannelID = dataNew.publicUpdatesChannelID;
+			this->vanityURLCode = dataNew.vanityURLCode;
+			this->description = dataNew.description;
+			this->banner = dataNew.banner;
+			this->ruleChannelID = dataNew.ruleChannelID;
+			this->applicationID = dataNew.applicationID;
+			this->createdAt = dataNew.createdAt;
+			this->joinedAt = dataNew.joinedAt;
+			this->widgetChannelID = dataNew.widgetChannelID;
+			this->systemChannelID = dataNew.systemChannelID;
+			this->region = dataNew.region;
+			this->afkChannelID = dataNew.afkChannelID;
+			this->ownerID = dataNew.ownerID;
+			this->features = dataNew.features;
+			this->threads = dataNew.threads;
+			this->permissions = dataNew.permissions;
+			this->owner = dataNew.owner;
+			this->afkTimeOut = dataNew.afkTimeOut;
+			this->widgetEnabled = dataNew.widgetEnabled;
+			this->verificationLevel = dataNew.verificationLevel;
+			this->defaultMessageNotifications = dataNew.defaultMessageNotifications;
+			this->explicitContentFilter = dataNew.explicitContentFilter;
+			this->emoji = dataNew.emoji;
+			this->roles = dataNew.roles;
+			this->systemChannelFlags = dataNew.systemChannelFlags;
+			this->mfaLevel = dataNew.mfaLevel;
+			this->large = dataNew.large;
+			this->voiceStates = dataNew.voiceStates;
+			this->presences = dataNew.presences;
+			this->maxPresences = dataNew.maxPresences;
+			this->maxMembers = dataNew.maxMembers;
+			this->premiumSubscriptionCount = dataNew.premiumSubscriptionCount;
+			this->premiumTier = dataNew.premiumTier;
+			this->maxVideoChannelUsers = dataNew.maxVideoChannelUsers;
+			this->approximateMemberCount = dataNew.approximateMemberCount;
+			this->unavailable = dataNew.unavailable;
+			this->memberCount = dataNew.memberCount;
+			this->approximatePresenceCount = dataNew.approximatePresenceCount;
+			this->nsfwLevel= dataNew.nsfwLevel;
+			this->welcomeScreen = dataNew.welcomeScreen;
+			this->members= dataNew.members;
+			this->channels = dataNew.channels;
+			this->stageInstances = dataNew.stageInstances;
+			this->discordCoreClient = dataNew.discordCoreClient;
+			this->discordCoreClientBase = dataNew.discordCoreClientBase;
+			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
 			}
 			else {
-				if (DiscordCoreClientBase::audioBuffersMap.contains(this->data.id)) {
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->data.id, DiscordCoreClientBase::youtubeAPIMap);
-					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, sharedPtr);
+				if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap);
+					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
 				}
 				else {
 					shared_ptr<unbounded_buffer<AudioFrameData>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-					DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->data.id, sharedPtrBuffer));
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->data.id), this->data.id, DiscordCoreClientBase::youtubeAPIMap);
-					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->data.id, sharedPtr);
+					DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtrBuffer));
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap);
+					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
 				}
 			}
 			return;
@@ -114,38 +158,42 @@ namespace DiscordCoreAPI {
 
 		void initialize() {
 			try {
-				cout << "Caching guild: " << this->data.name << endl;
-				cout << "Caching channels for guild: " << this->data.name << endl;
-				for (auto value : data.channels) {
-					value.guildId = this->data.id;
+				cout << "Caching guild: " << this->name << endl;
+				cout << "Caching channels for guild: " << this->name << endl;
+				for (auto value : channels) {
+					value.guildId = this->id;
 					ChannelData channelData = value;
-					Channel channel(channelData, this->discordCoreClient);
+					channelData.discordCoreClient = this->discordCoreClient;
+					Channel channel(channelData);
 					this->discordCoreClientBase->channels->insertChannelAsync(channel).get();
 				}
-				cout << "Caching guild members for guild: " << this->data.name << endl;
-				for (unsigned int x = 0; x < this->data.members.size(); x += 1) {
-					GuildMemberData guildMemberData = this->data.members.at(x);
-					for (auto value : this->data.voiceStates) {
+				cout << "Caching guild members for guild: " << this->name << endl;
+				for (unsigned int x = 0; x < this->members.size(); x += 1) {
+					GuildMemberData guildMemberData = this->members.at(x);
+					for (auto value : this->voiceStates) {
 						if (value.userId == guildMemberData.user.id) {
 							guildMemberData.voiceData = value;
 						}
 					}
-					guildMemberData.guildId = this->data.id;
+					guildMemberData.guildId = this->id;
+					guildMemberData.discordCoreClient = this->discordCoreClient;
 					DiscordGuildMember discordGuildMember(guildMemberData);
 					discordGuildMember.writeDataToDB();
-					GuildMember guildMember(guildMemberData, this->data.id, this->discordCoreClient);
-					this->discordCoreClientBase->guildMembers->insertGuildMemberAsync(guildMember, this->data.id).get();
+					GuildMember guildMember(guildMemberData, this->id);
+					this->discordCoreClientBase->guildMembers->insertGuildMemberAsync(guildMember, this->id).get();
 				}
-				cout << "Caching roles for guild: " << this->data.name << endl;
-				for (auto const& value : data.roles) {
+				cout << "Caching roles for guild: " << this->name << endl;
+				for (auto const& value : roles) {
 					RoleData roleData = value;
-					Role role(roleData, this->discordCoreClient);
+					roleData.discordCoreClient = this->discordCoreClient;
+					Role role(roleData);
 					this->discordCoreClientBase->roles->insertRoleAsync(role).get();
 				}
-				cout << "Caching users for guild: " << this->data.name << endl << endl;
-				for (auto value : data.members) {
-					DiscordCoreInternal::UserData userData = value.user;
-					User user(userData, this->discordCoreClient);
+				cout << "Caching users for guild: " << this->name << endl << endl;
+				for (auto value : members) {
+					UserData userData = value.user;
+					userData.discordCoreClient = this->discordCoreClient;
+					User user(userData);
 					this->discordCoreClientBase->users->insertUserAsync(user).get();
 				}
 			}
@@ -263,8 +311,10 @@ namespace DiscordCoreInternal	{
 				cout << "GuildManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::GuildData guildData;
+			guildData.discordCoreClient = this->discordCoreClient;
+			guildData.discordCoreClientBase = this->discordCoreClientBase;
 			DataParser::parseObject(returnData.data, &guildData);
-			DiscordCoreAPI::Guild guildNew(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
+			DiscordCoreAPI::Guild guildNew(guildData);
 			return guildNew;
 		}
 
@@ -461,11 +511,11 @@ namespace DiscordCoreInternal	{
 				while (this->guildsToInsert.try_pop(guildNew)) {
 					map<string, DiscordCoreAPI::Guild> cacheTemp;
 					try_receive(GuildManagerAgent::cache, cacheTemp);
-					if (cacheTemp.contains(guildNew.data.id)) {
-						cacheTemp.erase(guildNew.data.id);
+					if (cacheTemp.contains(guildNew.id)) {
+						cacheTemp.erase(guildNew.id);
 					}
 					guildNew.initialize();
-					cacheTemp.insert(make_pair(guildNew.data.id, guildNew));
+					cacheTemp.insert(make_pair(guildNew.id, guildNew));
 					send(GuildManagerAgent::cache, cacheTemp);
 				}
 			}
@@ -533,10 +583,12 @@ namespace DiscordCoreInternal	{
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManager::fetchAsync");
 			DiscordCoreAPI::GuildData guildData;
-			DiscordCoreAPI::Guild guild(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
-			try_receive(requestAgent.outGuildBuffer, guild);
+			guildData.discordCoreClient = this->discordCoreClient;
+			guildData.discordCoreClientBase = this->discordCoreClientBase;
+			DiscordCoreAPI::Guild guildNew(guildData);
+			try_receive(requestAgent.outGuildBuffer, guildNew);
 			co_await mainThread;
-			co_return guild;
+			co_return guildNew;
 		}
 
 		task<vector<DiscordCoreAPI::InviteData>> fetchInvitesAsync(DiscordCoreAPI::FetchInvitesData dataPackage) {
@@ -642,10 +694,12 @@ namespace DiscordCoreInternal	{
 			agent::wait(&requestAgent);
 			requestAgent.getError("GuildManager::getGuildAsync");
 			DiscordCoreAPI::GuildData guildData;
-			DiscordCoreAPI::Guild guild(this->agentResources, guildData, this->discordCoreClient, this->discordCoreClientBase);
-			try_receive(requestAgent.outGuildBuffer, guild);
+			guildData.discordCoreClient = this->discordCoreClient;
+			guildData.discordCoreClientBase = this->discordCoreClientBase;
+			DiscordCoreAPI::Guild guildNew(guildData);
+			try_receive(requestAgent.outGuildBuffer, guildNew);
 			co_await mainThread;
-			co_return guild;
+			co_return guildNew;
 		}
 
 		task<vector<DiscordCoreAPI::Guild>> getAllGuildsAsync() {

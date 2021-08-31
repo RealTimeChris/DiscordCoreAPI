@@ -22,24 +22,28 @@ namespace DiscordCoreAPI {
 
 	class Reactions;
 
-	class Reaction {
+	class Reaction : public ReactionData {
 	public:
 		friend struct Concurrency::details::_ResultHolder<Reaction>;
 		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::ReactionManager;
 		friend struct OnReactionAddData;
-		friend class DiscordCoreClient;		
-
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		DiscordCoreInternal::ReactionData data{};
+		friend class DiscordCoreClient;
 
 	protected:
 
 		Reaction() {};
 
-		Reaction(DiscordCoreInternal::ReactionData reactionData, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->data = reactionData;
+		Reaction(ReactionData dataNew) {
+			this->count = dataNew.count;
+			this->me = dataNew.me;
+			this->emoji = dataNew.emoji;
+			this->userId = dataNew.userId;
+			this->channelId = dataNew.channelId;
+			this->messageId = dataNew.messageId;
+			this->guildId = dataNew.guildId;
+			this->member = dataNew.member;
+			this->discordCoreClient = dataNew.discordCoreClient;
 		}
 	};
 
@@ -135,8 +139,9 @@ namespace DiscordCoreInternal {
 				cout << "this->putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::ReactionData reactionData;
+			reactionData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &reactionData);
-			DiscordCoreAPI::Reaction reaction(reactionData, this->discordCoreClient);
+			DiscordCoreAPI::Reaction reaction(reactionData);
 			return reaction;
 		}
 
@@ -256,8 +261,9 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("ReactionManager::createReactionAsync");
-			ReactionData reactionData;
-			DiscordCoreAPI::Reaction reaction(reactionData, this->discordCoreClient);
+			DiscordCoreAPI::ReactionData reactionData;
+			reactionData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Reaction reaction(reactionData);
 			try_receive(requestAgent.outReactionBuffer, reaction);
 			co_await mainThread;
 			co_return reaction;

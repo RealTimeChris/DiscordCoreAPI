@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 	class InputEvents;
 	class Channels;
 	
-	class Channel {
+	class Channel : public ChannelData {
 	public:
 		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::ChannelManagerAgent;
@@ -35,16 +35,36 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class Guild;
 
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		ChannelData data{};
-
 	protected:
 
 		Channel() {};
 
-		Channel(ChannelData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->data = dataNew;
+		Channel(ChannelData dataNew) {
+			this->id = dataNew.id;
+			this->type = dataNew.type;
+			this->guildId = dataNew.guildId;
+			this->position = dataNew.position;
+			this->permissionOverwrites = dataNew.permissionOverwrites;
+			this->name = dataNew.name;
+			this->topic = dataNew.topic;
+			this->nsfw = dataNew.nsfw;
+			this->lastMessageId = dataNew.lastMessageId;
+			this->bitrate = dataNew.bitrate;
+			this->userLimit = dataNew.userLimit;
+			this->rateLimitPerUser = dataNew.rateLimitPerUser;
+			this->recipients = dataNew.recipients;
+			this->icon = dataNew.icon;
+			this->ownerId = dataNew.ownerId;
+			this->applicationId = dataNew.applicationId;
+			this->parentId = dataNew.parentId;
+			this->lastPinTimestamp = dataNew.lastPinTimestamp;
+			this->rtcRegion = dataNew.rtcRegion;
+			this->videoQualityMode = dataNew.videoQualityMode;
+			this->messageCount = dataNew.messageCount;
+			this->memberCount = dataNew.memberCount;
+			this->threadMetadata = dataNew.threadMetadata;
+			this->member = dataNew.member;
+			this->discordCoreClient = dataNew.discordCoreClient;
 			return;
 		}
 	};
@@ -137,8 +157,9 @@ namespace DiscordCoreInternal	{
 				cout << "ChannelManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::ChannelData channelData;
+			channelData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &channelData);
-			DiscordCoreAPI::Channel channelNew(channelData, this->discordCoreClient);
+			DiscordCoreAPI::Channel channelNew(channelData);
 			return channelNew;
 		}
 
@@ -163,8 +184,9 @@ namespace DiscordCoreInternal	{
 				cout << "ChannelManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::ChannelData channelData;
+			channelData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &channelData);
-			DiscordCoreAPI::Channel channelNew(channelData, this->discordCoreClient);
+			DiscordCoreAPI::Channel channelNew(channelData);
 			return channelNew;
 		}
 
@@ -249,34 +271,35 @@ namespace DiscordCoreInternal	{
 					DiscordCoreAPI::Channel channel = postObjectData(dataPackage05);
 					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(channel.data.id)) {
-							cacheTemp.erase(channel.data.id);
-							cacheTemp.insert(make_pair(channel.data.id, channel));
+						if (cacheTemp.contains(channel.id)) {
+							cacheTemp.erase(channel.id);
+							cacheTemp.insert(make_pair(channel.id, channel));
 							send(this->outChannelBuffer, channel);
 							send(cache, cacheTemp);
 						}
 	 					else {
-							cacheTemp.insert(make_pair(channel.data.id, channel));
+							cacheTemp.insert(make_pair(channel.id, channel));
 							send(this->outChannelBuffer, channel);
 							send(cache, cacheTemp);
 						}
 					}
 					else {
-						cacheTemp.insert(make_pair(channel.data.id, channel));
+						cacheTemp.insert(make_pair(channel.id, channel));
 						send(this->outChannelBuffer, channel);
 						send(cache, cacheTemp);
 					}
 				}
 				DiscordCoreAPI::ChannelData dataPackage06;
-				DiscordCoreAPI::Channel channelNew(dataPackage06, this->discordCoreClient);
+				dataPackage06.discordCoreClient = this->discordCoreClient;
+				DiscordCoreAPI::Channel channelNew(dataPackage06);
 				while (this->channelsToInsert.try_pop(channelNew)) {
 					map<string, DiscordCoreAPI::Channel> cacheTemp;
 					if (try_receive(ChannelManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(channelNew.data.id)) {
-							cacheTemp.erase(channelNew.data.id);
+						if (cacheTemp.contains(channelNew.id)) {
+							cacheTemp.erase(channelNew.id);
 						}
 					}
-					cacheTemp.insert(make_pair(channelNew.data.id, channelNew));
+					cacheTemp.insert(make_pair(channelNew.id, channelNew));
 					send(ChannelManagerAgent::cache, cacheTemp);
 				}
 			}
@@ -342,7 +365,8 @@ namespace DiscordCoreInternal	{
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::fetchAsync");
 			DiscordCoreAPI::ChannelData channelData;
-			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
+			channelData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Channel channel(channelData);
 			try_receive(requestAgent.outChannelBuffer, channel);
 			co_await mainThread;
 			co_return channel;
@@ -360,7 +384,8 @@ namespace DiscordCoreInternal	{
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::getChannelAsync");
 			DiscordCoreAPI::ChannelData channelData;
-			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
+			channelData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Channel channel(channelData);
 			try_receive(requestAgent.outChannelBuffer, channel);
 			co_await mainThread;
 			co_return channel;
@@ -378,7 +403,8 @@ namespace DiscordCoreInternal	{
 			agent::wait(&requestAgent);
 			requestAgent.getError("ChannelManager::fetchDMChannelAsync");
 			DiscordCoreAPI::ChannelData channelData;
-			DiscordCoreAPI::Channel channel(channelData, this->discordCoreClient);
+			channelData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Channel channel(channelData);
 			try_receive(requestAgent.outChannelBuffer, channel);
 			co_await mainThread;
 			co_return channel;

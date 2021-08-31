@@ -1924,6 +1924,7 @@ namespace DiscordCoreAPI {
         bool hoist{ false };
         string id{ "" };
         int color{ 0 };
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
     };
 
     struct UserData {
@@ -1959,6 +1960,7 @@ namespace DiscordCoreAPI {
         int premiumType{ 0 };
         int publicFlags{ 0 };
         string createdAt{ "" };
+        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
     };
 
     struct EmojiData {
@@ -2453,6 +2455,7 @@ namespace DiscordCoreAPI {
         int memberCount{ 0 };
         ThreadMetadataData threadMetadata{};
         ThreadMemberData member{};
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
     };
 
     struct VoiceStateData {
@@ -2498,6 +2501,7 @@ namespace DiscordCoreAPI {
         string permissions{ "" };
         string userMention{ "" };
         VoiceStateData voiceData{};
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
     };
 
     struct ApplicationCommandInteractionDataResolved {
@@ -2626,6 +2630,7 @@ namespace DiscordCoreAPI {
         string messageId{ "" };
         string guildId{ "" };
         GuildMemberData member{};
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
     };
 
     enum class MessageType {
@@ -2885,6 +2890,7 @@ namespace DiscordCoreAPI {
         }
         string requesterId{ "" };
         MessageDataOld referencedMessage{};
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
     };
 
     struct InteractionData {
@@ -3156,6 +3162,8 @@ namespace DiscordCoreAPI {
         vector<GuildMemberData> members{};
         vector<ChannelData> channels{};
         vector<StageInstanceData> stageInstances{};
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
     };
 
     struct ReactionAddData {

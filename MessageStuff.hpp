@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 	class InputEvents;
 	class Messages;
 	
-	class Message {
+	class Message : public MessageData{
 	public:
 		friend struct Concurrency::details::_ResultHolder<Message>;
 		friend class DiscordCoreInternal::MessageManagerAgent;
@@ -34,16 +34,43 @@ namespace DiscordCoreAPI {
 		friend struct OnMessageUpdateData;
 		friend class DiscordCoreClient;
 
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		MessageData data{};
-
 	protected:
 
 		Message() {};
 
-		Message(MessageData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->data = dataNew;
-			this->discordCoreClient = discordCoreClientNew;
+		Message(MessageData dataNew) {
+			this->id = dataNew.id;
+			this->channelId = dataNew.channelId;
+			this->guildId = dataNew.guildId;
+			this->author = dataNew.author;
+			this->member = dataNew.member;
+			this->content = dataNew.content;
+			this->timestamp = dataNew.timestamp;
+			this->timestampRaw = dataNew.timestampRaw;
+			this->editedTimestamp = dataNew.editedTimestamp;
+			this->tts = dataNew.tts;
+			this->mentionEveryone = dataNew.mentionEveryone;
+			this->mentions = dataNew.mentions;
+			this->mentionRoles = dataNew.mentionRoles;
+			this->mentionChannels = dataNew.mentionChannels;
+			this->attachments = dataNew.attachments;
+			this->embeds = dataNew.embeds;
+			this->reactions = dataNew.reactions;
+			this->nonce = dataNew.nonce;
+			this->pinned = dataNew.pinned;
+			this->webhookId = dataNew.webhookId;
+			this->type = dataNew.type;
+			this->activity = dataNew.activity;
+			this->application = dataNew.application;
+			this->applicationId = dataNew.applicationId;
+			this->messageReference = dataNew.messageReference;
+			this->flags = dataNew.flags;
+			this->stickers = dataNew.stickers;
+			this->interaction = dataNew.interaction;
+			this->components = dataNew.components;
+			this->thread = dataNew.thread;
+			this->stickerItems = dataNew.stickerItems;
+			this->discordCoreClient = dataNew.discordCoreClient;
 		}
 	};
 
@@ -417,9 +444,10 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::getObject_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
+			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
 			messageData.requesterId = dataPackage.requesterId;
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			DiscordCoreAPI::Message messageNew(messageData);
 			return messageNew;
 		}
 
@@ -467,9 +495,9 @@ namespace DiscordCoreInternal {
 			vector<DiscordCoreAPI::Message> messagesVector{};
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::MessageData messageData;
-				DataParser::parseObject(value, &messageData);
-				DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
-				messagesVector.push_back(messageNew);
+				messageData.discordCoreClient = this->discordCoreClient;
+				DataParser::parseObject(returnData.data, &messageData);
+				DiscordCoreAPI::Message messageNew(messageData);
 			}
 			return messagesVector;
 		}
@@ -495,9 +523,9 @@ namespace DiscordCoreInternal {
 			vector<DiscordCoreAPI::Message> messagesVector{};
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::MessageData messageData;
-				DataParser::parseObject(value, &messageData);
-				DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
-				messagesVector.push_back(messageNew);
+				messageData.discordCoreClient = this->discordCoreClient;
+				DataParser::parseObject(returnData.data, &messageData);
+				DiscordCoreAPI::Message messageNew(messageData);
 			}
 			return messagesVector;
 		}
@@ -522,9 +550,10 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
-			messageData.requesterId = dataPackage.requesterId;
+			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			messageData.requesterId = dataPackage.requesterId;
+			DiscordCoreAPI::Message messageNew(messageData);
 			return messageNew;
 		}
 
@@ -549,9 +578,10 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
-			messageData.requesterId = dataPackage.requesterId;
+			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			messageData.requesterId = dataPackage.requesterId;
+			DiscordCoreAPI::Message messageNew(messageData);
 			return messageNew;
 		}
 
@@ -575,8 +605,9 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::postObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
+			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			DiscordCoreAPI::Message messageNew(messageData);
 			return messageNew;
 		}
 
@@ -774,9 +805,10 @@ namespace DiscordCoreInternal {
 			agent::wait(&requestAgent);
 			requestAgent.getError("MessageManager::replyAsync");
 			DiscordCoreAPI::MessageData messageData;
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			messageData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
-			messageNew.data.requesterId = dataPackage.requesterId;
+			messageNew.requesterId = dataPackage.requesterId;
 			co_await mainThread;
 			co_return messageNew;
 		}
@@ -806,8 +838,10 @@ namespace DiscordCoreInternal {
 			agent::wait(&requestAgent);
 			requestAgent.getError("MessageManager::sendDMAsync");
 			DiscordCoreAPI::MessageData messageData;
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			messageData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
+			messageNew.requesterId = dataPackage.requesterId;
 			co_await mainThread;
 			co_return messageNew;
 		}
@@ -835,9 +869,10 @@ namespace DiscordCoreInternal {
 			agent::wait(&requestAgent);
 			requestAgent.getError("MessageManager::createMessageAsync");
 			DiscordCoreAPI::MessageData messageData;
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			messageData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
-			messageNew.data.requesterId = dataPackage.requesterId;
+			messageNew.requesterId = dataPackage.requesterId;
 			co_await mainThread;
 			co_return messageNew;
 		}
@@ -870,9 +905,10 @@ namespace DiscordCoreInternal {
 			agent::wait(&requestAgent);
 			requestAgent.getError("MessageManager::editMessageAsync");
 			DiscordCoreAPI::MessageData messageData;
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			messageData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
-			messageNew.data.requesterId = dataPackage.requesterId;
+			messageNew.requesterId = dataPackage.requesterId;
 			co_await mainThread;
 			co_return messageNew;
 		}
@@ -985,8 +1021,10 @@ namespace DiscordCoreInternal {
 			exception error;
 			requestAgent.getError("MessageManager::fetchAsync");
 			DiscordCoreAPI::MessageData messageData;
-			DiscordCoreAPI::Message messageNew(messageData, this->discordCoreClient);
+			messageData.discordCoreClient = this->discordCoreClient;
+			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
+			messageNew.requesterId = dataPackage.requesterId;
 			co_await mainThread;
 			co_return messageNew;
 		}
