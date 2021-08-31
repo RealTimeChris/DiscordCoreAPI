@@ -13,7 +13,7 @@
 namespace DiscordCoreAPI {
 
     bool areWeInADM(InputEventData eventData, Channel channel, bool displayResponse = true) {
-        auto currentChannelType = channel.data.type;
+        auto currentChannelType = channel.type;
         if (currentChannelType == ChannelType::DM) {
             if (displayResponse) {
                 string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
@@ -303,19 +303,19 @@ namespace DiscordCoreAPI {
 
     protected:
         static string computeBasePermissions(GuildMember guildMember, shared_ptr<DiscordCoreInternal::GuildManager> guilds, shared_ptr<DiscordCoreInternal::RoleManager> roles) {
-            Guild guild = guilds->getGuildAsync({ guildMember.data.guildId }).get();
+            Guild guild = guilds->getGuildAsync({ guildMember.guildId }).get();
 
-            if (guild.data.ownerID == guildMember.data.user.id) {
+            if (guild.ownerID == guildMember.user.id) {
                 return getAllPermissions();
             }
 
-            Role everyone = roles->getRoleAsync({ .guildId = guild.data.id, .roleId = guild.data.id }).get();
-            string permissionsString = everyone.data.permissions;
+            Role everyone = roles->getRoleAsync({ .guildId = guild.id, .roleId = guild.id }).get();
+            string permissionsString = everyone.permissions;
             __int64 permissionsInt = stoll(permissionsString);
 
-            for (auto& role : guildMember.data.roles) {
-                Role currentRole = roles->getRoleAsync({ .guildId = guild.data.id, .roleId = role }).get();
-                permissionsInt |= stoll(currentRole.data.permissions);
+            for (auto& role : guildMember.roles) {
+                Role currentRole = roles->getRoleAsync({ .guildId = guild.id, .roleId = role }).get();
+                permissionsInt |= stoll(currentRole.permissions);
             }
 
             if ((permissionsInt & (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) == (__int64)DiscordCoreInternal::Permissions::ADMINISTRATOR) {
@@ -332,11 +332,11 @@ namespace DiscordCoreAPI {
                 return getAllPermissions();
             }
 
-            Guild guild = Guilds::getGuildAsync({ .guildId = guildMember.data.guildId }).get();
+            Guild guild = Guilds::getGuildAsync({ .guildId = guildMember.guildId }).get();
 
             DiscordCoreInternal::OverWriteData overwriteEveryone;
-            if (channel.data.permissionOverwrites.contains(guild.data.id)) {
-                overwriteEveryone = channel.data.permissionOverwrites.at(guild.data.id);
+            if (channel.permissionOverwrites.contains(guild.id)) {
+                overwriteEveryone = channel.permissionOverwrites.at(guild.id);
             }
 
             if (overwriteEveryone.id != "") {
@@ -344,23 +344,23 @@ namespace DiscordCoreAPI {
                 permissionsInt |= stoll(overwriteEveryone.allow);
             }
 
-            map<string, OverWriteData> overWrites = channel.data.permissionOverwrites;
+            map<string, OverWriteData> overWrites = channel.permissionOverwrites;
             __int64 allow = 0;
             __int64 deny = 0;
-            for (auto& role : guildMember.data.roles) {
-                Role currentRole = guildMember.discordCoreClient->roles->getRoleAsync({ .guildId = guildMember.data.guildId, .roleId = role }).get();
-                if (overWrites.contains(currentRole.data.id)) {
-                    allow |= stoll(overWrites.at(currentRole.data.id).allow);
-                    deny |= stoll(overWrites.at(currentRole.data.id).deny);
+            for (auto& role : guildMember.roles) {
+                Role currentRole = guildMember.discordCoreClient->roles->getRoleAsync({ .guildId = guildMember.guildId, .roleId = role }).get();
+                if (overWrites.contains(currentRole.id)) {
+                    allow |= stoll(overWrites.at(currentRole.id).allow);
+                    deny |= stoll(overWrites.at(currentRole.id).deny);
                 }
             }
 
             permissionsInt &= ~deny;
             permissionsInt |= allow;
 
-            if (overWrites.contains(guildMember.data.user.id)) {
-                permissionsInt &= ~stoll(overWrites.at(guildMember.data.user.id).deny);
-                permissionsInt |= stoll(overWrites.at(guildMember.data.user.id).allow);
+            if (overWrites.contains(guildMember.user.id)) {
+                permissionsInt &= ~stoll(overWrites.at(guildMember.user.id).deny);
+                permissionsInt |= stoll(overWrites.at(guildMember.user.id).allow);
             }
 
             stringstream stream;
@@ -379,7 +379,7 @@ namespace DiscordCoreAPI {
     bool checkForBotCommanderStatus(GuildMember guildMember, DiscordUser discordUser) {
         bool areWeACommander;
         for (auto& value : discordUser.data.botCommanders) {
-            if (guildMember.data.user.id == value) {
+            if (guildMember.user.id == value) {
                 areWeACommander = true;
                 return areWeACommander;
                 break;
@@ -404,7 +404,7 @@ namespace DiscordCoreAPI {
         if (displayResponse) {
             string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
             EmbedData msgEmbed;
-            msgEmbed.setAuthor(guildMember.data.user.username, guildMember.data.user.avatar);
+            msgEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
             msgEmbed.setColor(discordGuild.data.borderColor);
             msgEmbed.setDescription(msgString);
             msgEmbed.setTimeStamp(getTimeAndDate());

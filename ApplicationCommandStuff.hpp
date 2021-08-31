@@ -56,7 +56,12 @@ namespace DiscordCoreAPI {
         ApplicationCommand() {};
 
         ApplicationCommand(ApplicationCommandData dataNew) {
-            *this = dataNew;
+            this->applicationId = dataNew.applicationId;
+            this->defaultPermission = dataNew.defaultPermission;
+            this->description = dataNew.description;
+            this->id = dataNew.id;
+            this->name = dataNew.name;
+            this->options = dataNew.options;
         }
     };
 }

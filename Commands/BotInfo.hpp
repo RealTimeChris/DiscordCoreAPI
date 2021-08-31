@@ -24,15 +24,15 @@ namespace DiscordCoreAPI {
 
         virtual task<void>execute(shared_ptr<BaseFunctionArguments> args) {
 
-            if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE && Channels::getChannelAsync({ args->eventData.getChannelId() }).get().data.type != ChannelType::DM) {
+            if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE && Channels::getChannelAsync({ args->eventData.getChannelId() }).get().type != ChannelType::DM) {
                 InputEvents::deleteInputEventResponseAsync(args->eventData);
             }
-            else if(Channels::getChannelAsync({ args->eventData.getChannelId() }).get().data.type == ChannelType::DM || args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
+            else if(Channels::getChannelAsync({ args->eventData.getChannelId() }).get().type == ChannelType::DM || args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
                 args->argumentsArray.push_back("gamehouse");
             }
 
             Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
-            DiscordGuild discordGuild(guild.data);
+            DiscordGuild discordGuild(guild);
 
             if (args->argumentsArray.size() == 0 || (args->argumentsArray.at(0) != "janny" && args->argumentsArray.at(0) != "musichouse" && args->argumentsArray.at(0) != "gamehouse")) {
                 string msgString = "------\n**Please, enter the name of a bot as the first argument! (!botinfo = BOTNAME)**\n------";
