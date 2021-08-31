@@ -22,6 +22,11 @@ namespace DiscordCoreInternal{
 
 namespace DiscordCoreAPI {
 
+    class SelectMenuManager;
+    class ButtonManager;
+    class Interactions;
+    class InputEvents;
+
     struct ButtonInteractionData {
         friend class ButtonManager;
         friend class EventHandler;
@@ -736,7 +741,7 @@ namespace DiscordCoreInternal {
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
         InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)
-            :agent(*InteractionManagerAgent::threadContext->scheduler) {
+            :agent(*InteractionManagerAgent::threadContext->scheduler->ptrScheduler) {
             this->agentResources = agentResourcesNew;
         }
 
@@ -1013,9 +1018,39 @@ namespace DiscordCoreInternal {
     class InteractionManager {
     public:
 
-        InteractionManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+        template <class _Ty>
+        friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+        friend class DiscordCoreAPI::DiscordCoreClient;
+        friend class DiscordCoreAPI::SelectMenuManager;
+        friend class DiscordCoreAPI::ButtonManager;
+        friend class DiscordCoreAPI::Interactions;
+        friend class DiscordCoreAPI::InputEvents;
+
+        InteractionManager(InteractionManager* pointer) {
+            if (pointer != nullptr) {
+                *this = *pointer;
+            }
+        }
+
+    protected:
+        
+        shared_ptr<ThreadContext> threadContext{ nullptr };
+        HttpAgentResources agentResources{};
+
+        InteractionManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;
+        }
+
+        InteractionManager operator=(const InteractionManager&dataPackage) {
+            InteractionManager pointerToManager{ dataPackage };
+            return pointerToManager;
+        }
+
+        InteractionManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew) {
+            this->agentResources = agentResourcesNew;
+            this->threadContext = threadContextNew;
+            return *this;
         }
 
         task<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
@@ -1240,13 +1275,7 @@ namespace DiscordCoreInternal {
             co_return;
         }
 
-        ~InteractionManager() {
-            this->threadContext->releaseGroup();
-        }
-
-    protected:
-        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-        DiscordCoreInternal::HttpAgentResources agentResources{};
+        ~InteractionManager() {}
     };
     map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
     shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
@@ -1266,7 +1295,7 @@ namespace DiscordCoreAPI {
     public:
         static map<string, unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>*>selectMenuInteractionBufferMap;
 
-        SelectMenuManager(InputEventData dataPackage) : agent(*SelectMenuManager::threadContext->schedulerGroup) {
+        SelectMenuManager(InputEventData dataPackage) : agent(*SelectMenuManager::threadContext->schedulerGroup->ptrScheduleGroup) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
@@ -1399,7 +1428,7 @@ namespace DiscordCoreAPI {
     public:
         static map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> buttonInteractionBufferMap;
 
-        ButtonManager(DiscordCoreAPI::InputEventData dataPackage) : agent(*ButtonManager::threadContext->scheduler) {
+        ButtonManager(DiscordCoreAPI::InputEventData dataPackage) : agent(*ButtonManager::threadContext->scheduler->ptrScheduler) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();

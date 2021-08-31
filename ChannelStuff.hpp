@@ -13,27 +13,34 @@
 #include "HttpStuff.hpp"
 
 namespace DiscordCoreInternal {
+
 	class ChannelManagerAgent;
 	class ChannelManager;
+
 }
 
 namespace DiscordCoreAPI {
 
+	class InputEvents;
 	class Channels;
-
+	
 	class Channel {
 	public:
+		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::ChannelManagerAgent;
 		friend class DiscordCoreInternal::ChannelManager;
+		friend struct OnChannelDeletionData;
+		friend struct OnChannelCreationData;
+		friend struct OnChannelUpdateData;
 		friend class DiscordCoreClient;
 		friend class Guild;
 
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		ChannelData data{};
 
-		Channel() {};
-
 	protected:
+
+		Channel() {};
 
 		Channel(ChannelData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->discordCoreClient = discordCoreClientNew;
@@ -90,7 +97,7 @@ namespace DiscordCoreInternal	{
 		HttpAgentResources agentResources{};
 
 		ChannelManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
-			:agent(*ChannelManagerAgent::threadContext->scheduler) {
+			:agent(*ChannelManagerAgent::threadContext->scheduler->ptrScheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 		}
@@ -282,13 +289,45 @@ namespace DiscordCoreInternal	{
 
 	class ChannelManager {
 	public:
+
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::DiscordCoreClientBase;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::InputEvents;
 		friend class DiscordCoreAPI::Channels;
 		friend class DiscordCoreAPI::Guild;
 
+		ChannelManager(ChannelManager* pointer) {
+			if (pointer != nullptr) {
+				*this = *pointer;
+			}
+		}
+
+	protected:
+
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
+
+		ChannelManager() {};
+
 		ChannelManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->discordCoreClient = discordCoreClientNew;
+			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
+		}
+
+		ChannelManager operator=(const ChannelManager& dataPackage) {
+			ChannelManager pointerToManager{ dataPackage };
+			return pointerToManager;
+		}
+
+		ChannelManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->threadContext = threadContextNew;
+			return *this;
 		}
 
 		task<DiscordCoreAPI::Channel> fetchAsync(DiscordCoreAPI::FetchChannelData dataPackage) {
@@ -380,15 +419,6 @@ namespace DiscordCoreInternal	{
 			co_return;
 		}
 
-		~ChannelManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};
-
 		task<void> insertChannelAsync(DiscordCoreAPI::Channel channel) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
@@ -413,6 +443,8 @@ namespace DiscordCoreInternal	{
 			co_await mainThread;
 			co_return;
 		}
+
+		~ChannelManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Channel>> ChannelManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> ChannelManagerAgent::threadContext{ nullptr };

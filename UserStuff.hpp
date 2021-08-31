@@ -22,6 +22,7 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	class Guild;
 	class Users;
 
 	class Application {
@@ -41,17 +42,22 @@ namespace DiscordCoreAPI {
 
 	class User {
 	public:
+		friend struct Concurrency::details::_ResultHolder<User>;
 		friend class DiscordCoreInternal::UserManagerAgent;
 		friend class DiscordCoreInternal::UserManager;
+		friend struct OnGuildMemberRemoveData;
+		friend struct OnGuildBanRemoveData;
+		friend struct OnGuildBanAddData;
+		friend struct OnUserUpdateData;
 		friend class DiscordCoreClient;
 		friend class Guild;
 
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		DiscordCoreInternal::UserData data{};
 
-		User() {};
-
 	protected:
+
+		User() {};
 
 		User(DiscordCoreInternal::UserData dataNew, shared_ptr<DiscordCoreClient> coreClientNew) {
 			this->data = dataNew;
@@ -145,7 +151,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 
 		UserManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
-			:agent(*UserManagerAgent::threadContext->scheduler) {
+			:agent(*UserManagerAgent::threadContext->scheduler->ptrScheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 		}
@@ -296,14 +302,44 @@ namespace DiscordCoreInternal {
 
 	class UserManager {
 	public:
+
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::DiscordCoreClientBase;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Users;
 		friend class DiscordCoreAPI::Guild;
 
+		UserManager(UserManager* pointer) {
+			if (pointer != nullptr) {
+				*this = *pointer;
+			}
+		}
+
+	protected:
+
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
+
+		UserManager() {};
+
 		UserManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->discordCoreClient = discordCoreClientNew;
+			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
+		}
+
+		UserManager operator=(const UserManager& dataPackage) {
+			UserManager pointerToManager{ dataPackage };
+			return pointerToManager;
+		}
+
+		UserManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->threadContext = threadContextNew;
+			return *this;
 		}
 
 		task<DiscordCoreAPI::User> fetchAsync(DiscordCoreAPI::FetchUserData dataPackage) {
@@ -383,15 +419,6 @@ namespace DiscordCoreInternal {
 			co_return application;
 		}
 
-		~UserManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};
-		
 		task<void> insertUserAsync(DiscordCoreAPI::User user) {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			UserManagerAgent requestAgent(this->agentResources, this->discordCoreClient);
@@ -403,6 +430,7 @@ namespace DiscordCoreInternal {
 			co_return;
 		}
 
+		~UserManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::User>> UserManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> UserManagerAgent::threadContext{ nullptr };

@@ -20,22 +20,26 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	class Reactions;
+
 	class Reaction {
 	public:
+		friend struct Concurrency::details::_ResultHolder<Reaction>;
 		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::ReactionManager;
-		friend class DiscordCoreClient;
-		
+		friend struct OnReactionAddData;
+		friend class DiscordCoreClient;		
+
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		DiscordCoreInternal::ReactionData data{};
 
-		Reaction() {};
-
 	protected:
 
+		Reaction() {};
+
 		Reaction(DiscordCoreInternal::ReactionData reactionData, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
-			this->data = reactionData;
 			this->discordCoreClient = discordCoreClientNew;
+			this->data = reactionData;
 		}
 	};
 
@@ -91,7 +95,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 		
 		ReactionManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
-			:agent(*ReactionManagerAgent::threadContext->scheduler) {
+			:agent(*ReactionManagerAgent::threadContext->scheduler->ptrScheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
 		}
@@ -190,10 +194,41 @@ namespace DiscordCoreInternal {
 	class ReactionManager {
 	public:
 
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::Reactions;
+
+		ReactionManager(ReactionManager* pointer) {
+			if (pointer != nullptr) {
+				*this = *pointer;
+			}
+		}
+
+	protected:
+
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
+
+		ReactionManager() {};
+
 		ReactionManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->discordCoreClient = discordCoreClientNew;
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
+		}
+
+		ReactionManager operator=(const ReactionManager& dataPackage) {
+			ReactionManager pointerToManager{ dataPackage };
+			return pointerToManager;
+		}
+
+		ReactionManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->threadContext = threadContextNew;
+			return *this;
 		}
 
 		task<DiscordCoreAPI::Reaction> createReactionAsync(DiscordCoreAPI::CreateReactionData dataPackage){
@@ -337,14 +372,7 @@ namespace DiscordCoreInternal {
 			co_return;
 		}
 
-		~ReactionManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};
+		~ReactionManager() {}
 	};
 	shared_ptr<ThreadContext> ReactionManagerAgent::threadContext{ nullptr };
 }

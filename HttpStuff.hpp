@@ -16,14 +16,11 @@ namespace DiscordCoreInternal {
 	class HttpRequestAgent : shared_ptr<ThreadContext>,  public agent {
 	public:
 
-		static string botToken;
-		static string baseURL;
 		unbounded_buffer<HttpWorkload> workSubmissionBuffer{ nullptr };
 		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
-		string baseURLInd{ "" };
  
 		HttpRequestAgent(HttpAgentResources agentResources)
-			: agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup), shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
+			: agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup->ptrScheduleGroup), shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
 		{
 			try {
 				if (agentResources.baseURL == ""){
@@ -107,7 +104,9 @@ namespace DiscordCoreInternal {
 	protected:
 		static concurrent_unordered_map<string, RateLimitData> rateLimitData;
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		
+		static string botToken;
+		static string baseURL;
+
 		unbounded_buffer<hresult_error> errorhBuffer{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
 		HttpRequestHeaderCollection patchHeaders{ nullptr };
@@ -120,6 +119,7 @@ namespace DiscordCoreInternal {
 		HttpClient postHttpClient{ nullptr };
 		HttpClient putHttpClient{ nullptr };
 		HttpClient getHttpClient{ nullptr };
+		string baseURLInd{ "" };
 		
 		static bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew) {
 			if (rateLimitDataNew->getsRemaining <= 0) {

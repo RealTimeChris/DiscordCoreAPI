@@ -17,7 +17,6 @@ namespace DiscordCoreAPI {
 
 	class InputEvents {
 	public:
-		InputEvents() {}
 
 		static void initialize(shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreInternal::MessageManager> messagesNew, shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
 			InputEvents::messages = messagesNew;
@@ -215,15 +214,15 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
-		static shared_ptr<DiscordCoreInternal::MessageManager> messages;
+		inline static shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
+		inline static shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
 		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
+
+		InputEvents() {}
 	};
-	shared_ptr<DiscordCoreInternal::MessageManager> InputEvents::messages{ nullptr };
-	shared_ptr<DiscordCoreInternal::InteractionManager> InputEvents::interactions{ nullptr };
 	shared_ptr<DiscordCoreClientBase> InputEvents::discordCoreClientBase{ nullptr };
-	shared_ptr< DiscordCoreClient> InputEvents::discordCoreClient{ nullptr };
+	shared_ptr<DiscordCoreClient> InputEvents::discordCoreClient{ nullptr };
 }
 
 #endif

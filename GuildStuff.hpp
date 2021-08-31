@@ -27,19 +27,22 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	class PermissionsConverter;
 	class EventHandler;
 	class Guilds;
 
 	class Guild {
 	public:
+		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::GuildManagerAgent;
 		friend class DiscordCoreInternal::GuildManager;
+		friend struct OnGuildCreationData;
+		friend struct OnGuildDeletionData;
+		friend struct OnGuildUpdateData;
 		friend class DiscordCoreClient;
 
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		GuildData data{};
-
-		Guild() {};
 
 		shared_ptr<VoiceConnection> connectToVoice(string channelId) {
 			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
@@ -85,6 +88,8 @@ namespace DiscordCoreAPI {
 	protected:
 
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+
+		Guild() {};
 
 		Guild(DiscordCoreInternal::HttpAgentResources agentResourcesNew, GuildData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) {
 			this->discordCoreClient = discordCoreClientNew;
@@ -216,7 +221,7 @@ namespace DiscordCoreInternal	{
 		HttpAgentResources agentResources{};		
 		
 		GuildManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew)
-			:agent(*GuildManagerAgent::threadContext->scheduler) {
+			:agent(*GuildManagerAgent::threadContext->scheduler->ptrScheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 			this->discordCoreClientBase = coreClientBaseNew;
@@ -474,14 +479,46 @@ namespace DiscordCoreInternal	{
 
 	class GuildManager {
 	public:
+
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::PermissionsConverter;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Guilds;
 
-		GuildManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew) {
-			this->discordCoreClientBase = coreClientBaseNew;
+		GuildManager(GuildManager* pointer) {
+			if (pointer != nullptr) {
+				*this = *pointer;
+			}
+		}
+
+	protected:
+
+		shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};		
+
+		GuildManager() {};
+
+		GuildManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBaseNew) {
+			this->discordCoreClientBase = discordCoreClientBaseNew;
+			this->discordCoreClient = discordCoreClientNew;
 			this->agentResources = agentResourcesNew;
-			this->discordCoreClient = coreClientNew;
 			this->threadContext = threadContextNew;
+		}
+
+		GuildManager operator=(const GuildManager& dataPackage) {
+			GuildManager pointerToManager{ dataPackage };
+			return pointerToManager;
+		}
+
+		GuildManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBaseNew) {
+			this->discordCoreClientBase = discordCoreClientBaseNew;
+			this->discordCoreClient = discordCoreClientNew;
+			this->agentResources = agentResourcesNew;
+			this->threadContext = threadContextNew;
+			return *this;
 		}
 
 		task<DiscordCoreAPI::Guild> fetchAsync(DiscordCoreAPI::FetchGuildData dataPackage) {
@@ -625,16 +662,6 @@ namespace DiscordCoreInternal	{
 			co_return guildVector;
 		}
 
-		~GuildManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};
-
 		task<void> insertGuildAsync(DiscordCoreAPI::Guild guild) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
@@ -660,8 +687,9 @@ namespace DiscordCoreInternal	{
 			co_return;
 		}
 
+		~GuildManager() {}
 	};
-	shared_ptr<ThreadContext> GuildManagerAgent::threadContext{ nullptr };
 	overwrite_buffer<map<string, DiscordCoreAPI::Guild>> GuildManagerAgent::cache{ nullptr };
+	shared_ptr<ThreadContext> GuildManagerAgent::threadContext{ nullptr };
 }
 #endif

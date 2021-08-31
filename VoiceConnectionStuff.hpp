@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData>> bufferMessageBlockNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew)
-			: agent(*threadContextNew->scheduler) {
+			: agent(*threadContextNew->scheduler->ptrScheduler) {
 			if (voiceConnectionDataNew.channelId != "") {
 				if (sodium_init() == -1) {
 					cout << "LibSodium failed to initialize!" << endl << endl;
@@ -242,6 +242,7 @@ namespace DiscordCoreAPI {
 			EncodedFrameData encodedFrame;
 			encodedFrame.data = newVector;
 			encodedFrame.sampleCount = inputFrame.sampleCount;
+			encodedFrame.totalFrameCount = inputFrame.totalFrameCount;
 			delete oldBuffer;
 			oldBuffer = nullptr;
 			delete newBuffer;
@@ -472,12 +473,10 @@ namespace DiscordCoreAPI {
 				if (this->areWeStopping) {
 					send(this->stopBuffer, true);
 					this->areWeStopping = false;
-					this->clearAudioData();
 				}
 				if (this->areWeSkipping) {
 					send(this->skipBuffer, true);
 					this->areWeSkipping = false;
-					this->clearAudioData();
 				}
 				this->sendSpeakingMessage(false);
 			}

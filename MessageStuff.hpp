@@ -22,18 +22,24 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	class InputEvents;
+	class Messages;
+	
 	class Message {
 	public:
+		friend struct Concurrency::details::_ResultHolder<Message>;
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
+		friend struct OnMessageCreationData;
+		friend struct OnMessageUpdateData;
 		friend class DiscordCoreClient;
 
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-		MessageData data{};		
-
-		Message() {};
+		MessageData data{};
 
 	protected:
+
+		Message() {};
 
 		Message(MessageData dataNew, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = dataNew;
@@ -371,7 +377,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 		
 		MessageManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
-			:agent(*MessageManagerAgent::threadContext->scheduler) {
+			:agent(*MessageManagerAgent::threadContext->scheduler->ptrScheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
 		}
@@ -707,10 +713,42 @@ namespace DiscordCoreInternal {
 	class MessageManager {
 	public:
 
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::InputEvents;
+		friend class DiscordCoreAPI::Messages;
+
+		MessageManager(MessageManager* pointer) {
+			if (pointer != nullptr){
+				*this = *pointer;
+			}
+		}
+
+	protected:
+
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
+
+		MessageManager() {};
+
 		MessageManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->discordCoreClient = discordCoreClientNew;
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
+		}
+
+		MessageManager operator=(const MessageManager& dataPackage) {
+			MessageManager pointerToManager{ dataPackage };
+			return pointerToManager;
+		}
+
+		MessageManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->threadContext = threadContextNew;
+			return *this;
 		}
 
 		task<DiscordCoreAPI::Message> replyAsync(DiscordCoreAPI::ReplyMessageData dataPackage) {
@@ -953,14 +991,7 @@ namespace DiscordCoreInternal {
 			co_return messageNew;
 		}
 
-		~MessageManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};
+		~MessageManager() {}
 	};
 
 	shared_ptr<ThreadContext> MessageManagerAgent::threadContext{ nullptr };

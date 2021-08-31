@@ -22,21 +22,26 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	class PermissionsConverter;
 	class Roles;
 
 	class Role {
 	public:
+		friend struct Concurrency::details::_ResultHolder<Role>;
 		friend class DiscordCoreInternal::RoleManagerAgent;
 		friend class DiscordCoreInternal::RoleManager;
+		friend struct OnRoleDeletionData;
+		friend struct OnRoleCreationData;
 		friend class DiscordCoreClient;
+		friend struct OnRoleUpdateData;
 		friend class Guild;
 
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		RoleData data{};
 
-		Role() {};
-
 	protected:
+
+		Role() {};
 
 		Role(RoleData roleData, shared_ptr<DiscordCoreClient> discordCoreClientNew) {
 			this->data = roleData;
@@ -134,7 +139,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 
 		RoleManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
-			:agent(*RoleManagerAgent::threadContext->scheduler) {
+			:agent(*RoleManagerAgent::threadContext->scheduler->ptrScheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
 		}
@@ -455,13 +460,46 @@ namespace DiscordCoreInternal {
 
 	class RoleManager {
 	public:
+
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::DiscordCoreClientBase;
+		friend class DiscordCoreAPI::PermissionsConverter;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::GuildMembers;
 		friend class DiscordCoreAPI::Guild;
 		friend class DiscordCoreAPI::Roles;
 
+		RoleManager(RoleManager* pointer) {
+			if (pointer != nullptr) {
+				*this = *pointer;
+			}
+		}
+
+	protected:
+
+		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		HttpAgentResources agentResources{};
+
+		RoleManager() {};
+
 		RoleManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->discordCoreClient = discordCoreClientNew;
 			this->agentResources = agentResourcesNew;
 			this->threadContext = threadContextNew;
+		}
+
+		RoleManager operator=(const RoleManager& dataPackage) {
+			RoleManager pointerToManager{ dataPackage };
+			return pointerToManager;
+		}
+
+		RoleManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
+			this->threadContext = threadContextNew;
+			return *this;
 		}
 
 		task<DiscordCoreAPI::Role> fetchAsync(DiscordCoreAPI::FetchRoleData dataPackage) {
@@ -676,15 +714,6 @@ namespace DiscordCoreInternal {
 			co_return;
 		}
 
-		~RoleManager() {
-			this->threadContext->releaseGroup();
-		}
-
-	protected:
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};
-
 		task<void> insertRoleAsync(DiscordCoreAPI::Role role) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
@@ -711,6 +740,7 @@ namespace DiscordCoreInternal {
 			co_return;
 		}
 
+		~RoleManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Role>> RoleManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> RoleManagerAgent::threadContext{ nullptr };

@@ -1669,7 +1669,6 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null() && jsonObjectData.at("code").type() == nlohmann::detail::value_t::string) {
                 inviteData.code = jsonObjectData.at("code").get<string>();
             }
-
             else if (jsonObjectData.contains("code") && !jsonObjectData.at("code").is_null() && jsonObjectData.at("code").type() == nlohmann::detail::value_t::number_integer) {
                 inviteData.code = to_string(jsonObjectData.at("code").get<int>());
             }

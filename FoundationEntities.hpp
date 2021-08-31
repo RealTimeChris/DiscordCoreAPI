@@ -11,6 +11,8 @@
 #include "../pch.h"
 
 namespace DiscordCoreAPI {
+
+    class DiscordCoreClientBase;
     class DiscordCoreClient;
 
     void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
@@ -117,9 +119,6 @@ namespace DiscordCoreAPI {
             return false;
         }
     }
-
-    class GuildMember;
-    struct GuildMemberData;
 
 };
 
@@ -408,8 +407,6 @@ namespace  DiscordCoreInternal {
         RoleTagsData tags{};
     };
 
-    struct DiscordCoreAPI::GuildMemberData;
-
     struct GuildMemberData {
         string guildId{ "" };
         UserData user{};
@@ -643,6 +640,21 @@ namespace  DiscordCoreInternal {
         vector<ChannelData> channels{};
     };
 
+    struct ScheduleGroupWrapper {
+        ScheduleGroupWrapper(ScheduleGroup* dataPackage) {
+            this->ptrScheduleGroup = dataPackage;
+
+        }
+        ScheduleGroup* ptrScheduleGroup{ nullptr };
+    };
+
+    struct ScheduleWrapper {
+        ScheduleWrapper(Scheduler* dataPackage) {
+            this->ptrScheduler = dataPackage;
+        }
+        Scheduler* ptrScheduler{ nullptr };
+    };
+
     struct ThreadContext {
     public:
         ThreadContext() {};
@@ -654,12 +666,12 @@ namespace  DiscordCoreInternal {
         }
 
         void releaseGroup() {
-            this->schedulerGroup->Release();
+            this->schedulerGroup->ptrScheduleGroup->Release();
             this->schedulerGroup = nullptr;
         };
 
-        Scheduler* scheduler{ nullptr };
-        ScheduleGroup* schedulerGroup{ nullptr };
+        shared_ptr<ScheduleWrapper> scheduler{ nullptr };
+        shared_ptr<ScheduleGroupWrapper> schedulerGroup{ nullptr };
         shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
     };
 
@@ -2355,7 +2367,7 @@ namespace DiscordCoreAPI {
     };
 
     struct ThreadMetadataData {
-        operator DiscordCoreInternal::ThreadMetadataData(){
+        operator DiscordCoreInternal::ThreadMetadataData() {
             DiscordCoreInternal::ThreadMetadataData newData;
             newData.archived = this->archived;
             newData.archiverId = this->archiverId;
@@ -3258,7 +3270,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreClient;
         friend struct CommandData;
         friend class InputEvents;
-        
+
         InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
             this->messageData = messageData;
             this->interactionData = interactionData;
@@ -3480,7 +3492,7 @@ namespace DiscordCoreAPI {
         MessageData messageData{};
         string requesterId{ "" };
 
-        InputEventData(){}
+        InputEventData() {}
     };
 
     struct WebhookData {
@@ -3665,11 +3677,13 @@ namespace DiscordCoreAPI {
     struct RawFrameData {
         vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
+        int totalFrameCount{ 0 };
     };
 
     struct EncodedFrameData {
         vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
+        int totalFrameCount{ 0 };
     };
 
     enum class AudioFrameType {
@@ -3682,6 +3696,7 @@ namespace DiscordCoreAPI {
         AudioFrameType type{};
         EncodedFrameData encodedFrameData{};
         RawFrameData rawFrameData{};
+        int totalFrameCount{ 0 };
     };
 
     struct SoundCloudSearchResult {

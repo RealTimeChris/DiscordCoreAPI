@@ -28,7 +28,7 @@ namespace DiscordCoreInternal {
         unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
-        ThreadManagerAgent():agent(*ThreadManagerAgent::threadContext->scheduler){}
+        ThreadManagerAgent() :agent(*ThreadManagerAgent::threadContext->scheduler->ptrScheduler) {}
 
         void getError() {
             exception error;
@@ -64,11 +64,11 @@ namespace DiscordCoreInternal {
 
         static concurrent_vector<shared_ptr<ThreadContext>> threads;
 
-        static task<void> intialize() {
+        static void intialize() {
             shared_ptr<ThreadContext> threadContext = createThreadContext(ThreadType::Regular).get();
             ThreadManager::threads.push_back(threadContext);
             ThreadManagerAgent::initialize(threadContext);
-            co_return;
+            return;
         }
 
         static task<shared_ptr<ThreadContext>> getThreadContext(ThreadType threadType = ThreadType::Regular) {
@@ -84,8 +84,8 @@ namespace DiscordCoreInternal {
 
         ~ThreadManager() {
             for (auto value : ThreadManager::threads) {
-                value->scheduler->Release();
-                value->schedulerGroup->Release();
+                value->scheduler->ptrScheduler->Release();
+                value->schedulerGroup->ptrScheduleGroup->Release();
             }
             ThreadManagerAgent::cleanup();
         };
@@ -95,7 +95,7 @@ namespace DiscordCoreInternal {
     task<shared_ptr<ThreadContext>> createThreadContext(ThreadType threadType) {
         for (auto value : ThreadManager::threads) {
             if (value->schedulerGroup == nullptr) {
-                value->schedulerGroup = value->scheduler->CreateScheduleGroup();
+                value->schedulerGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->ptrScheduler->CreateScheduleGroup());
                 co_return value;
             }
         }
@@ -129,9 +129,9 @@ namespace DiscordCoreInternal {
         Scheduler* newScheduler = Scheduler::Create(policy);
         newScheduler->Attach();
         shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
-        threadContext->scheduler = newScheduler;
+        threadContext->scheduler = make_shared<ScheduleWrapper>(newScheduler);
         threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
-        threadContext->schedulerGroup = threadContext->scheduler->CreateScheduleGroup();
+        threadContext->schedulerGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->ptrScheduler->CreateScheduleGroup());
         co_return threadContext;
     }
     concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads{};

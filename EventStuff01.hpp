@@ -162,6 +162,8 @@ namespace DiscordCoreAPI {
 	class EventManager {
 	public:
 
+		friend class DiscordCoreClient;
+
 		event_token onChannelCreation(delegate<OnChannelCreationData> const& handler) {
 			return onChannelCreationEvent.add(handler);
 		}
@@ -403,8 +405,6 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-
-		friend class DiscordCoreClient;
 
 		winrt::event<delegate<OnChannelCreationData>> onChannelCreationEvent;
 

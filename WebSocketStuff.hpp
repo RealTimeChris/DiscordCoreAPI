@@ -11,8 +11,16 @@
 #include "../pch.h"
 #include "DataParsingFunctions.hpp"
 
+namespace DiscordCoreAPI {
+
+	class VoiceConnection;
+
+}
+
 namespace DiscordCoreInternal {
 
+	class WebSocketConnectionAgent;
+	
 	enum class WebSocketEventType {
 		CHANNEL_CREATE = 0,
 		CHANNEL_UPDATE = 1,
@@ -54,13 +62,8 @@ namespace DiscordCoreInternal {
 	class VoiceChannelWebSocketAgent : public agent {
 	public:
 
-		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
-		VoiceConnectionData voiceConnectionData{};
-		DatagramSocket voiceSocket{ nullptr };
-		MessageWebSocket webSocket{ nullptr };
-
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
-			:agent(*threadContextNew->scheduler) {
+			:agent(*threadContextNew->scheduler->ptrScheduler) {
 			this->threadContext = threadContextNew;
 			this->voiceConnectionData = voiceConnectionDataNew;
 			this->readyBuffer = readyBufferNew;
@@ -116,30 +119,34 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		friend class VoiceConnection;
+		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WebSocketConnectionAgent;
 		friend class Guild;
-		unbounded_buffer<bool>* readyBuffer{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		ThreadPoolTimer heartbeatTimer{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
-		vector<uint8_t> secretKey{};
-		DataWriter dataWriter{ nullptr };
-		int audioSSRC{ 0 };
-		int heartbeatInterval{ 0 };
-		int lastNumberReceived{ 0 };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<bool>* readyBuffer{ nullptr };
+		ThreadPoolTimer heartbeatTimer{ nullptr };
+		VoiceConnectionData voiceConnectionData{};
+		DatagramSocket voiceSocket{ nullptr };
+		MessageWebSocket webSocket{ nullptr };
 		bool didWeReceiveHeartbeatAck{ true };
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
-		event_token closedToken{};
-		bool areWeConnected{ false };
-		string voiceIp{ "" };
-		string voicePort{ "" };
-		string externalIp{ "" };
+		DataWriter dataWriter{ nullptr };
 		string voiceEncryptionMode{ "" };
 		bool areWeWaitingForIp{ true };
-
+		bool areWeConnected{ false };
+		int lastNumberReceived{ 0 };
+		vector<uint8_t> secretKey{};
+		int heartbeatInterval{ 0 };
+		event_token closedToken{};
+		string externalIp{ "" };
+		string voicePort{ "" };
+		string voiceIp{ "" };
+		int audioSSRC{ 0 };
+		
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -190,14 +197,14 @@ namespace DiscordCoreInternal {
 			}
 			catch (const exception& e) {
 				send(errorBuffer, e);
+				done();
 			}
-			done();
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
 			if (args.Code() != 1000 && args.Code() != 4014) {
-				this->heartbeatTimer.Cancel();
+				this->cleanup();
 				send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 				this->connect();
 				string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
@@ -207,6 +214,8 @@ namespace DiscordCoreInternal {
 
 		void sendHeartBeat(bool* didWeReceiveHeartbeatAckNew) {
 			if (this->didWeReceiveHeartbeatAck == false) {
+				this->cleanup();
+				send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 				this->connect();
 				this->didWeReceiveHeartbeatAck = true;
 				return;
@@ -303,12 +312,8 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		void terminate() {
-			done();
+		void cleanup() {
 			if (this != nullptr) {
-				if (this->threadContext->schedulerGroup != nullptr) {
-					this->threadContext->releaseGroup();
-				}				
 				if (this->webSocket != nullptr) {
 					this->webSocket.Close(1000, L"Disconnecting.");
 					this->webSocket = nullptr;
@@ -321,7 +326,14 @@ namespace DiscordCoreInternal {
 					this->voiceSocket.Close();
 					this->voiceSocket = nullptr;
 				}
+				
 			}
+		}
+
+		void terminate() {
+			done();
+			this->cleanup();
+			this->threadContext->releaseGroup();
 		}
 
 	};
@@ -329,11 +341,10 @@ namespace DiscordCoreInternal {
 	class WebSocketReceiverAgent : public agent {
 	public:
 
-		unbounded_buffer<WebSocketWorkload> workloadTarget{ nullptr };
-		unbounded_buffer<json> workloadSource{ nullptr };
+		friend class DiscordCoreAPI::DiscordCoreClient;
 
 		WebSocketReceiverAgent(shared_ptr<ThreadContext> threadContextNew):
-			agent(*threadContextNew->scheduler)
+			agent(*threadContextNew->scheduler->ptrScheduler)
 		{
 			this->threadContext = threadContextNew;
 			return;
@@ -346,11 +357,10 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		friend class DiscordCoreClientBase;
-		friend class DiscordCoreClient;
-		friend class WebSocketConnectionAgent;
+		unbounded_buffer<WebSocketWorkload> workloadTarget{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
+		unbounded_buffer<json> workloadSource{ nullptr };
 		bool doWeQuit{ false };
 
 		void getError() {
@@ -542,8 +552,11 @@ namespace DiscordCoreInternal {
 	class WebSocketConnectionAgent : public agent {
 	public:
 
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class VoiceChannelWebSocketAgent;
+
 		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
-			: agent(*threadContextNew->scheduler) {
+			: agent(*threadContextNew->scheduler->ptrScheduler) {
 			this->threadContext = threadContextNew;
 			this->webSocketMessageTarget = target;
 			this->botToken = botTokenNew;
@@ -569,12 +582,10 @@ namespace DiscordCoreInternal {
 			cout << "Sending Message: ";
 			cout << message << endl;
 
-			// Buffer any data we want to send.
 			if (this->messageWriter != nullptr) {
 				this->messageWriter.WriteString(to_hstring(message));
 			}
 
-			// Send the data as one complete message.
 			if (this->messageWriter != nullptr) {
 				this->messageWriter.StoreAsync().get();
 			}
@@ -602,31 +613,28 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		friend class VoiceConnection;
-		friend class VoiceChannelWebSocketAgent;
-		friend class DiscordCoreClient;
-		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-		event_token messageReceivedToken{};
-		event_token closedToken{};
-		hstring botToken{ L"" };
-		MessageWebSocket webSocket{ nullptr };
-		DataWriter messageWriter{ nullptr };
-		hstring socketPath{ L"" };
-		hstring sessionID{ L"" };
-		int heartbeatInterval{ 0 };
-		int lastNumberReceived{ 0 };
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		bool didWeReceiveHeartbeatAck{ true };
-		ThreadPoolTimer heartbeatTimer{ nullptr };
+		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketMessageTarget{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
-		bool isThisConnected{ false };
-		bool areWeCollectingData{ false };
-		bool stateUpdateCollected{ false };
-		bool serverUpdateCollected{ false };
 		VoiceConnectionData* pVoiceConnectionData{ nullptr };
-
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		shared_ptr<ThreadContext> threadContext{ nullptr };
+		ThreadPoolTimer heartbeatTimer{ nullptr };
+		MessageWebSocket webSocket{ nullptr };
+		bool didWeReceiveHeartbeatAck{ true };
+		DataWriter messageWriter{ nullptr };
+		bool serverUpdateCollected{ false };
+		bool stateUpdateCollected{ false };
+		event_token messageReceivedToken{};
+		bool areWeCollectingData{ false };
+		bool isThisConnected{ false };
+		int lastNumberReceived{ 0 };
+		int heartbeatInterval{ 0 };
+		hstring socketPath{ L"" };
+		event_token closedToken{};
+		hstring sessionID{ L"" };
+		hstring botToken{ L"" };
+		
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -635,40 +643,16 @@ namespace DiscordCoreInternal {
 		}
 
 		void run() {
-			if (isThisConnected == false) {
-				try {
+			try {
+				if (!this->isThisConnected) {
 					this->connect();
 					return;
 				}
-				catch (const exception& e) {
-					send(errorBuffer, e);
-					return;
-				}
 			}
-			done();
-		}
-
-		void terminate() {
-			this->cleanup();
-		}
-
-		void cleanup() {
-			done();
-
-			if (this->messageWriter != nullptr) {
-				this->messageWriter.DetachStream();
-				this->messageWriter.Close();
-				this->messageWriter = nullptr;
-			}
-
-			if (this->webSocket != nullptr) {
-				this->webSocket.Close(1000, L"Closed due to user request.");
-				this->webSocket = nullptr;
-			}
-
-			if (this->heartbeatTimer) {
-				this->heartbeatTimer.Cancel();
-				this->heartbeatTimer = nullptr;
+			catch (exception& e) {
+				send(this->errorBuffer, e);
+				done();
+				return;
 			}
 		}
 
@@ -685,6 +669,8 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			this->cleanup();
+			this->connect();
 			return;
 		}
 
@@ -814,6 +800,31 @@ namespace DiscordCoreInternal {
 
 			cout << "Message received from WebSocket: " << to_string(message) << endl << endl;
 		};
+
+		void cleanup() {
+			if (this->messageWriter != nullptr) {
+				this->messageWriter.DetachStream();
+				this->messageWriter.Close();
+				this->messageWriter = nullptr;
+			}
+
+			if (this->webSocket != nullptr) {
+				this->webSocket.Close(1000, L"Closed due to user request.");
+				this->webSocket = nullptr;
+			}
+
+			if (this->heartbeatTimer) {
+				this->heartbeatTimer.Cancel();
+				this->heartbeatTimer = nullptr;
+			}
+		}
+
+		void terminate() {
+			this->done();
+			this->cleanup();
+			this->threadContext->releaseGroup();
+		}
+
 	};
 }
 #endif

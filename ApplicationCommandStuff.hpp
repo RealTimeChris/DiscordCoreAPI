@@ -13,6 +13,9 @@
 
 namespace DiscordCoreAPI {
 
+    class ApplicationCommands;
+    class Interactions;
+
     struct EditApplicationCommandData {
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ false };
@@ -53,10 +56,50 @@ namespace DiscordCoreAPI {
     class ApplicationCommandManager {
     public:
 
+        template <class _Ty>
+        friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+        friend class DiscordCoreAPI::ApplicationCommands;
+        friend class DiscordCoreAPI::DiscordCoreClient;
+        friend class DiscordCoreAPI::SelectMenuManager;
+        friend class DiscordCoreAPI::ButtonManager;
+        friend class DiscordCoreAPI::Interactions;
+
+        ApplicationCommandManager(ApplicationCommandManager* pointer) {
+            if (pointer != nullptr) {
+                *this = *pointer;
+            }
+        }
+
+    protected:
+
+        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+        DiscordCoreInternal::HttpAgentResources agentResources{};
+        string applicationId{ "" };
+
+        ApplicationCommandManager() {};
+
         ApplicationCommandManager(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, string applicationIdNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;
             this->applicationId = applicationIdNew;
+        }
+
+        ApplicationCommandManager(const ApplicationCommandManager& dataPackage) {
+            this->agentResources = dataPackage.agentResources;
+            this->threadContext = dataPackage.threadContext;
+            return;
+        }
+
+        ApplicationCommandManager operator=(const ApplicationCommandManager& dataPackage) {
+            ApplicationCommandManager pointerToManager{ dataPackage };
+            return pointerToManager;
+        }
+
+        ApplicationCommandManager initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, string applicationIdNew) {
+            this->threadContext = threadContextNew;
+            this->agentResources = agentResourcesNew;
+            this->applicationId = applicationIdNew;
+            return *this;
         }
 
         task<ApplicationCommand> getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage) {
@@ -242,24 +285,15 @@ namespace DiscordCoreAPI {
         task<void> displayGlobalApplicationCommandsAsync() {
             apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            vector<ApplicationCommand> applicationCommands = getGlobalApplicationCommandsAsync().get();
-            for (unsigned int x = 0; x < applicationCommands.size(); x += 1) {
-                cout << "Command Name: " << applicationCommands.at(x).data.name << endl;
-                cout << "Command Description: " << applicationCommands.at(x).data.description << endl;
-                displayOptions(applicationCommands.at(x).data.options);
+            vector<ApplicationCommand> applicationCommandsNew = getGlobalApplicationCommandsAsync().get();
+            for (unsigned int x = 0; x < applicationCommandsNew.size(); x += 1) {
+                cout << "Command Name: " << applicationCommandsNew.at(x).data.name << endl;
+                cout << "Command Description: " << applicationCommandsNew.at(x).data.description << endl;
+                displayOptions(applicationCommandsNew.at(x).data.options);
             }
             co_await mainThread;
             co_return;
         }
-
-        ~ApplicationCommandManager() {
-            this->threadContext->releaseGroup();
-        }
-
-    protected:
-        DiscordCoreInternal::HttpAgentResources agentResources{};
-        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-        string applicationId{ "" };
 
         void displayOptions(vector<DiscordCoreAPI::ApplicationCommandOptionData> applicationCommandOptionData) {
             for (unsigned int x = 0; x < applicationCommandOptionData.size(); x += 1) {
@@ -318,8 +352,8 @@ namespace DiscordCoreAPI {
 
         }
 
+        ~ApplicationCommandManager() {}
     };
-
 }
 
 #endif
