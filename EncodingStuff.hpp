@@ -62,7 +62,6 @@ namespace DiscordCoreAPI {
 			EncodedFrameData encodedFrame;
 			encodedFrame.data = newVector;
 			encodedFrame.sampleCount = sampleCount;
-			encodedFrame.totalFrameCount = inputFrame.totalFrameCount;
 			delete oldBuffer;
 			oldBuffer = nullptr;
 			delete newBuffer;

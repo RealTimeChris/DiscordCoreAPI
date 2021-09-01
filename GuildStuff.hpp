@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 			}
 			else if (channelId != "") {
 				if ((voiceConnectionPtr == nullptr || voiceConnectionPtr->voiceConnectionData.channelId != channelId)) {
-					auto voiceConnectData = DiscordCoreClientBase::pWebSocketConnectionAgent->getVoiceConnectionData(channelId, this->id);
+					auto voiceConnectData = DiscordCoreClientBase::webSocketConnectionAgent->getVoiceConnectionData(channelId, this->id);
 					voiceConnectData.channelId = channelId;
 					voiceConnectData.guildId = this->id;
 					voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";

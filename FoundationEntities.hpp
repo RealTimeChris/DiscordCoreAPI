@@ -3685,13 +3685,11 @@ namespace DiscordCoreAPI {
     struct RawFrameData {
         vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
-        int totalFrameCount{ 0 };
     };
 
     struct EncodedFrameData {
         vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
-        int totalFrameCount{ 0 };
     };
 
     enum class AudioFrameType {
@@ -3704,7 +3702,6 @@ namespace DiscordCoreAPI {
         AudioFrameType type{};
         EncodedFrameData encodedFrameData{};
         RawFrameData rawFrameData{};
-        int totalFrameCount{ 0 };
     };
 
     struct SoundCloudSearchResult {

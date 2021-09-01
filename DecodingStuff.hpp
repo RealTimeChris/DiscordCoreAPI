@@ -19,8 +19,10 @@ namespace DiscordCoreAPI {
         size_t bufferMaxSize{ 0 };
     };
 
-    class SongDecoder : public agent {
+    class SongDecoder :  agent {
     public:
+
+        friend class YouTubeAPI;
 
         SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : agent(*threadContextNew->scheduler->ptrScheduler) {
             this->dataBuffer = dataPackage.dataBuffer;
@@ -39,13 +41,15 @@ namespace DiscordCoreAPI {
 
             RawFrameData rawFrame;
             if (try_receive(this->outDataBuffer, rawFrame)) {
-                *dataPackage = rawFrame;
-                return true;
+                if (rawFrame.sampleCount != -1) {
+                    *dataPackage = rawFrame;
+                    return true;
+                }
             }
             else {
                 return false;
             }
-            
+                       
         }
 
         ~SongDecoder() {
@@ -76,7 +80,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 }, bytesReadTotal{ 0 };
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         unbounded_buffer<vector<uint8_t>>* dataBuffer{};
@@ -100,7 +104,6 @@ namespace DiscordCoreAPI {
                     newVector.push_back(buffer.data()[x]);
                 }
                 this->currentBuffer = newVector;
-                this->totalFileSize = (int)this->totalFileSize;
                 unsigned char* fileStreamBuffer = (unsigned char*)av_malloc(this->bufferMaxSize);
                 if (fileStreamBuffer == nullptr) {
                     cout << "Failed to allocate filestreambuffer.\n\n";
@@ -228,6 +231,7 @@ namespace DiscordCoreAPI {
                 }
 
                 while (av_read_frame(this->formatContext, this->packet) >= 0) {
+
                     if (this->packet->stream_index == this->audioStreamIndex) {
                         int ret = avcodec_send_packet(this->audioDecodeContext, this->packet);
                         if (ret < 0) {
@@ -263,7 +267,6 @@ namespace DiscordCoreAPI {
                             }
                             RawFrameData rawFrame{};
                             rawFrame.data = newVector;
-                            rawFrame.totalFrameCount = this->audioDecodeContext->frame_number;
                             rawFrame.sampleCount = newFrame->nb_samples;
                             send(this->outDataBuffer, rawFrame);
                             __int64 sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
@@ -280,15 +283,19 @@ namespace DiscordCoreAPI {
                                 RawFrameData rawFrame02{};
                                 rawFrame02.data = newVector02;
                                 rawFrame02.sampleCount = newFrame->nb_samples;
-                                rawFrame02.totalFrameCount = this->audioDecodeContext->frame_number;
                                 send(this->outDataBuffer, rawFrame02);
                             }
-                            if (ret < 0) {
+                            if (ret < 0 || newFrame->nb_samples == 0) {
                                 cout << "Return value is less than zero!\n\n";
-                                done();
-                                return;
+                                break;
                             }
                         }
+                        else {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
                     }
                     av_packet_unref(this->packet);
                     av_frame_unref(this->frame);
@@ -304,9 +311,9 @@ namespace DiscordCoreAPI {
                 av_frame_unref(this->newFrame);
                 av_frame_free(&this->newFrame);
                 cout << "Completed decoding!" << endl << endl;
+                done();
+                return;
             }
-            done();
-            return;
         }
 
         static int FileStreamRead(void* opaque, uint8_t* buf, int) {   
@@ -316,13 +323,19 @@ namespace DiscordCoreAPI {
             cout << "STUCK HERE 010101" << endl;
             int startingValue{ (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() };
             int totalCountedMs{ 0 };
-            int msLimit{ 20000 };
+            int msLimit{ 10000 };
+            cout << "BYTES READ TOTAL: " << stream->bytesReadTotal << endl;
+            cout << "TOTAL FILE SIZE: " << stream->totalFileSize << endl;
+            if (stream->bytesReadTotal >= stream->totalFileSize) {
+                return AVERROR_EOF;
+            }
             while (!try_receive(stream->dataBuffer, stream->currentBuffer) && totalCountedMs < msLimit) {
                 totalCountedMs = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
             };
             cout << "STUCK HERE 020202" << endl;
             if (stream->currentBuffer.size() > 0) {
                 stream->bytesRead = (int)stream->currentBuffer.size();
+                stream->bytesReadTotal += stream->bytesRead;
             }
 
             for (int x = 0; x < stream->bytesRead; x += 1) {

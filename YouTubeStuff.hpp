@@ -266,16 +266,14 @@ namespace DiscordCoreAPI {
 				newVector.push_back(value);
 			}
 			this->songQueue = newVector;
-			this->currentSong = YouTubeSong(); 
+			this->currentSong = YouTubeSong();
 			receive(this->completionCallbackBuffer);
-			cout << "WEVE DONE IT WEVE DONE IT" << endl;
 		}
 
 		void skip() {
 			this->areWeSkippingOrStopping = true;
 			this->sendNextSong();
 			receive(this->completionCallbackBuffer);
-			cout << "WEVE DONE IT WEVE DONE IT" << endl;
 		}
 
 		bool isThereAnySongs() {
@@ -571,9 +569,11 @@ namespace DiscordCoreAPI {
 			return searchResults;
 		}
 
-		~YouTubeAPI() {
+		static void cleanup() {
 			YouTubeAPI::threadContext->releaseGroup();
 		}
+
+		~YouTubeAPI() {}
 
 	protected:
 		friend class Guild;
@@ -627,18 +627,14 @@ namespace DiscordCoreAPI {
 				int contentLengthCurrent{ youTubeAPI->maxBufSize };
 				int bytesReadTotal{ 0 };
 				int counter{ 0 };
-				int collectedFrameCount{ 0 };
-				int currentTotalFrameCount{ 0 };
 				BuildSongDecoderData dataPackage{};
 				dataPackage.dataBuffer = new unbounded_buffer<vector<uint8_t>>();
-				dataPackage.totalFileSize = song.contentLength;
+				dataPackage.totalFileSize = song.contentLength - 585;
 				dataPackage.bufferMaxSize = this->maxBufSize;
 				send(dataPackage.dataBuffer, vector<uint8_t>());
-				unbounded_buffer<bool>* endOfFileBuffer = new unbounded_buffer<bool>();
 				SongDecoder* songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				SongEncoder* songEncoder = new SongEncoder();
-				while (song.contentLength > bytesReadTotal) {
-					/*
+				while (song.contentLength > bytesReadTotal || songDecoder->status() != agent_done) {
 					if (this->areWeSkippingOrStopping) {
 						this->areWeSkippingOrStopping = false;
 						AudioFrameData dataPackageNew;
@@ -648,7 +644,6 @@ namespace DiscordCoreAPI {
 						this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
 						break;
 					}
-					*/
 					int bytesRead{ 0 };
 					InMemoryRandomAccessStream outputStream;
 					DataWriter streamDataWriter(outputStream);
@@ -685,44 +680,41 @@ namespace DiscordCoreAPI {
 						RawFrameData rawFrame;
 						while (songDecoder->getFrame(&rawFrame)) {
 							if (rawFrame.data.size() != 0) {
-								collectedFrameCount += 1;
-								currentTotalFrameCount = rawFrame.totalFrameCount;
 								frames.push_back(rawFrame);
 							}
 						}
 						auto encodedFrames = songEncoder->encodeFrames(frames);
+						for (auto value : encodedFrames) {
+							send(*this->sendAudioBuffer, value);
+						}
 					}
 					if (counter > 0) {
-						bytesRead = dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
-						bytesReadTotal += bytesRead;
-						remainingDownloadContentLength -= bytesRead;
-						auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-						streamDataWriter.WriteBuffer(buffer);
-						streamDataWriter.StoreAsync().get();
-						DataReader streamDataReader(outputStream.GetInputStreamAt(0));
-						streamDataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
-						auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-						vector<uint8_t> newVector;
-						for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
-							newVector.push_back(streamBuffer.data()[x]);
+						if (contentLengthCurrent > 0) {
+							bytesRead = dataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
+							bytesReadTotal += bytesRead;
+							remainingDownloadContentLength -= bytesRead;
+							auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+							streamDataWriter.WriteBuffer(buffer);
+							streamDataWriter.StoreAsync().get();
+							DataReader streamDataReader(outputStream.GetInputStreamAt(0));
+							streamDataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
+							auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+							vector<uint8_t> newVector;
+							for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
+								newVector.push_back(streamBuffer.data()[x]);
+							}
+							send(dataPackage.dataBuffer, newVector);
 						}
-						send(dataPackage.dataBuffer, newVector);
 						RawFrameData rawFrame;
 						rawFrame.data.resize(0);
-						while (collectedFrameCount < currentTotalFrameCount) {
-							while (songDecoder->getFrame(&rawFrame)) {
-								if (rawFrame.data.size() != 0) {
-									collectedFrameCount += 1;
-									frames.push_back(rawFrame);
-									currentTotalFrameCount = rawFrame.totalFrameCount;
-									cout << "TOTAL FRAME COUNT: " << rawFrame.totalFrameCount << endl;
-								}
+						while (songDecoder->getFrame(&rawFrame)) {
+							if (rawFrame.data.size() != 0) {
+								frames.push_back(rawFrame);
 							}
 						}
 						auto encodedFrames = songEncoder->encodeFrames(frames);
 						for (auto value : encodedFrames) {
-							if (send(*this->sendAudioBuffer, value)) {
-							};
+							send(*this->sendAudioBuffer, value);
 						}
 					}
 
@@ -734,23 +726,11 @@ namespace DiscordCoreAPI {
 					}
 					counter += 1;
 				}
-				vector<RawFrameData> frames;
-				RawFrameData rawFrame;
-				while (songDecoder->getFrame(&rawFrame)) {
-					if (rawFrame.data.size() != 0) {
-						frames.push_back(rawFrame);
-					}
-				}
-				auto encodedFrames = songEncoder->encodeFrames(frames);
-				for (auto value : encodedFrames) {
-					send(*this->sendAudioBuffer, value);
-				}
-				cout << "THIS IS WHERE IT IS THIS IS WHERE IT IS" << endl;
-				//AudioFrameData frameData;
-				//frameData.completed = true;
-				//send(*this->sendAudioBuffer, frameData);
+				AudioFrameData frameData;
+				frameData.encodedFrameData.sampleCount = 0;
+				frameData.rawFrameData.sampleCount = 0;
+				send(*this->sendAudioBuffer, frameData);
 				this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-				receive(endOfFileBuffer);
 				send(this->completionCallbackBuffer, true);
 				co_await mainThread;
 				co_return;

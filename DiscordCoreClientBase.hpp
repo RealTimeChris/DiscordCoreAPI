@@ -30,9 +30,7 @@ namespace DiscordCoreAPI {
 		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
 		static BotUser currentUser;
 
-		DiscordCoreClientBase() {};
-
-		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClient, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgentNew) {
+		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClient) {
 			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(nullptr);
 			this->guildMembers->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
 			this->channels = make_shared<DiscordCoreInternal::ChannelManager>(nullptr);
@@ -42,12 +40,11 @@ namespace DiscordCoreAPI {
 			this->users = make_shared<DiscordCoreInternal::UserManager>(nullptr);
 			this->users->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
-			DiscordCoreClientBase::currentUser.Initialize(pWebSocketConnectionAgentNew);
-			DiscordCoreClientBase::pWebSocketConnectionAgent = pWebSocketConnectionAgentNew;
+			DiscordCoreClientBase::currentUser.Initialize(DiscordCoreClientBase::webSocketConnectionAgent);
 		}
 
 	protected:
-		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pWebSocketConnectionAgent;
+		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent;
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> audioBuffersMap;
 		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
@@ -56,12 +53,14 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::RoleManager> roles;
 		shared_ptr<DiscordCoreInternal::UserManager> users;
 		hstring botToken{ L"" };
+
+		DiscordCoreClientBase() {};
 	};
 	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> DiscordCoreClientBase::audioBuffersMap{};
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
-	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::pWebSocketConnectionAgent{ nullptr };
+	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
 }
 #endif

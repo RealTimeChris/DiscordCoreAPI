@@ -41,17 +41,16 @@ namespace DiscordCoreAPI {
 		friend class Guilds;
 		friend class Roles;
 		friend class Users;
-		
+
 		static shared_ptr<DiscordCoreClient> thisPointer;
-		DiscordCoreInternal::HttpAgentResources agentResources{};
 		shared_ptr<EventManager> eventManager{ nullptr };
 		shared_ptr<DiscordUser> discordUser{ nullptr };
-		
+
 		DiscordCoreClient(hstring botTokenNew) : DiscordCoreClientBase(), agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->ptrScheduler) {
 			this->botToken = botTokenNew;
 		}
 
-		DiscordCoreClient(){}
+		DiscordCoreClient() {}
 
 		static void finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* functionVector);
 
@@ -63,10 +62,10 @@ namespace DiscordCoreAPI {
 		static void terminate() {
 			DiscordCoreClient::thisPointer->doWeQuit = true;
 			DatabaseManagerAgent::cleanup();
-			DiscordCoreClient::thisPointer->pWebSocketConnectionAgent->terminate();
-			DiscordCoreClient::thisPointer->pWebSocketReceiverAgent->terminate();
-			wait(DiscordCoreClient::thisPointer->pWebSocketConnectionAgent.get());
-			wait(DiscordCoreClient::thisPointer->pWebSocketReceiverAgent.get());
+			DiscordCoreClient::thisPointer->webSocketConnectionAgent->terminate();
+			DiscordCoreClient::thisPointer->webSocketReceiverAgent->terminate();
+			wait(DiscordCoreClient::thisPointer->webSocketConnectionAgent.get());
+			wait(DiscordCoreClient::thisPointer->webSocketReceiverAgent.get());
 			DiscordCoreClientBase::currentUser.~BotUser();
 			DiscordCoreClient::thisPointer->guilds->~GuildManager();
 			DiscordCoreClient::thisPointer->messages->~MessageManager();
@@ -94,16 +93,17 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> pWebSocketReceiverAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
-		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
+		DiscordCoreInternal::HttpAgentResources agentResources{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		hstring baseURL{ L"https://discord.com/api/v9" };		
+		hstring baseURL{ L"https://discord.com/api/v9" };
 		bool doWeQuit{ false };
 
 		task<void> initialize() {
@@ -115,8 +115,8 @@ namespace DiscordCoreAPI {
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
-			this->pWebSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			this->pWebSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->pWebSocketReceiverAgent->workloadSource, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->workloadSource, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
 			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
@@ -137,12 +137,12 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::GuildManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			this->thisPointerBase->initialize(this->agentResources, this->thisPointer, this->pWebSocketConnectionAgent);
+			this->thisPointerBase->initialize(this->agentResources, this->thisPointer);
 			this->users = this->thisPointerBase->users;
 			this->roles = this->thisPointerBase->roles;
 			this->guildMembers = this->thisPointerBase->guildMembers;
 			this->channels = this->thisPointerBase->channels;
-			this->pWebSocketConnectionAgent->setSocketPath(returnData.data.dump());
+			this->webSocketConnectionAgent->setSocketPath(returnData.data.dump());
 			this->interactions = make_shared<DiscordCoreInternal::InteractionManager>(nullptr);
 			this->interactions->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->reactions = make_shared<DiscordCoreInternal::ReactionManager>(nullptr);
@@ -160,8 +160,8 @@ namespace DiscordCoreAPI {
 			InputEvents::initialize(DiscordCoreClient::thisPointerBase, DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
-			this->pWebSocketReceiverAgent->start();
-			this->pWebSocketConnectionAgent->start();
+			this->webSocketReceiverAgent->start();
+			this->webSocketConnectionAgent->start();
 			this->start();
 			co_await mainThread;
 			co_return;
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 		void run() {
 			try {
 				while (doWeQuit == false) {
-					DiscordCoreInternal::WebSocketWorkload workload = receive(this->pWebSocketReceiverAgent->workloadTarget, INFINITE);
+					DiscordCoreInternal::WebSocketWorkload workload = receive(this->webSocketReceiverAgent->workloadTarget, INFINITE);
 					switch (workload.eventType) {
 					case DiscordCoreInternal::WebSocketEventType::CHANNEL_CREATE:
 					{
