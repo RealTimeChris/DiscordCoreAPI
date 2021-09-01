@@ -62,6 +62,10 @@ namespace DiscordCoreInternal {
 	class VoiceChannelWebSocketAgent : public agent {
 	public:
 
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class WebSocketConnectionAgent;
+		friend class Guild;
+
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
 			:agent(*threadContextNew->scheduler->ptrScheduler) {
 			this->threadContext = threadContextNew;
@@ -119,9 +123,6 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WebSocketConnectionAgent;
-		friend class Guild;
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
@@ -134,8 +135,10 @@ namespace DiscordCoreInternal {
 		bool didWeReceiveHeartbeatAck{ true };
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
+		const int maxReconnectTries{ 10 };
 		DataWriter dataWriter{ nullptr };
 		string voiceEncryptionMode{ "" };
+		int currentReconnectTries{ 0 };
 		bool areWeWaitingForIp{ true };
 		bool areWeConnected{ false };
 		int lastNumberReceived{ 0 };
@@ -204,9 +207,15 @@ namespace DiscordCoreInternal {
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
 			if (args.Code() != 1000 && args.Code() != 4014) {
-				this->cleanup();
-				send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
-				this->connect();
+				if (this->maxReconnectTries > this->currentReconnectTries) {
+					this->currentReconnectTries += 1;
+					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					this->cleanup();
+					this->connect();
+				}
+				else {
+					this->terminate();
+				}
 				string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
 				this->sendMessage(resumePayload);
 			}
@@ -214,9 +223,15 @@ namespace DiscordCoreInternal {
 
 		void sendHeartBeat(bool* didWeReceiveHeartbeatAckNew) {
 			if (this->didWeReceiveHeartbeatAck == false) {
-				this->cleanup();
-				send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
-				this->connect();
+				if (this->maxReconnectTries > this->currentReconnectTries) {
+					this->currentReconnectTries += 1;
+					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					this->cleanup();
+					this->connect();
+				}
+				else {
+					this->terminate();
+				}
 				this->didWeReceiveHeartbeatAck = true;
 				return;
 			}
@@ -626,7 +641,9 @@ namespace DiscordCoreInternal {
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		event_token messageReceivedToken{};
+		const int maxReconnectTries{ 10 };
 		bool areWeCollectingData{ false };
+		int currentReconnectTries{ 0 };
 		bool isThisConnected{ false };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
@@ -669,15 +686,27 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			this->cleanup();
-			this->connect();
+			if (this->maxReconnectTries > this->currentReconnectTries) {
+				this->currentReconnectTries += 1;
+				this->cleanup();
+				this->connect();
+			}
+			else {
+				this->terminate();
+			}
 			return;
 		}
 
 		void sendHeartBeat() {
 			if (this->didWeReceiveHeartbeatAck == false) {
-				this->cleanup();
-				this->connect();
+				if (this->maxReconnectTries > this->currentReconnectTries) {
+					this->currentReconnectTries += 1;
+					this->cleanup();
+					this->connect();
+				}
+				else {
+					this->terminate();
+				}
 				this->didWeReceiveHeartbeatAck = true;
 				return;
 			}
@@ -773,14 +802,28 @@ namespace DiscordCoreInternal {
 				this->cleanup();
 				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
 				this->sendMessage(resume);
-				this->connect();
+				if (this->maxReconnectTries > this->currentReconnectTries) {
+					this->currentReconnectTries += 1;
+					this->cleanup();
+					this->connect();
+				}
+				else {
+					this->terminate();
+				}
 			}
 
 			if (payload.at("op") == 9) {
 				cout << "Reconnecting (Type 9)!" << endl << endl;
 				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
 				this->sendMessage(resume);
-				this->connect();
+				if (this->maxReconnectTries > this->currentReconnectTries) {
+					this->currentReconnectTries += 1;
+					this->cleanup();
+					this->connect();
+				}
+				else {
+					this->terminate();
+				}
 			}
 
 			if (payload.at("op") == 10) {
