@@ -65,6 +65,7 @@ namespace DiscordCoreAPI {
 			this->applicationId = dataNew.applicationId;
 			this->messageReference = dataNew.messageReference;
 			this->flags = dataNew.flags;
+			this->referencedMessage = dataNew.referencedMessage;
 			this->stickers = dataNew.stickers;
 			this->interaction = dataNew.interaction;
 			this->components = dataNew.components;
@@ -496,8 +497,9 @@ namespace DiscordCoreInternal {
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::MessageData messageData;
 				messageData.discordCoreClient = this->discordCoreClient;
-				DataParser::parseObject(returnData.data, &messageData);
+				DataParser::parseObject(value, &messageData);
 				DiscordCoreAPI::Message messageNew(messageData);
+				messagesVector.push_back(messageNew);
 			}
 			return messagesVector;
 		}
@@ -524,8 +526,9 @@ namespace DiscordCoreInternal {
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::MessageData messageData;
 				messageData.discordCoreClient = this->discordCoreClient;
-				DataParser::parseObject(returnData.data, &messageData);
+				DataParser::parseObject(value, &messageData);
 				DiscordCoreAPI::Message messageNew(messageData);
+				messagesVector.push_back(messageNew);
 			}
 			return messagesVector;
 		}

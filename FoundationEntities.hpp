@@ -2881,7 +2881,7 @@ namespace DiscordCoreAPI {
         vector<MessageStickerItemData> stickerItems{};
     };
 
-    struct MessageData : MessageDataOld {
+    struct MessageData :public MessageDataOld {
         operator DiscordCoreInternal::MessageData() {
             DiscordCoreInternal::MessageData newData;
             newData.requesterId = this->requesterId;

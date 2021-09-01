@@ -701,7 +701,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			json payload = payload.parse(to_string(message));
-
+			
 			send(*this->webSocketMessageTarget, payload);
 
 			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
