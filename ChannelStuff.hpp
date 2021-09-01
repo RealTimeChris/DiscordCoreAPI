@@ -325,11 +325,6 @@ namespace DiscordCoreInternal	{
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
 
-		ChannelManager operator=(const ChannelManager& dataPackage) {
-			ChannelManager pointerToManager{ dataPackage };
-			return pointerToManager;
-		}
-
 		ChannelManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;

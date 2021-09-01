@@ -91,11 +91,6 @@ namespace DiscordCoreInternal{
         HttpAgentResources agentResources{};
         string applicationId{ "" };
 
-        ApplicationCommandManager operator=(const ApplicationCommandManager& dataPackage) {
-            ApplicationCommandManager pointerToManager{ dataPackage };
-            return pointerToManager;
-        }
-
         ApplicationCommandManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, string applicationIdNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;

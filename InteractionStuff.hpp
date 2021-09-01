@@ -1040,11 +1040,6 @@ namespace DiscordCoreInternal {
         shared_ptr<ThreadContext> threadContext{ nullptr };
         HttpAgentResources agentResources{};
 
-        InteractionManager operator=(const InteractionManager&dataPackage) {
-            InteractionManager pointerToManager{ dataPackage };
-            return pointerToManager;
-        }
-
         InteractionManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew) {
             this->agentResources = agentResourcesNew;
             this->threadContext = threadContextNew;

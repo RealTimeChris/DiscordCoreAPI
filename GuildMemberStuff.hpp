@@ -247,11 +247,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
 
-		GuildMemberManager operator=(const GuildMemberManager& dataPackage) {
-			GuildMemberManager pointerToManager{ dataPackage };
-			return pointerToManager;
-		}
-
 		GuildMemberManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
