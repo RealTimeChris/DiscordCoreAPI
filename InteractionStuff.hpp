@@ -13,13 +13,6 @@
 #include "DataParsingFunctions.hpp"
 #include "ThreadManager.hpp"
 
-namespace DiscordCoreInternal{
-
-    class InteractionManagerAgent;
-    class InteractionManager;
-
-}
-
 namespace DiscordCoreAPI {
 
     class SelectMenuManager;
@@ -1046,11 +1039,6 @@ namespace DiscordCoreInternal {
         
         shared_ptr<ThreadContext> threadContext{ nullptr };
         HttpAgentResources agentResources{};
-
-        InteractionManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew) {
-            this->agentResources = agentResourcesNew;
-            this->threadContext = threadContextNew;
-        }
 
         InteractionManager operator=(const InteractionManager&dataPackage) {
             InteractionManager pointerToManager{ dataPackage };

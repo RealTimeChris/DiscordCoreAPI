@@ -72,7 +72,7 @@ namespace DiscordCoreInternal {
         }
 
         static task<shared_ptr<ThreadContext>> getThreadContext(ThreadType threadType = ThreadType::Regular) {
-            ThreadManagerAgent requestAgent;
+            ThreadManagerAgent requestAgent{};
             send(requestAgent.readyBuffer, threadType);
             requestAgent.start();
             agent::wait(&requestAgent);

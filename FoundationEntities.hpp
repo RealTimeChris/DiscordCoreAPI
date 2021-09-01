@@ -124,7 +124,21 @@ namespace DiscordCoreAPI {
 
 namespace  DiscordCoreInternal {
 
+    class InteractionManagerAgent;
+    class GuildMemberManagerAgent;
+    class ReactionManagerAgent;
+    class MessageManagerAgent;
+    class ChannelManagerAgent;
+    class GuildMemberManager;
+    class InteractionManager;
+    class GuildManagerAgent;
+    class UserManagerAgent;
+	class ReactionManager;
+    class ChannelManager;
+    class MessageManager;
     class ThreadManager;
+    class GuildManager;
+    class UserManager;
 
     struct AllowedMentionsData {
         vector<string> parse{};

@@ -13,28 +13,20 @@
 #include "JSONifier.hpp"
 #include "HttpStuff.hpp"
 
-namespace DiscordCoreInternal {
-
-	class MessageManagerAgent;
-	class MessageManager;
-
-};
-
 namespace DiscordCoreAPI {
 
 	class InputEvents;
 	class Messages;
 	
-	class Message : public MessageData{
-	public:
+	class Message : public MessageData {
+	protected:
+
 		friend struct Concurrency::details::_ResultHolder<Message>;
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend struct OnMessageCreationData;
 		friend struct OnMessageUpdateData;
 		friend class DiscordCoreClient;
-
-	protected:
 
 		Message() {};
 
@@ -76,6 +68,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct EditMessageData {
+
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
@@ -219,6 +212,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct ReplyMessageData {
+
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
@@ -309,6 +303,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct SendDMData {
+
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
 
@@ -764,12 +759,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
-
-		MessageManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-		}
 
 		MessageManager operator=(const MessageManager& dataPackage) {
 			MessageManager pointerToManager{ dataPackage };

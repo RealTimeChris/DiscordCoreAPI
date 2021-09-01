@@ -259,8 +259,9 @@ namespace DiscordCoreAPI {
 
 		bool stop() {
 			if (this->areWePlaying) {
-				this->areWeSkippingOrStopping = true;
 				vector<uint8_t> newVector;
+				send(this->currentDataSendBuffer, newVector);
+				send(this->currentDataSendBuffer, newVector);
 				send(this->currentDataSendBuffer, newVector);
 				receive(this->completionCallbackBuffer);
 				AudioFrameData dataFrame;
@@ -287,12 +288,15 @@ namespace DiscordCoreAPI {
 
 		bool skip() {
 			if (this->areWePlaying) {
-				this->areWeSkippingOrStopping = true;
 				vector<uint8_t> newVector;
 				send(this->currentDataSendBuffer, newVector);
-				AudioFrameData dataFrame;
+				send(this->currentDataSendBuffer, newVector);
+				send(this->currentDataSendBuffer, newVector);
+				cout << "THIS IS IT010101;" << endl;
 				receive(this->completionCallbackBuffer);
+				AudioFrameData dataFrame;
 				while (try_receive(*this->sendAudioBuffer, dataFrame)) {};
+				cout << "THIS IS IT02020202;" << endl;
 				return true;
 			}
 			else {
@@ -301,23 +305,12 @@ namespace DiscordCoreAPI {
 		}
 
 		bool isThereAnySongs() {
-			if (this->loopAll || this->loopSong) {
-				if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
-					return false;
-				}
-				else {
-					return true;
-				}
+			if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
+				return false;
 			}
 			else {
-				if (this->songQueue.size() == 0) {
-					return false;
-				}
-				else {
-					return true;
-				}
+				return true;
 			}
-			
 		}
 
 		void addSongToQueue(YouTubeSearchResult searchResult) {
@@ -407,8 +400,10 @@ namespace DiscordCoreAPI {
 		}
 
 		YouTubeSong getCurrentSong() {
-			if (this->currentSong.videoId != "") {
-
+			if (this->lastSong.description != "") {
+				return this->lastSong;
+			}
+			else if (this->currentSong.videoId != "") {
 				return this->currentSong;
 			}
 			else if (this->songQueue.size() > 0) {
@@ -514,20 +509,21 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				if (this->songQueue.size() > 0 && (this->currentSong.description != "" || this->currentSong.description == "")) {
+					cout << "GUILD ID: " << this->guildId << endl;
+					cout << "THIS SKIPPED IT0000" << endl;
 					this->currentSong = this->songQueue.at(0);
-					for (int x = 0; x < this->songQueue.size(); x += 1) {
-						if (x == this->songQueue.size() - 1) {
-							break;
-						}
+					for (int x = 0; x < this->songQueue.size()-1; x += 1) {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					this->downloadAndStreamAudio(this->currentSong);
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					this->lastSong = YouTubeSong();
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
+					cout << "GUILD ID: " << this->guildId << endl;
+					cout << "THIS SKIPPED IT11111" << endl;
 					this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					this->lastSong = this->currentSong;
@@ -535,6 +531,8 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
+					cout << "GUILD ID: " << this->guildId << endl;
+					cout << "THIS SKIPPED IT222222" << endl;
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
 					this->downloadAndStreamAudio(this->currentSong);
@@ -543,6 +541,7 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (this->currentSong.videoId == "") {
+					cout << "THIS SKIPPED IT333333" << endl;
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -596,7 +595,6 @@ namespace DiscordCoreAPI {
 		const hstring baseWatchURL{ L"https://www.youtube.com/watch?v=" };
 		unbounded_buffer<bool> completionCallbackBuffer{ nullptr };
 		const hstring baseURL{ L"https://www.youtube.com" };
-		bool areWeSkippingOrStopping{ false };
 		vector<YouTubeSong> songQueue{};
 		const string newLine{ "\n\r" };
 		string html5PlayerFile{ "" };
@@ -650,10 +648,6 @@ namespace DiscordCoreAPI {
 				SongEncoder* songEncoder = new SongEncoder();
 				while (song.contentLength > bytesReadTotal || songDecoder->status() != agent_done) {
 					this->areWePlaying = true;
-					if (this->areWeSkippingOrStopping) {
-						this->areWeSkippingOrStopping = false;
-						break;
-					}
 					int bytesRead{ 0 };
 					InMemoryRandomAccessStream outputStream;
 					DataWriter streamDataWriter(outputStream);
@@ -679,6 +673,7 @@ namespace DiscordCoreAPI {
 					}
 					vector<RawFrameData> frames;
 					if (counter == 0) {
+						cout << "GET FRAME 222222" << endl;
 						DataReader streamDataReader(outputStream.GetInputStreamAt(0));
 						streamDataReader.LoadAsync((uint32_t)contentLengthCurrent).get();
 						auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
@@ -711,11 +706,6 @@ namespace DiscordCoreAPI {
 						while (songDecoder->getFrame(&rawFrame)) {
 							if (rawFrame.frameStatus == FrameStatus::Stopped) {
 								doWeBreak = true;
-								AudioFrameData frameData;
-								frameData.encodedFrameData.sampleCount = 0;
-								frameData.rawFrameData.sampleCount = 0;
-								frameData.frameStatus = FrameStatus::Stopped;
-								send(*this->sendAudioBuffer, frameData);
 								break;
 							}
 							if (rawFrame.data.size() != 0) {
@@ -739,11 +729,16 @@ namespace DiscordCoreAPI {
 					}
 					counter += 1;
 				}
+				vector<uint8_t> newVector;
+				send(dataPackage.dataBuffer, newVector);
+				RawFrameData frameData01;
+				songDecoder->getFrame(&frameData01);
+				AudioFrameData frameData02;
+				frameData02.encodedFrameData.sampleCount = 0;
+				frameData02.rawFrameData.sampleCount = 0;
+				frameData02.frameStatus = FrameStatus::Stopped;
+				send(*this->sendAudioBuffer, frameData02);
 				send(this->completionCallbackBuffer, true);
-				AudioFrameData frameData;
-				frameData.encodedFrameData.sampleCount = 0;
-				frameData.rawFrameData.sampleCount = 0;
-				send(*this->sendAudioBuffer, frameData);
 				co_await mainThread;
 				co_return;
 			}

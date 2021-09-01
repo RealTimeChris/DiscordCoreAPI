@@ -338,6 +338,7 @@ namespace DiscordCoreAPI {
                 stream->done();
                 RawFrameData frameData;
                 frameData.frameStatus = FrameStatus::Stopped;
+                frameData.sampleCount = 0;
                 send(stream->outDataBuffer, frameData);
                 return AVERROR_EOF;
             }

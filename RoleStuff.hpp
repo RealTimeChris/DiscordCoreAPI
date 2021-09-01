@@ -26,7 +26,8 @@ namespace DiscordCoreAPI {
 	class Roles;
 
 	class Role :public RoleData {
-	public:
+	protected:
+
 		friend struct Concurrency::details::_ResultHolder<Role>;
 		friend class DiscordCoreInternal::RoleManagerAgent;
 		friend class DiscordCoreInternal::RoleManager;
@@ -35,8 +36,6 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend struct OnRoleUpdateData;
 		friend class Guild;
-
-	protected:
 
 		Role() {};
 
@@ -493,12 +492,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
-
-		RoleManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-		}
 
 		RoleManager operator=(const RoleManager& dataPackage) {
 			RoleManager pointerToManager{ dataPackage };

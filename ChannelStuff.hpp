@@ -12,20 +12,13 @@
 #include "FoundationEntities.hpp"
 #include "HttpStuff.hpp"
 
-namespace DiscordCoreInternal {
-
-	class ChannelManagerAgent;
-	class ChannelManager;
-
-}
-
 namespace DiscordCoreAPI {
 
 	class InputEvents;
 	class Channels;
 	
 	class Channel : public ChannelData {
-	public:
+	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::ChannelManagerAgent;
@@ -35,8 +28,6 @@ namespace DiscordCoreAPI {
 		friend struct OnChannelUpdateData;
 		friend class DiscordCoreClient;
 		friend class Guild;
-
-	protected:
 
 		Channel() {};
 
@@ -333,12 +324,6 @@ namespace DiscordCoreInternal	{
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
-
-		ChannelManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-		}
 
 		ChannelManager operator=(const ChannelManager& dataPackage) {
 			ChannelManager pointerToManager{ dataPackage };

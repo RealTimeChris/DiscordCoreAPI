@@ -18,13 +18,6 @@
 #include "RoleStuff.hpp"
 #include "YouTubeStuff.hpp"
 
-namespace DiscordCoreInternal {
-
-	class GuildManagerAgent;
-	class GuildManager;
-
-};
-
 namespace DiscordCoreAPI {
 
 	class PermissionsConverter;
@@ -548,13 +541,6 @@ namespace DiscordCoreInternal	{
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
-
-		GuildManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBaseNew) {
-			this->discordCoreClientBase = discordCoreClientBaseNew;
-			this->discordCoreClient = discordCoreClientNew;
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-		}
 
 		GuildManager operator=(const GuildManager& dataPackage) {
 			GuildManager pointerToManager{ dataPackage };

@@ -91,28 +91,14 @@ namespace DiscordCoreInternal{
         HttpAgentResources agentResources{};
         string applicationId{ "" };
 
-        ApplicationCommandManager() {};
-
-        ApplicationCommandManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, string applicationIdNew) {
-            this->agentResources = agentResourcesNew;
-            this->threadContext = threadContextNew;
-            this->applicationId = applicationIdNew;
-        }
-
-        ApplicationCommandManager(const ApplicationCommandManager& dataPackage) {
-            this->agentResources = dataPackage.agentResources;
-            this->threadContext = dataPackage.threadContext;
-            return;
-        }
-
         ApplicationCommandManager operator=(const ApplicationCommandManager& dataPackage) {
             ApplicationCommandManager pointerToManager{ dataPackage };
             return pointerToManager;
         }
 
         ApplicationCommandManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, string applicationIdNew) {
-            this->threadContext = threadContextNew;
             this->agentResources = agentResourcesNew;
+            this->threadContext = threadContextNew;
             this->applicationId = applicationIdNew;
             return *this;
         }

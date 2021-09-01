@@ -98,9 +98,6 @@ namespace DiscordCoreAPI {
 				receive(this->stopBuffer);
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
-				AudioFrameData frameData;
-				while (try_receive(*this->audioDataBuffer, frameData));
-				this->clearAudioData();
 				send(this->stopBuffer, true);
 				return true;
 			}
@@ -117,7 +114,6 @@ namespace DiscordCoreAPI {
 				receive(this->skipBuffer);
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
-				this->clearAudioData();
 				send(this->skipBuffer, true);
 				return true;
 			}
@@ -230,11 +226,8 @@ namespace DiscordCoreAPI {
 			}
 			AudioFrameData frameData{ .frameStatus = FrameStatus::Running };
 			while (try_receive(*this->audioDataBuffer, frameData)) {
-				if (frameData.frameStatus == FrameStatus::Stopped) {
-					frameData.encodedFrameData.data.clear();
-					frameData.rawFrameData.data.clear();
-					break;
-				};
+				frameData.encodedFrameData.data.clear();
+				frameData.rawFrameData.data.clear();
 			};
 		}
 
@@ -325,16 +318,15 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			while (!this->doWeQuit) {
+				cout << "WERE HERE 0000" << endl;
 				if (!this->areWePlaying) {
 					receive(this->playBuffer);
-					AudioFrameData frameData;
-					frameData.frameStatus = FrameStatus::Stopped;
-					while (frameData.frameStatus == FrameStatus::Stopped || frameData.encodedFrameData.sampleCount == 0 || frameData.rawFrameData.sampleCount == 0) {
-						frameData = receive(*this->audioDataBuffer);
-					};
+					cout << "WERE HERE 11111" << endl;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
+					cout << "WERE HERE 2323232" << endl;
 					this->audioData = receive(*this->audioDataBuffer);
+					cout << "WERE HERE 333333" << endl;
 					this->areWePlaying = true;
 				}
 				this->sendSpeakingMessage(true);
@@ -347,13 +339,16 @@ namespace DiscordCoreAPI {
 				if (this->audioData.type == AudioFrameType::Encoded) {
 					this->areWeStreaming = true;
 					if (this->areWeStreaming) {
+						cout << "WERE HERE 444444" << endl;
 						while (this->audioData.encodedFrameData.sampleCount != 0) {
 							if (this->areWeSkipping) {
+								cout << "WERE HERE 55555" << endl;
 								this->onSongCompletionEvent();
 								frameCounter = 0;
 								break;
 							}
 							if (this->areWeStopping) {
+								cout << "WERE HERE 66666" << endl;
 								frameCounter = 0;
 								break;
 							}

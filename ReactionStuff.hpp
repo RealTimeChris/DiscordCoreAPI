@@ -11,26 +11,18 @@
 #include "../pch.h"
 #include "FoundationEntities.hpp"
 
-namespace DiscordCoreInternal {
-
-	class ReactionManagerAgent;
-	class ReactionManager;
-
-}
-
 namespace DiscordCoreAPI {
 
 	class Reactions;
 
 	class Reaction : public ReactionData {
-	public:
+	protected:
+
 		friend struct Concurrency::details::_ResultHolder<Reaction>;
 		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::ReactionManager;
 		friend struct OnReactionAddData;
 		friend class DiscordCoreClient;
-
-	protected:
 
 		Reaction() {};
 
@@ -215,12 +207,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
-
-		ReactionManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-		}
 
 		ReactionManager operator=(const ReactionManager& dataPackage) {
 			ReactionManager pointerToManager{ dataPackage };

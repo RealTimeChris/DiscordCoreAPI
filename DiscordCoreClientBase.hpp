@@ -27,8 +27,9 @@ namespace DiscordCoreAPI {
 		friend class InputEvents;
 		friend class Guild;
 
-		static shared_ptr<DiscordCoreClientBase> thisPointerBase;
 		static BotUser currentUser;
+
+		DiscordCoreClientBase() {}
 
 		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClient) {
 			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(nullptr);
@@ -58,7 +59,6 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> DiscordCoreClientBase::audioBuffersMap{};
-	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }
 #endif

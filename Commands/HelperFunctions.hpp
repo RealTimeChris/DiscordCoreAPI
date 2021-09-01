@@ -86,7 +86,6 @@ namespace DiscordCoreAPI {
             vector<string> returnVector;
             if (permissionString == "") {
                 permissionString = "0";
-                cout << "TESTING TESTING TESTING" << endl;
             }
             __int64 permissionsInteger = stoll(permissionString);
             if (permissionsInteger & 1 << 3) {
@@ -243,6 +242,128 @@ namespace DiscordCoreAPI {
             return returnVector;
         }
 
+        static vector<string> getPermissions(string permissionString) {
+            vector<string> returnVector;
+            if (permissionString == "") {
+                permissionString = "0";
+            }
+            __int64 permissionsInteger = stoll(permissionString);
+            if (permissionsInteger & 1 << 3) {
+                for (__int64 x = 0; x < 37; x += 1) {
+                    permissionsInteger |= 1i64 << x;
+                }
+            }
+            if (permissionsInteger & (1 << 0)) {
+                returnVector.push_back("Create Instant Invite");
+            }
+            if (permissionsInteger & (1 << 1)) {
+                returnVector.push_back("Kick Members");
+            }
+            if (permissionsInteger & (1 << 2)) {
+                returnVector.push_back("Ban Members");
+            }
+            if (permissionsInteger & (1 << 3)) {
+                returnVector.push_back("Administrator");
+            }
+            if (permissionsInteger & (1 << 4)) {
+                returnVector.push_back("Manage Channels");
+            }
+            if (permissionsInteger & (1 << 5)) {
+                returnVector.push_back("Manage Guild");
+            }
+            if (permissionsInteger & (1 << 6)) {
+                returnVector.push_back("Add Reactions");
+            }
+            if (permissionsInteger & (1 << 7)) {
+                returnVector.push_back("View Audit Log");
+            }
+            if (permissionsInteger & (1 << 8)) {
+                returnVector.push_back("Priority Speaker");
+            }
+            if (permissionsInteger & (1 << 9)) {
+                returnVector.push_back("Stream");
+            }
+            if (permissionsInteger & (1 << 10)) {
+                returnVector.push_back("View Channel");
+            }
+            if (permissionsInteger & (1 << 11)) {
+                returnVector.push_back("Send Messages");
+            }
+            if (permissionsInteger & (1 << 12)) {
+                returnVector.push_back("Send TTS Messages");
+            }
+            if (permissionsInteger & (1 << 13)) {
+                returnVector.push_back("Manage Messages");
+            }
+            if (permissionsInteger & (1 << 14)) {
+                returnVector.push_back("Embed Links");
+            }
+            if (permissionsInteger & (1 << 15)) {
+                returnVector.push_back("Attach Files");
+            }
+            if (permissionsInteger & (1 << 16)) {
+                returnVector.push_back("Read Message History");
+            }
+            if (permissionsInteger & (1 << 17)) {
+                returnVector.push_back("Mention Everyone");
+            }
+            if (permissionsInteger & (1 << 18)) {
+                returnVector.push_back("Use External Emoji");
+            }
+            if (permissionsInteger & (1 << 19)) {
+                returnVector.push_back("View Guild Insights");
+            }
+            if (permissionsInteger & (1 << 20)) {
+                returnVector.push_back("Connect");
+            }
+            if (permissionsInteger & (1 << 21)) {
+                returnVector.push_back("Speak");
+            }
+            if (permissionsInteger & (1 << 22)) {
+                returnVector.push_back("Mute Members");
+            }
+            if (permissionsInteger & (1 << 23)) {
+                returnVector.push_back("Deafen Members");
+            }
+            if (permissionsInteger & (1 << 24)) {
+                returnVector.push_back("Move Members");
+            }
+            if (permissionsInteger & (1 << 25)) {
+                returnVector.push_back("Use VAD");
+            }
+            if (permissionsInteger & (1 << 26)) {
+                returnVector.push_back("Change Nickname");
+            }
+            if (permissionsInteger & (1 << 27)) {
+                returnVector.push_back("Manage Nicknames");
+            }
+            if (permissionsInteger & (1 << 28)) {
+                returnVector.push_back("Manage Roles");
+            }
+            if (permissionsInteger & (1 << 29)) {
+                returnVector.push_back("Manage Webhooks");
+            }
+            if (permissionsInteger & (1 << 30)) {
+                returnVector.push_back("Manage Emojis");
+            }
+            if (permissionsInteger & (1 << 31)) {
+                returnVector.push_back("Use Slash Commands");
+            }
+            if (permissionsInteger & (1ull << 32)) {
+                returnVector.push_back("Request To Speak");
+            }
+            if (permissionsInteger & (1ull << 34)) {
+                returnVector.push_back("Manage Threads");
+            }
+            if (permissionsInteger & (1ull << 35)) {
+                returnVector.push_back("Use Public Threads");
+            }
+            if (permissionsInteger & (1ull << 36)) {
+                returnVector.push_back("Use Private Threads");
+            }
+            return returnVector;
+        }
+
         static string getAllPermissions() {
             __int64 allPerms;
             allPerms = allPerms | (__int64)DiscordCoreInternal::Permissions::ADD_REACTIONS;
@@ -286,7 +407,7 @@ namespace DiscordCoreAPI {
             return stream.str();
         }
 
-        static string getAllOfMyPerrmissions(GuildMember guildMember, Channel channel){
+        static string getAllOfMyPerrmissions(GuildMember guildMember, Channel channel) {
             string permsString = computePermissions(guildMember, channel);
             return permsString;
         }
@@ -332,7 +453,7 @@ namespace DiscordCoreAPI {
                 return getAllPermissions();
             }
 
-            Guild guild = Guilds::getGuildAsync({ .guildId = guildMember.guildId }).get();
+            Guild guild = guildMember.discordCoreClient->guilds->getGuildAsync({ .guildId = guildMember.guildId }).get();
 
             DiscordCoreInternal::OverWriteData overwriteEveryone;
             if (channel.permissionOverwrites.contains(guild.id)) {

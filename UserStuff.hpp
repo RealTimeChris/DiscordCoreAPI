@@ -13,26 +13,17 @@
 #include "DataParsingFunctions.hpp"
 #include "WebSocketStuff.hpp"
 
-namespace DiscordCoreInternal {
-
-	class UserManagerAgent;
-	class UserManager;
-
-};
-
 namespace DiscordCoreAPI {
 
 	class Guild;
 	class Users;
 
 	class Application : public ApplicationData {
-	public:
+	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Application>;
 		friend class DiscordCoreInternal::UserManagerAgent;
 		friend class DiscordCoreInternal::UserManager;
-
-	protected:
 
 		Application() {};
 
@@ -59,7 +50,7 @@ namespace DiscordCoreAPI {
 	};
 
 	class User : public UserData {
-	public:
+	protected:
 
 		friend struct Concurrency::details::_ResultHolder<User>;
 		friend class DiscordCoreInternal::UserManagerAgent;
@@ -70,8 +61,6 @@ namespace DiscordCoreAPI {
 		friend struct OnUserUpdateData;
 		friend class DiscordCoreClient;
 		friend class Guild;
-
-	protected:
 
 		User() {};
 
@@ -115,26 +104,8 @@ namespace DiscordCoreAPI {
 
 		BotUser(BotUser* dataPackage) {
 			if (dataPackage != nullptr) {
-				this->avatar = dataPackage->avatar;
-				this->bot = dataPackage->bot;
-				this->createdAt = dataPackage->createdAt;
-				this->discordCoreClient = dataPackage->discordCoreClient;
-				this->discriminator = dataPackage->discriminator;
-				this->email = dataPackage->email;
-				this->flags = dataPackage->flags;
-				this->id = dataPackage->id;
-				this->locale = dataPackage->locale;
-				this->mfaEnabled = dataPackage->mfaEnabled;
-				this->premiumType = dataPackage->premiumType;
-				this->publicFlags = dataPackage->publicFlags;
-				this->system = dataPackage->system;
-				this->username = dataPackage->username;
-				this->verified = dataPackage->verified;
+				*this = *dataPackage;
 			}
-		}
-
-		void Initialize(shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
-			this->pConnectionWebSocketAgent = pConnectionWebSocketAgentNew;
 		}
 
 		void updateVoiceStatus(UpdateVoiceStateData dataPackage) {
@@ -163,8 +134,6 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		~BotUser() {};
-
 		BotUser(UserData dataPackage) {
 			this->avatar = dataPackage.avatar;
 			this->bot = dataPackage.bot;
@@ -182,6 +151,12 @@ namespace DiscordCoreAPI {
 			this->username = dataPackage.username;
 			this->verified = dataPackage.verified;
 		}
+
+		void Initialize(shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
+			this->pConnectionWebSocketAgent = pConnectionWebSocketAgentNew;
+		}
+
+		~BotUser() {};
 
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgent{ nullptr };
 	};
@@ -394,12 +369,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
-
-		UserManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->agentResources = agentResourcesNew;
-			this->threadContext = threadContextNew;
-		}
 
 		UserManager operator=(const UserManager& dataPackage) {
 			UserManager pointerToManager{ dataPackage };
