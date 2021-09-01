@@ -28,8 +28,20 @@ namespace DiscordCoreAPI {
     class InputEvents;
 
     struct ButtonInteractionData {
+
         friend class ButtonManager;
         friend class EventHandler;
+
+        string applicationId{ "" };
+        GuildMemberData member{};
+        string channelId{ "" };
+        InteractionType type{};
+        string customId{ "" };
+        MessageData message{};
+        string guildId{ "" };
+        string token{ "" };
+        string id{ "" };
+        UserData user{};
 
         ButtonInteractionData(const ButtonInteractionData& dataPackage) {
             this->applicationId = dataPackage.applicationId;
@@ -43,24 +55,27 @@ namespace DiscordCoreAPI {
             this->user = dataPackage.user;
             this->id = dataPackage.id;
         }
-        string applicationId{ "" };
-        GuildMemberData member{};
-        string channelId{ "" };
-        InteractionType type{};
-        string customId{ "" };
-        MessageData message{};
-        string guildId{ "" };
-        string token{ "" };
-        string id{ "" };
-        UserData user{};
         
     protected:
         ButtonInteractionData() {}
     };
 
     struct SelectMenuInteractionData {
+
         friend class SelectMenuManager;
         friend class EventHandler;
+
+        string applicationId{ "" };
+        GuildMemberData member{};
+        vector<string> values{};
+        string channelId{ "" };
+        InteractionType type{};
+        MessageData message{};
+        string customId{ "" };
+        string guildId{ "" };
+        string token{ "" };
+        string id{ "" };
+        UserData user{};
 
         SelectMenuInteractionData(const SelectMenuInteractionData& dataPackage) {
             this->applicationId = dataPackage.applicationId;
@@ -75,22 +90,13 @@ namespace DiscordCoreAPI {
             this->user = dataPackage.user;
             this->id = dataPackage.id;
         }
-        string applicationId{ "" };
-        GuildMemberData member{};
-        vector<string> values{};
-        string channelId{ "" };
-        InteractionType type{};
-        MessageData message{};
-        string customId{ "" };
-        string guildId{ "" };
-        string token{ "" };
-        string id{ "" };
-        UserData user{};
+
     protected:
         SelectMenuInteractionData() {};
     };
 
     struct DeferComponentResponseData {
+
         friend class InputEvents;
         
         DeferComponentResponseData(InputEventData dataPackage) {
@@ -107,6 +113,7 @@ namespace DiscordCoreAPI {
     };
 
     struct CreateDeferredInteractionResponseData {
+
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
@@ -238,6 +245,7 @@ namespace DiscordCoreAPI {
 
     struct CreateEphemeralInteractionResponseData {
     public:
+
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
@@ -721,6 +729,7 @@ namespace DiscordCoreInternal {
 
     class InteractionManagerAgent : public agent {
     protected:
+
         friend class DiscordCoreAPI::DiscordCoreClient;
         friend class DiscordCoreAPI::EventHandler;
         friend class InteractionManager;

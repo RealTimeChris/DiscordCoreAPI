@@ -322,15 +322,14 @@ namespace DiscordCoreAPI {
             SongDecoder* stream = reinterpret_cast<SongDecoder*>(opaque);
             stream->bytesRead = 0;
             stream->currentBuffer = vector<uint8_t>();
-            int startingValue{ (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() };
-            int totalCountedMs{ 0 };
-            int msLimit{ 10000 };
             if (stream->bytesReadTotal >= stream->totalFileSize) {
                 return AVERROR_EOF;
             }
-            while (!try_receive(stream->dataBuffer, stream->currentBuffer) && totalCountedMs < msLimit) {
-                totalCountedMs = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+            try {
+                stream->currentBuffer = receive(stream->dataBuffer, 10000);
             }
+            catch (exception&) {};
+            
             if (stream->currentBuffer.size() > 0) {
                 stream->bytesRead = (int)stream->currentBuffer.size();
                 stream->bytesReadTotal += stream->bytesRead;

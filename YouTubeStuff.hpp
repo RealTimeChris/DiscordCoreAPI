@@ -301,12 +301,23 @@ namespace DiscordCoreAPI {
 		}
 
 		bool isThereAnySongs() {
-			if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
-				return false;
+			if (this->loopAll || this->loopSong) {
+				if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
 			else {
-				return true;
+				if (this->songQueue.size() == 0) {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
+			
 		}
 
 		void addSongToQueue(YouTubeSearchResult searchResult) {

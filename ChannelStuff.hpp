@@ -26,6 +26,7 @@ namespace DiscordCoreAPI {
 	
 	class Channel : public ChannelData {
 	public:
+
 		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::ChannelManagerAgent;
 		friend class DiscordCoreInternal::ChannelManager;
