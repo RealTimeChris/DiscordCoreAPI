@@ -137,18 +137,12 @@ namespace DiscordCoreInternal {
 		event_token messageReceivedToken{};
 		const int maxReconnectTries{ 10 };
 		DataWriter dataWriter{ nullptr };
-		string voiceEncryptionMode{ "" };
 		int currentReconnectTries{ 0 };
 		bool areWeWaitingForIp{ true };
 		bool areWeConnected{ false };
 		int lastNumberReceived{ 0 };
-		vector<uint8_t> secretKey{};
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
-		string externalIp{ "" };
-		string voicePort{ "" };
-		string voiceIp{ "" };
-		int audioSSRC{ 0 };
 		
 		void getError() {
 			exception error;
@@ -171,10 +165,10 @@ namespace DiscordCoreInternal {
 
 		void collectExternalIP() {
 			unsigned char packet[70] = { 0 };
-			packet[0] = (this->audioSSRC >> 24) & 0xff;
-			packet[1] = (this->audioSSRC>> 16) & 0xff;
-			packet[2] = (this->audioSSRC >> 8) & 0xff;
-			packet[3] = (this->audioSSRC) & 0xff;
+			packet[0] = (this->voiceConnectionData.audioSSRC >> 24) & 0xff;
+			packet[1] = (this->voiceConnectionData.audioSSRC>> 16) & 0xff;
+			packet[2] = (this->voiceConnectionData.audioSSRC >> 8) & 0xff;
+			packet[3] = (this->voiceConnectionData.audioSSRC) & 0xff;
 			vector<uint8_t> sendVector;
 			for (unsigned int x = 0; x < 70; x += 1) {
 				sendVector.push_back(packet[x]);
@@ -186,11 +180,11 @@ namespace DiscordCoreInternal {
 			receive(this->connectReadyBuffer);
 			this->voiceSocket = DatagramSocket();
 			this->voiceSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
-			winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceIp));
-			auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voicePort)).get();
+			winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceConnectionData.voiceIp));
+			auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get();
 			this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
 			this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
-			this->dataWriter = DataWriter(this->voiceSocket.GetOutputStreamAsync(hostName, to_hstring(this->voicePort)).get());
+			this->dataWriter = DataWriter(this->voiceSocket.GetOutputStreamAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get());
 			this->dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 		}
 
@@ -260,28 +254,28 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload.at("op") == 2) {
-					this->audioSSRC = payload.at("d").at("ssrc");
-					this->voiceConnectionData.audioSSRC = this->audioSSRC;
-					this->voiceIp = payload.at("d").at("ip");
-					this->voicePort = to_string(payload.at("d").at("port"));
+					this->voiceConnectionData.audioSSRC = payload.at("d").at("ssrc");
+					this->voiceConnectionData.audioSSRC = this->voiceConnectionData.audioSSRC;
+					this->voiceConnectionData.voiceIp = payload.at("d").at("ip");
+					this->voiceConnectionData.voicePort = to_string(payload.at("d").at("port"));
 					for (auto value : payload.at("d").at("modes")) {
 						if (value == "xsalsa20_poly1305") {
-							this->voiceEncryptionMode = value;
+							this->voiceConnectionData.voiceEncryptionMode = value;
 						}
 					}
 					send(this->connectReadyBuffer, true);
 					this->voiceConnect();
 					this->collectExternalIP();
 					while (this->areWeWaitingForIp) { cout << "Were here!" << endl; };
-					string protocolPayloadSelectString = getSelectProtocolPayload(this->voicePort, this->externalIp, this->voiceEncryptionMode);
+					string protocolPayloadSelectString = getSelectProtocolPayload(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode);
 					this->sendMessage(protocolPayloadSelectString);
 				}
 
 				if (payload.at("op") == 4) {
 					for (unsigned int x = 0; x < payload.at("d").at("secret_key").size(); x += 1) {
-						this->secretKey.push_back(payload.at("d").at("secret_key").at(x).get<uint8_t>());
+						this->voiceConnectionData.secretKey.push_back(payload.at("d").at("secret_key").at(x).get<uint8_t>());
 					}
-					for (auto value : this->secretKey) {
+					for (auto value : this->voiceConnectionData.secretKey) {
 						this->voiceConnectionData.keys.push_back(value);
 					}
 					send(this->readyBuffer, true);
@@ -323,7 +317,7 @@ namespace DiscordCoreInternal {
 
 			if (this->areWeWaitingForIp) {
 				this->areWeWaitingForIp = false;
-				this->externalIp = message.substr(4, message.find('\u0000', 4) - 4);
+				this->voiceConnectionData.externalIp = message.substr(4, message.find('\u0000', 4) - 4);
 			}
 		}
 

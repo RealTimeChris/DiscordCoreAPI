@@ -1748,12 +1748,17 @@ namespace  DiscordCoreInternal {
     };
 
     struct VoiceConnectionData {
+        string voiceEncryptionMode{ "" };
+        vector<uint8_t> secretKey{};
+        string externalIp{ "" };
+        string voicePort{ "" };
         string channelId{ "" };
-        string endpoint{ "" };
         string sessionId{ "" };
+        string endpoint{ "" };
+        string voiceIp{ "" };
         string guildId{ "" };
-        string token{ "" };
         string userId{ "" };
+        string token{ "" };
         int audioSSRC{ 0 };
         string keys{ "" };
     };
