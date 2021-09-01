@@ -117,6 +117,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->requesterId = dataPackage.getAuthorId();
+            this->data.data.flags = 64;
         }
 
     protected:

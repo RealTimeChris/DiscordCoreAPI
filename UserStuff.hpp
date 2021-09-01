@@ -36,8 +36,25 @@ namespace DiscordCoreAPI {
 
 		Application() {};
 
-		Application(DiscordCoreInternal::ApplicationData dataNew) {
-			*this = dataNew;
+		Application(ApplicationData dataNew) {
+			this->botPublic = dataNew.botPublic;
+			this->botRequireCodeGrant = dataNew.botRequireCodeGrant;
+			this->id = dataNew.id;
+			this->name = dataNew.name;
+			this->icon = dataNew.icon;
+			this->description = dataNew.description;
+			this->rpcOrigins = dataNew.rpcOrigins;
+			this->termsOfServiceUrl = dataNew.termsOfServiceUrl;
+			this->privacyPolicyUrl = dataNew.privacyPolicyUrl;
+			this->owner = dataNew.owner;
+			this->summary = dataNew.summary;
+			this->verifyKey = dataNew.verifyKey;
+			this->team = dataNew.team;
+			this->guildId = dataNew.guildId;
+			this->primarySkuId = dataNew.primarySkuId;
+			this->slug = dataNew.slug;
+			this->coverImage = dataNew.coverImage;
+			this->flags = dataNew.flags;
 		}
 	};
 
@@ -378,8 +395,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
 
-		UserManager() {};
-
 		UserManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->discordCoreClient = discordCoreClientNew;
 			this->agentResources = agentResourcesNew;
@@ -472,7 +487,7 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			requestAgent.getError("UserManager::fetchApplicationAsync");
-			ApplicationData applicationData;
+			DiscordCoreAPI::ApplicationData applicationData;
 			DiscordCoreAPI::Application application(applicationData);
 			try_receive(requestAgent.outApplicationBuffer, application);
 			co_return application;

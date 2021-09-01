@@ -333,8 +333,6 @@ namespace DiscordCoreInternal	{
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
 
-		ChannelManager() {};
-
 		ChannelManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->discordCoreClient = discordCoreClientNew;
 			this->agentResources = agentResourcesNew;

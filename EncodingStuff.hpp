@@ -28,6 +28,7 @@ namespace DiscordCoreAPI {
 			for (int x = 0; x < rawFrames.size(); x += 1) {
 				AudioFrameData frameData;
 				frameData.type = AudioFrameType::Encoded;
+				frameData.frameStatus = FrameStatus::Running;
 				frameData.encodedFrameData = encodeSingleAudioFrame(rawFrames[x]);
 				newData.push_back(frameData);
 			}

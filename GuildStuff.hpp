@@ -139,17 +139,17 @@ namespace DiscordCoreAPI {
 			this->stageInstances = dataNew.stageInstances;
 			this->discordCoreClient = dataNew.discordCoreClient;
 			this->discordCoreClientBase = dataNew.discordCoreClientBase;
-			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-			}
-			else {
-				if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap);
+			if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
+				if (!DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id);
 					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
 				}
-				else {
-					shared_ptr<unbounded_buffer<AudioFrameData>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-					DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtrBuffer));
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap);
+			}
+			else {
+				shared_ptr<unbounded_buffer<AudioFrameData>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
+				DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtrBuffer));
+				if (!DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id);
 					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
 				}
 			}
@@ -547,9 +547,7 @@ namespace DiscordCoreInternal	{
 		shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};		
-
-		GuildManager() {};
+		HttpAgentResources agentResources{};
 
 		GuildManager(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBaseNew) {
 			this->discordCoreClientBase = discordCoreClientBaseNew;

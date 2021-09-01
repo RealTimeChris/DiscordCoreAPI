@@ -3682,14 +3682,21 @@ namespace DiscordCoreAPI {
         bool failedDueToPerms{ false };
     };
 
+    enum class FrameStatus {
+        Stopped = 0,
+        Running = 1
+    };
+
     struct RawFrameData {
         vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
+        FrameStatus frameStatus{};
     };
 
     struct EncodedFrameData {
         vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
+        FrameStatus frameStatus{};
     };
 
     enum class AudioFrameType {
@@ -3702,6 +3709,7 @@ namespace DiscordCoreAPI {
         AudioFrameType type{};
         EncodedFrameData encodedFrameData{};
         RawFrameData rawFrameData{};
+        FrameStatus frameStatus{};
     };
 
     struct SoundCloudSearchResult {

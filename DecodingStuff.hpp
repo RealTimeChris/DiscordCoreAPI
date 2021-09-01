@@ -259,7 +259,7 @@ namespace DiscordCoreAPI {
                             this->newFrame->nb_samples = frame->nb_samples;
                             this->newFrame->pts = frame->pts;
                             swr_convert_frame(this->swrContext, this->newFrame, this->frame);
-                            cout << "Audio Frame #: " + to_string(this->audioFrameCount) + " Number of Samples: " + to_string(this->newFrame->nb_samples) + " pts: " + to_string(this->newFrame->pts) + " Size: " + to_string(this->newFrame->pkt_size) + ".\n\n";
+                            //cout << "Audio Frame #: " + to_string(this->audioFrameCount) + " Number of Samples: " + to_string(this->newFrame->nb_samples) + " pts: " + to_string(this->newFrame->pts) + " Size: " + to_string(this->newFrame->pkt_size) + ".\n\n";
                             size_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
                             vector<uint8_t> newVector{};
                             for (int x = 0; x < unpadded_linesize; x += 1) {
@@ -267,6 +267,7 @@ namespace DiscordCoreAPI {
                             }
                             RawFrameData rawFrame{};
                             rawFrame.data = newVector;
+                            rawFrame.frameStatus = FrameStatus::Running;
                             rawFrame.sampleCount = newFrame->nb_samples;
                             send(this->outDataBuffer, rawFrame);
                             __int64 sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
@@ -282,6 +283,7 @@ namespace DiscordCoreAPI {
 
                                 RawFrameData rawFrame02{};
                                 rawFrame02.data = newVector02;
+                                rawFrame02.frameStatus = FrameStatus::Running;
                                 rawFrame02.sampleCount = newFrame->nb_samples;
                                 send(this->outDataBuffer, rawFrame02);
                             }
@@ -320,22 +322,25 @@ namespace DiscordCoreAPI {
             SongDecoder* stream = reinterpret_cast<SongDecoder*>(opaque);
             stream->bytesRead = 0;
             stream->currentBuffer = vector<uint8_t>();
-            cout << "STUCK HERE 010101" << endl;
             int startingValue{ (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() };
             int totalCountedMs{ 0 };
             int msLimit{ 10000 };
-            cout << "BYTES READ TOTAL: " << stream->bytesReadTotal << endl;
-            cout << "TOTAL FILE SIZE: " << stream->totalFileSize << endl;
             if (stream->bytesReadTotal >= stream->totalFileSize) {
                 return AVERROR_EOF;
             }
             while (!try_receive(stream->dataBuffer, stream->currentBuffer) && totalCountedMs < msLimit) {
                 totalCountedMs = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-            };
-            cout << "STUCK HERE 020202" << endl;
+            }
             if (stream->currentBuffer.size() > 0) {
                 stream->bytesRead = (int)stream->currentBuffer.size();
                 stream->bytesReadTotal += stream->bytesRead;
+            }
+            else  {
+                stream->done();
+                RawFrameData frameData;
+                frameData.frameStatus = FrameStatus::Stopped;
+                send(stream->outDataBuffer, frameData);
+                return AVERROR_EOF;
             }
 
             for (int x = 0; x < stream->bytesRead; x += 1) {

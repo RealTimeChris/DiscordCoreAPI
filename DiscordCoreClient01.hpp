@@ -29,7 +29,7 @@ BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreClient : public DiscordCoreClientBase, protected agent, enable_shared_from_this<DiscordCoreClient> {
+	class DiscordCoreClient : public DiscordCoreClientBase, protected agent {
 	public:
 		friend class PermissionsConverter;
 		friend class ApplicationCommands;
@@ -49,8 +49,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient(hstring botTokenNew) : DiscordCoreClientBase(), agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->ptrScheduler) {
 			this->botToken = botTokenNew;
 		}
-
-		DiscordCoreClient() {}
 
 		static void finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* functionVector);
 
@@ -104,6 +102,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpAgentResources agentResources{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		hstring baseURL{ L"https://discord.com/api/v9" };
+		hstring botToken{ L"" };
 		bool doWeQuit{ false };
 
 		task<void> initialize() {

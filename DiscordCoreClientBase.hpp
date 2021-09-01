@@ -46,21 +46,19 @@ namespace DiscordCoreAPI {
 	protected:
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent;
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> audioBuffersMap;
-		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
-		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers;
-		shared_ptr<DiscordCoreInternal::ChannelManager> channels;
-		shared_ptr<DiscordCoreInternal::RoleManager> roles;
-		shared_ptr<DiscordCoreInternal::UserManager> users;
-		hstring botToken{ L"" };
+		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
+		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
+		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
+		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
+		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 
-		DiscordCoreClientBase() {};
 	};
-	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> DiscordCoreClientBase::audioBuffersMap{};
-	BotUser DiscordCoreClientBase::currentUser{ nullptr };
-	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
+	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> DiscordCoreClientBase::audioBuffersMap{};
+	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointerBase{ nullptr };
+	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }
 #endif

@@ -230,12 +230,13 @@ namespace DiscordCoreAPI {
 		return decipheredFormat;
 	};
 
-	class YouTubeAPI {
+	class YouTubeAPI{
 	public:
 
-		YouTubeAPI(shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioBufferNew, string guildIdNew, map<string, shared_ptr<YouTubeAPI>>* ptrToMap) {
+		friend class Guild;
+
+		YouTubeAPI(shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioBufferNew, string guildIdNew){
 			this->sendAudioBuffer = sendAudioBufferNew;
-			this->youtubeAPIMap = ptrToMap;
 			this->guildId = guildIdNew;
 			YouTubeAPI::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
 		}
@@ -256,28 +257,45 @@ namespace DiscordCoreAPI {
 			return this->loopSong;
 		}
 
-		void stop() {
-			this->areWeSkippingOrStopping = true;
-			vector<YouTubeSong> newVector;
-			if (this->currentSong.songId != "") {
-				newVector.push_back(this->currentSong);
+		bool stop() {
+			if (this->areWePlaying) {
+				this->areWeSkippingOrStopping = true;
+				vector<uint8_t> newVector;
+				send(this->currentDataSendBuffer, newVector);
+				receive(this->completionCallbackBuffer);
+				AudioFrameData dataFrame;
+				while (try_receive(*this->sendAudioBuffer, dataFrame)) {};
+				vector<YouTubeSong> newVector02;
+				newVector02.push_back(this->currentSong);
+				for (auto value : this->songQueue) {
+					newVector02.push_back(value);
+				}
+				this->songQueue = newVector02;
+				this->currentSong = YouTubeSong();
+				return true;
 			}
-			for (auto value : this->songQueue) {
-				newVector.push_back(value);
+			else {
+				return false;
 			}
-			this->songQueue = newVector;
-			this->currentSong = YouTubeSong();
-			receive(this->completionCallbackBuffer);
 		}
 
-		void skip() {
-			this->areWeSkippingOrStopping = true;
-			this->sendNextSong();
-			receive(this->completionCallbackBuffer);
+		bool skip() {
+			if (this->areWePlaying) {
+				this->areWeSkippingOrStopping = true;
+				vector<uint8_t> newVector;
+				send(this->currentDataSendBuffer, newVector);
+				AudioFrameData dataFrame;
+				receive(this->completionCallbackBuffer);
+				while (try_receive(*this->sendAudioBuffer, dataFrame)) {};
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		bool isThereAnySongs() {
-			if (this->currentSong.songId == "" && this->songQueue.size() == 0) {
+			if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
 				return false;
 			}
 			else {
@@ -286,8 +304,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void addSongToQueue(YouTubeSearchResult searchResult) {
-			auto youTubeAPI = this->youtubeAPIMap->at(this->guildId);
-			string watchHTMLURL = to_string(youTubeAPI->baseWatchURL) + searchResult.videoId + "&hl=en";
+			string watchHTMLURL = to_string(this->baseWatchURL) + searchResult.videoId + "&hl=en";
 			Filters::HttpBaseProtocolFilter filter;
 			filter.AutomaticDecompression(true);
 			Filters::HttpCacheControl cacheControl = filter.CacheControl();
@@ -304,13 +321,13 @@ namespace DiscordCoreAPI {
 			auto resultHTMLBody = httpClientGetHTMLBody.SendRequestAsync(requestMessageHTMLBody).get();
 			resultStringHTMLBody = resultHTMLBody.Content().ReadAsStringAsync().get();
 			string resultStringStringHTMLBody = to_string(resultStringHTMLBody);
-			youTubeAPI->html5Player = to_string(youTubeAPI->baseURL) + resultStringStringHTMLBody.substr(resultStringStringHTMLBody.find("/s/player/"), resultStringStringHTMLBody.find("/player_ias.vflset/en_US/base.js") + to_string(L"/player_ias.vflset/en_US/base.js").length());
-			youTubeAPI->html5Player = youTubeAPI->html5Player.substr(0, 73);
-			youTubeAPI->playerResponse = between(to_string(resultStringHTMLBody), "ytInitialPlayerResponse = ", "</script>");
-			youTubeAPI->playerResponse = youTubeAPI->playerResponse.substr(0, youTubeAPI->playerResponse.length() - 170);
+			this->html5Player = to_string(this->baseURL) + resultStringStringHTMLBody.substr(resultStringStringHTMLBody.find("/s/player/"), resultStringStringHTMLBody.find("/player_ias.vflset/en_US/base.js") + to_string(L"/player_ias.vflset/en_US/base.js").length());
+			this->html5Player = this->html5Player.substr(0, 73);
+			this->playerResponse = between(to_string(resultStringHTMLBody), "ytInitialPlayerResponse = ", "</script>");
+			this->playerResponse = this->playerResponse.substr(0, this->playerResponse.length() - 170);
 			json jsonObject;
-			if (youTubeAPI->playerResponse != "") {
-				jsonObject = json::parse(youTubeAPI->playerResponse);
+			if (this->playerResponse != "") {
+				jsonObject = json::parse(this->playerResponse);
 			}
 			DiscordCoreInternal::DataParser::parseObject(jsonObject, &searchResult.formats);
 			YouTubeFormat format;
@@ -329,11 +346,11 @@ namespace DiscordCoreAPI {
 			HttpRequestMessage requestPlayerFile;
 			auto requestPlayerFileHeaders = requestPlayerFile.Headers();
 			requestPlayerFileHeaders.Append(L"user-agent", L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			requestPlayerFile.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(youTubeAPI->html5Player)));
+			requestPlayerFile.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(this->html5Player)));
 			auto responseMessage02 = httpClientGetHTMLBody.SendRequestAsync(requestPlayerFile).get();
 			hstring responseToPlayerGet02 = responseMessage02.Content().ReadAsStringAsync().get();
-			youTubeAPI->html5PlayerFile = to_string(responseToPlayerGet02);
-			format = decipherFormat(format, youTubeAPI->html5PlayerFile);
+			this->html5PlayerFile = to_string(responseToPlayerGet02);
+			format = decipherFormat(format, this->html5PlayerFile);
 			YouTubeSong song;
 			song.description = searchResult.description;
 			song.duration = searchResult.duration;
@@ -345,14 +362,12 @@ namespace DiscordCoreAPI {
 			song.url = searchResult.videoURL;
 			song.videoId = searchResult.videoId;
 			bool isItFound = false;
-			for (auto value : youTubeAPI->songQueue) {
+			for (auto value : this->songQueue) {
 				if (value.songId == song.songId) {
 					isItFound = true;
 				}
 			}
-			if (!isItFound) {
-				youTubeAPI->songQueue.push_back(song);
-			}
+			this->songQueue.push_back(song);
 		}
 
 		void setQueue(vector<YouTubeSong> dataPackage) {
@@ -388,152 +403,135 @@ namespace DiscordCoreAPI {
 		}
 
 		SendNextSongReturnData sendNextSong() {
-			auto youTubeAPI = this->youtubeAPIMap->at(this->guildId);
 			SendNextSongReturnData returnData;
-			if (youTubeAPI->loopSong) {
-				if (youTubeAPI->songQueue.size() > 1 && youTubeAPI->currentSong.description == "") {
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					for (int x = 0; x < youTubeAPI->songQueue.size(); x += 1) {
-						if (x == youTubeAPI->songQueue.size() - 1) {
+			if (this->loopSong) {
+				if (this->songQueue.size() > 1 && this->currentSong.description == "") {
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						youTubeAPI->songQueue[x] = youTubeAPI->songQueue[x + 1];
+						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					youTubeAPI->songQueue.erase(youTubeAPI->songQueue.end() - 1, youTubeAPI->songQueue.end());
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					returnData.currentSong = youTubeAPI->currentSong;
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->songQueue.size() > 0 && youTubeAPI->currentSong.description != "") {
-					youTubeAPI->currentSong = youTubeAPI->currentSong;
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					returnData.currentSong = youTubeAPI->currentSong;
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
+				else if (this->songQueue.size() > 0 && this->currentSong.description != "") {
+					this->currentSong = this->currentSong;
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->currentSong.description != "" && youTubeAPI->songQueue.size() == 0) {
-					youTubeAPI->currentSong = youTubeAPI->currentSong;
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					returnData.currentSong = youTubeAPI->currentSong;
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
+				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
+					this->currentSong = this->currentSong;
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->songQueue.size() == 1 && youTubeAPI->currentSong.description == "") {
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					youTubeAPI->songQueue.erase(youTubeAPI->songQueue.begin(), youTubeAPI->songQueue.begin() + 1);
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					returnData.currentSong = youTubeAPI->currentSong;
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
+				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
+					this->currentSong = this->songQueue.at(0);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->currentSong.formatDownloadURL == "") {
-					returnData.currentSong = youTubeAPI->currentSong;
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
+				else if (this->currentSong.formatDownloadURL == "") {
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 			}
-			else if (youTubeAPI->loopAll) {
-				if (youTubeAPI->songQueue.size() > 1 && youTubeAPI->currentSong.description == "") {
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					for (int x = 0; x < youTubeAPI->songQueue.size(); x += 1) {
-						if (x == youTubeAPI->songQueue.size() - 1) {
+			else if (this->loopAll) {
+				if (this->songQueue.size() > 1 && this->currentSong.description == "") {
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						youTubeAPI->songQueue[x] = youTubeAPI->songQueue[x + 1];
+						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					youTubeAPI->songQueue.erase(youTubeAPI->songQueue.end() - 1, youTubeAPI->songQueue.end());
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->songQueue.size() > 0 && youTubeAPI->currentSong.description != "") {
-					auto tempSong02 = youTubeAPI->currentSong;
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					for (int x = 0; x < youTubeAPI->songQueue.size(); x += 1) {
-						if (x == youTubeAPI->songQueue.size() - 1) {
+				else if (this->songQueue.size() > 0 && this->currentSong.description != "") {
+					auto tempSong02 = this->currentSong;
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						youTubeAPI->songQueue[x] = youTubeAPI->songQueue[x + 1];
+						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					youTubeAPI->songQueue.at(youTubeAPI->songQueue.size() - 1) = tempSong02;
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+					this->songQueue.at(this->songQueue.size() - 1) = tempSong02;
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->currentSong.description != "" && youTubeAPI->songQueue.size() == 0) {
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->songQueue.size() == 1 && youTubeAPI->currentSong.description == "") {
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					youTubeAPI->songQueue.erase(youTubeAPI->songQueue.begin(), youTubeAPI->songQueue.begin() + 1);
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
+					this->currentSong = this->songQueue.at(0);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->currentSong.videoId == "") {
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+				else if (this->currentSong.videoId == "") {
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 			}
 			else {
-				if (youTubeAPI->songQueue.size() > 1 && youTubeAPI->currentSong.description == "") {
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					for (int x = 0; x < youTubeAPI->songQueue.size(); x += 1) {
-						if (x == youTubeAPI->songQueue.size() - 1) {
+				if (this->songQueue.size() > 1 && this->currentSong.description == "") {
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						youTubeAPI->songQueue[x] = youTubeAPI->songQueue[x + 1];
+						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					youTubeAPI->songQueue.erase(youTubeAPI->songQueue.end() - 1, youTubeAPI->songQueue.end());
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->songQueue.size() > 0 && youTubeAPI->currentSong.description != "") {
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					for (int x = 0; x < youTubeAPI->songQueue.size(); x += 1) {
-						if (x == youTubeAPI->songQueue.size() - 1) {
+				else if (this->songQueue.size() > 0 && this->currentSong.description != "") {
+					this->currentSong = this->songQueue.at(0);
+					for (int x = 0; x < this->songQueue.size(); x += 1) {
+						if (x == this->songQueue.size() - 1) {
 							break;
 						}
-						youTubeAPI->songQueue[x] = youTubeAPI->songQueue[x + 1];
+						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					youTubeAPI->songQueue.erase(youTubeAPI->songQueue.end() - 1, youTubeAPI->songQueue.end());
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->currentSong.description != "" && youTubeAPI->songQueue.size() == 0) {
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					youTubeAPI->currentSong = YouTubeSong();
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
+					this->currentSong = YouTubeSong();
 					return returnData;
 				}
-				else if (youTubeAPI->songQueue.size() == 1 && youTubeAPI->currentSong.description == "") {
-					youTubeAPI->currentSong = youTubeAPI->songQueue.at(0);
-					youTubeAPI->songQueue.erase(youTubeAPI->songQueue.begin(), youTubeAPI->songQueue.begin() + 1);
-					this->downloadAndStreamAudio(youTubeAPI->currentSong);
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
+					this->currentSong = this->songQueue.at(0);
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					this->downloadAndStreamAudio(this->currentSong);
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
-				else if (youTubeAPI->currentSong.videoId == "") {
-					this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-					returnData.currentSong = youTubeAPI->currentSong;
+				else if (this->currentSong.videoId == "") {
+					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 			}
-			this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
 			return returnData;
 		}
 
@@ -564,7 +562,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			if (returnData.returnCode != 200) {
-				cout << "YouTubeAPI::searchForVideo() Error 01: " << returnData.returnCode << returnData.returnMessage.c_str() << endl;
+				cout << "this::searchForVideo() Error 01: " << returnData.returnCode << returnData.returnMessage.c_str() << endl;
 			}
 			return searchResults;
 		}
@@ -576,12 +574,11 @@ namespace DiscordCoreAPI {
 		~YouTubeAPI() {}
 
 	protected:
-		friend class Guild;
 		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		const hstring baseSearchURL{ L"https://www.youtube.com/results?search_query=" };
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioBuffer{ nullptr };
+		unbounded_buffer<vector<uint8_t>>* currentDataSendBuffer{ nullptr };
 		const hstring baseWatchURL{ L"https://www.youtube.com/watch?v=" };
-		map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap{ nullptr };
 		unbounded_buffer<bool> completionCallbackBuffer{ nullptr };
 		const hstring baseURL{ L"https://www.youtube.com" };
 		bool areWeSkippingOrStopping{ false };
@@ -590,6 +587,7 @@ namespace DiscordCoreAPI {
 		string html5PlayerFile{ "" };
 		const int maxBufSize{ 4096 };
 		string playerResponse{ "" };
+		bool areWePlaying{ false };
 		YouTubeSong currentSong{};
 		string html5Player{ "" };
 		bool loopSong{ false };
@@ -600,7 +598,6 @@ namespace DiscordCoreAPI {
 			apartment_context mainThread;
 			co_await resume_foreground(*YouTubeAPI::threadContext->dispatcherQueue);
 			try {
-				auto youTubeAPI = this->youtubeAPIMap->at(this->guildId);
 				string downloadBaseURL;
 				if (song.formatDownloadURL.find("https://") != string::npos && song.formatDownloadURL.find("/videoplayback?") != string::npos) {
 					downloadBaseURL = song.formatDownloadURL.substr(song.formatDownloadURL.find("https://") + to_string(L"https://").length(), song.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
@@ -624,24 +621,21 @@ namespace DiscordCoreAPI {
 				dataWriter.StoreAsync().get();
 				bool areWeDoneHeaders{ false };
 				int remainingDownloadContentLength{ song.contentLength };
-				int contentLengthCurrent{ youTubeAPI->maxBufSize };
+				int contentLengthCurrent{ this->maxBufSize };
 				int bytesReadTotal{ 0 };
 				int counter{ 0 };
 				BuildSongDecoderData dataPackage{};
 				dataPackage.dataBuffer = new unbounded_buffer<vector<uint8_t>>();
 				dataPackage.totalFileSize = song.contentLength - 585;
 				dataPackage.bufferMaxSize = this->maxBufSize;
+				this->currentDataSendBuffer = dataPackage.dataBuffer;
 				send(dataPackage.dataBuffer, vector<uint8_t>());
 				SongDecoder* songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				SongEncoder* songEncoder = new SongEncoder();
 				while (song.contentLength > bytesReadTotal || songDecoder->status() != agent_done) {
+					this->areWePlaying = true;
 					if (this->areWeSkippingOrStopping) {
 						this->areWeSkippingOrStopping = false;
-						AudioFrameData dataPackageNew;
-						dataPackageNew.encodedFrameData.sampleCount = 0;
-						dataPackageNew.rawFrameData.sampleCount = 0;
-						send(*this->sendAudioBuffer, dataPackageNew);
-						this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
 						break;
 					}
 					int bytesRead{ 0 };
@@ -677,16 +671,6 @@ namespace DiscordCoreAPI {
 							newVector.push_back(streamBuffer.data()[x]);
 						}
 						send(dataPackage.dataBuffer, newVector);
-						RawFrameData rawFrame;
-						while (songDecoder->getFrame(&rawFrame)) {
-							if (rawFrame.data.size() != 0) {
-								frames.push_back(rawFrame);
-							}
-						}
-						auto encodedFrames = songEncoder->encodeFrames(frames);
-						for (auto value : encodedFrames) {
-							send(*this->sendAudioBuffer, value);
-						}
 					}
 					if (counter > 0) {
 						if (contentLengthCurrent > 0) {
@@ -707,10 +691,23 @@ namespace DiscordCoreAPI {
 						}
 						RawFrameData rawFrame;
 						rawFrame.data.resize(0);
+						bool doWeBreak{ false };
 						while (songDecoder->getFrame(&rawFrame)) {
+							if (rawFrame.frameStatus == FrameStatus::Stopped) {
+								doWeBreak = true;
+								AudioFrameData frameData;
+								frameData.encodedFrameData.sampleCount = 0;
+								frameData.rawFrameData.sampleCount = 0;
+								frameData.frameStatus = FrameStatus::Stopped;
+								send(*this->sendAudioBuffer, frameData);
+								break;
+							}
 							if (rawFrame.data.size() != 0) {
 								frames.push_back(rawFrame);
 							}
+						}
+						if (doWeBreak) {
+							break;
 						}
 						auto encodedFrames = songEncoder->encodeFrames(frames);
 						for (auto value : encodedFrames) {
@@ -718,27 +715,26 @@ namespace DiscordCoreAPI {
 						}
 					}
 
-					if (remainingDownloadContentLength >= youTubeAPI->maxBufSize) {
-						contentLengthCurrent = youTubeAPI->maxBufSize;
+					if (remainingDownloadContentLength >= this->maxBufSize) {
+						contentLengthCurrent = this->maxBufSize;
 					}
 					else {
 						contentLengthCurrent = remainingDownloadContentLength;
 					}
 					counter += 1;
 				}
+				send(this->completionCallbackBuffer, true);
 				AudioFrameData frameData;
 				frameData.encodedFrameData.sampleCount = 0;
 				frameData.rawFrameData.sampleCount = 0;
 				send(*this->sendAudioBuffer, frameData);
-				this->youtubeAPIMap->insert_or_assign(this->guildId, youTubeAPI);
-				send(this->completionCallbackBuffer, true);
 				co_await mainThread;
 				co_return;
 			}
 			catch (hresult_out_of_bounds& e) {
 				retryCount += 1;
 				if (retryCount < 5) {
-					cout << "YouTubeAPI::downloadAudio()::Out of bounds " << to_string(e.message()) << endl;
+					cout << "this::downloadAudio()::Out of bounds " << to_string(e.message()) << endl;
 					downloadAndStreamAudio(song, retryCount);
 				}
 				else {
