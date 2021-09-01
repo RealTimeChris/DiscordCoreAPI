@@ -229,7 +229,13 @@ namespace DiscordCoreAPI {
 				this->audioData = AudioFrameData();
 			}
 			AudioFrameData frameData{ .frameStatus = FrameStatus::Running };
-			while (try_receive(*this->audioDataBuffer, frameData)) { if (frameData.frameStatus == FrameStatus::Stopped) { break; }; };
+			while (try_receive(*this->audioDataBuffer, frameData)) {
+				if (frameData.frameStatus == FrameStatus::Stopped) {
+					frameData.encodedFrameData.data.clear();
+					frameData.rawFrameData.data.clear();
+					break;
+				};
+			};
 		}
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
@@ -326,6 +332,8 @@ namespace DiscordCoreAPI {
 					while (frameData.frameStatus == FrameStatus::Stopped || frameData.encodedFrameData.sampleCount == 0 || frameData.rawFrameData.sampleCount == 0) {
 						frameData = receive(*this->audioDataBuffer);
 					};
+					this->audioData.encodedFrameData.data.clear();
+					this->audioData.rawFrameData.data.clear();
 					this->audioData = receive(*this->audioDataBuffer);
 					this->areWePlaying = true;
 				}
@@ -362,6 +370,8 @@ namespace DiscordCoreAPI {
 								break;
 							}
 							frameCounter += 1;
+							this->audioData.encodedFrameData.data.clear();
+							this->audioData.rawFrameData.data.clear();
 							this->audioData = receive(*this->audioDataBuffer);
 							timeCounter = 0;
 							while (timeCounter <= intervalCount) {
@@ -414,6 +424,8 @@ namespace DiscordCoreAPI {
 								break;
 							}
 							frameCounter += 1;
+							this->audioData.encodedFrameData.data.clear();
+							this->audioData.rawFrameData.data.clear();
 							this->audioData = receive(*this->audioDataBuffer);
 							timeCounter = 0;
 							while (timeCounter <= intervalCount) {
