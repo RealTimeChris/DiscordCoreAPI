@@ -387,28 +387,11 @@ namespace DiscordCoreAPI {
 			return &this->songQueue;
 		}
 
-		void modifyQueue(int songOldPosition, int songNewPosition) {
+		void modifyQueue(int firstSongPosition, int secondSongPosition) {
 			shared_ptr<YouTubeAPI> youtubeAPI = this->youtubeAPIMap->at(this->guildId);
-			int currentSongCount = (int)youtubeAPI->songQueue.size();
-			if (songOldPosition < songNewPosition) {
-				YouTubeSong tempSong = youtubeAPI->songQueue.at(songOldPosition);
-				for (int x = 0; x < currentSongCount; x += 1) {
-					if (x < songNewPosition && x >= songOldPosition) {
-						youtubeAPI->songQueue.at(x) = youtubeAPI->songQueue.at(x + 1);
-					}
-				}
-				youtubeAPI->songQueue.at(songNewPosition) = tempSong;
-			}
-			else if (songOldPosition > songNewPosition) {
-				YouTubeSong tempSong = youtubeAPI->songQueue.at(songOldPosition);
-				for (int x = 0; x < currentSongCount; x += 1) {
-					if (x > songNewPosition && x <= songOldPosition) {
-						youtubeAPI->songQueue.at(x) = youtubeAPI->songQueue.at(x - 1);
-					}
-				}
-				youtubeAPI->songQueue.at(songNewPosition) = tempSong;
-			}
-			
+			YouTubeSong tempSong = youtubeAPI->songQueue.at(firstSongPosition);
+			youtubeAPI->songQueue.at(firstSongPosition) = youtubeAPI->songQueue.at(secondSongPosition);
+			youtubeAPI->songQueue.at(secondSongPosition) = tempSong;
 			this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 			return;
 		}
