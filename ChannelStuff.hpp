@@ -13,9 +13,6 @@
 #include "HttpStuff.hpp"
 
 namespace DiscordCoreAPI {
-
-	class InputEvents;
-	class Channels;
 	
 	class Channel : public ChannelData {
 	protected:

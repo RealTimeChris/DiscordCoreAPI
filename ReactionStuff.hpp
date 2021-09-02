@@ -13,8 +13,6 @@
 
 namespace DiscordCoreAPI {
 
-	class Reactions;
-
 	class Reaction : public ReactionData {
 	protected:
 

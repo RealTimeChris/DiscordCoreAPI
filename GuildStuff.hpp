@@ -20,10 +20,6 @@
 
 namespace DiscordCoreAPI {
 
-	class PermissionsConverter;
-	class EventHandler;
-	class Guilds;
-
 	class Guild :public GuildData {
 	public:
 		friend struct Concurrency::details::_ResultHolder<Guild>;

@@ -11,13 +11,23 @@
 #include "../pch.h"
 
 namespace DiscordCoreAPI {
-
+    
     class DiscordCoreClientBase;
+    class PermissionsConverter;
     class DiscordCoreClient;
     class SelectMenuManager;
     class ButtonManager;
     class Interactions;
-    class InputEvents;
+    class EventHandler;
+    class GuildMembers;
+    class InputEvents;    
+    class Reactions;
+    class Messages;
+    class Channels;
+    class Guilds;
+    class Roles;
+    class Users;
+    class Guild;
 
     class StopWatch {
     public:
@@ -196,12 +206,14 @@ namespace  DiscordCoreInternal {
     class GuildMemberManager;
     class InteractionManager;
     class GuildManagerAgent;
+    class RoleManagerAgent;
     class UserManagerAgent;
     class ReactionManager;
     class ChannelManager;
     class MessageManager;
     class ThreadManager;
     class GuildManager;
+    class RoleManager;
     class UserManager;
 
     struct AllowedMentionsData {
@@ -282,7 +294,6 @@ namespace  DiscordCoreInternal {
         EmbedThumbnailData thumbnail{};
         EmbedProviderData provider{};
         string hexColorValue{ "" };
-        string timestampRaw{ "" };
         string description{ "" };
         EmbedFooterData footer{};
         EmbedAuthorData author{};
@@ -293,56 +304,55 @@ namespace  DiscordCoreInternal {
         string type{ "" };
         string url{ "" };
 
-        EmbedData* setAuthor(string authorName, string authorAvatarURL = "") {
+        EmbedData setAuthor(string authorName, string authorAvatarURL = "") {
             this->author.name = authorName;
             this->author.iconUrl = authorAvatarURL;
-            return this;
+            return *this;
         }
 
-        EmbedData* setFooter(string footerText, string footerIconURLText = "") {
+        EmbedData setFooter(string footerText, string footerIconURLText = "") {
             this->footer.text = footerText;
             this->footer.iconUrl = footerIconURLText;
-            return this;
+            return *this;
         }
 
-        EmbedData* setTimeStamp(string timeStamp) {
-            this->timestamp = timeStamp;
-            this->timestampRaw = DiscordCoreAPI::convertTimeStampToNewOne(timeStamp);
-            return this;
-        }
-
-        EmbedData* addField(string name, string value, bool Inline = true) {
+        EmbedData addField(string name, string value, bool Inline = true) {
             EmbedFieldData embedFieldData;
             embedFieldData.name = name;
             embedFieldData.Inline = Inline;
             embedFieldData.value = value;
             this->fields.push_back(embedFieldData);
-            return this;
+            return *this;
         }
 
-        EmbedData* setDescription(string descriptionNew) {
+        EmbedData setDescription(string descriptionNew) {
             this->description = descriptionNew;
-            return this;
+            return *this;
         }
 
-        EmbedData* setColor(string hexColorValueNew) {
+        EmbedData setColor(string hexColorValueNew) {
             this->hexColorValue = hexColorValueNew;
-            return this;
+            return *this;
         }
 
-        EmbedData* setThumbnail(string thumbnailURL) {
+        EmbedData setThumbnail(string thumbnailURL) {
             this->thumbnail.url = thumbnailURL;
-            return this;
+            return *this;
         }
 
-        EmbedData* setTitle(string titleNew) {
+        EmbedData setTimeStamp(string timeStamp) {
+            this->timestamp = timeStamp;
+            return *this;
+        }
+
+        EmbedData setTitle(string titleNew) {
             this->title = titleNew;
-            return this;
+            return *this;
         }
 
-        EmbedData* setImage(string imageURL) {
+        EmbedData setImage(string imageURL) {
             this->image.url = imageURL;
-            return this;
+            return *this;
         }
     };
 
@@ -2291,7 +2301,6 @@ namespace DiscordCoreAPI {
         EmbedThumbnailData thumbnail{};
         EmbedProviderData provider{};
         string hexColorValue{ "" };
-        string timestampRaw{ "" };
         string description{ "" };
         EmbedFooterData footer{};
         EmbedAuthorData author{};
@@ -2306,7 +2315,7 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::EmbedData newData;
             newData.hexColorValue = this->hexColorValue;
             newData.description = this->description;
-            newData.timestamp = this->timestampRaw;
+            newData.timestamp = this->timestamp;
             for (auto value : this->fields) {
                 newData.fields.push_back(value);
             }

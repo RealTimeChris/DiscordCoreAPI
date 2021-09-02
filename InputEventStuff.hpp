@@ -188,6 +188,18 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
+		static task<void> deleteInputEventResponseAsync(DeleteMessageData dataPackage, unsigned int timeDelayNew = 0) {
+			apartment_context mainThread;
+			co_await resume_background();
+			DeleteMessageData deleteData;
+			deleteData.channelId = dataPackage.channelId;
+			deleteData.messageId = dataPackage.messageId;
+			deleteData.timeDelay = dataPackage.timeDelay;
+			InputEvents::messages->deleteMessageAsync(deleteData).get();
+			co_await mainThread;
+			co_return;
+		}
+
 		static task<void> deleteInputEventResponseAsync(InputEventData dataPackage, unsigned int timeDelayNew = 0) {
 			apartment_context mainThread;
 			co_await resume_background();

@@ -13,17 +13,7 @@
 #include "GuildMemberStuff.hpp"
 #include "FoundationEntities.hpp"
 
-namespace DiscordCoreInternal {
-
-	class RoleManagerAgent;
-	class RoleManager;
-
-}
-
 namespace DiscordCoreAPI {
-
-	class PermissionsConverter;
-	class Roles;
 
 	class Role :public RoleData {
 	protected:

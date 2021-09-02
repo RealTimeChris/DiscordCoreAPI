@@ -15,9 +15,6 @@
 
 namespace DiscordCoreAPI {
 
-	class Guild;
-	class Users;
-
 	class Application : public ApplicationData {
 	protected:
 

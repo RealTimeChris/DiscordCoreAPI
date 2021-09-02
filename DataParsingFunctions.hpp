@@ -1427,8 +1427,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("timestamp") && !jsonObjectData.at("timestamp").is_null()) {
-                embedData.timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData.at("timestamp").get<string>());
-                embedData.timestampRaw = jsonObjectData.at("timestamp").get<string>();
+                embedData.timestamp = jsonObjectData.at("timestamp").get<string>();
             }
 
             if (jsonObjectData.contains("color") && !jsonObjectData.at("color").is_null()) {

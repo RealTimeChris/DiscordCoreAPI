@@ -1038,7 +1038,7 @@ namespace DiscordCoreInternal {
 			{ "title", value.title },
 			{ "fields", fields },
 			{ "color",realColorVal },
-				{"timestamp", value.timestampRaw}
+				{"timestamp", value.timestamp}
 			};
 			embedsArray.push_back(embed);
 		}
@@ -1406,7 +1406,7 @@ namespace DiscordCoreInternal {
 				{ "title", value.title },
 				{ "fields", fields },
 				{ "color",realColorVal },
-					{"timestamp", value.timestampRaw}
+					{"timestamp", value.timestamp}
 				};
 				embedsArray.push_back(embed);
 			}

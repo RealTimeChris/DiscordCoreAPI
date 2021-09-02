@@ -14,10 +14,6 @@
 
 namespace DiscordCoreAPI {
 
-	class EventHandler;
-	class GuildMembers;
-	class Guild;
-
 	class GuildMember : public GuildMemberData {
 	protected:
 
