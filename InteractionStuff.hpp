@@ -258,6 +258,7 @@ namespace DiscordCoreAPI {
             else {
                 this->requesterId = dataPackage.user.id;
             }
+            this->data.data.flags = 64;
         }
 
         CreateEphemeralInteractionResponseData(ButtonInteractionData dataPackage) {
@@ -270,6 +271,7 @@ namespace DiscordCoreAPI {
             else {
                 this->requesterId = dataPackage.user.id;
             }
+            this->data.data.flags = 64;
         }
 
         CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
@@ -278,6 +280,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
+            this->data.data.flags = 64;
         }
 
         void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {

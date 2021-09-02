@@ -268,18 +268,14 @@ namespace DiscordCoreAPI {
 				AudioFrameData dataFrame;
 				while (try_receive(*this->sendAudioBuffer, dataFrame)) {};
 				vector<YouTubeSong> newVector02;
-				if (this->lastSong.description != "") {
-					newVector02.push_back(this->lastSong);
-					this->lastSong = YouTubeSong();
-				}
-				else {
+				if (this->currentSong.description != "") {
 					newVector02.push_back(this->currentSong);
+					this->currentSong = YouTubeSong();
 				}
 				for (auto value : this->songQueue) {
 					newVector02.push_back(value);
 				}
 				this->songQueue = newVector02;
-				this->currentSong = YouTubeSong();
 				return true;
 			}
 			else {
@@ -302,12 +298,23 @@ namespace DiscordCoreAPI {
 		}
 
 		bool isThereAnySongs() {
-			if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
-				return false;
+			if (this->loopAll || this->loopSong) {
+				if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
 			else {
-				return true;
+				if (this->songQueue.size() == 0) {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
+			
 		}
 
 		void addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember) {
@@ -398,10 +405,7 @@ namespace DiscordCoreAPI {
 
 		YouTubeSong getCurrentSong() {
 			shared_ptr<YouTubeAPI> youtubeAPI = this->youtubeAPIMap->at(this->guildId);
-			if (youtubeAPI->lastSong.description != "") {
-				return youtubeAPI->lastSong;
-			}
-			else if (youtubeAPI->currentSong.videoId != "") {
+			if (youtubeAPI->currentSong.videoId != "") {
 				return youtubeAPI->currentSong;
 			}
 			else if (youtubeAPI->songQueue.size() > 0) {
@@ -426,7 +430,6 @@ namespace DiscordCoreAPI {
 					}
 					youtubeAPI->songQueue.erase(youtubeAPI->songQueue.end() - 1, youtubeAPI->songQueue.end());
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -434,7 +437,6 @@ namespace DiscordCoreAPI {
 				else if (youtubeAPI->songQueue.size() > 0 && youtubeAPI->currentSong.description != "") {
 					youtubeAPI->currentSong = youtubeAPI->currentSong;
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -442,7 +444,6 @@ namespace DiscordCoreAPI {
 				else if (youtubeAPI->currentSong.description != "" && youtubeAPI->songQueue.size() == 0) {
 					youtubeAPI->currentSong = youtubeAPI->currentSong;
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -451,7 +452,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI->currentSong = youtubeAPI->songQueue.at(0);
 					youtubeAPI->songQueue.erase(youtubeAPI->songQueue.begin(), youtubeAPI->songQueue.begin() + 1);
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -473,7 +473,6 @@ namespace DiscordCoreAPI {
 					}
 					youtubeAPI->songQueue.erase(youtubeAPI->songQueue.end() - 1, youtubeAPI->songQueue.end());
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -489,14 +488,12 @@ namespace DiscordCoreAPI {
 					}
 					youtubeAPI->songQueue.at(youtubeAPI->songQueue.size() - 1) = tempSong02;
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
 				}
 				else if (youtubeAPI->currentSong.description != "" && youtubeAPI->songQueue.size() == 0) {
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -505,7 +502,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI->currentSong = youtubeAPI->songQueue.at(0);
 					youtubeAPI->songQueue.erase(youtubeAPI->songQueue.begin(), youtubeAPI->songQueue.begin() + 1);
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -524,7 +520,6 @@ namespace DiscordCoreAPI {
 					}
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
 					youtubeAPI->songQueue.erase(youtubeAPI->songQueue.end() - 1, youtubeAPI->songQueue.end());
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -532,7 +527,6 @@ namespace DiscordCoreAPI {
 				else if (youtubeAPI->currentSong.description != "" && youtubeAPI->songQueue.size() == 0) {
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
 					returnData.currentSong = youtubeAPI->currentSong;
-					youtubeAPI->lastSong = youtubeAPI->currentSong;
 					youtubeAPI->currentSong = YouTubeSong();
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -541,7 +535,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI->currentSong = youtubeAPI->songQueue.at(0);
 					youtubeAPI->songQueue.erase(youtubeAPI->songQueue.begin(), youtubeAPI->songQueue.begin() + 1);
 					youtubeAPI->downloadAndStreamAudio(youtubeAPI->currentSong);
-					youtubeAPI->lastSong = YouTubeSong();
 					returnData.currentSong = youtubeAPI->currentSong;
 					this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 					return returnData;
@@ -608,7 +601,6 @@ namespace DiscordCoreAPI {
 		YouTubeSong currentSong{};
 		string html5Player{ "" };
 		bool loopSong{ false };
-		YouTubeSong lastSong{};
 		bool loopAll{ false };
 		string guildId{ "" };
 

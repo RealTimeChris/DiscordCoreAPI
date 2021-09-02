@@ -11,7 +11,7 @@
 #include "../pch.h"
 
 namespace DiscordCoreAPI {
-    
+
     class DiscordCoreClientBase;
     class PermissionsConverter;
     class DiscordCoreClient;
@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
     class Interactions;
     class EventHandler;
     class GuildMembers;
-    class InputEvents;    
+    class InputEvents;
     class Reactions;
     class Messages;
     class Channels;
@@ -765,8 +765,10 @@ namespace  DiscordCoreInternal {
         }
 
         void releaseGroup() {
-            this->schedulerGroup->scheduleGroup->Release();
-            this->schedulerGroup = nullptr;
+            if (this->schedulerGroup != nullptr) {
+                this->schedulerGroup->scheduleGroup->Release();
+                this->schedulerGroup = nullptr;
+            }
         };
 
         ~ThreadContext() {
@@ -3137,7 +3139,7 @@ namespace DiscordCoreAPI {
         operator DiscordCoreInternal::TimestampData() {
             DiscordCoreInternal::TimestampData newData;
             newData.start = this->start;
-            newData.end = this->end;            
+            newData.end = this->end;
             return newData;
         }
         __int64 start{ 0 };
@@ -3903,7 +3905,7 @@ namespace DiscordCoreAPI {
         string videoTitle{ "" };
         string duration{ "" };
         string videoURL{ "" };
-        string videoId{ "" };        
+        string videoId{ "" };
     };
 
     struct YouTubeSong {
