@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 			this->discordCoreClientBase = dataNew.discordCoreClientBase;
 			if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
 				if (!DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id);
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap);
 					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
 				}
 			}
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 				shared_ptr<unbounded_buffer<AudioFrameData>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
 				DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtrBuffer));
 				if (!DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id);
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap);
 					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
 				}
 			}

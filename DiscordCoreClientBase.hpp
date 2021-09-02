@@ -25,6 +25,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class VoiceConnection;
 		friend class InputEvents;
+		friend class YouTubeAPI;
 		friend class Guild;
 
 		static BotUser currentUser;

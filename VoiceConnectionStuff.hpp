@@ -95,7 +95,9 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
+				cout << "WERE HERE WERE HERE WERE 2121212" << endl;
 				receive(this->stopBuffer);
+				cout << "WERE HERE WERE HERE WERE 34232323" << endl;
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
 				send(this->stopBuffer, true);
@@ -126,6 +128,7 @@ namespace DiscordCoreAPI {
 			if (this != nullptr) {
 
 				if (!this->areWePlaying) {
+					send(this->playBuffer, true);
 					send(this->playBuffer, true);
 				}
 
@@ -318,15 +321,15 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			while (!this->doWeQuit) {
-				cout << "WERE HERE 0000" << endl;
 				if (!this->areWePlaying) {
 					receive(this->playBuffer);
-					cout << "WERE HERE 11111" << endl;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
-					cout << "WERE HERE 2323232" << endl;
+					start:
 					this->audioData = receive(*this->audioDataBuffer);
-					cout << "WERE HERE 333333" << endl;
+					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0) {
+						goto start;
+					}
 					this->areWePlaying = true;
 				}
 				this->sendSpeakingMessage(true);
@@ -339,16 +342,12 @@ namespace DiscordCoreAPI {
 				if (this->audioData.type == AudioFrameType::Encoded) {
 					this->areWeStreaming = true;
 					if (this->areWeStreaming) {
-						cout << "WERE HERE 444444" << endl;
-						while (this->audioData.encodedFrameData.sampleCount != 0) {
+						while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
 							if (this->areWeSkipping) {
-								cout << "WERE HERE 55555" << endl;
-								this->onSongCompletionEvent();
 								frameCounter = 0;
 								break;
 							}
 							if (this->areWeStopping) {
-								cout << "WERE HERE 66666" << endl;
 								frameCounter = 0;
 								break;
 							}
@@ -378,8 +377,8 @@ namespace DiscordCoreAPI {
 							}
 							else {
 								this->onSongCompletionEvent();
-								this->areWePlaying = false;
 								this->areWeStreaming = false;
+								this->areWePlaying = false;
 								frameCounter = 0;
 								break;
 							}
@@ -389,16 +388,13 @@ namespace DiscordCoreAPI {
 							startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 						}
 					}
-					else {
-						this->areWePlaying = false;
-					}
+					this->areWePlaying = false;
 				}
 				else if (this->audioData.type == AudioFrameType::RawPCM ) {
 					this->areWePlaying = true;
 					if (this->areWePlaying) {
 						while (this->audioData.rawFrameData.sampleCount != 0) {
 							if (this->areWeSkipping) {
-								this->onSongCompletionEvent();
 								frameCounter = 0;
 								break;
 							}
@@ -428,13 +424,13 @@ namespace DiscordCoreAPI {
 							}
 							int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 							if (this->audioData.encodedFrameData.sampleCount != 0) {
-								auto newFrame = encodeSingleAudioFrame(this->audioData.rawFrameData);
-								this->sendSingleAudioFrame(newFrame);
+								auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
+								this->sendSingleAudioFrame(newFrames);
 							}
 							else {
 								this->onSongCompletionEvent();
-								this->areWePlaying = false;
 								this->areWeStreaming = false;
+								this->areWePlaying = false;
 								frameCounter = 0;
 								break;
 							}
@@ -444,10 +440,9 @@ namespace DiscordCoreAPI {
 							startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 						}
 					}
-					else {
-						this->areWePlaying = false;
-					}
+					this->areWePlaying = false;
 				}
+				this->areWePlaying = false;
 				if (this->areWeStopping) {
 					send(this->stopBuffer, true);
 					receive(this->stopBuffer);
