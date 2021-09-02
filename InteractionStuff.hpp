@@ -806,7 +806,7 @@ namespace DiscordCoreInternal {
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
         InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)
-            :agent(*InteractionManagerAgent::threadContext->scheduler->ptrScheduler) {
+            :agent(*InteractionManagerAgent::threadContext->scheduler->scheduler) {
             this->agentResources = agentResourcesNew;
         }
 
@@ -1350,7 +1350,7 @@ namespace DiscordCoreAPI {
     public:
         static map<string, unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>*>selectMenuInteractionBufferMap;
 
-        SelectMenuManager(InputEventData dataPackage) : agent(*SelectMenuManager::threadContext->schedulerGroup->ptrScheduleGroup) {
+        SelectMenuManager(InputEventData dataPackage) : agent(*SelectMenuManager::threadContext->scheduler->scheduler) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
@@ -1483,12 +1483,12 @@ namespace DiscordCoreAPI {
     public:
         static map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> buttonInteractionBufferMap;
 
-        ButtonManager(DiscordCoreAPI::InputEventData dataPackage) : agent(*ButtonManager::threadContext->scheduler->ptrScheduler) {
+        ButtonManager(DiscordCoreAPI::InputEventData dataPackage) : agent(*ButtonManager::threadContext->scheduler->scheduler) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
             this->buttonIncomingInteractionBuffer = new unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>;
-            ButtonManager::buttonInteractionBufferMap.insert(make_pair(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer));
+            ButtonManager::buttonInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer);
         }
 
         static void initialize(shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
@@ -1521,6 +1521,7 @@ namespace DiscordCoreAPI {
 
         ~ButtonManager() {
             done();
+            ButtonManager::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
         }
 
     protected:

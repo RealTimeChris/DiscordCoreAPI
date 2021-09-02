@@ -106,7 +106,7 @@ namespace DiscordCoreInternal	{
 		HttpAgentResources agentResources{};
 
 		ChannelManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
-			:agent(*ChannelManagerAgent::threadContext->scheduler->ptrScheduler) {
+			:agent(*ChannelManagerAgent::threadContext->scheduler->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 		}

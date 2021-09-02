@@ -28,7 +28,7 @@ namespace DiscordCoreInternal {
         unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
-        ThreadManagerAgent() :agent(*ThreadManagerAgent::threadContext->scheduler->ptrScheduler) {}
+        ThreadManagerAgent() :agent(*ThreadManagerAgent::threadContext->scheduler->scheduler) {}
 
         void getError() {
             exception error;
@@ -84,8 +84,8 @@ namespace DiscordCoreInternal {
 
         ~ThreadManager() {
             for (auto value : ThreadManager::threads) {
-                value->scheduler->ptrScheduler->Release();
-                value->schedulerGroup->ptrScheduleGroup->Release();
+                value->scheduler->scheduler->Release();
+                value->schedulerGroup->scheduleGroup->Release();
             }
             ThreadManagerAgent::cleanup();
         };
@@ -95,7 +95,7 @@ namespace DiscordCoreInternal {
     task<shared_ptr<ThreadContext>> createThreadContext(ThreadType threadType) {
         for (auto value : ThreadManager::threads) {
             if (value->schedulerGroup == nullptr) {
-                value->schedulerGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->ptrScheduler->CreateScheduleGroup());
+                value->schedulerGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->scheduler->CreateScheduleGroup());
                 co_return value;
             }
         }
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
         shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
         threadContext->scheduler = make_shared<ScheduleWrapper>(newScheduler);
         threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
-        threadContext->schedulerGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->ptrScheduler->CreateScheduleGroup());
+        threadContext->schedulerGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->scheduler->CreateScheduleGroup());
         co_return threadContext;
     }
     concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads{};

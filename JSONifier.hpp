@@ -1505,22 +1505,7 @@ namespace DiscordCoreInternal {
 				componentsActionRow.push_back(componentActionRow);
 			}
 
-			if (dataPackage.data.data.content == "") {
-				json data = {
-					{"flags", dataPackage.data.data.flags},
-					{"tts", dataPackage.data.data.tts},
-					{"type", dataPackage.data.type},
-				{"embeds", embedsArray},
-				{"allowed_mentions",
-				{{"parse", parseArray},
-		{"roles", rolesArray},
-		{"users", usersArray},
-		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
-					{"components", componentsActionRow} };
-				return data.dump();
-			}
-			else {
-				json data = { 
+			json data = {
 					{"flags", dataPackage.data.data.flags},
 					{"tts", dataPackage.data.data.tts},
 					{"type", dataPackage.data.type},
@@ -1532,8 +1517,7 @@ namespace DiscordCoreInternal {
 			{"users", usersArray},
 			{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}},
 				},{"components", componentsActionRow} };
-				return data.dump();
-			};
+			return data.dump();
 		}
 
 		string getCreateDeferredInteractionResponsePayload(PostDeferredInteractionResponseData dataPackage) {

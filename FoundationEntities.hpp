@@ -742,21 +742,20 @@ namespace  DiscordCoreInternal {
 
     struct ScheduleGroupWrapper {
         ScheduleGroupWrapper(ScheduleGroup* dataPackage) {
-            this->ptrScheduleGroup = dataPackage;
+            this->scheduleGroup = dataPackage;
 
         }
-        ScheduleGroup* ptrScheduleGroup{ nullptr };
+        ScheduleGroup* scheduleGroup{ nullptr };
     };
 
     struct ScheduleWrapper {
         ScheduleWrapper(Scheduler* dataPackage) {
-            this->ptrScheduler = dataPackage;
+            this->scheduler = dataPackage;
         }
-        Scheduler* ptrScheduler{ nullptr };
+        Scheduler* scheduler{ nullptr };
     };
 
     struct ThreadContext {
-    public:
         ThreadContext() {};
 
         ThreadContext(ThreadContext* threadContext) {
@@ -766,15 +765,13 @@ namespace  DiscordCoreInternal {
         }
 
         void releaseGroup() {
-            this->schedulerGroup->ptrScheduleGroup->Release();
+            this->schedulerGroup->scheduleGroup->Release();
             this->schedulerGroup = nullptr;
         };
 
         ~ThreadContext() {
-            if (this->schedulerGroup != nullptr) {
-                this->schedulerGroup->ptrScheduleGroup->Release();
-                this->schedulerGroup = nullptr;
-            }
+            this->schedulerGroup->scheduleGroup->Release();
+            this->schedulerGroup = nullptr;
         }
 
         shared_ptr<ScheduleWrapper> scheduler{ nullptr };

@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 		
 		ReactionManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
-			:agent(*ReactionManagerAgent::threadContext->scheduler->ptrScheduler) {
+			:agent(*ReactionManagerAgent::threadContext->scheduler->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
 		}

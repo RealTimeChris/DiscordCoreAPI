@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 
         friend class YouTubeAPI;
 
-        SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : agent(*threadContextNew->scheduler->ptrScheduler) {
+        SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : agent(*threadContextNew->scheduler->scheduler) {
             this->dataBuffer = dataPackage.dataBuffer;
             this->totalFileSize = (int)dataPackage.totalFileSize;
             this->threadContext = threadContextNew;

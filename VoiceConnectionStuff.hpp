@@ -22,7 +22,7 @@ namespace DiscordCoreAPI {
 
 		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData>> bufferMessageBlockNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) : 
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
-			agent(*threadContextNew->scheduler->ptrScheduler) 
+			agent(*threadContextNew->scheduler->scheduler) 
 		{
 			if (voiceConnectionDataNew.channelId != "") {
 				if (sodium_init() == -1) {

@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 		friend class Guild;
 
 		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
-			:agent(*threadContextNew->scheduler->ptrScheduler) {
+			:agent(*threadContextNew->scheduler->scheduler) {
 			this->threadContext = threadContextNew;
 			this->voiceConnectionData = voiceConnectionDataNew;
 			this->readyBuffer = readyBufferNew;
@@ -353,7 +353,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 
 		WebSocketReceiverAgent(shared_ptr<ThreadContext> threadContextNew):
-			agent(*threadContextNew->scheduler->ptrScheduler)
+			agent(*threadContextNew->scheduler->scheduler)
 		{
 			this->threadContext = threadContextNew;
 			return;
@@ -565,7 +565,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 
 		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
-			: agent(*threadContextNew->scheduler->ptrScheduler) {
+			: agent(*threadContextNew->scheduler->scheduler) {
 			this->threadContext = threadContextNew;
 			this->webSocketMessageTarget = target;
 			this->botToken = botTokenNew;

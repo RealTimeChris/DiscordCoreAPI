@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 
 		MessageCollector(int quantityToCollect,  int msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
-			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->ptrScheduler) {
+			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
 			this->messagesBuffer = new unbounded_buffer<Message>();
 			MessageCollector::messagesBufferMap.insert_or_assign(userId, this->messagesBuffer);
 			this->quantityOfMessageToCollect = quantityToCollect;
@@ -84,10 +84,13 @@ namespace DiscordCoreAPI {
 			this->userId = userIdNew;
 		}
 
-		MessageCollectorReturnData collectMessages() {
+		task<MessageCollectorReturnData> collectMessages() {
+			apartment_context mainThread;
+			co_await resume_background();
 			this->start();
 			wait(this);
-			return this->messageReturnData;
+			co_await mainThread;
+			co_return this->messageReturnData;
 		}
 
 		~MessageCollector() {
@@ -504,7 +507,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 		
 		MessageManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
-			:agent(*MessageManagerAgent::threadContext->scheduler->ptrScheduler) {
+			:agent(*MessageManagerAgent::threadContext->scheduler->scheduler) {
 			this->discordCoreClient = discordCoreClientNew;
 			this->agentResources = agentResourcesNew;
 		}

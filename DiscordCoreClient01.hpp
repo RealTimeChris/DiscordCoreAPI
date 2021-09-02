@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<EventManager> eventManager{ nullptr };
 		shared_ptr<DiscordUser> discordUser{ nullptr };
 
-		DiscordCoreClient(hstring botTokenNew) : DiscordCoreClientBase(), agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->ptrScheduler) {
+		DiscordCoreClient(hstring botTokenNew) : DiscordCoreClientBase(), agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
 			this->botToken = botTokenNew;
 		}
 

@@ -194,7 +194,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 
 		UserManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew)
-			:agent(*UserManagerAgent::threadContext->scheduler->ptrScheduler) {
+			:agent(*UserManagerAgent::threadContext->scheduler->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 		}

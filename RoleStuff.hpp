@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 		HttpAgentResources agentResources{};
 
 		RoleManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
-			:agent(*RoleManagerAgent::threadContext->scheduler->ptrScheduler) {
+			:agent(*RoleManagerAgent::threadContext->scheduler->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
 		}

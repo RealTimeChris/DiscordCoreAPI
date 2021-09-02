@@ -20,7 +20,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
  
 		HttpRequestAgent(HttpAgentResources agentResources)
-			: agent(*HttpRequestAgent::shared_ptr::get()->schedulerGroup->ptrScheduleGroup), shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
+			: agent(*HttpRequestAgent::shared_ptr::get()->scheduler->scheduler), shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
 		{
 			try {
 				if (agentResources.baseURL == ""){

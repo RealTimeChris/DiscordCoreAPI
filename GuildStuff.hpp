@@ -258,7 +258,7 @@ namespace DiscordCoreInternal	{
 		HttpAgentResources agentResources{};		
 		
 		GuildManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew)
-			:agent(*GuildManagerAgent::threadContext->scheduler->ptrScheduler) {
+			:agent(*GuildManagerAgent::threadContext->scheduler->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 			this->discordCoreClientBase = coreClientBaseNew;

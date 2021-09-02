@@ -264,8 +264,6 @@ namespace DiscordCoreAPI {
 			if (this->areWePlaying) {
 				vector<uint8_t> newVector;
 				send(this->currentDataSendBuffer, newVector);
-				send(this->currentDataSendBuffer, newVector);
-				send(this->currentDataSendBuffer, newVector);
 				receive(this->completionCallbackBuffer);
 				AudioFrameData dataFrame;
 				while (try_receive(*this->sendAudioBuffer, dataFrame)) {};
@@ -292,8 +290,6 @@ namespace DiscordCoreAPI {
 		bool skip() {
 			if (this->areWePlaying) {
 				vector<uint8_t> newVector;
-				send(this->currentDataSendBuffer, newVector);
-				send(this->currentDataSendBuffer, newVector);
 				send(this->currentDataSendBuffer, newVector);
 				receive(this->completionCallbackBuffer);
 				AudioFrameData dataFrame;
@@ -363,17 +359,17 @@ namespace DiscordCoreAPI {
 			this->html5PlayerFile = to_string(responseToPlayerGet02);
 			format = decipherFormat(format, this->html5PlayerFile);
 			YouTubeSong song;
-			song.description = searchResult.description;
-			song.duration = searchResult.duration;
-			song.formatDownloadURL = format.downloadURL;
-			song.imageURL = searchResult.thumbNailURL;
-			song.contentLength = (int)format.contentLength;
 			song.songId = to_string((int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			song.title = searchResult.videoTitle;
-			song.url = searchResult.videoURL;
-			song.videoId = searchResult.videoId;
-			song.addedById = guildMember.user.id;
 			song.addedByUserName = guildMember.user.username;
+			song.contentLength = (int)format.contentLength;
+			song.formatDownloadURL = format.downloadURL;
+			song.description = searchResult.description;
+			song.imageURL = searchResult.thumbNailURL;
+			song.duration = searchResult.duration;
+			song.addedById = guildMember.user.id;
+			song.title = searchResult.videoTitle;
+			song.videoId = searchResult.videoId;
+			song.url = searchResult.videoURL;
 			bool isItFound = false;
 			for (auto value : this->songQueue) {
 				if (value.songId == song.songId) {
@@ -394,13 +390,25 @@ namespace DiscordCoreAPI {
 		void modifyQueue(int songOldPosition, int songNewPosition) {
 			shared_ptr<YouTubeAPI> youtubeAPI = this->youtubeAPIMap->at(this->guildId);
 			int currentSongCount = (int)youtubeAPI->songQueue.size();
-			for (int x = 0; x < currentSongCount; x += 1) {
+			if (songOldPosition < songNewPosition) {
 				YouTubeSong tempSong = youtubeAPI->songQueue.at(songOldPosition);
-				if (x < songNewPosition && x > songOldPosition) {
-					youtubeAPI->songQueue.at(x - 1) = youtubeAPI->songQueue.at(x);
+				for (int x = 0; x < currentSongCount; x += 1) {
+					if (x < songNewPosition && x >= songOldPosition) {
+						youtubeAPI->songQueue.at(x) = youtubeAPI->songQueue.at(x + 1);
+					}
 				}
 				youtubeAPI->songQueue.at(songNewPosition) = tempSong;
 			}
+			else if (songOldPosition > songNewPosition) {
+				YouTubeSong tempSong = youtubeAPI->songQueue.at(songOldPosition);
+				for (int x = 0; x < currentSongCount; x += 1) {
+					if (x > songNewPosition && x <= songOldPosition) {
+						youtubeAPI->songQueue.at(x) = youtubeAPI->songQueue.at(x - 1);
+					}
+				}
+				youtubeAPI->songQueue.at(songNewPosition) = tempSong;
+			}
+			
 			this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
 			return;
 		}
