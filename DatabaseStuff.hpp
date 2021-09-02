@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
         unbounded_buffer<exception>errorBuffer{ nullptr };
 
         DatabaseManagerAgent()
-            : agent(*DatabaseManagerAgent::threadContext->scheduler->ptrScheduler) {
+            : agent(*DatabaseManagerAgent::threadContext->scheduler->scheduler) {
             this->botUserId = DatabaseManagerAgent::botUserId;
         }
 

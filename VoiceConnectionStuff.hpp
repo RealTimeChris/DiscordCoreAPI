@@ -96,9 +96,7 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
-				cout << "WERE HERE WERE HERE WERE 2121212" << endl;
 				receive(this->stopBuffer);
-				cout << "WERE HERE WERE HERE WERE 34232323" << endl;
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
 				send(this->stopBuffer, true);
