@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void addSongToQueue(YouTubeSearchResult searchResult) {
+		void addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember) {
 			string watchHTMLURL = to_string(this->baseWatchURL) + searchResult.videoId + "&hl=en";
 			Filters::HttpBaseProtocolFilter filter;
 			filter.AutomaticDecompression(true);
@@ -371,6 +371,8 @@ namespace DiscordCoreAPI {
 			song.title = searchResult.videoTitle;
 			song.url = searchResult.videoURL;
 			song.videoId = searchResult.videoId;
+			song.addedById = guildMember.user.id;
+			song.addedByUserName = guildMember.user.username;
 			bool isItFound = false;
 			for (auto value : this->songQueue) {
 				if (value.songId == song.songId) {

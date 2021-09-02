@@ -48,6 +48,73 @@ namespace DiscordCoreAPI {
         unsigned long long startTime{ 0 };
     };
 
+    template <typename... T, typename Function>
+    void executeFunctionAfterTimePeriod(Function function, unsigned int timeDelayInMs, bool isRepeating, T... args) {
+        ThreadPoolTimer threadPoolTimer{ nullptr };
+        if (timeDelayInMs > 0) {
+            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                function(args...);
+            };
+            if (isRepeating) {
+                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            }
+            else {
+                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            }
+        }
+        else {
+            function(args...);
+        }
+        return;
+    }
+
+    template <>
+    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> function, unsigned int timeDelayInMs, bool isRepeating) {
+        ThreadPoolTimer threadPoolTimer{ nullptr };
+        if (timeDelayInMs > 0) {
+            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                function(threadPoolTimerNew);
+            };
+            if (isRepeating) {
+                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            }
+            else {
+                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            }
+        }
+        else {
+            function(threadPoolTimer);
+        }
+        return;
+    }
+
+    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
+        __int64 timeValue = timeInMs / 1000;
+        __time64_t rawTime(timeValue);
+        tm timeInfo;
+        char timeBuffer[32];
+        errno_t error;
+        error = localtime_s(&timeInfo, &rawTime);
+        if (error)
+        {
+            printf("Invalid argument to _localtime64_s.");
+        }
+        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
+        return timeBuffer;
+    }
+
+    long long convertTimestampToInteger(string timeStamp) {
+        CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
+            stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
+        return timeValue.GetTime();
+    }
+
+    string convertTimeStampToNewOne(string timeStamp) {
+        long long timeInMs = convertTimestampToInteger(timeStamp) * 1000;
+        string returnString = convertTimeInMsToDateTimeString(timeInMs);
+        return returnString;
+    }
+
     void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
         auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
         winrt::Windows::Storage::StorageFile storageFile = folder.CreateFileAsync(fileName, CreationCollisionOption::ReplaceExisting).get();
@@ -74,21 +141,6 @@ namespace DiscordCoreAPI {
         return newString;
     }
 
-    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
-        __int64 timeValue = timeInMs / 1000;
-        __time64_t rawTime(timeValue);
-        tm timeInfo;
-        char timeBuffer[32];
-        errno_t error;
-        error = localtime_s(&timeInfo, &rawTime);
-        if (error)
-        {
-            printf("Invalid argument to _localtime64_s.");
-        }
-        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
-        return timeBuffer;
-    }
-
     string convertSnowFlakeToDateTimeString(string snowFlake) {
         string returnString;
         __int64 timeInMs = (stoll(snowFlake) >> 22) + 1420070400000;
@@ -96,16 +148,21 @@ namespace DiscordCoreAPI {
         return returnString;
     }
 
-    long long convertTimestampToInteger(string timeStamp) {
-        CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
-            stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
-        return timeValue.GetTime();
-    }
-
-    string convertTimeStampToNewOne(string timeStamp) {
-        long long timeInMs = convertTimestampToInteger(timeStamp) * 1000;
-        string returnString = convertTimeInMsToDateTimeString(timeInMs);
-        return returnString;
+    string getTimeAndDate() {
+        const time_t now = time(nullptr);
+        char charArray[26];
+        std::tm time;
+        DYNAMIC_TIME_ZONE_INFORMATION timeZoneInfo{};
+        auto returnValue = GetDynamicTimeZoneInformation(&timeZoneInfo);
+        localtime_s(&time, &now);
+        if ((int)returnValue == 1) {
+            time.tm_hour = (time.tm_hour + (timeZoneInfo.Bias / 60)) % 24;
+        }
+        else {
+            time.tm_hour = (time.tm_hour + (timeZoneInfo.Bias / 60) - 1) % 24;
+        }
+        strftime(charArray, 26, "%F %R", &time);
+        return charArray;
     }
 
     bool hasTimeElapsed(string timeStamp, long long days = 0, long long hours = 0, long long minutes = 0) {
@@ -1907,77 +1964,6 @@ namespace  DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-    template <typename... T, typename Function>
-    void executeFunctionAfterTimePeriod(Function function, unsigned int timeDelayInMs, bool isRepeating, T... args) {
-        ThreadPoolTimer threadPoolTimer{ nullptr };
-        if (timeDelayInMs > 0) {
-            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
-                function(args...);
-            };
-            if (isRepeating) {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-            else {
-                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-        }
-        else {
-            function(args...);
-        }
-        return;
-    }
-
-    template <>
-    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> function, unsigned int timeDelayInMs, bool isRepeating) {
-        ThreadPoolTimer threadPoolTimer{ nullptr };
-        if (timeDelayInMs > 0) {
-            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
-                function(threadPoolTimerNew);
-            };
-            if (isRepeating) {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-            else {
-                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-        }
-        else {
-            function(threadPoolTimer);
-        }
-        return;
-    }
-
-    DispatcherQueueTimer getDispatcherQueueTimer() {
-        DispatcherQueueOptions options{
-               sizeof(DispatcherQueueOptions),
-               DQTYPE_THREAD_DEDICATED,
-               DQTAT_COM_ASTA
-        };
-        ABI::Windows::System::IDispatcherQueueController* ptrNew{ nullptr };
-        check_hresult(CreateDispatcherQueueController(options, &ptrNew));
-        DispatcherQueueController queueController = { ptrNew, take_ownership_from_abi };
-        DispatcherQueue threadQueue = queueController.DispatcherQueue();
-        DispatcherQueueTimer timer = threadQueue.CreateTimer();
-        return timer;
-    }
-
-    string getTimeAndDate() {
-        const time_t now = time(nullptr);
-        char charArray[26];
-        std::tm time;
-        DYNAMIC_TIME_ZONE_INFORMATION timeZoneInfo{};
-        auto returnValue = GetDynamicTimeZoneInformation(&timeZoneInfo);
-        localtime_s(&time, &now);
-        if ((int)returnValue == 1) {
-            time.tm_hour = (time.tm_hour + (timeZoneInfo.Bias / 60)) % 24;
-        }
-        else {
-            time.tm_hour = (time.tm_hour + (timeZoneInfo.Bias / 60) - 1) % 24;
-        }
-        strftime(charArray, 26, "%F %R", &time);
-        return charArray;
-    }
-
     enum class Permissions :__int64 {
         CREATE_INSTANT_INVITE = (1 << 0),
         KICK_MEMBERS = (1 << 1),
@@ -2350,7 +2336,6 @@ namespace DiscordCoreAPI {
 
         EmbedData* setTimeStamp(string timeStamp) {
             this->timestamp = timeStamp;
-            this->timestampRaw = DiscordCoreAPI::convertTimeStampToNewOne(timeStamp);
             return this;
         }
 
@@ -3906,16 +3891,18 @@ namespace DiscordCoreAPI {
     };
 
     struct YouTubeSong {
+        string formatDownloadURL{ "" };
+        string addedByUserName{ "" };
+        string description{ "" };
         AudioFrameData frames{};
         int contentLength{ 0 };
+        string addedById{ "" };
         string imageURL{ "" };
-        string title{ "" };
-        string formatDownloadURL{ "" };
-        string url{ "" };
-        string description{ "" };
         string duration{ "" };
         string videoId{ "" };
         string songId{ "" };
+        string title{ "" };
+        string url{ "" };
     };
 
     struct SendNextSongReturnData {
