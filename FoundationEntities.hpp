@@ -770,8 +770,10 @@ namespace  DiscordCoreInternal {
         };
 
         ~ThreadContext() {
-            this->schedulerGroup->scheduleGroup->Release();
-            this->schedulerGroup = nullptr;
+            if (this->schedulerGroup != nullptr) {
+                this->schedulerGroup->scheduleGroup->Release();
+                this->schedulerGroup = nullptr;
+            }
         }
 
         shared_ptr<ScheduleWrapper> scheduler{ nullptr };
@@ -3094,48 +3096,48 @@ namespace DiscordCoreAPI {
     struct PartyData {
         operator DiscordCoreInternal::PartyData() {
             DiscordCoreInternal::PartyData newData;
-            newData.id = this->id;
             newData.size[0] = this->size[0];
             newData.size[1] = this->size[1];
+            newData.id = this->id;
             return newData;
         }
-        string id{ "" };
         vector<int> size{ 0, 0 };
+        string id{ "" };
     };
 
     struct AssetsData {
         operator DiscordCoreInternal::AssetsData() {
             DiscordCoreInternal::AssetsData newData;
             newData.largeImage = this->largeImage;
-            newData.largeText = this->largeText;
             newData.smallImage = this->smallImage;
+            newData.largeText = this->largeText;
             newData.smallText = this->smallText;
             return newData;
         }
         string largeImage{ "" };
-        string largeText{ "" };
         string smallImage{ "" };
+        string largeText{ "" };
         string smallText{ "" };
     };
 
     struct SecretsData {
         operator DiscordCoreInternal::SecretsData() {
             DiscordCoreInternal::SecretsData newData;
-            newData.join = this->join;
-            newData.match = this->match;
             newData.spectate = this->spectate;
+            newData.match = this->match;
+            newData.join = this->join;
             return newData;
         }
-        string join{ "" };
         string spectate{ "" };
         string match{ "" };
+        string join{ "" };
     };
 
     struct TimestampData {
         operator DiscordCoreInternal::TimestampData() {
             DiscordCoreInternal::TimestampData newData;
-            newData.end = this->end;
             newData.start = this->start;
+            newData.end = this->end;            
             return newData;
         }
         __int64 start{ 0 };
@@ -3166,37 +3168,37 @@ namespace DiscordCoreAPI {
         operator DiscordCoreInternal::ActivityData() {
             DiscordCoreInternal::ActivityData newData;
             newData.applicationId = this->applicationId;
-            newData.assets = this->assets;
+            newData.timestamps = this->timestamps;
             newData.createdAt = this->createdAt;
+            newData.instance = this->instance;
+            newData.secrets = this->secrets;
             newData.details = this->details;
+            newData.buttons = this->buttons;
+            newData.type = (int)this->type;
+            newData.assets = this->assets;
             newData.emoji = this->emoji;
             newData.flags = this->flags;
-            newData.instance = this->instance;
             newData.party = this->party;
-            newData.secrets = this->secrets;
             newData.state = this->state;
-            newData.timestamps = this->timestamps;
-            newData.type = (int)this->type;
-            newData.url = this->url;
             newData.name = this->name;
-            newData.buttons = this->buttons;
+            newData.url = this->url;
             return newData;
         }
-        int createdAt{ 0 };
         TimestampData timestamps{};
         string applicationId{ "" };
+        bool instance{ false };
+        SecretsData secrets{};
         string details{ "" };
+        ButtonData buttons{};
+        ActivityType type{};
+        AssetsData assets{};
+        int createdAt{ 0 };
         string state{ "" };
         EmojiData emoji{};
         PartyData party{};
-        AssetsData assets{};
-        SecretsData secrets{};
-        bool instance{ false };
-        int flags{ 0 };
         string name{ "" };
-        ActivityType type{};
         string url{ "" };
-        ButtonData buttons{};
+        int flags{ 0 };
     };
 
     struct ClientStatusData {
@@ -3237,87 +3239,87 @@ namespace DiscordCoreAPI {
     };
 
     struct WelcomeScreenChannelData {
-        string channelId{ "" };
         string description{ "" };
-        string emojiId{ "" };
+        string channelId{ "" };
         string emojiName{ "" };
+        string emojiId{ "" };
     };
 
     struct WelcomeScreenData {
-        string description{ "" };
         vector<WelcomeScreenChannelData> welcomeChannels{};
+        string description{ "" };
     };
 
     struct PresenceUpdateData {
-        UserData user{};
-        string guildId{ "" };
-        string status{ "" };
         vector<ActivityData> activities{};
         ClientStatusData clientStatus{};
+        string guildId{ "" };
+        string status{ "" };
+        UserData user{};
     };
 
     struct StageInstanceData {
-        string id{ "" };
-        string guildId{ "" };
-        string channelId{ "" };
-        string topic{ "" };
-        int privacyLevel{ 0 };
         bool discoverableDisabled{ false };
+        string channelId{ "" };
+        int privacyLevel{ 0 };
+        string guildId{ "" };
+        string topic{ "" };
+        string id{ "" };
     };
 
     struct GuildData {
+        shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+        DefaultMessageNotificationLevel defaultMessageNotifications{};
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        ExplicitContentFilterLevel explicitContentFilter{};
+        vector<StageInstanceData> stageInstances{};
+        vector<PresenceUpdateData> presences{};
+        VerificationLevel verificationLevel{};
+        vector<VoiceStateData> voiceStates{};
+        string publicUpdatesChannelID{ "" };
+        vector<GuildMemberData> members{};
+        WelcomeScreenData welcomeScreen{};
+        int premiumSubscriptionCount{ 0 };
+        int approximatePresenceCount{ 0 };
+        int approximateMemberCount{ 0 };
+        vector<ChannelData> channels{};
+        vector<ChannelData> threads{};
+        int maxVideoChannelUsers{ 0 };
+        string discoverySplash{ "" };
+        string preferredLocale{ "" };
+        string widgetChannelID{ "" };
+        string systemChannelID{ "" };
+        bool widgetEnabled{ false };
+        int systemChannelFlags{ 0 };
+        string vanityURLCode{ "" };
+        string ruleChannelID{ "" };
+        string applicationID{ "" };
+        vector<EmojiData> emoji{};
+        string description{ "" };
+        string afkChannelID{ "" };
+        vector<string> features{};
+        bool unavailable{ false };
+        PremiumTier premiumTier{};
+        string permissions{ "" };
+        vector<RoleData> roles{};
+        string createdAt{ "" };
+        string iconHash{ "" };
+        int maxPresences{ 0 };
+        string joinedAt{ "" };
+        string ownerID{ "" };
+        int memberCount{ 0 };
+        string region{ "" };
+        bool owner{ false };
+        int afkTimeOut{ 0 };
+        MFALevel mfaLevel{};
+        bool large{ false };
+        int maxMembers{ 0 };
+        string splash{ "" };
+        string banner{ "" };
+        int nsfwLevel{ 0 };
         string icon{ "" };
         string name{ "" };
         string id{ "" };
-        string iconHash{ "" };
-        string splash{ "" };
-        string discoverySplash{ "" };
-        string preferredLocale{ "" };
-        string publicUpdatesChannelID{ "" };
-        string vanityURLCode{ "" };
-        string description{ "" };
-        string banner{ "" };
-        string ruleChannelID{ "" };
-        string applicationID{ "" };
-        string createdAt{ "" };
-        string joinedAt{ "" };
-        string widgetChannelID{ "" };
-        string systemChannelID{ "" };
-        string region{ "" };
-        string afkChannelID{ "" };
-        string ownerID{ "" };
-        vector<string> features{};
-        vector<ChannelData> threads{};
-        string permissions{ "" };
-        bool owner{ false };
-        int afkTimeOut{ 0 };
-        bool widgetEnabled{ false };
-        VerificationLevel verificationLevel{};
-        DefaultMessageNotificationLevel defaultMessageNotifications{};
-        ExplicitContentFilterLevel explicitContentFilter{};
-        vector<EmojiData> emoji{};
-        vector<RoleData> roles{};
-        int systemChannelFlags{ 0 };
-        MFALevel mfaLevel{};
-        bool large{ false };
-        vector<VoiceStateData> voiceStates{};
-        vector<PresenceUpdateData> presences{};
-        int maxPresences{ 0 };
-        int maxMembers{ 0 };
-        int premiumSubscriptionCount{ 0 };
-        PremiumTier premiumTier{};
-        int maxVideoChannelUsers{ 0 };
-        int approximateMemberCount{ 0 };
-        bool unavailable{ false };
-        int memberCount{ 0 };
-        int approximatePresenceCount{ 0 };
-        int nsfwLevel{ 0 };
-        WelcomeScreenData welcomeScreen{};
-        vector<GuildMemberData> members{};
-        vector<ChannelData> channels{};
-        vector<StageInstanceData> stageInstances{};
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-        shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
     };
 
     struct ReactionAddData {
@@ -3325,18 +3327,18 @@ namespace DiscordCoreAPI {
         GuildMemberData member{};
         string channelId{ "" };
         string messageId{ "" };
-        EmojiData emoji{};
         string guildId{ "" };
         string userId{ "" };
+        EmojiData emoji{};
     };
 
     struct ReactionRemoveData {
         DiscordCoreClient* discordCoreClient{ nullptr };
         string channelId{ "" };
         string messageId{ "" };
-        EmojiData emoji{};
         string guildId{ "" };
         string userId{ "" };
+        EmojiData emoji{};
     };
 
     struct InteractionResponseData {
@@ -3345,9 +3347,9 @@ namespace DiscordCoreAPI {
     };
 
     struct InteractionPackageData {
+        string interactionToken{ "" };
         string applicationId{ "" };
         string interactionId{ "" };
-        string interactionToken{ "" };
     };
 
     struct MessagePackageData {
@@ -3372,8 +3374,8 @@ namespace DiscordCoreAPI {
 
     struct ApplicationCommandOptionChoiceData {
         string valueString{ "" };
-        int	valueInt{ 0 };
         string name{ "" };
+        int	valueInt{ 0 };
     };
 
     struct ApplicationCommandOptionData {
@@ -3395,33 +3397,33 @@ namespace DiscordCoreAPI {
     };
 
     struct UserCommandInteractionData {
+        ApplicationCommandType type{};
+        string interactionId{ "" };
         string applicationId{ "" };
-        string channelId{ "" };
-        string menuId{ "" };
-        string name{ "" };
         GuildMemberData members{};
         GuildMemberData member{};
-        UserData users{};
+        string channelId{ "" };
         string targetId{ "" };
-        ApplicationCommandType type{};
         string guildId{ "" };
+        string menuId{ "" };
         string token{ "" };
-        string interactionId{ "" };
+        string name{ "" };
+        UserData users{};
         int version{ 0 };
     };
 
     struct MessageCommandInteractionData {
-        string applicationId{ "" };
-        string channelId{ "" };
-        string menuId{ "" };
-        string name{ "" };
-        MessageData messages{};
-        string targetId{ "" };
-        GuildMemberData member{};
         ApplicationCommandType type{};
-        string guildId{ "" };
-        string token{ "" };
         string interactionId{ "" };
+        string applicationId{ "" };
+        GuildMemberData member{};
+        MessageData messages{};
+        string channelId{ "" };
+        string targetId{ "" };
+        string guildId{ "" };
+        string menuId{ "" };
+        string token{ "" };
+        string name{ "" };
         int version{ 0 };
     };
 
@@ -3438,7 +3440,8 @@ namespace DiscordCoreAPI {
         InputEventResponseType inputEventResponseType{};
         InputEventType eventType{};
 
-        InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
+        InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+            this->discordCoreClient = discordCoreClientNew;
             this->interactionData = interactionData;
             this->messageData = messageData;
             this->eventType = eventType;
@@ -3801,57 +3804,57 @@ namespace DiscordCoreAPI {
     };
 
     struct InviteData {
-        string channelId{ "" };
-        string guildId{ "" };
-        ChannelData channel{};
-        string code{ "" };
+        ApplicationData targetApplication{};
+        int approximatePresenceCount{ 0 };
+        StageInstanceData stageInstance{};
+        int approximateMemberCount{ 0 };
+        bool temporary{ false };
         string createdAt{ "" };
         string expiresAt{ "" };
-        GuildData guild{};
-        UserData inviter{};
-        int maxAge{ 0 };
-        int maxUses{ 0 };
-        int targetType{ 0 };
+        string channelId{ "" };
+        ChannelData channel{};
         UserData targetUser{};
-        int approximatePresenceCount{ 0 };
-        int approximateMemberCount{ 0 };
-        ApplicationData targetApplication{};
-        StageInstanceData stageInstance{};
-        bool temporary{ false };
+        string guildId{ "" };
+        int targetType{ 0 };
+        UserData inviter{};
+        GuildData guild{};
+        string code{ "" };
+        int maxUses{ 0 };
+        int maxAge{ 0 };
         int uses{ 0 };
     };
 
     struct TypingStartData {
+        GuildMemberData member{};
         string channelId{ "" };
         string guildId{ "" };
         string userId{ "" };
         int timestamp{ 0 };
-        GuildMemberData member{};
     };
 
     struct YouTubeFormat {
-        int itag{ 0 };
-        string mimeType{ "" };
-        string codecs{ "" };
-        int bitrate{ 0 };
-        int width{ 0 };
-        int height{ 0 };
-        string quality{ "" };
-        int fps{ 0 };
-        string audioQuality{ "" };
         string signatureCipher{ "" };
         string audioSampleRate{ "" };
-        int averageBitrate{ 0 };
         __int64 contentLength{ 0 };
+        string audioQuality{ "" };
         string downloadURL{ "" };
+        int averageBitrate{ 0 };
         string signature{ "" };
+        string mimeType{ "" };
+        string quality{ "" };
+        string codecs{ "" };
         string aitags{ "" };
+        int bitrate{ 0 };
+        int height{ 0 };
+        int width{ 0 };
+        int itag{ 0 };
+        int fps{ 0 };
     };
 
     struct BanData {
+        bool failedDueToPerms{ false };
         string reason{ "" };
         UserData user{};
-        bool failedDueToPerms{ false };
     };
 
     enum class FrameStatus {
@@ -3860,15 +3863,15 @@ namespace DiscordCoreAPI {
     };
 
     struct RawFrameData {
-        vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
         FrameStatus frameStatus{};
+        vector<uint8_t> data{};
     };
 
     struct EncodedFrameData {
-        vector<uint8_t> data{};
         int32_t sampleCount{ -1 };
         FrameStatus frameStatus{};
+        vector<uint8_t> data{};
     };
 
     enum class AudioFrameType {
@@ -3878,29 +3881,29 @@ namespace DiscordCoreAPI {
     };
 
     struct AudioFrameData {
-        AudioFrameType type{};
         EncodedFrameData encodedFrameData{};
         RawFrameData rawFrameData{};
         FrameStatus frameStatus{};
+        AudioFrameType type{};
     };
 
     struct SoundCloudSearchResult {
-        string songId{ "" };
         string thumbNailURL{ "" };
+        string description{ "" };
         string songTitle{ "" };
         string duration{ "" };
-        string description{ "" };
         string songURL{ "" };
+        string songId{ "" };
     };
 
     struct YouTubeSearchResult {
-        string videoId{ "" };
+        vector<YouTubeFormat> formats{};
         string thumbNailURL{ "" };
+        string description{ "" };
         string videoTitle{ "" };
         string duration{ "" };
-        string description{ "" };
         string videoURL{ "" };
-        vector<YouTubeFormat> formats{};
+        string videoId{ "" };        
     };
 
     struct YouTubeSong {
