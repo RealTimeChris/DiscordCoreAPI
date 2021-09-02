@@ -494,6 +494,11 @@ namespace DiscordCoreAPI {
 						}
 						messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 						Message message(messageData);
+						if (MessageCollector::messagesBufferMap.size() > 0) {
+							for (auto [key, value] : MessageCollector::messagesBufferMap) {
+								send(value, message);
+							}
+						}
 						OnMessageCreationData messageCreationData;
 						messageCreationData.message = message;
 						this->eventManager->onMessageCreationEvent(messageCreationData);

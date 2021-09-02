@@ -770,6 +770,13 @@ namespace  DiscordCoreInternal {
             this->schedulerGroup = nullptr;
         };
 
+        ~ThreadContext() {
+            if (this->schedulerGroup != nullptr) {
+                this->schedulerGroup->ptrScheduleGroup->Release();
+                this->schedulerGroup = nullptr;
+            }
+        }
+
         shared_ptr<ScheduleWrapper> scheduler{ nullptr };
         shared_ptr<ScheduleGroupWrapper> schedulerGroup{ nullptr };
         shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };

@@ -68,13 +68,16 @@ namespace DiscordCoreAPI {
 		vector<Message> messages;
 	};
 
-	class MessageCollector : agent {
+	class MessageCollector :DiscordCoreInternal::ThreadContext,  agent {
 	public:
 
+		friend class DiscordCoreClient;
+
 		MessageCollector(int quantityToCollect,  int msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) :
+			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
 			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->ptrScheduler) {
 			this->messagesBuffer = new unbounded_buffer<Message>();
-			MessageCollector::messagesBufferMap.insert(make_pair(userId, this->messagesBuffer));
+			MessageCollector::messagesBufferMap.insert_or_assign(userId, this->messagesBuffer);
 			this->quantityOfMessageToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
@@ -107,7 +110,6 @@ namespace DiscordCoreAPI {
 			while (this->elapsedTime < this->msToCollectFor) {
 				try {
 					Message message = receive(this->messagesBuffer, this->msToCollectFor - this->elapsedTime);
-
 					if (this->filteringFunction(message)) {
 						this->messageReturnData.messages.push_back(message);
 					}

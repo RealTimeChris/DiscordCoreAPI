@@ -231,16 +231,17 @@ namespace DiscordCoreAPI {
 		return decipheredFormat;
 	};
 
-	class YouTubeAPI{
+	class YouTubeAPI: DiscordCoreInternal::ThreadContext {
 	public:
 
 		friend class Guild;
 
-		YouTubeAPI(shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioBufferNew, string guildIdNew, map<string, shared_ptr<YouTubeAPI>>* youtubeAPIPointer){
+		YouTubeAPI(shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioBufferNew, string guildIdNew, map<string, shared_ptr<YouTubeAPI>>* youtubeAPIPointer): 
+		ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get())
+		{
 			this->sendAudioBuffer = sendAudioBufferNew;
 			this->youtubeAPIMap = youtubeAPIPointer;
 			this->guildId = guildIdNew;
-			YouTubeAPI::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
 		}
 
 		void setLoopAllStatus(bool enabled) {
@@ -390,7 +391,7 @@ namespace DiscordCoreAPI {
 			return &this->songQueue;
 		}
 
-		task<void> modifyQueue(int songOldPosition, int songNewPosition) {
+		void modifyQueue(int songOldPosition, int songNewPosition) {
 			shared_ptr<YouTubeAPI> youtubeAPI = this->youtubeAPIMap->at(this->guildId);
 			int currentSongCount = (int)youtubeAPI->songQueue.size();
 			for (int x = 0; x < currentSongCount; x += 1) {
@@ -401,6 +402,7 @@ namespace DiscordCoreAPI {
 				youtubeAPI->songQueue.at(songNewPosition) = tempSong;
 			}
 			this->youtubeAPIMap->insert_or_assign(this->guildId, youtubeAPI);
+			return;
 		}
 
 		YouTubeSong getCurrentSong() {
@@ -595,14 +597,9 @@ namespace DiscordCoreAPI {
 			return searchResults;
 		}
 
-		static void cleanup() {
-			YouTubeAPI::threadContext->releaseGroup();
-		}
-
 		~YouTubeAPI() {}
 
 	protected:
-		static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
 		const hstring baseSearchURL{ L"https://www.youtube.com/results?search_query=" };
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioBuffer{ nullptr };
 		unbounded_buffer<vector<uint8_t>>* currentDataSendBuffer{ nullptr };
@@ -625,7 +622,7 @@ namespace DiscordCoreAPI {
 
 		task<void> downloadAndStreamAudio(YouTubeSong song, int retryCount = 0) {
 			apartment_context mainThread;
-			co_await resume_foreground(*YouTubeAPI::threadContext->dispatcherQueue);
+			co_await resume_foreground(*this->dispatcherQueue);
 			try {
 				string downloadBaseURL;
 				if (song.formatDownloadURL.find("https://") != string::npos && song.formatDownloadURL.find("/videoplayback?") != string::npos) {
@@ -769,6 +766,5 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-	shared_ptr<DiscordCoreInternal::ThreadContext> YouTubeAPI::threadContext{ nullptr };
 };
 #endif

@@ -17,11 +17,13 @@
 
 namespace DiscordCoreAPI {
 
-	class VoiceConnection : public agent {
+	class VoiceConnection : DiscordCoreInternal::ThreadContext, public agent{
 	public:
 
-		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData>> bufferMessageBlockNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew)
-			: agent(*threadContextNew->scheduler->ptrScheduler) {
+		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData>> bufferMessageBlockNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) : 
+			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
+			agent(*threadContextNew->scheduler->ptrScheduler) 
+		{
 			if (voiceConnectionDataNew.channelId != "") {
 				if (sodium_init() == -1) {
 					cout << "LibSodium failed to initialize!" << endl << endl;
@@ -32,7 +34,6 @@ namespace DiscordCoreAPI {
 					cout << "Failed to create Opus encoder!" << endl << endl;
 				}
 				this->discordCoreClientBase = discordCoreClientBaseNew;
-				this->threadContext = threadContextNew;
 				this->voiceConnectionData = voiceConnectionDataNew;
 				this->audioDataBuffer = bufferMessageBlockNew;
 				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), this->voiceConnectionData, &this->readyBuffer);
@@ -165,9 +166,6 @@ namespace DiscordCoreAPI {
 
 					voiceConnection->doWeQuit = true;
 					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
-					if (voiceConnection->threadContext->schedulerGroup != nullptr) {
-						voiceConnection->threadContext->releaseGroup();
-					}
 					if (voiceConnection->encoder != nullptr) {
 						opus_encoder_destroy(voiceConnection->encoder);
 						voiceConnection->encoder = nullptr;
@@ -192,7 +190,6 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
-		shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		winrt::event<delegate<>> onSongCompletionEvent;
@@ -307,6 +304,11 @@ namespace DiscordCoreAPI {
 			if (this->voicechannelWebSocketAgent->voiceSocket != nullptr) {
 				this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
 			}
+			audioDataPacketNew.clear();
+			delete bufferToSendNew;
+			delete encryptionKeys;
+			delete audioDataPacket;			
+			bufferToSend.data.clear();
 			this->sequenceIndex += 1;
 			this->timestamp += (int)bufferToSend.sampleCount;
 		}
