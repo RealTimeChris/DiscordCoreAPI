@@ -95,8 +95,8 @@ namespace DiscordCoreAPI {
                     dataPackageNew.token = dataPackage.eventData.getInteractionToken();
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (ButtonManager::buttonInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        send(ButtonManager::buttonInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (Button::buttonInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
+                        send(Button::buttonInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::SELECT_MENU_INPUT) {
@@ -112,8 +112,8 @@ namespace DiscordCoreAPI {
                     dataPackageNew.values = dataPackage.eventData.getInteractionData().values;
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (SelectMenuManager::selectMenuInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        send(SelectMenuManager::selectMenuInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (SelectMenu::selectMenuInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
+                        send(SelectMenu::selectMenuInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::MESSAGE_COMMAND_INTERACTION) {

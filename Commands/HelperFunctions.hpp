@@ -595,7 +595,7 @@ namespace DiscordCoreAPI {
             }
 
             while (doWeQuit == false) {
-                ButtonManager button(event01);
+                Button button(event01);
 
                 vector<ButtonResponseData> buttonIntData = button.collectButtonData(false, waitForMaxMs);
                 if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "exit" || buttonIntData.at(0).buttonId == "") {

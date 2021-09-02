@@ -14,16 +14,17 @@ namespace DiscordCoreAPI {
 
     class DiscordCoreClientBase;
     class PermissionsConverter;
+    class ApplicationCommands;
     class DiscordCoreClient;
-    class SelectMenuManager;
-    class ButtonManager;
     class Interactions;
     class EventHandler;
     class GuildMembers;
     class InputEvents;
+    class SelectMenu;
     class Reactions;
     class Messages;
     class Channels;
+    class Button;
     class Guilds;
     class Roles;
     class Users;
@@ -198,6 +199,7 @@ namespace DiscordCoreAPI {
 
 namespace  DiscordCoreInternal {
 
+    class ApplicationCommandManager;
     class InteractionManagerAgent;
     class GuildMemberManagerAgent;
     class ReactionManagerAgent;

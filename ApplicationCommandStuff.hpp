@@ -11,16 +11,7 @@
 #include "../pch.h"
 #include "DiscordCoreClient02.hpp"
 
-namespace DiscordCoreInternal {
-
-    class ApplicationCommandManager;
-
-}
-
 namespace DiscordCoreAPI {
-
-    class ApplicationCommands;
-    class Interactions;
 
     struct EditApplicationCommandData {
         vector<DiscordCoreAPI::ApplicationCommandOptionData> options{};
@@ -30,11 +21,11 @@ namespace DiscordCoreAPI {
     };
 
     struct CreateApplicationCommandData {
-        ApplicationCommandType type{};
-        string name{ "" };
-        string description{ "" };
         vector<DiscordCoreAPI::ApplicationCommandOptionData> options{};
         bool defaultPermission{ true };
+        ApplicationCommandType type{};
+        string description{ "" };
+        string name{ "" };
     };
 
     struct GetGlobalApplicationCommandData {
@@ -56,12 +47,12 @@ namespace DiscordCoreAPI {
         ApplicationCommand() {};
 
         ApplicationCommand(ApplicationCommandData dataNew) {
-            this->applicationId = dataNew.applicationId;
             this->defaultPermission = dataNew.defaultPermission;
+            this->applicationId = dataNew.applicationId;
             this->description = dataNew.description;
-            this->id = dataNew.id;
-            this->name = dataNew.name;
             this->options = dataNew.options;
+            this->name = dataNew.name;
+            this->id = dataNew.id;
         }
     };
 }
@@ -75,9 +66,9 @@ namespace DiscordCoreInternal{
         friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
         friend class DiscordCoreAPI::ApplicationCommands;
         friend class DiscordCoreAPI::DiscordCoreClient;
-        friend class DiscordCoreAPI::SelectMenuManager;
-        friend class DiscordCoreAPI::ButtonManager;
         friend class DiscordCoreAPI::Interactions;
+        friend class DiscordCoreAPI::SelectMenu;
+        friend class DiscordCoreAPI::Button;
 
         ApplicationCommandManager(ApplicationCommandManager* pointer) {
             if (pointer != nullptr) {

@@ -73,8 +73,8 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->guildMembers->~GuildMemberManager();
 			DiscordCoreClient::thisPointer->roles->~RoleManager();
 			DiscordCoreClient::thisPointer->interactions->~InteractionManager();
-			SelectMenuManager::cleanup();
-			ButtonManager::cleanup();
+			SelectMenu::cleanup();
+			Button::cleanup();
 			DiscordCoreInternal::InteractionManagerAgent::cleanup();
 			DiscordCoreInternal::MessageManagerAgent::cleanup();
 			DiscordCoreInternal::GuildManagerAgent::cleanup();
@@ -153,8 +153,8 @@ namespace DiscordCoreAPI {
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.username, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->discordUser->data.userId);
-			ButtonManager::initialize(this->interactions);
-			SelectMenuManager::initialize(this->interactions);
+			Button::initialize(this->interactions);
+			SelectMenu::initialize(this->interactions);
 			InputEvents::initialize(make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this), DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
