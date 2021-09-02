@@ -105,13 +105,19 @@ namespace DiscordCoreAPI {
 		void run() {
 			this->startingTime = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
 			while (this->elapsedTime < this->msToCollectFor) {
-				Message message = receive(this->messagesBuffer, this->msToCollectFor = this->elapsedTime);
-				if (this->filteringFunction(message)) {
-					this->messageReturnData.messages.push_back(message);
+				try {
+					Message message = receive(this->messagesBuffer, this->msToCollectFor - this->elapsedTime);
+
+					if (this->filteringFunction(message)) {
+						this->messageReturnData.messages.push_back(message);
+					}
+					if (this->messageReturnData.messages.size() >= this->quantityOfMessageToCollect) {
+						break;
+					}
 				}
-				if (this->messageReturnData.messages.size() >= this->quantityOfMessageToCollect) {
-					break;
-				}
+				catch (exception&) {};
+				
+				
 				this->elapsedTime = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - this->startingTime;
 			}
 			done();
