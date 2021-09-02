@@ -14,6 +14,39 @@ namespace DiscordCoreAPI {
 
     class DiscordCoreClientBase;
     class DiscordCoreClient;
+    class SelectMenuManager;
+    class ButtonManager;
+    class Interactions;
+    class InputEvents;
+
+    class StopWatch {
+    public:
+
+        StopWatch(unsigned long long maxNumberOfMsNew) {
+            this->maxNumberOfMs = maxNumberOfMsNew;
+            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+        }
+
+        bool hasTimePassed() {
+            unsigned long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            unsigned long long elapsedTime = currentTime - this->startTime;
+            if (elapsedTime >= this->maxNumberOfMs) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        void resetTimer() {
+            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+        }
+
+    protected:
+
+        unsigned long long maxNumberOfMs{ 0 };
+        unsigned long long startTime{ 0 };
+    };
 
     void saveFile(hstring filePath, hstring fileName, IBuffer readBuffer) {
         auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
@@ -63,32 +96,6 @@ namespace DiscordCoreAPI {
         return returnString;
     }
 
-    class StopWatch {
-    public:
-        StopWatch(unsigned long long maxNumberOfMsNew) {
-            this->maxNumberOfMs = maxNumberOfMsNew;
-            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-        }
-
-        bool hasTimePassed() {
-            unsigned long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-            unsigned long long elapsedTime = currentTime - this->startTime;
-            if (elapsedTime >= this->maxNumberOfMs) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-
-        void resetTimer() {
-            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-        }
-    protected:
-        unsigned long long maxNumberOfMs{ 0 };
-        unsigned long long startTime{ 0 };
-    };
-
     long long convertTimestampToInteger(string timeStamp) {
         CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
             stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
@@ -133,7 +140,7 @@ namespace  DiscordCoreInternal {
     class InteractionManager;
     class GuildManagerAgent;
     class UserManagerAgent;
-	class ReactionManager;
+    class ReactionManager;
     class ChannelManager;
     class MessageManager;
     class ThreadManager;
@@ -141,53 +148,53 @@ namespace  DiscordCoreInternal {
     class UserManager;
 
     struct AllowedMentionsData {
+        bool repliedUser{ false };
         vector<string> parse{};
         vector<string> roles{};
         vector<string> users{};
-        bool repliedUser{ false };
     };
 
     struct MessageReferenceData {
+        bool failIfNotExists{ false };
         string messageId{ "" };
         string channelId{ "" };
         string guildId{ "" };
-        bool failIfNotExists{ false };
     };
 
     struct AttachmentData {
-        string id{ "" };
-        string filename{ "" };
         string contentType{ "" };
-        int size{ 0 };
-        string url{ "" };
+        string filename{ "" };
         string proxyUrl{ "" };
+        string url{ "" };
+        string id{ "" };
         int height{ 0 };
         int width{ 0 };
+        int size{ 0 };
     };
 
     struct EmbedFooterData {
+        string proxyIconUrl{ "" };
         string iconUrl{ "" };
         string text{ "" };
-        string proxyIconUrl{ "" };
     };
 
     struct EmbedImageData {
-        string url{ "" };
         string proxyUrl{ "" };
+        string url{ "" };
         int height{ 0 };
         int width{ 0 };
     };
 
     struct EmbedThumbnailData {
-        string url{ "" };
         string proxyUrl{ "" };
+        string url{ "" };
         int height{ 0 };
         int width{ 0 };
     };
 
     struct EmbedVideoData {
-        string url{ "" };
         string proxyUrl{ "" };
+        string url{ "" };
         int height{ 0 };
         int width{ 0 };
     };
@@ -198,76 +205,88 @@ namespace  DiscordCoreInternal {
     };
 
     struct EmbedAuthorData {
+        string proxyIconUrl{ "" };
+        string proxyUrl{ "" };
+        string iconUrl{ "" };
         string name{ "" };
         string url{ "" };
-        string iconUrl{ "" };
-        string proxyIconUrl{ "" };
     };
 
     struct EmbedFieldData {
-        string name{ "" };
-        string value{ "" };
+        string iconUrl{ "" };
         bool Inline{ false };
+        string value{ "" };
+        string name{ "" };
     };
 
     struct EmbedData {
-        EmbedData setTitle(string titleNew) {
-            this->title = titleNew;
-            return *this;
-        }
-        EmbedData setAuthor(string authorName, string authorAvatarURL = "") {
+
+        vector<EmbedFieldData> fields{};
+        EmbedThumbnailData thumbnail{};
+        EmbedProviderData provider{};
+        string hexColorValue{ "" };
+        string timestampRaw{ "" };
+        string description{ "" };
+        EmbedFooterData footer{};
+        EmbedAuthorData author{};
+        string timestamp{ "" };
+        EmbedImageData image{};
+        EmbedVideoData video{};
+        string title{ "" };
+        string type{ "" };
+        string url{ "" };
+
+        EmbedData* setAuthor(string authorName, string authorAvatarURL = "") {
             this->author.name = authorName;
             this->author.iconUrl = authorAvatarURL;
-            return *this;
+            return this;
         }
-        EmbedData setImage(string imageURL) {
-            this->image.url = imageURL;
-            return *this;
-        }
-        EmbedData setThumbnail(string thumbnailURL) {
-            this->thumbnail.url = thumbnailURL;
-            return *this;
-        }
-        EmbedData setColor(string hexColorValueNew) {
-            this->hexColorValue = hexColorValueNew;
-            return *this;
-        }
-        EmbedData setDescription(string descriptionNew) {
-            this->description = descriptionNew;
-            return *this;
-        }
-        EmbedData setFooter(string footerText, string footerIconURLText = "") {
+
+        EmbedData* setFooter(string footerText, string footerIconURLText = "") {
             this->footer.text = footerText;
             this->footer.iconUrl = footerIconURLText;
-            return *this;
+            return this;
         }
-        EmbedData setTimeStamp(string timeStamp) {
+
+        EmbedData* setTimeStamp(string timeStamp) {
             this->timestamp = timeStamp;
             this->timestampRaw = DiscordCoreAPI::convertTimeStampToNewOne(timeStamp);
-            return *this;
+            return this;
         }
-        EmbedData addField(string name, string value, bool Inline = true) {
+
+        EmbedData* addField(string name, string value, bool Inline = true) {
             EmbedFieldData embedFieldData;
             embedFieldData.name = name;
             embedFieldData.Inline = Inline;
             embedFieldData.value = value;
             this->fields.push_back(embedFieldData);
-            return *this;
+            return this;
         }
-        string title{ "" };
-        string type{ "" };
-        string description{ "" };
-        string url{ "" };
-        string timestamp{ "" };
-        string hexColorValue{ "" };
-        EmbedFooterData footer{};
-        EmbedImageData image{};
-        EmbedThumbnailData thumbnail{};
-        string timestampRaw{ "" };
-        EmbedVideoData video{};
-        EmbedProviderData provider{};
-        EmbedAuthorData author{};
-        vector<EmbedFieldData> fields{};
+
+        EmbedData* setDescription(string descriptionNew) {
+            this->description = descriptionNew;
+            return this;
+        }
+
+        EmbedData* setColor(string hexColorValueNew) {
+            this->hexColorValue = hexColorValueNew;
+            return this;
+        }
+
+        EmbedData* setThumbnail(string thumbnailURL) {
+            this->thumbnail.url = thumbnailURL;
+            return this;
+        }
+
+        EmbedData* setTitle(string titleNew) {
+            this->title = titleNew;
+            return this;
+        }
+
+        EmbedData* setImage(string imageURL) {
+            this->image.url = imageURL;
+            return this;
+        }
     };
 
     enum class Permissions :__int64 {
@@ -1079,34 +1098,68 @@ namespace  DiscordCoreInternal {
         DEFER_COMPONENT_RESPONSE = 9
     };
 
+    enum class ApplicationCommandType {
+        CHAT_INPUT = 1,
+        USER = 2,
+        MESSAGE = 3
+    };
+
+    struct UserCommandInteractionData {
+        ApplicationCommandType type{};
+        string applicationId{ "" };
+        string interactionId{ "" };
+        GuildMemberData members{};
+        GuildMemberData member{};
+        string channelId{ "" };
+        string targetId{ "" };
+        string guildId{ "" };
+        string menuId{ "" };
+        string token{ "" };
+        string name{ "" };
+        UserData users{};
+        int version{ 0 };
+    };
+
+    struct MessageCommandInteractionData {
+        ApplicationCommandType type{};
+        string interactionId{ "" };
+        string applicationId{ "" };
+        GuildMemberData member{};
+        string channelId{ "" };
+        MessageData messages{};
+        string targetId{ "" };
+        string guildId{ "" };
+        string menuId{ "" };
+        string token{ "" };
+        string name{ "" };
+        int version{ 0 };
+    };
+
     struct InputEventData {
+
+        friend struct RecurseThroughMessagePagesData;
+        friend struct OnInteractionCreationData;
+        friend struct BaseFunctionArguments;
+        friend class DiscordCoreClient;
+        friend struct CommandData;
+        friend class InputEvents;
+
+        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+        InputEventResponseType inputEventResponseType{};
+        InputEventType eventType{};
+
         InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
-            this->messageData = messageData;
             this->interactionData = interactionData;
+            this->messageData = messageData;
             this->eventType = eventType;
-            if (this->interactionData.user.id != "") {
-                this->messageData.author = this->interactionData.user;
-            }
-            else {
-                this->interactionData.user = this->messageData.author;
-            }
-            if (this->messageData.member.user.id == "") {
-                this->messageData.member = this->interactionData.member;
-            }
-            else {
-                this->interactionData.member = this->messageData.member;
-            }
             if (this->messageData.channelId == "") {
                 this->messageData.channelId = this->interactionData.channelId;
             }
             else {
                 this->interactionData.channelId = this->messageData.channelId;
             }
-            if (this->messageData.id == "") {
-                this->messageData.id = this->interactionData.message.id;
-            }
-            else {
-                this->interactionData.message.id = this->messageData.id;
+            if (this->interactionData.id == "") {
+                this->interactionData.id = this->messageData.interaction.id;
             }
             if (this->messageData.guildId == "") {
                 this->messageData.guildId = this->interactionData.guildId;
@@ -1114,8 +1167,23 @@ namespace  DiscordCoreInternal {
             else {
                 this->interactionData.guildId = this->messageData.guildId;
             }
-            if (this->interactionData.id == "") {
-                this->interactionData.id = this->messageData.interaction.id;
+            if (this->messageData.id == "") {
+                this->messageData.id = this->interactionData.message.id;
+            }
+            else {
+                this->interactionData.message.id = this->messageData.id;
+            }
+            if (this->messageData.member.user.id == "") {
+                this->messageData.member = this->interactionData.member;
+            }
+            else {
+                this->interactionData.member = this->messageData.member;
+            }
+            if (this->interactionData.user.id != "") {
+                this->messageData.author = this->interactionData.user;
+            }
+            else {
+                this->interactionData.user = this->messageData.author;
             }
             if (this->messageData.requesterId != "") {
                 this->requesterId = this->messageData.requesterId;
@@ -1124,31 +1192,43 @@ namespace  DiscordCoreInternal {
                 this->requesterId = this->interactionData.requesterId;
             }
         }
-        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-        InputEventType eventType{};
-        InputEventResponseType inputEventResponseType{};
-        InteractionData getInteractionData() {
-            return this->interactionData;
-        }
-        string getMessageContent() {
-            if (this->interactionData.message.content != "") {
-                return this->interactionData.message.content;
+
+        string getUserName() {
+            if (this->messageData.author.username == "" && this->interactionData.member.user.username != "") {
+                return this->interactionData.member.user.username;
+            }
+            else if (this->interactionData.member.user.username == "" && this->interactionData.user.username != "") {
+                return this->interactionData.user.username;
+            }
+            else if (this->messageData.author.username != "") {
+                return this->messageData.author.username;
+            }
+            else if (this->messageCommandInteractionData.member.user.username != "") {
+                return this->messageCommandInteractionData.member.user.username;
             }
             else {
-                return this->messageData.content;
+                return this->userCommandInteractionData.member.user.username;
             }
         }
-        vector<ActionRowData> getComponents() {
-            if (this->interactionData.message.components.size() > 0) {
-                if (this->interactionData.message.components.at(0).components.at(0).customId != "") {
-                    return this->interactionData.message.components;
-                }
+
+        string getAvatarURL() {
+            if (this->messageData.author.avatar == "" && this->interactionData.member.user.avatar != "") {
+                return this->interactionData.member.user.avatar;
+            }
+            else if (this->interactionData.member.user.avatar == "" && this->interactionData.user.avatar != "") {
+                return this->interactionData.user.avatar;
+            }
+            else if (this->messageData.author.avatar != "") {
+                return this->messageData.author.avatar;
+            }
+            else if (this->messageCommandInteractionData.member.user.avatar != "") {
+                return this->messageCommandInteractionData.member.user.avatar;
             }
             else {
-                return this->messageData.components;
+                return this->userCommandInteractionData.member.user.avatar;
             }
-            return vector<ActionRowData>();
         }
+
         vector<EmbedData> getEmbeds() {
             if (this->interactionData.message.embeds.size() > 0) {
                 if (this->interactionData.message.embeds.at(0).description != "") {
@@ -1165,55 +1245,115 @@ namespace  DiscordCoreInternal {
             }
             return vector<EmbedData>();
         }
-        string getApplicationId() {
-            if (this->interactionData.applicationId == "") {
-                return this->messageData.application.id;
+
+        vector<ActionRowData> getComponents() {
+            if (this->interactionData.message.components.size() > 0) {
+                if (this->interactionData.message.components.at(0).components.at(0).customId != "") {
+                    return this->interactionData.message.components;
+                }
             }
             else {
-                return this->interactionData.applicationId;
+                return this->messageData.components;
+            }
+            return vector<ActionRowData>();
+        }
+
+        string getAuthorId() {
+            if (this->messageData.author.id == "") {
+                return this->interactionData.user.id;
+            }
+            else if (this->messageData.author.id != "") {
+                return this->messageData.author.id;
+            }
+            else if (this->messageCommandInteractionData.member.user.id != "") {
+                return this->messageCommandInteractionData.member.user.id;
+            }
+            else {
+                return this->userCommandInteractionData.member.user.id;
             }
         }
-        string getInteractionToken() {
-            return this->interactionData.token;
-        }
+
         string getInteractionId() {
             if (this->interactionData.id == "") {
                 return this->messageData.interaction.id;
             }
-            else {
+            else if (this->interactionData.id != "") {
                 return this->interactionData.id;
             }
-        }
-        string getUserName() {
-            if (this->messageData.author.username == "" && this->interactionData.member.user.username != "") {
-                return this->interactionData.member.user.username;
-            }
-            else if (this->interactionData.member.user.username == "" && this->interactionData.user.username != "") {
-                return this->interactionData.user.username;
+            else if (this->messageCommandInteractionData.interactionId != "") {
+                return this->messageCommandInteractionData.interactionId;
             }
             else {
-                return this->messageData.author.username;
+                return this->userCommandInteractionData.interactionId;
             }
         }
-        string getAvatarURL() {
-            if (this->messageData.author.avatar == "" && this->interactionData.member.user.avatar != "") {
-                return this->interactionData.member.user.avatar;
+
+        string getApplicationId() {
+            if (this->interactionData.applicationId == "") {
+                return this->messageData.application.id;
             }
-            else if (this->interactionData.member.user.avatar == "" && this->interactionData.user.avatar != "") {
-                return this->interactionData.user.avatar;
+            else if (this->interactionData.applicationId != "") {
+                return this->interactionData.applicationId;
+            }
+            else if (this->messageCommandInteractionData.applicationId != "") {
+                return this->messageCommandInteractionData.applicationId;
             }
             else {
-                return this->messageData.author.avatar;
+                return this->userCommandInteractionData.applicationId;
             }
         }
+
         string getChannelId() {
             if (this->interactionData.channelId == "") {
                 return this->messageData.channelId;
             }
-            else {
+            else if (this->interactionData.channelId != "") {
                 return this->interactionData.channelId;
             }
+            else if (this->messageCommandInteractionData.channelId != "") {
+                return this->messageCommandInteractionData.channelId;
+            }
+            else {
+                return this->userCommandInteractionData.channelId;
+            }
         }
+
+        string getInteractionToken() {
+            if (this->interactionData.token != "") {
+                return this->interactionData.token;
+            }
+            else if (this->messageCommandInteractionData.token != "") {
+                return this->messageCommandInteractionData.token;
+            }
+            else {
+                return this->userCommandInteractionData.token;
+            }
+        }
+
+        string getGuildId() {
+            if (this->messageData.guildId == "") {
+                return this->interactionData.guildId;
+            }
+            else if (this->messageData.guildId != "") {
+                return this->messageData.guildId;
+            }
+            else if (this->userCommandInteractionData.guildId != "") {
+                return this->userCommandInteractionData.guildId;
+            }
+            else {
+                return this->messageCommandInteractionData.guildId;
+            }
+        }
+
+        string getMessageContent() {
+            if (this->interactionData.message.content != "") {
+                return this->interactionData.message.content;
+            }
+            else {
+                return this->messageData.content;
+            }
+        }
+
         string getMessageId() {
             if (this->messageData.id == "") {
                 return this->interactionData.message.id;
@@ -1222,35 +1362,27 @@ namespace  DiscordCoreInternal {
                 return this->messageData.id;
             }
         }
-        string getAuthorId() {
-            if (this->messageData.author.id == "") {
-                return this->interactionData.user.id;
-            }
-            else {
-                return this->messageData.author.id;
-            }
+
+        InteractionData getInteractionData() {
+            return this->interactionData;
         }
-        string getGuildId() {
-            if (this->messageData.guildId == "") {
-                return this->interactionData.guildId;
-            }
-            else {
-                return this->messageData.guildId;
-            }
-        }
+
         MessageData getMessageData() {
             return this->messageData;
         }
+
         string getRequesterId() {
             return this->requesterId;
         }
+
     protected:
-        friend class CommandController;
-        friend class InputEvents;
-        friend class DiscordCoreClient;
+        MessageCommandInteractionData messageCommandInteractionData{};
+        UserCommandInteractionData userCommandInteractionData{};
         InteractionData interactionData{};
-        MessageData messageData{ "" };
+        MessageData messageData{};
         string requesterId{ "" };
+
+        InputEventData() {}
     };
 
     struct GetApplicationData {
@@ -1634,12 +1766,6 @@ namespace  DiscordCoreInternal {
         vector<ApplicationCommandOptionData> options{};
     };
 
-    enum class ApplicationCommandType {
-        CHAT_INPUT = 1,
-        USER = 2,
-        MESSAGE = 3
-    };
-
     struct ApplicationCommandData {
         string id{ "" };
         ApplicationCommandType type{};
@@ -1780,8 +1906,6 @@ namespace  DiscordCoreInternal {
 };
 
 namespace DiscordCoreAPI {
-
-    class DiscordCoreClient;
 
     template <typename... T, typename Function>
     void executeFunctionAfterTimePeriod(Function function, unsigned int timeDelayInMs, bool isRepeating, T... args) {
@@ -2177,61 +2301,59 @@ namespace DiscordCoreAPI {
 
     struct EmbedData {
 
-        EmbedData() {}
+        vector<EmbedFieldData> fields{};
+        EmbedThumbnailData thumbnail{};
+        EmbedProviderData provider{};
+        string hexColorValue{ "" };
+        string timestampRaw{ "" };
+        string description{ "" };
+        EmbedFooterData footer{};
+        EmbedAuthorData author{};
+        string timestamp{ "" };
+        EmbedImageData image{};
+        EmbedVideoData video{};
+        string title{ "" };
+        string type{ "" };
+        string url{ "" };
 
         operator DiscordCoreInternal::EmbedData() {
             DiscordCoreInternal::EmbedData newData;
-            newData.author = this->author;
+            newData.hexColorValue = this->hexColorValue;
             newData.description = this->description;
+            newData.timestamp = this->timestampRaw;
             for (auto value : this->fields) {
                 newData.fields.push_back(value);
             }
-            newData.footer = this->footer;
-            newData.hexColorValue = this->hexColorValue;
-            newData.image = this->image;
-            newData.provider = this->provider;
             newData.thumbnail = this->thumbnail;
-            newData.timestamp = this->timestampRaw;
+            newData.provider = this->provider;
+            newData.footer = this->footer;
+            newData.author = this->author;
+            newData.image = this->image;
             newData.title = this->title;
+            newData.video = this->video;
             newData.type = this->type;
             newData.url = this->url;
-            newData.video = this->video;
             return newData;
-        };
-        EmbedData* setTitle(string titleNew) {
-            this->title = titleNew;
-            return this;
         }
+
         EmbedData* setAuthor(string authorName, string authorAvatarURL = "") {
             this->author.name = authorName;
             this->author.iconUrl = authorAvatarURL;
             return this;
         }
-        EmbedData* setImage(string imageURL) {
-            this->image.url = imageURL;
-            return this;
-        }
-        EmbedData* setThumbnail(string thumbnailURL) {
-            this->thumbnail.url = thumbnailURL;
-            return this;
-        }
-        EmbedData* setColor(string hexColorValueNew) {
-            this->hexColorValue = hexColorValueNew;
-            return this;
-        }
-        EmbedData* setDescription(string descriptionNew) {
-            this->description = descriptionNew;
-            return this;
-        }
+
         EmbedData* setFooter(string footerText, string footerIconURLText = "") {
             this->footer.text = footerText;
             this->footer.iconUrl = footerIconURLText;
             return this;
         }
+
         EmbedData* setTimeStamp(string timeStamp) {
             this->timestamp = timeStamp;
+            this->timestampRaw = DiscordCoreAPI::convertTimeStampToNewOne(timeStamp);
             return this;
         }
+
         EmbedData* addField(string name, string value, bool Inline = true) {
             EmbedFieldData embedFieldData;
             embedFieldData.name = name;
@@ -2240,20 +2362,31 @@ namespace DiscordCoreAPI {
             this->fields.push_back(embedFieldData);
             return this;
         }
-        string title{ "" };
-        string type{ "" };
-        string description{ "" };
-        string url{ "" };
-        string timestamp{ "" };
-        string hexColorValue{ "" };
-        EmbedFooterData footer{};
-        EmbedImageData image{};
-        EmbedThumbnailData thumbnail{};
-        string timestampRaw{ "" };
-        EmbedVideoData video{};
-        EmbedProviderData provider{};
-        EmbedAuthorData author{};
-        vector<EmbedFieldData> fields{};
+
+        EmbedData* setDescription(string descriptionNew) {
+            this->description = descriptionNew;
+            return this;
+        }
+
+        EmbedData* setColor(string hexColorValueNew) {
+            this->hexColorValue = hexColorValueNew;
+            return this;
+        }
+
+        EmbedData* setThumbnail(string thumbnailURL) {
+            this->thumbnail.url = thumbnailURL;
+            return this;
+        }
+
+        EmbedData* setTitle(string titleNew) {
+            this->title = titleNew;
+            return this;
+        }
+
+        EmbedData* setImage(string imageURL) {
+            this->image.url = imageURL;
+            return this;
+        }
     };
 
     struct ActionRowData {
@@ -2283,21 +2416,24 @@ namespace DiscordCoreAPI {
     };
 
     struct AllowedMentionsData {
+
         operator DiscordCoreInternal::AllowedMentionsData() {
             DiscordCoreInternal::AllowedMentionsData newData;
-            newData.parse = this->parse;
             newData.repliedUser = this->repliedUser;
+            newData.parse = this->parse;
             newData.roles = this->roles;
             newData.users = this->users;
             return newData;
         }
+
+        bool repliedUser{ false };
         vector<string> parse{};
         vector<string> roles{};
         vector<string> users{};
-        bool repliedUser{ false };
     };
 
     struct InteractionApplicationCommandCallbackData {
+
         operator DiscordCoreInternal::InteractionApplicationCommandCallbackData() {
             DiscordCoreInternal::InteractionApplicationCommandCallbackData newData;
             newData.allowedMentions = this->allowedMentions;
@@ -2312,6 +2448,7 @@ namespace DiscordCoreAPI {
             newData.tts = this->tts;
             return newData;
         }
+
         AllowedMentionsData allowedMentions{};
         vector<ActionRowData> components{};
         vector<EmbedData> embeds{};
@@ -3291,6 +3428,7 @@ namespace DiscordCoreAPI {
     };
 
     struct InputEventData {
+
         friend struct RecurseThroughMessagePagesData;
         friend struct OnInteractionCreationData;
         friend struct BaseFunctionArguments;
@@ -3298,33 +3436,22 @@ namespace DiscordCoreAPI {
         friend struct CommandData;
         friend class InputEvents;
 
+        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+        InputEventResponseType inputEventResponseType{};
+        InputEventType eventType{};
+
         InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
-            this->messageData = messageData;
             this->interactionData = interactionData;
+            this->messageData = messageData;
             this->eventType = eventType;
-            if (this->interactionData.user.id != "") {
-                this->messageData.author = this->interactionData.user;
-            }
-            else {
-                this->interactionData.user = this->messageData.author;
-            }
-            if (this->messageData.member.user.id == "") {
-                this->messageData.member = this->interactionData.member;
-            }
-            else {
-                this->interactionData.member = this->messageData.member;
-            }
             if (this->messageData.channelId == "") {
                 this->messageData.channelId = this->interactionData.channelId;
             }
             else {
                 this->interactionData.channelId = this->messageData.channelId;
             }
-            if (this->messageData.id == "") {
-                this->messageData.id = this->interactionData.message.id;
-            }
-            else {
-                this->interactionData.message.id = this->messageData.id;
+            if (this->interactionData.id == "") {
+                this->interactionData.id = this->messageData.interaction.id;
             }
             if (this->messageData.guildId == "") {
                 this->messageData.guildId = this->interactionData.guildId;
@@ -3332,8 +3459,23 @@ namespace DiscordCoreAPI {
             else {
                 this->interactionData.guildId = this->messageData.guildId;
             }
-            if (this->interactionData.id == "") {
-                this->interactionData.id = this->messageData.interaction.id;
+            if (this->messageData.id == "") {
+                this->messageData.id = this->interactionData.message.id;
+            }
+            else {
+                this->interactionData.message.id = this->messageData.id;
+            }
+            if (this->messageData.member.user.id == "") {
+                this->messageData.member = this->interactionData.member;
+            }
+            else {
+                this->interactionData.member = this->messageData.member;
+            }
+            if (this->interactionData.user.id != "") {
+                this->messageData.author = this->interactionData.user;
+            }
+            else {
+                this->interactionData.user = this->messageData.author;
             }
             if (this->messageData.requesterId != "") {
                 this->requesterId = this->messageData.requesterId;
@@ -3342,86 +3484,7 @@ namespace DiscordCoreAPI {
                 this->requesterId = this->interactionData.requesterId;
             }
         }
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
-        InputEventType eventType{};
-        InputEventResponseType inputEventResponseType{};
-        InteractionData getInteractionData() {
-            return this->interactionData;
-        }
-        string getMessageContent() {
-            if (this->interactionData.message.content != "") {
-                return this->interactionData.message.content;
-            }
-            else {
-                return this->messageData.content;
-            }
-        }
-        vector<ActionRowData> getComponents() {
-            if (this->interactionData.message.components.size() > 0) {
-                if (this->interactionData.message.components.at(0).components.at(0).customId != "") {
-                    return this->interactionData.message.components;
-                }
-            }
-            else {
-                return this->messageData.components;
-            }
-            return vector<ActionRowData>();
-        }
-        vector<EmbedData> getEmbeds() {
-            if (this->interactionData.message.embeds.size() > 0) {
-                if (this->interactionData.message.embeds.at(0).description != "") {
-                    return this->interactionData.message.embeds;
-                }
-                else if (this->interactionData.message.embeds.at(0).fields.size() > 0) {
-                    if (this->interactionData.message.embeds.at(0).fields.at(0).value != "") {
-                        return this->interactionData.message.embeds;
-                    }
-                }
-            }
-            else {
-                return this->messageData.embeds;
-            }
-            return vector<EmbedData>();
-        }
-        string getApplicationId() {
-            if (this->interactionData.applicationId == "") {
-                return this->messageData.application.id;
-            }
-            else if (this->interactionData.applicationId != "") {
-                return this->interactionData.applicationId;
-            }
-            else if (this->messageCommandInteractionData.applicationId != "") {
-                return this->messageCommandInteractionData.applicationId;
-            }
-            else {
-                return this->userCommandInteractionData.applicationId;
-            }
-        }
-        string getInteractionToken() {
-            if (this->interactionData.token != "") {
-                return this->interactionData.token;
-            }
-            else if (this->messageCommandInteractionData.token != "") {
-                return this->messageCommandInteractionData.token;
-            }
-            else {
-                return this->userCommandInteractionData.token;
-            }
-        }
-        string getInteractionId() {
-            if (this->interactionData.id == "") {
-                return this->messageData.interaction.id;
-            }
-            else if (this->interactionData.id != "") {
-                return this->interactionData.id;
-            }
-            else if (this->messageCommandInteractionData.interactionId != "") {
-                return this->messageCommandInteractionData.interactionId;
-            }
-            else {
-                return this->userCommandInteractionData.interactionId;
-            }
-        }
+
         string getUserName() {
             if (this->messageData.author.username == "" && this->interactionData.member.user.username != "") {
                 return this->interactionData.member.user.username;
@@ -3439,6 +3502,7 @@ namespace DiscordCoreAPI {
                 return this->userCommandInteractionData.member.user.username;
             }
         }
+
         string getAvatarURL() {
             if (this->messageData.author.avatar == "" && this->interactionData.member.user.avatar != "") {
                 return this->interactionData.member.user.avatar;
@@ -3456,28 +3520,36 @@ namespace DiscordCoreAPI {
                 return this->userCommandInteractionData.member.user.avatar;
             }
         }
-        string getChannelId() {
-            if (this->interactionData.channelId == "") {
-                return this->messageData.channelId;
-            }
-            else if (this->interactionData.channelId != "") {
-                return this->interactionData.channelId;
-            }
-            else if (this->messageCommandInteractionData.channelId != "") {
-                return this->messageCommandInteractionData.channelId;
-            }
-            else {
-                return this->userCommandInteractionData.channelId;
-            }
-        }
-        string getMessageId() {
-            if (this->messageData.id == "") {
-                return this->interactionData.message.id;
+
+        vector<EmbedData> getEmbeds() {
+            if (this->interactionData.message.embeds.size() > 0) {
+                if (this->interactionData.message.embeds.at(0).description != "") {
+                    return this->interactionData.message.embeds;
+                }
+                else if (this->interactionData.message.embeds.at(0).fields.size() > 0) {
+                    if (this->interactionData.message.embeds.at(0).fields.at(0).value != "") {
+                        return this->interactionData.message.embeds;
+                    }
+                }
             }
             else {
-                return this->messageData.id;
+                return this->messageData.embeds;
             }
+            return vector<EmbedData>();
         }
+
+        vector<ActionRowData> getComponents() {
+            if (this->interactionData.message.components.size() > 0) {
+                if (this->interactionData.message.components.at(0).components.at(0).customId != "") {
+                    return this->interactionData.message.components;
+                }
+            }
+            else {
+                return this->messageData.components;
+            }
+            return vector<ActionRowData>();
+        }
+
         string getAuthorId() {
             if (this->messageData.author.id == "") {
                 return this->interactionData.user.id;
@@ -3492,6 +3564,64 @@ namespace DiscordCoreAPI {
                 return this->userCommandInteractionData.member.user.id;
             }
         }
+
+        string getInteractionId() {
+            if (this->interactionData.id == "") {
+                return this->messageData.interaction.id;
+            }
+            else if (this->interactionData.id != "") {
+                return this->interactionData.id;
+            }
+            else if (this->messageCommandInteractionData.interactionId != "") {
+                return this->messageCommandInteractionData.interactionId;
+            }
+            else {
+                return this->userCommandInteractionData.interactionId;
+            }
+        }
+
+        string getApplicationId() {
+            if (this->interactionData.applicationId == "") {
+                return this->messageData.application.id;
+            }
+            else if (this->interactionData.applicationId != "") {
+                return this->interactionData.applicationId;
+            }
+            else if (this->messageCommandInteractionData.applicationId != "") {
+                return this->messageCommandInteractionData.applicationId;
+            }
+            else {
+                return this->userCommandInteractionData.applicationId;
+            }
+        }
+
+        string getChannelId() {
+            if (this->interactionData.channelId == "") {
+                return this->messageData.channelId;
+            }
+            else if (this->interactionData.channelId != "") {
+                return this->interactionData.channelId;
+            }
+            else if (this->messageCommandInteractionData.channelId != "") {
+                return this->messageCommandInteractionData.channelId;
+            }
+            else {
+                return this->userCommandInteractionData.channelId;
+            }
+        }
+
+        string getInteractionToken() {
+            if (this->interactionData.token != "") {
+                return this->interactionData.token;
+            }
+            else if (this->messageCommandInteractionData.token != "") {
+                return this->messageCommandInteractionData.token;
+            }
+            else {
+                return this->userCommandInteractionData.token;
+            }
+        }
+
         string getGuildId() {
             if (this->messageData.guildId == "") {
                 return this->interactionData.guildId;
@@ -3506,16 +3636,41 @@ namespace DiscordCoreAPI {
                 return this->messageCommandInteractionData.guildId;
             }
         }
+
+        string getMessageContent() {
+            if (this->interactionData.message.content != "") {
+                return this->interactionData.message.content;
+            }
+            else {
+                return this->messageData.content;
+            }
+        }
+
+        string getMessageId() {
+            if (this->messageData.id == "") {
+                return this->interactionData.message.id;
+            }
+            else {
+                return this->messageData.id;
+            }
+        }
+
+        InteractionData getInteractionData() {
+            return this->interactionData;
+        }
+
         MessageData getMessageData() {
             return this->messageData;
         }
+
         string getRequesterId() {
             return this->requesterId;
         }
+
     protected:
-        InteractionData interactionData{};
-        UserCommandInteractionData userCommandInteractionData{};
         MessageCommandInteractionData messageCommandInteractionData{};
+        UserCommandInteractionData userCommandInteractionData{};
+        InteractionData interactionData{};
         MessageData messageData{};
         string requesterId{ "" };
 
@@ -3523,41 +3678,41 @@ namespace DiscordCoreAPI {
     };
 
     struct WebhookData {
-        string id{ "" };
-        unsigned int type{ 0 };
-        string guildId{ "" };
-        string channelId{ "" };
-        UserData user{};
-        string name{ "" };
-        string avatar{ "" };
-        string token{ "" };
+        ChannelData sourceChannel{};
         string applicationId{ "" };
         GuildData sourceGuild{};
-        ChannelData sourceChannel{};
+        unsigned int type{ 0 };
+        string channelId{ "" };
+        string guildId{ "" };
+        string avatar{ "" };
+        string token{ "" };
+        string name{ "" };
         string url{ "" };
+        string id{ "" };
+        UserData user{};
     };
 
     struct AccountData {
-        string id{ "" };
         string name{ "" };
+        string id{ "" };
     };
 
     struct IntegrationData {
-        string id{ "" };
-        string name{ "" };
-        string type{ "" };
+        unsigned int expireGracePeriod{ 0 };
+        unsigned int subscriberCount{ 0 };
+        unsigned int expireBehavior{ 0 };
+        ApplicationData application{};
+        bool enableEmoticons{ true };
         bool enabled{ false };
         bool syncing{ false };
-        string roleId{ "" };
-        bool enableEmoticons{ true };
-        unsigned int expireBehavior{ 0 };
-        unsigned int expireGracePeriod{ 0 };
-        UserData user{};
         AccountData account{};
         string syncedAt{ "" };
-        unsigned int subscriberCount{ 0 };
         bool revoked{ false };
-        ApplicationData application{};
+        string roleId{ "" };
+        string name{ "" };
+        string type{ "" };
+        string id{ "" };
+        UserData user{};
     };
 
     enum class AuditLogEvent {
@@ -3603,10 +3758,10 @@ namespace DiscordCoreAPI {
         string membersRemoved{ "" };
         string channelId{ "" };
         string messageId{ "" };
-        string count{ "" };
-        string id{ "" };
-        string type{ "" };
         string roleName{ "" };
+        string count{ "" };
+        string type{ "" };
+        string id{ "" };
     };
 
     struct AuditLogChangeData {
@@ -3616,13 +3771,13 @@ namespace DiscordCoreAPI {
     };
 
     struct AuditLogEntryData {
-        string targetId{ "" };
         vector<AuditLogChangeData> changes{};
-        string userId{ "" };
-        string id{ "" };
-        AuditLogEvent actionType{};
         AuditLogEntryInfoData options{};
+        AuditLogEvent actionType{};
+        string targetId{ "" };
+        string userId{ "" };
         string reason{ "" };
+        string id{ "" };
     };
 
     struct AuditLogData {
@@ -3640,11 +3795,11 @@ namespace DiscordCoreAPI {
                 }
             }
         }
-        vector<WebhookData> webhooks{};
-        vector<UserData> users{};
         vector<AuditLogEntryData> auditLogEntries{};
         vector<IntegrationData> integrations{};
+        vector<WebhookData> webhooks{};
         vector<ChannelData> threads{};
+        vector<UserData> users{};
     };
 
     struct InviteData {

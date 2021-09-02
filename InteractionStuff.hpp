@@ -15,11 +15,6 @@
 
 namespace DiscordCoreAPI {
 
-    class SelectMenuManager;
-    class ButtonManager;
-    class Interactions;
-    class InputEvents;
-
     struct ButtonInteractionData {
 
         friend class ButtonManager;
@@ -93,11 +88,11 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
         
         DeferComponentResponseData(InputEventData dataPackage) {
-            this->type = InteractionCallbackType::DeferredUpdateMessage;
+            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+            this->type = InteractionCallbackType::DeferredUpdateMessage;
         }
     protected:
         InteractionPackageData interactionPackage{};
@@ -133,9 +128,9 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
 
         CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.interactionToken = dataPackage.token;
+            this->interactionPackage.interactionId = dataPackage.id;            
             if (dataPackage.member.user.id != "") {
                 this->requesterId = dataPackage.message.member.user.id;
             }
@@ -143,10 +138,11 @@ namespace DiscordCoreAPI {
                 this->requesterId = dataPackage.user.id;
             }
         }
+
         CreateInteractionResponseData(ButtonInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.interactionToken = dataPackage.token;
+            this->interactionPackage.interactionId = dataPackage.id;            
             if (dataPackage.member.user.id != "") {
                 this->requesterId = dataPackage.message.member.user.id;
             }
@@ -154,13 +150,15 @@ namespace DiscordCoreAPI {
                 this->requesterId = dataPackage.user.id;
             }
         }
+
         CreateInteractionResponseData(InputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
         }
+
         void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -169,14 +167,14 @@ namespace DiscordCoreAPI {
             if (this->data.data.components.size() < 5) {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
+                    component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
                     component.label = buttonLabel;
                     component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
                     component.url = url;
-                    component.type = ComponentType::Button;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -185,6 +183,7 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+
         void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -194,12 +193,12 @@ namespace DiscordCoreAPI {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData componentData;
                     componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
                     componentData.placeholder = placeholder;
                     componentData.maxValues = maxValues;
                     componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -209,23 +208,29 @@ namespace DiscordCoreAPI {
 
             }
         }
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
-        void addAllowedMentions(AllowedMentionsData dataPackage){
+
+        void addAllowedMentions(AllowedMentionsData dataPackage) {
             this->data.data.allowedMentions = dataPackage;
         }
+
         void addComponentRow(ActionRowData dataPackage) {
             this->data.data.components.push_back(dataPackage);
         }
-        void setTTSStatus(bool enabledTTs) {
-            this->data.data.tts = enabledTTs;
-        }
+
         void setResponseType(InteractionCallbackType type) {
             this->data.type = type;
+        }
+
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
+        void setTTSStatus(bool enabledTTs) {
+            this->data.data.tts = enabledTTs;
         }
         
     protected:
@@ -244,9 +249,9 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
 
         CreateEphemeralInteractionResponseData(SelectMenuInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.interactionToken = dataPackage.token;
+            this->interactionPackage.interactionId = dataPackage.id;            
             if (dataPackage.member.user.id != "") {
                 this->requesterId = dataPackage.message.member.user.id;
             }
@@ -254,10 +259,11 @@ namespace DiscordCoreAPI {
                 this->requesterId = dataPackage.user.id;
             }
         }
+
         CreateEphemeralInteractionResponseData(ButtonInteractionData dataPackage) {
-            this->interactionPackage.interactionId = dataPackage.id;
-            this->interactionPackage.interactionToken = dataPackage.token;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.interactionToken = dataPackage.token;
+            this->interactionPackage.interactionId = dataPackage.id;
             if (dataPackage.member.user.id != "") {
                 this->requesterId = dataPackage.message.member.user.id;
             }
@@ -265,13 +271,15 @@ namespace DiscordCoreAPI {
                 this->requesterId = dataPackage.user.id;
             }
         }
+
         CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
         }
+
         void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -280,14 +288,14 @@ namespace DiscordCoreAPI {
             if (this->data.data.components.size() < 5) {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
+                    component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
                     component.label = buttonLabel;
                     component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
                     component.url = url;
-                    component.type = ComponentType::Button;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -296,6 +304,7 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+
         void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -305,12 +314,12 @@ namespace DiscordCoreAPI {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData componentData;
                     componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
                     componentData.placeholder = placeholder;
                     componentData.maxValues = maxValues;
                     componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -320,25 +329,30 @@ namespace DiscordCoreAPI {
 
             }
         }
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
+
         void addAllowedMentions(AllowedMentionsData dataPackage) {
             this->data.data.allowedMentions = dataPackage;
         }
+
         void addComponentRow(ActionRowData dataPackage) {
             this->data.data.components.push_back(dataPackage);
         }
-        void setTTSStatus(bool enabledTTs) {
-            this->data.data.tts = enabledTTs;
-        }
+
         void setResponseType(InteractionCallbackType type) {
             this->data.type = type;
         }
 
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
+        void setTTSStatus(bool enabledTTs) {
+            this->data.data.tts = enabledTTs;
+        }
     protected:
         InteractionPackageData interactionPackage{};
         InteractionResponseData data{};
@@ -359,6 +373,7 @@ namespace DiscordCoreAPI {
             this->data.type = InteractionCallbackType::UpdateMessage;
             this->requesterId = dataPackage.getRequesterId();
         }
+
         void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -367,14 +382,14 @@ namespace DiscordCoreAPI {
             if (this->data.data.components.size() < 5) {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
+                    component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
                     component.label = buttonLabel;
                     component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
                     component.url = url;
-                    component.type = ComponentType::Button;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -383,6 +398,7 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+
         void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -392,12 +408,12 @@ namespace DiscordCoreAPI {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData componentData;
                     componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
                     componentData.placeholder = placeholder;
                     componentData.maxValues = maxValues;
                     componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -407,18 +423,27 @@ namespace DiscordCoreAPI {
 
             }
         }
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
+
         void addAllowedMentions(AllowedMentionsData dataPackage) {
             this->data.data.allowedMentions = dataPackage;
         }
+
         void addComponentRow(ActionRowData dataPackage) {
             this->data.data.components.push_back(dataPackage);
         }
+
+        void setResponseType(InteractionCallbackType type) {
+            this->data.type = type;
+        }
+
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
         void setTTSStatus(bool enabledTTs) {
             this->data.data.tts = enabledTTs;
         }
@@ -436,9 +461,9 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
 
         DeleteInteractionResponseData(InputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
         }
         
     protected:
@@ -453,11 +478,12 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
 
         CreateFollowUpMessageData(InputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->requesterId = dataPackage.getRequesterId();
         }
+
         void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -466,14 +492,14 @@ namespace DiscordCoreAPI {
             if (this->data.data.components.size() < 5) {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
+                    component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
                     component.label = buttonLabel;
                     component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
                     component.url = url;
-                    component.type = ComponentType::Button;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -482,6 +508,7 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+
         void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -491,41 +518,52 @@ namespace DiscordCoreAPI {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData componentData;
                     componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
                     componentData.placeholder = placeholder;
                     componentData.maxValues = maxValues;
                     componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
                     ActionRowData actionRowData;
                     this->data.data.components.push_back(actionRowData);
                 }
+
             }
         }
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
+
         void addAllowedMentions(AllowedMentionsData dataPackage) {
             this->data.data.allowedMentions = dataPackage;
         }
+
         void addComponentRow(ActionRowData dataPackage) {
             this->data.data.components.push_back(dataPackage);
         }
+
+        void setResponseType(InteractionCallbackType type) {
+            this->data.type = type;
+        }
+
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
         void setTTSStatus(bool enabledTTs) {
             this->data.data.tts = enabledTTs;
         }
 
     protected:
-        CreateFollowUpMessageData() {};
         InteractionPackageData interactionPackage{};
         InteractionResponseData data{};
         string requesterId{ "" };
+
+        CreateFollowUpMessageData() {};
     };
 
     struct CreateEphemeralFollowUpMessageData {
@@ -541,6 +579,7 @@ namespace DiscordCoreAPI {
             this->requesterId = dataPackage.getRequesterId();
             this->data.data.flags = 64;
         }
+
         void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -549,14 +588,14 @@ namespace DiscordCoreAPI {
             if (this->data.data.components.size() < 5) {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
+                    component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
                     component.label = buttonLabel;
                     component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
                     component.url = url;
-                    component.type = ComponentType::Button;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -565,6 +604,7 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+
         void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -574,32 +614,42 @@ namespace DiscordCoreAPI {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData componentData;
                     componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
                     componentData.placeholder = placeholder;
                     componentData.maxValues = maxValues;
                     componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
                     ActionRowData actionRowData;
                     this->data.data.components.push_back(actionRowData);
                 }
+
             }
         }
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
+
         void addAllowedMentions(AllowedMentionsData dataPackage) {
             this->data.data.allowedMentions = dataPackage;
         }
+
         void addComponentRow(ActionRowData dataPackage) {
             this->data.data.components.push_back(dataPackage);
         }
+
+        void setResponseType(InteractionCallbackType type) {
+            this->data.type = type;
+        }
+
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
         void setTTSStatus(bool enabledTTs) {
             this->data.data.tts = enabledTTs;
         }
@@ -623,6 +673,7 @@ namespace DiscordCoreAPI {
             this->messagePackage.messageId = dataPackage.getMessageId();
             this->requesterId = dataPackage.getRequesterId();
         }
+
         void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -631,14 +682,14 @@ namespace DiscordCoreAPI {
             if (this->data.data.components.size() < 5) {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData component;
-                    component.customId = customId;
-                    component.disabled = disabled;
+                    component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
-                    component.emoji.id = emojiId;
                     component.label = buttonLabel;
                     component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
                     component.url = url;
-                    component.type = ComponentType::Button;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
@@ -647,6 +698,7 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+
         void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -656,32 +708,42 @@ namespace DiscordCoreAPI {
                 if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
                     ComponentData componentData;
                     componentData.type = ComponentType::SelectMenu;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
                     componentData.placeholder = placeholder;
                     componentData.maxValues = maxValues;
                     componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
                     this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
                 }
                 else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
                     ActionRowData actionRowData;
                     this->data.data.components.push_back(actionRowData);
                 }
+
             }
         }
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
+
         void addAllowedMentions(AllowedMentionsData dataPackage) {
             this->data.data.allowedMentions = dataPackage;
         }
+
         void addComponentRow(ActionRowData dataPackage) {
             this->data.data.components.push_back(dataPackage);
         }
+
+        void setResponseType(InteractionCallbackType type) {
+            this->data.type = type;
+        }
+
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
         void setTTSStatus(bool enabledTTs) {
             this->data.data.tts = enabledTTs;
         }
@@ -750,10 +812,6 @@ namespace DiscordCoreInternal {
 
         static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
             InteractionManagerAgent::threadContext = threadContextNew;
-        }
-
-        static void cleanup() {
-            InteractionManagerAgent::threadContext->releaseGroup();
         }
 
         void getError(string stackTrace) {
@@ -967,6 +1025,10 @@ namespace DiscordCoreInternal {
             else {
                 deleteObjectData(dataPackage);
             }
+        }
+
+        static void cleanup() {
+            InteractionManagerAgent::threadContext->releaseGroup();
         }
 
     protected:
