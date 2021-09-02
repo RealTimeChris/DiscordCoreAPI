@@ -473,82 +473,82 @@ namespace  DiscordCoreInternal {
     };
 
     struct UserData {
-        string username{ "" };
-        string id{ "" };
         string discriminator{ "" };
-        string avatar{ "" };
-        bool bot{ false };
-        bool system{ false };
         bool mfaEnabled{ false };
-        string locale{ "" };
         bool verified{ false };
-        string email{ "" };
-        int flags{ 0 };
+        string createdAt{ "" };
+        string username{ "" };
+        bool system{ false };
         int premiumType{ 0 };
         int publicFlags{ 0 };
-        string createdAt{ "" };
+        string avatar{ "" };
+        string locale{ "" };
+        string email{ "" };
+        bool bot{ false };
+        string id{ "" };
+        int flags{ 0 };
     };
 
     struct RoleTagsData {
-        string botId{ "" };
-        string integrationId{ "" };
         string premiumSubscriber{ "" };
+        string integrationId{ "" };
+        string botId{ "" };
     };
 
     struct RoleData {
-        string id{ "" };
-        string name{ "" };
-        int color{ 0 };
-        bool hoist{ false };
-        int position{ 0 };
-        string permissions;
-        bool managed{ false };
         bool mentionable{ false };
+        bool managed{ false };
+        bool hoist{ false };
         RoleTagsData tags{};
+        string permissions;
+        string name{ "" };
+        int position{ 0 };
+        string id{ "" };
+        int color{ 0 };
     };
 
     struct GuildMemberData {
-        string guildId{ "" };
-        UserData user{};
-        string nick{ "" };
-        vector<string> roles{};
-        string joinedAt{ "" };
         string premiumSince{ "" };
-        bool deaf{ false };
-        bool mute{ false };
-        bool pending{ false };
         string permissions{ "" };
         string userMention{ "" };
+        vector<string> roles{};
+        bool pending{ false };
+        string joinedAt{ "" };
+        string guildId{ "" };
+        bool deaf{ false };
+        bool mute{ false };
+        string nick{ "" };
+        UserData user{};
     };
 
     struct WelcomeScreenChannelData {
-        string channelId{ "" };
         string description{ "" };
-        string emojiId{ "" };
+        string channelId{ "" };
         string emojiName{ "" };
+        string emojiId{ "" };
     };
 
     struct WelcomeScreenData {
-        string description{};
         vector<WelcomeScreenChannelData> welcomeChannels{};
+        string description{};
     };
 
     struct PartyData {
-        string id{ "" };
         vector<int> size{ 0, 0 };
+        string id{ "" };
     };
 
     struct AssetsData {
         string largeImage{ "" };
-        string largeText{ "" };
         string smallImage{ "" };
+        string largeText{ "" };
         string smallText{ "" };
     };
 
     struct SecretsData {
-        string join{ "" };
         string spectate{ "" };
         string match{ "" };
+        string join{ "" };
     };
 
     struct TimestampData {
@@ -562,43 +562,43 @@ namespace  DiscordCoreInternal {
     };
 
     struct EmojiData {
-        string id{ "" };
-        string name{ "" };
-        vector<RoleData> roles{};
-        UserData user{};
         bool requireColons{ false };
-        bool managed{ false };
-        bool animated{ false };
+        vector<RoleData> roles{};
         bool available{ false };
+        bool animated{ false };
+        bool managed{ false };
+        string name{ "" };
+        UserData user{};
+        string id{ "" };
     };
 
     struct ReactionData {
-        int count{ 0 };
-        bool me{ false };
-        EmojiData emoji{};
-        string userId{ "" };
+        GuildMemberData member{};
         string channelId{ "" };
         string messageId{ "" };
         string guildId{ "" };
-        GuildMemberData member{};
+        string userId{ "" };
+        EmojiData emoji{};
+        bool me{ false };
+        int count{ 0 };
     };
 
     struct ActivityData {
-        int createdAt = 0;
         TimestampData timestamps{};
         string applicationId{ "" };
+        bool instance{ false };
+        SecretsData secrets{};
         string details{ "" };
+        ButtonData buttons{};
+        AssetsData assets{};
         string state{ "" };
+        int createdAt = 0;
         EmojiData emoji{};
         PartyData party{};
-        AssetsData assets{};
-        SecretsData secrets{};
-        bool instance{ false };
-        int flags{ 0 };
         string name{ "" };
-        int type{ 0 };
         string url{ "" };
-        ButtonData buttons{};
+        int flags{ 0 };
+        int type{ 0 };
     };
 
     struct ClientStatusData {
@@ -608,18 +608,18 @@ namespace  DiscordCoreInternal {
     };
 
     struct UpdatePresenceData {
-        __int64 since{ 0 };
         vector<ActivityData> activities{};
         string status{ "" };
+        __int64 since{ 0 };
         bool afk{ false };
     };
 
     struct PresenceUpdateData {
-        UserData user{};
-        string guildId{ "" };
-        string status{ "" };
         vector<ActivityData> activities{};
         ClientStatusData clientStatus{};
+        string guildId{ "" };
+        string status{ "" };
+        UserData user{};
     };
 
     enum class EditChannelPermissionOverwritesType {
@@ -628,116 +628,131 @@ namespace  DiscordCoreInternal {
     };
 
     struct OverWriteData {
-        string id{ "" };
         EditChannelPermissionOverwritesType type{};
+        string channelId{ "" };
         string allow{ "" };
         string deny{ "" };
-        string channelId{ "" };
+        string id{ "" };
     };
 
     struct ThreadMetadataData {
-        bool archived{ false };
-        string archiverId{ "" };
-        int autoArchiveDuration{ 0 };
         string archiveTimestamp{ "" };
+        int autoArchiveDuration{ 0 };
+        string archiverId{ "" };
+        bool archived{ false };
         bool locked{ false };
     };
 
     struct ThreadMemberData {
-        string id{ "" };
-        string userId{ "" };
         string joinTimestamp{ "" };
+        string userId{ "" };
+        string id{ "" };
         int flags{ 0 };
     };
 
     struct ChannelData {
-        string id{ "" };
-        ChannelType type{};
-        string guildId{ "" };
-        int position{ -1 };
         map<string, OverWriteData> permissionOverwrites{};
-        string name{ "" };
+        ThreadMetadataData threadMetadata{};
+        vector<UserData> recipients{};
+        string lastPinTimestamp{ "" };
+        string lastMessageId{ "" };
+        int rateLimitPerUser{ -1 };
+        string applicationId{ "" };
+        int videoQualityMode{ -1 };
+        ThreadMemberData member{};
+        string rtcRegion{ "" };
+        string parentId{ "" };
+        string guildId{ "" };
+        string ownerId{ "" };
+        int userLimit{ -1 };
         string topic{ "" };
         bool nsfw{ false };
-        string lastMessageId{ "" };
+        ChannelType type{};
+        int position{ -1 };
+        string name{ "" };
         int bitrate{ -1 };
-        int userLimit{ -1 };
-        int rateLimitPerUser{ -1 };
-        vector<UserData> recipients{};
         string icon{ "" };
-        string ownerId{ "" };
-        string applicationId{ "" };
-        string parentId{ "" };
-        string lastPinTimestamp{ "" };
-        string rtcRegion{ "" };
-        int videoQualityMode{ -1 };
-        ThreadMetadataData threadMetadata{};
-        ThreadMemberData member{};
+        string id{ "" };
     };
 
     struct VoiceStateData {
-        string guildId{ "" };
-        string channelId{ "" };
-        string userId{ "" };
+        string requestToSpeakTimestamp{ "" };
         GuildMemberData guildMember{};
+        bool selfStream{ false };
+        string channelId{ "" };
         string sessionId{ "" };
-        bool deaf{ false };
-        bool mute{ false };
         bool selfDeaf{ false };
         bool selfMute{ false };
-        bool selfStream{ false };
         bool selfVideo{ false };
         bool suppress{ false };
-        string requestToSpeakTimestamp{ "" };
+        string guildId{ "" };
+        string userId{ "" };
+        bool deaf{ false };
+        bool mute{ false };
+    };
+
+    struct StageInstanceData {
+        bool discoverableDisabled{ false };
+        string channelId{ "" };
+        int privacyLevel{ 0 };
+        string guildId{ "" };
+        string topic{ "" };
+        string id{ "" };
     };
 
     struct GuildData {
+        shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+        DefaultMessageNotificationLevel defaultMessageNotifications{};        
+        ExplicitContentFilterLevel explicitContentFilter{};
+        vector<StageInstanceData> stageInstances{};
+        vector<PresenceUpdateData> presences{};
+        VerificationLevel verificationLevel{};
+        vector<VoiceStateData> voiceStates{};
+        string publicUpdatesChannelID{ "" };
+        vector<GuildMemberData> members{};
+        WelcomeScreenData welcomeScreen{};
+        int premiumSubscriptionCount{ 0 };
+        int approximatePresenceCount{ 0 };
+        int approximateMemberCount{ 0 };
+        vector<ChannelData> channels{};
+        vector<ChannelData> threads{};
+        int maxVideoChannelUsers{ 0 };
+        string discoverySplash{ "" };
+        string preferredLocale{ "" };
+        string widgetChannelID{ "" };
+        string systemChannelID{ "" };
+        bool widgetEnabled{ false };
+        int systemChannelFlags{ 0 };
+        string vanityURLCode{ "" };
+        string ruleChannelID{ "" };
+        string applicationID{ "" };
+        vector<EmojiData> emoji{};
+        string description{ "" };
+        string afkChannelID{ "" };
+        vector<string> features{};
+        bool unavailable{ false };
+        PremiumTier premiumTier{};
+        string permissions{ "" };
+        vector<RoleData> roles{};
+        string createdAt{ "" };
+        string iconHash{ "" };
+        int maxPresences{ 0 };
+        string joinedAt{ "" };
+        string ownerID{ "" };
+        int memberCount{ 0 };
+        string region{ "" };
+        bool owner{ false };
+        int afkTimeOut{ 0 };
+        MFALevel mfaLevel{};
+        bool large{ false };
+        int maxMembers{ 0 };
+        string splash{ "" };
+        string banner{ "" };
+        int nsfwLevel{ 0 };
         string icon{ "" };
         string name{ "" };
         string id{ "" };
-        string iconHash{ "" };
-        string splash{ "" };
-        string discoverySplash{ "" };
-        string preferredLocale{ "" };
-        string publicUpdatesChannelID{ "" };
-        string vanityURLCode{ "" };
-        string description{ "" };
-        string banner{ "" };
-        string ruleChannelID{ "" };
-        string applicationID{ "" };
-        string joinedAt{ "" };
-        string widgetChannelID{ "" };
-        string systemChannelID{ "" };
-        string region{ "" };
-        string afkChannelID{ "" };
-        string ownerID{ "" };
-        vector<string> features{};
-        string permissions{ "" };
-        bool owner{ false };
-        int afkTimeOut{ 0 };
-        bool widgetEnabled{ false };
-        VerificationLevel verificationLevel{};
-        DefaultMessageNotificationLevel defaultMessageNotifications{};
-        ExplicitContentFilterLevel explicitContentFilter{};
-        vector<EmojiData> emoji{};
-        map<string, RoleData> roles{};
-        int systemChannelFlags{ 0 };
-        MFALevel mfaLevel{};
-        bool large{ false };
-        bool unavailable{ false };
-        int memberCount{ 0 };
-        vector<VoiceStateData> voiceStates{};
-        vector<PresenceUpdateData> presences{};
-        int maxPresences{ 0 };
-        int maxMembers{ 0 };
-        int premiumSubscriptionCount{ 0 };
-        PremiumTier premiumTier{};
-        int maxVideoChannelUsers{ 0 };
-        int approximateMemberCount{ 0 };
-        int approximatePresenceCount{ 0 };
-        WelcomeScreenData welcomeScreen{};
-        vector<GuildMemberData> members{};
-        vector<ChannelData> channels{};
     };
 
     struct ScheduleGroupWrapper {
@@ -756,12 +771,13 @@ namespace  DiscordCoreInternal {
     };
 
     struct ThreadContext {
+
         ThreadContext() {};
 
         ThreadContext(ThreadContext* threadContext) {
-            this->scheduler = threadContext->scheduler;
             this->dispatcherQueue = threadContext->dispatcherQueue;
             this->schedulerGroup = threadContext->schedulerGroup;
+            this->scheduler = threadContext->scheduler;
         }
 
         void releaseGroup() {
@@ -778,90 +794,90 @@ namespace  DiscordCoreInternal {
             }
         }
 
-        shared_ptr<ScheduleWrapper> scheduler{ nullptr };
         shared_ptr<ScheduleGroupWrapper> schedulerGroup{ nullptr };
         shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
+        shared_ptr<ScheduleWrapper> scheduler{ nullptr };        
     };
 
     struct HttpAgentResources {
-        string baseURL{ "" };
         hstring userAgent{ L"" };
+        string baseURL{ "" };       
     };
 
     struct DeleteInteractionResponseData {
         HttpAgentResources agentResources{};
-        string applicationId{ "" };
-        string interactionToken{ "" };
         unsigned int timeDelayInMs{ 0 };
+        string interactionToken{ "" };
+        string applicationId{ "" };        
     };
 
     struct DeleteFollowUpMessageData {
         HttpAgentResources agentResources{};
-        string applicationId{ "" };
-        string interactionToken{ "" };
-        string messageId{ "" };
         unsigned int timeDelayInMs{ 0 };
+        string interactionToken{ "" };
+        string applicationId{ "" };
+        string messageId{ "" };
     };
 
     struct ChannelMentionData {
-        string id{ "" };
         string guildId{ "" };
-        int type{ -1 };
         string name{ "" };
+        string id{ "" };
+        int type{ -1 };
     };
 
     struct MessageActivityData {
-        int type{ -1 };
         string partyId{ "" };
+        int type{ -1 };
     };
 
     struct TeamMembersObjectData {
-        int membershipState{ -1 };
         vector<string> permissions{};
+        int membershipState{ -1 };
         string teamId{ "" };
         UserData user{};
     };
 
     struct TeamObjectData {
-        string icon{ "" };
-        string id{ "" };
         vector<TeamMembersObjectData> members{};
         string ownerUserId{ "" };
+        string icon{ "" };
+        string id{ "" };
     };
 
     struct ApplicationData {
-        string id{ "" };
-        string name{ "" };
-        string icon{ "" };
-        string description{ "" };
-        vector<string> rpcOrigins{};
-        bool botPublic{ false };
         bool botRequireCodeGrant{ false };
         string termsOfServiceUrl{ "" };
         string privacyPolicyUrl{ "" };
-        UserData owner{};
-        string  summary{ "" };
+        vector<string> rpcOrigins{};
+        string primarySkuId{ "" };
+        string description{ "" };
+        bool botPublic{ false };
+        string coverImage{ "" };
         string verifyKey{ "" };
+        string  summary{ "" };
         TeamObjectData team{};
         string guildId{ "" };
-        string primarySkuId{ "" };
         string slug{ "" };
-        string coverImage{ "" };
+        string name{ "" };
+        string icon{ "" };
+        UserData owner{};
+        string id{ "" };
         int flags{ 0 };
     };
 
     struct MessageStickerData {
-        string id{ "" };
-        string packId{ "" };
-        string name{ "" };
         string description{ "" };
-        string tags{ "" };
-        string asset{ "" };
-        int formatType{ 0 };
         bool available{ false };
         string guildId{ "" };
-        UserData user{};
+        string packId{ "" };
+        int formatType{ 0 };
         int sortValue{ 0 };
+        string asset{ "" };
+        string name{ "" };
+        string tags{ "" };
+        string id{ "" };
+        UserData user{};
     };
 
     enum class ComponentType {
@@ -879,25 +895,25 @@ namespace  DiscordCoreInternal {
     };
 
     struct SelectOptionData {
+        string description{ "" };
+        bool _default{ false };
         string label{ "" };
         string value{ "" };
-        string description{ "" };
         EmojiData emoji{};
-        bool _default{ false };
     };
 
     struct ComponentData {
+        vector<SelectOptionData> options{};
+        string placeholder{ "" };
+        bool disabled{ false };
+        string customId{ "" };
         ComponentType type{};
         ButtonStyle style{};
         string label{ "" };
-        EmojiData emoji{};
-        string customId{ "" };
-        string url{ "" };
-        string placeholder{ "" };
-        bool disabled{ false };
-        vector<SelectOptionData> options{};
         int maxValues{ 0 };
         int minValues{ 0 };
+        EmojiData emoji{};
+        string url{ "" };
     };
 
     struct ActionRowData {
@@ -905,12 +921,12 @@ namespace  DiscordCoreInternal {
     };
 
     struct InteractionApplicationCommandCallbackData {
-        bool tts{ false };
-        string content{ "" };
-        vector<EmbedData> embeds{};
         AllowedMentionsData allowedMentions{};
-        int flags{ 0 };
         vector<ActionRowData> components{};
+        vector<EmbedData> embeds{};
+        string content{ "" };
+        bool tts{ false };
+        int flags{ 0 };
     };
 
     enum class MessageType {
@@ -939,11 +955,11 @@ namespace  DiscordCoreInternal {
     };
 
     struct ReactionAddEventData {
-        string userId{ "" };
+        GuildMemberData member{};
         string channelId{ "" };
         string messageId{ "" };
         string guildId{ "" };
-        GuildMemberData member{};
+        string userId{ "" };
         EmojiData emoji{};
     };
 
@@ -1021,9 +1037,9 @@ namespace  DiscordCoreInternal {
     };
 
     struct MessageStickerItemData {
-        string id{ "" };
-        string name{ "" };
         MessageStickerItemType formatType{};
+        string name{ "" };
+        string id{ "" };
     };
 
     enum class InteractionType {
@@ -1033,44 +1049,44 @@ namespace  DiscordCoreInternal {
     };
 
     struct MessageInteractionData {
-        string id{ "" };
         InteractionType type{};
         string name{ "" };
         UserData user{};
+        string id{ "" };
     };
 
     struct MessageDataOld {
-        string id{ "" };
-        string channelId{ "" };
-        string guildId{ "" };
-        UserData author{};
-        GuildMemberData member{};
-        string content{ "" };
-        string timestamp{ "" };
-        string timestampRaw{ "" };
-        string editedTimestamp{ "" };
-        bool tts{ false };
-        bool mentionEveryone{ false };
-        vector<UserData> mentions{};
-        vector<string> mentionRoles{};
+        vector<MessageStickerItemData> stickerItems{};
         vector<ChannelMentionData> mentionChannels{};
-        vector<AttachmentData> attachments{};
-        vector<EmbedData> embeds{};
-        vector<ReactionData> reactions{};
-        string nonce{ "" };
-        bool pinned{ false };
-        string webhookId{ "" };
-        MessageType type{};
-        MessageActivityData activity{};
-        ApplicationData application{};
-        string applicationId{ "" };
         MessageReferenceData messageReference{};
-        int flags{ 0 };
         vector<MessageStickerData> stickers{};
         MessageInteractionData interaction{};
+        vector<AttachmentData> attachments{};
         vector<ActionRowData> components{};
+        vector<ReactionData> reactions{};
+        MessageActivityData activity{};
+        bool mentionEveryone{ false };
+        vector<string> mentionRoles{};
+        ApplicationData application{};
+        string editedTimestamp{ "" };
+        vector<UserData> mentions{};
+        vector<EmbedData> embeds{};
+        string applicationId{ "" };
+        string timestampRaw{ "" };
+        GuildMemberData member{};
+        string webhookId{ "" };
+        string channelId{ "" };
+        string timestamp{ "" };
         ChannelData thread{};
-        vector<MessageStickerItemData> stickerItems{};
+        bool pinned{ false };
+        string guildId{ "" };
+        string content{ "" };
+        MessageType type{};
+        string nonce{ "" };
+        UserData author{};
+        bool tts{ false };
+        string id{ "" };
+        int flags{ 0 };
     };
 
     struct MessageData : MessageDataOld {
@@ -1079,10 +1095,10 @@ namespace  DiscordCoreInternal {
     };
 
     struct ApplicationCommandInteractionDataResolved {
-        map<string, UserData> users{};
         map<string, GuildMemberData> members{};
-        map<string, RoleData> roles{};
         map<string, ChannelData> channels{};
+        map<string, UserData> users{};       
+        map<string, RoleData> roles{};        
     };
 
     enum class ApplicationCommandOptionType {
@@ -1099,21 +1115,21 @@ namespace  DiscordCoreInternal {
     };
 
     struct ApplicationCommandInteractionDataOption {
-        string name{ "" };
-        ApplicationCommandOptionType type{};
-        bool valueBool{ false };
-        string valueString{ "" };
-        int valueInt{ -1 };
         vector<ApplicationCommandInteractionDataOption> options{};
+        ApplicationCommandOptionType type{};
+        string valueString{ "" };
+        bool valueBool{ false };
+        int valueInt{ false };
+        string name{ "" };
     };
 
     struct ApplicationCommandInteractionData {
+        vector<ApplicationCommandInteractionDataOption> options{};
+        ApplicationCommandInteractionDataResolved resolved{};
+        int componentType{ -1 };
+        string customId{ "" };
         string name{ "" };
         string id{ "" };
-        ApplicationCommandInteractionDataResolved resolved{};
-        vector<ApplicationCommandInteractionDataOption> options{};
-        string customId{ "" };
-        int componentType{ -1 };
     };
 
     enum class ApplicationCommandPermissionType {
@@ -1122,35 +1138,35 @@ namespace  DiscordCoreInternal {
     };
 
     struct ApplicationCommandPermissionData {
-        string id{ "" };
         ApplicationCommandPermissionType type;
         bool permission{ false };
+        string id{ "" };
     };
 
     struct GuildApplicationCommandPermissionData {
-        string id{ "" };
+        vector<ApplicationCommandPermissionData> permissions{};
         string applicationId{ "" };
         string guildId{ "" };
-        vector<ApplicationCommandPermissionData> permissions{};
+        string id{ "" };
     };
 
     struct InteractionData {
-        string id{ "" };
-        string applicationId{ "" };
-        InteractionType type{};
         ApplicationCommandInteractionData data{};
-        json dataRaw{};
-        string guildId{ "" };
-        string channelId{ "" };
-        GuildMemberData member{};
         ComponentType componentType{};
-        UserData user{};
-        string token{ "" };
-        int version{ -1 };
-        MessageData message{};
-        string customId{ "" };
+        string applicationId{ "" };
+        GuildMemberData member{};
         string requesterId{ "" };
         vector<string> values{};
+        InteractionType type{};
+        string channelId{ "" };
+        MessageData message{};
+        string customId{ "" };
+        string guildId{ "" };
+        string token{ "" };
+        int version{ -1 };
+        string id{ "" };
+        UserData user{};
+        json dataRaw{};
     };
 
     enum class InputEventType {
@@ -1471,42 +1487,42 @@ namespace  DiscordCoreInternal {
 
     struct PatchInteractionResponseData {
         HttpAgentResources agentResources{};
-        string applicationId{ "" };
+        InteractionResponseData data{};
         string interactionToken{ "" };
-        InteractionResponseData data;
+        string applicationId{ "" };
     };
 
     struct PostInteractionResponseData {
-        HttpAgentResources agentResources{};
-        string interactionId{ "" };
-        string interactionToken{ "" };
         InteractionApplicationCommandCallbackData data{};
+        HttpAgentResources agentResources{};
         InteractionCallbackType type{};
+        string interactionToken{ "" };
+        string interactionId{ "" };
     };
 
     struct PostFollowUpMessageData {
-        HttpAgentResources agentResources{};
-        string applicationId{ "" };
-        string interactionToken{ "" };
-        bool tts{ false };
-        string content{ "" };
-        vector<EmbedData> embeds{};
         AllowedMentionsData allowedMentions{};
-        int flags{ 0 };
+        HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
+        string interactionToken{ "" };
+        string applicationId{ "" };
+        vector<EmbedData> embeds{};
+        string content{ "" };
+        bool tts{ false };
+        int flags{ 0 };
     };
 
     struct GetInteractionResponseData {
         HttpAgentResources agentResources{};
-        string applicationId{ "" };
         string interactionToken{ "" };
+        string applicationId{ "" };
     };
 
     struct PostDeferredInteractionResponseData {
-        InteractionCallbackType type{};
         HttpAgentResources agentResources{};
-        string interactionId{ "" };
+        InteractionCallbackType type{};
         string interactionToken{ "" };
+        string interactionId{ "" };
         int flags{ 0 };
     };
 
@@ -1518,17 +1534,17 @@ namespace  DiscordCoreInternal {
 
     struct GetMessagesData {
         HttpAgentResources agentResources{};
-        string channelId{ "" };
-        unsigned int limit{ 0 };
         string beforeThisId{ "" };
-        string afterThisId{ "" };
         string aroundThisId{ "" };
+        string afterThisId{ "" };
+        unsigned int limit{ 0 };
+        string channelId{ "" };
     };
 
     struct DeleteMessagesBulkData {
         HttpAgentResources agentResources{};
-        string channelId{ "" };
         vector<string> messageIds{};
+        string channelId{ "" };
         string content{ "" };
     };
 
@@ -1541,11 +1557,11 @@ namespace  DiscordCoreInternal {
 
     struct RateLimitData {
         HttpWorkloadType workloadType{};
+        float nextExecutionTime{ 0.0f };
+        float timeStartedAt{ 0.0f };
         int getsRemaining{ 1 };
         float msRemain{ 0.0f };
-        float timeStartedAt{ 0.0f };
         string bucket{ "" };
-        float nextExecutionTime{ 0.0f };
     };
 
     struct CollectGuildData {
@@ -1574,18 +1590,18 @@ namespace  DiscordCoreInternal {
 
     struct DeleteReactionDataAll {
         HttpAgentResources agentResources{};
+        ReactionDeletionType deletionType{};
+        string encodedEmoji{ "" };
         string channelId{ "" };
         string messageId{ "" };
-        string encodedEmoji{ "" };
         string userId{ "" };
-        ReactionDeletionType deletionType{};
     };
 
     struct GetReactionData {
         string channelId{ "" };
         string messageId{ "" };
-        string userId{ "" };
         string emojiName{ "" };
+        string userId{ "" };
     };
 
     struct CollectChannelData {
@@ -1599,12 +1615,12 @@ namespace  DiscordCoreInternal {
     };
 
     struct PutPermissionOverwritesData {
+        EditChannelPermissionOverwritesType type{};
         HttpAgentResources agentResources{};
         string roleOrUserId{ "" };
+        string channelId{ "" };
         string allow{ "" };
         string deny{ "" };
-        EditChannelPermissionOverwritesType type{};
-        string channelId{ "" };
     };
 
     struct DeleteChannelPermissionOverwritesData {
@@ -1620,9 +1636,9 @@ namespace  DiscordCoreInternal {
 
     struct GetMessageData {
         HttpAgentResources agentResources{};
+        string requesterId{ "" };
         string channelId{ "" };
         string messageId{ "" };
-        string requesterId{ "" };
     };
 
     struct PutPinMessageData {
@@ -1638,8 +1654,8 @@ namespace  DiscordCoreInternal {
 
     struct CollectUserData {
         HttpAgentResources agentResources{};
-        string userId{ "" };
         GetUserDataType userType{};
+        string userId{ "" };        
     };
 
     struct LeaveGuildData {
@@ -1649,8 +1665,8 @@ namespace  DiscordCoreInternal {
 
     struct GetUserData {
         HttpAgentResources agentResources{};
-        string userId{ "" };
         GetUserDataType userType{};
+        string userId{ "" };        
     };
 
     struct GetPinnedMessagesData {
@@ -1659,31 +1675,31 @@ namespace  DiscordCoreInternal {
     };
 
     struct PostMessageData {
+        MessageReferenceData messageReference{};
+        AllowedMentionsData allowedMentions{};
         HttpAgentResources agentResources{};
+        vector<ActionRowData> components{};
+        vector<EmbedData> embeds{};
         string requesterId{ "" };
         string channelId{ "" };
         string content{ "" };
         bool tts{ false };
-        vector<EmbedData> embeds{};
-        AllowedMentionsData allowedMentions{};
-        MessageReferenceData messageReference{};
-        vector<ActionRowData> components{};
         int nonce{ 0 };
     };
 
     struct PatchMessageData {
-        HttpAgentResources agentResources{};
-        string content{ "" };
-        string channelId{ "" };
-        string messageId{ "" };
-        string requesterId{ "" };
-        vector<EmbedData> embeds{};
-        int flags{ 0 };
-        vector<AttachmentData> attachments{};
-        AllowedMentionsData allowedMentions{};
-        MessageData originalMessageData{};
-        vector<ActionRowData> components{};
         MessageReferenceData messageReference{};
+        AllowedMentionsData allowedMentions{};
+        vector<AttachmentData> attachments{};
+        HttpAgentResources agentResources{};
+        vector<ActionRowData> components{};
+        MessageData originalMessageData{};
+        vector<EmbedData> embeds{};
+        string requesterId{ "" };
+        string messageId{ "" };
+        string channelId{ "" };
+        string content{ "" };
+        int flags{ 0 };
     };
 
     struct DeleteMessageData {
@@ -1694,41 +1710,47 @@ namespace  DiscordCoreInternal {
     };
 
     struct CreateMessageData {
+
+        friend class MessageManager;
+
+        MessageReferenceData messageReference{};
+        AllowedMentionsData allowedMentions{};
+        vector<ActionRowData> components{};
+        vector<EmbedData> embeds{};
+        string channelId{ "" };
+        string content{ "" };
+        bool tts{ false };
+        int nonce{ 0 };
+
         CreateMessageData() {}
+
         CreateMessageData(InputEventData dataPackage) {
             this->channelId = dataPackage.getChannelId();
             this->requesterId = dataPackage.getRequesterId();
         }
-        AllowedMentionsData allowedMentions{};
-        string content{ "" };
-        vector<EmbedData> embeds{};
-        MessageReferenceData messageReference{};
-        vector<ActionRowData> components{};
-        int nonce{ 0 };
-        bool tts{ false };
-        string channelId{ "" };
+
     protected:
-        friend class MessageManager;
+
         string requesterId{ "" };
     };
 
     struct PostDMData {
         HttpAgentResources agentResources{};
-        string userId{ "" };
-        string channelId{ "" };
         CreateMessageData messageData{};
+        string channelId{ "" };
+        string userId{ "" };
     };
 
     struct CollectGuildMemberData {
         HttpAgentResources agentResources{};
-        string guildId{ "" };
         string guildMemberId{ "" };
+        string guildId{ "" };
     };
 
     struct GetGuildMemberData {
         HttpAgentResources agentResources{};
-        string guildId{ "" };
         string guildMemberId{ "" };
+        string guildId{ "" };
     };
 
     struct GetGuildMemberRolesData {
@@ -1738,21 +1760,21 @@ namespace  DiscordCoreInternal {
 
     struct PatchGuildMemberData {
         HttpAgentResources agentResources{};
-        string guildMemberId{ "" };
-        string guildId{ "" };
-        string nick{ "" };
-        vector<string> roleIds{};
-        bool mute{ false };
-        bool deaf{ false };
         string newVoiceChannelId{ "" };
         string currentChannelId{ "" };
+        string guildMemberId{ "" };
+        vector<string> roleIds{};
+        string guildId{ "" };
+        bool mute{ false };
+        bool deaf{ false };
+        string nick{ "" };
     };
 
     struct UpdateVoiceStateData {
-        string guildId{ "" };
         string channelId{ "" };
         bool selfMute{ false };
         bool selfDeaf{ false };
+        string guildId{ "" };
     };
 
     struct GetRolesData {
@@ -1780,14 +1802,14 @@ namespace  DiscordCoreInternal {
     };
 
     struct RolePositionData {
-        string roleId{ "" };
         unsigned int rolePosition{ 0 };
+        string roleId{ "" };
     };
 
     struct PatchRolePositionData {
+        vector<RolePositionData> rolePositions{};
         HttpAgentResources agentResources{};
         string guildId{ "" };
-        vector<RolePositionData> rolePositions{};
     };
 
     struct CollectRoleData {
@@ -1798,13 +1820,13 @@ namespace  DiscordCoreInternal {
 
     struct PostRoleData {
         HttpAgentResources agentResources{};
+        string hexColorValue{ "" };
+        bool mentionable{ false };
+        __int64 permissions{ 0 };
         string guildId{ "" };
         string roleId{ "" };
-        string name{ "" };
-        __int64 permissions{ 0 };
-        string hexColorValue{ "" };
         bool hoist{ false };
-        bool mentionable{ false };
+        string name{ "" };
     };
 
     struct PutRoleData {
@@ -1816,75 +1838,75 @@ namespace  DiscordCoreInternal {
 
     struct PatchRoleData {
         HttpAgentResources agentResources{};
+        string hexColorValue{ "" };
+        bool mentionable{ false };
+        string permissions{ "" };
+        string content{ "" };
         string guildId{ "" };
         string roleId{ "" };
-        string content{ "" };
-        string name{ "" };
-        string permissions{ "" };
-        string hexColorValue{ "" };
         bool hoist{ false };
-        bool mentionable{ false };
+        string name{ "" };
     };
 
     struct ApplicationCommandOptionChoiceData {
+        string valueString{ "" };
         string name{ "" };
         int	valueInt{ 0 };
-        string valueString{ "" };
     };
 
     struct ApplicationCommandOptionData {
-        ApplicationCommandOptionType type{};
-        string name{ "" };
-        string description{ "" };
-        bool required{ false };
         vector<ApplicationCommandOptionChoiceData>	choices{};
         vector<ApplicationCommandOptionData> options{};
+        ApplicationCommandOptionType type{};
+        string description{ "" };
+        bool required{ false };
+        string name{ "" };
     };
 
     struct ApplicationCommandData {
-        string id{ "" };
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string guildId{ "" };
-        string name{ "" };
-        string description{ "" };
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ true };
+        ApplicationCommandType type{};
+        string applicationId{ "" };
+        string description{ "" };
+        string guildId{ "" };
+        string name{ "" };
+        string id{ "" };
     };
 
     struct PatchApplicationCommandData {
-        string name{ "" };
-        string description{ "" };
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ true };
+        string description{ "" };
+        string name{ "" };
     };
 
     struct PostApplicationCommandData {
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string name{ "" };
-        string description{ "" };
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ true };
+        ApplicationCommandType type{};
+        string applicationId{ "" };
+        string description{ "" };
+        string name{ "" };
     };
 
     struct InteractionResponseFullData {
-        InteractionData interactionData{};
         PostInteractionResponseData interactionResponseData{};
+        InteractionData interactionData{};
     };
 
     struct PatchFollowUpMessageData {
+        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
         HttpAgentResources agentResources{};
-        string applicationId{ "" };
+        vector<ActionRowData> components{};
         string interactionToken{ "" };
+        string applicationId{ "" };
+        vector<EmbedData> embeds{};
+        string requesterId{ "" };
         string messageId{ "" };
         string content{ "" };
         bool tts{ false };
-        vector<EmbedData> embeds{};
-        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
         int flags{ 0 };
-        string requesterId{ "" };
     };
 
     enum class AuditLogEvent {
@@ -1927,10 +1949,10 @@ namespace  DiscordCoreInternal {
 
     struct GetAuditLogData {
         HttpAgentResources agentResources{};
-        string userId{ "" };
-        string guildId{ "" };
         AuditLogEvent actionType{};
         unsigned int limit{ 0 };
+        string guildId{ "" };
+        string userId{ "" };
     };
 
     struct GetInviteData {
@@ -1965,17 +1987,17 @@ namespace  DiscordCoreInternal {
     };
 
     struct VoiceReadyPayload {
-        int ssrc{ 0 };
-        string ip{ "" };
-        int port{ 0 };
         vector<string> modes{};
+        string ip{ "" };
+        int ssrc{ 0 };
+        int port{ 0 };
     };
 
     struct PutGuildBanData {
         HttpAgentResources agentResources{};
-        string guildId{ "" };
         string guildMemberId{ "" };
         int deleteMessageDays{ 0 };
+        string guildId{ "" };
         string reason{ "" };
     };
 };
@@ -2043,35 +2065,35 @@ namespace DiscordCoreAPI {
             newData.integrationId = this->integrationId;
             return newData;
         }
+        string premiumSubscriber{ "" };
         string integrationId{ "" };
         string botId{ "" };
-        string premiumSubscriber{ "" };
     };
 
     struct RoleData {
         operator DiscordCoreInternal::RoleData() {
             DiscordCoreInternal::RoleData newData;
+            newData.permissions = this->permissions;
+            newData.mentionable = this->mentionable;
+            newData.position = this->position;
+            newData.managed = this->managed;
             newData.color = this->color;
             newData.hoist = this->hoist;
-            newData.id = this->id;
-            newData.managed = this->managed;
-            newData.mentionable = this->mentionable;
             newData.name = this->name;
-            newData.permissions = this->permissions;
-            newData.position = this->position;
             newData.tags = this->tags;
+            newData.id = this->id;
             return newData;
         }
-        RoleTagsData tags{};
-        string permissions{ "" };
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         bool mentionable{ false };
+        string permissions{ "" };
+        bool managed{ false };
+        RoleTagsData tags{};
+        bool hoist{ false };
         int position{ 0 };
         string name{ "" };
-        bool managed{ false };
-        bool hoist{ false };
         string id{ "" };
         int color{ 0 };
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
     };
 
     struct UserData {

@@ -18,20 +18,20 @@ namespace DiscordCoreAPI {
 
     struct DiscordUserData {
         vector<string> botCommanders{ "", "", "" };
-        string currencyName{ "MBux" };
-        int32_t guildCount{ 0 };
+        float hoursOfRobberyCooldown{ 0.100f };
         int32_t hoursOfDrugSaleCooldown{ 3 };
         int32_t hoursOfDepositCooldown{ 24 };
-        float hoursOfRobberyCooldown{ 0.100f };
+        string currencyName{ "MBux" };
+        int32_t guildCount{ 0 };
+        string userName{ "" };
         string prefix{ "!" };
         string userId{ "" };
-        string userName{ "" };
     };
 
     struct Card {
+        unsigned int value{ 0 };
         string suit{ "" };
         string type{ "" };
-        unsigned int value{ 0 };
     };
 
     class Deck {
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
         // Draws a random card from the Deck.
         Card drawRandomcard() {
             if (this->cards.size() == 0) {
-                Card voidCard{ .suit = "",.type = "",.value = 0 };
+                Card voidCard{ .value = 0,.suit = "",.type = "" };
                 voidCard.suit = ":black_large_square:";
                 voidCard.type = "null";
                 voidCard.value = 0;
@@ -132,50 +132,50 @@ namespace DiscordCoreAPI {
     };
 
     struct RouletteBet {
+        vector<string> winningNumbers{};
+        unsigned int payoutAmount{ 0 };
         unsigned int betAmount{ 0 };
         string betOptions{ "" };
         string betType{ "" };
-        unsigned int payoutAmount{ 0 };
         string userId{ "" };
-        vector<string> winningNumbers{};
     };
 
     struct Roulette {
-        bool currentlySpinning{ false };
         vector<RouletteBet> rouletteBets{};
+        bool currentlySpinning{ false };
     };
 
     struct LargestPayout {
-        int amount{ 0 };
         string timeStamp{ "" };
-        string userId{ "" };
         string userName{ "" };
+        string userId{ "" };
+        int amount{ 0 };
     };
 
     struct CasinoStats {
         LargestPayout largestBlackjackPayout{};
-        int totalBlackjackPayout{ 0 };
         LargestPayout largestCoinFlipPayout{};
-        int totalCoinFlipPayout{ 0 };
         LargestPayout largestRoulettePayout{};
-        int totalRoulettePayout{ 0 };
         LargestPayout largestSlotsPayout{};
+        int totalBlackjackPayout{ 0 };
+        int totalCoinFlipPayout{ 0 };
+        int totalRoulettePayout{ 0 };
         int totalSlotsPayout{ 0 };
         int totalPayout{ 0 };
     };
 
     struct InventoryItem {
-        string emoji{ "" };
         unsigned int itemCost{ 0 };
-        string itemName{ "" };
-        int oppMod{ 0 };
         unsigned int selfMod{ 0 };
+        string itemName{ "" };
+        string emoji{ "" };
+        int oppMod{ 0 };
     };
 
     struct InventoryRole {
         unsigned int roleCost{ 0 };
-        string roleId{ "" };
         string roleName{ "" };
+        string roleId{ "" };
     };
 
     struct GuildShop {
@@ -184,35 +184,35 @@ namespace DiscordCoreAPI {
     };
 
     struct Currency {
-        unsigned int bank{ 10000 };
-        unsigned int wallet{ 10000 };
         unsigned int timeOfLastDeposit{ 0 };
+        unsigned int wallet{ 10000 };
+        unsigned int bank{ 10000 };
     };
 
     struct DiscordGuildData {
-        string guildId{ "" };
-        string guildName{ "" };
+        vector<string> gameChannelIds{};
+        string  borderColor{ "FEFEFE" };
         unsigned int memberCount{ 0 };
         vector<Card> blackjackStack{};
-        string  borderColor{ "FEFEFE" };
         CasinoStats casinoStats{};
-        vector<string> gameChannelIds{};
-        GuildShop guildShop{};
         Roulette rouletteGame{};
+        string guildName{ "" };
+        GuildShop guildShop{};
+        string guildId{ "" };
     };
 
     struct DiscordGuildMemberData {
-        string guildMemberMention{ "" };
-        string guildMemberId{ "" };
-        string displayName{ "" };
-        string guildId{ "" };
-        string globalId{ "" };
-        string userName{ "" };
-        Currency currency{};
-        vector<InventoryItem> items{};
-        vector<InventoryRole> roles{};
         unsigned int lastTimeRobbed{ 0 };
         unsigned int lastTimeWorked{ 0 };
+        string guildMemberMention{ "" };
+        vector<InventoryItem> items{};
+        vector<InventoryRole> roles{};
+        string guildMemberId{ "" };
+        string displayName{ "" };
+        string globalId{ "" };
+        string userName{ "" };
+        string guildId{ "" };
+        Currency currency{};
     };
 
     enum class DatabaseWorkloadType {
@@ -225,31 +225,31 @@ namespace DiscordCoreAPI {
     };
 
     struct DatabaseWorkload {
-        DiscordGuildData guildData{};
-        DiscordUserData userData{};
         DiscordGuildMemberData guildMemberData{};
+        DatabaseWorkloadType workloadType{};
+        DiscordGuildData guildData{};
+        string guildMemberId{ "" };
+        DiscordUserData userData{};
         string globalId{ "" };
         string guildId{ "" };
-        string guildMemberId{ "" };
-        DatabaseWorkloadType workloadType{};
     };
 
     class DatabaseManagerAgent : agent {
     protected:
-        friend class DiscordCoreClient;
-        friend class DiscordUser;
-        friend class DiscordGuild;
         friend class DiscordGuildMember;
+        friend class DiscordCoreClient;
+        friend class DiscordGuild;
+        friend class DiscordUser;        
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static mongocxx::collection collection;
         static mongocxx::instance* instance;
         static mongocxx::database dataBase;
         static mongocxx::client* client;
         static string botUserId;
-        unbounded_buffer<DatabaseWorkload> requestBuffer{ nullptr };
-        unbounded_buffer<DiscordUserData>discordUserOutputBuffer{ nullptr };
-        unbounded_buffer<DiscordGuildData>discordGuildOutputBuffer{ nullptr };
         unbounded_buffer<DiscordGuildMemberData>discordGuildMemberOutputBuffer{ nullptr };
+        unbounded_buffer<DiscordGuildData>discordGuildOutputBuffer{ nullptr };
+        unbounded_buffer<DiscordUserData>discordUserOutputBuffer{ nullptr };
+        unbounded_buffer<DatabaseWorkload> requestBuffer{ nullptr };
         unbounded_buffer<exception>errorBuffer{ nullptr };
 
         DatabaseManagerAgent()
@@ -281,15 +281,14 @@ namespace DiscordCoreAPI {
             bsoncxx::builder::basic::document buildDoc;
             try {
                 using bsoncxx::builder::basic::kvp;
-                buildDoc.append(kvp("_id", discordUserData.userId));
-                buildDoc.append(kvp("userId", discordUserData.userId));
-                buildDoc.append(kvp("userName", discordUserData.userName));
-                buildDoc.append(kvp("guildCount", bsoncxx::types::b_int32(discordUserData.guildCount)));
-                buildDoc.append(kvp("currencyName", discordUserData.currencyName));
-                buildDoc.append(kvp("prefix", discordUserData.prefix));
-                buildDoc.append(kvp("hoursOfDepositCooldown", bsoncxx::types::b_int32(discordUserData.hoursOfDepositCooldown)));
                 buildDoc.append(kvp("hoursOfDrugSaleCooldown", bsoncxx::types::b_int32(discordUserData.hoursOfDrugSaleCooldown)));
                 buildDoc.append(kvp("hoursOfRobberyCooldown", bsoncxx::types::b_double(discordUserData.hoursOfRobberyCooldown)));
+                buildDoc.append(kvp("hoursOfDepositCooldown", bsoncxx::types::b_int32(discordUserData.hoursOfDepositCooldown)));
+                buildDoc.append(kvp("guildCount", bsoncxx::types::b_int32(discordUserData.guildCount)));
+                buildDoc.append(kvp("currencyName", discordUserData.currencyName));
+                buildDoc.append(kvp("userName", discordUserData.userName));
+                buildDoc.append(kvp("prefix", discordUserData.prefix));
+                buildDoc.append(kvp("_id", discordUserData.userId));
                 buildDoc.append(kvp("botCommanders", [discordUserData](bsoncxx::builder::basic::sub_array subArray) {
                     for (auto& value : discordUserData.botCommanders) {
                         subArray.append(value);
@@ -307,15 +306,15 @@ namespace DiscordCoreAPI {
         static DiscordUserData parseUserData(bsoncxx::document::value docValue) {
             DiscordUserData userData;
             try {
-                userData.userName = docValue.view()["userName"].get_utf8().value.to_string();
-                userData.currencyName = docValue.view()["currencyName"].get_utf8().value.to_string();
-                userData.guildCount = docValue.view()["guildCount"].get_int32();
-                userData.hoursOfDepositCooldown = docValue.view()["hoursOfDepositCooldown"].get_int32();
-                userData.hoursOfDrugSaleCooldown = docValue.view()["hoursOfDrugSaleCooldown"].get_int32();
                 userData.hoursOfRobberyCooldown = (float)docValue.view()["hoursOfRobberyCooldown"].get_double();
+                userData.hoursOfDrugSaleCooldown = docValue.view()["hoursOfDrugSaleCooldown"].get_int32();
+                userData.hoursOfDepositCooldown = docValue.view()["hoursOfDepositCooldown"].get_int32();
+                userData.currencyName = docValue.view()["currencyName"].get_utf8().value.to_string();
+                userData.userName = docValue.view()["userName"].get_utf8().value.to_string();
                 userData.prefix = docValue.view()["prefix"].get_utf8().value.to_string();
                 userData.userId = docValue.view()["userId"].get_utf8().value.to_string();
                 auto botCommandersArray = docValue.view()["botCommanders"].get_array();
+                userData.guildCount = docValue.view()["guildCount"].get_int32();
                 vector<string> newVector;
                 for (const auto& value : botCommandersArray.value) {
                     newVector.push_back(value.get_utf8().value.to_string());
@@ -333,10 +332,10 @@ namespace DiscordCoreAPI {
             bsoncxx::builder::basic::document buildDoc;
             try {
                 using bsoncxx::builder::basic::kvp;
-                buildDoc.append(kvp("_id", discordGuildData.guildId));
-                buildDoc.append(kvp("guildId", discordGuildData.guildId));
-                buildDoc.append(kvp("guildName", discordGuildData.guildName));
                 buildDoc.append(kvp("memberCount", bsoncxx::types::b_int32(discordGuildData.memberCount)));
+                buildDoc.append(kvp("guildName", discordGuildData.guildName));
+                buildDoc.append(kvp("guildId", discordGuildData.guildId));
+                buildDoc.append(kvp("_id", discordGuildData.guildId));
                 buildDoc.append(kvp("blackjackStack",
                     [discordGuildData](bsoncxx::builder::basic::sub_array subArray) {
                         for (auto& value : discordGuildData.blackjackStack) {
@@ -378,30 +377,31 @@ namespace DiscordCoreAPI {
                 buildDoc.append(kvp("casinoStats", [discordGuildData](bsoncxx::builder::basic::sub_document subDocument) {
                     subDocument.append(kvp("largestBlackjackPayout", [discordGuildData](bsoncxx::builder::basic::sub_document subDoc2) {
                         subDoc2.append(kvp("amount", bsoncxx::types::b_int32(discordGuildData.casinoStats.largestBlackjackPayout.amount)));
-                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestBlackjackPayout.userId));
                         subDoc2.append(kvp("timeStamp", discordGuildData.casinoStats.largestBlackjackPayout.timeStamp));
                         subDoc2.append(kvp("userName", discordGuildData.casinoStats.largestBlackjackPayout.userName));
+                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestBlackjackPayout.userId));
                         }));
                     subDocument.append(kvp("totalBlackjackPayout", bsoncxx::types::b_int32(discordGuildData.casinoStats.totalBlackjackPayout)));
                     subDocument.append(kvp("largestCoinFlipPayout", [discordGuildData](bsoncxx::builder::basic::sub_document subDoc2) {
                         subDoc2.append(kvp("amount", bsoncxx::types::b_int32(discordGuildData.casinoStats.largestCoinFlipPayout.amount)));
-                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestCoinFlipPayout.userId));
                         subDoc2.append(kvp("timeStamp", discordGuildData.casinoStats.largestCoinFlipPayout.timeStamp));
                         subDoc2.append(kvp("userName", discordGuildData.casinoStats.largestCoinFlipPayout.userName));
+                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestCoinFlipPayout.userId));
                         }));
                     subDocument.append(kvp("totalCoinFlipPayout", bsoncxx::types::b_int32(discordGuildData.casinoStats.totalCoinFlipPayout)));
                     subDocument.append(kvp("largestRoulettePayout", [discordGuildData](bsoncxx::builder::basic::sub_document subDoc2) {
                         subDoc2.append(kvp("amount", bsoncxx::types::b_int32(discordGuildData.casinoStats.largestRoulettePayout.amount)));
-                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestRoulettePayout.userId));
                         subDoc2.append(kvp("timeStamp", discordGuildData.casinoStats.largestRoulettePayout.timeStamp));
                         subDoc2.append(kvp("userName", discordGuildData.casinoStats.largestRoulettePayout.userName));
+                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestRoulettePayout.userId));
                         }));
                     subDocument.append(kvp("totalRoulettePayout", bsoncxx::types::b_int32(discordGuildData.casinoStats.totalRoulettePayout)));
                     subDocument.append(kvp("largestSlotsPayout", [discordGuildData](bsoncxx::builder::basic::sub_document subDoc2) {
                         subDoc2.append(kvp("amount", bsoncxx::types::b_int32(discordGuildData.casinoStats.largestSlotsPayout.amount)));
-                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestSlotsPayout.userId));
                         subDoc2.append(kvp("timeStamp", discordGuildData.casinoStats.largestSlotsPayout.timeStamp));
                         subDoc2.append(kvp("userName", discordGuildData.casinoStats.largestSlotsPayout.userName));
+                        subDoc2.append(kvp("userId", discordGuildData.casinoStats.largestSlotsPayout.userId));
+                        
                         }));
                     subDocument.append(kvp("totalSlotsPayout", bsoncxx::types::b_int32(discordGuildData.casinoStats.totalSlotsPayout)));
                     subDocument.append(kvp("totalPayout", bsoncxx::types::b_int32(discordGuildData.casinoStats.totalPayout)));
@@ -411,11 +411,11 @@ namespace DiscordCoreAPI {
                     subDocument.append(kvp("rouletteBets", [discordGuildData](bsoncxx::builder::basic::sub_array subArray) {
                         for (auto& value : discordGuildData.rouletteGame.rouletteBets) {
                             subArray.append([value](bsoncxx::builder::basic::sub_document subDoc2) {
+                                subDoc2.append(kvp("payoutAmount", bsoncxx::types::b_int32(value.payoutAmount)));
                                 subDoc2.append(kvp("betAmount", bsoncxx::types::b_int32(value.betAmount)));
                                 subDoc2.append(kvp("betOptions", value.betOptions));
                                 subDoc2.append(kvp("betType", value.betType));
                                 subDoc2.append(kvp("userId", value.userId));
-                                subDoc2.append(kvp("payoutAmount", bsoncxx::types::b_int32(value.payoutAmount)));
                                 subDoc2.append(kvp("winningNumbers", [value](bsoncxx::builder::basic::sub_array subArray2) {
                                     for (auto& value2 : value.winningNumbers) {
                                         subArray2.append(value2);
@@ -808,11 +808,11 @@ namespace DiscordCoreAPI {
             return;
         }
     };
-    string DatabaseManagerAgent::botUserId{ "" };
+    shared_ptr<DiscordCoreInternal::ThreadContext> DatabaseManagerAgent::threadContext{ nullptr };
     mongocxx::instance* DatabaseManagerAgent::instance{ nullptr };
+    mongocxx::client* DatabaseManagerAgent::client{ nullptr };
     mongocxx::collection DatabaseManagerAgent::collection{};
     mongocxx::database DatabaseManagerAgent::dataBase{};
-    mongocxx::client* DatabaseManagerAgent::client{ nullptr };
-    shared_ptr<DiscordCoreInternal::ThreadContext> DatabaseManagerAgent::threadContext{ nullptr };
+    string DatabaseManagerAgent::botUserId{ "" };
 };
 #endif
