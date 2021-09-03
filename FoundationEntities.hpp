@@ -4046,6 +4046,11 @@ namespace DiscordCoreAPI {
     };
 
     struct CommandData {
+
+        vector<string> optionsArgs{};
+        InputEventData eventData{};
+        string commandName{ "" };
+
         CommandData(InputEventData inputEventData) {
             this->eventData = inputEventData;
             if (inputEventData.userCommandInteractionData.name != "") {
@@ -4062,9 +4067,6 @@ namespace DiscordCoreAPI {
                 this->optionsArgs.push_back(inputEventData.messageCommandInteractionData.messages.id);
             }
         }
-        vector<string> optionsArgs{};
-        InputEventData eventData{};
-        string commandName{ "" };
     };
 
     string constructStringContent(CommandData commandData) {
