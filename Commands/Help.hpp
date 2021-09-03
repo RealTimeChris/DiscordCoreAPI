@@ -17,7 +17,12 @@ namespace DiscordCoreAPI {
 		Help() {
 			this->commandName = "help";
 			this->helpDescription = "A help command for this bot!";
-			this->helpEmoji.name = "🏥";
+			EmbedData msgEmbed;
+			msgEmbed.setDescription("------\nSimply enter !help or /help, and follow the instructions!\n------");
+			msgEmbed.setTitle("__**Help Usage:**__");
+			msgEmbed.setTimeStamp(getTimeAndDate());
+			msgEmbed.setColor("FeFeFe");
+			this->helpEmbed = msgEmbed;
 		}
 
 		Help* create() {
@@ -122,7 +127,7 @@ namespace DiscordCoreAPI {
 						msgEmbed00.setColor(discordGuild.data.borderColor);
 						msgEmbed00.setTimeStamp(getTimeAndDate());
 						msgEmbed00.setDescription(messageString);
-						msgEmbed00.setTitle("__**" + args->eventData.discordCoreClient->currentUser.username + " Help : Page " + to_string(counter03 + 1) + " of " + to_string(selectOptions.size()) + " * *__");
+						msgEmbed00.setTitle("__**" + args->eventData.discordCoreClient->currentUser.username + " Help: Page " + to_string(counter03 + 1) + " of " + to_string(selectOptions.size()) + "**__");
 						EditMessageData responseData(newEvent);
 						responseData.addMessageEmbed(msgEmbed00);
 						responseData.addSelectMenu(false, "help_menu", value, "Commands", 1, 1);
