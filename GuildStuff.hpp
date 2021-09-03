@@ -45,14 +45,26 @@ namespace DiscordCoreAPI {
 					voiceConnectData.userId = this->discordCoreClientBase->currentUser.id;
 					if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
 						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->id), this->discordCoreClientBase);
-						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
+						shared_ptr<YouTubeAPI> youtubeAPI;
+						if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
+							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
+						}
+						else {
+							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
 					else {
 						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData>>();
 						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtr));
 						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->id), this->discordCoreClientBase);
-						auto youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
+						shared_ptr<YouTubeAPI> youtubeAPI;
+						if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
+							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
+						}
+						else {
+							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
 					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->id, voiceConnectionPtr));

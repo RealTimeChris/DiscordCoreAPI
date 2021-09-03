@@ -169,6 +169,9 @@ namespace DiscordCoreAPI {
 						voiceConnection->encoder = nullptr;
 					}
 					voiceConnection->hasTerminateRun = true;
+					if (DiscordCoreClientBase::youtubeAPIMap->contains(voiceConnection->voiceConnectionData.guildId)) {
+						DiscordCoreClientBase::youtubeAPIMap->erase(voiceConnection->voiceConnectionData.guildId);
+					}
 					if (DiscordCoreClientBase::audioBuffersMap.contains(voiceConnection->voiceConnectionData.guildId)) {
 						DiscordCoreClientBase::audioBuffersMap.erase(voiceConnection->voiceConnectionData.guildId);
 					}
