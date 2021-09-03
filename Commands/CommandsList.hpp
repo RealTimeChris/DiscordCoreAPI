@@ -10,6 +10,7 @@
 
 #include "Commands.hpp"
 #include "BotInfo.hpp"
+#include "Help.hpp"
 #include "Test.hpp"
 
 #endif

@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 					msgEmbed.setColor(discordGuild.data.borderColor);
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setDescription(messageNew);
-					msgEmbed.setTitle("__**MBot-MusicHouse Help: Front Page**__");
+					msgEmbed.setTitle("__**" + args->eventData.discordCoreClient->currentUser.username + " Help: Front Page**__");
 
 					vector<string> numberEmojiNames{ "✅", "🍬", "🅱", "❌", };
 					vector<string> numberEmojiId;
