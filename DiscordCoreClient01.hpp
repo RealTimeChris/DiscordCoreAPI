@@ -488,11 +488,13 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::MESSAGE_CREATE:
 					{
 						MessageData messageData;
-						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
-						if (DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
-							send(*DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
-						}
 						messageData.discordCoreClient = DiscordCoreClient::thisPointer;
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
+						if (messageData.interaction.id != "") {
+							if (DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
+								send(*DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
+							}
+						}
 						Message message(messageData);
 						if (MessageCollector::messagesBufferMap.size() > 0) {
 							for (auto [key, value] : MessageCollector::messagesBufferMap) {

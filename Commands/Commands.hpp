@@ -24,11 +24,13 @@ namespace DiscordCoreAPI {
 
 	class BaseFunction {
 	public:
-		virtual ~BaseFunction() {}
+		virtual ~BaseFunction() {};
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		virtual BaseFunction* create() = 0;
-		string commandName = "";
-		string helpDescription = "";
+		string helpDescription{ "" };
+		EmojiData helpEmoji{  };
+		string commandName{ "" };
+		EmbedData helpEmbed{};
 	};
 
 	class CommandCenter {

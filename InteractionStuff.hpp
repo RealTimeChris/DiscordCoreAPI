@@ -356,6 +356,7 @@ namespace DiscordCoreAPI {
         void setTTSStatus(bool enabledTTs) {
             this->data.data.tts = enabledTTs;
         }
+
     protected:
         InteractionPackageData interactionPackage{};
         InteractionResponseData data{};
@@ -1135,6 +1136,7 @@ namespace DiscordCoreInternal {
             DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
+            InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, make_shared<unbounded_buffer<DiscordCoreAPI::MessageData>>()));
             dataPackageNew.data = dataPackage.data.data;
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.data.type;
             DiscordCoreInternal::HttpAgentResources httpAgentResources;
@@ -1144,25 +1146,26 @@ namespace DiscordCoreInternal {
             requestAgent.start();
             agent::wait(&requestAgent);
             requestAgent.getError("InteractionManager::createInteractionResponseAsync");
-            DiscordCoreAPI::MessageData messageData;
             if (dataPackage.data.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessage || dataPackage.data.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessageWithSource) {
                 if (InteractionManagerAgent::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
                     shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
                     try {
-                        messageData = receive(*messageBlock, 1000);
+                        DiscordCoreAPI::MessageData messageData = receive(*messageBlock, 1000);
+                        co_await mainThread;
+                        InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
+                        co_return messageData;
                     }
-                    catch (exception&) {};
+                    catch (exception&) {
+                        co_return DiscordCoreAPI::MessageData();
+                    };
                 }
-
             }
-            InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
-            co_await mainThread;
-            co_return messageData;
         }
 
         task<DiscordCoreAPI::MessageData> createEphemeralInteractionResponseAsync(DiscordCoreAPI::CreateEphemeralInteractionResponseData dataPackage) {
             apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, make_shared<unbounded_buffer<DiscordCoreAPI::MessageData>>()));
             DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -1476,6 +1479,7 @@ namespace DiscordCoreAPI {
     };
 
     struct ButtonResponseData {
+        string emojiName{ "" };
         string channelId{ "" };
         string messageId{ "" };
         string buttonId{ "" };

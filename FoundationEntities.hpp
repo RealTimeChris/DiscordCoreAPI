@@ -2137,26 +2137,26 @@ namespace DiscordCoreAPI {
     struct EmojiData {
         operator DiscordCoreInternal::EmojiData() {
             DiscordCoreInternal::EmojiData newData;
-            newData.animated = this->animated;
-            newData.available = this->available;
-            newData.id = this->id;
-            newData.managed = this->managed;
-            newData.name = this->name;
             newData.requireColons = this->requireColons;
+            newData.available = this->available;
+            newData.animated = this->animated;
+            newData.managed = this->managed;
+            newData.user = this->user;
+            newData.name = this->name;
+            newData.id = this->id;
             for (auto value : this->roles) {
                 newData.roles.push_back(value);
             }
-            newData.user = this->user;
             return newData;
         }
-        string id{ "" };
-        string name{ "" };
-        vector<RoleData> roles{};
-        UserData user{};
         bool requireColons{ false };
-        bool managed{ false };
+        vector<RoleData> roles{};
+        bool available{ true };
         bool animated{ false };
-        bool available{ false };
+        bool managed{ false };
+        string name{ "" };
+        UserData user{};
+        string id{ "" };
     };
 
     struct SelectOptionData {
