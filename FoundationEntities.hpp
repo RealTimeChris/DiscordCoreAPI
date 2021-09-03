@@ -658,7 +658,7 @@ namespace  DiscordCoreInternal {
         vector<UserData> recipients{};
         string lastPinTimestamp{ "" };
         string lastMessageId{ "" };
-        int rateLimitPerUser{ -1 };
+        int rateLimitPerUser{ -1 };        
         string applicationId{ "" };
         int videoQualityMode{ -1 };
         ThreadMemberData member{};
@@ -2061,18 +2061,21 @@ namespace DiscordCoreAPI {
     };
 
     struct RoleTagsData {
+
         operator DiscordCoreInternal::RoleTagsData() {
             DiscordCoreInternal::RoleTagsData newData;
-            newData.botId = this->botId;
             newData.integrationId = this->integrationId;
+            newData.botId = this->botId;
             return newData;
         }
+
         string premiumSubscriber{ "" };
         string integrationId{ "" };
         string botId{ "" };
     };
 
     struct RoleData {
+
         operator DiscordCoreInternal::RoleData() {
             DiscordCoreInternal::RoleData newData;
             newData.permissions = this->permissions;
@@ -2086,6 +2089,7 @@ namespace DiscordCoreAPI {
             newData.id = this->id;
             return newData;
         }
+
         shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         bool mentionable{ false };
         string permissions{ "" };
@@ -2099,56 +2103,60 @@ namespace DiscordCoreAPI {
     };
 
     struct UserData {
+
         operator DiscordCoreInternal::UserData() {
             DiscordCoreInternal::UserData newData;
-            newData.avatar = this->avatar;
-            newData.bot = this->bot;
             newData.discriminator = this->discriminator;
-            newData.email = this->email;
-            newData.flags = this->flags;
-            newData.id = this->id;
-            newData.locale = this->locale;
-            newData.mfaEnabled = this->mfaEnabled;
             newData.premiumType = this->premiumType;
             newData.publicFlags = this->publicFlags;
-            newData.system = this->system;
+            newData.mfaEnabled = this->mfaEnabled;
+            newData.createdAt = this->createdAt;
             newData.username = this->username;
             newData.verified = this->verified;
-            newData.createdAt = this->createdAt;
+            newData.avatar = this->avatar;
+            newData.locale = this->locale;
+            newData.system = this->system;
+            newData.email = this->email;
+            newData.flags = this->flags;
+            newData.bot = this->bot;
+            newData.id = this->id;
             return newData;
         }
-        string username{ "" };
-        string id{ "" };
+
+        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
         string discriminator{ "" };
-        string avatar{ "" };
-        bool bot{ false };
-        bool system{ false };
         bool mfaEnabled{ false };
-        string locale{ "" };
         bool verified{ false };
-        string email{ "" };
-        int flags{ 0 };
+        string createdAt{ "" };
+        string username{ "" };
+        bool system{ false };
         int premiumType{ 0 };
         int publicFlags{ 0 };
-        string createdAt{ "" };
-        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+        string avatar{ "" };
+        string locale{ "" };
+        string email{ "" };
+        bool bot{ false };
+        string id{ "" };
+        int flags{ 0 };
     };
 
     struct EmojiData {
+
         operator DiscordCoreInternal::EmojiData() {
             DiscordCoreInternal::EmojiData newData;
             newData.requireColons = this->requireColons;
             newData.available = this->available;
+            for (auto value : this->roles) {
+                newData.roles.push_back(value);
+            }
             newData.animated = this->animated;
             newData.managed = this->managed;
             newData.user = this->user;
             newData.name = this->name;
             newData.id = this->id;
-            for (auto value : this->roles) {
-                newData.roles.push_back(value);
-            }
             return newData;
         }
+
         bool requireColons{ false };
         vector<RoleData> roles{};
         bool available{ true };
@@ -2160,171 +2168,191 @@ namespace DiscordCoreAPI {
     };
 
     struct SelectOptionData {
+
         operator DiscordCoreInternal::SelectOptionData() {
             DiscordCoreInternal::SelectOptionData newData;
             newData.description = this->description;
+            newData._default = this->_default;
             newData.emoji = this->emoji;
             newData.label = this->label;
             newData.value = this->value;
-            newData._default = this->_default;
             return newData;
         }
+
+        string description{ "" };
+        bool _default{ false };
         string label{ "" };
         string value{ "" };
-        string description{ "" };
-        EmojiData emoji{};
-        bool _default{ false };
+        EmojiData emoji{};        
     };
 
     struct ComponentData {
+
         operator DiscordCoreInternal::ComponentData() {
             DiscordCoreInternal::ComponentData newData;
+            newData.style = (DiscordCoreInternal::ButtonStyle)this->style;
+            newData.type = (DiscordCoreInternal::ComponentType)this->type;
+            newData.placeholder = this->placeholder;
+            for (auto value : this->options) {
+                newData.options.push_back(value);
+            }
+            newData.maxValues = this->maxValues;
+            newData.minValues = this->minValues;
             newData.customId = this->customId;
             newData.disabled = this->disabled;
             newData.emoji = this->emoji;
             newData.label = this->label;
-            newData.style = (DiscordCoreInternal::ButtonStyle)this->style;
-            newData.type = (DiscordCoreInternal::ComponentType)this->type;
             newData.url = this->url;
-            newData.maxValues = this->maxValues;
-            newData.minValues = this->minValues;
-            for (auto value : this->options) {
-                newData.options.push_back(value);
-            }
-            newData.placeholder = this->placeholder;
             return newData;
         }
+
+        vector<SelectOptionData> options{};
+        string placeholder{ "" };
+        bool disabled{ false };
+        string customId{ "" };
         ComponentType type{};
         ButtonStyle style{};
         string label{ "" };
-        EmojiData emoji{};
-        string customId{ "" };
-        string url{ "" };
-        string placeholder{ "" };
-        bool disabled{ false };
-        vector<SelectOptionData> options{};
         int maxValues{ 0 };
         int minValues{ 0 };
+        EmojiData emoji{};
+        string url{ "" };
     };
 
     struct AttachmentData {
+
         operator DiscordCoreInternal::AttachmentData() {
             DiscordCoreInternal::AttachmentData newData;
             newData.contentType = this->contentType;
+            newData.proxyUrl = this->proxyUrl;
             newData.filename = this->filename;
             newData.height = this->height;
-            newData.id = this->id;
-            newData.proxyUrl = this->proxyUrl;
+            newData.width = this->width;
             newData.size = this->size;
             newData.url = this->url;
-            newData.width = this->width;
+            newData.id = this->id;
             return newData;
         }
-        string id{ "" };
-        string filename{ "" };
+
         string contentType{ "" };
-        int size{ 0 };
-        string url{ "" };
+        string filename{ "" };
         string proxyUrl{ "" };
+        string url{ "" };
+        string id{ "" };        
         int height{ 0 };
         int width{ 0 };
+        int size{ 0 };
     };
 
     struct EmbedFooterData {
+
         operator DiscordCoreInternal::EmbedFooterData() {
             DiscordCoreInternal::EmbedFooterData newData;
-            newData.iconUrl = this->iconUrl;
             newData.proxyIconUrl = this->proxyIconUrl;
+            newData.iconUrl = this->iconUrl;
             newData.text = this->text;
             return newData;
         };
+
+        string proxyIconUrl{ "" };
         string iconUrl{ "" };
         string text{ "" };
-        string proxyIconUrl{ "" };
     };
 
     struct EmbedImageData {
+
         operator DiscordCoreInternal::EmbedImageData() {
             DiscordCoreInternal::EmbedImageData newData;
-            newData.height = this->height;
             newData.proxyUrl = this->proxyUrl;
-            newData.url = this->url;
+            newData.height = this->height;
             newData.width = this->width;
+            newData.url = this->url;            
             return newData;
         }
-        string url{ "" };
+
         string proxyUrl{ "" };
+        string url{ "" };        
         int height{ 0 };
         int width{ 0 };
     };
 
     struct EmbedThumbnailData {
+
         operator DiscordCoreInternal::EmbedThumbnailData() {
             DiscordCoreInternal::EmbedThumbnailData newData;
-            newData.height = this->height;
             newData.proxyUrl = this->proxyUrl;
-            newData.url = this->url;
+            newData.height = this->height;
             newData.width = this->width;
+            newData.url = this->url;
             return newData;
         }
-        string url{ "" };
+
         string proxyUrl{ "" };
+        string url{ "" };
         int height{ 0 };
         int width{ 0 };
     };
 
     struct EmbedVideoData {
+
         operator DiscordCoreInternal::EmbedVideoData() {
             DiscordCoreInternal::EmbedVideoData newData;
-            newData.height = this->height;
             newData.proxyUrl = this->proxyUrl;
-            newData.url = this->url;
+            newData.height = this->height;
             newData.width = this->width;
+            newData.url = this->url;
             return newData;
         }
-        string url{ "" };
+
         string proxyUrl{ "" };
+        string url{ "" };
         int height{ 0 };
         int width{ 0 };
     };
 
     struct EmbedProviderData {
+
         operator DiscordCoreInternal::EmbedProviderData() {
             DiscordCoreInternal::EmbedProviderData newData;
             newData.name = this->name;
             newData.url = this->url;
             return newData;
         }
+
         string name{ "" };
         string url{ "" };
     };
 
     struct EmbedAuthorData {
+
         operator DiscordCoreInternal::EmbedAuthorData() {
             DiscordCoreInternal::EmbedAuthorData newData;
+            newData.proxyIconUrl = this->proxyIconUrl;
             newData.iconUrl = this->iconUrl;
             newData.name = this->name;
-            newData.proxyIconUrl = this->proxyIconUrl;
             newData.url = this->url;
             return newData;
         };
+
+        string proxyIconUrl{ "" };
+        string iconUrl{ "" };
         string name{ "" };
         string url{ "" };
-        string iconUrl{ "" };
-        string proxyIconUrl{ "" };
     };
 
     struct EmbedFieldData {
+
         operator DiscordCoreInternal::EmbedFieldData() {
             DiscordCoreInternal::EmbedFieldData newData;
             newData.Inline = this->Inline;
-            newData.name = this->name;
             newData.value = this->value;
+            newData.name = this->name;
             return newData;
         }
-        string name{ "" };
-        string value{ "" };
+
         bool Inline{ false };
+        string value{ "" };
+        string name{ "" };
     };
 
     struct EmbedData {
@@ -2419,8 +2447,6 @@ namespace DiscordCoreAPI {
         operator DiscordCoreInternal::ActionRowData() {
             DiscordCoreInternal::ActionRowData newData;
             for (auto value : this->components) {
-                DiscordCoreInternal::ComponentData component;
-                component = value;
                 newData.components.push_back(value);
             }
             return newData;
@@ -2494,18 +2520,20 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageReferenceData {
+
         operator DiscordCoreInternal::MessageReferenceData() {
             DiscordCoreInternal::MessageReferenceData newData;
-            newData.channelId = this->channelId;
             newData.failIfNotExists = this->failIfNotExists;
-            newData.guildId = this->guildId;
+            newData.channelId = this->channelId;
             newData.messageId = this->messageId;
+            newData.guildId = this->guildId;            
             return newData;
         }
+
+        bool failIfNotExists{ false };
         string messageId{ "" };
         string channelId{ "" };
         string guildId{ "" };
-        bool failIfNotExists{ false };
     };
 
     enum class InteractionType {
@@ -2520,20 +2548,22 @@ namespace DiscordCoreAPI {
     };
 
     struct OverWriteData {
+
         operator DiscordCoreInternal::OverWriteData() {
             DiscordCoreInternal::OverWriteData newData;
+            newData.type = (DiscordCoreInternal::EditChannelPermissionOverwritesType)this->type;
+            newData.channelId = this->channelId;
             newData.allow = this->allow;
             newData.deny = this->deny;
             newData.id = this->id;
-            newData.type = (DiscordCoreInternal::EditChannelPermissionOverwritesType)this->type;
-            newData.channelId = this->channelId;
             return newData;
         }
-        string id{ "" };
+
         EditChannelPermissionOverwritesType type{};   //	either 0 (role) or 1 (member;
+        string channelId{ "" };
         string allow{ "" };
         string deny{ "" };
-        string channelId{ "" };
+        string id{ "" };
     };
 
     enum class ChannelType {
@@ -2551,142 +2581,151 @@ namespace DiscordCoreAPI {
     };
 
     struct ThreadMetadataData {
+
         operator DiscordCoreInternal::ThreadMetadataData() {
             DiscordCoreInternal::ThreadMetadataData newData;
-            newData.archived = this->archived;
-            newData.archiverId = this->archiverId;
-            newData.archiveTimestamp = this->archiveTimestamp;
             newData.autoArchiveDuration = this->autoArchiveDuration;
+            newData.archiveTimestamp = this->archiveTimestamp;
+            newData.archiverId = this->archiverId;
+            newData.archived = this->archived;
             newData.locked = this->locked;
             return newData;
         };
-        bool archived{ false };
-        string archiverId{ "" };
-        int autoArchiveDuration{ 0 };
+
         string archiveTimestamp{ "" };
+        int autoArchiveDuration{ 0 };
+        string archiverId{ "" };
+        bool archived{ false };
         bool locked{ false };
     };
 
     struct ThreadMemberData {
+
         operator DiscordCoreInternal::ThreadMemberData() {
             DiscordCoreInternal::ThreadMemberData newData;
-            newData.flags = this->flags;
-            newData.id = this->id;
             newData.joinTimestamp = this->joinTimestamp;
             newData.userId = this->userId;
+            newData.flags = this->flags;
+            newData.id = this->id;
             return newData;
         }
-        string id{ "" };
-        string userId{ "" };
+
         string joinTimestamp{ "" };
+        string userId{ "" };
+        string id{ "" };
         int flags{ 0 };
     };
 
     struct ChannelData {
+
         operator DiscordCoreInternal::ChannelData() {
             DiscordCoreInternal::ChannelData newData;
-            newData.applicationId = this->applicationId;
-            newData.bitrate = this->bitrate;
-            newData.guildId = this->guildId;
-            newData.icon = this->icon;
-            newData.id = this->id;
-            newData.lastMessageId = this->lastMessageId;
-            newData.lastPinTimestamp = this->lastPinTimestamp;
-            newData.name = this->name;
-            newData.nsfw = this->nsfw;
-            newData.ownerId = this->ownerId;
-            newData.parentId = this->parentId;
             for (auto [key, value] : this->permissionOverwrites) {
                 newData.permissionOverwrites.insert(make_pair(key, value));
             }
-            newData.position = this->position;
+            newData.type = (DiscordCoreInternal::ChannelType)this->type;
             newData.rateLimitPerUser = this->rateLimitPerUser;
+            newData.lastPinTimestamp = this->lastPinTimestamp;
+            newData.videoQualityMode = this->videoQualityMode;
+            newData.threadMetadata = this->threadMetadata;
+            newData.applicationId = this->applicationId;
+            newData.lastMessageId = this->lastMessageId;
             for (auto value : this->recipients) {
                 newData.recipients.push_back(value);
             }
             newData.rtcRegion = this->rtcRegion;
-            newData.topic = this->topic;
-            newData.type = (DiscordCoreInternal::ChannelType)this->type;
             newData.userLimit = this->userLimit;
-            newData.videoQualityMode = this->videoQualityMode;
+            newData.parentId = this->parentId;
+            newData.position = this->position;
+            newData.bitrate = this->bitrate;
+            newData.guildId = this->guildId;
+            newData.ownerId = this->ownerId;
             newData.member = this->member;
-            newData.threadMetadata = this->threadMetadata;
+            newData.topic = this->topic;
+            newData.icon = this->icon;
+            newData.name = this->name;
+            newData.nsfw = this->nsfw;
+            newData.id = this->id;            
             return newData;
         }
-        string id{ "" };
-        ChannelType type = ChannelType::DM;
-        string guildId{ "" };
-        int position{ 0 };
+
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         map<string, OverWriteData> permissionOverwrites{};
-        string name{ "" };
+        ThreadMetadataData threadMetadata{};
+        ChannelType type{ ChannelType::DM };
+        vector<UserData> recipients{};
+        string lastPinTimestamp{ "" };
+        string lastMessageId{ "" };
+        string applicationId{ "" };
+        int videoQualityMode{ 0 };
+        int rateLimitPerUser{ 0 };
+        ThreadMemberData member{};
+        string rtcRegion{ "" };
+        int messageCount{ 0 };
+        string parentId{ "" };
+        string guildId{ "" };
+        string ownerId{ "" };
+        int memberCount{ 0 };
         string topic{ "" };
         bool nsfw{ false };
-        string lastMessageId{ "" };
-        int bitrate{ 0 };
         int userLimit{ 0 };
-        int rateLimitPerUser{ 0 };
-        vector<UserData> recipients{};
+        string name{ "" };
+        int position{ 0 };
         string icon{ "" };
-        string ownerId{ "" };
-        string applicationId{ "" };
-        string parentId{ "" };
-        string lastPinTimestamp{ "" };
-        string rtcRegion{ "" };
-        int videoQualityMode{ 0 };
-        int messageCount{ 0 };
-        int memberCount{ 0 };
-        ThreadMetadataData threadMetadata{};
-        ThreadMemberData member{};
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        int bitrate{ 0 };
+        string id{ "" };
     };
 
     struct VoiceStateData {
-        string guildId{ "" };
-        string channelId{ "" };
-        string userId{ "" };
-        string sessionId{ "" };
-        bool deaf{ false };
-        bool mute{ false };
-        bool selfDeaf{ false };
-        bool selfMute{ false };
+        string requestToSpeakTimestamp{ "" };
         bool selfStream{ false };
         bool selfVideo{ false };
+        bool selfDeaf{ false };
+        bool selfMute{ false };
+        string sessionId{ "" };
+        string channelId{ "" };
         bool suppress{ false };
-        string requestToSpeakTimestamp{ "" };
+        string guildId{ "" };
+        string userId{ "" };
+        bool deaf{ false };
+        bool mute{ false };
     };
 
     struct GuildMemberData {
+
         operator DiscordCoreInternal::GuildMemberData() {
             DiscordCoreInternal::GuildMemberData newData;
-            newData.deaf = this->deaf;
-            newData.guildId = this->guildId;
+            newData.premiumSince = this->premiumSince;
+            newData.permissions = this->permissions;
+            newData.userMention = this->userMention;
             newData.joinedAt = this->joinedAt;
+            newData.pending = this->pending;
+            newData.guildId = this->guildId;
+            newData.roles = this->roles;
+            newData.deaf = this->deaf;
             newData.mute = this->mute;
             newData.nick = this->nick;
-            newData.pending = this->pending;
-            newData.permissions = this->permissions;
-            newData.premiumSince = this->premiumSince;
-            newData.roles = this->roles;
             newData.user = this->user;
-            newData.userMention = this->userMention;
             return newData;
         }
-        string guildId{ "" };
-        UserData user{};
-        string nick{ "" };
-        vector<string> roles{};
-        string joinedAt{ "" };
+
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        VoiceStateData voiceData{};
         string premiumSince{ "" };
-        bool deaf{ false };
-        bool mute{ false };
-        bool pending{ false };
         string permissions{ "" };
         string userMention{ "" };
-        VoiceStateData voiceData{};
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        vector<string> roles{};
+        string joinedAt{ "" };
+        bool pending{ false };
+        string guildId{ "" };
+        bool deaf{ false };
+        bool mute{ false };
+        string nick{ "" };
+        UserData user{};
     };
 
     struct ApplicationCommandInteractionDataResolved {
+
         operator DiscordCoreInternal::ApplicationCommandInteractionDataResolved() {
             DiscordCoreInternal::ApplicationCommandInteractionDataResolved newData;
             for (auto [key, value] : this->channels) {
@@ -2703,10 +2742,11 @@ namespace DiscordCoreAPI {
             }
             return newData;
         }
-        map<string, UserData> users{};
+
         map<string, GuildMemberData> members{};
-        map<string, RoleData> roles{};
         map<string, ChannelData> channels{};
+        map<string, UserData> users{};
+        map<string, RoleData> roles{};
     };
 
     enum class ApplicationCommandOptionType {
@@ -2727,22 +2767,25 @@ namespace DiscordCoreAPI {
     vector<DiscordCoreInternal::ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions);
 
     struct ApplicationCommandInteractionDataOption {
+
         operator DiscordCoreInternal::ApplicationCommandInteractionDataOption() {
             DiscordCoreInternal::ApplicationCommandInteractionDataOption newData;
-            newData.name = this->name;
-            newData.options = convertAppCommandInteractionDataOptions(this->options);
             newData.type = (DiscordCoreInternal::ApplicationCommandOptionType)this->type;
+            newData.options = convertAppCommandInteractionDataOptions(this->options);
+            newData.valueString = this->valueString;
             newData.valueBool = this->valueBool;
             newData.valueInt = this->valueInt;
-            newData.valueString = this->valueString;
+            newData.name = this->name;
             return newData;
         }
-        string name{ "" };
-        ApplicationCommandOptionType type{};
-        bool valueBool{ false };
-        string valueString{ "" };
-        int valueInt{ 0 };
+
         vector<ApplicationCommandInteractionDataOption> options{};
+        ApplicationCommandOptionType type{};
+        string valueString{ "" };
+        bool valueBool{ false };
+        string name{ "" };
+        int valueInt{ 0 };
+        
     };
 
     vector<DiscordCoreInternal::ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions) {
@@ -2756,63 +2799,70 @@ namespace DiscordCoreAPI {
     }
 
     struct ApplicationCommandInteractionData {
+
         operator DiscordCoreInternal::ApplicationCommandInteractionData() {
             DiscordCoreInternal::ApplicationCommandInteractionData newData;
             newData.componentType = this->componentType;
-            newData.customId = this->customId;
-            newData.id = this->id;
-            newData.name = this->name;
             for (auto value : this->options) {
                 newData.options.push_back(value);
             }
+            newData.customId = this->customId;
             newData.resolved = this->resolved;
+            newData.name = this->name;
+            newData.id = this->id;
             return newData;
         }
+
+        vector<ApplicationCommandInteractionDataOption> options{};
+        ApplicationCommandInteractionDataResolved resolved{};
+        int componentType{ 0 };
+        string customId{ "" };
         string name{ "" };
         string id{ "" };
-        ApplicationCommandInteractionDataResolved resolved{};
-        vector<ApplicationCommandInteractionDataOption> options{};
-        string customId{ "" };
-        int componentType{ 0 };
     };
 
     struct ChannelMentionData {
+
         operator DiscordCoreInternal::ChannelMentionData() {
             DiscordCoreInternal::ChannelMentionData newData;
             newData.guildId = this->guildId;
-            newData.id = this->id;
             newData.name = this->name;
             newData.type = this->type;
+            newData.id = this->id;
             return newData;
         }
-        string id{ "" };
+
         string guildId{ "" };
-        int type{ 0 };
         string name{ "" };
+        string id{ "" };
+        int type{ 0 };
+        
     };
 
     struct ReactionData {
+
         operator DiscordCoreInternal::ReactionData() {
             DiscordCoreInternal::ReactionData newData;
             newData.channelId = this->channelId;
+            newData.messageId = this->messageId;
+            newData.guildId = this->guildId;
+            newData.member = this->member;
+            newData.userId = this->userId;
             newData.count = this->count;
             newData.emoji = this->emoji;
-            newData.guildId = this->guildId;
             newData.me = this->me;
-            newData.member = this->member;
-            newData.messageId = this->messageId;
-            newData.userId = this->userId;
             return newData;
         }
-        int count{ 0 };
-        bool me{ false };
-        EmojiData emoji{};
-        string userId{ "" };
+
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        GuildMemberData member{};
         string channelId{ "" };
         string messageId{ "" };
         string guildId{ "" };
-        GuildMemberData member{};
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        string userId{ "" };
+        EmojiData emoji{};
+        bool me{ false };
+        int count{ 0 };
     };
 
     enum class MessageType {
@@ -2841,41 +2891,45 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageActivityData {
-        int type{ 0 };
         string partyId{ "" };
+        int type{ 0 };
     };
 
     struct MessageInteractionData {
+
         operator DiscordCoreInternal::MessageInteractionData() {
             DiscordCoreInternal::MessageInteractionData newData;
-            newData.id = this->id;
-            newData.name = this->name;
             newData.type = (DiscordCoreInternal::InteractionType)this->type;
+            newData.name = this->name;
             newData.user = this->user;
+            newData.id = this->id;            
             return newData;
         }
-        string id{ "" };
+
         InteractionType type{};
         string name{ "" };
         UserData user{};
+        string id{ "" };
     };
 
     struct MessageStickerData {
+
         operator DiscordCoreInternal::MessageStickerData() {
             DiscordCoreInternal::MessageStickerData newData;
-            newData.asset = this->asset;
             newData.description = this->description;
             newData.formatType = this->formatType;
-            newData.id = this->id;
-            newData.name = this->name;
-            newData.packId = this->packId;
-            newData.tags = this->tags;
             newData.available = this->available;
-            newData.guildId = this->guildId;
             newData.sortValue = this->sortValue;
+            newData.guildId = this->guildId;
+            newData.packId = this->packId;
+            newData.asset = this->asset;
+            newData.name = this->name;
+            newData.tags = this->tags;
             newData.user = this->user;
+            newData.id = this->id;            
             return newData;
         }
+
         bool available{ false };
         string description{ "" };
         string guildId{ "" };
@@ -2974,6 +3028,7 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageStickerItemData {
+
         operator DiscordCoreInternal::MessageStickerItemData() {
             DiscordCoreInternal::MessageStickerItemData newData;
             newData.formatType = (DiscordCoreInternal::MessageStickerItemType)this->formatType;
@@ -2981,12 +3036,14 @@ namespace DiscordCoreAPI {
             newData.id = this->id;            
             return newData;
         }
+
         MessageStickerItemType formatType{};
         string name{ "" };
         string id{ "" };
     };
 
     struct MessageDataOld {
+
         operator DiscordCoreInternal::MessageDataOld() {
             DiscordCoreInternal::MessageDataOld newData;
             newData.type = (DiscordCoreInternal::MessageType)this->type;
@@ -3071,23 +3128,20 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageData :public MessageDataOld {
+
         operator DiscordCoreInternal::MessageData() {
             DiscordCoreInternal::MessageData newData;
-            newData.requesterId = this->requesterId;
             newData.referencedMessage = this->referencedMessage;
+            newData.requesterId = this->requesterId;
             return newData;
         }
-        string requesterId{ "" };
-        MessageDataOld referencedMessage{};
+
         shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        MessageDataOld referencedMessage{};
+        string requesterId{ "" };        
     };
 
     struct InteractionData {
-        InteractionData() {};
-
-        InteractionData(string requesterId) {
-            this->requesterId = requesterId;
-        }
 
         operator DiscordCoreInternal::InteractionData() {
             DiscordCoreInternal::InteractionData newData;
@@ -3127,9 +3181,16 @@ namespace DiscordCoreAPI {
         UserData user{};
         string id{ "" };
         json dataRaw{};
+
+        InteractionData() {};
+
+        InteractionData(string requesterId) {
+            this->requesterId = requesterId;
+        }
     };
 
     struct PartyData {
+
         operator DiscordCoreInternal::PartyData() {
             DiscordCoreInternal::PartyData newData;
             newData.size[0] = this->size[0];
@@ -3137,11 +3198,13 @@ namespace DiscordCoreAPI {
             newData.id = this->id;
             return newData;
         }
+
         vector<int> size{ 0, 0 };
         string id{ "" };
     };
 
     struct AssetsData {
+
         operator DiscordCoreInternal::AssetsData() {
             DiscordCoreInternal::AssetsData newData;
             newData.largeImage = this->largeImage;
@@ -3150,6 +3213,7 @@ namespace DiscordCoreAPI {
             newData.smallText = this->smallText;
             return newData;
         }
+
         string largeImage{ "" };
         string smallImage{ "" };
         string largeText{ "" };
@@ -3157,6 +3221,7 @@ namespace DiscordCoreAPI {
     };
 
     struct SecretsData {
+
         operator DiscordCoreInternal::SecretsData() {
             DiscordCoreInternal::SecretsData newData;
             newData.spectate = this->spectate;
@@ -3164,29 +3229,34 @@ namespace DiscordCoreAPI {
             newData.join = this->join;
             return newData;
         }
+
         string spectate{ "" };
         string match{ "" };
         string join{ "" };
     };
 
     struct TimestampData {
+
         operator DiscordCoreInternal::TimestampData() {
             DiscordCoreInternal::TimestampData newData;
             newData.start = this->start;
             newData.end = this->end;
             return newData;
         }
+
         __int64 start{ 0 };
         __int64 end{ 0 };
     };
 
     struct ButtonData {
+
         operator DiscordCoreInternal::ButtonData() {
             DiscordCoreInternal::ButtonData newData;
             newData.label = this->label;
             newData.url = this->url;
             return newData;
         }
+
         string label{ "" };
         string url{ "" };
     };
@@ -3201,6 +3271,7 @@ namespace DiscordCoreAPI {
     };
 
     struct ActivityData {
+
         operator DiscordCoreInternal::ActivityData() {
             DiscordCoreInternal::ActivityData newData;
             newData.applicationId = this->applicationId;
@@ -3220,6 +3291,7 @@ namespace DiscordCoreAPI {
             newData.url = this->url;
             return newData;
         }
+
         TimestampData timestamps{};
         string applicationId{ "" };
         bool instance{ false };
