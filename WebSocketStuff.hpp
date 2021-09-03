@@ -204,7 +204,6 @@ namespace DiscordCoreInternal {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
 					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
-					this->cleanup();
 					this->connect();
 				}
 				else {
@@ -220,7 +219,6 @@ namespace DiscordCoreInternal {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
 					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
-					this->cleanup();
 					this->connect();
 				}
 				else {
@@ -684,7 +682,6 @@ namespace DiscordCoreInternal {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
 			if (this->maxReconnectTries > this->currentReconnectTries) {
 				this->currentReconnectTries += 1;
-				this->cleanup();
 				this->connect();
 			}
 			else {
@@ -698,7 +695,6 @@ namespace DiscordCoreInternal {
 			if (this->didWeReceiveHeartbeatAck == false) {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
-					this->cleanup();
 					this->connect();
 				}
 				else {
@@ -796,12 +792,10 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 7) {
 				cout << "Reconnecting (Type 7)!" << endl << endl;
-				this->cleanup();
 				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
 				this->sendMessage(resume);
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
-					this->cleanup();
 					this->connect();
 				}
 				else {
@@ -815,7 +809,6 @@ namespace DiscordCoreInternal {
 				this->sendMessage(resume);
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
-					this->cleanup();
 					this->connect();
 				}
 				else {
