@@ -564,11 +564,12 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class VoiceChannelWebSocketAgent;
 
-		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew)
+		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew, bool* doWeQuitNew)
 			: agent(*threadContextNew->scheduler->scheduler) {
 			this->threadContext = threadContextNew;
 			this->webSocketMessageTarget = target;
 			this->botToken = botTokenNew;
+			this->doWeQuit = doWeQuitNew;
 			return;
 		}
 
@@ -645,6 +646,7 @@ namespace DiscordCoreInternal {
 		event_token closedToken{};
 		hstring sessionID{ L"" };
 		hstring botToken{ L"" };
+		bool* doWeQuit{};
 		
 		void getError() {
 			exception error;
@@ -686,6 +688,7 @@ namespace DiscordCoreInternal {
 				this->connect();
 			}
 			else {
+				*this->doWeQuit = true;
 				this->terminate();
 			}
 			return;

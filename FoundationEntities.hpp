@@ -2876,20 +2876,21 @@ namespace DiscordCoreAPI {
             newData.user = this->user;
             return newData;
         }
-        string id{ "" };
-        string packId{ "" };
-        string name{ "" };
-        string description{ "" };
-        string tags{ "" };
-        string asset{ "" };
-        int formatType{ 0 };
         bool available{ false };
+        string description{ "" };
         string guildId{ "" };
-        UserData user{};
+        string packId{ "" };
+        int formatType{ 0 };
+        string asset{ "" };
         int sortValue{ 0 };
+        string name{ "" };
+        string tags{ "" };
+        string id{ "" };
+        UserData user{};
     };
 
     struct TeamMembersObjectData {
+
         operator DiscordCoreInternal::TeamMembersObjectData() {
             DiscordCoreInternal::TeamMembersObjectData newData;
             newData.membershipState = this->membershipState;
@@ -2898,66 +2899,71 @@ namespace DiscordCoreAPI {
             newData.user = this->user;
             return newData;
         }
-        int membershipState{ 0 };
+
         vector<string> permissions{};
+        int membershipState{ 0 };
         string teamId{ "" };
         UserData user{};
     };
 
     struct TeamObjectData {
+
         operator DiscordCoreInternal::TeamObjectData() {
             DiscordCoreInternal::TeamObjectData newData;
-            newData.icon = this->icon;
-            newData.id = this->id;
             newData.ownerUserId = this->ownerUserId;
+            newData.icon = this->icon;
+            newData.id = this->id;            
             return newData;
         }
-        string icon{ "" };
-        string id{ "" };
+
         vector<TeamMembersObjectData> members{};
         string ownerUserId{ "" };
+        string icon{ "" };
+        string id{ "" };
     };
 
     struct ApplicationData {
+
         operator DiscordCoreInternal::ApplicationData() {
             DiscordCoreInternal::ApplicationData newData;
-            newData.botPublic = this->botPublic;
             newData.botRequireCodeGrant = this->botRequireCodeGrant;
-            newData.coverImage = this->coverImage;
-            newData.description = this->description;
-            newData.flags = this->flags;
-            newData.guildId = this->guildId;
-            newData.icon = this->icon;
-            newData.id = this->id;
-            newData.name = this->name;
-            newData.owner = this->owner;
-            newData.primarySkuId = this->primarySkuId;
-            newData.privacyPolicyUrl = this->privacyPolicyUrl;
-            newData.rpcOrigins = this->rpcOrigins;
-            newData.slug = this->slug;
-            newData.summary = this->summary;
-            newData.team = this->team;
             newData.termsOfServiceUrl = this->termsOfServiceUrl;
+            newData.privacyPolicyUrl = this->privacyPolicyUrl;
+            newData.primarySkuId = this->primarySkuId;
+            newData.description = this->description;
+            newData.coverImage = this->coverImage;
+            newData.rpcOrigins = this->rpcOrigins;
+            newData.botPublic = this->botPublic;
             newData.verifyKey = this->verifyKey;
+            newData.guildId = this->guildId;
+            newData.summary = this->summary;
+            newData.owner = this->owner;
+            newData.flags = this->flags;
+            newData.icon = this->icon;
+            newData.name = this->name;
+            newData.slug = this->slug;
+            newData.team = this->team;
+            newData.id = this->id;
             return newData;
         }
-        string id{ "" };
-        string name{ "" };
-        string icon{ "" };
-        string description{ "" };
-        vector<string> rpcOrigins{};
-        bool botPublic{ false };
+
         bool botRequireCodeGrant{ false };
         string termsOfServiceUrl{ "" };
         string privacyPolicyUrl{ "" };
-        UserData owner{};
-        string  summary{ "" };
+        vector<string> rpcOrigins{};
+        string primarySkuId{ "" };
+        string description{ "" };
+        bool botPublic{ false };
+        string coverImage{ "" };
         string verifyKey{ "" };
         TeamObjectData team{};
+        string  summary{ "" };
         string guildId{ "" };
-        string primarySkuId{ "" };
         string slug{ "" };
-        string coverImage{ "" };
+        string name{ "" };
+        string icon{ "" };
+        UserData owner{};
+        string id{ "" };
         int flags{ 0 };
     };
 
@@ -2971,96 +2977,97 @@ namespace DiscordCoreAPI {
         operator DiscordCoreInternal::MessageStickerItemData() {
             DiscordCoreInternal::MessageStickerItemData newData;
             newData.formatType = (DiscordCoreInternal::MessageStickerItemType)this->formatType;
-            newData.id = this->id;
             newData.name = this->name;
+            newData.id = this->id;            
             return newData;
         }
-        string id{ "" };
-        string name{ "" };
         MessageStickerItemType formatType{};
+        string name{ "" };
+        string id{ "" };
     };
 
     struct MessageDataOld {
         operator DiscordCoreInternal::MessageDataOld() {
             DiscordCoreInternal::MessageDataOld newData;
+            newData.type = (DiscordCoreInternal::MessageType)this->type;
+            newData.messageReference = this->messageReference;
             newData.activity.partyId = this->activity.partyId;
-            newData.activity.type = this->activity.type;
-            newData.application = this->application;
-            for (auto value : this->attachments) {
-                newData.attachments.push_back(value);
-            }
-            newData.author = this->author;
-            newData.channelId = this->channelId;
-            for (auto value : this->components) {
-                newData.components.push_back(value);
-            }
-            newData.content = this->content;
             newData.editedTimestamp = this->editedTimestamp;
-            for (auto value : this->embeds) {
-                newData.embeds.push_back(value);
-            }
-            newData.flags = this->flags;
-            newData.guildId = this->guildId;
-            newData.id = this->id;
-            newData.interaction = this->interaction;
-            newData.member = this->member;
+            newData.mentionEveryone = this->mentionEveryone;
             for (auto value : this->mentionChannels) {
                 newData.mentionChannels.push_back(value);
             }
-            newData.mentionEveryone = this->mentionEveryone;
-            newData.mentionRoles = this->mentionRoles;
-            for (auto value : this->mentions) {
-                newData.mentions.push_back(value);
+            newData.activity.type = this->activity.type;
+            for (auto value : this->stickerItems) {
+                newData.stickerItems.push_back(value);
             }
-            newData.messageReference = this->messageReference;
-            newData.nonce = this->nonce;
-            newData.pinned = this->pinned;
+            newData.mentionRoles = this->mentionRoles;
+            for (auto value : this->attachments) {
+                newData.attachments.push_back(value);
+            }
+            for (auto value : this->components) {
+                newData.components.push_back(value);
+            }
+            newData.interaction = this->interaction;
+            newData.application = this->application;
             for (auto value : this->reactions) {
                 newData.reactions.push_back(value);
             }
             for (auto value : this->stickers) {
                 newData.stickers.push_back(value);
             }
-            for (auto value : this->stickerItems) {
-                newData.stickerItems.push_back(value);
+            for (auto value : this->mentions) {
+                newData.mentions.push_back(value);
             }
-            newData.timestamp = this->timestamp;
-            newData.tts = this->tts;
-            newData.type = (DiscordCoreInternal::MessageType)this->type;
+            for (auto value : this->embeds) {
+                newData.embeds.push_back(value);
+            }
+            newData.channelId = this->channelId;
             newData.webhookId = this->webhookId;
+            newData.timestamp = this->timestamp;
+            newData.content = this->content;
+            newData.guildId = this->guildId;
+            newData.author = this->author;
+            newData.member = this->member;
+            newData.pinned = this->pinned;
+            newData.flags = this->flags;
+            newData.nonce = this->nonce;
+            newData.tts = this->tts;
+            newData.id = this->id;
             return newData;
         }
-        string id{ "" };
-        string channelId{ "" };
-        string guildId{ "" };
-        UserData author{};
-        GuildMemberData member{};
-        string content{ "" };
-        string timestamp{ "" };
-        string timestampRaw{ "" };
-        string editedTimestamp{ "" };
-        bool tts{ false };
-        bool mentionEveryone{ false };
-        vector<UserData> mentions{};
-        vector<string> mentionRoles{};
+
+        vector<MessageStickerItemData> stickerItems{};
         vector<ChannelMentionData> mentionChannels{};
-        vector<AttachmentData> attachments{};
-        vector<EmbedData> embeds{};
-        vector<ReactionData> reactions{};
-        string nonce{ "" };
-        bool pinned{ false };
-        string webhookId{ "" };
-        MessageType type{};
-        MessageActivityData activity{};
-        ApplicationData application{};
-        string applicationId{ "" };
         MessageReferenceData messageReference{};
-        int flags{ 0 };
         vector<MessageStickerData> stickers{};
+        vector<AttachmentData> attachments{};
         MessageInteractionData interaction{};
         vector<ActionRowData> components{};
+        vector<ReactionData> reactions{};
+        MessageActivityData activity{};
+        ApplicationData application{};
+        vector<string> mentionRoles{};
+        bool mentionEveryone{ false };
+        string editedTimestamp{ "" };
+        vector<UserData> mentions{};
+        vector<EmbedData> embeds{};
+        string applicationId{ "" };
+        string timestampRaw{ "" };
+        GuildMemberData member{};
+        string channelId{ "" };
+        string timestamp{ "" };
+        string webhookId{ "" };
+        string guildId{ "" };
+        bool pinned{ false };
+        string content{ "" };
         ChannelData thread{};
-        vector<MessageStickerItemData> stickerItems{};
+        string nonce{ "" };
+        MessageType type{};
+        UserData author{};
+        bool tts{ false };
+        string id{ "" };
+        int flags{ 0 };
     };
 
     struct MessageData :public MessageDataOld {
@@ -3077,46 +3084,49 @@ namespace DiscordCoreAPI {
 
     struct InteractionData {
         InteractionData() {};
+
         InteractionData(string requesterId) {
             this->requesterId = requesterId;
         }
+
         operator DiscordCoreInternal::InteractionData() {
             DiscordCoreInternal::InteractionData newData;
+            newData.componentType = (DiscordCoreInternal::ComponentType)this->componentType;
+            newData.type = (DiscordCoreInternal::InteractionType)this->type;
             newData.applicationId = this->applicationId;
+            newData.requesterId = this->requesterId;
             newData.channelId = this->channelId;
             newData.customId = this->customId;
-            newData.data = this->data;
-            newData.componentType = static_cast<DiscordCoreInternal::ComponentType>(this->componentType);
+            newData.message = this->message;
             newData.dataRaw = this->dataRaw;
             newData.guildId = this->guildId;
-            newData.id = this->id;
-            newData.member = this->member;
-            newData.message = this->message;
-            newData.token = this->token;
-            newData.type = (DiscordCoreInternal::InteractionType)this->type;
-            newData.user = this->user;
             newData.version = this->version;
-            newData.requesterId = this->requesterId;
+            newData.member = this->member;
             newData.values = this->values;
+            newData.token = this->token;
+            newData.user = this->user;
+            newData.data = this->data;
+            newData.id = this->id;
             return newData;
         }
-        string id{ "" };
-        string applicationId{ "" };
-        InteractionType type{};
+
         ApplicationCommandInteractionData data{};
         ComponentType componentType{};
-        json dataRaw{};
-        string guildId{ "" };
-        string channelId{ "" };
+        string applicationId{ "" };
         GuildMemberData member{};
-        string name{ "" };
-        UserData user{};
-        string token{ "" };
-        int version{ 0 };
+        string requesterId{ "" };
+        vector<string> values{};
+        string channelId{ "" };
+        InteractionType type{};
         MessageData message{};
         string customId{ "" };
-        vector<string> values{};
-        string requesterId{ "" };
+        string guildId{ "" };
+        string token{ "" };
+        string name{ "" };
+        int version{ 0 };
+        UserData user{};
+        string id{ "" };
+        json dataRaw{};
     };
 
     struct PartyData {
@@ -3400,6 +3410,7 @@ namespace DiscordCoreAPI {
 
     struct ApplicationCommandOptionChoiceData {
         string valueString{ "" };
+        float valueFloat{ 0.0f };
         string name{ "" };
         int	valueInt{ 0 };
     };
@@ -3416,8 +3427,10 @@ namespace DiscordCoreAPI {
     struct ApplicationCommandData {
         vector<ApplicationCommandOptionData> options{};
         bool defaultPermission{ false };
+        ApplicationCommandType type{};
         string applicationId{ "" };
-        string description{ "" };
+        string description{ "" };        
+        string guildId{ "" };
         string name{ "" };
         string id{ "" };
     };
@@ -3978,13 +3991,12 @@ namespace DiscordCoreAPI {
             }
         }
         vector<string> optionsArgs{};
-        string commandName{ "" };
         InputEventData eventData{};
+        string commandName{ "" };
     };
 
     string constructStringContent(CommandData commandData) {
-        string finalCommandString;
-        finalCommandString = commandData.commandName + " = ";
+        string finalCommandString = commandData.commandName + " = ";
         for (auto& value : commandData.optionsArgs) {
             finalCommandString += value + ", ";
         }
