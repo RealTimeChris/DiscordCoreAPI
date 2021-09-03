@@ -28,7 +28,6 @@ namespace DiscordCoreAPI {
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		virtual BaseFunction* create() = 0;
 		string helpDescription{ "" };
-		EmojiData helpEmoji{  };
 		string commandName{ "" };
 		EmbedData helpEmbed{};
 	};
@@ -98,7 +97,7 @@ namespace DiscordCoreAPI {
 							lowestValue = value;
 							functionName = messageContents.substr(currentPosition, key.length());
 						}
-						
+
 					}
 				}
 				if (isItFound) {
