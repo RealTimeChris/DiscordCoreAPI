@@ -483,7 +483,7 @@ namespace DiscordCoreInternal {
 
 		auto componentsActionRow = json::array();
 
-		for (auto& value : dataPackage.messageData.components) {
+		for (auto& value : dataPackage.components) {
 			auto components = json::array();
 
 			for (auto& valueNew : value.components) {
@@ -562,7 +562,7 @@ namespace DiscordCoreInternal {
 
 		auto embedsArray = json::array();
 
-		for (auto& value : dataPackage.messageData.embeds) {
+		for (auto& value : dataPackage.embeds) {
 
 			auto fields = json::array();
 
@@ -617,21 +617,21 @@ namespace DiscordCoreInternal {
 			embedsArray.push_back(embed);
 		}
 
-		if (dataPackage.messageData.embeds.size()>0) {
-			if (dataPackage.messageData.messageReference.guildId != "") {
+		if (dataPackage.embeds.size()>0) {
+			if (dataPackage.messageReference.guildId != "") {
 				json data = {
 		{"allowed_mentions", {
-			{"parse", dataPackage.messageData.allowedMentions.parse},
-			{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
-			{"roles", dataPackage.messageData.allowedMentions.roles},
-			{"users", dataPackage.messageData.allowedMentions.users}
+			{"parse", dataPackage.allowedMentions.parse},
+			{"replied_user", dataPackage.allowedMentions.repliedUser},
+			{"roles", dataPackage.allowedMentions.roles},
+			{"users", dataPackage.allowedMentions.users}
 			}},
-			{"message_reference",{{"message_id", dataPackage.messageData.messageReference.messageId},
-			{"channel_id", dataPackage.messageData.messageReference.channelId},
-			{"fail_if_not_exists", dataPackage.messageData.messageReference.failIfNotExists}
+			{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+			{"channel_id", dataPackage.messageReference.channelId},
+			{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
 				}},
-		{"content", dataPackage.messageData.content},
-		{"tts" , dataPackage.messageData.tts},
+		{"content", dataPackage.content},
+		{"tts" , dataPackage.tts},
 		{"embeds" ,embedsArray},
 					{"components", componentsActionRow}
 				};
@@ -640,13 +640,13 @@ namespace DiscordCoreInternal {
 			else {
 				json data = {
 	{"allowed_mentions", {
-		{"parse", dataPackage.messageData.allowedMentions.parse},
-		{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
-		{"roles", dataPackage.messageData.allowedMentions.roles},
-		{"users", dataPackage.messageData.allowedMentions.users}
+		{"parse", dataPackage.allowedMentions.parse},
+		{"replied_user", dataPackage.allowedMentions.repliedUser},
+		{"roles", dataPackage.allowedMentions.roles},
+		{"users", dataPackage.allowedMentions.users}
 		}},
-	{"content", dataPackage.messageData.content},
-	{"tts" , dataPackage.messageData.tts},
+	{"content", dataPackage.content},
+	{"tts" , dataPackage.tts},
 	{"embeds" ,embedsArray},
 				{"components", componentsActionRow}
 				};
@@ -654,20 +654,20 @@ namespace DiscordCoreInternal {
 			}
 		}
 		else {
-			if (dataPackage.messageData.messageReference.guildId != "") {
+			if (dataPackage.messageReference.guildId != "") {
 				json data = {
 			{"allowed_mentions", {
-				{"parse", dataPackage.messageData.allowedMentions.parse},
-				{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
-				{"roles", dataPackage.messageData.allowedMentions.roles},
-				{"users", dataPackage.messageData.allowedMentions.users}
+				{"parse", dataPackage.allowedMentions.parse},
+				{"replied_user", dataPackage.allowedMentions.repliedUser},
+				{"roles", dataPackage.allowedMentions.roles},
+				{"users", dataPackage.allowedMentions.users}
 				}},
-				{"message_reference",{{"message_id", dataPackage.messageData.messageReference.messageId},
-				{"channel_id", dataPackage.messageData.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageData.messageReference.failIfNotExists}
+				{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+				{"channel_id", dataPackage.messageReference.channelId},
+				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
 					}},
-			{"content", dataPackage.messageData.content},
-			{"tts" , dataPackage.messageData.tts},
+			{"content", dataPackage.content},
+			{"tts" , dataPackage.tts},
 					{"components", componentsActionRow}
 				};
 				return data.dump();
@@ -675,17 +675,17 @@ namespace DiscordCoreInternal {
 			else {
 				json data = {
 			{"allowed_mentions", {
-				{"parse", dataPackage.messageData.allowedMentions.parse},
-				{"replied_user", dataPackage.messageData.allowedMentions.repliedUser},
-				{"roles", dataPackage.messageData.allowedMentions.roles},
-				{"users", dataPackage.messageData.allowedMentions.users}
+				{"parse", dataPackage.allowedMentions.parse},
+				{"replied_user", dataPackage.allowedMentions.repliedUser},
+				{"roles", dataPackage.allowedMentions.roles},
+				{"users", dataPackage.allowedMentions.users}
 				}},
-					{"message_reference",{{"message_id", dataPackage.messageData.messageReference.messageId},
-				{"channel_id", dataPackage.messageData.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageData.messageReference.failIfNotExists}
+					{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+				{"channel_id", dataPackage.messageReference.channelId},
+				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
 					}},
-			{"content", dataPackage.messageData.content},
-			{"tts" , dataPackage.messageData.tts},
+			{"content", dataPackage.content},
+			{"tts" , dataPackage.tts},
 				{"components", componentsActionRow}
 				};
 				return data.dump();

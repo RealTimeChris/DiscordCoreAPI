@@ -231,22 +231,8 @@ namespace DiscordCoreAPI {
 	};
 
 	struct CreateMessageData {
-		operator DiscordCoreInternal::CreateMessageData() {
-			DiscordCoreInternal::CreateMessageData newData;
-			newData.messageReference = this->messageReference;
-			newData.allowedMentions = this->allowedMentions;
-			for (auto value : this->components) {
-				newData.components.push_back(value);
-			}
-			newData.content = this->content;
-			for (auto value : this->embeds) {
-				newData.embeds.push_back(value);
-			}
-			newData.channelId = this->channelId;
-			newData.nonce = this->nonce;
-			newData.tts = this->tts;
-			return newData;
-		}
+
+		friend class DiscordCoreInternal::MessageManager;
 
 		CreateMessageData(InputEventData dataPackage) {
 			this->requesterId = dataPackage.getRequesterId();
@@ -912,18 +898,18 @@ namespace DiscordCoreInternal {
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.channelId = dataPackage.channelId;
-			dataPackageNew.messageData.allowedMentions = dataPackage.allowedMentions;
+			dataPackageNew.allowedMentions= dataPackage.allowedMentions;
 			for (auto value : dataPackage.components) {
-				dataPackageNew.messageData.components.push_back(value);
+				dataPackageNew.components.push_back(value);
 			}
-			dataPackageNew.messageData.content= dataPackage.content;
+			dataPackageNew.content= dataPackage.content;
 			for (auto value : dataPackage.embeds) {
-				dataPackageNew.messageData.embeds.push_back(value);
+				dataPackageNew.embeds.push_back(value);
 			}
-			dataPackageNew.messageData.messageReference = dataPackage.messageReference;
-			dataPackageNew.messageData.nonce = dataPackage.nonce;
-			dataPackageNew.messageData.requesterId = dataPackage.requesterId;
-			dataPackageNew.messageData.tts = dataPackage.tts;
+			dataPackageNew.messageReference = dataPackage.messageReference;
+			dataPackageNew.nonce = dataPackage.nonce;
+			dataPackageNew.requesterId = dataPackage.requesterId;
+			dataPackageNew.tts = dataPackage.tts;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostDMMessageBuffer, dataPackageNew);
 			requestAgent.start();
@@ -938,7 +924,7 @@ namespace DiscordCoreInternal {
 			co_return messageNew;
 		}
 
-		task<DiscordCoreAPI::Message> createMessageAsync(CreateMessageData dataPackage) {
+		task<DiscordCoreAPI::Message> createMessageAsync(DiscordCoreAPI::CreateMessageData dataPackage) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			PostMessageData dataPackageNew;
