@@ -114,8 +114,8 @@ namespace DiscordCoreAPI {
 			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
-			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->workloadSource, this->botToken, DiscordCoreInternal::ThreadManager::getThreadContext().get(), &this->doWeQuit);
+			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
+			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->workloadSource, this->botToken, &this->doWeQuit);
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
 			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkload workload;

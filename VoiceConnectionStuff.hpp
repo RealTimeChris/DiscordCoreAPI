@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 				this->discordCoreClientBase = discordCoreClientBaseNew;
 				this->voiceConnectionData = voiceConnectionDataNew;
 				this->audioDataBuffer = bufferMessageBlockNew;
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), this->voiceConnectionData, &this->readyBuffer);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(this->voiceConnectionData, &this->readyBuffer);
 				send(this->voicechannelWebSocketAgent->voiceConnectionDataBuffer, this->voiceConnectionData);
 				this->voicechannelWebSocketAgent->start();
 				receive(this->readyBuffer);

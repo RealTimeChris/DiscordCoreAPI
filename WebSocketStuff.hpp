@@ -59,16 +59,17 @@ namespace DiscordCoreInternal {
 		WebSocketEventType eventType;
 	};
 
-	class VoiceChannelWebSocketAgent : public agent {
+	class VoiceChannelWebSocketAgent : ThreadContext, agent {
 	public:
 
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WebSocketConnectionAgent;
 		friend class Guild;
 
-		VoiceChannelWebSocketAgent(shared_ptr<ThreadContext> threadContextNew, VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
-			:agent(*threadContextNew->scheduler->scheduler) {
-			this->threadContext = threadContextNew;
+		VoiceChannelWebSocketAgent(VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
+			:
+			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
+			agent(*this->scheduler->scheduler) {
 			this->voiceConnectionData = voiceConnectionDataNew;
 			this->readyBuffer = readyBufferNew;
 			return;
@@ -125,7 +126,6 @@ namespace DiscordCoreInternal {
 	protected:
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool>* readyBuffer{ nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
@@ -340,20 +340,19 @@ namespace DiscordCoreInternal {
 		void terminate() {
 			done();
 			this->cleanup();
-			this->threadContext->releaseGroup();
 		}
 
 	};
 
-	class WebSocketReceiverAgent : public agent {
+	class WebSocketReceiverAgent : ThreadContext, agent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 
-		WebSocketReceiverAgent(shared_ptr<ThreadContext> threadContextNew):
-			agent(*threadContextNew->scheduler->scheduler)
+		WebSocketReceiverAgent()
+			: ThreadContext(*ThreadManager::getThreadContext().get()), 
+			agent(*this->scheduler->scheduler)
 		{
-			this->threadContext = threadContextNew;
 			return;
 		}
 
@@ -365,7 +364,6 @@ namespace DiscordCoreInternal {
 
 	protected:
 		unbounded_buffer<WebSocketWorkload> workloadTarget{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<json> workloadSource{ nullptr };
 		bool doWeQuit{ false };
@@ -552,19 +550,17 @@ namespace DiscordCoreInternal {
 
 		void terminate() {
 			this->doWeQuit = true;
-			this->threadContext->releaseGroup();
 		}
 	};
 
-	class WebSocketConnectionAgent : public agent {
+	class WebSocketConnectionAgent : ThreadContext, agent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class VoiceChannelWebSocketAgent;
 
-		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, shared_ptr<ThreadContext> threadContextNew, bool* doWeQuitNew)
-			: agent(*threadContextNew->scheduler->scheduler) {
-			this->threadContext = threadContextNew;
+		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, bool* doWeQuitNew)
+			:ThreadContext(*ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
 			this->webSocketMessageTarget = target;
 			this->botToken = botTokenNew;
 			this->doWeQuit = doWeQuitNew;
@@ -626,7 +622,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<json>* webSocketMessageTarget{ nullptr };
 		VoiceConnectionData* pVoiceConnectionData{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		shared_ptr<ThreadContext> threadContext{ nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
 		bool didWeReceiveHeartbeatAck{ true };
@@ -685,7 +680,6 @@ namespace DiscordCoreInternal {
 				this->connect();
 			}
 			else {
-				*this->doWeQuit = true;
 				this->terminate();
 			}
 			return;
@@ -853,9 +847,9 @@ namespace DiscordCoreInternal {
 		}
 
 		void terminate() {
+			*this->doWeQuit = true;
 			this->done();
 			this->cleanup();
-			this->threadContext->releaseGroup();
 		}
 
 	};
