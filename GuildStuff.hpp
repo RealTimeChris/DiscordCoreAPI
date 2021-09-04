@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 						}
 						else {
-							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 						}
 						else {
-							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
@@ -88,72 +88,72 @@ namespace DiscordCoreAPI {
 		Guild() {};
 
 		Guild(GuildData dataNew) {
-			this->icon = dataNew.icon;
-			this->name = dataNew.name;
-			this->id = dataNew.id;
-			this->iconHash = dataNew.iconHash;
-			this->splash = dataNew.splash;
-			this->discoverySplash = dataNew.discoverySplash;
-			this->preferredLocale = dataNew.preferredLocale;
-			this->publicUpdatesChannelID = dataNew.publicUpdatesChannelID;
-			this->vanityURLCode = dataNew.vanityURLCode;
-			this->description = dataNew.description;
-			this->banner = dataNew.banner;
-			this->ruleChannelID = dataNew.ruleChannelID;
-			this->applicationID = dataNew.applicationID;
-			this->createdAt = dataNew.createdAt;
-			this->joinedAt = dataNew.joinedAt;
-			this->widgetChannelID = dataNew.widgetChannelID;
-			this->systemChannelID = dataNew.systemChannelID;
-			this->region = dataNew.region;
-			this->afkChannelID = dataNew.afkChannelID;
-			this->ownerID = dataNew.ownerID;
-			this->features = dataNew.features;
-			this->threads = dataNew.threads;
-			this->permissions = dataNew.permissions;
-			this->owner = dataNew.owner;
-			this->afkTimeOut = dataNew.afkTimeOut;
-			this->widgetEnabled = dataNew.widgetEnabled;
-			this->verificationLevel = dataNew.verificationLevel;
-			this->defaultMessageNotifications = dataNew.defaultMessageNotifications;
-			this->explicitContentFilter = dataNew.explicitContentFilter;
-			this->emoji = dataNew.emoji;
-			this->roles = dataNew.roles;
-			this->systemChannelFlags = dataNew.systemChannelFlags;
-			this->mfaLevel = dataNew.mfaLevel;
-			this->large = dataNew.large;
-			this->voiceStates = dataNew.voiceStates;
-			this->presences = dataNew.presences;
-			this->maxPresences = dataNew.maxPresences;
-			this->maxMembers = dataNew.maxMembers;
-			this->premiumSubscriptionCount = dataNew.premiumSubscriptionCount;
-			this->premiumTier = dataNew.premiumTier;
-			this->maxVideoChannelUsers = dataNew.maxVideoChannelUsers;
-			this->approximateMemberCount = dataNew.approximateMemberCount;
-			this->unavailable = dataNew.unavailable;
-			this->memberCount = dataNew.memberCount;
-			this->approximatePresenceCount = dataNew.approximatePresenceCount;
-			this->nsfwLevel= dataNew.nsfwLevel;
-			this->welcomeScreen = dataNew.welcomeScreen;
-			this->members= dataNew.members;
-			this->channels = dataNew.channels;
-			this->stageInstances = dataNew.stageInstances;
-			this->discordCoreClient = dataNew.discordCoreClient;
-			this->discordCoreClientBase = dataNew.discordCoreClientBase;
-			if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
-				if (!DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
+			if (DiscordCoreClientBase::audioBuffersMap.contains(dataNew.id)) {
+				if (!DiscordCoreClientBase::youtubeAPIMap->contains(dataNew.id)) {
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(dataNew.id), dataNew.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(dataNew.id, sharedPtr);
 				}
 			}
 			else {
 				shared_ptr<unbounded_buffer<AudioFrameData>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtrBuffer));
-				if (!DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, sharedPtr);
+				DiscordCoreClientBase::audioBuffersMap.insert(make_pair(dataNew.id, sharedPtrBuffer));
+				if (!DiscordCoreClientBase::youtubeAPIMap->contains(dataNew.id)) {
+					shared_ptr<YouTubeAPI> sharedPtr = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(dataNew.id), dataNew.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(dataNew.id, sharedPtr);
 				}
 			}
+			this->defaultMessageNotifications = dataNew.defaultMessageNotifications;
+			this->premiumSubscriptionCount = dataNew.premiumSubscriptionCount;
+			this->approximatePresenceCount = dataNew.approximatePresenceCount;
+			this->publicUpdatesChannelID = dataNew.publicUpdatesChannelID;
+			this->approximateMemberCount = dataNew.approximateMemberCount;
+			this->explicitContentFilter = dataNew.explicitContentFilter;
+			this->discordCoreClientBase = dataNew.discordCoreClientBase;
+			this->maxVideoChannelUsers = dataNew.maxVideoChannelUsers;
+			this->systemChannelFlags = dataNew.systemChannelFlags;
+			this->verificationLevel = dataNew.verificationLevel;
+			this->discordCoreClient = dataNew.discordCoreClient;
+			this->discoverySplash = dataNew.discoverySplash;
+			this->preferredLocale = dataNew.preferredLocale;
+			this->widgetChannelID = dataNew.widgetChannelID;
+			this->systemChannelID = dataNew.systemChannelID;
+			this->stageInstances = dataNew.stageInstances;
+			this->welcomeScreen = dataNew.welcomeScreen;
+			this->widgetEnabled = dataNew.widgetEnabled;
+			this->vanityURLCode = dataNew.vanityURLCode;
+			this->applicationID = dataNew.applicationID;
+			this->ruleChannelID = dataNew.ruleChannelID;
+			this->maxPresences = dataNew.maxPresences;
+			this->afkChannelID = dataNew.afkChannelID;
+			this->description = dataNew.description;
+			this->voiceStates = dataNew.voiceStates;
+			this->premiumTier = dataNew.premiumTier;
+			this->unavailable = dataNew.unavailable;
+			this->memberCount = dataNew.memberCount;
+			this->permissions = dataNew.permissions;
+			this->afkTimeOut = dataNew.afkTimeOut;
+			this->maxMembers = dataNew.maxMembers;
+			this->nsfwLevel = dataNew.nsfwLevel;
+			this->createdAt = dataNew.createdAt;
+			this->presences = dataNew.presences;
+			this->features = dataNew.features;
+			this->mfaLevel = dataNew.mfaLevel;
+			this->joinedAt = dataNew.joinedAt;
+			this->iconHash = dataNew.iconHash;
+			this->channels = dataNew.channels;
+			this->ownerID = dataNew.ownerID;
+			this->threads = dataNew.threads;
+			this->members = dataNew.members;
+			this->splash = dataNew.splash;
+			this->banner = dataNew.banner;
+			this->region = dataNew.region;
+			this->large = dataNew.large;
+			this->owner = dataNew.owner;
+			this->emoji = dataNew.emoji;
+			this->roles = dataNew.roles;
+			this->icon = dataNew.icon;
+			this->name = dataNew.name;
+			this->id = dataNew.id;
 			return;
 		}
 
@@ -206,9 +206,9 @@ namespace DiscordCoreAPI {
 	};
 
 	struct CreateGuildBanData {
-		string guildId{ "" };
 		string guildMemberId{ "" };
 		int deleteMessageDays{ 0 };
+		string guildId{ "" };
 		string reason{ "" };
 	};
 
@@ -226,8 +226,8 @@ namespace DiscordCoreAPI {
 
 	struct FetchAuditLogData {
 		AuditLogEvent actionType{};
-		string guildId{ "" };
 		unsigned int limit{ 0 };
+		string guildId{ "" };
 		string userId{ "" };
 	};
 
