@@ -69,14 +69,14 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnRoleUpdateData {
+		string guildId{ "" };
 		Role roleOld{};
 		Role roleNew{};
-		string guildId{ "" };
 	};
 
 	struct OnRoleDeletionData {
-		Role roleOld{};
 		string guildId{ "" };
+		Role roleOld{};		
 	};
 
 	struct OnInviteCreationData {
@@ -110,9 +110,9 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnMessageDeleteBulkData {
-		vector<string> ids{};
 		string channelId{ "" };
 		string guildId{ "" };
+		vector<string> ids{};
 	};
 
 	struct OnReactionAddData {
@@ -130,9 +130,9 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnReactionRemoveEmojiData {
+		string messageId{ "" };
 		string channelId{ "" };
 		string guildId{ "" };
-		string messageId{ "" };
 		EmojiData emoji{};
 	};
 
@@ -154,9 +154,9 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnVoiceServerUpdateData {
-		string token{ "" };
-		string guildId{ "" };
 		string endpoint{ "" };
+		string guildId{ "" };
+		string token{ "" };
 	};
 
 	class EventManager {

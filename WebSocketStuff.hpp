@@ -55,8 +55,8 @@ namespace DiscordCoreInternal {
 	};
 
 	struct WebSocketWorkload {
-		json payLoad;
-		WebSocketEventType eventType;
+		WebSocketEventType eventType{};
+		json payLoad{};
 	};
 
 	class VoiceChannelWebSocketAgent : ThreadContext, agent {
