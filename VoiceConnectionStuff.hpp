@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 
 		bool skip() {
 			if (this->areWePlaying){
-				this->areWeStopping = true;
+				this->areWeSkipping = true;
 				if (DiscordCoreClientBase::youtubeAPIMap->contains(this->voiceConnectionData.guildId)) {
 					auto songQueue = *DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->getQueue();
 					auto currentSong = DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->getCurrentSong();
@@ -139,10 +139,10 @@ namespace DiscordCoreAPI {
 				}				
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
-				receive(this->stopBuffer);
+				receive(this->skipBuffer);
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
-				send(this->stopBuffer, true);
+				send(this->skipBuffer, true);
 				return true;
 			}
 			else {

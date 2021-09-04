@@ -31,6 +31,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClient : public DiscordCoreClientBase, protected agent {
 	public:
+
 		friend class PermissionsConverter;
 		friend class ApplicationCommands;
 		friend class GuildMembers;

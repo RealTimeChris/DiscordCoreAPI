@@ -283,20 +283,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		bool skip() {
-			if (this->areWePlaying) {
-				this->areWeStopping = true;
-				vector<uint8_t> newVector;
-				send(this->currentDataSendBuffer, newVector);
-				AudioFrameData dataFrame;
-				while (try_receive(*this->sendAudioBuffer, dataFrame)) {};
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-
 		bool isThereAnySongs() {
 			if (this->loopAll || this->loopSong) {
 				if (this->songQueue.size() == 0 && this->currentSong.songId == "") {
