@@ -3700,20 +3700,13 @@ namespace DiscordCoreAPI {
         UserData user{};
     };
 
-    enum class FrameStatus {
-        Stopped = 0,
-        Running = 1
-    };
-
     struct RawFrameData {
         int32_t sampleCount{ -1 };
-        FrameStatus frameStatus{};
         vector<uint8_t> data{};
     };
 
     struct EncodedFrameData {
         int32_t sampleCount{ -1 };
-        FrameStatus frameStatus{};
         vector<uint8_t> data{};
     };
 
@@ -3726,7 +3719,6 @@ namespace DiscordCoreAPI {
     struct AudioFrameData {
         EncodedFrameData encodedFrameData{};
         RawFrameData rawFrameData{};
-        FrameStatus frameStatus{};
         AudioFrameType type{};
     };
 

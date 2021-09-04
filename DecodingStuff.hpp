@@ -55,6 +55,7 @@ namespace DiscordCoreAPI {
         }
 
         ~SongDecoder() {
+            this->done();
             if (this->formatContext) {
                 avformat_close_input(&this->formatContext);
             }
@@ -269,7 +270,6 @@ namespace DiscordCoreAPI {
                             }
                             RawFrameData rawFrame{};
                             rawFrame.data = newVector;
-                            rawFrame.frameStatus = FrameStatus::Running;
                             rawFrame.sampleCount = newFrame->nb_samples;
                             send(this->outDataBuffer, rawFrame);
                             __int64 sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
@@ -285,7 +285,6 @@ namespace DiscordCoreAPI {
 
                                 RawFrameData rawFrame02{};
                                 rawFrame02.data = newVector02;
-                                rawFrame02.frameStatus = FrameStatus::Running;
                                 rawFrame02.sampleCount = newFrame->nb_samples;
                                 send(this->outDataBuffer, rawFrame02);
                             }
@@ -337,9 +336,7 @@ namespace DiscordCoreAPI {
                 stream->bytesReadTotal += stream->bytesRead;
             }
             else  {
-                stream->done();
                 RawFrameData frameData;
-                frameData.frameStatus = FrameStatus::Stopped;
                 frameData.sampleCount = 0;
                 send(stream->outDataBuffer, frameData);
                 return AVERROR_EOF;

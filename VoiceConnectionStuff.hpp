@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
 				this->audioData.rawFrameData.data.clear();
 				this->audioData = AudioFrameData();
 			}
-			AudioFrameData frameData{ .frameStatus = FrameStatus::Running };
+			AudioFrameData frameData{};
 			while (try_receive(*this->audioDataBuffer, frameData)) {
 				frameData.encodedFrameData.data.clear();
 				frameData.rawFrameData.data.clear();
@@ -404,6 +404,8 @@ namespace DiscordCoreAPI {
 							int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 							if (this->audioData.encodedFrameData.sampleCount != 0) {
 								this->sendSingleAudioFrame(this->audioData.encodedFrameData);
+								this->audioData.encodedFrameData.data.clear();
+								this->audioData.rawFrameData.data.clear();
 							}
 							else {
 								this->onSongCompletionEvent();

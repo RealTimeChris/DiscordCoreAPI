@@ -663,18 +663,10 @@ namespace DiscordCoreAPI {
 						}
 						RawFrameData rawFrame;
 						rawFrame.data.resize(0);
-						bool doWeBreak{ false };
 						while (songDecoder->getFrame(&rawFrame)) {
-							if (rawFrame.frameStatus == FrameStatus::Stopped) {
-								doWeBreak = true;
-								break;
-							}
 							if (rawFrame.data.size() != 0) {
 								frames.push_back(rawFrame);
 							}
-						}
-						if (doWeBreak) {
-							break;
 						}
 						auto encodedFrames = songEncoder->encodeFrames(frames);
 						for (auto value : encodedFrames) {
@@ -698,9 +690,10 @@ namespace DiscordCoreAPI {
 					AudioFrameData frameData02;
 					frameData02.encodedFrameData.sampleCount = 0;
 					frameData02.rawFrameData.sampleCount = 0;
-					frameData02.frameStatus = FrameStatus::Stopped;
 					send(*this->sendAudioBuffer, frameData02);
 				}
+				songEncoder->~SongEncoder();
+				songDecoder->~SongDecoder();
 				co_await mainThread;
 				co_return;
 			}
