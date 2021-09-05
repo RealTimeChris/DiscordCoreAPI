@@ -23,6 +23,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreClientBase {
 	public:
 		friend class DiscordCoreClient;
+		friend class YouTubeAPIWrapper;
 		friend class VoiceConnection;
 		friend class InputEvents;
 		friend class YouTubeAPI;

@@ -19,19 +19,29 @@ namespace DiscordCoreAPI {
         size_t bufferMaxSize{ 0 };
     };
 
-    class SongDecoder :  agent {
+    class SongDecoder : agent {
     public:
 
         friend class YouTubeAPI;
 
         SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : agent(*threadContextNew->scheduler->scheduler) {
-            this->dataBuffer = dataPackage.dataBuffer;
-            this->totalFileSize = (int)dataPackage.totalFileSize;
-            this->threadContext = threadContextNew;
             this->bufferMaxSize = (int)dataPackage.bufferMaxSize;
+            this->totalFileSize = (int)dataPackage.totalFileSize;
+            this->completionBuffer = new unbounded_buffer<bool>;
+            this->dataBuffer = dataPackage.dataBuffer;
+            this->threadContext = threadContextNew;
             this->start();
         }
-        
+
+        void exit() {
+            this->done();
+            this->areWeQuitting = true;
+        }
+
+        bool getCompletionSignal() {
+            return receive(this->completionBuffer);
+        }
+
         bool getFrame(RawFrameData* dataPackage) {
 
             if (!this->haveWeBooted) {
@@ -51,7 +61,7 @@ namespace DiscordCoreAPI {
             }
 
             return false;
-                       
+
         }
 
         ~SongDecoder() {
@@ -85,6 +95,7 @@ namespace DiscordCoreAPI {
     protected:
         int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 }, bytesReadTotal{ 0 };
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
+        unbounded_buffer<bool>* completionBuffer{ nullptr };
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         unbounded_buffer<vector<uint8_t>>* dataBuffer{};
         unbounded_buffer<RawFrameData> outDataBuffer{};
@@ -96,9 +107,10 @@ namespace DiscordCoreAPI {
         AVStream* audioStream{ nullptr };
         vector<uint8_t> currentBuffer{};
         AVPacket* packet{ nullptr };
+        bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
-        
+
         void run() {
             if (!this->haveWeBooted) {
                 vector<uint8_t> newVector;
@@ -306,7 +318,11 @@ namespace DiscordCoreAPI {
                     this->frame = av_frame_alloc();
                     this->newFrame = av_frame_alloc();
                     this->packet = av_packet_alloc();
+                    if (this->areWeQuitting) {
+                        break;
+                    }
                 }
+                send(this->completionBuffer, true);
                 av_packet_unref(this->packet);
                 av_packet_free(&this->packet);
                 av_frame_unref(this->frame);
@@ -314,12 +330,11 @@ namespace DiscordCoreAPI {
                 av_frame_unref(this->newFrame);
                 av_frame_free(&this->newFrame);
                 cout << "Completed decoding!" << endl << endl;
-                done();
                 return;
             }
         }
 
-        static int FileStreamRead(void* opaque, uint8_t* buf, int) {   
+        static int FileStreamRead(void* opaque, uint8_t* buf, int) {
             SongDecoder* stream = reinterpret_cast<SongDecoder*>(opaque);
             stream->bytesRead = 0;
             stream->currentBuffer = vector<uint8_t>();
@@ -330,12 +345,11 @@ namespace DiscordCoreAPI {
                 stream->currentBuffer = receive(stream->dataBuffer, 10000);
             }
             catch (exception&) {};
-            
             if (stream->currentBuffer.size() > 0) {
                 stream->bytesRead = (int)stream->currentBuffer.size();
                 stream->bytesReadTotal += stream->bytesRead;
             }
-            else  {
+            else {
                 RawFrameData frameData;
                 frameData.sampleCount = 0;
                 send(stream->outDataBuffer, frameData);
@@ -353,9 +367,8 @@ namespace DiscordCoreAPI {
 
             return stream->bytesRead;
         }
-
     };
-    
+
 }
 
 #endif

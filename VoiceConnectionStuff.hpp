@@ -94,6 +94,7 @@ namespace DiscordCoreAPI {
 		bool stop() {
 			if (this->areWePlaying) {
 				this->areWeStopping = true;
+				/*
 				if (!DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->stop()) {
 					return false;
 				}
@@ -106,6 +107,7 @@ namespace DiscordCoreAPI {
 				youtubeAPI->setLoopSongStatus(isSongLooped);
 				youtubeAPI->setQueue(songQueue);
 				DiscordCoreClientBase::youtubeAPIMap->insert(make_pair(this->voiceConnectionData.guildId, youtubeAPI));
+				*/
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
 				receive(this->stopBuffer);
@@ -122,6 +124,7 @@ namespace DiscordCoreAPI {
 		bool skip() {
 			if (this->areWePlaying){
 				this->areWeSkipping = true;
+				/*
 				if (DiscordCoreClientBase::youtubeAPIMap->contains(this->voiceConnectionData.guildId)) {
 					auto songQueue = *DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->getQueue();
 					auto currentSong = DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->getCurrentSong();
@@ -136,7 +139,8 @@ namespace DiscordCoreAPI {
 					youtubeAPI->setQueue(songQueue);
 					youtubeAPI->sendNextSong();
 					DiscordCoreClientBase::youtubeAPIMap->insert(make_pair(this->voiceConnectionData.guildId, youtubeAPI));
-				}				
+				}
+				*/
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
 				receive(this->skipBuffer);
@@ -241,10 +245,6 @@ namespace DiscordCoreAPI {
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
 		bool doWeQuit{ false };
-
-		event_token onSongCompletionToBeWrapped(delegate<> const handler) {
-			return onSongCompletionEvent.add(handler);
-		}
 
 		void clearAudioData() {
 			if (this->audioData.encodedFrameData.data.size() != 0 && this->audioData.rawFrameData.data.size() != 0) {
