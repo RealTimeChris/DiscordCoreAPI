@@ -333,6 +333,7 @@ namespace DiscordCoreInternal {
 		void cleanup() {
 			if (this != nullptr) {
 				if (this->webSocket != nullptr) {
+					this->webSocket.Close(1000, L"Disconnecting");
 					this->webSocket = nullptr;
 				}
 				if (this->heartbeatTimer != nullptr) {
@@ -630,8 +631,8 @@ namespace DiscordCoreInternal {
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketMessageTarget{ nullptr };
-		VoiceConnectionData* pVoiceConnectionData{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
+		VoiceConnectionData pVoiceConnectionData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
 		bool didWeReceiveHeartbeatAck{ true };
@@ -732,37 +733,33 @@ namespace DiscordCoreInternal {
 
 			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
 				if (this->serverUpdateCollected != true && this->stateUpdateCollected != true) {
-					this->pVoiceConnectionData = new VoiceConnectionData;
-					this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
-					this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
+					this->pVoiceConnectionData = VoiceConnectionData();
+					this->pVoiceConnectionData.endpoint = payload.at("d").at("endpoint").get<string>();
+					this->pVoiceConnectionData.token = payload.at("d").at("token").get<string>();
 					this->serverUpdateCollected = true;
 				}
 				else {
-					this->pVoiceConnectionData->endpoint = payload.at("d").at("endpoint").get<string>();
-					this->pVoiceConnectionData->token = payload.at("d").at("token").get<string>();
-					send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
-					delete this->pVoiceConnectionData;
-					this->pVoiceConnectionData = nullptr;
-					this->areWeCollectingData = false;
+					this->pVoiceConnectionData.endpoint = payload.at("d").at("endpoint").get<string>();
+					this->pVoiceConnectionData.token = payload.at("d").at("token").get<string>();
+					send(this->voiceConnectionDataBuffer, this->pVoiceConnectionData);
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
+					this->areWeCollectingData = false;
 				}
 			}
 
 			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected) {
 				if (this->stateUpdateCollected != true && this->serverUpdateCollected != true) {
-					this->pVoiceConnectionData = new VoiceConnectionData;
-					this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
+					this->pVoiceConnectionData = VoiceConnectionData();
+					this->pVoiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
 					this->stateUpdateCollected = true;
 				}
 				else {
-					this->pVoiceConnectionData->sessionId = payload.at("d").at("session_id").get<string>();
-					send(this->voiceConnectionDataBuffer, *this->pVoiceConnectionData);
-					delete this->pVoiceConnectionData;
-					this->pVoiceConnectionData = nullptr;
-					this->areWeCollectingData = false;
+					this->pVoiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
+					send(this->voiceConnectionDataBuffer, this->pVoiceConnectionData);
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
+					this->areWeCollectingData = false;
 				}
 			}
 

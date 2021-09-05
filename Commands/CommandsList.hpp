@@ -11,6 +11,7 @@
 #include "Commands.hpp"
 #include "BotInfo.hpp"
 #include "Help.hpp"
+#include "RegisterApplicationCommands.hpp"
 #include "Test.hpp"
 
 #endif

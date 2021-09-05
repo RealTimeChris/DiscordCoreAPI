@@ -36,9 +36,9 @@ namespace DiscordCoreAPI {
 				if (channel.type != ChannelType::DM) {
 					InputEvents::deleteInputEventResponseAsync(args->eventData);
 				}
-				
-				Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId()}).get();
-				DiscordGuild discordGuild(guild); 
+
+				Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
+				DiscordGuild discordGuild(guild);
 				string messageString = "------\nHello! How are you doing today?! I'm " + args->eventData.discordCoreClient->currentUser.username + " and I'm here to help you out!\n" +
 					"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back to the previous menu)\n------";
 				InputEventData newEvent = args->eventData;
@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 					newEvent = InputEvents::respondToEvent(responseData);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-					CreateInteractionResponseData responseData(newEvent);
+					CreateEphemeralInteractionResponseData responseData(newEvent);
 					responseData.addContent("1");
 					newEvent = InputEvents::respondToEvent(responseData);
 				}
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 					int counter{ 0 };
 					int currentHelpPage{ 0 };
 					for (auto [key, value] : CommandCenter::functions) {
-						if (counter % 25 == 0) {
+						if (counter % 24 == 0) {
 							selectOptions.push_back(vector<SelectOptionData>());
 							currentHelpPage += 1;
 						}
@@ -77,7 +77,11 @@ namespace DiscordCoreAPI {
 					newData.description = "Go back to the previous menu.";
 					newData.value = "go back";
 					newData.emoji.name = "❌";
-					selectOptions.at(currentHelpPage - 1).push_back(newData);
+					vector<vector<SelectOptionData>> selectOptionsNew;
+					for (auto value : selectOptions) {
+						value.push_back(newData);
+						selectOptionsNew.push_back(value);
+					}
 					int counter02{ 0 };
 					string messageNew = "------\nSelect which page of help items you would like to view, by clicking a button below!\n------";
 					EmbedData msgEmbed;
@@ -94,7 +98,7 @@ namespace DiscordCoreAPI {
 						EditMessageData responseData(newEvent);
 						responseData.addMessageEmbed(msgEmbed);
 						counter02 = 0;
-						for (auto value : selectOptions) {
+						for (auto value : selectOptionsNew) {
 							counter02 += 1;
 							string customId{ "select_page_" + to_string(counter02) };
 							responseData.addButton(false, customId, to_string(counter02), numberEmojiNames[counter02], ButtonStyle::Success);
@@ -107,7 +111,7 @@ namespace DiscordCoreAPI {
 						EditInteractionResponseData responseData(newEvent);
 						responseData.addMessageEmbed(msgEmbed);
 						counter02 = 0;
-						for (auto value : selectOptions) {
+						for (auto value : selectOptionsNew) {
 							counter02 += 1;
 							string customId{ "select_page_" + to_string(counter02) };
 							responseData.addButton(false, customId, to_string(counter02), numberEmojiNames[counter02], ButtonStyle::Success);
@@ -121,7 +125,7 @@ namespace DiscordCoreAPI {
 					int counter03{ 0 };
 					vector<EditMessageData> editMessageData00;
 					vector<EditInteractionResponseData> editInteractionResponseData00;
-					for (auto value : selectOptions) {
+					for (auto value : selectOptionsNew) {
 						EmbedData msgEmbed00;
 						msgEmbed00.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 						msgEmbed00.setColor(discordGuild.data.borderColor);
@@ -188,7 +192,7 @@ namespace DiscordCoreAPI {
 							if (buttonReturnData.at(0).buttonId == "back") {
 								continue;
 							}
-							else if (buttonReturnData.at(0).buttonId == "exit"){
+							else if (buttonReturnData.at(0).buttonId == "exit") {
 								InputEvents::deleteInputEventResponseAsync(newEvent).get();
 								break;
 							}
@@ -203,7 +207,7 @@ namespace DiscordCoreAPI {
 						break;
 					}
 				}
-				
+
 
 				co_return;
 			}

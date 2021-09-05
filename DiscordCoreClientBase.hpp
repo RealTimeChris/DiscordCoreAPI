@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent;
-		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> audioBuffersMap;
+		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
 		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPIMap;
 		static map<string, vector<YouTubeSong>>* guildYouTubeQueueMap;
@@ -58,11 +58,11 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 
 	};
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPICore>>() };
 	map<string, vector<YouTubeSong>>* DiscordCoreClientBase::guildYouTubeQueueMap{ new map<string, vector<YouTubeSong>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> DiscordCoreClientBase::audioBuffersMap{};
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }
 #endif

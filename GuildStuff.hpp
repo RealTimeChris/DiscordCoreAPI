@@ -43,36 +43,12 @@ namespace DiscordCoreAPI {
 					voiceConnectData.guildId = this->id;
 					voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
 					voiceConnectData.userId = this->discordCoreClientBase->currentUser.id;
-					if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->id), this->discordCoreClientBase);
-						shared_ptr<YouTubeAPICore> youtubeAPI;
-						if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
-						}
-						else {
-							youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
-						}
-						if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
-							youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id));
-						}
-						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
+					auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
+					if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
+						youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id));
 					}
-					else {
-						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData>>();
-						DiscordCoreClientBase::audioBuffersMap.insert_or_assign(this->id, sharedPtr);
-						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->id), this->discordCoreClientBase);
-						shared_ptr<YouTubeAPICore> youtubeAPI;
-						if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
-						}
-						else {
-							youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
-						}
-						if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
-							youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id));
-						}
-						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
-					}
+					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
+					voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap, this->discordCoreClientBase);
 					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, voiceConnectionPtr);
 					return voiceConnectionPtr;
 				}
@@ -96,13 +72,14 @@ namespace DiscordCoreAPI {
 						voiceConnection->encoder = nullptr;
 					}
 					voiceConnection->hasTerminateRun = true;
+					voiceConnection->voicechannelWebSocketAgent->~VoiceChannelWebSocketAgent();
 					if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
 						DiscordCoreClientBase::youtubeAPIMap->at(this->id)->stop();
 						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, *DiscordCoreClientBase::youtubeAPIMap->at(this->id)->getQueue());
 						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
 					}
-					if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
-						DiscordCoreClientBase::audioBuffersMap.erase(this->id);
+					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)) {
+						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					}
 					if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 						DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
@@ -116,10 +93,7 @@ namespace DiscordCoreAPI {
 				return DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 			}
 			else {
-				DiscordCoreClientBase::audioBuffersMap.insert_or_assign(this->id, make_shared<unbounded_buffer<AudioFrameData>>());
-				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
-				DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
-				return youtubeAPI;
+				return shared_ptr<YouTubeAPICore>();
 			}
 		}
 
@@ -128,20 +102,6 @@ namespace DiscordCoreAPI {
 		Guild() {};
 
 		Guild(GuildData dataNew) {
-			if (DiscordCoreClientBase::audioBuffersMap.contains(dataNew.id)) {
-				if (!DiscordCoreClientBase::youtubeAPIMap->contains(dataNew.id)) {
-					shared_ptr<YouTubeAPICore> sharedPtr = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap.at(dataNew.id), dataNew.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(dataNew.id, sharedPtr);
-				}
-			}
-			else {
-				shared_ptr<unbounded_buffer<AudioFrameData>> sharedPtrBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				DiscordCoreClientBase::audioBuffersMap.insert(make_pair(dataNew.id, sharedPtrBuffer));
-				if (!DiscordCoreClientBase::youtubeAPIMap->contains(dataNew.id)) {
-					shared_ptr<YouTubeAPICore> sharedPtr = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap.at(dataNew.id), dataNew.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(dataNew.id, sharedPtr);
-				}
-			}
 			this->defaultMessageNotifications = dataNew.defaultMessageNotifications;
 			this->premiumSubscriptionCount = dataNew.premiumSubscriptionCount;
 			this->approximatePresenceCount = dataNew.approximatePresenceCount;

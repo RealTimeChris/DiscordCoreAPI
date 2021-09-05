@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 	class VoiceConnection : DiscordCoreInternal::ThreadContext, public agent{
 	public:
 
-		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, shared_ptr<unbounded_buffer<AudioFrameData>> bufferMessageBlockNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) : 
+		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
 			agent(*threadContextNew->scheduler->scheduler) 
 		{
@@ -35,7 +35,8 @@ namespace DiscordCoreAPI {
 				}
 				this->discordCoreClientBase = discordCoreClientBaseNew;
 				this->voiceConnectionData = voiceConnectionDataNew;
-				this->audioDataBuffer = bufferMessageBlockNew;
+				this->sendAudioBufferMap = sendAudioBufferMapNew;
+				this->audioDataBuffer = this->sendAudioBufferMap->at(this->voiceConnectionData.guildId);
 				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(this->voiceConnectionData, &this->readyBuffer);
 				send(this->voicechannelWebSocketAgent->voiceConnectionDataBuffer, this->voiceConnectionData);
 				this->voicechannelWebSocketAgent->start();
@@ -158,6 +159,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClientBase;
 		friend class Guild;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
+		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMap{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
@@ -290,6 +292,7 @@ namespace DiscordCoreAPI {
 			while (!this->doWeQuit) {
 				if (!this->areWePlaying) {
 					receive(this->playBuffer);
+					this->audioDataBuffer = this->sendAudioBufferMap->at(this->voiceConnectionData.guildId);
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
 					start:

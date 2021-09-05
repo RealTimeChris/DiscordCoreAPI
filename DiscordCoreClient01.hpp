@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreClientBase::initialize(this->agentResources, this->thisPointer);
-			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, &DiscordCoreClientBase::audioBuffersMap);
+			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap);
 			this->users = this->users;
 			this->roles = this->roles;
 			this->guildMembers = this->guildMembers;
@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 				this->discordUser->data.guildCount -= 1;
 				this->discordUser->writeDataToDB();
 			}
-			this->audioBuffersMap.erase(guildData.id);
+			this->audioBuffersMap->erase(guildData.id);
 		}
 
 		void getError() {
