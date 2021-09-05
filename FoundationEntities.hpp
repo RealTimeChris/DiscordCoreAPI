@@ -16,6 +16,7 @@ namespace DiscordCoreAPI {
     class PermissionsConverter;
     class ApplicationCommands;
     class DiscordCoreClient;
+    class VoiceConnection;
     class Interactions;
     class EventHandler;
     class GuildMembers;
@@ -198,8 +199,9 @@ namespace DiscordCoreAPI {
 };
 
 namespace  DiscordCoreInternal {
-
+    
     class ApplicationCommandManager;
+    class WebSocketConnectionAgent;
     class InteractionManagerAgent;
     class GuildMemberManagerAgent;
     class ReactionManagerAgent;

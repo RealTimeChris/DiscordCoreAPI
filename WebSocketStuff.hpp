@@ -11,47 +11,60 @@
 #include "../pch.h"
 #include "DataParsingFunctions.hpp"
 
-namespace DiscordCoreAPI {
-
-	class VoiceConnection;
-
-}
-
 namespace DiscordCoreInternal {
-
-	class WebSocketConnectionAgent;
 	
 	enum class WebSocketEventType {
-		CHANNEL_CREATE = 0,
-		CHANNEL_UPDATE = 1,
-		CHANNEL_DELETE = 2,
-		GUILD_CREATE = 3,
-		GUILD_UPDATE = 4,
-		GUILD_DELETE = 5,
-		GUILD_BAN_ADD = 6,
-		GUILD_BAN_REMOVE = 7,
-		GUILD_MEMBER_ADD = 8,
-		GUILD_MEMBER_REMOVE = 9,
-		GUILD_MEMBER_UPDATE = 10,
-		ROLE_CREATE = 11,
-		ROLE_UPDATE = 12,
-		ROLE_DELETE = 13,
-		INVITE_CREATE = 14,
-		INVITE_DELETE = 15,
-		MESSAGE_CREATE = 16,
-		MESSAGE_UPDATE = 17,
-		MESSAGE_DELETE = 18,
-		MESSAGE_DELETE_BULK = 19,
-		REACTION_ADD = 20,
-		REACTION_REMOVE = 21,
-		REACTION_REMOVE_ALL = 22,
-		REACTION_REMOVE_EMOJI = 23,
-		PRESENCE_UPDATE = 24,
-		TYPING_START = 25,
-		USER_UPDATE = 26,
-		VOICE_STATE_UPDATE = 27,
-		VOICE_SERVER_UPDATE = 28,
-		INTERACTION_CREATE = 29
+		Application_Command_Create = 0,
+		Application_Command_Update = 1,
+		Application_Command_Delete = 2,
+		Channel_Create = 3,
+		Channel_Update = 4,
+		Channel_Delete = 5,
+		Channel_Pins_Update = 6,
+		Thread_Create = 7,
+		Thread_Update = 8,
+		Thread_Delete = 9,
+		Thread_List_Sync = 10,
+		Thread_Member_Update = 11,
+		Thread_Members_Update = 12,
+		Guild_Create = 13,
+		Guild_Update = 14,
+		Guild_Delete = 15,
+		Guild_Ban_Add = 16,
+		Guild_Ban_Remove = 17,
+		Guild_Emojis_Update = 18,
+		Guild_Stickers_Update = 19,
+		Guild_Integrations_Update = 20,
+		Guild_Member_Add = 21,
+		Guild_Member_Remove = 22,
+		Guild_Member_Update = 23,
+		Guild_Members_Chunk = 24,
+		Guild_Role_Create = 25,
+		Guild_Role_Update = 26,
+		Guild_Role_Delete = 27,
+		Integration_Create = 28,
+		Integration_Update = 29,
+		Integration_Delete = 30,
+		Interaction_Create = 31,
+		Invite_Create = 32,
+		Invite_Delete = 33,
+		Message_Create = 34,
+		Message_Update = 35,
+		Message_Delete = 36,
+		Message_Delete_Bulk = 37,
+		Message_Reaction_Add = 38,
+		Message_Reaction_Remove = 39,
+		Message_Reaction_Remove_All = 40,
+		Message_Reaction_Remove_Emoji = 41,
+		Presence_Update = 42,
+		Stage_Instance_Create = 43,
+		Stage_Instance_Delete = 44,
+		Stage_Instance_Update = 45,
+		Typing_Start = 46,
+		User_Update = 47,
+		Voice_State_Update = 48,
+		Voice_Server_Update = 49,
+		Webhooks_Update = 50
 	};
 
 	struct WebSocketWorkload {
@@ -397,152 +410,152 @@ namespace DiscordCoreInternal {
 			workload.payLoad = payload.at("d");
 
 			if (payload.at("t") == "CHANNEL_CREATE") {
-				workload.eventType = WebSocketEventType::CHANNEL_CREATE;
+				workload.eventType = WebSocketEventType::Channel_Create;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "CHANNEL_UPDATE") {
-				workload.eventType = WebSocketEventType::CHANNEL_UPDATE;
+				workload.eventType = WebSocketEventType::Channel_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "CHANNEL_DELETE") {
-				workload.eventType = WebSocketEventType::CHANNEL_DELETE;
+				workload.eventType = WebSocketEventType::Channel_Delete;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_CREATE") {
-				workload.eventType = WebSocketEventType::GUILD_CREATE;
+				workload.eventType = WebSocketEventType::Guild_Create;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_UPDATE") {
-				workload.eventType = WebSocketEventType::GUILD_UPDATE;
+				workload.eventType = WebSocketEventType::Guild_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_DELETE") {
-				workload.eventType = WebSocketEventType::GUILD_DELETE;
+				workload.eventType = WebSocketEventType::Guild_Delete;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_BAN_ADD") {
-				workload.eventType = WebSocketEventType::GUILD_BAN_ADD;
+				workload.eventType = WebSocketEventType::Guild_Ban_Add;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_BAN_REMOVE") {
-				workload.eventType = WebSocketEventType::GUILD_BAN_REMOVE;
+				workload.eventType = WebSocketEventType::Guild_Ban_Remove;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_ADD") {
-				workload.eventType = WebSocketEventType::GUILD_MEMBER_ADD;
+				workload.eventType = WebSocketEventType::Guild_Member_Add;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_REMOVE") {
-				workload.eventType = WebSocketEventType::GUILD_MEMBER_REMOVE;
+				workload.eventType = WebSocketEventType::Guild_Member_Remove;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_UPDATE") {
-				workload.eventType = WebSocketEventType::GUILD_MEMBER_UPDATE;
+				workload.eventType = WebSocketEventType::Guild_Member_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_CREATE") {
-				workload.eventType = WebSocketEventType::ROLE_CREATE;
+				workload.eventType = WebSocketEventType::Guild_Role_Create;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_UPDATE") {
-				workload.eventType = WebSocketEventType::ROLE_UPDATE;
+				workload.eventType = WebSocketEventType::Guild_Role_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_DELETE") {
-				workload.eventType = WebSocketEventType::ROLE_DELETE;
+				workload.eventType = WebSocketEventType::Guild_Role_Delete;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INVITE_CREATE") {
-				workload.eventType = WebSocketEventType::INVITE_CREATE;
+				workload.eventType = WebSocketEventType::Invite_Create;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INVITE_DELETE") {
-				workload.eventType = WebSocketEventType::INVITE_DELETE;
+				workload.eventType = WebSocketEventType::Invite_Delete;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INTERACTION_CREATE") {
-				workload.eventType = WebSocketEventType::INTERACTION_CREATE;
+				workload.eventType = WebSocketEventType::Interaction_Create;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_CREATE") {
-				workload.eventType = WebSocketEventType::MESSAGE_CREATE;
+				workload.eventType = WebSocketEventType::Message_Create;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_UPDATE") {
-				workload.eventType = WebSocketEventType::MESSAGE_UPDATE;
+				workload.eventType = WebSocketEventType::Message_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_DELETE") {
-				workload.eventType = WebSocketEventType::MESSAGE_DELETE;
+				workload.eventType = WebSocketEventType::Message_Delete;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_DELETE_BULK") {
-				workload.eventType = WebSocketEventType::MESSAGE_DELETE_BULK;
+				workload.eventType = WebSocketEventType::Message_Delete_Bulk;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_ADD") {
-				workload.eventType = WebSocketEventType::REACTION_ADD;
+				workload.eventType = WebSocketEventType::Message_Reaction_Add;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE") {
-				workload.eventType = WebSocketEventType::REACTION_REMOVE;
+				workload.eventType = WebSocketEventType::Message_Reaction_Remove;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_ALL") {
-				workload.eventType = WebSocketEventType::REACTION_REMOVE_ALL;
+				workload.eventType = WebSocketEventType::Message_Reaction_Remove_All;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_EMOJI") {
-				workload.eventType = WebSocketEventType::REACTION_REMOVE_EMOJI;
+				workload.eventType = WebSocketEventType::Message_Reaction_Remove_Emoji;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "PRESENCE_UPDATE") {
-				workload.eventType = WebSocketEventType::PRESENCE_UPDATE;
+				workload.eventType = WebSocketEventType::Presence_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "TYPING_START") {
-				workload.eventType = WebSocketEventType::TYPING_START;
+				workload.eventType = WebSocketEventType::Typing_Start;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "USER_UPDATE") {
-				workload.eventType = WebSocketEventType::USER_UPDATE;
+				workload.eventType = WebSocketEventType::User_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "VOICE_STATE_UPDATE") {
-				workload.eventType = WebSocketEventType::VOICE_STATE_UPDATE;
+				workload.eventType = WebSocketEventType::Voice_State_Update;
 				sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "VOICE_SERVER_UPDATE") {
-				workload.eventType = WebSocketEventType::VOICE_SERVER_UPDATE;
+				workload.eventType = WebSocketEventType::Voice_Server_Update;
 				sendWorkload(workload);
 			}
 		}
