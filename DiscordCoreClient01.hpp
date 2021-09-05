@@ -55,6 +55,11 @@ namespace DiscordCoreAPI {
 
 		static void runBot() {
 			wait((agent*)DiscordCoreClient::thisPointer.get());
+			if (DiscordCoreClient::thisPointer->doWeQuitWebSocket) {
+				cout << "It appears as though there was a websocket issue! Enter any value to continue!" << endl << endl;
+				string x;
+				cin >> x;
+			}
 			DiscordCoreClient::thisPointer->getError();
 		}
 
@@ -103,6 +108,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpAgentResources agentResources{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		hstring baseURL{ L"https://discord.com/api/v9" };
+		bool doWeQuitWebSocket{ false };
 		hstring botToken{ L"" };
 		bool doWeQuit{ false };
 
@@ -115,7 +121,7 @@ namespace DiscordCoreAPI {
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
-			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->workloadSource, this->botToken, &this->doWeQuit);
+			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->workloadSource, this->botToken, &this->doWeQuitWebSocket);
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
 			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
@@ -206,7 +212,7 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			try {
-				while (doWeQuit == false) {
+				while (!this->doWeQuit && !this->doWeQuitWebSocket) {
 					DiscordCoreInternal::WebSocketWorkload workload = receive(this->webSocketReceiverAgent->workloadTarget, INFINITE);
 					switch (workload.eventType) {
 					case DiscordCoreInternal::WebSocketEventType::CHANNEL_CREATE:
@@ -274,7 +280,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildData);
 						removeGuild(guildData);
 						guildData.discordCoreClientBase = make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this);
-						guildData.discordCoreClient = DiscordCoreClient::thisPointer;						
+						guildData.discordCoreClient = DiscordCoreClient::thisPointer;
 						Guild guild(guildData);
 						DiscordCoreAPI::OnGuildDeletionData guildDeletionData;
 						guildDeletionData.guild = guild;
@@ -289,7 +295,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreAPI::OnGuildMemberRemoveData guildMemberRemoveData;
 						DiscordCoreAPI::OnGuildBanAddData guildBanAddData;
 						guildBanAddData.guildId = workload.payLoad.at("guild_id");
-						guildBanAddData.user = user;						
+						guildBanAddData.user = user;
 						this->eventManager->onGuildBanAddEvent(guildBanAddData);
 						break;
 					}
@@ -301,7 +307,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreAPI::OnGuildMemberRemoveData guildMemberRemoveData;
 						DiscordCoreAPI::OnGuildBanRemoveData guildBanRemoveData;
 						guildBanRemoveData.guildId = workload.payLoad.at("guild_id");
-						guildBanRemoveData.user = user;						
+						guildBanRemoveData.user = user;
 						this->eventManager->onGuildBanRemoveEvent(guildBanRemoveData);
 						break;
 					}
@@ -360,7 +366,7 @@ namespace DiscordCoreAPI {
 						roleUpdateData.roleOld = role;
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("role"), &role);
 						roleUpdateData.guildId = workload.payLoad.at("guild_id");
-						roleUpdateData.roleNew = role;						
+						roleUpdateData.roleNew = role;
 						this->eventManager->onRoleUpdateEvent(roleUpdateData);
 						break;
 					}
@@ -411,10 +417,10 @@ namespace DiscordCoreAPI {
 						if (interactionData.type == InteractionType::ApplicationCommand) {
 							if (workload.payLoad.at("data").at("type") == ApplicationCommandType::CHAT_INPUT) {
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
-								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;								
+								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 								eventData.discordCoreClient = DiscordCoreClient::thisPointer;
 								eventData.requesterId = interactionData.requesterId;
-								eventData.interactionData = interactionData;								
+								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData;
 								eventCreationData.eventData = eventData;
 								this->eventManager->onInteractionCreationEvent(eventCreationData);
@@ -467,7 +473,7 @@ namespace DiscordCoreAPI {
 							if (interactionData.componentType == ComponentType::Button) {
 								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
 								eventData.discordCoreClient = DiscordCoreClient::thisPointer;
-								eventData.eventType = InputEventType::BUTTON_INTERACTION;								
+								eventData.eventType = InputEventType::BUTTON_INTERACTION;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData;
@@ -490,6 +496,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::MESSAGE_CREATE:
 					{
 						MessageData messageData;
+						this->doWeQuitWebSocket = true;
 						messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
 						if (messageData.interaction.id != "") {
@@ -645,7 +652,7 @@ namespace DiscordCoreAPI {
 						OnVoiceServerUpdateData voiceServerUpdateData;
 						voiceServerUpdateData.endpoint = workload.payLoad.at("endpoint");
 						voiceServerUpdateData.guildId = workload.payLoad.at("guild_id");
-						voiceServerUpdateData.token = workload.payLoad.at("token");					
+						voiceServerUpdateData.token = workload.payLoad.at("token");
 						this->eventManager->onVoiceServerUpdateEvent(voiceServerUpdateData);
 						break;
 					}
