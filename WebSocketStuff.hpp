@@ -12,7 +12,7 @@
 #include "DataParsingFunctions.hpp"
 
 namespace DiscordCoreInternal {
-	
+
 	enum class WebSocketEventType {
 		Application_Command_Create = 0,
 		Application_Command_Update = 1,
@@ -155,7 +155,7 @@ namespace DiscordCoreInternal {
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
-		
+
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 		void collectExternalIP() {
 			unsigned char packet[70] = { 0 };
 			packet[0] = (this->voiceConnectionData.audioSSRC >> 24) & 0xff;
-			packet[1] = (this->voiceConnectionData.audioSSRC>> 16) & 0xff;
+			packet[1] = (this->voiceConnectionData.audioSSRC >> 16) & 0xff;
 			packet[2] = (this->voiceConnectionData.audioSSRC >> 8) & 0xff;
 			packet[3] = (this->voiceConnectionData.audioSSRC) & 0xff;
 			vector<uint8_t> sendVector;
@@ -245,7 +245,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
-			
+
 			hstring message;
 			DataReader dataReader{ nullptr };
 			if (args.GetDataReader() != nullptr) {
@@ -264,10 +264,9 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload.at("op") == 2) {
-					this->voiceConnectionData.audioSSRC = payload.at("d").at("ssrc");
-					this->voiceConnectionData.audioSSRC = this->voiceConnectionData.audioSSRC;
-					this->voiceConnectionData.voiceIp = payload.at("d").at("ip");
-					this->voiceConnectionData.voicePort = to_string(payload.at("d").at("port"));
+					this->voiceConnectionData.audioSSRC = payload.at("d").at("ssrc").get<int>();
+					this->voiceConnectionData.voiceIp = payload.at("d").at("ip").get<string>();
+					this->voiceConnectionData.voicePort = payload.at("d").at("port").get<string>();
 					for (auto value : payload.at("d").at("modes")) {
 						if (value == "xsalsa20_poly1305") {
 							this->voiceConnectionData.voiceEncryptionMode = value;
@@ -297,7 +296,7 @@ namespace DiscordCoreInternal {
 					}
 					string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData);
 					this->sendMessage(identifyPayload);
-					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void{
+					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void {
 						VoiceChannelWebSocketAgent::sendHeartBeat(&this->didWeReceiveHeartbeatAck);
 						this->didWeReceiveHeartbeatAck = false;
 					};
@@ -307,7 +306,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		void onVoiceDataReceived(DatagramSocket const& , DatagramSocketMessageReceivedEventArgs const& args) {
+		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args) {
 
 			string message;
 			DataReader dataReader{ nullptr };
@@ -345,7 +344,7 @@ namespace DiscordCoreInternal {
 					this->voiceSocket.Close();
 					this->voiceSocket = nullptr;
 				}
-				
+
 			}
 		}
 
@@ -362,7 +361,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 
 		WebSocketReceiverAgent()
-			: ThreadContext(*ThreadManager::getThreadContext().get()), 
+			: ThreadContext(*ThreadManager::getThreadContext().get()),
 			agent(*this->scheduler->scheduler)
 		{
 			return;
@@ -411,152 +410,152 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("t") == "CHANNEL_CREATE") {
 				workload.eventType = WebSocketEventType::Channel_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "CHANNEL_UPDATE") {
 				workload.eventType = WebSocketEventType::Channel_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "CHANNEL_DELETE") {
 				workload.eventType = WebSocketEventType::Channel_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_CREATE") {
 				workload.eventType = WebSocketEventType::Guild_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_UPDATE") {
 				workload.eventType = WebSocketEventType::Guild_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_DELETE") {
 				workload.eventType = WebSocketEventType::Guild_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_BAN_ADD") {
 				workload.eventType = WebSocketEventType::Guild_Ban_Add;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_BAN_REMOVE") {
 				workload.eventType = WebSocketEventType::Guild_Ban_Remove;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_ADD") {
 				workload.eventType = WebSocketEventType::Guild_Member_Add;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_REMOVE") {
 				workload.eventType = WebSocketEventType::Guild_Member_Remove;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_UPDATE") {
 				workload.eventType = WebSocketEventType::Guild_Member_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_CREATE") {
 				workload.eventType = WebSocketEventType::Guild_Role_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_UPDATE") {
 				workload.eventType = WebSocketEventType::Guild_Role_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_DELETE") {
 				workload.eventType = WebSocketEventType::Guild_Role_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INVITE_CREATE") {
 				workload.eventType = WebSocketEventType::Invite_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INVITE_DELETE") {
 				workload.eventType = WebSocketEventType::Invite_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INTERACTION_CREATE") {
 				workload.eventType = WebSocketEventType::Interaction_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_CREATE") {
 				workload.eventType = WebSocketEventType::Message_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_UPDATE") {
 				workload.eventType = WebSocketEventType::Message_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_DELETE") {
 				workload.eventType = WebSocketEventType::Message_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_DELETE_BULK") {
 				workload.eventType = WebSocketEventType::Message_Delete_Bulk;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_ADD") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Add;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_ALL") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove_All;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_EMOJI") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove_Emoji;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "PRESENCE_UPDATE") {
 				workload.eventType = WebSocketEventType::Presence_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "TYPING_START") {
 				workload.eventType = WebSocketEventType::Typing_Start;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "USER_UPDATE") {
 				workload.eventType = WebSocketEventType::User_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "VOICE_STATE_UPDATE") {
 				workload.eventType = WebSocketEventType::Voice_State_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "VOICE_SERVER_UPDATE") {
 				workload.eventType = WebSocketEventType::Voice_Server_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 		}
 
@@ -652,7 +651,7 @@ namespace DiscordCoreInternal {
 		hstring sessionID{ L"" };
 		hstring botToken{ L"" };
 		bool* doWeQuit{};
-		
+
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -729,7 +728,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			json payload = payload.parse(to_string(message));
-			
+
 			send(*this->webSocketMessageTarget, payload);
 
 			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
