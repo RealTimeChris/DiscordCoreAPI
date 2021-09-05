@@ -37,6 +37,7 @@
 - ### [Creating a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Global%20Application%20Command.md)
 - ### [Getting a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Global%20Application%20Command.md)
 - ### [Editing a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Global%20Application%20Command.md)
+- ### [Deleting Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Global%20Application%20Command.md)
 
 ## Interaction Stuff:
 
