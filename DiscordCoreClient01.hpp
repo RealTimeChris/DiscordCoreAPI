@@ -895,6 +895,10 @@ namespace DiscordCoreAPI {
 		static void deleteGlobalApplicationCommand(DeleteApplicationCommandData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->deleteGlobalApplicationCommand(dataPackage);
 		}
+
+		static task<vector<ApplicationCommand>>  bulkOverwriteApplicationCommandsAsync(BulkOverwriteApplicationCommandsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->bulkOverwriteApplicationCommandsAsync(dataPackage);
+		}
 	};
 
 	class Reactions {

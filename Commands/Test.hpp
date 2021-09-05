@@ -14,7 +14,13 @@ namespace DiscordCoreAPI {
 	public:
 		Test() {
 			this->commandName = "test";
-			this->helpDescription = "__**Test:**__ Enter !test or /test to run this command!";
+			this->helpDescription = "Testing purposes!";
+			EmbedData msgEmbed;
+			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
+			msgEmbed.setTitle("__**Test Usage:**__");
+			msgEmbed.setTimeStamp(getTimeAndDate());
+			msgEmbed.setColor("FeFeFe");
+			this->helpEmbed = msgEmbed;
 		}
 
 		Test* create() {
@@ -23,18 +29,7 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			FetchAuditLogData dataPackage;
-			dataPackage.actionType = AuditLogEvent::MEMBER_BAN_ADD;
-			dataPackage.guildId = args->eventData.getGuildId();
-			dataPackage.limit = 25;
-			dataPackage.userId = args->eventData.getAuthorId();
-			SoundCloudAPI soundCloudAPI{};
-			soundCloudAPI.searchForSong("Skrillex");
-			AuditLogData auditLogData = DiscordCoreAPI::Guilds::fetchAuditLogDataAsync(dataPackage).get();
-
-			for (auto value : auditLogData.auditLogEntries) {
-				cout << "ACTION TYPE: " << to_string((int)value.actionType) << " TARGET: <@!" << value.targetId << ">." << endl;
-			}
+			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
 
 			co_return;
 		}

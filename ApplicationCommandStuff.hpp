@@ -36,6 +36,10 @@ namespace DiscordCoreAPI {
         string name{ "" };
     };
 
+    struct BulkOverwriteApplicationCommandsData {
+        vector<CreateApplicationCommandData> data{};
+    };
+
     class ApplicationCommand : public ApplicationCommandData {
     public:
 
@@ -238,6 +242,50 @@ namespace DiscordCoreInternal{
                 cout << "ApplicationCommandManager::deleteGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             return;
+        }
+
+        task<vector<DiscordCoreAPI::ApplicationCommand>> bulkOverwriteApplicationCommandsAsync(DiscordCoreAPI::BulkOverwriteApplicationCommandsData dataPackage) {
+            auto newDataArray = json::array();
+            vector<PostApplicationCommandData> newVector{};
+            for (auto value : dataPackage.data) {
+                PostApplicationCommandData dataPackageNew;
+                dataPackageNew.applicationId = this->applicationId;
+                dataPackageNew.defaultPermission = value.defaultPermission;
+                dataPackageNew.description = value.description;
+                dataPackageNew.name = value.name;
+                for (auto value01 : value.options) {
+                    dataPackageNew.options.push_back(value01);
+                }
+                dataPackageNew.type = (ApplicationCommandType)value.type;
+                newVector.push_back(dataPackageNew);
+                
+            }
+            for (auto value : newVector) {
+                newDataArray.push_back(getCreateApplicationCommandPayload(value));
+            }
+            json dataNew = { {"data", newDataArray.dump() } };
+            HttpWorkload workload;
+            workload.relativePath = "/applications/" + this->applicationId + "/commands";
+            workload.workloadClass = HttpWorkloadClass::PUT;
+            workload.workloadType = HttpWorkloadType::PUT_BULK_OVERWRITE_APPLICATION_COMMANDS;
+            workload.content = dataNew.dump();
+            cout << workload.content << endl;
+            HttpRequestAgent requestAgent(this->agentResources);
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::bulkOverwriteApplicationCommandsAsync");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::bulkOverwriteApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::bulkOverwriteApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            vector<DiscordCoreAPI::ApplicationCommand> returnVector;
+            for (auto value : returnData.data) {
+                DiscordCoreAPI::ApplicationCommandData dataPackage02;
+                DataParser::parseObject(value, &dataPackage02);
+                DiscordCoreAPI::ApplicationCommand applicationCommand(dataPackage02);
+                returnVector.push_back(applicationCommand);
+            }
+            co_return returnVector;
         }
 
         task<void> displayGlobalApplicationCommandsAsync() {

@@ -1031,7 +1031,8 @@ namespace  DiscordCoreInternal {
         PUT_GUILD_BAN = 53,
         DELETE_LEAVE_GUILD = 54,
         SOUNDCLOUD_SEARCH = 55,
-        GET_APPLICATION_COMMAND = 56
+        GET_APPLICATION_COMMAND = 56,
+        PUT_BULK_OVERWRITE_APPLICATION_COMMANDS = 57
     };
 
     enum class MessageStickerItemType {
@@ -1585,6 +1586,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct ApplicationCommandOptionChoiceData {
+        float valueFloat{ 0.0f };
         string valueString{ "" };
         string name{ "" };
         int	valueInt{ 0 };
@@ -3215,6 +3217,14 @@ namespace DiscordCoreAPI {
     };
 
     struct ApplicationCommandOptionChoiceData {
+        operator DiscordCoreInternal::ApplicationCommandOptionChoiceData() {
+            DiscordCoreInternal::ApplicationCommandOptionChoiceData newData;
+            newData.valueString = this->valueString;
+            newData.valueFloat = this->valueFloat;
+            newData.valueInt = this->valueInt;
+            newData.name = this->name;
+            return newData;
+        }
         string valueString{ "" };
         float valueFloat{ 0.0f };
         string name{ "" };
@@ -3222,6 +3232,20 @@ namespace DiscordCoreAPI {
     };
 
     struct ApplicationCommandOptionData {
+        operator DiscordCoreInternal::ApplicationCommandOptionData() {
+            DiscordCoreInternal::ApplicationCommandOptionData newData;
+            for (auto value : this->choices) {
+                newData.choices.push_back(value);
+            }
+            newData.description = this->description;
+            newData.name = this->name;
+            for (auto value : this->options) {
+                newData.options.push_back(value);
+            }
+            newData.required = this->required;
+            newData.type = (DiscordCoreInternal::ApplicationCommandOptionType)this->type;
+            return newData;
+        }
         vector<ApplicationCommandOptionChoiceData>	choices{};
         vector<ApplicationCommandOptionData> options{};
         ApplicationCommandOptionType type{};

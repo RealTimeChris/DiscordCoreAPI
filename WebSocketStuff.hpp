@@ -212,10 +212,9 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (args.Code() != 550) {
+			if (args.Code() != 1000) {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
-					this->cleanup();
 					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 					this->connect();
 					string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
@@ -334,7 +333,6 @@ namespace DiscordCoreInternal {
 		void cleanup() {
 			if (this != nullptr) {
 				if (this->webSocket != nullptr) {
-					this->webSocket.Close(550, L"Disconnecting.");
 					this->webSocket = nullptr;
 				}
 				if (this->heartbeatTimer != nullptr) {
