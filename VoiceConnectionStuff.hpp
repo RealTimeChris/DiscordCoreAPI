@@ -170,6 +170,8 @@ namespace DiscordCoreAPI {
 					}
 					voiceConnection->hasTerminateRun = true;
 					if (DiscordCoreClientBase::youtubeAPIMap->contains(voiceConnection->voiceConnectionData.guildId)) {
+						DiscordCoreClientBase::youtubeAPIMap->at(voiceConnection->voiceConnectionData.guildId)->stop();
+						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(voiceConnection->voiceConnectionData.guildId, *DiscordCoreClientBase::youtubeAPIMap->at(voiceConnection->voiceConnectionData.guildId)->getQueue());
 						DiscordCoreClientBase::youtubeAPIMap->erase(voiceConnection->voiceConnectionData.guildId);
 					}
 					if (DiscordCoreClientBase::audioBuffersMap.contains(voiceConnection->voiceConnectionData.guildId)) {

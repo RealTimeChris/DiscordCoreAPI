@@ -52,6 +52,9 @@ namespace DiscordCoreAPI {
 						else {
 							youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
 						}
+						if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
+							youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id));
+						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
 					else {
@@ -64,6 +67,9 @@ namespace DiscordCoreAPI {
 						}
 						else {
 							youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
+						}
+						if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
+							youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id));
 						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}

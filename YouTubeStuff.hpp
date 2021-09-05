@@ -733,10 +733,10 @@ namespace DiscordCoreAPI {
 		};
 
 		static bool stop(string guildId) {
-			if (!YouTubeAPI::youtubeAPIMap->at(guildId)->stop()) {
-				return false;
-			}
 			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
+				if (!YouTubeAPI::youtubeAPIMap->at(guildId)->stop()) {
+					return false;
+				}
 				auto songQueue = *YouTubeAPI::youtubeAPIMap->at(guildId)->getQueue();
 				bool isSongLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopSongEnabled();
 				bool isAllLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopAllEnabled();
@@ -764,7 +764,9 @@ namespace DiscordCoreAPI {
 			if (YouTubeAPI::youtubeAPIMap->contains(guildId)){
 				auto songQueue = *YouTubeAPI::youtubeAPIMap->at(guildId)->getQueue();
 				auto currentSong = YouTubeAPI::youtubeAPIMap->at(guildId)->getCurrentSong();
-				YouTubeAPI::youtubeAPIMap->at(guildId)->stop();
+				if (!YouTubeAPI::youtubeAPIMap->at(guildId)->stop()) {
+					return false;
+				}
 				bool isSongLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopSongEnabled();
 				bool isAllLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopAllEnabled();
 				YouTubeAPI::youtubeAPIMap->erase(guildId);
@@ -803,7 +805,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
 				youtubeAPI->setLoopAllStatus(enabled);
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 			}
 		}
 
@@ -817,7 +818,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->isLoopAllEnabled();
 			}
 			else {
@@ -836,7 +836,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
 				youtubeAPI->setLoopSongStatus(enabled);
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 			}
 		}
 
@@ -850,7 +849,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->isLoopSongEnabled();
 			}
 			else {
@@ -868,7 +866,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->isThereAnySongs();
 			}
 			else {
@@ -887,7 +884,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
 				youtubeAPI->addSongToQueue(searchResult, guildMember);
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 			}
 		}
 
@@ -902,7 +898,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
 				youtubeAPI->setQueue(dataPackage);
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 			}
 		}
 
@@ -916,7 +911,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->getQueue();
 			}
 			else {
@@ -936,7 +930,6 @@ namespace DiscordCoreAPI {
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
 				youtubeAPI->modifyQueue(firstSongPosition, secondSongPosition);
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 			}
 		}
 
@@ -950,7 +943,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->getCurrentSong();
 			}
 			else {
@@ -968,7 +960,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->sendNextSong();
 			}
 			else {
@@ -986,7 +977,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->searchForVideo(searchQuery);
 			}
 			else {
@@ -1004,7 +994,6 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::audioBuffersMap->insert(make_pair(guildId, make_shared<unbounded_buffer<AudioFrameData>>()));
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap->at(guildId), guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				}
-				YouTubeAPI::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
 				return youtubeAPI->downloadAndStreamAudio(song, retryCount);
 			}
 			else {

@@ -34,7 +34,6 @@ namespace DiscordCoreAPI {
         }
 
         void exit() {
-            this->done();
             this->areWeQuitting = true;
         }
 
@@ -246,7 +245,6 @@ namespace DiscordCoreAPI {
                 }
 
                 while (av_read_frame(this->formatContext, this->packet) >= 0) {
-
                     if (this->packet->stream_index == this->audioStreamIndex) {
                         int ret = avcodec_send_packet(this->audioDecodeContext, this->packet);
                         if (ret < 0) {
@@ -330,6 +328,7 @@ namespace DiscordCoreAPI {
                 av_frame_unref(this->newFrame);
                 av_frame_free(&this->newFrame);
                 cout << "Completed decoding!" << endl << endl;
+                this->done();
                 return;
             }
         }
