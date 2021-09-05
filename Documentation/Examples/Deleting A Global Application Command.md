@@ -2,7 +2,7 @@
 ### **Deleting a Global Application Command:**
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
-- Select, from the `ApplicationCommands` class, the `deleteGlobalApplicationCommand()` function and execute it, while passing in a data structure of type `DeleteApplicationCommandData`, with a no return value.
+- Select, from the `ApplicationCommands` class, the `deleteGlobalApplicationCommand()` function and execute it, while passing in a data structure of type `DeleteApplicationCommandData`, with no return value.
 
 ```cpp
  // Test.hpp - Header for the "test" command.
