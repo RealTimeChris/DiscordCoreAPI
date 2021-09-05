@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		event_token onSongCompletion(delegate<> const& handler) {
+		event_token onSongCompletion(delegate<VoiceConnection*> const& handler) {
 			shared_ptr<VoiceConnection> sharedPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId);
 			if (!sharedPtr->areWeInstantiated) {
 				sharedPtr->areWeInstantiated = true;
@@ -129,7 +129,6 @@ namespace DiscordCoreAPI {
 
 				if (!this->areWePlaying) {
 					send(this->playBuffer, true);
-					send(this->playBuffer, true);
 				}
 
 				if (!this->areWeWaiting) {
@@ -162,8 +161,8 @@ namespace DiscordCoreAPI {
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMap{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		winrt::event<delegate<>> onSongCompletionEvent;
 		unbounded_buffer<bool> readyBuffer{ nullptr };
 		unbounded_buffer<bool> pauseBuffer{ nullptr };
 		unbounded_buffer<bool> stopBuffer{ nullptr };
@@ -348,7 +347,7 @@ namespace DiscordCoreAPI {
 								this->audioData.rawFrameData.data.clear();
 							}
 							else {
-								this->onSongCompletionEvent();
+								this->onSongCompletionEvent(this);
 								this->areWeStreaming = false;
 								this->areWePlaying = false;
 								frameCounter = 0;
@@ -400,7 +399,7 @@ namespace DiscordCoreAPI {
 								this->sendSingleAudioFrame(newFrames);
 							}
 							else {
-								this->onSongCompletionEvent();
+								this->onSongCompletionEvent(this);
 								this->areWeStreaming = false;
 								this->areWePlaying = false;
 								frameCounter = 0;

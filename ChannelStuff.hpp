@@ -29,41 +29,41 @@ namespace DiscordCoreAPI {
 		Channel() {};
 
 		Channel(ChannelData dataNew) {
-			this->id = dataNew.id;
-			this->type = dataNew.type;
-			this->guildId = dataNew.guildId;
-			this->position = dataNew.position;
 			this->permissionOverwrites = dataNew.permissionOverwrites;
-			this->name = dataNew.name;
-			this->topic = dataNew.topic;
-			this->nsfw = dataNew.nsfw;
-			this->lastMessageId = dataNew.lastMessageId;
-			this->bitrate = dataNew.bitrate;
-			this->userLimit = dataNew.userLimit;
+			this->discordCoreClient = dataNew.discordCoreClient;
 			this->rateLimitPerUser = dataNew.rateLimitPerUser;
-			this->recipients = dataNew.recipients;
-			this->icon = dataNew.icon;
-			this->ownerId = dataNew.ownerId;
-			this->applicationId = dataNew.applicationId;
-			this->parentId = dataNew.parentId;
 			this->lastPinTimestamp = dataNew.lastPinTimestamp;
-			this->rtcRegion = dataNew.rtcRegion;
 			this->videoQualityMode = dataNew.videoQualityMode;
+			this->threadMetadata = dataNew.threadMetadata;
+			this->lastMessageId = dataNew.lastMessageId;
+			this->applicationId = dataNew.applicationId;
 			this->messageCount = dataNew.messageCount;
 			this->memberCount = dataNew.memberCount;
-			this->threadMetadata = dataNew.threadMetadata;
+			this->recipients = dataNew.recipients;
+			this->userLimit = dataNew.userLimit;
+			this->rtcRegion = dataNew.rtcRegion;
+			this->position = dataNew.position;
+			this->parentId = dataNew.parentId;
+			this->ownerId = dataNew.ownerId;
+			this->bitrate = dataNew.bitrate;
+			this->guildId = dataNew.guildId;
 			this->member = dataNew.member;
-			this->discordCoreClient = dataNew.discordCoreClient;
+			this->topic = dataNew.topic;
+			this->type = dataNew.type;
+			this->name = dataNew.name;
+			this->nsfw = dataNew.nsfw;
+			this->icon = dataNew.icon;
+			this->id = dataNew.id;
 			return;
 		}
 	};
 
 	struct EditChannelPermissionOverwritesData {
-		string allow{ "" };
-		string deny{ "" };
 		EditChannelPermissionOverwritesType type{};
 		string roleOrUserId{ "" };
 		string channelId{ "" };
+		string allow{ "" };
+		string deny{ "" };
 	};
 
 	struct FetchChannelData {
@@ -75,8 +75,8 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DeleteChannelPermissionOverwritesData {
-		string channelId{ "" };
 		string roleOrUserId{ "" };
+		string channelId{ "" };
 	};
 
 	struct FetchDMChannelData {

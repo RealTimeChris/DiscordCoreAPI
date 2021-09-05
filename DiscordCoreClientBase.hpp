@@ -29,6 +29,7 @@ namespace DiscordCoreAPI {
 		friend class YouTubeAPICore;
 		friend class Guild;
 
+		static DiscordCoreClientBase* thisPointer;
 		static BotUser currentUser;
 
 		DiscordCoreClientBase() {}
@@ -44,6 +45,7 @@ namespace DiscordCoreAPI {
 			this->users->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(DiscordCoreClientBase::webSocketConnectionAgent);
+			DiscordCoreClientBase::thisPointer = this;
 		}
 
 	protected:
@@ -64,5 +66,6 @@ namespace DiscordCoreAPI {
 	map<string, vector<YouTubeSong>>* DiscordCoreClientBase::guildYouTubeQueueMap{ new map<string, vector<YouTubeSong>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
+	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer;
 }
 #endif
