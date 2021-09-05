@@ -123,9 +123,12 @@ namespace DiscordCoreAPI {
 
     struct CreateInteractionResponseData {
     public:
+
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
+        friend class SelectMenu;
+        friend class Button;
 
         CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
@@ -1162,38 +1165,6 @@ namespace DiscordCoreInternal {
             }
         }
 
-        task<DiscordCoreAPI::MessageData> createEphemeralInteractionResponseAsync(DiscordCoreAPI::CreateEphemeralInteractionResponseData dataPackage) {
-            apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
-            InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, make_shared<unbounded_buffer<DiscordCoreAPI::MessageData>>()));
-            DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
-            dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
-            dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
-            dataPackageNew.data = dataPackage.data.data;
-            dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.data.type;
-            DiscordCoreInternal::HttpAgentResources httpAgentResources;
-            dataPackageNew.agentResources = httpAgentResources;
-            InteractionManagerAgent requestAgent(httpAgentResources);
-            send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::createInteractionResponseAsync");
-            DiscordCoreAPI::MessageData messageData;
-            if (dataPackage.data.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessage || dataPackage.data.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessageWithSource) {
-                if (InteractionManagerAgent::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
-                    shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
-                    try {
-                        messageData = receive(*messageBlock, 1000);
-                    }
-                    catch (exception&) {};
-                }
-
-            }
-            InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
-            co_await mainThread;
-            co_return messageData;
-        }
-
         task<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage) {
             apartment_context mainThread;
             co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
@@ -1422,14 +1393,15 @@ namespace DiscordCoreAPI {
                     if (this->getButtonDataForAll == false) {
                         DiscordCoreAPI::SelectMenuInteractionData selectMenuInteractionData = receive(SelectMenu::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
                         if (selectMenuInteractionData.user.id != this->userId) {
-                            DiscordCoreAPI::CreateEphemeralInteractionResponseData createResponseData(selectMenuInteractionData);
+                            DiscordCoreAPI::CreateInteractionResponseData createResponseData(selectMenuInteractionData);
                             DiscordCoreAPI::EmbedData embedData;
                             embedData.setColor("FEFEFE");
                             embedData.setTitle("__**Permission Issue:**__");
                             embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
                             embedData.setDescription("Sorry, but that menu can only be selected by <@!" + this->userId + ">!");
                             createResponseData.addMessageEmbed(embedData);
-                            SelectMenu::interactions->createEphemeralInteractionResponseAsync(createResponseData).get();
+                            createResponseData.data.data.flags = 64;
+                            SelectMenu::interactions->createInteractionResponseAsync(createResponseData).get();
                         }
                         else {
                             this->interactionData = selectMenuInteractionData;
@@ -1556,14 +1528,15 @@ namespace DiscordCoreAPI {
                     if (this->getButtonDataForAll == false) {
                         DiscordCoreAPI::ButtonInteractionData buttonInteractionData = receive(Button::buttonIncomingInteractionBuffer, this->maxTimeInMs);
                         if (buttonInteractionData.user.id != this->userId) {
-                            DiscordCoreAPI::CreateEphemeralInteractionResponseData createResponseData(buttonInteractionData);
+                            DiscordCoreAPI::CreateInteractionResponseData createResponseData(buttonInteractionData);
                             DiscordCoreAPI::EmbedData embedData;
                             embedData.setColor("FEFEFE");
                             embedData.setTitle("__**Permission Issue:**__");
                             embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
                             embedData.setDescription("Sorry, but that button can only be pressed by <@!" + this->userId + ">!");
                             createResponseData.addMessageEmbed(embedData);
-                            Button::interactions->createEphemeralInteractionResponseAsync(createResponseData).get();
+                            createResponseData.data.data.flags = 64;
+                            Button::interactions->createInteractionResponseAsync(createResponseData).get();
                         }
                         else {
                             this->interactionData = buttonInteractionData;
