@@ -133,10 +133,8 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!this->areWeWaiting) {
-					cout << "WERE HERE WERE HERE" << endl;
 					this->areWeWaiting = true;
 					wait(this);
-					cout << "WERE HERE WERE HERE0202020" << endl;
 					this->areWeWaiting = false;
 				}
 			}
