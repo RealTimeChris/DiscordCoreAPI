@@ -22,7 +22,7 @@ namespace DiscordCoreAPI {
     class SongDecoder : agent {
     public:
 
-        friend class YouTubeAPI;
+        friend class YouTubeAPICore;
 
         SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : agent(*threadContextNew->scheduler->scheduler) {
             this->bufferMaxSize = (int)dataPackage.bufferMaxSize;

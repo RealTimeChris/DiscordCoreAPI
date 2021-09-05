@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreClientBase::initialize(this->agentResources, this->thisPointer);
-			YouTubeAPIWrapper::initialize(DiscordCoreClientBase::youtubeAPIMap, &DiscordCoreClientBase::audioBuffersMap);
+			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, &DiscordCoreClientBase::audioBuffersMap);
 			this->users = this->users;
 			this->roles = this->roles;
 			this->guildMembers = this->guildMembers;
