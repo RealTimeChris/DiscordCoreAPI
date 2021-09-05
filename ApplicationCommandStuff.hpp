@@ -231,9 +231,7 @@ namespace DiscordCoreInternal{
             co_return appCommand;
         }
 
-        task<void> deleteGlobalApplicationCommandAsync(DiscordCoreAPI::DeleteApplicationCommandData dataPackage) {
-            apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+        void deleteGlobalApplicationCommand(DiscordCoreAPI::DeleteApplicationCommandData dataPackage) {
             vector<DiscordCoreAPI::ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync().get();
             string commandId;
             bool isItFound = false;
@@ -245,8 +243,7 @@ namespace DiscordCoreInternal{
             }
             if (isItFound == false) {
                 cout << "ApplicationCommandManager::deleteGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
-                co_await mainThread;
-                co_return;
+                return;
             }
             HttpWorkload workload;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + commandId;
@@ -265,8 +262,7 @@ namespace DiscordCoreInternal{
             else {
                 cout << "ApplicationCommandManager::deleteGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
-            co_await mainThread;
-            co_return;
+            return;
         }
 
         task<void> displayGlobalApplicationCommandsAsync() {

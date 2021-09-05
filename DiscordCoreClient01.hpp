@@ -897,8 +897,8 @@ namespace DiscordCoreAPI {
 			return DiscordCoreClient::thisPointer->applicationCommands->editGlobalApplicationCommandAsync(dataPackage);
 		}
 
-		static task<void> deleteGlobalApplicationCommandAsync(DeleteApplicationCommandData dataPackage) {
-			return DiscordCoreClient::thisPointer->applicationCommands->deleteGlobalApplicationCommandAsync(dataPackage);
+		static void deleteGlobalApplicationCommand(DeleteApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->deleteGlobalApplicationCommand(dataPackage);
 		}
 	};
 
