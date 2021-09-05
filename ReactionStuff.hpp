@@ -116,12 +116,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.emoji + "/@me";
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManagerAgent::putObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ReactionManagerAgent::putObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "this->putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -152,12 +147,7 @@ namespace DiscordCoreInternal {
 				workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.encodedEmoji + "/" + dataPackage.userId;
 			}
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManagerAgent::deleteObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ReactionManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "this->deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}

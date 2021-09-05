@@ -119,12 +119,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::GET_GUILD_MEMBER;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManagerAgent::getObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildMemberManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildMemberManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -145,12 +140,7 @@ namespace DiscordCoreInternal {
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 			workload.content = getModifyGuildMemberPayload(dataPackage);
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManagerAgent::patchObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildMemberManagerAgent::patchObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildMemberManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}

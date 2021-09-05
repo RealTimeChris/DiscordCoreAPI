@@ -15,9 +15,6 @@ namespace DiscordCoreInternal {
 
 	class HttpRequestAgent : shared_ptr<ThreadContext>,  public agent {
 	public:
-
-		unbounded_buffer<HttpWorkload> workSubmissionBuffer{ nullptr };
-		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
  
 		HttpRequestAgent(HttpAgentResources agentResources)
 			: agent(*HttpRequestAgent::shared_ptr::get()->scheduler->scheduler), shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
@@ -85,6 +82,15 @@ namespace DiscordCoreInternal {
 			HttpRequestAgent::baseURL = baseURLNew;
 		};
 
+		HttpData submitWorkloadAndGetResult(HttpWorkload workload, string callStack) {
+			send(this->workSubmissionBuffer, workload);
+			this->start();
+			wait(this);
+			this->getError(callStack);
+			auto returnData = receive(this->workReturnBuffer);
+			return returnData;
+		}
+
 		void getError(string stackTrace){
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -106,8 +112,9 @@ namespace DiscordCoreInternal {
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static string botToken;
 		static string baseURL;
-
+		unbounded_buffer<HttpWorkload> workSubmissionBuffer{ nullptr };
 		unbounded_buffer<hresult_error> errorhBuffer{ nullptr };
+		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
 		HttpRequestHeaderCollection patchHeaders{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };

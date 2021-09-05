@@ -520,12 +520,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::GET_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::getObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::getObject_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -569,12 +564,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::getObjectData_01");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::getObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -598,12 +588,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::GET_PINNED_MESSAGES;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::getObjectData_02");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::getObjectData_02");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::getObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -628,12 +613,7 @@ namespace DiscordCoreInternal {
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 			workload.content = getEditMessagePayload(dataPackage);;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::patchObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::patchObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -656,12 +636,7 @@ namespace DiscordCoreInternal {
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 			workload.content = getReplyMessagePayload(dataPackage);
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::postObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::postObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -683,12 +658,7 @@ namespace DiscordCoreInternal {
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 			workload.content = getCreateMessagePayload(dataPackage);
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::postObjectData_01");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::postObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::postObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -709,12 +679,7 @@ namespace DiscordCoreInternal {
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
 			workload.content = dataPackage.content;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::postObjectData_02");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::postObjectData_02");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::postObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -730,12 +695,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::PUT_PIN_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::putObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::putObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent:putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -751,12 +711,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManagerAgent::deleteObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::onDeleteData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}

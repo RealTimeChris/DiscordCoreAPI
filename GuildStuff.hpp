@@ -339,12 +339,7 @@ namespace DiscordCoreInternal	{
 			workload.workloadType = HttpWorkloadType::GET_GUILD;
 			workload.relativePath = "/guilds/" + dataPackage.guildId;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManagerAgent::getObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -365,12 +360,7 @@ namespace DiscordCoreInternal	{
 			workload.workloadType = HttpWorkloadType::GET_INVITE;
 			workload.relativePath = "/invites/" + dataPackage.inviteId + "?with_counts=true&with_expiration=true";
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManagerAgent::getObjectData_01");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -388,12 +378,7 @@ namespace DiscordCoreInternal	{
 			workload.workloadType = HttpWorkloadType::GET_INVITES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/invites";
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManagerAgent::getObjectData_02");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_02");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -415,12 +400,7 @@ namespace DiscordCoreInternal	{
 			workload.workloadType = HttpWorkloadType::GET_VANITY_INVITE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/vanity-url";
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManagerAgent::getObjectData_03");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_03");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_03 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -456,12 +436,7 @@ namespace DiscordCoreInternal	{
 				workload.relativePath += "?limit=" + to_string(dataPackage.limit);
 			}
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManagerAgent::getObjectData_04");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_04");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_04 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
@@ -480,12 +455,7 @@ namespace DiscordCoreInternal	{
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.guildMemberId;
 			workload.content = getAddBanPayload(dataPackage);
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManagerAgent::putObjectData_00");
-			HttpData returnData;
-			try_receive(requestAgent.workReturnBuffer, returnData);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::putObjectData_00");
 			DiscordCoreAPI::BanData banData;
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;

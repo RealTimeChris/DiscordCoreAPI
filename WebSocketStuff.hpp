@@ -12,7 +12,7 @@
 #include "DataParsingFunctions.hpp"
 
 namespace DiscordCoreInternal {
-	
+
 	enum class WebSocketEventType {
 		Application_Command_Create = 0,
 		Application_Command_Update = 1,
@@ -155,7 +155,7 @@ namespace DiscordCoreInternal {
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
-		
+
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 		void collectExternalIP() {
 			unsigned char packet[70] = { 0 };
 			packet[0] = (this->voiceConnectionData.audioSSRC >> 24) & 0xff;
-			packet[1] = (this->voiceConnectionData.audioSSRC>> 16) & 0xff;
+			packet[1] = (this->voiceConnectionData.audioSSRC >> 16) & 0xff;
 			packet[2] = (this->voiceConnectionData.audioSSRC >> 8) & 0xff;
 			packet[3] = (this->voiceConnectionData.audioSSRC) & 0xff;
 			vector<uint8_t> sendVector;
@@ -212,17 +212,18 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (args.Code() != 1000 && args.Code() != 4014) {
+			if (args.Code() != 550) {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
+					this->cleanup();
 					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 					this->connect();
+					string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
+					this->sendMessage(resumePayload);
 				}
 				else {
 					this->terminate();
 				}
-				string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
-				this->sendMessage(resumePayload);
 			}
 		}
 
@@ -245,7 +246,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
-			
+
 			hstring message;
 			DataReader dataReader{ nullptr };
 			if (args.GetDataReader() != nullptr) {
@@ -296,7 +297,7 @@ namespace DiscordCoreInternal {
 					}
 					string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData);
 					this->sendMessage(identifyPayload);
-					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void{
+					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void {
 						VoiceChannelWebSocketAgent::sendHeartBeat(&this->didWeReceiveHeartbeatAck);
 						this->didWeReceiveHeartbeatAck = false;
 					};
@@ -306,7 +307,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		void onVoiceDataReceived(DatagramSocket const& , DatagramSocketMessageReceivedEventArgs const& args) {
+		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args) {
 
 			string message;
 			DataReader dataReader{ nullptr };
@@ -333,7 +334,7 @@ namespace DiscordCoreInternal {
 		void cleanup() {
 			if (this != nullptr) {
 				if (this->webSocket != nullptr) {
-					this->webSocket.Close(1000, L"Disconnecting.");
+					this->webSocket.Close(550, L"Disconnecting.");
 					this->webSocket = nullptr;
 				}
 				if (this->heartbeatTimer != nullptr) {
@@ -344,7 +345,7 @@ namespace DiscordCoreInternal {
 					this->voiceSocket.Close();
 					this->voiceSocket = nullptr;
 				}
-				
+
 			}
 		}
 
@@ -361,7 +362,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 
 		WebSocketReceiverAgent()
-			: ThreadContext(*ThreadManager::getThreadContext().get()), 
+			: ThreadContext(*ThreadManager::getThreadContext().get()),
 			agent(*this->scheduler->scheduler)
 		{
 			return;
@@ -651,7 +652,7 @@ namespace DiscordCoreInternal {
 		hstring sessionID{ L"" };
 		hstring botToken{ L"" };
 		bool* doWeQuit{};
-		
+
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
@@ -728,7 +729,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			json payload = payload.parse(to_string(message));
-			
+
 			send(*this->webSocketMessageTarget, payload);
 
 			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {

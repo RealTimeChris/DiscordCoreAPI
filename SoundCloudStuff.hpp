@@ -26,10 +26,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::SOUNDCLOUD_SEARCH;
 			workload.relativePath += searchQuery;
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			DiscordCoreInternal::HttpData returnData = receive(requestAgent.workReturnBuffer);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "SoundCloudAPI::searchForSong");
 			vector<DiscordCoreAPI::SoundCloudSearchResult> searchResults;
 			json partialSearchResultsJson = returnData.data;
 			cout << partialSearchResultsJson << endl;

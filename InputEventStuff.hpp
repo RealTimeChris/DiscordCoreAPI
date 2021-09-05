@@ -226,13 +226,15 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		inline static shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
-		inline static shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
+		static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
+		static shared_ptr<DiscordCoreInternal::MessageManager> messages;
 		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
 
 		InputEvents() {}
 	};
+	shared_ptr<DiscordCoreInternal::InteractionManager> InputEvents::interactions{ nullptr };
+	shared_ptr<DiscordCoreInternal::MessageManager> InputEvents::messages{ nullptr };
 	shared_ptr<DiscordCoreClientBase> InputEvents::discordCoreClientBase{ nullptr };
 	shared_ptr<DiscordCoreClient> InputEvents::discordCoreClient{ nullptr };
 }

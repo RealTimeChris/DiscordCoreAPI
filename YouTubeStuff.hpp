@@ -553,10 +553,7 @@ namespace DiscordCoreAPI {
 			curl_url_get(urlHandle, CURLUPart::CURLUPART_QUERY, &charString, 0);
 			workload.relativePath = charString;
 			curl_free(charString);
-			send(requestAgent.workSubmissionBuffer, workload);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			DiscordCoreInternal::HttpData returnData = receive(requestAgent.workReturnBuffer);
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "YouTubeAPICore::searchForVideo");
 			vector<DiscordCoreAPI::YouTubeSearchResult> searchResults;
 			json partialSearchResultsJson = returnData.data;
 			for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
