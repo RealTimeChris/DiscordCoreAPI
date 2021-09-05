@@ -412,26 +412,26 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->songQueue.size() > 0 && this->currentSong.description != "") {
 					this->currentSong = this->currentSong;
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
 					this->currentSong = this->currentSong;
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -464,19 +464,19 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.at(this->songQueue.size() - 1) = tempSong02;
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -491,13 +491,13 @@ namespace DiscordCoreAPI {
 					for (int x = 0; x < this->songQueue.size() - 1; x += 1) {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					this->currentSong = YouTubeSong();
 					return returnData;
@@ -505,7 +505,7 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->downloadAndStreamAudio(this->currentSong);
+					returnData.didItFail = this->downloadAndStreamAudio(this->currentSong);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -571,7 +571,7 @@ namespace DiscordCoreAPI {
 		bool loopAll{ false };
 		string guildId{ "" };
 
-		task<void> downloadAndStreamAudio(YouTubeSong song, int retryCount = 0) {
+		task<bool> downloadAndStreamAudio(YouTubeSong song, int retryCount = 0) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->threadContext->dispatcherQueue);
 			try {
@@ -701,7 +701,7 @@ namespace DiscordCoreAPI {
 				songEncoder->~SongEncoder();
 				songDecoder->~SongDecoder();
 				co_await mainThread;
-				co_return;
+				co_return true;
 			}
 			catch (hresult_out_of_bounds& e) {
 				retryCount += 1;
@@ -710,7 +710,7 @@ namespace DiscordCoreAPI {
 					downloadAndStreamAudio(song, retryCount);
 				}
 				else {
-					co_return;
+					co_return false;
 				}
 			}
 		}
@@ -777,8 +777,11 @@ namespace DiscordCoreAPI {
 				youtubeAPI->setLoopAllStatus(isAllLooped);
 				youtubeAPI->setLoopSongStatus(isSongLooped);
 				youtubeAPI->setQueue(songQueue);
-				youtubeAPI->sendNextSong();
+				auto returnData = youtubeAPI->sendNextSong();
 				YouTubeAPIWrapper::youtubeAPIMap->insert(make_pair(guildId, youtubeAPI));
+				if (returnData.didItFail.is_done()) {
+					return returnData.didItFail.get();
+				}
 				return true;
 			}
 			else {

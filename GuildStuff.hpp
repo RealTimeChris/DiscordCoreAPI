@@ -50,24 +50,24 @@ namespace DiscordCoreAPI {
 							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 						}
 						else {
-							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
 						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
 					else {
 						auto sharedPtr = make_shared<unbounded_buffer<AudioFrameData>>();
-						DiscordCoreClientBase::audioBuffersMap.insert(make_pair(this->id, sharedPtr));
+						DiscordCoreClientBase::audioBuffersMap.insert_or_assign(this->id, sharedPtr);
 						voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap.at(this->id), this->discordCoreClientBase);
 						shared_ptr<YouTubeAPI> youtubeAPI;
 						if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
 							youtubeAPI = DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 						}
 						else {
-							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+							youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
 						}
 						DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					}
-					DiscordCoreClientBase::voiceConnectionMap->insert(make_pair(this->id, voiceConnectionPtr));
+					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, voiceConnectionPtr);
 					return voiceConnectionPtr;
 				}
 			}
@@ -79,7 +79,10 @@ namespace DiscordCoreAPI {
 				return DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 			}
 			else {
-				return nullptr;
+				DiscordCoreClientBase::audioBuffersMap.insert_or_assign(this->id, make_shared<unbounded_buffer<AudioFrameData>>());
+				auto youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->id), this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
+				DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
+				return youtubeAPI;
 			}
 		}
 

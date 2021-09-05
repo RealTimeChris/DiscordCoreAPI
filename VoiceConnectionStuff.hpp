@@ -94,20 +94,6 @@ namespace DiscordCoreAPI {
 		bool stop() {
 			if (this->areWePlaying) {
 				this->areWeStopping = true;
-				/*
-				if (!DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->stop()) {
-					return false;
-				}
-				auto songQueue = *DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->getQueue();
-				bool isSongLooped = DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->isLoopSongEnabled();
-				bool isAllLooped = DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->isLoopAllEnabled();
-				DiscordCoreClientBase::youtubeAPIMap->erase(this->voiceConnectionData.guildId);
-				auto youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->voiceConnectionData.guildId), this->voiceConnectionData.guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-				youtubeAPI->setLoopAllStatus(isAllLooped);
-				youtubeAPI->setLoopSongStatus(isSongLooped);
-				youtubeAPI->setQueue(songQueue);
-				DiscordCoreClientBase::youtubeAPIMap->insert(make_pair(this->voiceConnectionData.guildId, youtubeAPI));
-				*/
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
 				receive(this->stopBuffer);
@@ -124,23 +110,6 @@ namespace DiscordCoreAPI {
 		bool skip() {
 			if (this->areWePlaying){
 				this->areWeSkipping = true;
-				/*
-				if (DiscordCoreClientBase::youtubeAPIMap->contains(this->voiceConnectionData.guildId)) {
-					auto songQueue = *DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->getQueue();
-					auto currentSong = DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->getCurrentSong();
-					DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->stop();
-					bool isSongLooped = DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->isLoopSongEnabled();
-					bool isAllLooped = DiscordCoreClientBase::youtubeAPIMap->at(this->voiceConnectionData.guildId)->isLoopAllEnabled();
-					DiscordCoreClientBase::youtubeAPIMap->erase(this->voiceConnectionData.guildId);
-					auto youtubeAPI = make_shared<YouTubeAPI>(DiscordCoreClientBase::audioBuffersMap.at(this->voiceConnectionData.guildId), this->voiceConnectionData.guildId, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-					youtubeAPI->currentSong = currentSong;
-					youtubeAPI->setLoopAllStatus(isAllLooped);
-					youtubeAPI->setLoopSongStatus(isSongLooped);
-					youtubeAPI->setQueue(songQueue);
-					youtubeAPI->sendNextSong();
-					DiscordCoreClientBase::youtubeAPIMap->insert(make_pair(this->voiceConnectionData.guildId, youtubeAPI));
-				}
-				*/
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
 				receive(this->skipBuffer);
@@ -192,7 +161,7 @@ namespace DiscordCoreAPI {
 						voiceConnection->areWeStopping = true;
 						receive(voiceConnection->stopBuffer);
 					}
-
+					this->voicechannelWebSocketAgent->~VoiceChannelWebSocketAgent();
 					voiceConnection->doWeQuit = true;
 					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
 					if (voiceConnection->encoder != nullptr) {
