@@ -1,4 +1,4 @@
-### **Delete Permission Overwrites:**
+### **Deleting Permission Overwrites:**
 ---
 - Create and populate a data structure by the name of `DiscordCoreAPI::DeletePermissionOverwritesData`.
 - Select, from the `Channels` class of the `DiscordCoreAPI` namespace, and execute `deletePermissionOverWritesAsync` from it, while having passed in the data structure.
