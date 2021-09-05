@@ -1,12 +1,11 @@
 
-### **Getting All Guilds:**
+### **Deleting a Global Application Command:**
 ---
-- Access the `Guilds` class of the `DiscordCoreAPI` namespace.
-- Select, from the `Guilds` class, the `getAllGuildsAsync()` function and execute it, with a return value of type `auto` or `vector<Guild>`.
-- Call the function with `.get()` added to the end in order to wait for the results now.
+- Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
+- Select, from the `ApplicationCommands` class, the `deleteGlobalApplicationCommand()` function and execute it, while passing in a data structure of type `DeleteApplicationCommandData`, with no return value.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
+ // Test.hpp - Header for the "test" command.
 // https://github.com/RealTimeChris
 
 #pragma once
@@ -36,8 +35,10 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
-			
-			vector<Guild> guilds = Guilds::getAllGuildsAsync().get();
+
+			DeleteApplicationCommandData dataPackage;
+			dataPackage.name = "testcommandname";
+			ApplicationCommands::deleteGlobalApplicationCommand(dataPackage);
 
 			co_return;
 		}

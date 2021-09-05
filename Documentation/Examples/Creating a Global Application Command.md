@@ -22,7 +22,13 @@ namespace DiscordCoreAPI {
 	public:
 		Test() {
 			this->commandName = "test";
-			this->helpDescription = "__**Test Usage:**__ Enter !test or /test to run this command!";
+			this->helpDescription = "Testing purposes!";
+			EmbedData msgEmbed;
+			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
+			msgEmbed.setTitle("__**Test Usage:**__");
+			msgEmbed.setTimeStamp(getTimeAndDate());
+			msgEmbed.setColor("FeFeFe");
+			this->helpEmbed = msgEmbed;
 		}
 
 		Test* create() {
