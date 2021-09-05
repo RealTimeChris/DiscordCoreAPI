@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
                         Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
                         auto voiceConnection = guild.connectToVoice(dataPackage.voiceStateData.channelId);
                         if (voiceConnection->areWeConnected()) {
-                            voiceConnection->disconnect();
+                            guild.disconnect();
                         }
                         guildMap.erase(dataPackage.voiceStateData.guildId);
                         guildMap.insert(make_pair(dataPackage.voiceStateData.guildId, guild));

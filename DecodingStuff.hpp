@@ -34,6 +34,7 @@ namespace DiscordCoreAPI {
         }
 
         void exit() {
+            this->done();
             this->areWeQuitting = true;
         }
 
@@ -300,14 +301,17 @@ namespace DiscordCoreAPI {
                             }
                             if (ret < 0 || newFrame->nb_samples == 0) {
                                 cout << "Return value is less than zero!\n\n";
+                                this->done();
                                 break;
                             }
                         }
                         else {
+                            this->done();
                             break;
                         }
                     }
                     else {
+                        this->done();
                         break;
                     }
                     av_packet_unref(this->packet);
@@ -317,6 +321,7 @@ namespace DiscordCoreAPI {
                     this->newFrame = av_frame_alloc();
                     this->packet = av_packet_alloc();
                     if (this->areWeQuitting) {
+                        this->done();
                         break;
                     }
                 }
@@ -328,7 +333,6 @@ namespace DiscordCoreAPI {
                 av_frame_unref(this->newFrame);
                 av_frame_free(&this->newFrame);
                 cout << "Completed decoding!" << endl << endl;
-                this->done();
                 return;
             }
         }

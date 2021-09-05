@@ -80,6 +80,37 @@ namespace DiscordCoreAPI {
 			return voiceConnectionPtr;
 		}
 
+		void disconnect() {
+			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
+				shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(this->id);
+				if (!voiceConnection->hasTerminateRun) {
+					if (voiceConnection->areWePlaying) {
+						voiceConnection->areWePlaying = false;
+						voiceConnection->areWeStopping = true;
+						receive(voiceConnection->stopBuffer);
+					}
+					voiceConnection->doWeQuit = true;
+					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .guildId = this->id,.channelId = "", .selfMute = false,.selfDeaf = false });
+					if (voiceConnection->encoder != nullptr) {
+						opus_encoder_destroy(voiceConnection->encoder);
+						voiceConnection->encoder = nullptr;
+					}
+					voiceConnection->hasTerminateRun = true;
+					if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
+						DiscordCoreClientBase::youtubeAPIMap->at(this->id)->stop();
+						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, *DiscordCoreClientBase::youtubeAPIMap->at(this->id)->getQueue());
+						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
+					}
+					if (DiscordCoreClientBase::audioBuffersMap.contains(this->id)) {
+						DiscordCoreClientBase::audioBuffersMap.erase(this->id);
+					}
+					if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
+						DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
+					}
+				}
+			}
+		}
+
 		shared_ptr<YouTubeAPICore> getYouTubeAPI() {
 			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
 				return DiscordCoreClientBase::youtubeAPIMap->at(this->id);

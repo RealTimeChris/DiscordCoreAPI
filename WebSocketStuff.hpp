@@ -90,7 +90,6 @@ namespace DiscordCoreInternal {
 		}
 
 		void sendMessage(string text) {
-
 			string message = text;
 			if (message.empty()) {
 				cout << "Please specify text to send" << endl;
@@ -855,4 +854,3 @@ namespace DiscordCoreInternal {
 	};
 }
 #endif
-

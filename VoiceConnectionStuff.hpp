@@ -152,41 +152,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void disconnect() {
-			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->voiceConnectionData.guildId)) {
-				shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(this->voiceConnectionData.guildId);
-				if (!voiceConnection->hasTerminateRun) {
-					if (voiceConnection->areWePlaying) {
-						voiceConnection->areWePlaying = false;
-						voiceConnection->areWeStopping = true;
-						receive(voiceConnection->stopBuffer);
-					}
-					this->voicechannelWebSocketAgent->~VoiceChannelWebSocketAgent();
-					voiceConnection->doWeQuit = true;
-					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .guildId = voiceConnection->voiceConnectionData.guildId,.channelId = "", .selfMute = false,.selfDeaf = false });
-					if (voiceConnection->encoder != nullptr) {
-						opus_encoder_destroy(voiceConnection->encoder);
-						voiceConnection->encoder = nullptr;
-					}
-					voiceConnection->hasTerminateRun = true;
-					if (DiscordCoreClientBase::youtubeAPIMap->contains(voiceConnection->voiceConnectionData.guildId)) {
-						DiscordCoreClientBase::youtubeAPIMap->at(voiceConnection->voiceConnectionData.guildId)->stop();
-						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(voiceConnection->voiceConnectionData.guildId, *DiscordCoreClientBase::youtubeAPIMap->at(voiceConnection->voiceConnectionData.guildId)->getQueue());
-						DiscordCoreClientBase::youtubeAPIMap->erase(voiceConnection->voiceConnectionData.guildId);
-					}
-					if (DiscordCoreClientBase::audioBuffersMap.contains(voiceConnection->voiceConnectionData.guildId)) {
-						DiscordCoreClientBase::audioBuffersMap.erase(voiceConnection->voiceConnectionData.guildId);
-					}
-					if (DiscordCoreClientBase::voiceConnectionMap->contains(voiceConnection->voiceConnectionData.guildId)) {
-						DiscordCoreClientBase::voiceConnectionMap->erase(voiceConnection->voiceConnectionData.guildId);
-					}
-				}
-			}
-		}
-
-		~VoiceConnection() {
-			this->disconnect();
-		}
+		~VoiceConnection() {}
 
 	protected:
 		friend class DiscordCoreClientBase;

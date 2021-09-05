@@ -612,7 +612,7 @@ namespace DiscordCoreAPI {
 				send(dataPackage.dataBuffer, vector<uint8_t>());
 				SongDecoder* songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 				SongEncoder* songEncoder = new SongEncoder();
-				while (song.contentLength > bytesReadTotal || songDecoder->status() != agent_done) {
+				while (song.contentLength > bytesReadTotal) {
 					this->areWePlaying = true;
 					int bytesRead{ 0 };
 					InMemoryRandomAccessStream outputStream;
@@ -673,6 +673,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						if (this->areWeStopping) {
+							songDecoder->exit();
 							break;
 						}
 						auto encodedFrames = songEncoder->encodeFrames(frames);
