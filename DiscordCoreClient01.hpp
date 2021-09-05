@@ -496,7 +496,6 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::MESSAGE_CREATE:
 					{
 						MessageData messageData;
-						this->doWeQuitWebSocket = true;
 						messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
 						if (messageData.interaction.id != "") {
