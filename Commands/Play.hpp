@@ -132,6 +132,7 @@ namespace DiscordCoreAPI {
 			if (!voiceConnection->areWeCurrentlyPlaying()) {
 				voiceConnection->onSongCompletion([=](VoiceConnection* voiceConnection) mutable noexcept ->task<void> {
 					co_await resume_background();
+					throw exception("TESTING");
 					Guild guildNew(guild);
 					DiscordGuild discordGuild02(guildNew);
 					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = YouTubeAPI::getCurrentSong(guild.id).addedById }).get();
