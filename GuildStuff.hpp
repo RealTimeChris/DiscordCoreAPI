@@ -45,7 +45,9 @@ namespace DiscordCoreAPI {
 					voiceConnectData.userId = this->discordCoreClientBase->currentUser.id;
 					auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
 					if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
-						youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id));
+						youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).songQueue);
+						youtubeAPI->setLoopAllStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopAllEnabled);
+						youtubeAPI->setLoopSongStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopSongEnabled);
 					}
 					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 					voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap, this->discordCoreClientBase);
@@ -75,7 +77,11 @@ namespace DiscordCoreAPI {
 					voiceConnection->voicechannelWebSocketAgent->~VoiceChannelWebSocketAgent();
 					if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
 						DiscordCoreClientBase::youtubeAPIMap->at(this->id)->stop();
-						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, *DiscordCoreClientBase::youtubeAPIMap->at(this->id)->getQueue());
+						Playlist playlist{};
+						playlist.songQueue = *DiscordCoreClientBase::youtubeAPIMap->at(this->id)->getQueue();
+						playlist.isLoopAllEnabled = DiscordCoreClientBase::youtubeAPIMap->at(this->id)->isLoopAllEnabled();
+						playlist.isLoopSongEnabled = DiscordCoreClientBase::youtubeAPIMap->at(this->id)->isLoopSongEnabled();
+						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, playlist);
 						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
 					}
 					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)) {

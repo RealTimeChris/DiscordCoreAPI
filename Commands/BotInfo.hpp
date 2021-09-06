@@ -11,12 +11,18 @@
 #include "../DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
-	class BotInfo : public BaseFunction {
-	public:
-		BotInfo() {
-			this->commandName = "botinfo";
-			this->helpDescription = "__**Bot Info Usage:**__ Enter !botinfo or /botinfo";
-		}
+    class BotInfo : public BaseFunction {
+    public:
+        BotInfo() {
+            this->commandName = "botinfo";
+            this->helpDescription = "Displays some info about this bot.";
+            EmbedData msgEmbed;
+            msgEmbed.setDescription("------\nEnter !botinfo = musichouse or /botinfo.\n------");
+            msgEmbed.setTitle("__**Bot Info Usage:**__");
+            msgEmbed.setTimeStamp(getTimeAndDate());
+            msgEmbed.setColor("FeFeFe");
+            this->helpEmbed = msgEmbed;
+        }
 
         BotInfo* create() {
             return new BotInfo;
@@ -27,8 +33,8 @@ namespace DiscordCoreAPI {
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE && Channels::getChannelAsync({ args->eventData.getChannelId() }).get().type != ChannelType::DM) {
                 InputEvents::deleteInputEventResponseAsync(args->eventData);
             }
-            else if(Channels::getChannelAsync({ args->eventData.getChannelId() }).get().type == ChannelType::DM || args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION){
-                args->argumentsArray.push_back("gamehouse");
+            else if (Channels::getChannelAsync({ args->eventData.getChannelId() }).get().type == ChannelType::DM || args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+                args->argumentsArray.push_back("musichouse");
             }
 
             Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
@@ -56,7 +62,7 @@ namespace DiscordCoreAPI {
                 }
                 co_return;
             }
-            if (args->argumentsArray.at(0) != "gamehouse") {
+            if (args->argumentsArray.at(0) != "musichouse") {
                 co_return;
             }
 
@@ -81,7 +87,7 @@ namespace DiscordCoreAPI {
                 auto eventNew = InputEvents::respondToEvent(dataPackage);
             }
             co_return;
-		}
+        }
 
     };
 }

@@ -40,6 +40,82 @@ namespace DiscordCoreAPI {
         return false;
     }
 
+    bool checkIfAllowedPlayingInChannel(DiscordCoreAPI::InputEventData eventData, DiscordGuild discordGuild) {
+        bool isItFound = true;
+        if (discordGuild.data.musicChannelIds.size() > 0) {
+            isItFound = false;
+            string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
+            EmbedData msgEmbed;
+            for (auto& value : discordGuild.data.musicChannelIds) {
+                if (eventData.getChannelId() == value) {
+                    isItFound = true;
+                    break;
+                }
+                else {
+                    msgString += "<#" + value + ">\n";
+                }
+            }
+            msgString += "------";
+            if (isItFound == false) {
+                msgEmbed.setAuthor(eventData.getUserName(), eventData.getAvatarURL());
+                msgEmbed.setColor(discordGuild.data.borderColor);
+                msgEmbed.setDescription(msgString);
+                msgEmbed.setTitle("__**Permissions Issue:**__");
+                if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                    ReplyMessageData replyMessageData(eventData);
+                    replyMessageData.addMessageEmbed(msgEmbed);
+                    InputEventData event01 = InputEvents::respondToEvent(replyMessageData);
+                    InputEvents::deleteInputEventResponseAsync(event01, 20000);
+                }
+                else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+                    CreateEphemeralInteractionResponseData responseData(eventData);
+                    responseData.addMessageEmbed(msgEmbed);
+                    InputEventData event01 = InputEvents::respondToEvent(responseData);
+                }
+            }
+        }
+        return isItFound;
+    }
+
+    bool checkIfWeHaveControl(DiscordCoreAPI::InputEventData eventData, DiscordGuild guildData, GuildMember guildMember) {
+            if (guildData.data.djRoleId == "") {
+                return true;
+            }
+            bool doWeHaveControl = false;
+            DiscordGuildMember guildMemberData(guildMember);
+
+            auto myRoles = Roles::getGuildMemberRoles({ .guildId = guildData.data.guildId, .guildMember = guildMember });
+
+            for (auto value : myRoles) {
+                if (value.id == guildData.data.djRoleId) {
+                    doWeHaveControl = true;
+                }
+            }            
+
+            if (!doWeHaveControl) {
+                string msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
+                DiscordCoreAPI::EmbedData msgEmbed;
+                msgEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+                msgEmbed.setDescription(msgString);
+                msgEmbed.setColor(guildData.data.borderColor);
+                msgEmbed.setTimeStamp(getTimeAndDate());
+                msgEmbed.setTitle("Permissions Issue");
+                if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                    ReplyMessageData dataPackage(eventData);
+                    dataPackage.addMessageEmbed(msgEmbed);
+                    auto newEvent = InputEvents::respondToEvent(dataPackage);
+                    InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
+                }
+                else {
+                    CreateEphemeralInteractionResponseData dataPackage(eventData);
+                    dataPackage.addMessageEmbed(msgEmbed);
+                    auto newEvent = InputEvents::respondToEvent(dataPackage);
+                    InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
+                }
+            }
+            return doWeHaveControl;
+    }
+
     class PermissionsConverter {
     public:
 
@@ -547,9 +623,9 @@ namespace DiscordCoreAPI {
     }
 
     struct RecurseThroughMessagePagesData {
-        InputEventData inputEventData;
-        unsigned int currentPageIndex;
-        string buttonId;
+        InputEventData inputEventData{};
+        int currentPageIndex{ -1 };
+        string buttonId{ "" };
     };
 
     // Recurses through a succession of messages.

@@ -312,7 +312,6 @@ namespace DiscordCoreAPI {
 					this->areWeStreaming = true;
 					this->areWePlaying = true;;
 					while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
-						this->areWePlaying = true;
 						if (this->areWeSkipping) {
 							frameCounter = 0;
 							break;

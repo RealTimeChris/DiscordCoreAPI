@@ -18,10 +18,6 @@ namespace DiscordCoreInternal {
         static void parseObject(json jsonObjectData, DiscordCoreAPI::OverWriteData* pDataStructure) {
             DiscordCoreAPI::OverWriteData overWriteData = *pDataStructure;
 
-            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
-                overWriteData.id = jsonObjectData.at("id").get<string>();
-            }
-
             if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
                 overWriteData.type = (DiscordCoreAPI::EditChannelPermissionOverwritesType)jsonObjectData.at("type").get<int>();
             }
@@ -34,11 +30,33 @@ namespace DiscordCoreInternal {
                 overWriteData.deny = jsonObjectData.at("deny").get<string>();
             }
 
+            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                overWriteData.id = jsonObjectData.at("id").get<string>();
+            }
+
             *pDataStructure = overWriteData;
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSearchResult* pDataStructure) {
             DiscordCoreAPI::YouTubeSearchResult partialSearchResult = *pDataStructure;
+
+            if (jsonObjectData.contains("lengthText") && !jsonObjectData.at("lengthText").is_null()) {
+                partialSearchResult.duration = jsonObjectData.at("lengthText").at("accessibility").at("accessibilityData").at("label").get<string>();
+            }
+
+            if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData.at("detailedMetadataSnippets").is_null()) {
+                for (auto value : jsonObjectData.at("detailedMetadataSnippets").at(0).at("snippetText").at("runs")) {
+                    partialSearchResult.description += value.at("text").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("thumbnail") && !jsonObjectData.at("thumbnail").is_null()) {
+                partialSearchResult.thumbNailURL = jsonObjectData.at("thumbnail").at("thumbnails").at(0).at("url").get<string>();
+            }
+
+            if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
+                partialSearchResult.videoURL = "https://www.youtube.com/watch?v=" + jsonObjectData.at("videoId").get<string>();
+            }
 
             if (jsonObjectData.contains("title") && !jsonObjectData.at("title").is_null()) {
                 if (jsonObjectData.at("title").contains("runs")) {
@@ -51,24 +69,6 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
                 partialSearchResult.videoId = jsonObjectData.at("videoId").get<string>();
-            }
-
-            if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
-                partialSearchResult.videoURL = "https://www.youtube.com/watch?v=" + jsonObjectData.at("videoId").get<string>();
-            }
-
-            if (jsonObjectData.contains("thumbnail") && !jsonObjectData.at("thumbnail").is_null()) {
-                partialSearchResult.thumbNailURL = jsonObjectData.at("thumbnail").at("thumbnails").at(0).at("url").get<string>();
-            }
-
-            if (jsonObjectData.contains("lengthText") && !jsonObjectData.at("lengthText").is_null()) {
-                partialSearchResult.duration = jsonObjectData.at("lengthText").at("accessibility").at("accessibilityData").at("label").get<string>();
-            }
-
-            if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData.at("detailedMetadataSnippets").is_null()) {
-                for (auto value : jsonObjectData.at("detailedMetadataSnippets").at(0).at("snippetText").at("runs")) {
-                    partialSearchResult.description += value.at("text").get<string>();
-                }
             }
 
             *pDataStructure = partialSearchResult;
@@ -2626,46 +2626,46 @@ namespace DiscordCoreInternal {
                 if (jsonObjectData.contains("streamingData") && !jsonObjectData.at("streamingData").is_null() && jsonObjectData.at("streamingData").contains("formats") && !jsonObjectData.at("streamingData").at("formats").is_null()) {
                     for (auto value : jsonObjectData.at("streamingData").at("formats")) {
                         DiscordCoreAPI::YouTubeFormat newData;
-                        if (value.contains("audioQuality")) {
+                        if (value.contains("audioQuality") && !value.at("audioQuality").is_null()) {
                             newData.audioQuality = value.at("audioQuality").get<string>();
                         }
-                        if (value.contains("averageBitrate")) {
+                        if (value.contains("averageBitrate") && !value.at("averageBitrate").is_null()) {
                             newData.averageBitrate = value.at("averageBitrate").get<int>();
                         }
-                        if (value.contains("audioSampleRate")) {
+                        if (value.contains("audioSampleRate") && !value.at("audioSampleRate").is_null()) {
                             newData.audioSampleRate = value.at("audioSampleRate").get<string>();
                         }
-                        if (value.contains("bitrate")) {
+                        if (value.contains("bitrate") && !value.at("bitrate").is_null()) {
                             newData.bitrate = value.at("bitrate").get<int>();
                         }
-                        if (value.contains("contentLength")) {
+                        if (value.contains("contentLength") && !value.at("contentLength").is_null()) {
                             newData.contentLength = stoll(value.at("contentLength").get<string>());
                         }
-                        if (value.contains("fps")) {
+                        if (value.contains("fps") && !value.at("fps").is_null()) {
                             newData.fps = value.at("fps").get<int>();
                         }
-                        if (value.contains("height")) {
+                        if (value.contains("height") && !value.at("height").is_null()) {
                             newData.height = value.at("height").get<int>();
                         }
-                        if (value.contains("width")) {
+                        if (value.contains("width") && !value.at("width").is_null()) {
                             newData.height = value.at("width").get<int>();
                         }
-                        if (value.contains("aitags")) {
+                        if (value.contains("aitags") && !value.at("aitags").is_null()) {
                             newData.aitags = value.at("aitags").get<string>();
                         }
-                        if (value.contains("itag")) {
+                        if (value.contains("itag") && !value.at("itag").is_null()) {
                             newData.itag = value.at("itag").get<int>();
                         }
-                        if (value.contains("mimeType")) {
+                        if (value.contains("mimeType") && !value.at("mimeType").is_null()) {
                             newData.mimeType = value.at("mimeType").get<string>();
                         }
-                        if (value.contains("quality")) {
+                        if (value.contains("quality") && !value.at("quality").is_null()) {
                             newData.quality = value.at("quality").get<string>();
                         }
-                        if (value.contains("signatureCipher")) {
+                        if (value.contains("signatureCipher") && !value.at("signatureCipher").is_null()) {
                             newData.signatureCipher = value.at("signatureCipher").get<string>();
                         }
-                        else if (value.contains("cipher")) {
+                        else if (value.contains("cipher") && !value.at("cipher").is_null()) {
                             newData.signatureCipher = value.at("cipher").get<string>();
                         }
                         if (newData.signatureCipher.find("&sp") != string::npos) {
@@ -2684,46 +2684,46 @@ namespace DiscordCoreInternal {
                 if (jsonObjectData.contains("streamingData") && !jsonObjectData.at("streamingData").is_null() && jsonObjectData.at("streamingData").contains("adaptiveFormats") && !jsonObjectData.at("streamingData").at("adaptiveFormats").is_null()) {
                     for (auto value : jsonObjectData.at("streamingData").at("adaptiveFormats")) {
                         DiscordCoreAPI::YouTubeFormat newData;
-                        if (value.contains("audioQuality")) {
+                        if (value.contains("audioQuality") && !value.at("audioQuality").is_null()) {
                             newData.audioQuality = value.at("audioQuality").get<string>();
                         }
-                        if (value.contains("averageBitrate")) {
+                        if (value.contains("averageBitrate") && !value.at("averageBitrate").is_null()) {
                             newData.averageBitrate = value.at("averageBitrate").get<int>();
                         }
-                        if (value.contains("audioSampleRate")) {
+                        if (value.contains("audioSampleRate") && !value.at("audioSampleRate").is_null()) {
                             newData.audioSampleRate = value.at("audioSampleRate").get<string>();
                         }
-                        if (value.contains("bitrate")) {
+                        if (value.contains("bitrate") && !value.at("bitrate").is_null()) {
                             newData.bitrate = value.at("bitrate").get<int>();
                         }
-                        if (value.contains("contentLength")) {
+                        if (value.contains("contentLength") && !value.at("contentLength").is_null()) {
                             newData.contentLength = stoll(value.at("contentLength").get<string>());
                         }
-                        if (value.contains("fps")) {
+                        if (value.contains("fps") && !value.at("fps").is_null()) {
                             newData.fps = value.at("fps").get<int>();
                         }
-                        if (value.contains("height")) {
+                        if (value.contains("height") && !value.at("height").is_null()) {
                             newData.height = value.at("height").get<int>();
                         }
-                        if (value.contains("width")) {
+                        if (value.contains("width") && !value.at("width").is_null()) {
                             newData.height = value.at("width").get<int>();
                         }
-                        if (value.contains("aitags")) {
+                        if (value.contains("aitags") && !value.at("aitags").is_null()) {
                             newData.aitags = value.at("aitags").get<string>();
                         }
-                        if (value.contains("itag")) {
+                        if (value.contains("itag") && !value.at("itag").is_null()) {
                             newData.itag = value.at("itag").get<int>();
                         }
-                        if (value.contains("mimeType")) {
+                        if (value.contains("mimeType") && !value.at("mimeType").is_null()) {
                             newData.mimeType = value.at("mimeType").get<string>();
                         }
-                        if (value.contains("quality")) {
+                        if (value.contains("quality") && !value.at("quality").is_null()) {
                             newData.quality = value.at("quality").get<string>();
                         }
-                        if (value.contains("signatureCipher")) {
+                        if (value.contains("signatureCipher") && !value.at("signatureCipher").is_null()) {
                             newData.signatureCipher = value.at("signatureCipher").get<string>();
                         }
-                        else if (value.contains("cipher")) {
+                        else if (value.contains("cipher") && !value.at("cipher").is_null()) {
                             newData.signatureCipher = value.at("cipher").get<string>();
                         }
                         if (newData.signatureCipher.find("&sp") != string::npos) {

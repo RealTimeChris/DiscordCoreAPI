@@ -3782,6 +3782,12 @@ namespace DiscordCoreAPI {
         string url{ "" };
     };
 
+    struct Playlist {
+        vector<YouTubeSong> songQueue{};
+        bool isLoopSongEnabled{ false };
+        bool isLoopAllEnabled{ false };
+    };
+
     struct SendNextSongReturnData {
     public:
         YouTubeSong currentSong{};

@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 							lowestValue = value;
 							functionName = messageContents.substr(currentPosition, key.length());
 						}
-
+						
 					}
 				}
 				if (isItFound) {
