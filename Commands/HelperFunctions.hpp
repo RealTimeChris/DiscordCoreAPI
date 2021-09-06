@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
             bool doWeHaveControl = false;
             DiscordGuildMember guildMemberData(guildMember);
 
-            auto myRoles = Roles::getGuildMemberRoles({ .guildId = guildData.data.guildId, .guildMember = guildMember });
+            auto myRoles = Roles::getGuildMemberRoles({ .guildMember = guildMember,.guildId = guildData.data.guildId });
 
             for (auto value : myRoles) {
                 if (value.id == guildData.data.djRoleId) {

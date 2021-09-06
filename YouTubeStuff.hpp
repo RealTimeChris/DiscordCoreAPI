@@ -798,8 +798,6 @@ namespace DiscordCoreAPI {
 
 	};
 
-	
-
 	class YouTubeAPI {
 	public:
 
