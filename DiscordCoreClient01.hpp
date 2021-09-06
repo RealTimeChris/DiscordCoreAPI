@@ -57,8 +57,6 @@ namespace DiscordCoreAPI {
 			wait((agent*)DiscordCoreClient::thisPointer.get());
 			if (DiscordCoreClient::thisPointer->doWeQuitWebSocket) {
 				cout << "It appears as though there was a websocket issue! Enter any value to continue!" << endl << endl;
-				string x;
-				cin >> x;
 			}
 			DiscordCoreClient::thisPointer->getError();
 		}

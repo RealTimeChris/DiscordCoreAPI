@@ -3745,7 +3745,7 @@ namespace DiscordCoreAPI {
     struct AudioFrameData {
         EncodedFrameData encodedFrameData{};
         RawFrameData rawFrameData{};
-        AudioFrameType type{};
+        AudioFrameType type{ AudioFrameType::Unset };
     };
 
     struct SoundCloudSearchResult {
@@ -3791,7 +3791,6 @@ namespace DiscordCoreAPI {
     struct SendNextSongReturnData {
     public:
         YouTubeSong currentSong{};
-        task<bool> didItFail{};
     };
 
     static string commandPrefix;

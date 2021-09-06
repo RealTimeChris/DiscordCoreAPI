@@ -212,7 +212,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (args.Code() != 1000) {
+			if (args.Code() != 1000 && args.Code() != 4014) {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
 					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
@@ -332,6 +332,10 @@ namespace DiscordCoreInternal {
 
 		void cleanup() {
 			if (this != nullptr) {
+				if (this->voiceSocket != nullptr) {
+					this->voiceSocket.Close();
+					this->voiceSocket = nullptr;
+				}
 				if (this->webSocket != nullptr) {
 					this->webSocket.Close(1000, L"Disconnecting");
 					this->webSocket = nullptr;
@@ -339,10 +343,6 @@ namespace DiscordCoreInternal {
 				if (this->heartbeatTimer != nullptr) {
 					this->heartbeatTimer.Cancel();
 					this->heartbeatTimer = nullptr;
-				}
-				if (this->voiceSocket != nullptr) {
-					this->voiceSocket.Close();
-					this->voiceSocket = nullptr;
 				}
 
 			}
@@ -410,152 +410,152 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("t") == "CHANNEL_CREATE") {
 				workload.eventType = WebSocketEventType::Channel_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "CHANNEL_UPDATE") {
 				workload.eventType = WebSocketEventType::Channel_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "CHANNEL_DELETE") {
 				workload.eventType = WebSocketEventType::Channel_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_CREATE") {
 				workload.eventType = WebSocketEventType::Guild_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_UPDATE") {
 				workload.eventType = WebSocketEventType::Guild_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_DELETE") {
 				workload.eventType = WebSocketEventType::Guild_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_BAN_ADD") {
 				workload.eventType = WebSocketEventType::Guild_Ban_Add;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_BAN_REMOVE") {
 				workload.eventType = WebSocketEventType::Guild_Ban_Remove;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_ADD") {
 				workload.eventType = WebSocketEventType::Guild_Member_Add;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_REMOVE") {
 				workload.eventType = WebSocketEventType::Guild_Member_Remove;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_MEMBER_UPDATE") {
 				workload.eventType = WebSocketEventType::Guild_Member_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_CREATE") {
 				workload.eventType = WebSocketEventType::Guild_Role_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_UPDATE") {
 				workload.eventType = WebSocketEventType::Guild_Role_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "GUILD_ROLE_DELETE") {
 				workload.eventType = WebSocketEventType::Guild_Role_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INVITE_CREATE") {
 				workload.eventType = WebSocketEventType::Invite_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INVITE_DELETE") {
 				workload.eventType = WebSocketEventType::Invite_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "INTERACTION_CREATE") {
 				workload.eventType = WebSocketEventType::Interaction_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_CREATE") {
 				workload.eventType = WebSocketEventType::Message_Create;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_UPDATE") {
 				workload.eventType = WebSocketEventType::Message_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_DELETE") {
 				workload.eventType = WebSocketEventType::Message_Delete;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_DELETE_BULK") {
 				workload.eventType = WebSocketEventType::Message_Delete_Bulk;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_ADD") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Add;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_ALL") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove_All;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "MESSAGE_REACTION_REMOVE_EMOJI") {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove_Emoji;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "PRESENCE_UPDATE") {
 				workload.eventType = WebSocketEventType::Presence_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "TYPING_START") {
 				workload.eventType = WebSocketEventType::Typing_Start;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "USER_UPDATE") {
 				workload.eventType = WebSocketEventType::User_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "VOICE_STATE_UPDATE") {
 				workload.eventType = WebSocketEventType::Voice_State_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 
 			if (payload.at("t") == "VOICE_SERVER_UPDATE") {
 				workload.eventType = WebSocketEventType::Voice_Server_Update;
-				sendWorkload(workload);
+				this->sendWorkload(workload);
 			}
 		}
 

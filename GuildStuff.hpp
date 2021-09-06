@@ -22,6 +22,7 @@ namespace DiscordCoreAPI {
 
 	class Guild :public GuildData {
 	public:
+
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::GuildManagerAgent;
 		friend class DiscordCoreInternal::GuildManager;
@@ -30,51 +31,47 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildUpdateData;
 		friend class DiscordCoreClient;
 
-		shared_ptr<VoiceConnection> connectToVoice(string channelId) {
-			shared_ptr<VoiceConnection> voiceConnectionPtr{ nullptr };
+		shared_ptr<VoiceConnection>* connectToVoice(string channelId) {
+			shared_ptr<VoiceConnection>* voiceConnectionPtr{ nullptr };
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
-				voiceConnectionPtr = DiscordCoreClientBase::voiceConnectionMap->at(this->id);
-				return voiceConnectionPtr;
+				return  &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			else if (channelId != "") {
-				if ((voiceConnectionPtr == nullptr || voiceConnectionPtr->voiceConnectionData.channelId != channelId)) {
-					auto voiceConnectData = DiscordCoreClientBase::webSocketConnectionAgent->getVoiceConnectionData(channelId, this->id);
-					voiceConnectData.channelId = channelId;
-					voiceConnectData.guildId = this->id;
-					voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
-					voiceConnectData.userId = this->discordCoreClientBase->currentUser.id;
-					auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
-					if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
-						youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).songQueue);
-						youtubeAPI->setLoopAllStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopAllEnabled);
-						youtubeAPI->setLoopSongStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopSongEnabled);
-					}
-					DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
-					voiceConnectionPtr = make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap, this->discordCoreClientBase);
-					DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, voiceConnectionPtr);
-					return voiceConnectionPtr;
+				auto voiceConnectData = DiscordCoreClientBase::webSocketConnectionAgent->getVoiceConnectionData(channelId, this->id);
+				voiceConnectData.channelId = channelId;
+				voiceConnectData.guildId = this->id;
+				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
+				voiceConnectData.userId = this->discordCoreClientBase->currentUser.id;
+				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap, this->discordCoreClientBase));
+				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id);
+				if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
+					youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).songQueue);
+					youtubeAPI->setLoopAllStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopAllEnabled);
+					youtubeAPI->setLoopSongStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopSongEnabled);
 				}
+				DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);				
+				return &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			return voiceConnectionPtr;
 		}
-
+	
 		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
-				shared_ptr<VoiceConnection> voiceConnection = DiscordCoreClientBase::voiceConnectionMap->at(this->id);
-				if (!voiceConnection->hasTerminateRun) {
-					if (voiceConnection->areWePlaying) {
-						voiceConnection->areWePlaying = false;
-						voiceConnection->areWeStopping = true;
-						receive(voiceConnection->stopBuffer);
+				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
+				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
+				if (!(*voiceConnection)->hasTerminateRun) {
+					if ((*voiceConnection)->areWePlaying) {
+						(*voiceConnection)->areWePlaying = false;
+						(*voiceConnection)->areWeStopping = true;
 					}
-					voiceConnection->doWeQuit = true;
+					(*voiceConnection)->doWeQuit = true;
 					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .guildId = this->id,.channelId = "", .selfMute = false,.selfDeaf = false });
-					if (voiceConnection->encoder != nullptr) {
-						opus_encoder_destroy(voiceConnection->encoder);
-						voiceConnection->encoder = nullptr;
+					if ((*voiceConnection)->encoder != nullptr) {
+						opus_encoder_destroy((*voiceConnection)->encoder);
+						(*voiceConnection)->encoder = nullptr;
 					}
-					voiceConnection->hasTerminateRun = true;
-					voiceConnection->voicechannelWebSocketAgent->~VoiceChannelWebSocketAgent();
+					(*voiceConnection)->hasTerminateRun = true;
+					
 					if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
 						DiscordCoreClientBase::youtubeAPIMap->at(this->id)->stop();
 						Playlist playlist{};
@@ -87,9 +84,7 @@ namespace DiscordCoreAPI {
 					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)) {
 						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					}
-					if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
-						DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
-					}
+					return;
 				}
 			}
 		}
@@ -246,7 +241,7 @@ namespace DiscordCoreAPI {
 	};
 };
 
-namespace DiscordCoreInternal	{
+namespace DiscordCoreInternal {
 
 	class GuildManagerAgent : agent {
 	protected:
@@ -273,9 +268,9 @@ namespace DiscordCoreInternal	{
 		unbounded_buffer<GetGuildData> requestGetGuildBuffer{ nullptr };
 		concurrent_queue<DiscordCoreAPI::Guild> guildsToInsert{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		HttpAgentResources agentResources{};		
-		
-		GuildManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew)
+		HttpAgentResources agentResources{};
+
+		GuildManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> coreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> coreClientBaseNew)
 			:agent(*GuildManagerAgent::threadContext->scheduler->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
