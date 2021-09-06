@@ -5,7 +5,7 @@
 - Execute the `MessageCollector::collectMessages` function, with `.get()` added to the end of it to block the current thread to wait for the message results.
  
 ```cpp
-function<bool(DiscordCoreAPI::Message)> messageFilter = [=](DiscordCoreAPI::Message message)-> bool {
+function<bool(Message)> messageFilter = [=](Message message)-> bool {
                         if (userID == message.author.id) {
                             return true;
                         }
