@@ -3,6 +3,7 @@
 - First, define a filtering function - which is one that takes a `DiscordCoreAPI::Message` as its one argument, that returns a `bool`. Define it so that if it returns true, the message is "collected".
 - Instantiate the `DiscordCoreAPI::MessageCollector` class with arguments to define how many messages are collected, for how long in milliseconds the collection runs, a userId, and the filter function.
 - Execute the `MessageCollector::collectMessages` function, with `.get()` added to the end of it to block the current thread to wait for the message results.
+- This function returns a struct of type `MessageCollectorReturnData`, which contains a vector of collected `Message`s.
  
 ```cpp
 function<bool(Message)> messageFilter = [=](Message message)-> bool {
