@@ -58,9 +58,9 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			shared_ptr<VoiceConnection> voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
+			shared_ptr<VoiceConnection>* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
 
-			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
+			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != (*voiceConnection)->getChannelId()) {
 				EmbedData newEmbed;
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			if (!voiceConnection->areWeConnected() || !voiceConnection->areWeCurrentlyPlaying()) {
+			if (!(*voiceConnection)->areWeConnected() || !(*voiceConnection)->areWeCurrentlyPlaying()) {
 				string msgString = "------\n**There's no music playing to be paused!**\n------";
 				EmbedData msgEmbed;
 				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 				}
 				co_return;
 			}
-			voiceConnection->pauseToggle();
+			(*voiceConnection)->pauseToggle();
 
 			EmbedData msgEmbed;
 			msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());

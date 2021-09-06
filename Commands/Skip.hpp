@@ -61,9 +61,9 @@ namespace DiscordCoreAPI {
 				newEvent = InputEvents::respondToEvent(dataPackage);
 			}
 
-			shared_ptr<VoiceConnection> voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
+			shared_ptr<VoiceConnection>* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
 
-			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
+			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != (*voiceConnection)->getChannelId()) {
 				EmbedData newEmbed;
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			if (!voiceConnection->areWeConnected() || !voiceConnection->areWeCurrentlyPlaying()) {
+			if (!(*voiceConnection)->areWeConnected() || !(*voiceConnection)->areWeCurrentlyPlaying()) {
 				string msgString = "------\n**There's no music playing to be skipped!**\n------";
 				EmbedData msgEmbed;
 				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -144,9 +144,9 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				
-				if (voiceConnection->areWeCurrentlyPlaying() &&YouTubeAPI::isThereAnySongs(guild.id)) {
+				if ((*voiceConnection)->areWeCurrentlyPlaying() &&YouTubeAPI::isThereAnySongs(guild.id)) {
 					YouTubeAPI::skip(guild.id);
-					voiceConnection->skip();
+					(*voiceConnection)->skip();
 					string msgString = "------\n**We're skipping to the next song!**\n------";
 					EmbedData msgEmbed02;
 					msgEmbed02.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 						InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 					}
 					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = YouTubeAPI::getCurrentSong(guild.id).addedById }).get();
-					voiceConnection->play();
+					(*voiceConnection)->play();
 					EmbedData newEmbed;
 					newEmbed.setAuthor(guildMember02.user.username, guildMember02.user.avatar);
 					newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +

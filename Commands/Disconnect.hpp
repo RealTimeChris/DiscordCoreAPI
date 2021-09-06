@@ -57,9 +57,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			auto voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
-
-			if (voiceConnection->areWeConnected()) {
+			if ((*guild.connectToVoice(guildMember.voiceData.channelId))->areWeConnected()) {
 				guild.disconnect();
 				EmbedData newEmbed;
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());

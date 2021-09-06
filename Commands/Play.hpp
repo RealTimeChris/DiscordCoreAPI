@@ -49,6 +49,16 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
+			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
+
+			bool doWeHaveControl = checkIfWeHaveControl(args->eventData, discordGuild, guildMember);
+
+			if (!doWeHaveControl) {
+				co_return;
+			}
+
+			shared_ptr<VoiceConnection> voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
+
 			InputEventData newEvent = args->eventData;
 			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				CreateDeferredInteractionResponseData dataPackage(newEvent);
@@ -57,14 +67,6 @@ namespace DiscordCoreAPI {
 			vector<YouTubeSearchResult> searchResults;
 			if (args->argumentsArray.size() > 0) {
 				searchResults = YouTubeAPI::searchForVideo(args->argumentsArray[0], guild.id);
-			}
-
-			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
-
-			bool doWeHaveControl = checkIfWeHaveControl(args->eventData, discordGuild, guildMember);
-
-			if (!doWeHaveControl) {
-				co_return;
 			}
 
 			vector<EmbedData> embedsFromSearch;
@@ -80,8 +82,6 @@ namespace DiscordCoreAPI {
 				newEmbed.setColor(discordGuild.data.borderColor);
 				embedsFromSearch.push_back(newEmbed);
 			}
-
-			shared_ptr<VoiceConnection> voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
 
 			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
 				EmbedData newEmbed;
@@ -132,32 +132,63 @@ namespace DiscordCoreAPI {
 			if (!voiceConnection->areWeCurrentlyPlaying()) {
 				voiceConnection->onSongCompletion([=](VoiceConnection* voiceConnection) mutable noexcept ->task<void> {
 					co_await resume_background();
-					throw exception("TESTING");
-					Guild guildNew(guild);
-					DiscordGuild discordGuild02(guildNew);
-					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = YouTubeAPI::getCurrentSong(guild.id).addedById }).get();
-					discordGuild02.getDataFromDB();
-					if (YouTubeAPI::isThereAnySongs(guildNew.id)) {
-						auto returnValue01 = YouTubeAPI::sendNextSong(guildNew.id);
+					discordGuild.getDataFromDB();
+					if (YouTubeAPI::isThereAnySongs(guild.id)) {
+						try {
+							auto returnValue01 = YouTubeAPI::sendNextSong(guild.id);
+							voiceConnection->play();
+						}
+						catch (exception& e) {
+							EmbedData newEmbed;
+							newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+							string newString = "__**Sorry, there was an error while trying to play that last song!\nIt was: ";
+							newString += e.what();
+							newString += "**__";
+							newEmbed.setDescription(newString);
+							newEmbed.setTimeStamp(getTimeAndDate());
+							newEmbed.setTitle("__**Error Playing:**__");
+							newEmbed.setColor(discordGuild.data.borderColor);
+							if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
+							}
+							if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
+							}
+							if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
+							}
+							if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
+							}
+							if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+								ReplyMessageData dataPackage(newEvent);
+								dataPackage.addMessageEmbed(newEmbed);
+								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+							}
+							else {
+								CreateFollowUpMessageData dataPackage(newEvent);
+								dataPackage.addMessageEmbed(newEmbed);
+								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+							}
+						}
 						EmbedData newEmbed;
-				 		voiceConnection->play();
-						newEmbed.setAuthor(guildMember02.user.username, guildMember02.user.avatar);
-						newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guildNew.id).title + "](" + YouTubeAPI::getCurrentSong(guildNew.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guildNew.id).description + "\n__**Duration:**__ " +
-							YouTubeAPI::getCurrentSong(guildNew.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guildNew.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guildNew.id).addedByUserName + ")");
-						newEmbed.setImage(YouTubeAPI::getCurrentSong(guildNew.id).imageURL);
+						newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+						newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
+							YouTubeAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guild.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guild.id).addedByUserName + ")");
+						newEmbed.setImage(YouTubeAPI::getCurrentSong(guild.id).imageURL);
 						newEmbed.setTimeStamp(getTimeAndDate());
 						newEmbed.setTitle("__**Now Playing:**__");
-						newEmbed.setColor(discordGuild02.data.borderColor);
-						if (YouTubeAPI::isLoopAllEnabled(guildNew.id) && YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						newEmbed.setColor(discordGuild.data.borderColor);
+						if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
 						}
-						if (!YouTubeAPI::isLoopAllEnabled(guildNew.id) && YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
 						}
-						if (YouTubeAPI::isLoopAllEnabled(guildNew.id) && !YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
 						}
-						if (!YouTubeAPI::isLoopAllEnabled(guildNew.id) && !YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 						}
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
@@ -172,23 +203,23 @@ namespace DiscordCoreAPI {
 						}
 					}
 					else {
-						discordGuild02.getDataFromDB();
+						discordGuild.getDataFromDB();
 						EmbedData newEmbed;
-						newEmbed.setAuthor(guildMember02.user.username, guildMember02.user.avatar);
+						newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
 						newEmbed.setDescription("------\n__**Sorry, but there's nothing left to play here!**__\n------");
 						newEmbed.setTimeStamp(getTimeAndDate());
 						newEmbed.setTitle("__**Now Playing:**__");
-						newEmbed.setColor(discordGuild02.data.borderColor);
-						if (YouTubeAPI::isLoopAllEnabled(guildNew.id) && YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						newEmbed.setColor(discordGuild.data.borderColor);
+						if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
 						}
-						else if (!YouTubeAPI::isLoopAllEnabled(guildNew.id) && YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
 						}
-						else if (YouTubeAPI::isLoopAllEnabled(guildNew.id) && !YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						else if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
 						}
-						else if (!YouTubeAPI::isLoopAllEnabled(guildNew.id) && !YouTubeAPI::isLoopSongEnabled(guildNew.id)) {
+						else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 						}
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
@@ -206,38 +237,73 @@ namespace DiscordCoreAPI {
 
 				if (!voiceConnection->areWeCurrentlyPlaying()) {
 					if (YouTubeAPI::isThereAnySongs(guild.id)) {
-						auto returnValue02 = YouTubeAPI::sendNextSong(guild.id);
-						EmbedData newEmbed;
-						newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-						newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
-							YouTubeAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guild.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guild.id).addedByUserName + ")");
-						newEmbed.setImage(YouTubeAPI::getCurrentSong(guild.id).imageURL);
-						newEmbed.setTimeStamp(getTimeAndDate());
-						newEmbed.setTitle("__**Now Playing:**__");
-						newEmbed.setColor(discordGuild.data.borderColor);
-						if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
+						try {
+							auto returnValue02 = YouTubeAPI::sendNextSong(guild.id);
+							EmbedData newEmbed;
+							newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+							newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
+								YouTubeAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guild.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guild.id).addedByUserName + ")");
+							newEmbed.setImage(YouTubeAPI::getCurrentSong(guild.id).imageURL);
+							newEmbed.setTimeStamp(getTimeAndDate());
+							newEmbed.setTitle("__**Now Playing:**__");
+							newEmbed.setColor(discordGuild.data.borderColor);
+							if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
+							}
+							else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
+							}
+							else if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
+							}
+							else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
+							}
+							if (newEvent.eventType == InputEventType::REGULAR_MESSAGE) {
+								ReplyMessageData dataPackage(newEvent);
+								dataPackage.addMessageEmbed(newEmbed);
+								newEvent = InputEvents::respondToEvent(dataPackage);
+							}
+							else {
+								CreateFollowUpMessageData dataPackage(newEvent);
+								dataPackage.addMessageEmbed(newEmbed);
+								newEvent = InputEvents::respondToEvent(dataPackage);
+							}
+							voiceConnection->play();
 						}
-						else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
+						catch (exception& e) {
+							EmbedData newEmbed;
+							newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+							string newString = "__**Sorry, there was an error while trying to play that last song!\nIt was: "; 
+							newString += e.what(); 
+							newString += "**__";
+							newEmbed.setDescription(newString);
+							newEmbed.setTimeStamp(getTimeAndDate());
+							newEmbed.setTitle("__**Error Playing:**__");
+							newEmbed.setColor(discordGuild.data.borderColor);
+							if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
+							}
+							if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
+							}
+							if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
+							}
+							if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
+							}
+							if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+								ReplyMessageData dataPackage(newEvent);
+								dataPackage.addMessageEmbed(newEmbed);
+								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+							}
+							else {
+								CreateFollowUpMessageData dataPackage(newEvent);
+								dataPackage.addMessageEmbed(newEmbed);
+								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+							}
 						}
-						else if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
-						}
-						else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
-						}
-						if (newEvent.eventType == InputEventType::REGULAR_MESSAGE) {
-							ReplyMessageData dataPackage(newEvent);
-							dataPackage.addMessageEmbed(newEmbed);
-							newEvent = InputEvents::respondToEvent(dataPackage);
-						}
-						else {
-							CreateFollowUpMessageData dataPackage(newEvent);
-							dataPackage.addMessageEmbed(newEmbed);
-							newEvent = InputEvents::respondToEvent(dataPackage);
-						}
-						voiceConnection->play();
 					}
 					else {
 						EmbedData newEmbed;

@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			auto voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
+			shared_ptr<VoiceConnection> voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
 
 			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
 				if (voiceConnection->getChannelId() == "" && guildMember.voiceData.channelId != "") {
