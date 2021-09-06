@@ -8,6 +8,7 @@
 - ### [Running a Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Running%20a%20Command.md)
 - ### [Running a Function on a Timer](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Running%20a%20Function%20on%20a%20Timer.md)
 - ### [Listening for a Discord Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listening%20for%20a%20Discord%20Event.md)
+- ### [Using the Message Collector](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Using%20a%20Message%20Collector.md)
 
 ## Channel Stuff:
 - ### [Getting a Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Channel.md)
