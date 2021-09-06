@@ -25,15 +25,15 @@ namespace DiscordCoreAPI {
 		Reaction() {};
 
 		Reaction(ReactionData dataNew) {
-			this->count = dataNew.count;
-			this->me = dataNew.me;
-			this->emoji = dataNew.emoji;
-			this->userId = dataNew.userId;
+			this->discordCoreClient = dataNew.discordCoreClient;
 			this->channelId = dataNew.channelId;
 			this->messageId = dataNew.messageId;
 			this->guildId = dataNew.guildId;
+			this->userId = dataNew.userId;
 			this->member = dataNew.member;
-			this->discordCoreClient = dataNew.discordCoreClient;
+			this->count = dataNew.count;
+			this->emoji = dataNew.emoji;
+			this->me = dataNew.me;
 		}
 	};
 

@@ -30,27 +30,27 @@ namespace DiscordCoreAPI {
 		Role() {};
 
 		Role(RoleData dataNew) {
-			this->tags = dataNew.tags;
+			this->discordCoreClient = dataNew.discordCoreClient;
 			this->permissions = dataNew.permissions;
 			this->mentionable = dataNew.mentionable;
 			this->position = dataNew.position;
-			this->name = dataNew.name;
 			this->managed = dataNew.managed;
-			this->hoist = dataNew.hoist;
-			this->id = dataNew.id;
 			this->color = dataNew.color;
-			this->discordCoreClient = dataNew.discordCoreClient;
+			this->hoist = dataNew.hoist;
+			this->name = dataNew.name;
+			this->tags = dataNew.tags;
+			this->id = dataNew.id;
 		}
 	};
 
 	struct UpdateRoleData {
+		string hexColorValue{ "" };
+		bool mentionable{ false };
+		string permissions{ "" };
 		string guildId{ "" };
 		string roleId{ "" };
-		string name{ "" };
-		string permissions{ "" };
-		string hexColorValue{ "" };
 		bool hoist{ false };
-		bool mentionable{ false };
+		string name{ "" };
 	};
 
 	struct GetGuildRolesData {
@@ -63,9 +63,9 @@ namespace DiscordCoreAPI {
 	};
 
 	struct UpdateRolePositionData {
+		int newPosition{ 0 };
 		string guildId{ "" };
 		string roleId{ "" };
-		int newPosition{ 0 };
 	};
 
 	struct RemoveRoleFromGuildMemberData {
@@ -91,18 +91,18 @@ namespace DiscordCoreAPI {
 	};
 
 	struct CreateRoleData {
-		string name{ "" };
-		string permissions{ "0" };
 		string hexColorValue{ "" };
-		bool hoist{ false };
 		bool mentionable{ false };
+		string permissions{ "0" };
 		string guildId{ "" };
+		bool hoist{ false };
+		string name{ "" };
 		int position{ 0 };
 	};
 
 	struct GetGuildMemberRolesData {
-		string guildId{ "" };
 		GuildMember guildMember{};
+		string guildId{ "" };
 	};
 };
 
@@ -611,7 +611,7 @@ namespace DiscordCoreInternal {
 			roleData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Role newRole(roleData);
 			try_receive(requestAgent.outRoleBuffer, newRole);
-			updateRolePositions({ .guildId = dataPackage.guildId, .roleId = roleData.id, .newPosition = dataPackage.position });
+			updateRolePositions({ .newPosition = dataPackage.position,.guildId = dataPackage.guildId,.roleId = roleData.id });
 			co_await mainThread;
 			co_return newRole;
 		}

@@ -22,10 +22,13 @@ namespace DiscordCoreInternal {
 
     class ThreadManagerAgent :public agent {
     protected:
+
         friend class ThreadManager;
+
         static shared_ptr<ThreadContext> threadContext;
-        unbounded_buffer<ThreadType> readyBuffer{ nullptr };
+
         unbounded_buffer<shared_ptr<ThreadContext>> outputBuffer{ nullptr };
+        unbounded_buffer<ThreadType> readyBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
         ThreadManagerAgent() :agent(*ThreadManagerAgent::threadContext->scheduler->scheduler) {}
