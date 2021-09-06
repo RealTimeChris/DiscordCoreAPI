@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 
 		void play() {
 			if (this != nullptr) {
-
+				receive(this->readyBuffer);
 				if (!this->areWePlaying) {
 					send(this->playBuffer, true);
 				}
@@ -290,16 +290,16 @@ namespace DiscordCoreAPI {
 		void run() {
 			while (!this->doWeQuit) {
 				if (!this->areWePlaying) {
+					send(this->readyBuffer, true);
 					receive(this->playBuffer);
 					this->audioDataBuffer = this->sendAudioBufferMap->at(this->voiceConnectionData.guildId);
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
-					start:
+				start:
 					this->audioData = receive(*this->audioDataBuffer);
 					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0) {
 						goto start;
 					}
-					this->areWePlaying = true;
 				}
 				this->sendSpeakingMessage(true);
 				int intervalCount = 20000;
@@ -310,106 +310,105 @@ namespace DiscordCoreAPI {
 
 				if (this->audioData.type == AudioFrameType::Encoded) {
 					this->areWeStreaming = true;
-					if (this->areWeStreaming) {
-						while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
-							if (this->areWeSkipping) {
-								frameCounter = 0;
-								break;
-							}
-							if (this->areWeStopping) {
-								frameCounter = 0;
-								break;
-							}
-							if (this->areWePaused) {
-								this->areWeStreaming = false;
-								receive(this->pauseBuffer);
-								this->areWePaused = false;
-							}
-							if (this->doWeQuit) {
-								this->clearAudioData();
-								this->areWeStreaming = false;
-								this->areWePlaying = false;
-								frameCounter = 0;
-								break;
-							}
-							frameCounter += 1;
+					this->areWePlaying = true;;
+					while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
+						this->areWePlaying = true;
+						if (this->areWeSkipping) {
+							frameCounter = 0;
+							break;
+						}
+						if (this->areWeStopping) {
+							frameCounter = 0;
+							break;
+						}
+						if (this->areWePaused) {
+							this->areWeStreaming = false;
+							receive(this->pauseBuffer);
+							this->areWePaused = false;
+						}
+						if (this->doWeQuit) {
+							this->clearAudioData();
+							this->areWeStreaming = false;
+							this->areWePlaying = false;
+							frameCounter = 0;
+							break;
+						}
+						frameCounter += 1;
+						this->audioData.encodedFrameData.data.clear();
+						this->audioData.rawFrameData.data.clear();
+						this->audioData = receive(*this->audioDataBuffer);
+						timeCounter = 0;
+						while (timeCounter <= intervalCount) {
+							timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+						}
+						int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						if (this->audioData.encodedFrameData.sampleCount != 0) {
+							this->sendSingleAudioFrame(this->audioData.encodedFrameData);
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();
-							this->audioData = receive(*this->audioDataBuffer);
-							timeCounter = 0;
-							while (timeCounter <= intervalCount) {
-								timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-							}
-							int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-							if (this->audioData.encodedFrameData.sampleCount != 0) {
-								this->sendSingleAudioFrame(this->audioData.encodedFrameData);
-								this->audioData.encodedFrameData.data.clear();
-								this->audioData.rawFrameData.data.clear();
-							}
-							else {
-								this->onSongCompletionEvent(this);
-								this->areWeStreaming = false;
-								this->areWePlaying = false;
-								frameCounter = 0;
-								break;
-							}
-							totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
-							int totalTimeAverage = totalTime / frameCounter;
-							intervalCount = 20000 - totalTimeAverage;
-							startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 						}
+						else {
+							this->onSongCompletionEvent(this);
+							this->areWeStreaming = false;
+							this->areWePlaying = false;
+							frameCounter = 0;
+							break;
+						}
+						totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
+						int totalTimeAverage = totalTime / frameCounter;
+						intervalCount = 20000 - totalTimeAverage;
+						startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 					}
 					this->areWePlaying = false;
 				}
 				else if (this->audioData.type == AudioFrameType::RawPCM ) {
+					this->areWeStreaming = true;
 					this->areWePlaying = true;
-					if (this->areWePlaying) {
-						while (this->audioData.rawFrameData.sampleCount != 0) {
-							if (this->areWeSkipping) {
-								frameCounter = 0;
-								break;
-							}
-							if (this->areWeStopping) {
-								frameCounter = 0;
-								break;
-							}
-							if (this->areWePaused) {
-								this->areWeStreaming = false;
-								receive(this->pauseBuffer);
-								this->areWePaused = false;
-							}
-							if (this->doWeQuit) {
-								this->clearAudioData();
-								this->areWeStreaming = false;
-								this->areWePlaying = false;
-								frameCounter = 0;
-								break;
-							}
-							frameCounter += 1;
-							this->audioData.encodedFrameData.data.clear();
-							this->audioData.rawFrameData.data.clear();
-							this->audioData = receive(*this->audioDataBuffer);
-							timeCounter = 0;
-							while (timeCounter <= intervalCount) {
-								timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-							}
-							int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-							if (this->audioData.encodedFrameData.sampleCount != 0) {
-								auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
-								this->sendSingleAudioFrame(newFrames);
-							}
-							else {
-								this->onSongCompletionEvent(this);
-								this->areWeStreaming = false;
-								this->areWePlaying = false;
-								frameCounter = 0;
-								break;
-							}
-							totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
-							int totalTimeAverage = totalTime / frameCounter;
-							intervalCount = 20000 - totalTimeAverage;
-							startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+					while (this->audioData.rawFrameData.sampleCount != 0) {
+						if (this->areWeSkipping) {
+							frameCounter = 0;
+							break;
 						}
+						if (this->areWeStopping) {
+							frameCounter = 0;
+							break;
+						}
+						if (this->areWePaused) {
+							this->areWeStreaming = false;
+							receive(this->pauseBuffer);
+							this->areWePaused = false;
+						}
+						if (this->doWeQuit) {
+							this->clearAudioData();
+							this->areWeStreaming = false;
+							this->areWePlaying = false;
+							frameCounter = 0;
+							break;
+						}
+						frameCounter += 1;
+						this->audioData.encodedFrameData.data.clear();
+						this->audioData.rawFrameData.data.clear();
+						this->audioData = receive(*this->audioDataBuffer);
+						timeCounter = 0;
+						while (timeCounter <= intervalCount) {
+							timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+						}
+						int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						if (this->audioData.encodedFrameData.sampleCount != 0) {
+							auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
+							this->sendSingleAudioFrame(newFrames);
+						}
+						else {
+							this->onSongCompletionEvent(this);
+							this->areWeStreaming = false;
+							this->areWePlaying = false;
+							frameCounter = 0;
+							break;
+						}
+						totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
+						int totalTimeAverage = totalTime / frameCounter;
+						intervalCount = 20000 - totalTimeAverage;
+						startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 					}
 					this->areWePlaying = false;
 				}
