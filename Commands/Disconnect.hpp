@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			auto voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
+			auto voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
 
 			if (voiceConnection->areWeConnected()) {
 				guild.disconnect();

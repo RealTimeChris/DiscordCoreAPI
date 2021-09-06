@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
                 co_return;
             }
 
-            auto voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
+            auto voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
 
             if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
                 EmbedData newEmbed;

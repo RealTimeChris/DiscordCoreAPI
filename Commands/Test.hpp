@@ -89,10 +89,8 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				else if (buttonData.at(0).buttonId == "connect") {
-					shared_ptr<VoiceConnection> sharedPtr = guild.connectToVoice(guildMember.voiceData.channelId);
 				}
 				else if (buttonData.at(0).buttonId == "disconnect") {
-					shared_ptr<VoiceConnection> sharedPtr = guild.connectToVoice(guildMember.voiceData.channelId);
 					guild.disconnect();
 				}
 				
