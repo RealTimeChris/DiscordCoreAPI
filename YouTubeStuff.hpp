@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 		inputVector[position] = first;
 		return inputVector;
 	}
-	
+
 	string joinString(vector<char> stringToJoin) {
 		string newString;
 		for (unsigned int x = 0; x < stringToJoin.size(); x += 1) {
@@ -607,7 +607,7 @@ namespace DiscordCoreAPI {
 			this->areWeStopping = false;
 			try {
 				this->outputDataBuffer01 = *this->sendAudioBufferMap->at(this->guildId);
-					
+
 				string downloadBaseURL;
 				if (currentSong.formatDownloadURL.find("https://") != string::npos && currentSong.formatDownloadURL.find("/videoplayback?") != string::npos) {
 					downloadBaseURL = currentSong.formatDownloadURL.substr(currentSong.formatDownloadURL.find("https://") + to_string(L"https://").length(), currentSong.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
@@ -795,8 +795,6 @@ namespace DiscordCoreAPI {
 
 	};
 
-	
-
 	class YouTubeAPI {
 	public:
 
@@ -847,7 +845,7 @@ namespace DiscordCoreAPI {
 				youtubeAPI->sendNextSong();
 				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
 				return true;
-				}
+			}
 			else {
 				return false;
 			}
@@ -941,7 +939,7 @@ namespace DiscordCoreAPI {
 				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId));
 				YouTubeAPI::youtubeAPIMap->at(guildId)->modifyQueue(firstSongPosition, secondSongPosition);
 			}
-		
+
 		}
 
 		static YouTubeSong getCurrentSong(string guildId) {
