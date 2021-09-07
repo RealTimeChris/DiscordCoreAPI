@@ -55,8 +55,8 @@ namespace DiscordCoreAPI {
                         }
                     }
                 }
-                return false;
             }
+            return false;
         }
 
         ~SongDecoder() {
