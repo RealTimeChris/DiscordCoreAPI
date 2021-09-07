@@ -775,9 +775,6 @@ namespace DiscordCoreAPI {
 					throw exception(newString.c_str());
 				}
 			}
-			catch (exception& e) {
-				cout << "YouTubeAPICore::downloadAudio()::Error " << e.what() << endl;
-			}
 		};
 
 		task<bool> runTask(YouTubeSong song, int retryCount = 0) {
