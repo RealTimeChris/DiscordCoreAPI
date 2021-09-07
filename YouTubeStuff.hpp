@@ -289,6 +289,14 @@ namespace DiscordCoreAPI {
 			return this->loopSong;
 		}
 
+		void setQueue(vector<YouTubeSong> dataPackage) {
+			this->songQueue = dataPackage;
+		}
+
+		vector<YouTubeSong>* getQueue() {
+			return &this->songQueue;
+		}
+
 		bool stop() {
 			if (this->areWePlaying) {
 				this->cancelTokenSource.cancel();
@@ -354,83 +362,6 @@ namespace DiscordCoreAPI {
 				}
 			}
 
-		}
-
-		void addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember) {
-			string watchHTMLURL = to_string(this->baseWatchURL) + searchResult.videoId + "&hl=en";
-			Filters::HttpBaseProtocolFilter filter;
-			filter.AutomaticDecompression(true);
-			Filters::HttpCacheControl cacheControl = filter.CacheControl();
-			cacheControl.ReadBehavior(Filters::HttpCacheReadBehavior::NoCache);
-			cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
-			winrt::Windows::Web::Http::HttpClient httpClientGetHTMLBody(filter);
-			HttpRequestMessage requestMessageHTMLBody;
-			auto headersNewHTMLBody = requestMessageHTMLBody.Headers();
-			headersNewHTMLBody.Append(L"user-agent", L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			requestMessageHTMLBody.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(watchHTMLURL)));
-			allocator<csub_match> allocator;
-			cmatch html5PlayerMatchResults(allocator);
-			hstring resultStringHTMLBody;
-			auto resultHTMLBody = httpClientGetHTMLBody.SendRequestAsync(requestMessageHTMLBody).get();
-			resultStringHTMLBody = resultHTMLBody.Content().ReadAsStringAsync().get();
-			string resultStringStringHTMLBody = to_string(resultStringHTMLBody);
-			this->html5Player = to_string(this->baseURL) + resultStringStringHTMLBody.substr(resultStringStringHTMLBody.find("/s/player/"), resultStringStringHTMLBody.find("/player_ias.vflset/en_US/base.js") + to_string(L"/player_ias.vflset/en_US/base.js").length());
-			this->html5Player = this->html5Player.substr(0, 73);
-			this->playerResponse = between(to_string(resultStringHTMLBody), "ytInitialPlayerResponse = ", "</script>");
-			this->playerResponse = this->playerResponse.substr(0, this->playerResponse.length() - 170);
-			json jsonObject;
-			if (this->playerResponse != "") {
-				jsonObject = json::parse(this->playerResponse);
-			}
-			DiscordCoreInternal::DataParser::parseObject(jsonObject, &searchResult.formats);
-			YouTubeFormat format;
-			for (auto value : searchResult.formats) {
-				if (value.mimeType.find("opus") != string::npos) {
-					format = value;
-					if (value.audioQuality == "AUDIO_QUALITY_MEDIUM" && format.audioQuality == "AUDIO_QUALITY_LOW") {
-						format = value;
-					}
-					if (value.audioQuality == "AUDIO_QUALITY_HIGH") {
-						format = value;
-					}
-				}
-			}
-
-			HttpRequestMessage requestPlayerFile;
-			auto requestPlayerFileHeaders = requestPlayerFile.Headers();
-			requestPlayerFileHeaders.Append(L"user-agent", L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			requestPlayerFile.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(this->html5Player)));
-			auto responseMessage02 = httpClientGetHTMLBody.SendRequestAsync(requestPlayerFile).get();
-			hstring responseToPlayerGet02 = responseMessage02.Content().ReadAsStringAsync().get();
-			this->html5PlayerFile = to_string(responseToPlayerGet02);
-			format = decipherFormat(format, this->html5PlayerFile);
-			YouTubeSong song;
-			song.songId = to_string((int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			song.addedByUserName = guildMember.user.username;
-			song.contentLength = (int)format.contentLength;
-			song.formatDownloadURL = format.downloadURL;
-			song.description = searchResult.description;
-			song.imageURL = searchResult.thumbNailURL;
-			song.duration = searchResult.duration;
-			song.addedById = guildMember.user.id;
-			song.title = searchResult.videoTitle;
-			song.videoId = searchResult.videoId;
-			song.url = searchResult.videoURL;
-			bool isItFound = false;
-			for (auto value : this->songQueue) {
-				if (value.songId == song.songId) {
-					isItFound = true;
-				}
-			}
-			this->songQueue.push_back(song);
-		}
-
-		void setQueue(vector<YouTubeSong> dataPackage) {
-			this->songQueue = dataPackage;
-		}
-
-		vector<YouTubeSong>* getQueue() {
-			return &this->songQueue;
 		}
 
 		void modifyQueue(int firstSongPosition, int secondSongPosition) {
@@ -569,6 +500,76 @@ namespace DiscordCoreAPI {
 			return returnData;
 		}
 
+		YouTubeSong addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember) {
+			string watchHTMLURL = to_string(this->baseWatchURL) + searchResult.videoId + "&hl=en";
+			Filters::HttpBaseProtocolFilter filter;
+			filter.AutomaticDecompression(true);
+			Filters::HttpCacheControl cacheControl = filter.CacheControl();
+			cacheControl.ReadBehavior(Filters::HttpCacheReadBehavior::NoCache);
+			cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
+			winrt::Windows::Web::Http::HttpClient httpClientGetHTMLBody(filter);
+			HttpRequestMessage requestMessageHTMLBody;
+			auto headersNewHTMLBody = requestMessageHTMLBody.Headers();
+			headersNewHTMLBody.Append(L"user-agent", L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+			requestMessageHTMLBody.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(watchHTMLURL)));
+			allocator<csub_match> allocator;
+			cmatch html5PlayerMatchResults(allocator);
+			hstring resultStringHTMLBody;
+			auto resultHTMLBody = httpClientGetHTMLBody.SendRequestAsync(requestMessageHTMLBody).get();
+			resultStringHTMLBody = resultHTMLBody.Content().ReadAsStringAsync().get();
+			string resultStringStringHTMLBody = to_string(resultStringHTMLBody);
+			this->html5Player = to_string(this->baseURL) + resultStringStringHTMLBody.substr(resultStringStringHTMLBody.find("/s/player/"), resultStringStringHTMLBody.find("/player_ias.vflset/en_US/base.js") + to_string(L"/player_ias.vflset/en_US/base.js").length());
+			this->html5Player = this->html5Player.substr(0, 73);
+			this->playerResponse = between(to_string(resultStringHTMLBody), "ytInitialPlayerResponse = ", "</script>");
+			this->playerResponse = this->playerResponse.substr(0, this->playerResponse.length() - 170);
+			json jsonObject;
+			if (this->playerResponse != "") {
+				jsonObject = json::parse(this->playerResponse);
+			}
+			DiscordCoreInternal::DataParser::parseObject(jsonObject, &searchResult.formats);
+			YouTubeFormat format;
+			for (auto value : searchResult.formats) {
+				if (value.mimeType.find("opus") != string::npos) {
+					format = value;
+					if (value.audioQuality == "AUDIO_QUALITY_MEDIUM" && format.audioQuality == "AUDIO_QUALITY_LOW") {
+						format = value;
+					}
+					if (value.audioQuality == "AUDIO_QUALITY_HIGH") {
+						format = value;
+					}
+				}
+			}
+
+			HttpRequestMessage requestPlayerFile;
+			auto requestPlayerFileHeaders = requestPlayerFile.Headers();
+			requestPlayerFileHeaders.Append(L"user-agent", L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+			requestPlayerFile.RequestUri(winrt::Windows::Foundation::Uri(to_hstring(this->html5Player)));
+			auto responseMessage02 = httpClientGetHTMLBody.SendRequestAsync(requestPlayerFile).get();
+			hstring responseToPlayerGet02 = responseMessage02.Content().ReadAsStringAsync().get();
+			this->html5PlayerFile = to_string(responseToPlayerGet02);
+			format = decipherFormat(format, this->html5PlayerFile);
+			YouTubeSong song;
+			song.songId = to_string((int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			song.addedByUserName = guildMember.user.username;
+			song.contentLength = (int)format.contentLength;
+			song.formatDownloadURL = format.downloadURL;
+			song.description = searchResult.description;
+			song.imageURL = searchResult.thumbNailURL;
+			song.duration = searchResult.duration;
+			song.addedById = guildMember.user.id;
+			song.title = searchResult.videoTitle;
+			song.videoId = searchResult.videoId;
+			song.url = searchResult.videoURL;
+			bool isItFound = false;
+			for (auto value : this->songQueue) {
+				if (value.songId == song.songId) {
+					isItFound = true;
+				}
+			}
+			this->songQueue.push_back(song);
+			return song;
+		}
+
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
 			DiscordCoreInternal::HttpAgentResources agentResources;
 			agentResources.baseURL = to_string(this->baseSearchURL);
@@ -597,8 +598,6 @@ namespace DiscordCoreAPI {
 			}
 			return searchResults;
 		}
-
-		~YouTubeAPICore() {}
 
 		task<bool> downloadAndStreamAudioToBeWrapped(YouTubeSong song, cancellation_token token, int retryCountNew = 0) {
 			apartment_context mainThread;
@@ -753,11 +752,10 @@ namespace DiscordCoreAPI {
 				}
 				this->songDecoder->areWeQuitting = true;
 				agent::wait(this->songDecoder.get());
-				cancel_current_task();
-				co_return true;
 				delete this->bufferFlushBuffer;
 				this->bufferFlushBuffer = nullptr;
 				send(this->completionBuffer, true);
+				cancel_current_task();				
 				co_await mainThread;
 				co_return true;
 			}
@@ -792,6 +790,8 @@ namespace DiscordCoreAPI {
 				}
 				co_return false; });
 		}
+
+		~YouTubeAPICore() {}
 
 	};
 
@@ -901,13 +901,13 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		static void addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember, string guildId) {
+		static YouTubeSong addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember, string guildId) {
 			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->at(guildId)->addSongToQueue(searchResult, guildMember);
+				return YouTubeAPI::youtubeAPIMap->at(guildId)->addSongToQueue(searchResult, guildMember);
 			}
 			else {
 				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId));
-				YouTubeAPI::youtubeAPIMap->at(guildId)->addSongToQueue(searchResult, guildMember);
+				return YouTubeAPI::youtubeAPIMap->at(guildId)->addSongToQueue(searchResult, guildMember);
 			}
 		}
 

@@ -3771,7 +3771,6 @@ namespace DiscordCoreAPI {
         string formatDownloadURL{ "" };
         string addedByUserName{ "" };
         string description{ "" };
-        AudioFrameData frames{};
         int contentLength{ 0 };
         string addedById{ "" };
         string imageURL{ "" };
