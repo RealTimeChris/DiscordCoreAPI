@@ -36,6 +36,7 @@ namespace DiscordCoreAPI {
 		friend class ApplicationCommands;
 		friend class GuildMembers;
 		friend class Interactions;
+		friend class YouTubeAPI;
 		friend class Reactions;
 		friend class Channels;
 		friend class Messages;

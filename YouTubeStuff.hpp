@@ -11,6 +11,7 @@
 #include "DiscordCoreClientBase.hpp"
 #include "HttpStuff.hpp"
 #include "DataParsingFunctions.hpp"
+#include "DatabaseStuff.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -383,6 +384,10 @@ namespace DiscordCoreAPI {
 			};
 		}
 
+		void setCurrentSong(YouTubeSong song){
+			this->currentSong = song;
+		}
+
 		SendNextSongReturnData sendNextSong() {
 			SendNextSongReturnData returnData;
 			if (this->loopSong) {
@@ -752,8 +757,6 @@ namespace DiscordCoreAPI {
 				}
 				this->songDecoder->areWeQuitting = true;
 				agent::wait(this->songDecoder.get());
-				delete this->bufferFlushBuffer;
-				this->bufferFlushBuffer = nullptr;
 				send(this->completionBuffer, true);
 				cancel_current_task();				
 				co_await mainThread;
@@ -952,6 +955,16 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+		static void setCurrentSong(YouTubeSong song, string guildId) {
+			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
+				YouTubeAPI::youtubeAPIMap->at(guildId)->setCurrentSong(song);
+			}
+			else {
+				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId));
+				YouTubeAPI::youtubeAPIMap->at(guildId)->setCurrentSong(song);
+			}
+		}
+
 		static SendNextSongReturnData sendNextSong(string guildId) {
 			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
 				return YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong();
@@ -972,7 +985,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 	};
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* YouTubeAPI::audioBuffersMap{};
-	map<string, shared_ptr<YouTubeAPICore>>* YouTubeAPI::youtubeAPIMap{};
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* YouTubeAPI::audioBuffersMap{ nullptr };
+	map<string, shared_ptr<YouTubeAPICore>>* YouTubeAPI::youtubeAPIMap{ nullptr };
 };
 #endif

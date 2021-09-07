@@ -506,6 +506,7 @@ namespace DiscordCoreInternal {
 		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreAPI::PermissionsConverter;
 		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::YouTubeAPI;
 		friend class DiscordCoreAPI::Guilds;
 
 		GuildManager(GuildManager* pointer) {
