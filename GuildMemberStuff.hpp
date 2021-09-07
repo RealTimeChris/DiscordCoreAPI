@@ -29,51 +29,49 @@ namespace DiscordCoreAPI {
 		GuildMember() {};
 
 		GuildMember(GuildMemberData dataNew, string guildIdNew) {
-			this->guildId = guildIdNew;
-			this->user = dataNew.user;
-			this->nick = dataNew.nick;
-			this->roles = dataNew.roles;
-			this->joinedAt = dataNew.joinedAt;
+			this->discordCoreClient = dataNew.discordCoreClient;
 			this->premiumSince = dataNew.premiumSince;
-			this->deaf = dataNew.deaf;
-			this->mute = dataNew.mute;
-			this->pending = dataNew.pending;
 			this->permissions = dataNew.permissions;
 			this->userMention = dataNew.userMention;
 			this->voiceData = dataNew.voiceData;
-			this->discordCoreClient = dataNew.discordCoreClient;
+			this->joinedAt = dataNew.joinedAt;
+			this->pending = dataNew.pending;
+			this->roles = dataNew.roles;
+			this->guildId = guildIdNew;
+			this->user = dataNew.user;
+			this->nick = dataNew.nick;
+			this->deaf = dataNew.deaf;
+			this->mute = dataNew.mute;
 		}
 	};
 
 	struct ModifyGuildMemberData {
-		string guildMemberId{ "" };
-		string guildId{ "" };
-		string nick{ "" };
-		vector<string> roleIds{};
-		bool mute{ false };
-		bool deaf{ false };
 		string newVoiceChannelId{ "" };
 		string currentChannelId{ "" };
+		string guildMemberId{ "" };
+		vector<string> roleIds{};
+		string guildId{ "" };
+		bool mute{ false };
+		bool deaf{ false };
+		string nick{ "" };
 	};
 
 	struct FetchGuildMemberData {
-		string guildId{ "" };
 		string guildMemberId{ "" };
+		string guildId{ "" };
 	};
 
 	struct GetGuildMemberData {
-		string guildId{ "" };
 		string guildMemberId{ "" };
+		string guildId{ "" };
 	};
 };
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI::EventHandler;
-	class DiscordCoreAPI::GuildMembers;
-
 	class GuildMemberManagerAgent : agent {
 	protected:
+
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildMemberManager;
@@ -91,7 +89,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		HttpAgentResources agentResources{};
 
-		GuildMemberManagerAgent(HttpAgentResources agentResourcesNew,  shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
+		GuildMemberManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
 			:agent(*GuildMemberManagerAgent::threadContext->scheduler->scheduler) {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = discordCoreClientNew;
@@ -112,8 +110,8 @@ namespace DiscordCoreInternal {
 			}
 			return;
 		}
-		
-		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage){
+
+		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage) {
 			HttpWorkload workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_GUILD_MEMBER;
@@ -171,7 +169,7 @@ namespace DiscordCoreInternal {
 				if (try_receive(this->requestGetGuildMemberBuffer, dataPackage02)) {
 					map<string, DiscordCoreAPI::GuildMember> cacheTemp;
 					if (try_receive(GuildMemberManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage02.guildId + " + "+ dataPackage02.guildMemberId)) {
+						if (cacheTemp.contains(dataPackage02.guildId + " + " + dataPackage02.guildMemberId)) {
 							cacheTemp.erase(dataPackage02.guildId + " + " + dataPackage02.guildMemberId);
 						}
 					}
@@ -197,7 +195,7 @@ namespace DiscordCoreInternal {
 				while (this->guildMembersToInsert.try_pop(guildMember)) {
 					map<string, DiscordCoreAPI::GuildMember> cacheTemp;
 					try_receive(GuildMemberManagerAgent::cache, cacheTemp);
-					if (cacheTemp.contains(guildMember.guildId +" + "+ guildMember.user.id)) {
+					if (cacheTemp.contains(guildMember.guildId + " + " + guildMember.user.id)) {
 						cacheTemp.erase(guildMember.guildId + " + " + guildMember.user.id);
 					}
 					cacheTemp.insert(make_pair(guildMember.guildId + " + " + guildMember.user.id, guildMember));
@@ -247,7 +245,7 @@ namespace DiscordCoreInternal {
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.guildMemberId = dataPackage.guildMemberId;
-			GuildMemberManagerAgent requestAgent(dataPackageNew.agentResources,  this->discordCoreClient);
+			GuildMemberManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestGetGuildMemberBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
