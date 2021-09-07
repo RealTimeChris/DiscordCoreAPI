@@ -332,7 +332,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::Guild_Member_Update:
 					{
 						DiscordCoreAPI::OnGuildMemberUpdateData guildMemberUpdateData;
-						GuildMember guildMemberOld = this->guildMembers->getGuildMemberAsync({ .guildId = workload.payLoad.at("guild_id"), .guildMemberId = workload.payLoad.at("user").at("id") }).get();
+						GuildMember guildMemberOld = this->guildMembers->getGuildMemberAsync({ .guildMemberId = workload.payLoad.at("user").at("id"),.guildId = workload.payLoad.at("guild_id") }).get();
 						guildMemberUpdateData.guildMemberOld = guildMemberOld;
 						GuildMemberData guildMemberData;
 						guildMemberData.discordCoreClient = DiscordCoreClient::thisPointer;

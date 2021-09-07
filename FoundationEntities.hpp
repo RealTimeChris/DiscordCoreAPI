@@ -13,6 +13,7 @@
 namespace DiscordCoreAPI {
 
     class DiscordCoreClientBase;
+    class DatabaseManagerAgent;
     class PermissionsConverter;
     class ApplicationCommands;
     class DiscordCoreClient;

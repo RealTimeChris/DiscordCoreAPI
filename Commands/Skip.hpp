@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
+			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
 			bool doWeHaveControl = checkIfWeHaveControl(args->eventData, discordGuild, guildMember);
 
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 						InputEvents::deleteInputEventResponseAsync(newEvent);
 						InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 					}
-					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = YouTubeAPI::getCurrentSong(guild.id).addedById }).get();
+					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildMemberId = YouTubeAPI::getCurrentSong(guild.id).addedById,.guildId = args->eventData.getGuildId() }).get();
 					(*voiceConnection)->play();
 					EmbedData newEmbed;
 					newEmbed.setAuthor(guildMember02.user.username, guildMember02.user.avatar);

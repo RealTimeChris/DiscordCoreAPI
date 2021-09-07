@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 			Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild);
 
-			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
+			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
 			EmbedData msgEmbed;
 			msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());

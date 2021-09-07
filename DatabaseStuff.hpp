@@ -14,8 +14,6 @@
 
 namespace DiscordCoreAPI {
 
-    class DatabaseManagerAgent;
-
     struct DiscordUserData {
         vector<string> botCommanders{ "", "", "" };
         int32_t guildCount{ 0 };
@@ -71,16 +69,19 @@ namespace DiscordCoreAPI {
 
     class DatabaseManagerAgent : agent {
     protected:
+
         friend class DiscordGuildMember;
         friend class DiscordCoreClient;
         friend class DiscordUser;
         friend class DiscordGuild;
+
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static mongocxx::collection collection;
         static mongocxx::instance* instance;
         static mongocxx::database dataBase;
         static mongocxx::client* client;
         static string botUserId;
+
         unbounded_buffer<DiscordGuildMemberData> discordGuildMemberOutputBuffer{ nullptr };
         unbounded_buffer<DiscordGuildData> discordGuildOutputBuffer{ nullptr };
         unbounded_buffer<DiscordUserData>discordUserOutputBuffer{ nullptr };
@@ -322,7 +323,9 @@ namespace DiscordCoreAPI {
 
     class DiscordUser {
     public:
+
         DiscordUserData data{};
+
         DiscordUser(string userNameNew, string userIdNew) {
             this->data.userId = userIdNew;
             this->getDataFromDB();
@@ -331,28 +334,28 @@ namespace DiscordCoreAPI {
         }
 
         void writeDataToDB() {
-            DatabaseManagerAgent databaseManager;
-            DatabaseWorkload workload;
+            DatabaseManagerAgent requestAgent{};
+            DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_USER_WRITE;
             workload.userData = this->data;
-            send(databaseManager.requestBuffer, workload);
-            databaseManager.start();
-            agent::wait(&databaseManager);
-            databaseManager.getError("DiscordUser::WriteDataToDB() ");
+            send(requestAgent.requestBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("DiscordUser::WriteDataToDB() ");
             return;
         }
 
         void getDataFromDB() {
-            DatabaseManagerAgent databaseManager;
-            DatabaseWorkload workload;
+            DatabaseManagerAgent requestAgent{};
+            DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_USER_READ;
             workload.userData = this->data;
-            send(databaseManager.requestBuffer, workload);
-            databaseManager.start();
-            agent::wait(&databaseManager);
-            databaseManager.getError("DiscordUser::getDataFromDB() ");
+            send(requestAgent.requestBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("DiscordUser::getDataFromDB() ");
             DiscordUserData userData;
-            try_receive(databaseManager.discordUserOutputBuffer, userData);
+            try_receive(requestAgent.discordUserOutputBuffer, userData);
             if (userData.userId != "") {
                 this->data = userData;
             }
@@ -368,6 +371,7 @@ namespace DiscordCoreAPI {
         friend class YouTubeAPI;
 
         DiscordGuildData data{};
+
         DiscordGuild(GuildData guildData) {
             this->data.guildId = guildData.id;
             this->getDataFromDB();
@@ -376,28 +380,28 @@ namespace DiscordCoreAPI {
         }
 
         void writeDataToDB() {
-            DatabaseManagerAgent databaseManager;
-            DatabaseWorkload workload;
+            DatabaseManagerAgent requestAgent{};
+            DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_WRITE;
             workload.guildData = this->data;
-            send(databaseManager.requestBuffer, workload);
-            databaseManager.start();
-            agent::wait(&databaseManager);
-            databaseManager.getError("DiscordGuild::writeDataToDB() ");
+            send(requestAgent.requestBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("DiscordGuild::writeDataToDB() ");
             return;
         }
 
         void getDataFromDB() {
-            DatabaseManagerAgent databaseManager;
-            DatabaseWorkload workload;
+            DatabaseManagerAgent requestAgent{};
+            DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_READ;
             workload.guildData = this->data;
-            send(databaseManager.requestBuffer, workload);
-            databaseManager.start();
-            agent::wait(&databaseManager);
-            databaseManager.getError("DiscordGuild::getDataFromDB() ");
+            send(requestAgent.requestBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("DiscordGuild::getDataFromDB() ");
             DiscordGuildData guildData;
-            try_receive(databaseManager.discordGuildOutputBuffer, guildData);
+            try_receive(requestAgent.discordGuildOutputBuffer, guildData);
             if (guildData.guildId != "") {
                 this->data = guildData;
             }
@@ -412,7 +416,9 @@ namespace DiscordCoreAPI {
 
     class DiscordGuildMember {
     public:
+
         DiscordGuildMemberData data{};
+
         DiscordGuildMember(DiscordCoreInternal::GuildMemberData guildMemberData) {
             this->data.guildMemberId = guildMemberData.user.id;
             this->data.guildId = guildMemberData.guildId;
@@ -429,40 +435,40 @@ namespace DiscordCoreAPI {
         }
 
         void writeDataToDB() {
-            DatabaseManagerAgent databaseManager;
-            DatabaseWorkload workload;
+            DatabaseManagerAgent requestAgent{};
+            DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_MEMBER_WRITE;
             workload.guildMemberData = this->data;
-            send(databaseManager.requestBuffer, workload);
-            databaseManager.start();
-            agent::wait(&databaseManager);
-            databaseManager.getError("DiscordGuildMember::writeDataToDB() ");
+            send(requestAgent.requestBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("DiscordGuildMember::writeDataToDB() ");
             return;
         }
 
         void getDataFromDB() {
-            DatabaseManagerAgent databaseManager;
-            DatabaseWorkload workload;
+            DatabaseManagerAgent requestAgent{};
+            DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_MEMBER_READ;
             workload.guildMemberData = this->data;
-            send(databaseManager.requestBuffer, workload);
-            databaseManager.start();
-            agent::wait(&databaseManager);
-            databaseManager.getError("DiscordGuildMember::getDataFromDB() ");
+            send(requestAgent.requestBuffer, workload);
+            requestAgent.start();
+            agent::wait(&requestAgent);
+            requestAgent.getError("DiscordGuildMember::getDataFromDB() ");
             DiscordGuildMemberData guildMemberData;
-            try_receive(databaseManager.discordGuildMemberOutputBuffer, guildMemberData);
+            try_receive(requestAgent.discordGuildMemberOutputBuffer, guildMemberData);
             if (guildMemberData.globalId != "") {
                 this->data = guildMemberData;
             }
             return;
         }
     };
-    string DatabaseManagerAgent::botUserId{ "" };
+    shared_ptr<DiscordCoreInternal::ThreadContext> DatabaseManagerAgent::threadContext{ nullptr };
     mongocxx::instance* DatabaseManagerAgent::instance{ nullptr };
+    mongocxx::client* DatabaseManagerAgent::client{ nullptr };
     mongocxx::collection DatabaseManagerAgent::collection{};
     mongocxx::database DatabaseManagerAgent::dataBase{};
-    mongocxx::client* DatabaseManagerAgent::client{ nullptr };
-    shared_ptr<DiscordCoreInternal::ThreadContext> DatabaseManagerAgent::threadContext{ nullptr };
+    string DatabaseManagerAgent::botUserId{ "" };
 };
 #endif
 

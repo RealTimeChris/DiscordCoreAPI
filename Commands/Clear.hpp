@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildId = args->eventData.getGuildId(), .guildMemberId = args->eventData.getAuthorId() }).get();
+			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
 			bool doWeHaveControl = checkIfWeHaveControl(args->eventData, discordGuild, guildMember);
 
