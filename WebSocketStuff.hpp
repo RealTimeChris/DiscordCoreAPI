@@ -215,8 +215,10 @@ namespace DiscordCoreInternal {
 			if (args.Code() != 1000 && args.Code() != 4014) {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
+					this->cleanup();
 					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 					this->connect();
+					this->voiceConnect();
 					string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
 					this->sendMessage(resumePayload);
 				}
@@ -230,8 +232,10 @@ namespace DiscordCoreInternal {
 			if (this->didWeReceiveHeartbeatAck == false) {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
+					this->cleanup();
 					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 					this->connect();
+					this->voiceConnect();
 				}
 				else {
 					this->terminate();
@@ -761,10 +765,10 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-			if (payload.at("s") >= 0) {
-				this->lastNumberReceived = payload.at("s");
-			}
+			if (payload.at("s") >= 0) {			}
 
+
+				this->lastNumberReceived = payload.at("s");
 			if (payload.at("t") == "PRESENCE_UPDATE") {
 				return;
 			}
