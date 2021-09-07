@@ -15,6 +15,7 @@ namespace DiscordCoreAPI {
 
 	class SongEncoder {
 	public:
+
         SongEncoder() {
 			int error;
 			this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);

@@ -13,7 +13,6 @@
 #include "DecodingStuff.hpp"
 #include "EncodingStuff.hpp"
 #include "GuildStuff.hpp"
-#include "DiscordCoreClientBase.hpp"
 
 namespace DiscordCoreAPI {
 
