@@ -355,6 +355,10 @@ namespace DiscordCoreAPI {
 
     class DiscordGuild {
     public:
+
+        friend class YouTubeAPICore;
+        friend class YouTubeAPI;
+
         DiscordGuildData data{};
         DiscordGuild(GuildData guildData) {
             this->data.guildId = guildData.id;
@@ -390,8 +394,12 @@ namespace DiscordCoreAPI {
                 this->data = guildData;
             }
             return;
-
         }
+
+    protected:
+
+        DiscordGuild() {};
+
     };
 
     class DiscordGuildMember {
