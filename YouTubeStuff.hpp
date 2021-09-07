@@ -798,7 +798,6 @@ namespace DiscordCoreAPI {
 					send(*this->outputDataBuffer01, frameData02);
 				}
 				agent::wait(this->songDecoder.get());
-				cout << "WERE HERE THIS IS IT" << endl;
 				cancel_current_task();
 				co_await mainThread;
 				co_return true;
