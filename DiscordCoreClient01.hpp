@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
-			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->workloadSource, this->botToken, &this->doWeQuitWebSocket);
+			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, &this->doWeQuitWebSocket);
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
 			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
@@ -206,7 +206,7 @@ namespace DiscordCoreAPI {
 		void run() {
 			try {
 				while (!this->doWeQuit && !this->doWeQuitWebSocket) {
-					DiscordCoreInternal::WebSocketWorkload workload = receive(this->webSocketReceiverAgent->workloadTarget, INFINITE);
+					DiscordCoreInternal::WebSocketWorkload workload = receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, INFINITE);
 					switch (workload.eventType) {
 					case DiscordCoreInternal::WebSocketEventType::Channel_Create:
 					{
