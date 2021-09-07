@@ -379,8 +379,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 		unbounded_buffer<WebSocketWorkload> webSocketWorkloadTarget{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<json> webSocketWorkloadSource{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
 		bool doWeQuit{ false };
 
 		void getError() {
@@ -765,10 +765,10 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-			if (payload.at("s") >= 0) {			}
-
-
+			if (payload.at("s") >= 0) { 
 				this->lastNumberReceived = payload.at("s");
+			}
+
 			if (payload.at("t") == "PRESENCE_UPDATE") {
 				return;
 			}
