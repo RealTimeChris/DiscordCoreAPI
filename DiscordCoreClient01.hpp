@@ -29,7 +29,7 @@ BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreClient : public DiscordCoreClientBase, protected agent {
+	class DiscordCoreClient : public DiscordCoreClientBase, agent {
 	public:
 
 		friend class PermissionsConverter;
@@ -137,7 +137,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreClientBase::initialize(this->agentResources, this->thisPointer);
-			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap);
 			this->users = this->users;
 			this->roles = this->roles;
 			this->guildMembers = this->guildMembers;
@@ -152,6 +151,8 @@ namespace DiscordCoreAPI {
 			this->guilds = make_shared<DiscordCoreInternal::GuildManager>(nullptr);
 			this->guilds->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer, make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this));
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			map < string, DiscordGuild*> discordGuildsMap{};
+			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, discordGuildsMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.username, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->discordUser->data.userId);

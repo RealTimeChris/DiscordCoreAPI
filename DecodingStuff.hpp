@@ -14,7 +14,7 @@ namespace DiscordCoreAPI {
 
     struct BuildSongDecoderData {
     public:
-        unbounded_buffer<vector<uint8_t>>* dataBuffer{};
+        unbounded_buffer<vector<uint8_t>>* inputDataBuffer{};
         size_t totalFileSize{ 0 };
         size_t bufferMaxSize{ 0 };
     };
@@ -27,18 +27,16 @@ namespace DiscordCoreAPI {
         SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : agent(*threadContextNew->scheduler->scheduler) {
             this->bufferMaxSize = (int)dataPackage.bufferMaxSize;
             this->totalFileSize = (int)dataPackage.totalFileSize;
-            this->completionBuffer = new unbounded_buffer<bool>;
-            this->dataBuffer = dataPackage.dataBuffer;
+            this->inputDataBuffer = dataPackage.inputDataBuffer;
             this->threadContext = threadContextNew;
+        }
+
+        void startMe() {
             this->start();
         }
 
         void linkCompletionBuffer(unbounded_buffer<bool>* completionBufferNew) {
-            this->completionBuffer->link_target(completionBufferNew);
-        }
-
-        unbounded_buffer<bool>* getBufferFlushBuffer() {
-            return &this->bufferFlushBuffer;
+            this->completionBuffer.link_target(completionBufferNew);
         }
 
         bool getFrame(RawFrameData* dataPackage) {
@@ -60,8 +58,7 @@ namespace DiscordCoreAPI {
         }
 
         ~SongDecoder() {
-            this->done();
-            this->completionBuffer->unlink_targets();
+            this->completionBuffer.unlink_targets();
             if (this->formatContext) {
                 avformat_close_input(&this->formatContext);
             }
@@ -89,13 +86,12 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 }, bytesReadTotal{ 0 };
+        int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
         shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
-        unbounded_buffer<bool> bufferFlushBuffer{ nullptr };
-        unbounded_buffer<bool>* completionBuffer{ nullptr };
+        unbounded_buffer<vector<uint8_t>>* inputDataBuffer{};
+        unbounded_buffer<bool> completionBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
-        unbounded_buffer<vector<uint8_t>>* dataBuffer{};
         unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };
@@ -114,7 +110,7 @@ namespace DiscordCoreAPI {
             try {
                 if (!this->haveWeBooted) {
                     vector<uint8_t> newVector;
-                    auto buffer = receive(this->dataBuffer);
+                    auto buffer = receive(this->inputDataBuffer);
                     for (unsigned int x = 0; x < buffer.size(); x += 1) {
                         newVector.push_back(buffer.data()[x]);
                     }
@@ -123,6 +119,7 @@ namespace DiscordCoreAPI {
                     if (fileStreamBuffer == nullptr) {
                         send(this->completionBuffer, true);
                         cout << "Failed to allocate filestreambuffer.\n\n" << endl;
+                        return;
                     }
                     this->ioContext = avio_alloc_context(
                         fileStreamBuffer,
@@ -137,6 +134,7 @@ namespace DiscordCoreAPI {
                     if (this->ioContext == nullptr) {
                         send(this->completionBuffer, true);
                         cout << "Failed to allocate AVIOContext.\n\n" << endl;
+                        return;
                     }
 
                     this->formatContext = avformat_alloc_context();
@@ -305,12 +303,10 @@ namespace DiscordCoreAPI {
                                 }
                             }
                             else {
-                                this->done();
                                 break;
                             }
                         }
                         else {
-                            this->done();
                             break;
                         }
                         av_packet_unref(this->packet);
@@ -320,11 +316,9 @@ namespace DiscordCoreAPI {
                         this->newFrame = av_frame_alloc();
                         this->packet = av_packet_alloc();
                         if (this->areWeQuitting) {
-                            this->done();
                             break;
                         }
                     }
-                    send(this->completionBuffer, true);
                     av_packet_unref(this->packet);
                     av_packet_free(&this->packet);
                     av_frame_unref(this->frame);
@@ -332,6 +326,8 @@ namespace DiscordCoreAPI {
                     av_frame_unref(this->newFrame);
                     av_frame_free(&this->newFrame);
                     cout << "Completed decoding!" << endl << endl;
+                    send(this->completionBuffer, true);
+                    this->done();
                     return;
                 }
             }
@@ -346,30 +342,23 @@ namespace DiscordCoreAPI {
             stream->bytesRead = 0;
             stream->currentBuffer = vector<uint8_t>();
             if (stream->areWeQuitting) {
-                stream->done();
-                send(stream->bufferFlushBuffer, true);
-                return AVERROR_EOF;
-            }
-            if (stream->bytesReadTotal >= stream->totalFileSize) {
-                stream->done();
+                send(stream->completionBuffer, true);
                 return AVERROR_EOF;
             }
             try {
-                stream->currentBuffer = receive(stream->dataBuffer, stream->refreshTimeForBuffer);
+                stream->currentBuffer = receive(stream->inputDataBuffer, stream->refreshTimeForBuffer);
             }
-            catch (exception&) { 
-                stream->done();
+            catch (exception&) {
                 return AVERROR_EOF;
             };
             if (stream->currentBuffer.size() > 0) {
                 stream->bytesRead = (int)stream->currentBuffer.size();
-                stream->bytesReadTotal += stream->bytesRead;
             }
             else {
                 RawFrameData frameData;
                 frameData.sampleCount = 0;
                 send(stream->outDataBuffer, frameData);
-                stream->done();
+                stream->areWeQuitting = true;
                 return AVERROR_EOF;
             }
 
