@@ -22,17 +22,16 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClientBase {
 	public:
+
 		friend class DiscordCoreClient;
-		friend class YouTubeAPI;
 		friend class VoiceConnection;
-		friend class InputEvents;
 		friend class YouTubeAPICore;
+		friend class InputEvents;
+		friend class YouTubeAPI;
 		friend class Guild;
 
-		static DiscordCoreClientBase* thisPointer;
+		static shared_ptr<DiscordCoreClientBase> thisPointer;
 		static BotUser currentUser;
-
-		DiscordCoreClientBase() {}
 
 		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClient) {
 			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(nullptr);
@@ -45,7 +44,9 @@ namespace DiscordCoreAPI {
 			this->users->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(DiscordCoreClientBase::webSocketConnectionAgent);
-			DiscordCoreClientBase::thisPointer = this;
+			shared_ptr<DiscordCoreClientBase> sharedPtr;
+			sharedPtr.reset(this);
+			DiscordCoreClientBase::thisPointer = sharedPtr;
 		}
 
 	protected:
@@ -65,7 +66,7 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPICore>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
 	map<string, Playlist>* DiscordCoreClientBase::guildYouTubeQueueMap{ new map<string, Playlist>() };
-	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
+	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }
 #endif

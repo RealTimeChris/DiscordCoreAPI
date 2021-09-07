@@ -47,9 +47,9 @@ namespace DiscordCoreAPI {
 	struct DeleteUserReactionData {
 		string channelId{ "" };
 		string messageId{ "" };
-		string userId{ "" };
 		string emojiName{ "" };
 		string emojiId{ "" };
+		string userId{ "" };
 	};
 
 	struct DeleteOwnReactionData {

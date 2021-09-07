@@ -25,24 +25,24 @@ namespace DiscordCoreAPI {
 		Application() {};
 
 		Application(ApplicationData dataNew) {
-			this->botPublic = dataNew.botPublic;
 			this->botRequireCodeGrant = dataNew.botRequireCodeGrant;
-			this->id = dataNew.id;
-			this->name = dataNew.name;
-			this->icon = dataNew.icon;
-			this->description = dataNew.description;
-			this->rpcOrigins = dataNew.rpcOrigins;
 			this->termsOfServiceUrl = dataNew.termsOfServiceUrl;
 			this->privacyPolicyUrl = dataNew.privacyPolicyUrl;
-			this->owner = dataNew.owner;
-			this->summary = dataNew.summary;
-			this->verifyKey = dataNew.verifyKey;
-			this->team = dataNew.team;
-			this->guildId = dataNew.guildId;
 			this->primarySkuId = dataNew.primarySkuId;
-			this->slug = dataNew.slug;
+			this->description = dataNew.description;
+			this->rpcOrigins = dataNew.rpcOrigins;
 			this->coverImage = dataNew.coverImage;
+			this->botPublic = dataNew.botPublic;
+			this->verifyKey = dataNew.verifyKey;
+			this->summary = dataNew.summary;
+			this->guildId = dataNew.guildId;
+			this->owner = dataNew.owner;
 			this->flags = dataNew.flags;
+			this->team = dataNew.team;
+			this->slug = dataNew.slug;
+			this->name = dataNew.name;
+			this->icon = dataNew.icon;
+			this->id = dataNew.id;
 		}
 	};
 
@@ -62,21 +62,21 @@ namespace DiscordCoreAPI {
 		User() {};
 
 		User(UserData dataNew) {
-			this->avatar = dataNew.avatar;
-			this->bot = dataNew.bot;
-			this->createdAt = dataNew.createdAt;
 			this->discordCoreClient = dataNew.discordCoreClient;
 			this->discriminator = dataNew.discriminator;
-			this->email = dataNew.email;
-			this->flags = dataNew.flags;
-			this->id = dataNew.id;
-			this->locale = dataNew.locale;
-			this->mfaEnabled = dataNew.mfaEnabled;
 			this->premiumType = dataNew.premiumType;
 			this->publicFlags = dataNew.publicFlags;
-			this->system = dataNew.system;
+			this->mfaEnabled = dataNew.mfaEnabled;
+			this->createdAt = dataNew.createdAt;
 			this->username = dataNew.username;
 			this->verified = dataNew.verified;
+			this->locale = dataNew.locale;
+			this->system = dataNew.system;
+			this->avatar = dataNew.avatar;
+			this->email = dataNew.email;
+			this->flags = dataNew.flags;
+			this->bot = dataNew.bot;
+			this->id = dataNew.id;
 		}
 	};
 
@@ -87,10 +87,10 @@ namespace DiscordCoreAPI {
 	};
 
 	struct UpdateVoiceStateData {
-		string guildId{ "" };
 		string channelId{ "" };
 		bool selfMute{ false };
 		bool selfDeaf{ false };
+		string guildId{ "" };
 	};
 
 	class BotUser : public UserData {
@@ -132,21 +132,21 @@ namespace DiscordCoreAPI {
 	protected:
 
 		BotUser(UserData dataPackage) {
-			this->avatar = dataPackage.avatar;
-			this->bot = dataPackage.bot;
-			this->createdAt = dataPackage.createdAt;
 			this->discordCoreClient = dataPackage.discordCoreClient;
 			this->discriminator = dataPackage.discriminator;
-			this->email = dataPackage.email;
-			this->flags = dataPackage.flags;
-			this->id = dataPackage.id;
-			this->locale = dataPackage.locale;
-			this->mfaEnabled = dataPackage.mfaEnabled;
 			this->premiumType = dataPackage.premiumType;
 			this->publicFlags = dataPackage.publicFlags;
-			this->system = dataPackage.system;
+			this->mfaEnabled = dataPackage.mfaEnabled;
+			this->createdAt = dataPackage.createdAt;
 			this->username = dataPackage.username;
 			this->verified = dataPackage.verified;
+			this->avatar = dataPackage.avatar;
+			this->locale = dataPackage.locale;
+			this->system = dataPackage.system;
+			this->email = dataPackage.email;
+			this->flags = dataPackage.flags;
+			this->bot = dataPackage.bot;
+			this->id = dataPackage.id;
 		}
 
 		void Initialize(shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {

@@ -234,8 +234,7 @@ namespace DiscordCoreAPI {
 	class YouTubeAPICore {
 	public:
 
-		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, string guildIdNew)
-		{
+		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, string guildIdNew) {
 			this->sendAudioBufferMap = sendAudioBufferMapNew;
 			this->sendAudioBuffer = *this->sendAudioBufferMap->at(guildIdNew);
 			this->guildId = guildIdNew;

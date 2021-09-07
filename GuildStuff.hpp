@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 						(*voiceConnection)->areWeStopping = true;
 					}
 					(*voiceConnection)->doWeQuit = true;
-					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .guildId = this->id,.channelId = "", .selfMute = false,.selfDeaf = false });
+					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
 					if ((*voiceConnection)->encoder != nullptr) {
 						opus_encoder_destroy((*voiceConnection)->encoder);
 						(*voiceConnection)->encoder = nullptr;

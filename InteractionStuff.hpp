@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
     struct ButtonInteractionData {
 
         friend class EventHandler;
-        friend class Button;        
+        friend class Button;
 
         string applicationId{ "" };
         GuildMemberData member{};
