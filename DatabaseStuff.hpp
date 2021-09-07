@@ -24,13 +24,21 @@ namespace DiscordCoreAPI {
         string userId{ "" };
     };
 
+    struct DBPlaylist {
+        bool isLoopSongEnabled{ false };
+        bool isLoopAllEnabled{ false };
+        vector<YouTubeSong> songList{};
+        YouTubeSong currentSong{};
+    };
+
     struct DiscordGuildData {
         vector<string> musicChannelIds{};
         string  borderColor{ "FEFEFE" };
         unsigned int memberCount{ 0 };
         string guildName{ "" };
         string djRoleId{ "" };
-        string guildId{ "" };
+        DBPlaylist playlist{};
+        string guildId{ "" };        
     };
 
     struct DiscordGuildMemberData {
