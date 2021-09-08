@@ -112,6 +112,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->requesterId = dataPackage.getAuthorId();
+            this->channelId = dataPackage.getChannelId();
             this->data.data.flags = 64;
         }
 
@@ -119,6 +120,7 @@ namespace DiscordCoreAPI {
         InteractionPackageData interactionPackage{};
         InteractionResponseData data{};
         string requesterId{ "" };
+        string channelId{ "" };
     };
 
     struct CreateInteractionResponseData {

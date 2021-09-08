@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 			}
 			return voiceConnectionPtr;
 		}
-	
+		
 		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);

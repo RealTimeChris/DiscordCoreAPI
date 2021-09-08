@@ -343,13 +343,13 @@ namespace DiscordCoreAPI {
             stream->currentBuffer = vector<uint8_t>();
             if (stream->areWeQuitting) {
                 send(stream->completionBuffer, true);
-                return AVERROR_EOF;
+                return AVERROR_EXIT;
             }
             try {
                 stream->currentBuffer = receive(stream->inputDataBuffer, stream->refreshTimeForBuffer);
             }
             catch (exception&) {
-                return AVERROR_EOF;
+                return AVERROR_EXIT;
             };
             if (stream->currentBuffer.size() > 0) {
                 stream->bytesRead = (int)stream->currentBuffer.size();
@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
                 frameData.sampleCount = 0;
                 send(stream->outDataBuffer, frameData);
                 stream->areWeQuitting = true;
-                return AVERROR_EOF;
+                return AVERROR_EXIT;
             }
 
             for (int x = 0; x < stream->bytesRead; x += 1) {
@@ -368,8 +368,7 @@ namespace DiscordCoreAPI {
 
             if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize || stream->currentBuffer.size() == 0) {
                 cout << "End of file reached!\n\n";
-                stream->done();
-                return AVERROR_EOF;
+                return AVERROR_EXIT;
             }
 
             return stream->bytesRead;

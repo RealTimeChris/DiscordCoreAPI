@@ -235,6 +235,12 @@ namespace DiscordCoreAPI {
 	class YouTubeAPICore {
 	public:
 
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj)noexcept;
+		friend class VoiceConnection;
+		friend class YouTubeAPI;
+		friend class Guild;
+
 		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, string guildIdNew, DiscordGuild* discordGuildNew) {
 			this->sendAudioBufferMap = sendAudioBufferMapNew;
 			this->outputDataBuffer01 = *this->sendAudioBufferMap->at(guildIdNew);
@@ -243,12 +249,6 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-
-		template <class _Ty>
-		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj)noexcept;
-		friend class VoiceConnection;
-		friend class YouTubeAPI;
-		friend class Guild;
 
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMap{ nullptr };
 		const hstring baseSearchURL{ L"https://www.youtube.com/results?search_query=" };

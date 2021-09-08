@@ -95,6 +95,7 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
 			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
+			dataPackageNewer.interactionData.channelId = dataPackage.channelId;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			return dataPackageNewer;
 		}
