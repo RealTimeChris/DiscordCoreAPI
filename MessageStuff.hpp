@@ -634,7 +634,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::POST_MESSAGE;
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
-			workload.content = getReplyMessagePayload(dataPackage);
+			workload.content = getCreateMessagePayload(dataPackage);
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::postObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {

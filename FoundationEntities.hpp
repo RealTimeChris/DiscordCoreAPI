@@ -12,10 +12,11 @@
 
 namespace DiscordCoreAPI {
 
+    struct RespondToInputEventData;
     class DiscordCoreClientBase;
     class DatabaseManagerAgent;
     class PermissionsConverter;
-    class ApplicationCommands;
+    class ApplicationCommands;    
     class DiscordCoreClient;
     class VoiceConnection;
     class Interactions;
@@ -3357,6 +3358,7 @@ namespace DiscordCoreAPI {
 
         friend struct RecurseThroughMessagePagesData;
         friend struct OnInteractionCreationData;
+        friend struct RespondToInputEventData;
         friend struct BaseFunctionArguments;
         friend class DiscordCoreClient;
         friend struct CommandData;
