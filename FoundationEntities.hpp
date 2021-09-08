@@ -137,8 +137,7 @@ namespace DiscordCoreAPI {
     IBuffer loadFile(hstring filePath, hstring fileName) {
         auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
         winrt::Windows::Storage::StorageFile storageFile = folder.GetFileAsync(fileName).get();
-        auto returnBuffer = winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile).get();
-        return returnBuffer;
+        return winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile).get();
     }
 
     string convertToLowerCase(string stringToConvert) {
@@ -309,55 +308,55 @@ namespace  DiscordCoreInternal {
         string type{ "" };
         string url{ "" };
 
-        EmbedData setAuthor(string authorName, string authorAvatarURL = "") {
+        EmbedData* setAuthor(string authorName, string authorAvatarURL = "") {
             this->author.name = authorName;
             this->author.iconUrl = authorAvatarURL;
-            return *this;
+            return this;
         }
 
-        EmbedData setFooter(string footerText, string footerIconURLText = "") {
+        EmbedData* setFooter(string footerText, string footerIconURLText = "") {
             this->footer.text = footerText;
             this->footer.iconUrl = footerIconURLText;
-            return *this;
+            return this;
         }
 
-        EmbedData addField(string name, string value, bool Inline = true) {
+        EmbedData* setTimeStamp(string timeStamp) {
+            this->timestamp = timeStamp;
+            return this;
+        }
+
+        EmbedData* addField(string name, string value, bool Inline = true) {
             EmbedFieldData embedFieldData;
             embedFieldData.name = name;
             embedFieldData.Inline = Inline;
             embedFieldData.value = value;
             this->fields.push_back(embedFieldData);
-            return *this;
+            return this;
         }
 
-        EmbedData setDescription(string descriptionNew) {
+        EmbedData* setDescription(string descriptionNew) {
             this->description = descriptionNew;
-            return *this;
+            return this;
         }
 
-        EmbedData setColor(string hexColorValueNew) {
+        EmbedData* setColor(string hexColorValueNew) {
             this->hexColorValue = hexColorValueNew;
-            return *this;
+            return this;
         }
 
-        EmbedData setThumbnail(string thumbnailURL) {
+        EmbedData* setThumbnail(string thumbnailURL) {
             this->thumbnail.url = thumbnailURL;
-            return *this;
+            return this;
         }
 
-        EmbedData setTimeStamp(string timeStamp) {
-            this->timestamp = timeStamp;
-            return *this;
-        }
-
-        EmbedData setTitle(string titleNew) {
+        EmbedData* setTitle(string titleNew) {
             this->title = titleNew;
-            return *this;
+            return this;
         }
 
-        EmbedData setImage(string imageURL) {
+        EmbedData* setImage(string imageURL) {
             this->image.url = imageURL;
-            return *this;
+            return this;
         }
     };
 
@@ -705,6 +704,32 @@ namespace  DiscordCoreInternal {
         string id{ "" };
     };
 
+    enum class StickerType {
+        STANDARD = 1,
+        GUILD = 2
+    };
+
+    enum class StickerFormatType {
+        PNG = 1,
+        APNG = 2,
+        LOTTIE = 3
+    };
+
+    struct StickerData {
+        StickerFormatType formatType{};
+        string description{ "" };
+        bool available{ false };
+        string guildId{ "" };
+        string packId{ "" };
+        string asset{ "" };
+        StickerType type{};
+        int sortValue{ 0 };
+        string name{ "" };
+        string tags{ "" };
+        string id{ "" };
+        UserData user{};
+    };
+
     struct GuildData {
         shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
         shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
@@ -714,29 +739,30 @@ namespace  DiscordCoreInternal {
         vector<PresenceUpdateData> presences{};
         VerificationLevel verificationLevel{};
         vector<VoiceStateData> voiceStates{};
-        string publicUpdatesChannelID{ "" };
+        string publicUpdatesChannelId{ "" };
         vector<GuildMemberData> members{};
         WelcomeScreenData welcomeScreen{};
         int premiumSubscriptionCount{ 0 };
         int approximatePresenceCount{ 0 };
         int approximateMemberCount{ 0 };
         vector<ChannelData> channels{};
+        vector<StickerData> stickers{};
         vector<ChannelData> threads{};
         int maxVideoChannelUsers{ 0 };
         string discoverySplash{ "" };
         string preferredLocale{ "" };
-        string widgetChannelID{ "" };
-        string systemChannelID{ "" };
+        string widgetChannelId{ "" };
+        string systemChannelId{ "" };
+        string rulesChannelId{ "" };
         bool widgetEnabled{ false };
         int systemChannelFlags{ 0 };
         string vanityURLCode{ "" };
-        string ruleChannelID{ "" };
-        string applicationID{ "" };
+        string applicationId{ "" };
         vector<EmojiData> emoji{};
         string description{ "" };
-        string afkChannelID{ "" };
+        string afkChannelId{ "" };
         vector<string> features{};
-        bool unavailable{ false };
+        bool unavailable{ false };        
         PremiumTier premiumTier{};
         string permissions{ "" };
         vector<RoleData> roles{};
@@ -744,7 +770,7 @@ namespace  DiscordCoreInternal {
         string iconHash{ "" };
         int maxPresences{ 0 };
         string joinedAt{ "" };
-        string ownerID{ "" };
+        string ownerId{ "" };
         int memberCount{ 0 };
         string region{ "" };
         bool owner{ false };
@@ -3112,6 +3138,32 @@ namespace DiscordCoreAPI {
         string id{ "" };
     };
 
+    enum class StickerType {
+        STANDARD = 1,
+        GUILD = 2
+    };
+
+    enum class StickerFormatType {
+        PNG = 1,
+        APNG = 2,
+        LOTTIE = 3
+    };
+
+    struct StickerData {
+        StickerFormatType formatType{};
+        string description{ "" };
+        bool available{ false };
+        string guildId{ "" };
+        string packId{ "" };
+        string asset{ "" };
+        StickerType type{};
+        int sortValue{ 0 };
+        string name{ "" };
+        string tags{ "" };
+        string id{ "" };
+        UserData user{};
+    };
+
     struct GuildData {
         shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
         DefaultMessageNotificationLevel defaultMessageNotifications{};
@@ -3121,27 +3173,28 @@ namespace DiscordCoreAPI {
         vector<PresenceUpdateData> presences{};
         VerificationLevel verificationLevel{};
         vector<VoiceStateData> voiceStates{};
-        string publicUpdatesChannelID{ "" };
+        string publicUpdatesChannelId{ "" };
         vector<GuildMemberData> members{};
         WelcomeScreenData welcomeScreen{};
         int premiumSubscriptionCount{ 0 };
         int approximatePresenceCount{ 0 };
         int approximateMemberCount{ 0 };
         vector<ChannelData> channels{};
+        vector<StickerData> stickers{};
         vector<ChannelData> threads{};
         int maxVideoChannelUsers{ 0 };
         string discoverySplash{ "" };
         string preferredLocale{ "" };
-        string widgetChannelID{ "" };
-        string systemChannelID{ "" };
+        string widgetChannelId{ "" };
+        string systemChannelId{ "" };
+        string rulesChannelId{ "" };
         bool widgetEnabled{ false };
         int systemChannelFlags{ 0 };
         string vanityURLCode{ "" };
-        string ruleChannelID{ "" };
-        string applicationID{ "" };
+        string applicationId{ "" };
         vector<EmojiData> emoji{};
         string description{ "" };
-        string afkChannelID{ "" };
+        string afkChannelId{ "" };
         vector<string> features{};
         bool unavailable{ false };
         PremiumTier premiumTier{};
@@ -3151,7 +3204,7 @@ namespace DiscordCoreAPI {
         string iconHash{ "" };
         int maxPresences{ 0 };
         string joinedAt{ "" };
-        string ownerID{ "" };
+        string ownerId{ "" };
         int memberCount{ 0 };
         string region{ "" };
         bool owner{ false };

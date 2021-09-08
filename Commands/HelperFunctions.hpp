@@ -502,7 +502,7 @@ namespace DiscordCoreAPI {
         static string computeBasePermissions(GuildMember guildMember, shared_ptr<DiscordCoreInternal::GuildManager> guilds, shared_ptr<DiscordCoreInternal::RoleManager> roles) {
             Guild guild = guilds->getGuildAsync({ guildMember.guildId }).get();
 
-            if (guild.ownerID == guildMember.user.id) {
+            if (guild.ownerId == guildMember.user.id) {
                 return getAllPermissions();
             }
 
