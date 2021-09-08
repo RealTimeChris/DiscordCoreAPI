@@ -18,6 +18,7 @@
 #include "InputEventStuff.hpp"
 #include "DatabaseStuff.hpp"
 #include "YouTubeStuff.hpp"
+#include "StickerStuff.hpp"
 #include "SoundCloudStuff.hpp"
 #include "WebSocketStuff.hpp"
 
@@ -102,6 +103,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
+		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		hstring gatewayBaseURL{ L"wss://gateway.discord.gg/?v=9" };
 		DiscordCoreInternal::HttpAgentResources agentResources{};
@@ -136,7 +138,8 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::GuildManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreClientBase::initialize(this->agentResources, this->thisPointer);
+			DiscordCoreClientBase::initialize(agentResources, DiscordCoreClient::thisPointer);
+			DiscordCoreInternal::StickerManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->users = this->users;
 			this->roles = this->roles;
 			this->guildMembers = this->guildMembers;
@@ -148,6 +151,8 @@ namespace DiscordCoreAPI {
 			this->reactions->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
 			this->messages = make_shared<DiscordCoreInternal::MessageManager>(nullptr);
 			this->messages->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->stickers = make_shared<DiscordCoreInternal::StickerManager>(nullptr);
+			this->stickers->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
 			this->guilds = make_shared<DiscordCoreInternal::GuildManager>(nullptr);
 			this->guilds->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer, make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this));
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());

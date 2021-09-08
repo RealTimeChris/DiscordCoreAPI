@@ -206,6 +206,7 @@ namespace  DiscordCoreInternal {
     class GuildMemberManagerAgent;
     class ReactionManagerAgent;
     class MessageManagerAgent;
+    class StickerManagerAgent;
     class ChannelManagerAgent;
     class GuildMemberManager;
     class InteractionManager;
@@ -214,6 +215,7 @@ namespace  DiscordCoreInternal {
     class UserManagerAgent;
     class ReactionManager;
     class ChannelManager;
+    class StickerManager;
     class MessageManager;
     class ThreadManager;
     class GuildManager;
@@ -3150,6 +3152,7 @@ namespace DiscordCoreAPI {
     };
 
     struct StickerData {
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         StickerFormatType formatType{};
         string description{ "" };
         bool available{ false };
