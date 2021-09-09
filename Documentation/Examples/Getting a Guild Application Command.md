@@ -1,5 +1,5 @@
 
-### **Getting a Gguild Application Command:**
+### **Getting a Guild Application Command:**
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
 - Select, from the `ApplicationCommands` class, the `getGuildApplicationCommandAsync()` function and execute it, while passing in a data structure of type `GetGuildApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
