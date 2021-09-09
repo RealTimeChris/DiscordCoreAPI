@@ -686,7 +686,7 @@ namespace DiscordCoreAPI {
 				dataPackage.bufferMaxSize = this->maxBufSize;
 				this->outputDataBuffer00 = dataPackage.inputDataBuffer;
 				send(dataPackage.inputDataBuffer, vector<uint8_t>());
-				this->songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+				this->songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
 				this->songDecoder->linkCompletionBuffer(this->completionBuffer);
 				shared_ptr<SongEncoder> songEncoder = make_shared<SongEncoder>();
 				while (this->currentSong.contentLength > bytesReadTotal) {

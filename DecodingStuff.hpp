@@ -19,16 +19,15 @@ namespace DiscordCoreAPI {
         size_t bufferMaxSize{ 0 };
     };
 
-    class SongDecoder : agent {
+    class SongDecoder : DiscordCoreInternal::ThreadContext, agent {
     public:
 
         friend class YouTubeAPICore;
 
-        SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : agent(*threadContextNew->scheduler->scheduler) {
+        SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : ThreadContext(threadContextNew.get()), agent(*this->scheduler->scheduler){
             this->bufferMaxSize = (int)dataPackage.bufferMaxSize;
             this->totalFileSize = (int)dataPackage.totalFileSize;
             this->inputDataBuffer = dataPackage.inputDataBuffer;
-            this->threadContext = threadContextNew;
         }
 
         void startMe() {
@@ -82,12 +81,10 @@ namespace DiscordCoreAPI {
             if (this->packet) {
                 av_packet_free(&this->packet);
             }
-            this->threadContext->releaseGroup();
         }
 
     protected:
         int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        shared_ptr<DiscordCoreInternal::ThreadContext> threadContext{ nullptr };
         unbounded_buffer<vector<uint8_t>>* inputDataBuffer{};
         unbounded_buffer<bool> completionBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
