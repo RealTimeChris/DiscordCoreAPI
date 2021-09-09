@@ -29,6 +29,15 @@ namespace DiscordCoreAPI {
         string name{ "" };
     };
 
+    struct GetGuildApplicationCommandsData {
+        string guildId{ "" };
+    };
+
+    struct GetGuildApplicationCommandData {
+        string commandId{ "" };
+        string guildId{ "" };
+    };
+
     struct GetGlobalApplicationCommandData {
         string commandId{ "" };
     };
@@ -124,7 +133,7 @@ namespace DiscordCoreInternal{
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = HttpWorkloadType::GET_APPLICATION_COMMANDS;
             HttpRequestAgent requestAgent(this->agentResources);
-            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGlobalApplicationCommands");
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGlobalApplicationCommandsAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
@@ -216,6 +225,32 @@ namespace DiscordCoreInternal{
             co_return appCommand;
         }
 
+        task<vector<DiscordCoreAPI::ApplicationCommand>> getGuildApplicationCommandsAsync(DiscordCoreAPI::GetGuildApplicationCommandsData dataPackage) {
+            apartment_context mainThread;
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            HttpWorkload workload;
+            workload.workloadClass = HttpWorkloadClass::GET;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands";
+            workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMANDS;
+            HttpRequestAgent requestAgent(this->agentResources);
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGuildApplicationCommandsAsync");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::getGuildApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::getGuildApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            vector<DiscordCoreAPI::ApplicationCommand> appCommands;
+            for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
+                DiscordCoreAPI::ApplicationCommandData appCommandData;
+                DataParser::parseObject(returnData.data.at(x), &appCommandData);
+                DiscordCoreAPI::ApplicationCommand appCommand(appCommandData);
+                appCommands.push_back(appCommand);
+            }
+            co_await mainThread;
+            co_return appCommands;
+        }
+
         void deleteGlobalApplicationCommand(DiscordCoreAPI::DeleteApplicationCommandData dataPackage) {
             vector<DiscordCoreAPI::ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync().get();
             string commandId;
@@ -305,18 +340,40 @@ namespace DiscordCoreInternal{
             workload.workloadType = HttpWorkloadType::POST_GUILD_APPLICATION_COMMAND;
             workload.content = getCreateApplicationCommandPayload(dataPackageNew);
             HttpRequestAgent requestAgent(this->agentResources);
-            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::createGlobalApplicationCommandAsync");
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::createGuildApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-                cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::createGuildApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             else {
-                cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+                cout << "ApplicationCommandManager::createGuildApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             DiscordCoreAPI::ApplicationCommandData appCommandData;
             DataParser::parseObject(returnData.data, &appCommandData);
             DiscordCoreAPI::ApplicationCommand appCommand(appCommandData);
             co_await mainThread;
             co_return appCommandData;
+        }
+
+        task<DiscordCoreAPI::ApplicationCommand> getGuildApplicationCommandAsync(DiscordCoreAPI::GetGuildApplicationCommandData dataPackage) {
+            apartment_context mainThread;
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            HttpWorkload workload;
+            workload.workloadClass = HttpWorkloadClass::GET;
+            workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMAND;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + dataPackage.commandId;
+            HttpRequestAgent requestAgent(this->agentResources);
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGuildApplicationCommandAsync");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200){
+                cout << "ApplicationCommandManager::getGuildApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::getGuildApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            DiscordCoreAPI::ApplicationCommandData appCommandData;
+            DataParser::parseObject(returnData.data, &appCommandData);
+            DiscordCoreAPI::ApplicationCommand appCommand(appCommandData);
+            co_await mainThread;
+            co_return appCommand;
         }
 
         task<void> displayGlobalApplicationCommandsAsync() {

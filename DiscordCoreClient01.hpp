@@ -905,8 +905,16 @@ namespace DiscordCoreAPI {
 			return DiscordCoreClient::thisPointer->applicationCommands->bulkOverwriteApplicationCommandsAsync(dataPackage);
 		}
 
+		static task<vector<ApplicationCommand>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGuildApplicationCommandsAsync(dataPackage);
+		}
+
 		static task<ApplicationCommand> createGuildApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->createGuildApplicationCommandAsync(dataPackage);
+		}
+
+		static task<ApplicationCommand> getGuildApplicationCommandAsync(GetGuildApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGuildApplicationCommandAsync(dataPackage);
 		}
 	};
 

@@ -832,19 +832,26 @@ namespace DiscordCoreInternal {
 		};
 
 		void cleanup() {
+			cout << "WERE HERE 000" << endl;
 			if (this->messageWriter != nullptr) {
+				cout << "WERE HERE 111" << endl;
 				this->messageWriter.DetachStream();
+				cout << "WERE HERE 222" << endl;
 				this->messageWriter.Close();
+				cout << "WERE HERE 333" << endl;
 				this->messageWriter = nullptr;
 			}
-
+			cout << "WERE HERE 444" << endl;
 			if (this->webSocket != nullptr) {
 				this->webSocket.Close(1000, L"Closed due to user request.");
+				cout << "WERE HERE 555" << endl;
 				this->webSocket = nullptr;
 			}
 
 			if (this->heartbeatTimer) {
+				cout << "WERE HERE 666" << endl;
 				this->heartbeatTimer.Cancel();
+				cout << "WERE HERE 777" << endl;
 				this->heartbeatTimer = nullptr;
 			}
 		}
