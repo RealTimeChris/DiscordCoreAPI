@@ -18,7 +18,7 @@
     
     [`DiscordCoreAPI::Roles`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#role-stuff)
     
-    [`DiscordCoreAPI::SlashCommands`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#slash-command-stuff)
+    [`DiscordCoreAPI::ApplicationCommands`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#slash-command-stuff)
     
     [`DiscordCoreAPI::Users`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#user-stuff)
     
