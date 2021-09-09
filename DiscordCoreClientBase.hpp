@@ -14,9 +14,9 @@
 #include "RoleStuff.hpp"
 #include "ChannelStuff.hpp"
 #include "MessageStuff.hpp"
+#include "YouTubeStuff.hpp"
 #include "GuildMemberStuff.hpp"
 #include "WebSocketStuff.hpp"
-#include "YouTubeStuff.hpp"
 
 namespace DiscordCoreAPI {
 
