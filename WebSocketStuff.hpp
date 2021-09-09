@@ -686,6 +686,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			this->webSocket = nullptr;
 			this->terminate();
 			return;
 		}
@@ -758,7 +759,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-			if (payload.at("s") >= 0) { 
+			if (payload.at("s") >= 0) {
 				this->lastNumberReceived = payload.at("s");
 			}
 

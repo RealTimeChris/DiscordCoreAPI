@@ -821,7 +821,6 @@ namespace DiscordCoreAPI {
 				agent::wait(this->songDecoder);
 				delete this->songDecoder;
 				this->songDecoder = nullptr;
-				cancel_current_task();
 				co_await mainThread;
 				co_return true;
 			}
