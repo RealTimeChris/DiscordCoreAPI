@@ -710,15 +710,13 @@ namespace DiscordCoreInternal {
 		}
 
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args) {
-			DataReader dataReader{ nullptr };
 			hstring message;
 			if (args != nullptr) {
 				if (args.IsMessageComplete()) {
 					if (args.GetDataReader() != nullptr) {
-						dataReader = args.GetDataReader();
-						dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
-						if (dataReader.UnconsumedBufferLength() > 0) {
-							message = dataReader.ReadString(dataReader.UnconsumedBufferLength());
+						args.GetDataReader().UnicodeEncoding(UnicodeEncoding::Utf8);
+						if (args.GetDataReader().UnconsumedBufferLength() > 0) {
+							message = args.GetDataReader().ReadString(args.GetDataReader().UnconsumedBufferLength());
 						}
 					}
 				}
