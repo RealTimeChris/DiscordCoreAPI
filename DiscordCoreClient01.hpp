@@ -213,7 +213,16 @@ namespace DiscordCoreAPI {
 		void run() {
 			try {
 				while (!this->doWeQuit && !this->doWeQuitWebSocket) {
-					DiscordCoreInternal::WebSocketWorkload workload = receive(this->webSocketReceiverAgent->webSocketWorkloadTarget);
+					DiscordCoreInternal::WebSocketWorkload workload;
+				startingPoint:
+					while (!this->doWeQuitWebSocket) {
+						try {
+							workload = receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, 1000);
+						}
+						catch (operation_timed_out&) {
+							goto startingPoint;
+						}
+					}
 					switch (workload.eventType) {
 					case DiscordCoreInternal::WebSocketEventType::Channel_Create:
 					{
