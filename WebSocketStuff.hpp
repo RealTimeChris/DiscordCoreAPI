@@ -613,7 +613,7 @@ namespace DiscordCoreInternal {
 			UpdateVoiceStateData dataPackage;
 			dataPackage.channelId = channelId;
 			dataPackage.guildId = guildId;
-			dataPackage.selfDeaf = false;
+			dataPackage.selfDeaf = true;
 			dataPackage.selfMute = false;
 			string newString = getVoiceStateUpdatePayload(dataPackage);
 			this->areWeCollectingData = true;
@@ -686,14 +686,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries) {
-				this->currentReconnectTries += 1;
-				this->cleanup();
-				this->connect();
-			}
-			else {
-				this->terminate();
-			}
+			this->terminate();
 			return;
 		}
 
