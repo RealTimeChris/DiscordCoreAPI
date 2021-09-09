@@ -44,6 +44,7 @@ namespace DiscordCoreAPI {
 			dataPackage.description = "Displays info about the current bot.";
 			dataPackage.name = "botinfo";
 			dataPackage.type = ApplicationCommandType::CHAT_INPUT;
+			dataPackage.guildId = args->eventData.getGuildId();
 
 			auto returnValue = ApplicationCommands::createGuildApplicationCommandAsync(dataPackage).get();
 
