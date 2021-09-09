@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildMemberId = YouTubeAPI::getCurrentSong(guild.id).addedById,.guildId = args->eventData.getGuildId() }).get();
 					(*voiceConnection)->play();
 					EmbedData newEmbed;
-					newEmbed.setAuthor(guildMember02.user.username, guildMember02.user.avatar);
+					newEmbed.setAuthor(guildMember02.user.userName, guildMember02.user.avatar);
 					newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
 						YouTubeAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guild.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guild.id).addedByUserName + ")");
 					newEmbed.setImage(YouTubeAPI::getCurrentSong(guild.id).imageURL);

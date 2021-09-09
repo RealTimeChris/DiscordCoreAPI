@@ -597,7 +597,7 @@ namespace DiscordCoreAPI {
 			format = decipherFormat(format, this->html5PlayerFile);
 			YouTubeSong song;
 			song.songId = to_string((int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			song.addedByUserName = guildMember.user.username;
+			song.addedByUserName = guildMember.user.userName;
 			song.contentLength = (int)format.contentLength;
 			song.formatDownloadURL = format.downloadURL;
 			song.description = searchResult.description;

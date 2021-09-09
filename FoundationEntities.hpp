@@ -484,7 +484,7 @@ namespace  DiscordCoreInternal {
         bool mfaEnabled{ false };
         bool verified{ false };
         string createdAt{ "" };
-        string username{ "" };
+        string userName{ "" };
         bool system{ false };
         int premiumType{ 0 };
         int publicFlags{ 0 };
@@ -1877,7 +1877,7 @@ namespace DiscordCoreAPI {
             newData.publicFlags = this->publicFlags;
             newData.mfaEnabled = this->mfaEnabled;
             newData.createdAt = this->createdAt;
-            newData.username = this->username;
+            newData.userName = this->userName;
             newData.verified = this->verified;
             newData.avatar = this->avatar;
             newData.locale = this->locale;
@@ -1894,7 +1894,7 @@ namespace DiscordCoreAPI {
         bool mfaEnabled{ false };
         bool verified{ false };
         string createdAt{ "" };
-        string username{ "" };
+        string userName{ "" };
         bool system{ false };
         int premiumType{ 0 };
         int publicFlags{ 0 };
@@ -3415,20 +3415,20 @@ namespace DiscordCoreAPI {
         }
 
         string getUserName() {
-            if (this->messageData.author.username == "" && this->interactionData.member.user.username != "") {
-                return this->interactionData.member.user.username;
+            if (this->messageData.author.userName == "" && this->interactionData.member.user.userName != "") {
+                return this->interactionData.member.user.userName;
             }
-            else if (this->interactionData.member.user.username == "" && this->interactionData.user.username != "") {
-                return this->interactionData.user.username;
+            else if (this->interactionData.member.user.userName == "" && this->interactionData.user.userName != "") {
+                return this->interactionData.user.userName;
             }
-            else if (this->messageData.author.username != "") {
-                return this->messageData.author.username;
+            else if (this->messageData.author.userName != "") {
+                return this->messageData.author.userName;
             }
-            else if (this->messageCommandInteractionData.member.user.username != "") {
-                return this->messageCommandInteractionData.member.user.username;
+            else if (this->messageCommandInteractionData.member.user.userName != "") {
+                return this->messageCommandInteractionData.member.user.userName;
             }
             else {
-                return this->userCommandInteractionData.member.user.username;
+                return this->userCommandInteractionData.member.user.userName;
             }
         }
 
@@ -3597,12 +3597,7 @@ namespace DiscordCoreAPI {
         }
 
         string getRequesterId() {
-            if (this->messageData.requesterId != "") {
-                return this->messageData.requesterId;
-            }
-            else {
-                return this->interactionData.requesterId;
-            }
+            return this->requesterId;
         }
 
     protected:

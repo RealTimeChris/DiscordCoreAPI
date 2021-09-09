@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			map < string, DiscordGuild*> discordGuildsMap{};
 			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, discordGuildsMap);
-			this->discordUser = make_shared<DiscordUser>(this->currentUser.username, this->currentUser.id);
+			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->discordUser->data.userId);
 			Button::initialize(this->interactions);

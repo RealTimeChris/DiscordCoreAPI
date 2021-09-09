@@ -40,6 +40,9 @@ namespace DiscordCoreAPI {
 			this->guildId = guildIdNew;
 			this->user = dataNew.user;
 			this->nick = dataNew.nick;
+			if (this->nick == "") {
+				this->nick = this->user.userName;
+			}
 			this->deaf = dataNew.deaf;
 			this->mute = dataNew.mute;
 		}
@@ -194,11 +197,12 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::GuildMember guildMember;
 				while (this->guildMembersToInsert.try_pop(guildMember)) {
 					map<string, DiscordCoreAPI::GuildMember> cacheTemp;
-					try_receive(GuildMemberManagerAgent::cache, cacheTemp);
-					if (cacheTemp.contains(guildMember.guildId + " + " + guildMember.user.id)) {
-						cacheTemp.erase(guildMember.guildId + " + " + guildMember.user.id);
-					}
-					cacheTemp.insert(make_pair(guildMember.guildId + " + " + guildMember.user.id, guildMember));
+					if (try_receive(GuildMemberManagerAgent::cache, cacheTemp)) {
+						if (cacheTemp.contains(guildMember.guildId + " + " + guildMember.user.id)) {
+							cacheTemp.erase(guildMember.guildId + " + " + guildMember.user.id);
+						}
+						cacheTemp.insert(make_pair(guildMember.guildId + " + " + guildMember.user.id, guildMember));
+					};
 					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 			}

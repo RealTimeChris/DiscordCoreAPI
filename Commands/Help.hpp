@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 				Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
-				string messageString = "------\nHello! How are you doing today?! I'm " + args->eventData.discordCoreClient->currentUser.username + " and I'm here to help you out!\n" +
+				string messageString = "------\nHello! How are you doing today?! I'm " + args->eventData.discordCoreClient->currentUser.userName + " and I'm here to help you out!\n" +
 					"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back to the previous menu)\n------";
 				InputEventData newEvent = args->eventData;
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 					msgEmbed.setColor(discordGuild.data.borderColor);
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setDescription(messageNew);
-					msgEmbed.setTitle("__**" + args->eventData.discordCoreClient->currentUser.username + " Help: Front Page**__");
+					msgEmbed.setTitle("__**" + args->eventData.discordCoreClient->currentUser.userName + " Help: Front Page**__");
 
 					vector<string> numberEmojiNames{ "✅", "🍬", "🅱", "❌", };
 					vector<string> numberEmojiId;
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 						msgEmbed00.setColor(discordGuild.data.borderColor);
 						msgEmbed00.setTimeStamp(getTimeAndDate());
 						msgEmbed00.setDescription(messageString);
-						msgEmbed00.setTitle("__**" + args->eventData.discordCoreClient->currentUser.username + " Help: Page " + to_string(counter03 + 1) + " of " + to_string(selectOptions.size()) + "**__");
+						msgEmbed00.setTitle("__**" + args->eventData.discordCoreClient->currentUser.userName + " Help: Page " + to_string(counter03 + 1) + " of " + to_string(selectOptions.size()) + "**__");
 						EditMessageData responseData(newEvent);
 						responseData.addMessageEmbed(msgEmbed00);
 						responseData.addSelectMenu(false, "help_menu", value, "Commands", 1, 1);

@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
             if (displayResponse) {
                 string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
                 EmbedData msgEmbed;
-                msgEmbed.setAuthor(eventData.getMessageData().interaction.user.username, eventData.getMessageData().author.avatar);
+                msgEmbed.setAuthor(eventData.getMessageData().interaction.user.userName, eventData.getMessageData().author.avatar);
                 msgEmbed.setColor("FEFEFE");
                 msgEmbed.setDescription(msgString);
                 msgEmbed.setTimeStamp(getTimeAndDate());
@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
             if (!doWeHaveControl) {
                 string msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
                 DiscordCoreAPI::EmbedData msgEmbed;
-                msgEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+                msgEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
                 msgEmbed.setDescription(msgString);
                 msgEmbed.setColor(guildData.data.borderColor);
                 msgEmbed.setTimeStamp(getTimeAndDate());
@@ -601,7 +601,7 @@ namespace DiscordCoreAPI {
         if (displayResponse) {
             string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
             EmbedData msgEmbed;
-            msgEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+            msgEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
             msgEmbed.setColor(discordGuild.data.borderColor);
             msgEmbed.setDescription(msgString);
             msgEmbed.setTimeStamp(getTimeAndDate());

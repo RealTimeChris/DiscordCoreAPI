@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 						}
 						catch (exception& e) {
 							EmbedData newEmbed;
-							newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 							string newString = "__**Sorry, there was an error while trying to play that last song!\nIt was: ";
 							newString += e.what();
 							newString += "**__";
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						EmbedData newEmbed;
-						newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+						newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 						newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
 							YouTubeAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guild.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guild.id).addedByUserName + ")");
 						newEmbed.setImage(YouTubeAPI::getCurrentSong(guild.id).imageURL);
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 					else {
 						discordGuild.getDataFromDB();
 						EmbedData newEmbed;
-						newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+						newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 						newEmbed.setDescription("------\n__**Sorry, but there's nothing left to play here!**__\n------");
 						newEmbed.setTimeStamp(getTimeAndDate());
 						newEmbed.setTitle("__**Now Playing:**__");
@@ -273,7 +273,7 @@ namespace DiscordCoreAPI {
 						}
 						catch (exception& e) {
 							EmbedData newEmbed;
-							newEmbed.setAuthor(guildMember.user.username, guildMember.user.avatar);
+							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 							string newString = "__**Sorry, there was an error while trying to play that last song!\nIt was: "; 
 							newString += e.what(); 
 							newString += "**__";

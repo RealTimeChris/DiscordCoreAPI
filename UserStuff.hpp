@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 			this->publicFlags = dataNew.publicFlags;
 			this->mfaEnabled = dataNew.mfaEnabled;
 			this->createdAt = dataNew.createdAt;
-			this->username = dataNew.username;
+			this->userName = dataNew.userName;
 			this->verified = dataNew.verified;
 			this->locale = dataNew.locale;
 			this->system = dataNew.system;
@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 			this->publicFlags = dataPackage.publicFlags;
 			this->mfaEnabled = dataPackage.mfaEnabled;
 			this->createdAt = dataPackage.createdAt;
-			this->username = dataPackage.username;
+			this->userName = dataPackage.userName;
 			this->verified = dataPackage.verified;
 			this->avatar = dataPackage.avatar;
 			this->locale = dataPackage.locale;

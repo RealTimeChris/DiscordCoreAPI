@@ -425,12 +425,12 @@ namespace DiscordCoreAPI {
             this->data.globalId = this->data.guildId + " + " + this->data.guildMemberId;
             this->getDataFromDB();
             if (guildMemberData.nick == "") {
-                this->data.displayName = guildMemberData.user.username;
+                this->data.displayName = guildMemberData.user.userName;
             }
             else {
                 this->data.displayName = guildMemberData.nick;
             }
-            this->data.userName = guildMemberData.user.username;
+            this->data.userName = guildMemberData.user.userName;
             this->data.guildMemberMention = guildMemberData.userMention;
         }
 

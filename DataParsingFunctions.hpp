@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
             DiscordCoreAPI::UserData userData = *pDataStructure;
 
             if (jsonObjectData.contains("username") && !jsonObjectData.at("username").is_null()) {
-                userData.username = jsonObjectData.at("username").get<string>();
+                userData.userName = jsonObjectData.at("username").get<string>();
             }
 
             if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
@@ -515,7 +515,7 @@ namespace DiscordCoreInternal {
                 guildMemberData.nick = jsonObjectData.at("nick").get<string>();
             }
             else {
-                guildMemberData.nick = "";
+                guildMemberData.nick = guildMemberData.user.userName;
             }
 
             if (guildMemberData.nick == "") {

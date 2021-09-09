@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
             messageEmbed.setColor("FEFEFE");
             messageEmbed.setTitle("__**Bot Info:**__");
             messageEmbed.setTimeStamp(getTimeAndDate());
-            messageEmbed.addField("__Bot Name:__", args->eventData.discordCoreClient->currentUser.username, true);
+            messageEmbed.addField("__Bot Name:__", args->eventData.discordCoreClient->currentUser.userName, true);
             messageEmbed.addField("__Bot ID:__", args->eventData.discordCoreClient->currentUser.id, true);
             messageEmbed.addField("__Guild Count:__", to_string(args->eventData.discordCoreClient->discordUser->data.guildCount), true);
             messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser.createdAt, true);
