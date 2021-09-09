@@ -3593,7 +3593,13 @@ namespace DiscordCoreAPI {
         }
 
         MessageData getMessageData() {
-            return this->messageData;
+            if (this->messageData.id != "") {
+                return this->messageData;
+
+            }
+            else {
+                return this->interactionData.message;
+            }
         }
 
         string getRequesterId() {

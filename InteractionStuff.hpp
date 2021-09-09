@@ -1116,7 +1116,10 @@ namespace DiscordCoreInternal {
                 if (InteractionManagerAgent::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
                     shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
                     try {
-                        DiscordCoreAPI::MessageData messageData = receive(*messageBlock, 1000);
+                        DiscordCoreAPI::MessageData messageData;
+                        while (messageData.id == "") {
+                            try_receive(*messageBlock, messageData);
+                        };
                         co_await mainThread;
                         InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
                         co_return messageData;
