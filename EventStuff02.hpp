@@ -119,14 +119,11 @@ namespace DiscordCoreAPI {
                 else if (dataPackage.eventData.eventType == InputEventType::MESSAGE_COMMAND_INTERACTION) {
                     CommandData commandData(dataPackage.eventData);
                     commandData.eventData = dataPackage.eventData;
-                    cout << "WERE HERE WERE HERE" << endl;
                     CommandCenter::checkForAndRunCommand(commandData);
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::USER_COMMAND_INTERACTION) {
                     CommandData commandData(dataPackage.eventData);
                     commandData.eventData = dataPackage.eventData;
-                    cout << "WERE HERE WERE HERE" << endl;
-                    cout << commandData.commandName << endl;
                     CommandCenter::checkForAndRunCommand(commandData);
                 }
                 co_await mainThread;
