@@ -3576,11 +3576,15 @@ namespace DiscordCoreAPI {
         }
 
         string getMessageId() {
-            if (this->messageData.id == "") {
+            if (this->messageData.id != "") {
+                return this->messageData.id;
+
+            }
+            else if (this->interactionData.message.id != "") {
                 return this->interactionData.message.id;
             }
-            else {
-                return this->messageData.id;
+            else if (this->messageCommandInteractionData.messages.id != "") {
+                return this->messageCommandInteractionData.messages.id;
             }
         }
 
@@ -3593,7 +3597,12 @@ namespace DiscordCoreAPI {
         }
 
         string getRequesterId() {
-            return this->requesterId;
+            if (this->messageData.requesterId != "") {
+                return this->messageData.requesterId;
+            }
+            else {
+                return this->interactionData.requesterId;
+            }
         }
 
     protected:
