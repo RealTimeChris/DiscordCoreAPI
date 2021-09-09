@@ -10,11 +10,11 @@
 
 #include "../pch.h"
 #include "VoiceConnectionStuff.hpp"
+#include "YouTubeStuff.hpp"
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
 #include "ChannelStuff.hpp"
 #include "MessageStuff.hpp"
-#include "YouTubeStuff.hpp"
 #include "GuildMemberStuff.hpp"
 #include "WebSocketStuff.hpp"
 
@@ -45,6 +45,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(DiscordCoreClientBase::webSocketConnectionAgent);
 			DiscordCoreClientBase::thisPointer = this;
+			DiscordCoreClientBase::youtubeAPIMap = new map<string, shared_ptr<YouTubeAPICore>>;
 		}
 
 	protected:
@@ -59,9 +60,9 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 
 	};
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>() };
-	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
-	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPICore>>() };
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*> };
+	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>> };
+	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPIMap{ nullptr };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
 	map<string, Playlist>* DiscordCoreClientBase::guildYouTubeQueueMap{ new map<string, Playlist>() };
 	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };

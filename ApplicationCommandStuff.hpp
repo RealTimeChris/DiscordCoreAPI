@@ -25,6 +25,7 @@ namespace DiscordCoreAPI {
         bool defaultPermission{ true };
         ApplicationCommandType type{};
         string description{ "" };
+        string guildId{ "" };
         string name{ "" };
     };
 
@@ -286,6 +287,36 @@ namespace DiscordCoreInternal{
                 returnVector.push_back(applicationCommand);
             }
             co_return returnVector;
+        }
+
+        task<DiscordCoreAPI::ApplicationCommand> createGuildApplicationCommandAsync(DiscordCoreAPI::CreateApplicationCommandData dataPackage){
+            apartment_context mainThread;
+            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            PostApplicationCommandData dataPackageNew;
+            dataPackageNew.applicationId = this->applicationId;
+            dataPackageNew.defaultPermission = dataPackage.defaultPermission;
+            dataPackageNew.description = dataPackage.description;
+            dataPackageNew.name = dataPackage.name;
+            dataPackageNew.type = (ApplicationCommandType)dataPackage.type;
+            copyOptionsData(&dataPackageNew.options, dataPackage.options);
+            HttpWorkload workload;
+            workload.workloadClass = HttpWorkloadClass::POST;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands";
+            workload.workloadType = HttpWorkloadType::POST_GUILD_APPLICATION_COMMAND;
+            workload.content = getCreateApplicationCommandPayload(dataPackageNew);
+            HttpRequestAgent requestAgent(this->agentResources);
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::createGlobalApplicationCommandAsync");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            DiscordCoreAPI::ApplicationCommandData appCommandData;
+            DataParser::parseObject(returnData.data, &appCommandData);
+            DiscordCoreAPI::ApplicationCommand appCommand(appCommandData);
+            co_await mainThread;
+            co_return appCommandData;
         }
 
         task<void> displayGlobalApplicationCommandsAsync() {

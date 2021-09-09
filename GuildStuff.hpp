@@ -20,7 +20,7 @@
 
 namespace DiscordCoreAPI {
 
-	class Guild :public GuildData {
+	class Guild : public GuildData {
 	public:
 
 		friend struct Concurrency::details::_ResultHolder<Guild>;
@@ -77,9 +77,9 @@ namespace DiscordCoreAPI {
 					if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
 						DiscordCoreClientBase::youtubeAPIMap->at(this->id)->stop();
 						Playlist playlist{};
-						playlist.songQueue = *DiscordCoreClientBase::youtubeAPIMap->at(this->id)->getQueue();
-						playlist.isLoopAllEnabled = DiscordCoreClientBase::youtubeAPIMap->at(this->id)->isLoopAllEnabled();
-						playlist.isLoopSongEnabled = DiscordCoreClientBase::youtubeAPIMap->at(this->id)->isLoopSongEnabled();
+						playlist.songQueue = *(DiscordCoreClientBase::youtubeAPIMap)->at(this->id)->getQueue();
+						playlist.isLoopAllEnabled = (DiscordCoreClientBase::youtubeAPIMap)->at(this->id)->isLoopAllEnabled();
+						playlist.isLoopSongEnabled = (DiscordCoreClientBase::youtubeAPIMap)->at(this->id)->isLoopSongEnabled();
 						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, playlist);
 						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
 					}

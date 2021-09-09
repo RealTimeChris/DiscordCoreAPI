@@ -46,7 +46,8 @@ namespace DiscordCoreAPI {
 			shared_ptr<BaseFunction> functionPointer{ nullptr };
 			bool messageOption = false;
 			if (commandData.eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				functionPointer = CommandCenter::getCommand(convertToLowerCase(commandData.eventData.getMessageData().content), commandData);
+				string commandName = parseCommandName(convertToLowerCase(commandData.eventData.getMessageData().content), commandData);
+				functionPointer = CommandCenter::getCommand(commandName, commandData);
 				messageOption = true;
 			}
 			else if (commandData.eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
@@ -83,21 +84,23 @@ namespace DiscordCoreAPI {
 			return shared_ptr<BaseFunction>(CommandCenter::functions.at(functionName)->create());
 		}
 
-		static shared_ptr<BaseFunction> getCommand(string messageContents, CommandData commandData) {
+		static shared_ptr<BaseFunction> getCommand(string commandName, CommandData commandData) {
 			try {
-				size_t currentPosition = INFINITE;
 				BaseFunction* lowestValue{ nullptr };
-				string functionName;
-				bool isItFound = false;
-				for (auto const& [key, value] : DiscordCoreAPI::CommandCenter::functions) {
-					if (messageContents[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
-						if (messageContents.find(key) != string::npos && messageContents.find(key) < currentPosition) {
-							isItFound = true;
-							currentPosition = messageContents.find(key);
-							lowestValue = value;
-							functionName = messageContents.substr(currentPosition, key.length());
+				string functionName{ "" };
+				bool isItFound{ false };
+				if (commandName.size() > 0) {
+					for (auto const& [key, value] : DiscordCoreAPI::CommandCenter::functions) {
+
+						if (commandName[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
+							if (key.find(commandName.substr(1, commandName.size() - 1)) != string::npos) {
+								isItFound = true;
+								lowestValue = value;
+								functionName = commandName.substr(1, key.length());
+								cout << "FUNCTION NAME: " << commandName.substr(1, key.length()) << endl;
+							}
+
 						}
-						
 					}
 				}
 				if (isItFound) {
@@ -109,6 +112,31 @@ namespace DiscordCoreAPI {
 				cout << "CommandCenter::getCommand() Error: " << e.what() << endl << endl;
 			}
 			return nullptr;
+		}
+
+		static string parseCommandName(string messageContents, CommandData commandData) {
+			if (messageContents.size() > 0) {
+				if (messageContents[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
+					for (auto [key, value] : CommandCenter::functions) {
+						if (messageContents.find(key) != string::npos) {
+							if (messageContents.find_first_of(" ") == string::npos) {
+								if (messageContents.substr(1, messageContents.find_first_of('\u0000') - 1) == key) {
+									string commandName = commandData.eventData.discordCoreClient->discordUser->data.prefix[0] + messageContents.substr(1, messageContents.find_first_of('\u0000') - 1);
+									return commandName;
+								}
+							}
+							else {
+								if (messageContents.substr(1, messageContents.find_first_of(' ') - 1) == key) {
+									string commandName = commandData.eventData.discordCoreClient->discordUser->data.prefix[0] + messageContents.substr(1, messageContents.find_first_of(' ') - 1);
+									return commandName;
+								}
+							}
+
+						}
+					}
+				}
+			}
+			return string();
 		}
 
 		static vector<string> parseArguments(string messageContents) {

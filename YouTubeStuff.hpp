@@ -244,8 +244,8 @@ namespace DiscordCoreAPI {
 		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, string guildIdNew, DiscordGuild* discordGuildNew) {
 			this->sendAudioBufferMap = sendAudioBufferMapNew;
 			this->outputDataBuffer01 = *this->sendAudioBufferMap->at(guildIdNew);
-			this->completionBuffer = new unbounded_buffer<bool>;
 			this->discordGuild = discordGuildNew;
+			this->completionBuffer = new unbounded_buffer<bool>;
 			this->guildId = guildIdNew;
 		}
 
@@ -687,6 +687,7 @@ namespace DiscordCoreAPI {
 				this->outputDataBuffer00 = dataPackage.inputDataBuffer;
 				send(dataPackage.inputDataBuffer, vector<uint8_t>());
 				this->songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
+				this->completionBuffer = new unbounded_buffer<bool>;
 				this->songDecoder->linkCompletionBuffer(this->completionBuffer);
 				shared_ptr<SongEncoder> songEncoder = make_shared<SongEncoder>();
 				while (this->currentSong.contentLength > bytesReadTotal) {

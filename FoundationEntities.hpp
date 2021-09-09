@@ -1062,7 +1062,8 @@ namespace  DiscordCoreInternal {
         DELETE_LEAVE_GUILD = 54,
         SOUNDCLOUD_SEARCH = 55,
         GET_APPLICATION_COMMAND = 56,
-        PUT_BULK_OVERWRITE_APPLICATION_COMMANDS = 57
+        PUT_BULK_OVERWRITE_APPLICATION_COMMANDS = 57,
+        POST_GUILD_APPLICATION_COMMAND = 58
     };
 
     enum class MessageStickerItemType {
@@ -3583,7 +3584,7 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.message.id != "") {
                 return this->interactionData.message.id;
             }
-            else if (this->messageCommandInteractionData.messages.id != "") {
+            else  {
                 return this->messageCommandInteractionData.messages.id;
             }
         }

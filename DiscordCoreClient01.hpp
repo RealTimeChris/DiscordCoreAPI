@@ -904,6 +904,10 @@ namespace DiscordCoreAPI {
 		static task<vector<ApplicationCommand>>  bulkOverwriteApplicationCommandsAsync(BulkOverwriteApplicationCommandsData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->bulkOverwriteApplicationCommandsAsync(dataPackage);
 		}
+
+		static task<ApplicationCommand> createGuildApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->createGuildApplicationCommandAsync(dataPackage);
+		}
 	};
 
 	class Reactions {
