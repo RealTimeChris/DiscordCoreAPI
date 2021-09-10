@@ -413,6 +413,26 @@ namespace DiscordCoreInternal {
 			WebSocketWorkload workload;
 			workload.payLoad = payload.at("d");
 
+			if (payload.at("t") == "APPLICATION_COMMAND_CREATE") {
+				workload.eventType = WebSocketEventType::Application_Command_Create;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+			
+			if (payload.at("t") == "APPLICATION_COMMAND_UPDATE") {
+				workload.eventType = WebSocketEventType::Application_Command_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "APPLICATION_COMMAND_DELETE") {
+				workload.eventType = WebSocketEventType::Application_Command_Delete;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "APPLICATION_COMMAND_DELETE") {
+				workload.eventType = WebSocketEventType::Application_Command_Delete;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
 			if (payload.at("t") == "CHANNEL_CREATE") {
 				workload.eventType = WebSocketEventType::Channel_Create;
 				send(this->webSocketWorkloadTarget, workload);
@@ -425,6 +445,41 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("t") == "CHANNEL_DELETE") {
 				workload.eventType = WebSocketEventType::Channel_Delete;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "CHANNEL_PINS_UPDATE") {
+				workload.eventType = WebSocketEventType::Channel_Pins_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "THREAD_CREATE") {
+				workload.eventType = WebSocketEventType::Thread_Create;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "THREAD_UPDATE") {
+				workload.eventType = WebSocketEventType::Thread_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "THREAD_DELETE") {
+				workload.eventType = WebSocketEventType::Thread_Delete;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "THREAD_LIST_SYNC") {
+				workload.eventType = WebSocketEventType::Thread_List_Sync;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "THREAD_MEMBER_UPDATE") {
+				workload.eventType = WebSocketEventType::Thread_Member_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "THREAD_MEMBERS_UPDATE") {
+				workload.eventType = WebSocketEventType::Thread_Members_Update;
 				send(this->webSocketWorkloadTarget, workload);
 			}
 
@@ -453,6 +508,21 @@ namespace DiscordCoreInternal {
 				send(this->webSocketWorkloadTarget, workload);
 			}
 
+			if (payload.at("t") == "GUILD_EMOJIS_UPDATE") {
+				workload.eventType = WebSocketEventType::Guild_Emojis_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "GUILD_STICKERS_UPDATE") {
+				workload.eventType = WebSocketEventType::Guild_Stickers_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "GUILD_INTEGRATIONS_UPDATE") {
+				workload.eventType = WebSocketEventType::Guild_Integrations_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
 			if (payload.at("t") == "GUILD_MEMBER_ADD") {
 				workload.eventType = WebSocketEventType::Guild_Member_Add;
 				send(this->webSocketWorkloadTarget, workload);
@@ -465,6 +535,11 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("t") == "GUILD_MEMBER_UPDATE") {
 				workload.eventType = WebSocketEventType::Guild_Member_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "GUILD_MEMBERS_CHUNK") {
+				workload.eventType = WebSocketEventType::Guild_Members_Chunk;
 				send(this->webSocketWorkloadTarget, workload);
 			}
 
@@ -482,6 +557,26 @@ namespace DiscordCoreInternal {
 				workload.eventType = WebSocketEventType::Guild_Role_Delete;
 				send(this->webSocketWorkloadTarget, workload);
 			}
+			
+			if (payload.at("t") == "INTEGRATION_ROLE_CREATE") {
+				workload.eventType = WebSocketEventType::Integration_Create;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "INTEGRATION_ROLE_UPDATE") {
+				workload.eventType = WebSocketEventType::Integration_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "INTEGRATION_ROLE_DELETE") {
+				workload.eventType = WebSocketEventType::Integration_Delete;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "INTERACTION_CREATE") {
+				workload.eventType = WebSocketEventType::Interaction_Create;
+				send(this->webSocketWorkloadTarget, workload);
+			}
 
 			if (payload.at("t") == "INVITE_CREATE") {
 				workload.eventType = WebSocketEventType::Invite_Create;
@@ -490,11 +585,6 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("t") == "INVITE_DELETE") {
 				workload.eventType = WebSocketEventType::Invite_Delete;
-				send(this->webSocketWorkloadTarget, workload);
-			}
-
-			if (payload.at("t") == "INTERACTION_CREATE") {
-				workload.eventType = WebSocketEventType::Interaction_Create;
 				send(this->webSocketWorkloadTarget, workload);
 			}
 
@@ -537,9 +627,24 @@ namespace DiscordCoreInternal {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove_Emoji;
 				send(this->webSocketWorkloadTarget, workload);
 			}
-
+			
 			if (payload.at("t") == "PRESENCE_UPDATE") {
 				workload.eventType = WebSocketEventType::Presence_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "STAGE_INSTANCE_CREATE") {
+				workload.eventType = WebSocketEventType::Stage_Instance_Create;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "STAGE_INSTANCE_DELETE") {
+				workload.eventType = WebSocketEventType::Stage_Instance_Delete;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+
+			if (payload.at("t") == "STAGE_INSTANCE_UPDATE") {
+				workload.eventType = WebSocketEventType::Stage_Instance_Update;
 				send(this->webSocketWorkloadTarget, workload);
 			}
 
@@ -562,6 +667,12 @@ namespace DiscordCoreInternal {
 				workload.eventType = WebSocketEventType::Voice_Server_Update;
 				send(this->webSocketWorkloadTarget, workload);
 			}
+
+			if (payload.at("t") == "WEBHOOKS_UPDATE") {
+				workload.eventType = WebSocketEventType::Webhooks_Update;
+				send(this->webSocketWorkloadTarget, workload);
+			}
+						
 		}
 
 		void terminate() {
