@@ -10,8 +10,21 @@
 
 #include "../pch.h"
 #include "GuildMemberStuff.hpp"
+#include "ApplicationCommandStuff.hpp"
 
 namespace DiscordCoreAPI {
+
+	struct OnApplicationCommandCreationData {
+		ApplicationCommand applicationCommand{};
+	};
+
+	struct OnApplicationCommandUpdateData {
+		ApplicationCommand applicationCommand{};
+	};
+
+	struct OnApplicationCommandDeletionData {
+		ApplicationCommand applicationCommand{};
+	};
 
 	struct OnChannelCreationData {
 		Channel channel{};
@@ -24,6 +37,10 @@ namespace DiscordCoreAPI {
 
 	struct OnChannelDeletionData {
 		Channel channel{};
+	};
+
+	struct OnChannelPinsUpdateEventData {
+		ChannelPinsUpdateEventData dataPackage{};
 	};
 
 	struct OnGuildCreationData {
@@ -164,6 +181,30 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClient;
 
+		event_token onApplicationCommandCreation(delegate<OnApplicationCommandCreationData> const& handler) {
+			return onApplicationCommandCreationEvent.add(handler);
+		}
+
+		void onApplicationCommandCreation(event_token const& handler) {
+			return onApplicationCommandCreationEvent.remove(handler);
+		}
+
+		event_token onApplicationCommandUpdate(delegate<OnApplicationCommandUpdateData> const& handler) {
+			return onApplicationCommandUpdateEvent.add(handler);
+		}
+
+		void onApplicationCommandUpdate(event_token const& handler) {
+			return onApplicationCommandUpdateEvent.remove(handler);
+		}
+
+		event_token onApplicationCommandDeletion(delegate<OnApplicationCommandDeletionData> const& handler) {
+			return onApplicationCommandDeletionEvent.add(handler);
+		}
+
+		void onApplicationCommandDeletion(event_token const& handler) {
+			return onApplicationCommandDeletionEvent.remove(handler);
+		}
+
 		event_token onChannelCreation(delegate<OnChannelCreationData> const& handler) {
 			return onChannelCreationEvent.add(handler);
 		}
@@ -186,6 +227,14 @@ namespace DiscordCoreAPI {
 
 		void onChannelDeletion(event_token const& token) {
 			onChannelDeletionEvent.remove(token);
+		}
+
+		event_token onChannelPinsUpdate(delegate<OnChannelPinsUpdateEventData> const& handler) {
+			return onChannelPinsUpdateEvent.add(handler);
+		}
+
+		void onChannelPinsUpdate(event_token const& handler) {
+			return onChannelPinsUpdateEvent.remove(handler);
 		}
 
 		event_token onGuildCreation(delegate<OnGuildCreationData> const& handler) {
@@ -406,11 +455,19 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		winrt::event<delegate<OnApplicationCommandCreationData>> onApplicationCommandCreationEvent;
+
+		winrt::event<delegate<OnApplicationCommandUpdateData>> onApplicationCommandUpdateEvent;
+
+		winrt::event<delegate<OnApplicationCommandDeletionData>> onApplicationCommandDeletionEvent;
+
 		winrt::event<delegate<OnChannelCreationData>> onChannelCreationEvent;
 
 		winrt::event<delegate<OnChannelUpdateData>> onChannelUpdateEvent;
 
 		winrt::event<delegate<OnChannelDeletionData>> onChannelDeletionEvent;
+
+		winrt::event<delegate<OnChannelPinsUpdateEventData>> onChannelPinsUpdateEvent;
 
 		winrt::event<delegate<OnGuildCreationData>> onGuildCreationEvent;
 

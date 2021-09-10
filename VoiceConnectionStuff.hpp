@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 				this->discordCoreClientBase = discordCoreClientBaseNew;
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->readyBuffer, &websocketAgent->collectVoiceConnectionDataBuffer, &websocketAgent->voiceConnectionDataBuffer, voiceConnectInitDataNew);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->readyBuffer, websocketAgent->collectVoiceConnectionDataBuffer, websocketAgent->voiceConnectionDataBuffer, voiceConnectInitDataNew);
 				this->voicechannelWebSocketAgent->start();
 				receive(this->readyBuffer);
 				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
@@ -157,11 +157,11 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* receiveAudioBufferMap{ nullptr };
+		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		unbounded_buffer<bool> readyBuffer{ nullptr };
 		unbounded_buffer<bool> pauseBuffer{ nullptr };
 		unbounded_buffer<bool> stopBuffer{ nullptr };

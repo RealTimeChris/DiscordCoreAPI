@@ -3239,6 +3239,24 @@ namespace DiscordCoreInternal {
             *pDataStructure = typingStartData;
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ChannelPinsUpdateEventData* pDataStructre) {
+            DiscordCoreAPI::ChannelPinsUpdateEventData dataPackage = *pDataStructre;
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                dataPackage.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("channel_id") && !jsonObjectData.at("channel_id").is_null()) {
+                dataPackage.channelId = jsonObjectData.at("channel_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("last_pin_timestamp") && !jsonObjectData.at("last_pin_timestamp").is_null()) {
+                dataPackage.lastPinTimestamp = jsonObjectData.at("last_pin_timestamp").get<string>();
+            }
+
+            *pDataStructre = dataPackage;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::BanData* pDataStructure) {
             DiscordCoreAPI::BanData newData{};
 

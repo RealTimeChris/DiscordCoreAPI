@@ -3923,6 +3923,13 @@ namespace DiscordCoreAPI {
         }
         return finalCommandString;
     };
+
+    struct ChannelPinsUpdateEventData {
+        string lastPinTimestamp{ "" };
+        string channelId{ "" };
+        string guildId{ "" };
+    };
+
 };
 
 #endif

@@ -55,6 +55,10 @@ namespace DiscordCoreAPI {
 
         friend struct Concurrency::details::_ResultHolder<ApplicationCommand>;
         friend class DiscordCoreInternal::ApplicationCommandManager;
+        friend struct OnApplicationCommandDeletionData;
+        friend struct OnApplicationCommandCreationData;
+        friend struct OnApplicationCommandUpdateData;
+        friend class DiscordCoreClient;
 
     protected:
 

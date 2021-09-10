@@ -14,7 +14,6 @@
 #include "GuildStuff.hpp"
 #include "InteractionStuff.hpp"
 #include "EventStuff01.hpp"
-#include "ApplicationCommandStuff.hpp"
 #include "InputEventStuff.hpp"
 #include "DatabaseStuff.hpp"
 #include "YouTubeStuff.hpp"
@@ -124,12 +123,6 @@ namespace DiscordCoreAPI {
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
 			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, &this->doWeQuitWebSocket);
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
-			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
-			DiscordCoreInternal::HttpWorkload workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
-			workload.relativePath = "/gateway/bot";
-			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "DiscordCoreClient::initialize()");
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::ChannelManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::ReactionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
@@ -144,7 +137,7 @@ namespace DiscordCoreAPI {
 			this->roles = this->roles;
 			this->guildMembers = this->guildMembers;
 			this->channels = this->channels;
-			this->webSocketConnectionAgent->setSocketPath(returnData.data.dump());
+			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			this->interactions = make_shared<DiscordCoreInternal::InteractionManager>(nullptr);
 			this->interactions->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->reactions = make_shared<DiscordCoreInternal::ReactionManager>(nullptr);
@@ -171,6 +164,16 @@ namespace DiscordCoreAPI {
 			this->start();
 			co_await mainThread;
 			co_return;
+		}
+
+		string getGateWayUrl() {
+			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
+			DiscordCoreInternal::HttpWorkload workload;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
+			workload.relativePath = "/gateway/bot";
+			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "DiscordCoreClient::getGateWayUrl()");
+			return returnData.data.dump();
 		}
 
 		Guild createGuild(GuildData guildData) {
@@ -222,6 +225,33 @@ namespace DiscordCoreAPI {
 						goto startingPoint;
 					}
 					switch (workload.eventType) {
+					case DiscordCoreInternal::WebSocketEventType::Application_Command_Create: 
+					{
+						ApplicationCommandData appCommandData{};
+						ApplicationCommand appCommand(appCommandData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &appCommandData);
+						OnApplicationCommandCreationData dataPackage{};
+						dataPackage.applicationCommand = appCommand;
+						this->eventManager->onApplicationCommandCreationEvent(dataPackage);
+					}
+					case DiscordCoreInternal::WebSocketEventType::Application_Command_Update:
+					{
+						ApplicationCommandData appCommandData{};
+						ApplicationCommand appCommand(appCommandData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &appCommandData);
+						OnApplicationCommandUpdateData dataPackage{};
+						dataPackage.applicationCommand = appCommand;
+						this->eventManager->onApplicationCommandUpdateEvent(dataPackage);
+					}
+					case DiscordCoreInternal::WebSocketEventType::Application_Command_Delete:
+					{
+						ApplicationCommandData appCommandData{};
+						ApplicationCommand appCommand(appCommandData);
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &appCommandData);
+						OnApplicationCommandDeletionData dataPackage{};
+						dataPackage.applicationCommand = appCommand;
+						this->eventManager->onApplicationCommandDeletionEvent(dataPackage);
+					}
 					case DiscordCoreInternal::WebSocketEventType::Channel_Create:
 					{
 						ChannelData channelData{};
@@ -252,6 +282,15 @@ namespace DiscordCoreAPI {
 						OnChannelDeletionData channelDeleteData{};
 						channelDeleteData.channel = channel;
 						this->eventManager->onChannelDeletionEvent(channelDeleteData);
+						break;
+					}
+					case DiscordCoreInternal::WebSocketEventType::Channel_Pins_Update:
+					{
+						OnChannelPinsUpdateEventData dataPackage{};
+						ChannelPinsUpdateEventData dataPackage02{};
+						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &dataPackage02);
+						dataPackage.dataPackage = dataPackage02;
+						this->eventManager->onChannelPinsUpdateEvent(dataPackage);
 						break;
 					}
 					case DiscordCoreInternal::WebSocketEventType::Guild_Create:

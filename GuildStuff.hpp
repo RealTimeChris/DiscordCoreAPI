@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, playlist);
 						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
 					}
-					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)) {
+					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
 						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					}
 					return;

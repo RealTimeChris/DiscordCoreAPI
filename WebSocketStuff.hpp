@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 		friend class WebSocketConnectionAgent;
 		friend class Guild;
 
-		VoiceChannelWebSocketAgent(unbounded_buffer<bool>* readyBufferNew, unbounded_buffer<GetVoiceConnectInitData>* collectVoiceConnectionDataBufferNew, unbounded_buffer<VoiceConnectionData>* voiceConnectionDataBufferNew, VoiceConnectInitData initDataNew) 
+		VoiceChannelWebSocketAgent(unbounded_buffer<bool>* readyBufferNew, shared_ptr<unbounded_buffer<GetVoiceConnectInitData>> collectVoiceConnectionDataBufferNew, shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBufferNew, VoiceConnectInitData initDataNew)
 			:
 			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
 			agent(*this->scheduler->scheduler) {
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 			dataPackage.channelId = this->voiceConnectInitData.channelId;
 			dataPackage.guildId = this->voiceConnectInitData.guildId;
 			dataPackage.userId = this->voiceConnectInitData.userId;
-			send(this->collectVoiceConnectionDataBuffer, dataPackage);
+			send(*this->collectVoiceConnectionDataBuffer, dataPackage);
 			this->readyBuffer = readyBufferNew;
 			return;
 		}
@@ -149,14 +149,14 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		unbounded_buffer<GetVoiceConnectInitData>* collectVoiceConnectionDataBuffer{ nullptr };
-		unbounded_buffer<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
+		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
+		shared_ptr<unbounded_buffer<GetVoiceConnectInitData>> collectVoiceConnectionDataBuffer{ nullptr };
+		VoiceConnectionData voiceConnectionData{};
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool>* readyBuffer{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
-		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
 		bool didWeReceiveHeartbeatAck{ true };
@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void connect() {
-			this->voiceConnectionData = receive(this->voiceConnectionDataBuffer);
+			this->voiceConnectionData = receive(this->voiceConnectionDataBuffer.get());
 			this->voiceConnectionData.endPoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
 			this->heartbeatTimer = ThreadPoolTimer(nullptr);
 			this->webSocket = MessageWebSocket();
@@ -236,7 +236,7 @@ namespace DiscordCoreInternal {
 					dataPackage.channelId = this->voiceConnectInitData.channelId;
 					dataPackage.guildId = this->voiceConnectInitData.guildId;
 					dataPackage.userId = this->voiceConnectInitData.userId;
-					send(this->collectVoiceConnectionDataBuffer, dataPackage);
+					send(*this->collectVoiceConnectionDataBuffer, dataPackage);
 					this->connect();
 					string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
 					this->sendMessage(resumePayload);
@@ -692,6 +692,8 @@ namespace DiscordCoreInternal {
 			this->webSocketWorkloadTarget = target;
 			this->botToken = botTokenNew;
 			this->doWeQuit = doWeQuitNew;
+			this->voiceConnectionDataBuffer = make_shared<unbounded_buffer<VoiceConnectionData>>();
+			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectInitData>>();
 			return;
 		}
 
@@ -726,7 +728,8 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		void getVoiceConnectionData(GetVoiceConnectInitData doWeCollect) {
+		void getVoiceConnectionData() {
+			GetVoiceConnectInitData doWeCollect = receive(*this->collectVoiceConnectionDataBuffer);
 			UpdateVoiceStateData dataPackage;
 			dataPackage.channelId = doWeCollect.channelId;
 			dataPackage.guildId = doWeCollect.guildId;
@@ -745,13 +748,13 @@ namespace DiscordCoreInternal {
 
 	protected:
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		unbounded_buffer<GetVoiceConnectInitData> collectVoiceConnectionDataBuffer{ nullptr };
-		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
+		shared_ptr<unbounded_buffer<GetVoiceConnectInitData>> collectVoiceConnectionDataBuffer{ nullptr };
+		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		GetVoiceConnectInitData voiceConnectInitData{};
-		VoiceConnectionData voiceConnectionData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
+		VoiceConnectionData voiceConnectionData{};
 		MessageWebSocket webSocket{ nullptr };
 		bool didWeReceiveHeartbeatAck{ true };
 		DataWriter messageWriter{ nullptr };
@@ -839,9 +842,10 @@ namespace DiscordCoreInternal {
 
 			GetVoiceConnectInitData doWeCollect{};
 
-			if (try_receive(this->collectVoiceConnectionDataBuffer, doWeCollect)) {
+			if (try_receive(this->collectVoiceConnectionDataBuffer.get(), doWeCollect)) {
 				this->voiceConnectInitData = doWeCollect;
-				this->getVoiceConnectionData(doWeCollect);
+				send(this->collectVoiceConnectionDataBuffer.get(), doWeCollect);
+				this->getVoiceConnectionData();
 			}
 
 			send(*this->webSocketWorkloadTarget, payload);
@@ -857,7 +861,8 @@ namespace DiscordCoreInternal {
 					this->voiceConnectionData.endPoint = payload.at("d").at("endpoint").get<string>();
 					this->voiceConnectionData.token = payload.at("d").at("token").get<string>();
 					this->serverUpdateCollected = true;
-					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					send(*this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
 				}
@@ -870,7 +875,7 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
-					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					send(*this->voiceConnectionDataBuffer, this->voiceConnectionData);
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
