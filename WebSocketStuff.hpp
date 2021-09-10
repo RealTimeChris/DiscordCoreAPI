@@ -248,20 +248,6 @@ namespace DiscordCoreInternal {
 		}
 
 		void sendHeartBeat(bool* didWeReceiveHeartbeatAckNew) {
-			if (this->didWeReceiveHeartbeatAck == false) {
-				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->currentReconnectTries += 1;
-					this->cleanup();
-					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
-					this->connect();
-					this->voiceConnect();
-				}
-				else {
-					this->terminate();
-				}
-				this->didWeReceiveHeartbeatAck = true;
-				return;
-			}
 			string heartbeatPayload = getVoiceHeartbeatPayload(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			this->sendMessage(heartbeatPayload);
 			*didWeReceiveHeartbeatAckNew = true;
@@ -721,18 +707,6 @@ namespace DiscordCoreInternal {
 		}
 
 		void sendHeartBeat() {
-			if (this->didWeReceiveHeartbeatAck == false) {
-				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->currentReconnectTries += 1;
-					this->cleanup();
-					this->connect();
-				}
-				else {
-					this->terminate();
-				}
-				this->didWeReceiveHeartbeatAck = true;
-				return;
-			}
 			string heartbeat = getHeartbeatPayload(this->lastNumberReceived);
 			this->sendMessage(heartbeat);
 			this->didWeReceiveHeartbeatAck = false;
