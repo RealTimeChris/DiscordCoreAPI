@@ -753,6 +753,7 @@ namespace DiscordCoreAPI {
 								}
 								auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
 								while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+									wait(150);
 									if (this->areWeStopping) {
 										break;
 									}
