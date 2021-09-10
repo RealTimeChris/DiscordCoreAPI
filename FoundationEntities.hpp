@@ -33,6 +33,23 @@ namespace DiscordCoreAPI {
     class Users;
     class Guild;
 
+    bool nanosleep(LONGLONG ns) {
+        HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+        LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
+        if (!timer) {
+            return FALSE;
+        }
+        
+        if (!SetWaitableTimerEx(timer, &largeInt, 0, NULL, NULL, NULL, 0)) {
+            CloseHandle(timer);
+            cout << GetLastError() << endl;
+            return FALSE;
+        }
+        WaitForSingleObjectEx(timer, INFINITE, false);
+        CloseHandle(timer);
+        return TRUE;
+    }
+
     class StopWatch {
     public:
 

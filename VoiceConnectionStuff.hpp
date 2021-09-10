@@ -308,15 +308,15 @@ namespace DiscordCoreAPI {
 					}
 				}
 				this->sendSpeakingMessage(true);
-				int intervalCount = 20000;
-				int frameCounter = 0;
-				int timeCounter = 0;
-				int totalTime = 0;
-				int startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+				long long startingValue{ (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() };
+				long long intervalCount{ 0 };
+				long long timeCounter{ 0 };
+				long long totalTime{ 0 };
+				int frameCounter{ 0 };
 
 				if (this->audioData.type == AudioFrameType::Encoded) {
 					this->areWeStreaming = true;
-					this->areWePlaying = true;;
+					this->areWePlaying = true;
 					while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
 						if (this->areWeSkipping) {
 							frameCounter = 0;
@@ -336,19 +336,22 @@ namespace DiscordCoreAPI {
 							this->areWeStreaming = false;
 							this->areWePlaying = false;
 							frameCounter = 0;
-							break;
+				 			break;
 						}
 						frameCounter += 1;
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
 						this->audioData = receive(*this->audioDataBuffer);
-						timeCounter = 0;
-						while (timeCounter <= intervalCount) {
-							timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-						}
-						int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+						long long  waitTime = intervalCount - timeCounter;
+						if (!nanosleep(waitTime)) {
+							break;
+						};
+						long long startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
 						if (this->audioData.encodedFrameData.sampleCount != 0) {
 							this->sendSingleAudioFrame(this->audioData.encodedFrameData);
+							
 							this->audioData.type = AudioFrameType::Unset;
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();
@@ -360,17 +363,16 @@ namespace DiscordCoreAPI {
 							frameCounter = 0;
 							break;
 						}
-						totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
-						int totalTimeAverage = totalTime / frameCounter;
-						intervalCount = 20000 - totalTimeAverage;
-						startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
+						long long totalTimeAverage = totalTime / frameCounter;
+						intervalCount = 20000000 - totalTimeAverage;
 					}
 					this->areWePlaying = false;
 				}
 				else if (this->audioData.type == AudioFrameType::RawPCM ) {
 					this->areWeStreaming = true;
 					this->areWePlaying = true;
-					while (this->audioData.rawFrameData.sampleCount != 0) {
+					while (this->audioData.rawFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
 						if (this->areWeSkipping) {
 							frameCounter = 0;
 							break;
@@ -395,14 +397,20 @@ namespace DiscordCoreAPI {
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
 						this->audioData = receive(*this->audioDataBuffer);
-						timeCounter = 0;
-						while (timeCounter <= intervalCount) {
-							timeCounter = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-						}
-						int startingValueForCalc = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-						if (this->audioData.encodedFrameData.sampleCount != 0) {
+						timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+						long long  waitTime = intervalCount - timeCounter;
+						if (!nanosleep(waitTime)) {
+							break;
+						};
+						long long startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						if (this->audioData.rawFrameData.sampleCount != 0) {
 							auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
 							this->sendSingleAudioFrame(newFrames);
+
+							this->audioData.type = AudioFrameType::Unset;
+							this->audioData.encodedFrameData.data.clear();
+							this->audioData.rawFrameData.data.clear();
 						}
 						else {
 							this->onSongCompletionEvent(this);
@@ -411,10 +419,9 @@ namespace DiscordCoreAPI {
 							frameCounter = 0;
 							break;
 						}
-						totalTime += (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
-						int totalTimeAverage = totalTime / frameCounter;
-						intervalCount = 20000 - totalTimeAverage;
-						startingValue = (int)chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+						totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
+						long long totalTimeAverage = totalTime / frameCounter;
+						intervalCount = 20000000 - totalTimeAverage;
 					}
 					this->areWePlaying = false;
 				}
