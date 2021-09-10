@@ -19,11 +19,11 @@ namespace DiscordCoreAPI {
 	class VoiceConnection : DiscordCoreInternal::ThreadContext, agent {
 	public:
 
-		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectionData voiceConnectionDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew) :
+		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get()),
 			agent(*threadContextNew->scheduler->scheduler)
 		{
-			if (voiceConnectionDataNew.channelId != "") {
+			if (voiceConnectInitDataNew.channelId != "") {
 				if (sodium_init() == -1) {
 					cout << "LibSodium failed to initialize!" << endl << endl;
 				}
@@ -33,15 +33,14 @@ namespace DiscordCoreAPI {
 					cout << "Failed to create Opus encoder!" << endl << endl;
 				}
 				this->discordCoreClientBase = discordCoreClientBaseNew;
-				this->voiceConnectionData = voiceConnectionDataNew;
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectionData.guildId, &this->audioDataBuffer);
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(this->voiceConnectionData, &this->readyBuffer);
-				send(this->voicechannelWebSocketAgent->voiceConnectionDataBuffer, this->voiceConnectionData);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->readyBuffer, &websocketAgent->collectVoiceConnectionDataBuffer, &websocketAgent->voiceConnectionDataBuffer, voiceConnectInitDataNew);
 				this->voicechannelWebSocketAgent->start();
 				receive(this->readyBuffer);
+				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
+				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, &this->audioDataBuffer);
 				this->areWeConnectedBool = true;
 			}
 			else {
@@ -50,8 +49,8 @@ namespace DiscordCoreAPI {
 		}
 
 		string getChannelId() {
-			if (this != nullptr && this->voiceConnectionData.channelId != "") {
-				return this->voiceConnectionData.channelId;
+			if (this != nullptr && this->voiceConnectInitData.channelId != "") {
+				return this->voiceConnectInitData.channelId;
 			}
 			else {
 				return string();
@@ -160,6 +159,7 @@ namespace DiscordCoreAPI {
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* receiveAudioBufferMap{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
+		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		unbounded_buffer<bool> readyBuffer{ nullptr };
@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
 				if (!this->areWePlaying) {
 					send(this->readyBuffer, true);
 					receive(this->playBuffer);
-					this->audioDataBuffer = *this->receiveAudioBufferMap->at(this->voiceConnectionData.guildId);
+					this->audioDataBuffer = *this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();

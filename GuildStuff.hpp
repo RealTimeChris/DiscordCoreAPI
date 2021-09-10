@@ -37,12 +37,11 @@ namespace DiscordCoreAPI {
 				return  &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			else if (channelId != "") {
-				auto voiceConnectData = DiscordCoreClientBase::webSocketConnectionAgent->getVoiceConnectionData(channelId, this->id);
-				voiceConnectData.channelId = channelId;
-				voiceConnectData.guildId = this->id;
-				voiceConnectData.endpoint = "wss://" + voiceConnectData.endpoint + "/?v=4";
-				voiceConnectData.userId = this->discordCoreClientBase->currentUser.id;
-				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectData, DiscordCoreClientBase::audioBuffersMap, this->discordCoreClientBase));
+				DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData;
+				voiceConnectInitData.channelId = channelId;
+				voiceConnectInitData.guildId = this->id;
+				voiceConnectInitData.userId = this->discordCoreClientBase->currentUser.id;
+				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, this->discordCoreClientBase, DiscordCoreClientBase::webSocketConnectionAgent));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
 				YouTubeAPI::discordGuilds.insert(make_pair(this->id, discordGuild));
 				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild);

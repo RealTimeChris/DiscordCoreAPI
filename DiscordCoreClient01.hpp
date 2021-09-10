@@ -212,16 +212,14 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			try {
+			startingPoint:
 				while (!this->doWeQuit && !this->doWeQuitWebSocket) {
-					DiscordCoreInternal::WebSocketWorkload workload;
-				startingPoint:
-					while (!this->doWeQuitWebSocket) {
-						try {
-							workload = receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, 1000);
-						}
-						catch (operation_timed_out&) {
-							goto startingPoint;
-						}
+					DiscordCoreInternal::WebSocketWorkload workload{};
+					try {
+						workload = receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, 1000);
+					}
+					catch (operation_timed_out&) {
+						goto startingPoint;
 					}
 					switch (workload.eventType) {
 					case DiscordCoreInternal::WebSocketEventType::Channel_Create:
@@ -346,7 +344,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::Guild_Member_Update:
 					{
 						DiscordCoreAPI::OnGuildMemberUpdateData guildMemberUpdateData{};
-						GuildMember guildMemberOld = this->guildMembers->getGuildMemberAsync({ .guildMemberId = workload.payLoad.at("user").at("id"),.guildId = workload.payLoad.at("guild_id")  }).get();
+						GuildMember guildMemberOld = this->guildMembers->getGuildMemberAsync({ .guildMemberId = workload.payLoad.at("user").at("id"),.guildId = workload.payLoad.at("guild_id") }).get();
 						guildMemberUpdateData.guildMemberOld = guildMemberOld;
 						GuildMemberData guildMemberData{};
 						guildMemberData.discordCoreClient = DiscordCoreClient::thisPointer;
@@ -670,11 +668,6 @@ namespace DiscordCoreAPI {
 					}
 					}
 				}
-			}
-			catch (const operation_timed_out& e) {
-				done();
-				cout << e.what() << endl;
-				start();
 			}
 			catch (const exception& e) {
 				send(this->errorBuffer, e);

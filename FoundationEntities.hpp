@@ -1741,17 +1741,20 @@ namespace  DiscordCoreInternal {
         string guildId{ "" };
     };
 
+    struct VoiceConnectInitData {
+        string channelId{ "" };
+        string guildId{ "" };
+        string userId{ "" };
+    };
+
     struct VoiceConnectionData {
         string voiceEncryptionMode{ "" };
         vector<uint8_t> secretKey{};
         string externalIp{ "" };
         string voicePort{ "" };
-        string channelId{ "" };
         string sessionId{ "" };
-        string endpoint{ "" };
+        string endPoint{ "" };
         string voiceIp{ "" };
-        string guildId{ "" };
-        string userId{ "" };
         string token{ "" };
         int audioSSRC{ 0 };
         string keys{ "" };

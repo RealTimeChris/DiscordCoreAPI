@@ -144,13 +144,13 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	string getVoiceIdentifyPayload(DiscordCoreInternal::VoiceConnectionData dataPackage) {
+	string getVoiceIdentifyPayload(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
 		json data;
 
 		data = {
 			{"d" , {
-			{"user_id" , dataPackage.userId},
-			{"server_id", dataPackage.guildId},
+			{"user_id" , dataPackage02.userId},
+			{"server_id", dataPackage02.guildId},
 			{"session_id" , dataPackage.sessionId},
 			{"token" , dataPackage.token}
 			}},{	"op", int(0)}

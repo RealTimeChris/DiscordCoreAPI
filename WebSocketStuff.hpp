@@ -72,6 +72,12 @@ namespace DiscordCoreInternal {
 		json payLoad{};
 	};
 
+	struct GetVoiceConnectInitData {
+		string channelId{ "" };
+		string guildId{ "" };
+		string userId{ "" };
+	};
+
 	class VoiceChannelWebSocketAgent : ThreadContext, agent {
 	public:
 
@@ -79,11 +85,18 @@ namespace DiscordCoreInternal {
 		friend class WebSocketConnectionAgent;
 		friend class Guild;
 
-		VoiceChannelWebSocketAgent(VoiceConnectionData voiceConnectionDataNew, unbounded_buffer<bool>* readyBufferNew)
+		VoiceChannelWebSocketAgent(unbounded_buffer<bool>* readyBufferNew, unbounded_buffer<GetVoiceConnectInitData>* collectVoiceConnectionDataBufferNew, unbounded_buffer<VoiceConnectionData>* voiceConnectionDataBufferNew, VoiceConnectInitData initDataNew) 
 			:
 			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
 			agent(*this->scheduler->scheduler) {
-			this->voiceConnectionData = voiceConnectionDataNew;
+			this->voiceConnectionDataBuffer = voiceConnectionDataBufferNew;
+			this->collectVoiceConnectionDataBuffer = collectVoiceConnectionDataBufferNew;
+			this->voiceConnectInitData = initDataNew;
+			GetVoiceConnectInitData dataPackage;
+			dataPackage.channelId = this->voiceConnectInitData.channelId;
+			dataPackage.guildId = this->voiceConnectInitData.guildId;
+			dataPackage.userId = this->voiceConnectInitData.userId;
+			send(this->collectVoiceConnectionDataBuffer, dataPackage);
 			this->readyBuffer = readyBufferNew;
 			return;
 		}
@@ -136,10 +149,12 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
+		unbounded_buffer<GetVoiceConnectInitData>* collectVoiceConnectionDataBuffer{ nullptr };
+		unbounded_buffer<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool>* readyBuffer{ nullptr };
+		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };
@@ -166,12 +181,13 @@ namespace DiscordCoreInternal {
 
 		void connect() {
 			this->voiceConnectionData = receive(this->voiceConnectionDataBuffer);
+			this->voiceConnectionData.endPoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
 			this->heartbeatTimer = ThreadPoolTimer(nullptr);
 			this->webSocket = MessageWebSocket();
 			this->webSocket.Control().MessageType(SocketMessageType::Utf8);
 			this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
 			this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
-			this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endpoint))).get();
+			this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endPoint))).get();
 			this->areWeConnected = true;
 		}
 
@@ -216,10 +232,13 @@ namespace DiscordCoreInternal {
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
 					this->cleanup();
-					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					GetVoiceConnectInitData dataPackage;
+					dataPackage.channelId = this->voiceConnectInitData.channelId;
+					dataPackage.guildId = this->voiceConnectInitData.guildId;
+					dataPackage.userId = this->voiceConnectInitData.userId;
+					send(this->collectVoiceConnectionDataBuffer, dataPackage);
 					this->connect();
-					this->voiceConnect();
-					string resumePayload = getResumeVoicePayload(this->voiceConnectionData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
+					string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
 					this->sendMessage(resumePayload);
 				}
 				else {
@@ -298,7 +317,7 @@ namespace DiscordCoreInternal {
 					if (payload.at("d").contains("heartbeat_interval")) {
 						this->heartbeatInterval = (int)payload.at("d").at("heartbeat_interval").get<float>();
 					}
-					string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData);
+					string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData, this->voiceConnectInitData);
 					this->sendMessage(identifyPayload);
 					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void {
 						VoiceChannelWebSocketAgent::sendHeartBeat(&this->didWeReceiveHeartbeatAck);
@@ -568,6 +587,7 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::VoiceConnection;
 		friend class VoiceChannelWebSocketAgent;
 
 		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, bool* doWeQuitNew)
@@ -609,17 +629,16 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		VoiceConnectionData getVoiceConnectionData(string channelId, string guildId) {
+		void getVoiceConnectionData(GetVoiceConnectInitData doWeCollect) {
 			UpdateVoiceStateData dataPackage;
-			dataPackage.channelId = channelId;
-			dataPackage.guildId = guildId;
+			dataPackage.channelId = doWeCollect.channelId;
+			dataPackage.guildId = doWeCollect.guildId;
 			dataPackage.selfDeaf = true;
 			dataPackage.selfMute = false;
 			string newString = getVoiceStateUpdatePayload(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newString);
-			VoiceConnectionData newData = receive(this->voiceConnectionDataBuffer);
-			return newData;
+			return;
 		}
 
 		~WebSocketConnectionAgent() {
@@ -629,10 +648,12 @@ namespace DiscordCoreInternal {
 
 	protected:
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		unbounded_buffer<GetVoiceConnectInitData> collectVoiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		VoiceConnectionData pVoiceConnectionData{};
+		GetVoiceConnectInitData voiceConnectInitData{};
+		VoiceConnectionData voiceConnectionData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
 		bool didWeReceiveHeartbeatAck{ true };
@@ -686,8 +707,16 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			this->webSocket = nullptr;
-			this->terminate();
+			if (this->maxReconnectTries > this->currentReconnectTries) {
+				this->currentReconnectTries += 1;
+				this->cleanup();
+				this->connect();
+				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+				this->sendMessage(resume);
+			}
+			else {
+				this->terminate();
+			}
 			return;
 		}
 
@@ -723,34 +752,40 @@ namespace DiscordCoreInternal {
 			}
 			json payload = payload.parse(to_string(message));
 
+			GetVoiceConnectInitData doWeCollect{};
+
+			if (try_receive(this->collectVoiceConnectionDataBuffer, doWeCollect)) {
+				this->voiceConnectInitData = doWeCollect;
+				this->getVoiceConnectionData(doWeCollect);
+			}
+
 			send(*this->webSocketWorkloadTarget, payload);
 
-			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
+			if (this->areWeCollectingData && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
 				if (this->serverUpdateCollected != true && this->stateUpdateCollected != true) {
-					this->pVoiceConnectionData = VoiceConnectionData();
-					this->pVoiceConnectionData.endpoint = payload.at("d").at("endpoint").get<string>();
-					this->pVoiceConnectionData.token = payload.at("d").at("token").get<string>();
+					this->voiceConnectionData = VoiceConnectionData();
+					this->voiceConnectionData.endPoint = payload.at("d").at("endpoint").get<string>();
+					this->voiceConnectionData.token = payload.at("d").at("token").get<string>();
 					this->serverUpdateCollected = true;
 				}
 				else {
-					this->pVoiceConnectionData.endpoint = payload.at("d").at("endpoint").get<string>();
-					this->pVoiceConnectionData.token = payload.at("d").at("token").get<string>();
-					send(this->voiceConnectionDataBuffer, this->pVoiceConnectionData);
-					this->serverUpdateCollected = false;
+					this->voiceConnectionData.endPoint = payload.at("d").at("endpoint").get<string>();
+					this->voiceConnectionData.token = payload.at("d").at("token").get<string>();
+					this->serverUpdateCollected = true;
+					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
 				}
 			}
-
-			if (this->areWeCollectingData == true && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected) {
+			if (this->areWeCollectingData && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload.at("d").at("member").at("user").at("id") == this->voiceConnectInitData.userId) {
 				if (this->stateUpdateCollected != true && this->serverUpdateCollected != true) {
-					this->pVoiceConnectionData = VoiceConnectionData();
-					this->pVoiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
+					this->voiceConnectionData = VoiceConnectionData();
+					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
 					this->stateUpdateCollected = true;
 				}
 				else {
-					this->pVoiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
-					send(this->voiceConnectionDataBuffer, this->pVoiceConnectionData);
+					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
+					send(this->voiceConnectionDataBuffer, this->voiceConnectionData);
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
@@ -779,20 +814,14 @@ namespace DiscordCoreInternal {
 				this->sendHeartBeat();
 			}
 
-			if (payload.at("op") == 6) {
-				cout << "Resuming!" << endl << endl;
-				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-				this->sendMessage(resume);
-			}
-
 			if (payload.at("op") == 7) {
 				cout << "Reconnecting (Type 7)!" << endl << endl;
-				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-				this->sendMessage(resume);
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
 					this->cleanup();
 					this->connect();
+					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+					this->sendMessage(resume);
 				}
 				else {
 					this->terminate();
@@ -801,12 +830,12 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 9) {
 				cout << "Reconnecting (Type 9)!" << endl << endl;
-				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
-				this->sendMessage(resume);
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
 					this->cleanup();
 					this->connect();
+					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+					this->sendMessage(resume);
 				}
 				else {
 					this->terminate();
@@ -832,26 +861,19 @@ namespace DiscordCoreInternal {
 		};
 
 		void cleanup() {
-			cout << "WERE HERE 000" << endl;
 			if (this->messageWriter != nullptr) {
-				cout << "WERE HERE 111" << endl;
 				this->messageWriter.DetachStream();
-				cout << "WERE HERE 222" << endl;
 				this->messageWriter.Close();
-				cout << "WERE HERE 333" << endl;
 				this->messageWriter = nullptr;
 			}
-			cout << "WERE HERE 444" << endl;
+
 			if (this->webSocket != nullptr) {
 				this->webSocket.Close(1000, L"Closed due to user request.");
-				cout << "WERE HERE 555" << endl;
 				this->webSocket = nullptr;
 			}
 
 			if (this->heartbeatTimer) {
-				cout << "WERE HERE 666" << endl;
 				this->heartbeatTimer.Cancel();
-				cout << "WERE HERE 777" << endl;
 				this->heartbeatTimer = nullptr;
 			}
 		}
