@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 
 		void connect() {
 			try {
-				this->voiceConnectionData = receive(this->voiceConnectionDataBuffer.get(), 5500);
+				this->voiceConnectionData = receive(this->voiceConnectionDataBuffer.get(), 20000);
 			}
 			catch (operation_timed_out&) {}
 			this->voiceConnectionData.endPoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
