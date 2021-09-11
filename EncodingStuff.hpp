@@ -47,28 +47,27 @@ namespace DiscordCoreAPI {
 		const int sampleRate{ 48000 };
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
-			int sampleCount = inputFrame.sampleCount;
-			uint8_t* oldBuffer = new uint8_t[inputFrame.data.size()];
+			uint8_t* oldBuffer{ new uint8_t[inputFrame.data.size()] };
+
 			for (int x = 0; x < inputFrame.data.size(); x += 1) {
 				oldBuffer[x] = inputFrame.data[x];
 			}
-			
-			uint8_t* newBuffer = new uint8_t[this->maxBufferSize];
-			
-			int count = opus_encode_float(this->encoder, (float*)oldBuffer, sampleCount, newBuffer, this->maxBufferSize);
-			vector<uint8_t> newVector{};
+
+			uint8_t* newBuffer{ new uint8_t[this->maxBufferSize] };
+
+			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, this->maxBufferSize);
+			EncodedFrameData encodedFrame{};
 			for (int x = 0; x < count; x += 1) {
-				newVector.push_back(newBuffer[x]);
+				encodedFrame.data.push_back(newBuffer[x]);
 			}
-			EncodedFrameData encodedFrame;
-			encodedFrame.data = newVector;
-			encodedFrame.sampleCount = sampleCount;
+			encodedFrame.sampleCount = inputFrame.sampleCount;
 			delete oldBuffer;
 			oldBuffer = nullptr;
 			delete newBuffer;
 			newBuffer = nullptr;
 			return encodedFrame;
 		}
+
 	};
 
 }
