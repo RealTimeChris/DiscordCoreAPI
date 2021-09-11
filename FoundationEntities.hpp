@@ -27,13 +27,14 @@ namespace DiscordCoreAPI {
     class Reactions;
     class Messages;
     class Channels;
+    class BotUser;
     class Button;
     class Guilds;
     class Roles;
     class Users;
     class Guild;
 
-    bool nanosleep(LONGLONG ns) {
+    bool nanoSleep(LONGLONG ns) {
         HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
         LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
         if (!timer) {
@@ -42,7 +43,6 @@ namespace DiscordCoreAPI {
         
         if (!SetWaitableTimerEx(timer, &largeInt, 0, NULL, NULL, NULL, 0)) {
             CloseHandle(timer);
-            cout << GetLastError() << endl;
             return FALSE;
         }
         WaitForSingleObjectEx(timer, INFINITE, false);

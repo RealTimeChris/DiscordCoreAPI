@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
 		friend class YouTubeAPICore;
 		friend class Guild;		
 
-		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew,  shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) :
+		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew,  shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get()),
 			agent(*threadContextNew->scheduler->scheduler)
 		{
@@ -38,12 +38,12 @@ namespace DiscordCoreAPI {
 				}
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->readyBuffer, websocketAgent->voiceConnectionDataBuffer, voiceConnectInitDataNew, websocketAgent);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->readyBuffer, voiceConnectInitDataNew, websocketAgent);
 				this->voicechannelWebSocketAgent->start();
 				receive(this->readyBuffer);
 				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
-				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, &this->audioDataBuffer);
+				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
 				this->areWeConnectedBool = true;
 			}
 			else {
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		void play() {
 			if (this != nullptr) {
 				try {
-					receive(this->skipBuffer, 1000);
+					receive(this->readyBuffer, 1000);
 				}
 				catch (operation_timed_out&) {};
 				if (!this->areWePlaying) {
@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
-		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* receiveAudioBufferMap{ nullptr };
+		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* receiveAudioBufferMap{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
@@ -305,17 +305,17 @@ namespace DiscordCoreAPI {
 				if (!this->areWePlaying) {
 					send(this->readyBuffer, true);
 					receive(this->playBuffer);
-					this->audioDataBuffer = *this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
+					this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
 				start:
 					try {
-						this->audioData = receive(*this->audioDataBuffer, 10000);
+						this->audioData = receive(this->audioDataBuffer.get(), 10000);
 					}
 					catch (operation_timed_out&) {};
 					
-					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0) {
+					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0 || this->audioData.type == AudioFrameType::Cancel || this->audioData.type == AudioFrameType::Unset) {
 						goto start;
 					}
 				}
@@ -353,10 +353,10 @@ namespace DiscordCoreAPI {
 						}
 						frameCounter += 1;
 						try_receive(*this->audioDataBuffer, this->audioData);
-						nanosleep(100000);
+						nanoSleep(100000);
 						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
 							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
-							nanosleep(18000000);
+							nanoSleep(18000000);
 							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
 							long long  waitTime = intervalCount - timeCounter;
 							spinLock(waitTime);
@@ -405,11 +405,11 @@ namespace DiscordCoreAPI {
 						}
 						frameCounter += 1;
 						try_receive(*this->audioDataBuffer, this->audioData);
-						nanosleep(100000);
+						nanoSleep(100000);
 						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
 							auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
 							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
-							nanosleep(18000000);
+							nanoSleep(18000000);
 							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
 							long long  waitTime = intervalCount - timeCounter;
 							spinLock(waitTime);

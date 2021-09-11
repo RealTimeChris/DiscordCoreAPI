@@ -242,31 +242,28 @@ namespace DiscordCoreAPI {
 		friend class YouTubeAPI;
 		friend class Guild;
 
-		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, string guildIdNew, DiscordGuild* discordGuildNew, shared_ptr<VoiceConnection> voiceConnectionNew) {
-			this->sendAudioBufferMap = sendAudioBufferMapNew;
-			this->outputDataBuffer01 = *this->sendAudioBufferMap->at(guildIdNew);
+		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap, string guildIdNew, DiscordGuild* discordGuildNew, shared_ptr<VoiceConnection> voiceConnectionNew) {
+			this->sendAudioDataBufferMap = sendAudioDataBufferMap;
+			this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(guildIdNew);
 			this->discordGuild = discordGuildNew;
-			this->completionBuffer = new unbounded_buffer<bool>;
 			this->guildId = guildIdNew;
 			this->voiceConnection = voiceConnectionNew;
 		}
 
 	protected:
 
-		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMap{ nullptr };
-		const hstring baseSearchURL{ L"https://www.youtube.com/results?search_query=" };
-		shared_ptr<unbounded_buffer<AudioFrameData>> outputDataBuffer01{ nullptr };
-		const hstring baseWatchURL{ L"https://www.youtube.com/watch?v=" };
-		unbounded_buffer<vector<uint8_t>>* outputDataBuffer00{ nullptr };
+		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap{ nullptr };
+		const string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
+		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
+		const string baseWatchURL{ "https://www.youtube.com/watch?v=" };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
-		const hstring baseURL{ L"https://www.youtube.com" };
-		unbounded_buffer<bool>* completionBuffer{ nullptr };
+		const string baseURL{ "https://www.youtube.com" };
 		DiscordGuild* discordGuild{ new DiscordGuild };
+		SongDecoder* songDecoder{ nullptr };
 		cancellation_token_source cancelTokenSource{};
 		const int refreshTimeForBuffer{ 50 };
-		SongDecoder* songDecoder{ nullptr };
+		const hstring newLine{ L"\n\r" };
 		vector<YouTubeSong> songQueue{};
-		const string newLine{ "\n\r" };
 		string html5PlayerFile{ "" };
 		const int maxBufSize{ 4096 };
 		string playerResponse{ "" };
@@ -308,30 +305,11 @@ namespace DiscordCoreAPI {
 				if (this->songDecoder != nullptr) {
 					this->songDecoder->refreshTimeForBuffer = 10;
 				}
-				this->cancelTokenSource.cancel();
 				this->areWeStopping = true;
-				vector<uint8_t> newVector;
-				try {
-					receive(this->completionBuffer, 10);
-				}
-				catch (operation_timed_out&) {
-					send(this->outputDataBuffer00, newVector);
-				}
-				try {
-					receive(this->completionBuffer, 10);
-				}
-				catch (operation_timed_out&) {
-					send(this->outputDataBuffer00, newVector);
-				}
-				try {
-					receive(this->completionBuffer, 10);
-				}
-				catch (operation_timed_out&) {
-					send(this->outputDataBuffer00, newVector);
-				}
+				this->cancelTokenSource.cancel();
 				AudioFrameData dataFrame;
 				this->currentTask.wait();
-				while (try_receive(*this->outputDataBuffer01, dataFrame)) {};
+				while (try_receive(*this->sendAudioDataBuffer, dataFrame)) {};
 				vector<YouTubeSong> newVector02;
 				if (this->currentSong.description != "") {
 					newVector02.push_back(this->currentSong);
@@ -353,30 +331,11 @@ namespace DiscordCoreAPI {
 				if (this->songDecoder != nullptr) {
 					this->songDecoder->refreshTimeForBuffer = 10;
 				}
-				this->cancelTokenSource.cancel();
 				this->areWeStopping = true;
-				vector<uint8_t> newVector;
-				try {
-					receive(this->completionBuffer, 10);
-				}
-				catch (operation_timed_out&) {
-					send(this->outputDataBuffer00, newVector);
-				}
-				try {
-					receive(this->completionBuffer, 10);
-				}
-				catch (operation_timed_out&) {
-					send(this->outputDataBuffer00, newVector);
-				}
-				try {
-					receive(this->completionBuffer, 10);
-				}
-				catch (operation_timed_out&) {
-					send(this->outputDataBuffer00, newVector);
-				}
+				this->cancelTokenSource.cancel();
 				AudioFrameData dataFrame;
 				this->currentTask.wait();
-				while (try_receive(*this->outputDataBuffer01, dataFrame)) {};
+				while (try_receive(*this->sendAudioDataBuffer, dataFrame)) {};
 				vector<YouTubeSong> newVector02;
 				this->currentSong = YouTubeSong();
 				return;
@@ -547,7 +506,7 @@ namespace DiscordCoreAPI {
 		}
 
 		YouTubeSong addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember) {
-			string watchHTMLURL = to_string(this->baseWatchURL) + searchResult.videoId + "&hl=en";
+			string watchHTMLURL = this->baseWatchURL + searchResult.videoId + "&hl=en";
 			Filters::HttpBaseProtocolFilter filter;
 			filter.AutomaticDecompression(true);
 			Filters::HttpCacheControl cacheControl = filter.CacheControl();
@@ -564,7 +523,7 @@ namespace DiscordCoreAPI {
 			auto resultHTMLBody = httpClientGetHTMLBody.SendRequestAsync(requestMessageHTMLBody).get();
 			resultStringHTMLBody = resultHTMLBody.Content().ReadAsStringAsync().get();
 			string resultStringStringHTMLBody = to_string(resultStringHTMLBody);
-			this->html5Player = to_string(this->baseURL) + resultStringStringHTMLBody.substr(resultStringStringHTMLBody.find("/s/player/"), resultStringStringHTMLBody.find("/player_ias.vflset/en_US/base.js") + to_string(L"/player_ias.vflset/en_US/base.js").length());
+			this->html5Player = this->baseURL + resultStringStringHTMLBody.substr(resultStringStringHTMLBody.find("/s/player/"), resultStringStringHTMLBody.find("/player_ias.vflset/en_US/base.js") + to_string(L"/player_ias.vflset/en_US/base.js").length());
 			this->html5Player = this->html5Player.substr(0, 73);
 			this->playerResponse = between(to_string(resultStringHTMLBody), "ytInitialPlayerResponse = ", "</script>");
 			this->playerResponse = this->playerResponse.substr(0, this->playerResponse.length() - 170);
@@ -618,7 +577,7 @@ namespace DiscordCoreAPI {
 
 		vector<YouTubeSearchResult> searchForVideo(string searchQuery) {
 			DiscordCoreInternal::HttpAgentResources agentResources;
-			agentResources.baseURL = to_string(this->baseSearchURL);
+			agentResources.baseURL = this->baseSearchURL;
 			DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
 			DiscordCoreInternal::HttpWorkload workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
@@ -651,15 +610,15 @@ namespace DiscordCoreAPI {
 			co_await resume_foreground(*threadContext->dispatcherQueue);
 			this->areWeStopping = false;
 			try {
-				this->outputDataBuffer01 = *this->sendAudioBufferMap->at(this->guildId);
+				this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(this->guildId);
 
 				string downloadBaseURL;
 				if (currentSong.formatDownloadURL.find("https://") != string::npos && currentSong.formatDownloadURL.find("/videoplayback?") != string::npos) {
 					downloadBaseURL = currentSong.formatDownloadURL.substr(currentSong.formatDownloadURL.find("https://") + to_string(L"https://").length(), currentSong.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
 				}
 				// Creates GET request.
-				string request = "GET " + currentSong.formatDownloadURL + " HTTP/1.1" + newLine +
-					"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+				hstring request = L"GET " + to_hstring(currentSong.formatDownloadURL) + L" HTTP/1.1" + newLine +
+					L"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 					+ newLine + newLine;
 				StreamSocket streamSocket = StreamSocket();
 				streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
@@ -680,20 +639,17 @@ namespace DiscordCoreAPI {
 				int bytesReadTotal{ 0 };
 				int counter{ 0 };
 				BuildSongDecoderData dataPackage{};
-				dataPackage.inputDataBuffer = new unbounded_buffer<vector<uint8_t>>();
+				dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
 				dataPackage.totalFileSize = this->currentSong.contentLength - 585;
 				dataPackage.bufferMaxSize = this->maxBufSize;
-				this->outputDataBuffer00 = dataPackage.inputDataBuffer;
-				send(dataPackage.inputDataBuffer, vector<uint8_t>());
+				send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
 				this->songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
-				this->completionBuffer = new unbounded_buffer<bool>;
-				this->songDecoder->linkCompletionBuffer(this->completionBuffer);
 				shared_ptr<SongEncoder> songEncoder = make_shared<SongEncoder>();
 				while (this->currentSong.contentLength > bytesReadTotal && !this->areWeStopping) {
 					if (token.is_canceled()) {
 						agent::wait(this->songDecoder);
+						this->areWePlaying = false;
 						delete this->songDecoder;
-						this->songDecoder = nullptr;
 						cancel_current_task();
 						co_return true;
 					}
@@ -743,8 +699,8 @@ namespace DiscordCoreAPI {
 						}
 						if (token.is_canceled()) {
 							agent::wait(this->songDecoder);
+							this->areWePlaying = false;
 							delete this->songDecoder;
-							this->songDecoder = nullptr;
 							cancel_current_task();
 							co_return true;
 						}
@@ -763,14 +719,14 @@ namespace DiscordCoreAPI {
 							for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
 								newVector.push_back(streamBuffer.data()[x]);
 							}
-							send(dataPackage.inputDataBuffer, newVector);
+							send(dataPackage.sendEncodedAudioDataBuffer, newVector);
 						}
 						if (counter > 0) {
 							if (contentLengthCurrent > 0) {
 								if (token.is_canceled()) {
 									agent::wait(this->songDecoder);
+									this->areWePlaying = false;
 									delete this->songDecoder;
-									this->songDecoder = nullptr;
 									cancel_current_task();
 									co_return true;
 								}
@@ -802,12 +758,12 @@ namespace DiscordCoreAPI {
 								for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
 									newVector.push_back(streamBuffer.data()[x]);
 								}
-								send(dataPackage.inputDataBuffer, newVector);
+								send(dataPackage.sendEncodedAudioDataBuffer, newVector);
 							}
 							if (token.is_canceled()) {
 								agent::wait(this->songDecoder);
+								this->areWePlaying = false;
 								delete this->songDecoder;
-								this->songDecoder = nullptr;
 								cancel_current_task();
 								co_return true;
 							}
@@ -820,8 +776,8 @@ namespace DiscordCoreAPI {
 							}
 							auto encodedFrames = songEncoder->encodeFrames(frames);
 							for (auto value : encodedFrames) {
-								if (this->outputDataBuffer01 != nullptr) {
-									send(*this->outputDataBuffer01, value);
+								if (this->sendAudioDataBuffer != nullptr) {
+									send(*this->sendAudioDataBuffer, value);
 								}
 								else {
 									break;
@@ -841,18 +797,18 @@ namespace DiscordCoreAPI {
 				}
 				if (!this->areWeStopping) {
 					vector<uint8_t> newVector;
-					send(dataPackage.inputDataBuffer, newVector);
+					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
 					RawFrameData frameData01;
-					songDecoder->getFrame(&frameData01);
+					while (songDecoder->getFrame(&frameData01));
 					AudioFrameData frameData02;
 					frameData02.encodedFrameData.sampleCount = 0;
 					frameData02.rawFrameData.sampleCount = 0;
 					frameData02.type = AudioFrameType::Cancel;
-					send(*this->outputDataBuffer01, frameData02);
+					send(*this->sendAudioDataBuffer, frameData02);
 				}
 				agent::wait(this->songDecoder);
 				delete this->songDecoder;
-				this->songDecoder = nullptr;
+				this->areWePlaying = false;
 				co_await mainThread;
 				co_return true;
 			}
@@ -867,7 +823,7 @@ namespace DiscordCoreAPI {
 					frameData02.encodedFrameData.sampleCount = 0;
 					frameData02.rawFrameData.sampleCount = 0;
 					frameData02.type = AudioFrameType::Cancel;
-					send(*this->outputDataBuffer01, frameData02);
+					send(*this->sendAudioDataBuffer, frameData02);
 					this->stopWithoutSaving();
 					this->voiceConnection->onSongCompletionEvent(this->voiceConnection.get());
 					retryCountNew = 0;
@@ -903,40 +859,40 @@ namespace DiscordCoreAPI {
 	class YouTubeAPI {
 	public:
 
-		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* audioBuffersMap;
+		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap;
 		static map<string, shared_ptr<VoiceConnection>> voiceConnectionMap;
-		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPIMap;
-		static map<string, DiscordGuild*> discordGuilds;
+		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMap;
+		static map<string, DiscordGuild*> discordGuildMap;
 
-		static void initialize(map<string, shared_ptr<YouTubeAPICore>>* youtubeAPIMapNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* audioBuffersMapNew, map<string, DiscordGuild*> discordGuildsNew) {
-			YouTubeAPI::audioBuffersMap = audioBuffersMapNew;
-			YouTubeAPI::youtubeAPIMap = youtubeAPIMapNew;
-			YouTubeAPI::discordGuilds = discordGuildsNew;
+		static void initialize(map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMapNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMapNew, map<string, DiscordGuild*> discordGuildsNew) {
+			YouTubeAPI::sendAudioDataBufferMap = sendAudioDataBufferMapNew;
+			YouTubeAPI::youtubeAPICoreMap = youtubeAPICoreMapNew;
+			YouTubeAPI::discordGuildMap = discordGuildsNew;
 		};
 
 		static bool stop(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				if (!YouTubeAPI::youtubeAPIMap->at(guildId)->stop()) {
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				if (!YouTubeAPI::youtubeAPICoreMap->at(guildId)->stop()) {
 					return false;
 				}
-				bool isSongLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopSongEnabled();
-				bool isAllLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopAllEnabled();
-				auto songQueue = *YouTubeAPI::youtubeAPIMap->at(guildId)->getQueue();
-				YouTubeAPI::youtubeAPIMap->erase(guildId);
+				bool isSongLooped = YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopSongEnabled();
+				bool isAllLooped = YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopAllEnabled();
+				auto songQueue = *YouTubeAPI::youtubeAPICoreMap->at(guildId)->getQueue();
+				YouTubeAPI::youtubeAPICoreMap->erase(guildId);
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				youtubeAPI->setLoopSongStatus(isSongLooped);
 				youtubeAPI->setLoopAllStatus(isAllLooped);
 				youtubeAPI->setQueue(songQueue);
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
 				return true;
 			}
 			else {
@@ -945,31 +901,31 @@ namespace DiscordCoreAPI {
 		}
 
 		static bool skip(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				bool isSongLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopSongEnabled();
-				bool isAllLooped = YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopAllEnabled();
-				auto currentSong = YouTubeAPI::youtubeAPIMap->at(guildId)->getCurrentSong();
-				auto songQueue = *YouTubeAPI::youtubeAPIMap->at(guildId)->getQueue();
-				if (!YouTubeAPI::youtubeAPIMap->at(guildId)->stop()) {
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				bool isSongLooped = YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopSongEnabled();
+				bool isAllLooped = YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopAllEnabled();
+				auto currentSong = YouTubeAPI::youtubeAPICoreMap->at(guildId)->getCurrentSong();
+				auto songQueue = *YouTubeAPI::youtubeAPICoreMap->at(guildId)->getQueue();
+				if (!YouTubeAPI::youtubeAPICoreMap->at(guildId)->stop()) {
 					return false;
 				}
-				YouTubeAPI::youtubeAPIMap->erase(guildId);
+				YouTubeAPI::youtubeAPICoreMap->erase(guildId);
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				youtubeAPI->setLoopSongStatus(isSongLooped);
 				youtubeAPI->setLoopAllStatus(isAllLooped);
 				youtubeAPI->currentSong = currentSong;
 				youtubeAPI->setQueue(songQueue);
 				youtubeAPI->sendNextSong();
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
 				return true;
 			}
 			else {
@@ -978,269 +934,269 @@ namespace DiscordCoreAPI {
 		}
 
 		static void setLoopAllStatus(bool enabled, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setLoopAllStatus(enabled);
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setLoopAllStatus(enabled);
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setLoopAllStatus(enabled);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setLoopAllStatus(enabled);
 			}
 		}
 
 		static bool isLoopAllEnabled(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopAllEnabled();
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopAllEnabled();
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopAllEnabled();
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopAllEnabled();
 			}
 		}
 
 		static void setLoopSongStatus(bool enabled, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setLoopSongStatus(enabled);
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setLoopSongStatus(enabled);
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setLoopSongStatus(enabled);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setLoopSongStatus(enabled);
 			}
 		}
 
 		static bool isLoopSongEnabled(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopSongEnabled();
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopSongEnabled();
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->isLoopSongEnabled();
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->isLoopSongEnabled();
 			}
 		}
 
 		static bool isThereAnySongs(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->isThereAnySongs();
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->isThereAnySongs();
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->isThereAnySongs();
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->isThereAnySongs();
 			}
 		}
 
 		static YouTubeSong addSongToQueue(YouTubeSearchResult searchResult, GuildMember guildMember, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->addSongToQueue(searchResult, guildMember);
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->addSongToQueue(searchResult, guildMember);
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->addSongToQueue(searchResult, guildMember);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->addSongToQueue(searchResult, guildMember);
 			}
 		}
 
 		static void setQueue(vector<YouTubeSong> dataPackage, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setQueue(dataPackage);
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setQueue(dataPackage);
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setQueue(dataPackage);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setQueue(dataPackage);
 			}
 		}
 
 		static vector<YouTubeSong>* getQueue(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->getQueue();
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->getQueue();
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->getQueue();
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->getQueue();
 			}
 		}
 
 		static void modifyQueue(int firstSongPosition, int secondSongPosition, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->at(guildId)->modifyQueue(firstSongPosition, secondSongPosition);
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->modifyQueue(firstSongPosition, secondSongPosition);
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				YouTubeAPI::youtubeAPIMap->at(guildId)->modifyQueue(firstSongPosition, secondSongPosition);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->modifyQueue(firstSongPosition, secondSongPosition);
 			}
 
 		}
 
 		static YouTubeSong getCurrentSong(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->getCurrentSong();
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->getCurrentSong();
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->getCurrentSong();
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->getCurrentSong();
 			}
 		}
 
 		static void setCurrentSong(YouTubeSong song, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setCurrentSong(song);
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setCurrentSong(song);
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				YouTubeAPI::youtubeAPIMap->at(guildId)->setCurrentSong(song);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setCurrentSong(song);
 			}
 		}
 
 		static SendNextSongReturnData sendNextSong(string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong();
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->sendNextSong();
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong();
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->sendNextSong();
 			}
 		}
 
 		static vector<YouTubeSearchResult> searchForVideo(string searchQuery, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->searchForVideo(searchQuery);
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->searchForVideo(searchQuery);
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuilds.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
-					YouTubeAPI::discordGuilds.insert_or_assign(guildId, new DiscordGuild);
-					auto discordGuildPtr = YouTubeAPI::discordGuilds.at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::audioBuffersMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+					YouTubeAPI::discordGuildMap.insert_or_assign(guildId, new DiscordGuild);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return YouTubeAPI::youtubeAPIMap->at(guildId)->searchForVideo(searchQuery);
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->searchForVideo(searchQuery);
 			}
 		}
 	};
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* YouTubeAPI::audioBuffersMap{ nullptr };
-	map<string, shared_ptr<YouTubeAPICore>>* YouTubeAPI::youtubeAPIMap{ nullptr };
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* YouTubeAPI::sendAudioDataBufferMap{ nullptr };
+	map<string, shared_ptr<YouTubeAPICore>>* YouTubeAPI::youtubeAPICoreMap{ nullptr };
 	map<string, shared_ptr<VoiceConnection>> YouTubeAPI::voiceConnectionMap{};
-	map<string, DiscordGuild*> YouTubeAPI::discordGuilds{};
+	map<string, DiscordGuild*> YouTubeAPI::discordGuildMap{};
 };
 #endif

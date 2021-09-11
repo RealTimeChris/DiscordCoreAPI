@@ -14,7 +14,7 @@ namespace DiscordCoreAPI {
 
     struct BuildSongDecoderData {
     public:
-        unbounded_buffer<vector<uint8_t>>* inputDataBuffer{};
+        unbounded_buffer<vector<uint8_t>>* sendEncodedAudioDataBuffer{};
         size_t totalFileSize{ 0 };
         size_t bufferMaxSize{ 0 };
     };
@@ -27,15 +27,11 @@ namespace DiscordCoreAPI {
         SongDecoder(BuildSongDecoderData dataPackage, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) : ThreadContext(threadContextNew.get()), agent(*this->scheduler->scheduler){
             this->bufferMaxSize = (int)dataPackage.bufferMaxSize;
             this->totalFileSize = (int)dataPackage.totalFileSize;
-            this->inputDataBuffer = dataPackage.inputDataBuffer;
+            this->inputDataBuffer = dataPackage.sendEncodedAudioDataBuffer;
         }
 
         void startMe() {
             this->start();
-        }
-
-        void linkCompletionBuffer(unbounded_buffer<bool>* completionBufferNew) {
-            this->completionBuffer.link_target(completionBufferNew);
         }
 
         bool getFrame(RawFrameData* dataPackage) {
@@ -57,7 +53,6 @@ namespace DiscordCoreAPI {
         }
 
         ~SongDecoder() {
-            this->completionBuffer.unlink_targets();
             if (this->formatContext) {
                 avformat_close_input(&this->formatContext);
             }
@@ -86,7 +81,6 @@ namespace DiscordCoreAPI {
     protected:
         int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
         unbounded_buffer<vector<uint8_t>>* inputDataBuffer{};
-        unbounded_buffer<bool> completionBuffer{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         unbounded_buffer<RawFrameData> outDataBuffer{};
@@ -114,7 +108,6 @@ namespace DiscordCoreAPI {
                     this->currentBuffer = newVector;
                     unsigned char* fileStreamBuffer = (unsigned char*)av_malloc(this->bufferMaxSize);
                     if (fileStreamBuffer == nullptr) {
-                        send(this->completionBuffer, true);
                         cout << "Failed to allocate filestreambuffer.\n\n" << endl;
                         return;
                     }
@@ -129,7 +122,6 @@ namespace DiscordCoreAPI {
                     );
 
                     if (this->ioContext == nullptr) {
-                        send(this->completionBuffer, true);
                         cout << "Failed to allocate AVIOContext.\n\n" << endl;
                         return;
                     }
@@ -137,7 +129,6 @@ namespace DiscordCoreAPI {
                     this->formatContext = avformat_alloc_context();
 
                     if (!this->formatContext) {
-                        send(this->completionBuffer, true);
                         cout << "Could not allocate the format context.\n\n" << endl;
                         return;
                     }
@@ -146,7 +137,6 @@ namespace DiscordCoreAPI {
                     this->formatContext->flags |= AVFMT_FLAG_CUSTOM_IO;
 
                     if (avformat_open_input(&this->formatContext, "memory", nullptr, nullptr) < 0) {
-                        send(this->completionBuffer, true);
                         cout << "Error opening AVFormatContext.\n\n" << endl;
                         return;
                     }
@@ -156,7 +146,6 @@ namespace DiscordCoreAPI {
                         string newString = "Could not find ";
                         newString += av_get_media_type_string(type);
                         newString += " stream in input memory stream.\n\n";
-                        send(this->completionBuffer, true);
                         cout << newString<< endl;
                         return;
                     }
@@ -165,13 +154,11 @@ namespace DiscordCoreAPI {
                         this->audioStream = this->formatContext->streams[this->audioStreamIndex];
                         if (!this->audioStream) {
                             cout << "Could not find an audio stream.\n\n" << endl;
-                            send(this->completionBuffer, true);
                             return;
                         }
 
                         if (avformat_find_stream_info(this->formatContext, NULL) < 0) {
                             cout << "Could not find stream information.\n\n" << endl;
-                            send(this->completionBuffer, true);
                             return;
                         }
 
@@ -180,7 +167,6 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to find ";
                             newString += av_get_media_type_string(type);
                             newString += " decoder.\n\n";
-                            send(this->completionBuffer, true);
                             cout << newString<< endl;
                             return;
                         }
@@ -190,7 +176,6 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to allocate the ";
                             newString += av_get_media_type_string(type);
                             newString += " AVCodecContext.\n\n";
-                            send(this->completionBuffer, true);
                             cout << newString<< endl;
                             return;
                         }
@@ -199,7 +184,6 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to copy ";
                             newString += av_get_media_type_string(type);
                             newString += " codec parameters to decoder context.\n\n";
-                            send(this->completionBuffer, true);
                             cout << newString<< endl;
                             return;
                         }
@@ -208,7 +192,6 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to open ";
                             newString += av_get_media_type_string(type);
                             newString += " AVCodecContext.\n\n";
-                            send(this->completionBuffer, true);
                             cout << newString<< endl;
                             return;
                         }
@@ -323,7 +306,6 @@ namespace DiscordCoreAPI {
                     av_frame_unref(this->newFrame);
                     av_frame_free(&this->newFrame);
                     cout << "Completed decoding!" << endl << endl;
-                    send(this->completionBuffer, true);
                     this->done();
                     return;
                 }
@@ -339,7 +321,6 @@ namespace DiscordCoreAPI {
             stream->bytesRead = 0;
             stream->currentBuffer = vector<uint8_t>();
             if (stream->areWeQuitting) {
-                send(stream->completionBuffer, true);
                 return AVERROR_EXIT;
             }
             try {
