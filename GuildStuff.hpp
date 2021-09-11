@@ -44,7 +44,8 @@ namespace DiscordCoreAPI {
 				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, this->discordCoreClientBase, DiscordCoreClientBase::webSocketConnectionAgent));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
 				YouTubeAPI::discordGuilds.insert(make_pair(this->id, discordGuild));
-				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild);
+				YouTubeAPI::voiceConnectionMap.insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
 				if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
 					youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).songQueue);
 					youtubeAPI->setLoopAllStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopAllEnabled);
@@ -60,6 +61,7 @@ namespace DiscordCoreAPI {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
+				YouTubeAPI::voiceConnectionMap.erase(this->id);
 				if (!(*voiceConnection)->hasTerminateRun) {
 					if ((*voiceConnection)->areWePlaying) {
 						(*voiceConnection)->areWePlaying = false;

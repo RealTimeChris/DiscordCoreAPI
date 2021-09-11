@@ -19,6 +19,8 @@ namespace DiscordCoreAPI {
 	class VoiceConnection : DiscordCoreInternal::ThreadContext, agent {
 	public:
 
+		friend class YouTubeAPICore;
+
 		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* sendAudioBufferMapNew, shared_ptr<DiscordCoreClientBase> discordCoreClientBaseNew, shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get()),
 			agent(*threadContextNew->scheduler->scheduler)
@@ -95,7 +97,10 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
-				receive(this->stopBuffer);
+				try {
+					receive(this->stopBuffer, 1000);
+				}
+				catch (operation_timed_out&) {};				
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
 				send(this->stopBuffer, true);
@@ -111,7 +116,10 @@ namespace DiscordCoreAPI {
 				this->areWeSkipping = true;
 				this->areWePlaying = false;
 				this->areWeStreaming = false;
-				receive(this->skipBuffer);
+				try {
+					receive(this->skipBuffer, 1000);
+				}
+				catch (operation_timed_out&) {};
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
 				send(this->skipBuffer, true);
@@ -124,7 +132,10 @@ namespace DiscordCoreAPI {
 
 		void play() {
 			if (this != nullptr) {
-				receive(this->readyBuffer);
+				try {
+					receive(this->skipBuffer, 1000);
+				}
+				catch (operation_timed_out&) {};
 				if (!this->areWePlaying) {
 					send(this->playBuffer, true);
 				}
@@ -157,11 +168,11 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>*>* receiveAudioBufferMap{ nullptr };
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
+		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		unbounded_buffer<bool> readyBuffer{ nullptr };
 		unbounded_buffer<bool> pauseBuffer{ nullptr };
 		unbounded_buffer<bool> stopBuffer{ nullptr };
@@ -303,16 +314,17 @@ namespace DiscordCoreAPI {
 					try {
 						this->audioData = receive(*this->audioDataBuffer, 10000);
 					}
-					catch (exception&) {};
+					catch (operation_timed_out&) {};
 					
 					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0) {
 						goto start;
 					}
 				}
 				this->sendSpeakingMessage(true);
-				long long startingValue{ (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() };
+				long long startingValue{ (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() };
 				long long intervalCount{ 20000000 };
 				long long timeCounter{ 0 };
+				long long totalTime{ 0 };
 				int frameCounter{ 0 };
 
 				if (this->audioData.type == AudioFrameType::Encoded) {
@@ -341,15 +353,19 @@ namespace DiscordCoreAPI {
 						}
 						frameCounter += 1;
 						try_receive(*this->audioDataBuffer, this->audioData);
+						long long startingValueForCalc{ 0 };
 						nanosleep(100000);
 						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
 							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
 							nanosleep(18000000);
-							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
 							long long  waitTime = intervalCount - timeCounter;
 							spinLock(waitTime);
-							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
+							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+							startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
 							this->sendSingleAudioFrame(newFrame);
+							totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
+							intervalCount = 20000000 - (totalTime / frameCounter);
 							this->audioData.type = AudioFrameType::Unset;
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();
@@ -389,16 +405,21 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						frameCounter += 1;
+						long long startingValueForCalc{ 0 };
 						try_receive(*this->audioDataBuffer, this->audioData);
-						nanosleep(18000000);
+						nanosleep(100000);
 						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
 							auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
 							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
-							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+							nanosleep(18000000);
+							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
 							long long  waitTime = intervalCount - timeCounter;
 							spinLock(waitTime);
-							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
+							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+							startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
 							this->sendSingleAudioFrame(newFrame);
+							totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
+							intervalCount = 20000000 - (totalTime / frameCounter);
 							this->audioData.type = AudioFrameType::Unset;
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();

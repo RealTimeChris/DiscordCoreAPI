@@ -180,7 +180,10 @@ namespace DiscordCoreInternal {
 		}
 
 		void connect() {
-			this->voiceConnectionData = receive(this->voiceConnectionDataBuffer.get());
+			try {
+				this->voiceConnectionData = receive(this->voiceConnectionDataBuffer.get(), 5500);
+			}
+			catch (operation_timed_out&) {}
 			this->voiceConnectionData.endPoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
 			this->heartbeatTimer = ThreadPoolTimer(nullptr);
 			this->webSocket = MessageWebSocket();
@@ -399,7 +402,7 @@ namespace DiscordCoreInternal {
 		void run() {
 			try {
 				while (doWeQuit == false) {
-					json payload = receive(this->webSocketWorkloadSource, INFINITE);
+					json payload = receive(this->webSocketWorkloadSource);
 					this->onMessageReceived(payload);
 				}
 			}
@@ -729,7 +732,11 @@ namespace DiscordCoreInternal {
 		}
 
 		void getVoiceConnectionData() {
-			GetVoiceConnectInitData doWeCollect = receive(*this->collectVoiceConnectionDataBuffer);
+			GetVoiceConnectInitData doWeCollect;
+			try {
+				doWeCollect = receive(*this->collectVoiceConnectionDataBuffer, 1500);
+			}
+			catch (operation_timed_out&) {}
 			UpdateVoiceStateData dataPackage;
 			dataPackage.channelId = doWeCollect.channelId;
 			dataPackage.guildId = doWeCollect.guildId;
