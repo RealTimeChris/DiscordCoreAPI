@@ -344,7 +344,7 @@ namespace DiscordCoreAPI {
 						nanosleep(100000);
 						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
 							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
-							nanosleep(17500000);
+							nanosleep(18000000);
 							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
 							long long  waitTime = intervalCount - timeCounter;
 							spinLock(waitTime);
@@ -390,7 +390,7 @@ namespace DiscordCoreAPI {
 						}
 						frameCounter += 1;
 						try_receive(*this->audioDataBuffer, this->audioData);
-						nanosleep(17500000);
+						nanosleep(18000000);
 						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
 							auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
 							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
