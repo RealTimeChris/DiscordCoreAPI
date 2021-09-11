@@ -206,12 +206,10 @@ namespace DiscordCoreAPI {
 			uint8_t* newBuffer{ new uint8_t[this->maxBufferSize] };
 
 			int count = opus_encode_float(this->encoder, (float*)oldBuffer, inputFrame.sampleCount, newBuffer, this->maxBufferSize);
-			vector<uint8_t> newVector{};
-			for (int x = 0; x < count; x += 1) {
-				newVector.push_back(newBuffer[x]);
-			}
 			EncodedFrameData encodedFrame;
-			encodedFrame.data = newVector;
+			for (int x = 0; x < count; x += 1) {
+				encodedFrame.data.push_back(newBuffer[x]);
+			}
 			encodedFrame.sampleCount = inputFrame.sampleCount;
 			delete oldBuffer;
 			oldBuffer = nullptr;
@@ -220,7 +218,7 @@ namespace DiscordCoreAPI {
 			return encodedFrame;
 		}
 
-		void sendSingleAudioFrame(EncodedFrameData bufferToSend) {
+		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData bufferToSend) {
 			constexpr int headerSize{ 12 };
 			constexpr int nonceSize{ crypto_secretbox_NONCEBYTES };
 			uint8_t header01[2]{ 0x80 , 0x78 };
@@ -266,16 +264,20 @@ namespace DiscordCoreAPI {
 			for (unsigned int x = 0; x < numOfBytes; x += 1) {
 				audioDataPacketNew.push_back(audioDataPacket[x]);
 			}
-			if (this->voicechannelWebSocketAgent->voiceSocket != nullptr) {
-				this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
-			}
-			audioDataPacketNew.clear();
+
 			delete bufferToSendNew;
 			delete encryptionKeys;
-			delete audioDataPacket;			
+			delete audioDataPacket;
 			bufferToSend.data.clear();
 			this->sequenceIndex += 1;
 			this->timestamp += (int)bufferToSend.sampleCount;
+			return audioDataPacketNew;
+		}
+
+		void sendSingleAudioFrame(vector<uint8_t> audioDataPacketNew) {
+			if (this->voicechannelWebSocketAgent->voiceSocket != nullptr) {
+				this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
+			}
 		}
 
 		void sendSpeakingMessage(bool isSpeaking) {
@@ -309,9 +311,8 @@ namespace DiscordCoreAPI {
 				}
 				this->sendSpeakingMessage(true);
 				long long startingValue{ (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() };
-				long long intervalCount{ 0 };
+				long long intervalCount{ 20000000 };
 				long long timeCounter{ 0 };
-				long long totalTime{ 0 };
 				int frameCounter{ 0 };
 
 				if (this->audioData.type == AudioFrameType::Encoded) {
@@ -339,33 +340,27 @@ namespace DiscordCoreAPI {
 				 			break;
 						}
 						frameCounter += 1;
-						this->audioData.encodedFrameData.data.clear();
-						this->audioData.rawFrameData.data.clear();
-						this->audioData = receive(*this->audioDataBuffer);
-						timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-						long long  waitTime = intervalCount - timeCounter;
-						if (!nanosleep(waitTime)) {
-							break;
-						};
-						long long startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
-						startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
-						if (this->audioData.encodedFrameData.sampleCount != 0) {
-							this->sendSingleAudioFrame(this->audioData.encodedFrameData);
-							
+						try_receive(*this->audioDataBuffer, this->audioData);
+						nanosleep(100000);
+						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
+							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
+							nanosleep(17500000);
+							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+							long long  waitTime = intervalCount - timeCounter;
+							spinLock(waitTime);
+							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
+							this->sendSingleAudioFrame(newFrame);
 							this->audioData.type = AudioFrameType::Unset;
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();
 						}
-						else {
+						else if (this->audioData.type == AudioFrameType::Cancel) {
 							this->onSongCompletionEvent(this);
 							this->areWeStreaming = false;
 							this->areWePlaying = false;
 							frameCounter = 0;
 							break;
 						}
-						totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
-						long long totalTimeAverage = totalTime / frameCounter;
-						intervalCount = 20000000 - totalTimeAverage;
 					}
 					this->areWePlaying = false;
 				}
@@ -394,34 +389,27 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						frameCounter += 1;
-						this->audioData.encodedFrameData.data.clear();
-						this->audioData.rawFrameData.data.clear();
-						this->audioData = receive(*this->audioDataBuffer);
-						timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
-						long long  waitTime = intervalCount - timeCounter;
-						if (!nanosleep(waitTime)) {
-							break;
-						};
-						long long startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
-						startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
-						if (this->audioData.rawFrameData.sampleCount != 0) {
+						try_receive(*this->audioDataBuffer, this->audioData);
+						nanosleep(17500000);
+						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
 							auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
-							this->sendSingleAudioFrame(newFrames);
-
+							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
+							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValue;
+							long long  waitTime = intervalCount - timeCounter;
+							spinLock(waitTime);
+							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count();
+							this->sendSingleAudioFrame(newFrame);
 							this->audioData.type = AudioFrameType::Unset;
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();
 						}
-						else {
+						else if (this->audioData.type == AudioFrameType::Cancel) {
 							this->onSongCompletionEvent(this);
 							this->areWeStreaming = false;
 							this->areWePlaying = false;
 							frameCounter = 0;
 							break;
 						}
-						totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count() - startingValueForCalc;
-						long long totalTimeAverage = totalTime / frameCounter;
-						intervalCount = 20000000 - totalTimeAverage;
 					}
 					this->areWePlaying = false;
 				}

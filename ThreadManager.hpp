@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
         ~ThreadManager() {
             for (auto value : ThreadManager::threads) {
                 value->scheduler->scheduler->Release();
-                value->schedulerGroup->scheduleGroup->Release();
+                value->scheduleGroup->scheduleGroup->Release();
             }
             ThreadManagerAgent::cleanup();
         };
@@ -97,9 +97,17 @@ namespace DiscordCoreInternal {
 
     task<shared_ptr<ThreadContext>> createThreadContext(ThreadType threadType) {
         for (auto value : ThreadManager::threads) {
-            if (value->schedulerGroup == nullptr) {
-                value->schedulerGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->scheduler->CreateScheduleGroup());
-                co_return value;
+            if (value->scheduleGroup == nullptr) {
+                if (threadType == ThreadType::Music) {
+                    if (value->scheduler->scheduler->GetPolicy().GetPolicyValue(PolicyElementKey::ContextPriority) == THREAD_PRIORITY_HIGHEST) {
+                        value->scheduleGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->scheduler->CreateScheduleGroup());
+                        co_return value;
+                    }
+                }
+                else {
+                    value->scheduleGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->scheduler->CreateScheduleGroup());
+                    co_return value;
+                }
             }
         }
 
@@ -134,7 +142,7 @@ namespace DiscordCoreInternal {
         shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
         threadContext->scheduler = make_shared<ScheduleWrapper>(newScheduler);
         threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
-        threadContext->schedulerGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->scheduler->CreateScheduleGroup());
+        threadContext->scheduleGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->scheduler->CreateScheduleGroup());
         co_return threadContext;
     }
     concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads{};

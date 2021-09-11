@@ -818,6 +818,7 @@ namespace DiscordCoreAPI {
 					AudioFrameData frameData02;
 					frameData02.encodedFrameData.sampleCount = 0;
 					frameData02.rawFrameData.sampleCount = 0;
+					frameData02.type = AudioFrameType::Cancel;
 					send(*this->outputDataBuffer01, frameData02);
 				}
 				agent::wait(this->songDecoder);

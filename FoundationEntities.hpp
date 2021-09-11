@@ -50,6 +50,14 @@ namespace DiscordCoreAPI {
         return TRUE;
     }
 
+    void spinLock(long long timeInNsToSpinLockFor){
+        long long startTime = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+        long long timePassed{ 0 };
+        while (timePassed < timeInNsToSpinLockFor) {
+            timePassed = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startTime;
+        }
+    }
+
     class StopWatch {
     public:
 
@@ -827,25 +835,25 @@ namespace  DiscordCoreInternal {
 
         ThreadContext(ThreadContext* threadContext) {
             this->dispatcherQueue = threadContext->dispatcherQueue;
-            this->schedulerGroup = threadContext->schedulerGroup;
+            this->scheduleGroup = threadContext->scheduleGroup;
             this->scheduler = threadContext->scheduler;
         }
 
         void releaseGroup() {
-            if (this->schedulerGroup != nullptr) {
-                this->schedulerGroup->scheduleGroup->Release();
-                this->schedulerGroup = nullptr;
+            if (this->scheduleGroup != nullptr) {
+                this->scheduleGroup->scheduleGroup->Release();
+                this->scheduleGroup = nullptr;
             }
         };
 
         ~ThreadContext() {
-            if (this->schedulerGroup != nullptr) {
-                this->schedulerGroup->scheduleGroup->Release();
-                this->schedulerGroup = nullptr;
+            if (this->scheduleGroup != nullptr) {
+                this->scheduleGroup->scheduleGroup->Release();
+                this->scheduleGroup = nullptr;
             }
         }
 
-        shared_ptr<ScheduleGroupWrapper> schedulerGroup{ nullptr };
+        shared_ptr<ScheduleGroupWrapper> scheduleGroup{ nullptr };
         shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
         shared_ptr<ScheduleWrapper> scheduler{ nullptr };        
     };
@@ -3831,13 +3839,14 @@ namespace DiscordCoreAPI {
     enum class AudioFrameType {
         Unset = 0,
         Encoded = 1,
-        RawPCM = 2
+        RawPCM = 2,
+        Cancel = 3
     };
 
     struct AudioFrameData {
+        AudioFrameType type{ AudioFrameType::Unset };
         EncodedFrameData encodedFrameData{};
         RawFrameData rawFrameData{};
-        AudioFrameType type{ AudioFrameType::Unset };
     };
 
     struct SoundCloudSearchResult {
