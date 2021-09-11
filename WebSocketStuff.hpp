@@ -81,11 +81,6 @@ namespace DiscordCoreInternal {
 	class WebSocketConnectionAgent : ThreadContext, agent {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class VoiceChannelWebSocketAgent;
-		friend class DiscordCoreAPI::BotUser;
-
 		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, bool* doWeQuitNew)
 			:ThreadContext(*ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
 			this->webSocketWorkloadTarget = target;
@@ -95,6 +90,40 @@ namespace DiscordCoreInternal {
 			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectionData>>();
 			return;
 		}
+
+	protected:
+
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class VoiceChannelWebSocketAgent;
+		friend class DiscordCoreAPI::BotUser;
+
+		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		shared_ptr<unbounded_buffer<GetVoiceConnectionData>> collectVoiceConnectionDataBuffer{ nullptr };
+		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
+		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
+		GetVoiceConnectionData voiceConnectInitData{};
+		ThreadPoolTimer heartbeatTimer{ nullptr };
+		VoiceConnectionData voiceConnectionData{};
+		MessageWebSocket webSocket{ nullptr };
+		bool didWeReceiveHeartbeatAck{ true };
+		DataWriter messageWriter{ nullptr };
+		bool serverUpdateCollected{ false };
+		bool stateUpdateCollected{ false };
+		event_token messageReceivedToken{};
+		const int maxReconnectTries{ 10 };
+		bool areWeCollectingData{ false };
+		int currentReconnectTries{ 0 };
+		int lastNumberReceived{ 0 };
+		int heartbeatInterval{ 0 };
+		hstring socketPath{ L"" };
+		event_token closedToken{};
+		bool* doWeQuit{ nullptr };
+		hstring sessionID{ L"" };
+		hstring botToken{ L"" };
 
 		void setSocketPath(string socketPathBase) {
 			std::wstringstream stream;
@@ -121,32 +150,6 @@ namespace DiscordCoreInternal {
 			this->terminate();
 			this->getError();
 		}
-
-	protected:
-		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		shared_ptr<unbounded_buffer<GetVoiceConnectionData>> collectVoiceConnectionDataBuffer{ nullptr };
-		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
-		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
-		GetVoiceConnectionData voiceConnectInitData{};
-		ThreadPoolTimer heartbeatTimer{ nullptr };
-		VoiceConnectionData voiceConnectionData{};
-		MessageWebSocket webSocket{ nullptr };
-		bool didWeReceiveHeartbeatAck{ true };
-		DataWriter messageWriter{ nullptr };
-		bool serverUpdateCollected{ false };
-		bool stateUpdateCollected{ false };
-		event_token messageReceivedToken{};
-		const int maxReconnectTries{ 10 };
-		bool areWeCollectingData{ false };
-		int currentReconnectTries{ 0 };
-		int lastNumberReceived{ 0 };
-		int heartbeatInterval{ 0 };
-		hstring socketPath{ L"" };
-		event_token closedToken{};
-		bool* doWeQuit{ nullptr };
-		hstring sessionID{ L"" };
-		hstring botToken{ L"" };		
 
 		void getError() {
 			exception error;
@@ -649,18 +652,16 @@ namespace DiscordCoreInternal {
 	class WebSocketReceiverAgent : ThreadContext, agent {
 	public:
 
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		template <class _Ty>
+		friend struct default_delete;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 
 		WebSocketReceiverAgent()
 			: ThreadContext(*ThreadManager::getThreadContext().get()),
 			agent(*this->scheduler->scheduler)
 		{
-			return;
-		}
-
-		~WebSocketReceiverAgent() {
-			this->terminate();
-			this->getError();
 			return;
 		}
 
@@ -959,6 +960,12 @@ namespace DiscordCoreInternal {
 
 		void terminate() {
 			this->doWeQuit = true;
+		}
+
+		~WebSocketReceiverAgent() {
+			this->terminate();
+			this->getError();
+			return;
 		}
 	};
 }
