@@ -897,9 +897,7 @@ namespace DiscordCoreInternal {
 			PatchMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
-			cout << "CHANNEL ID: " << dataPackageNew.channelId << endl;
 			dataPackageNew.messageId = dataPackage.messageId;
-			cout << "MESSAGE ID: " << dataPackageNew.messageId << endl;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
 			for (auto value : dataPackage.attachments) {
 				dataPackageNew.attachments.push_back(value);
