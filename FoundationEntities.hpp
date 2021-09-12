@@ -175,13 +175,13 @@ namespace DiscordCoreAPI {
                 }
             }
             if (this->find(":") != string::npos) {
-                hourVal = this->substr(this->find_first_of(":") - 2, this->find_first_of(":"));
+                hourVal = this->substr(this->find_first_of(":") - 2, 2);
             }
             if (this->find_last_of(":") != string::npos) {
-                minuteVal = this->substr(this->find_last_of(":") - 2, this->find_last_of(":"));
+                minuteVal = this->substr(this->find_last_of(":") - 2, 2);
             }
             if (this->find_last_of(":") != string::npos) {
-                secondVal = this->substr(this->find_last_of(":"), 1);
+                secondVal = this->substr(this->find_last_of(":") + 1, 2);
             }
             if (this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") != string::npos) {
                 dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
@@ -202,7 +202,6 @@ namespace DiscordCoreAPI {
 
             string finalValue{};
             finalValue = to_string(newtime.tm_year + 1900) + "-" + monthVal + "-" + dayVal + "T" + hourVal + ":" + minuteVal + ":" + secondVal;
-            cout << finalValue << endl;
             return finalValue;
         }
 

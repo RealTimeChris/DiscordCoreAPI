@@ -489,7 +489,9 @@ namespace DiscordCoreInternal {
 					if (cacheTemp.contains(guildNew.id)) {
 						cacheTemp.erase(guildNew.id);
 					}
-					guildNew.initialize();
+					else {
+						guildNew.initialize();
+					}					
 					cacheTemp.insert(make_pair(guildNew.id, guildNew));
 					send(GuildManagerAgent::cache, cacheTemp);
 				}
