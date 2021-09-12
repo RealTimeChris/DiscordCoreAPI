@@ -2985,11 +2985,27 @@ namespace DiscordCoreInternal {
             DiscordCoreAPI::AuditLogChangeData changeData = *pDataStructure;
 
             if (jsonObjectData.contains("new_value") && !jsonObjectData.at("new_value").is_null()) {
-                changeData.newValueString = jsonObjectData.at("new_value").get<string>();
+                if (jsonObjectData.at("new_value").is_string()){
+                    changeData.newValueString = jsonObjectData.at("new_value").get<string>();
+                }
+                else if (jsonObjectData.at("new_value").is_boolean()) {
+                    changeData.newValueBool = jsonObjectData.at("new_value").get<bool>();
+                }
+                else if (jsonObjectData.at("new_value").is_number_integer()) {
+                    changeData.newValueInt = jsonObjectData.at("new_value").get<int>();
+                }
             }
 
             if (jsonObjectData.contains("old_value") && !jsonObjectData.at("old_value").is_null()) {
-                changeData.oldValueString = jsonObjectData.at("old_value").get<string>();
+                if (jsonObjectData.at("old_value").is_string()) {
+                    changeData.oldValueString = jsonObjectData.at("old_value").get<string>();
+                }
+                else if (jsonObjectData.at("old_value").is_boolean()) {
+                    changeData.oldValueBool = jsonObjectData.at("old_value").get<bool>();
+                }
+                else if (jsonObjectData.at("old_value").is_number_integer()) {
+                    changeData.oldValueInt = jsonObjectData.at("old_value").get<int>();
+                }
             }
 
             if (jsonObjectData.contains("key") && !jsonObjectData.at("key").is_null()) {
@@ -3043,7 +3059,7 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("target_id") && !jsonObjectData.at("target_id").is_null()) {
                 entryData.targetId = jsonObjectData.at("target_id").get<string>();
             }
-
+            
             if (jsonObjectData.contains("changes") && !jsonObjectData.at("changes").is_null()) {
                 vector<DiscordCoreAPI::AuditLogChangeData> newVector{};
                 for (auto newValue : jsonObjectData.at("changes")) {
@@ -3053,12 +3069,13 @@ namespace DiscordCoreInternal {
                 }
                 entryData.changes = newVector;
             }
-
+            
             if (jsonObjectData.contains("user_id") && !jsonObjectData.at("user_id").is_null()) {
                 entryData.userId = jsonObjectData.at("user_id").get<string>();
             }
 
             if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                entryData.createdTimeStamp = DiscordCoreAPI::convertSnowFlakeToDateTimeString(jsonObjectData.at("id").get<string>());
                 entryData.id = jsonObjectData.at("id").get<string>();
             }
 
@@ -3159,7 +3176,7 @@ namespace DiscordCoreInternal {
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::AuditLogData* pDataStructure) {
             DiscordCoreAPI::AuditLogData auditLogData = *pDataStructure;
-
+            
             if (jsonObjectData.contains("webhooks") && !jsonObjectData.at("webhooks").is_null()) {
                 vector<DiscordCoreAPI::WebhookData> newVector{};
                 for (auto newValue : jsonObjectData.at("webhooks")) {
@@ -3169,7 +3186,7 @@ namespace DiscordCoreInternal {
                 }
                 auditLogData.webhooks = newVector;
             }
-
+            
             if (jsonObjectData.contains("users") && !jsonObjectData.at("users").is_null()) {
                 vector<DiscordCoreAPI::UserData> newVector{};
                 for (auto newValue : jsonObjectData.at("users")) {
@@ -3179,7 +3196,7 @@ namespace DiscordCoreInternal {
                 }
                 auditLogData.users = newVector;
             }
-
+            
             if (jsonObjectData.contains("audit_log_entries") && !jsonObjectData.at("audit_log_entries").is_null()) {
                 vector<DiscordCoreAPI::AuditLogEntryData> newVector{};
                 for (auto newValue : jsonObjectData.at("audit_log_entries")) {
@@ -3189,7 +3206,7 @@ namespace DiscordCoreInternal {
                 }
                 auditLogData.auditLogEntries = newVector;
             }
-
+            
             if (jsonObjectData.contains("integrations") && !jsonObjectData.at("integrations").is_null()) {
                 vector<DiscordCoreAPI::IntegrationData> newVector{};
                 for (auto newValue : jsonObjectData.at("integrations")) {
@@ -3209,7 +3226,7 @@ namespace DiscordCoreInternal {
                 }
                 auditLogData.threads = newVector;
             }
-
+           
             *pDataStructure = auditLogData;
         }
 

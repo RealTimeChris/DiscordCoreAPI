@@ -127,29 +127,113 @@ namespace DiscordCoreAPI {
         return;
     }
 
-    string convertTimeInMsToDateTimeString(__int64 timeInMs) {
+    struct TimeStamp : public string {
+
+        string getOldSchoolTimeStamp() {
+            string dayVal{ "00" };
+            string monthVal{ "" };
+            string hourVal{ "" };
+            string minuteVal{ "" };
+            string secondVal{ "00" };
+            string millisecondVal{ "00" };
+            if (this->find(" ") != string::npos) {
+                if (this->substr(this->find_first_of(" ")+1, 3) == "Jan") {
+                    monthVal = "01";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Feb") {
+                    monthVal = "02";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Mar") {
+                    monthVal = "03";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Apr") {
+                    monthVal = "04";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "May") {
+                    monthVal = "05";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Jun") {
+                    monthVal = "06";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Jul") {
+                    monthVal = "07";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Aug") {
+                    monthVal = "08";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Sep") {
+                    monthVal = "09";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Oct") {
+                    monthVal = "10";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Nov") {
+                    monthVal = "11";
+                }
+                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Dec") {
+                    monthVal = "12";
+                }
+            }
+            if (this->find(":") != string::npos) {
+                hourVal = this->substr(this->find_first_of(":") - 2, this->find_first_of(":"));
+            }
+            if (this->find_last_of(":") != string::npos) {
+                minuteVal = this->substr(this->find_last_of(":") - 2, this->find_last_of(":"));
+            }
+            if (this->find_last_of(":") != string::npos) {
+                secondVal = this->substr(this->find_last_of(":"), 1);
+            }
+            if (this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") != string::npos) {
+                dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
+            }
+            struct tm newtime;
+            __time64_t long_time;
+            errno_t err;
+            
+            // Get time as 64-bit integer.
+            _time64(&long_time);
+            // Convert to local time.
+            err = _localtime64_s(&newtime, &long_time);
+            if (err)
+            {
+                printf("Invalid argument to _localtime64_s.");
+                exit(1);
+            }
+
+            string finalValue{};
+            finalValue = to_string(newtime.tm_year + 1900) + "-" + monthVal + "-" + dayVal + "T" + hourVal + ":" + minuteVal + ":" + secondVal;
+            cout << finalValue << endl;
+            return finalValue;
+        }
+
+    };
+
+    TimeStamp convertTimeInMsToDateTimeString(__int64 timeInMs) {
         __int64 timeValue = timeInMs / 1000;
         __time64_t rawTime(timeValue);
         tm timeInfo;
-        char timeBuffer[32];
+        char timeBuffer[42];
         errno_t error;
         error = localtime_s(&timeInfo, &rawTime);
-        if (error)
-        {
+        if (error) {
             printf("Invalid argument to _localtime64_s.");
         }
-        strftime(timeBuffer, 32, "%a %b %d %Y %X", &timeInfo);
-        return timeBuffer;
+        strftime(timeBuffer, 42, "%a %b %d %Y %X", &timeInfo);
+        TimeStamp timeStamp;
+        for (int x = 0; x < 42; x += 1) {
+            timeStamp.push_back(timeBuffer[x]);
+        }
+        return timeStamp;
     }
 
     long long convertTimestampToInteger(string timeStamp) {
         CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
             stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
-        return timeValue.GetTime();
+        return timeValue.GetTime() * 1000;
     }
 
     string convertTimeStampToNewOne(string timeStamp) {
-        long long timeInMs = convertTimestampToInteger(timeStamp) * 1000;
+        long long timeInMs = convertTimestampToInteger(timeStamp);
         string returnString = convertTimeInMsToDateTimeString(timeInMs);
         return returnString;
     }
@@ -179,8 +263,8 @@ namespace DiscordCoreAPI {
         return newString;
     }
 
-    string convertSnowFlakeToDateTimeString(string snowFlake) {
-        string returnString;
+    TimeStamp convertSnowFlakeToDateTimeString(string snowFlake) {
+        TimeStamp returnString;
         __int64 timeInMs = (stoll(snowFlake) >> 22) + 1420070400000;
         returnString = convertTimeInMsToDateTimeString(timeInMs);
         return returnString;
@@ -3737,11 +3821,16 @@ namespace DiscordCoreAPI {
     struct AuditLogChangeData {
         string newValueString{ "" };
         string oldValueString{ "" };
+        bool newValueBool{ false };
+        bool oldValueBool{ false };
+        int newValueInt{ 0 };
+        int oldValueInt{ 0 };
         string key{ "" };
     };
 
     struct AuditLogEntryData {
         vector<AuditLogChangeData> changes{};
+        TimeStamp createdTimeStamp{ "" };
         AuditLogEntryInfoData options{};
         AuditLogEvent actionType{};
         string targetId{ "" };

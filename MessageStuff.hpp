@@ -234,13 +234,13 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreInternal::MessageManager;
 
+		CreateMessageData(string channelIdNew) {
+			this->channelId = channelIdNew;
+		}
+
 		CreateMessageData(InputEventData dataPackage) {
 			this->requesterId = dataPackage.getRequesterId();
 			this->channelId = dataPackage.getChannelId();
-		}
-
-		CreateMessageData(string channelId) {
-			this->channelId = channelId;
 		}
 
 		void addAllowedMentions(AllowedMentionsData dataPackage) {

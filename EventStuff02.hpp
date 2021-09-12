@@ -19,14 +19,32 @@ namespace DiscordCoreAPI {
 
         static void onChannelCreation(OnChannelCreationData dataPackage) {
             Channels::insertChannelAsync(dataPackage.channel).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.channel.guildId }).get();
+            guild.channels.push_back(dataPackage.channel);
+            Guilds::insertGuildAsync(guild).get();            
         }
 
         static void onChannelUpdate(OnChannelUpdateData dataPackage) {
             Channels::insertChannelAsync(dataPackage.channelNew).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.channelNew.guildId }).get();
+            for (int x = 0; x < guild.channels.size(); x += 1) {
+                if (guild.channels[x].id == dataPackage.channelNew.id) {
+                    guild.channels.erase(guild.channels.begin() + x);
+                }
+            }
+            guild.channels.push_back(dataPackage.channelNew);
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static void onChannelDeletion(OnChannelDeletionData dataPackage) {
             Channels::removeChannelAsync(dataPackage.channel.id).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.channel.guildId }).get();
+            for (int x = 0; x < guild.channels.size(); x += 1) {
+                if (guild.channels[x].id == dataPackage.channel.id) {
+                    guild.channels.erase(guild.channels.begin() + x);
+                }
+            }
+            Guilds::insertGuildAsync(guild).get();
         }
         
         static void onGuildCreation(OnGuildCreationData dataPackage) {
@@ -61,14 +79,32 @@ namespace DiscordCoreAPI {
 
         static void onRoleCreation(OnRoleCreationData dataPackage) {
             Roles::insertRoleAsync(dataPackage.role).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.guildId }).get();
+            guild.roles.push_back(dataPackage.role);
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static void onRoleUpdate(OnRoleUpdateData dataPackage) {
             Roles::insertRoleAsync(dataPackage.roleNew).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.guildId }).get();
+            for (int x = 0; x < guild.roles.size(); x += 1) {
+                if (guild.roles[x].id == dataPackage.roleNew.id) {
+                    guild.roles.erase(guild.roles.begin() + x);
+                }
+            }
+            guild.roles.push_back(dataPackage.roleNew);
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static void onRoleDeletion(OnRoleDeletionData dataPackage) {
             Roles::removeRoleAsync(dataPackage.guildId).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.guildId }).get();
+            for (int x = 0; x < guild.roles.size(); x += 1) {
+                if (guild.roles[x].id == dataPackage.roleOld.id) {
+                    guild.roles.erase(guild.roles.begin() + x);
+                }
+            }
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static task<void> onInteractionCreation(OnInteractionCreationData dataPackage) {
