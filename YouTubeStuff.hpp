@@ -878,12 +878,12 @@ namespace DiscordCoreAPI {
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap;
 		static map<string, shared_ptr<VoiceConnection>> voiceConnectionMap;
 		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMap;
-		static map<string, DiscordGuild*> discordGuildMap;
+		static map<string, DiscordGuild*>* discordGuildMap;
 
-		static void initialize(map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMapNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMapNew, map<string, DiscordGuild*> discordGuildsNew) {
+		static void initialize(map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMapNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMapNew, map<string, DiscordGuild*>* discordGuildMapNew) {
 			YouTubeAPI::sendAudioDataBufferMap = sendAudioDataBufferMapNew;
 			YouTubeAPI::youtubeAPICoreMap = youtubeAPICoreMapNew;
-			YouTubeAPI::discordGuildMap = discordGuildsNew;
+			YouTubeAPI::discordGuildMap = discordGuildMapNew;
 		};
 
 		static bool stop(string guildId) {
@@ -896,13 +896,13 @@ namespace DiscordCoreAPI {
 				auto songQueue = *YouTubeAPI::youtubeAPICoreMap->at(guildId)->getQueue();
 				YouTubeAPI::youtubeAPICoreMap->erase(guildId);
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
 					return false;
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				youtubeAPI->setLoopSongStatus(isSongLooped);
@@ -927,8 +927,8 @@ namespace DiscordCoreAPI {
 				}
 				YouTubeAPI::youtubeAPICoreMap->erase(guildId);
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -953,8 +953,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -971,8 +971,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -989,8 +989,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1007,8 +1007,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1025,8 +1025,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1043,8 +1043,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1061,8 +1061,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1079,8 +1079,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1097,8 +1097,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1116,8 +1116,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1134,8 +1134,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1152,8 +1152,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1170,8 +1170,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				shared_ptr<YouTubeAPICore> youtubeAPI;
-				if (YouTubeAPI::discordGuildMap.contains(guildId)) {
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap.at(guildId);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
 					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				else {
@@ -1185,6 +1185,6 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* YouTubeAPI::sendAudioDataBufferMap{ nullptr };
 	map<string, shared_ptr<YouTubeAPICore>>* YouTubeAPI::youtubeAPICoreMap{ nullptr };
 	map<string, shared_ptr<VoiceConnection>> YouTubeAPI::voiceConnectionMap{};
-	map<string, DiscordGuild*> YouTubeAPI::discordGuildMap{};
+	map<string, DiscordGuild*>* YouTubeAPI::discordGuildMap{};
 };
 #endif

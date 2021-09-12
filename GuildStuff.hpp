@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 				voiceConnectInitData.userId = this->discordCoreClientBase->currentUser.id;
 				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::webSocketConnectionAgent));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
-				YouTubeAPI::discordGuildMap.insert(make_pair(this->id, discordGuild));
+				YouTubeAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
 				YouTubeAPI::voiceConnectionMap.insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
 				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
 				if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
