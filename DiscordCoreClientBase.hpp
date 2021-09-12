@@ -33,15 +33,7 @@ namespace DiscordCoreAPI {
 		static DiscordCoreClientBase* thisPointer;
 		static BotUser currentUser;
 
-		void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreClient> discordCoreClient) {
-			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(nullptr);
-			this->guildMembers->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
-			this->channels = make_shared<DiscordCoreInternal::ChannelManager>(nullptr);
-			this->channels->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
-			this->roles = make_shared<DiscordCoreInternal::RoleManager>(nullptr);
-			this->roles->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
-			this->users = make_shared<DiscordCoreInternal::UserManager>(nullptr);
-			this->users->initialize(agentResourcesNew, DiscordCoreInternal::ThreadManager::getThreadContext().get(), discordCoreClient);
+		void initialize() {
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(DiscordCoreClientBase::webSocketConnectionAgent);
 			DiscordCoreClientBase::thisPointer = this;

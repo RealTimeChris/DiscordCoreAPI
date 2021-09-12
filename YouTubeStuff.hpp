@@ -255,13 +255,14 @@ namespace DiscordCoreAPI {
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap{ nullptr };
 		const string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
+		cancellation_token_source cancelTokenSource{ cancellation_token_source() };
+		cancellation_token cancelToken{ this->cancelTokenSource.get_token() };
 		const string baseWatchURL{ "https://www.youtube.com/watch?v=" };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		const string baseURL{ "https://www.youtube.com" };
 		DiscordGuild* discordGuild{ new DiscordGuild };
-		SongDecoder* songDecoder{ nullptr };
-		cancellation_token_source cancelTokenSource{};
 		const int refreshTimeForBuffer{ 50 };
+		SongDecoder* songDecoder{ nullptr };
 		const hstring newLine{ L"\n\r" };
 		vector<YouTubeSong> songQueue{};
 		string html5PlayerFile{ "" };
@@ -398,26 +399,34 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->songQueue.size() > 0 && this->currentSong.description != "") {
 					this->currentSong = this->currentSong;
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
 					this->currentSong = this->currentSong;
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -436,7 +445,9 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -450,19 +461,25 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.at(this->songQueue.size() - 1) = tempSong02;
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -477,13 +494,17 @@ namespace DiscordCoreAPI {
 					for (int x = 0; x < this->songQueue.size() - 1; x += 1) {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					this->currentSong = YouTubeSong();
 					return returnData;
@@ -491,7 +512,9 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong);
+					this->cancelTokenSource = cancellation_token_source();
+					this->cancelToken = this->cancelTokenSource.get_token();
+					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
@@ -824,18 +847,20 @@ namespace DiscordCoreAPI {
 			}
 		};
 
-		task<bool> downloadAndStreamAudio(YouTubeSong song) {
+		task<bool> downloadAndStreamAudio(YouTubeSong song, cancellation_token token) {
 			int retryCount{ 0 };
-			this->cancelTokenSource = cancellation_token_source();
-			auto token{ this->cancelTokenSource.get_token() };
 			auto lambda = [&](YouTubeSong song, int retryCount) ->task<bool> {
-				return this->downloadAndStreamAudioToBeWrapped(song, token, retryCount);
-				
+				return create_task(this->downloadAndStreamAudioToBeWrapped(song, token, retryCount));
+
 			};
 			return lambda(song, retryCount).then([](task<bool> returnTask)->task<bool> {
 				try {
 					returnTask.get();
 					co_return true;
+				}
+				catch (invalid_operation& e) {
+					cout << "YouTubeAPICore::downloadAndStreamAudio() Error: " << e.what() << endl;
+					co_return false;
 				}
 				catch (exception& e) {
 					cout << "YouTubeAPICore::downloadAndStreamAudio() Error: " << e.what() << endl;

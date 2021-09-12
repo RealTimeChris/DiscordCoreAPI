@@ -81,6 +81,13 @@ namespace DiscordCoreInternal {
 	class WebSocketConnectionAgent : ThreadContext, agent {
 	public:
 
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class VoiceChannelWebSocketAgent;
+		friend class DiscordCoreAPI::BotUser;
+
 		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, bool* doWeQuitNew)
 			:ThreadContext(*ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
 			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectionData>>();
@@ -91,13 +98,6 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-
-		template <class _Ty>
-		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class VoiceChannelWebSocketAgent;
-		friend class DiscordCoreAPI::BotUser;
 
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<GetVoiceConnectionData>> collectVoiceConnectionDataBuffer{ nullptr };
@@ -423,6 +423,7 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
+
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
 		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
@@ -601,8 +602,6 @@ namespace DiscordCoreInternal {
 					message.push_back(value);
 				}
 			}
-
-			//cout << "Message received from VoiceDatagramSocket: " << to_string(to_hstring(message.c_str())) << endl << endl;
 
 			if (this->areWeWaitingForIp) {
 				this->areWeWaitingForIp = false;
