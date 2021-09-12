@@ -288,11 +288,11 @@ namespace DiscordCoreAPI {
 
     bool hasTimeElapsed(string timeStamp, long long days = 0, long long hours = 0, long long minutes = 0) {
         long long startTime = convertTimestampToInteger(timeStamp);
-        long long currentTime = chrono::duration_cast<chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count();
+        long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
         long long secondsPerMinute = 60;
         long long secondsPerHour = secondsPerMinute * 60;
         long long secondsPerDay = secondsPerHour * 24;
-        long long targetElapsedTime = (days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute);
+        long long targetElapsedTime = (days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute) * 1000;
         long long actualElapsedTime = currentTime - startTime;
         if (actualElapsedTime < 0) {
             actualElapsedTime = 0;
@@ -1455,9 +1455,12 @@ namespace  DiscordCoreInternal {
         HttpWorkloadType workloadType{};
         float nextExecutionTime{ 0.0f };
         float timeStartedAt{ 0.0f };
+        float msRemainTotal{ 0.0f };
+        bool isItMarked{ false };
         int getsRemaining{ 1 };
         float msRemain{ 0.0f };
         string bucket{ "" };
+        int totalGets{ 0 };
     };
 
     struct CollectGuildData {

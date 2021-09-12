@@ -336,6 +336,7 @@ namespace DiscordCoreInternal {
 							send(this->outRoleBuffer, role);
 						}
 					}
+					send(RoleManagerAgent::cache, cacheTemp);
 				}
 				GetRoleData dataPackage02;
 				if (try_receive(this->requestGetRoleBuffer, dataPackage02)) {
@@ -348,7 +349,7 @@ namespace DiscordCoreInternal {
 					}
 					cacheTemp.insert(make_pair(dataPackage02.roleId, role));
 					send(this->outRoleBuffer, role);
-					send(cache, cacheTemp);
+					send(RoleManagerAgent::cache, cacheTemp);
 				}
 				PatchRoleData dataPackage03;
 				if (try_receive(this->requestPatchRoleBuffer, dataPackage03)) {
@@ -361,7 +362,7 @@ namespace DiscordCoreInternal {
 					}
 					cacheTemp.insert(make_pair(dataPackage03.roleId, role));
 					send(this->outRoleBuffer, role);
-					send(cache, cacheTemp);
+					send(RoleManagerAgent::cache, cacheTemp);
 				}
 				PutRoleData dataPackage04;
 				if (try_receive(this->requestPutRoleBuffer, dataPackage04)) {
@@ -396,7 +397,7 @@ namespace DiscordCoreInternal {
 					}
 					cacheTemp.insert(make_pair(dataPackage09.roleId, role));
 					send(this->outRoleBuffer, role);
-					send(cache, cacheTemp);
+					send(RoleManagerAgent::cache, cacheTemp);
 				}
 				DiscordCoreAPI::RoleData dataPackage10;
 				dataPackage10.discordCoreClient = this->discordCoreClient;

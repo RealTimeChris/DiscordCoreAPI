@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
         }
 
         static void onRoleDeletion(OnRoleDeletionData dataPackage) {
-            Roles::removeRoleAsync(dataPackage.guildId).get();
+            Roles::removeRoleAsync(dataPackage.roleOld.id).get();
             Guild guild = Guilds::getGuildAsync({ dataPackage.guildId }).get();
             for (int x = 0; x < guild.roles.size(); x += 1) {
                 if (guild.roles[x].id == dataPackage.roleOld.id) {

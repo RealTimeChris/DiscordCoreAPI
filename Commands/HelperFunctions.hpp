@@ -314,7 +314,6 @@ namespace DiscordCoreAPI {
                 sstream << "USE_PRIVATE_THREADS" << endl;
                 returnVector.push_back("Use Private Threads");
             }
-            cout << "PERMISSIONS: " << endl << sstream.str() << endl;
             return returnVector;
         }
 
@@ -499,19 +498,19 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        static string computeBasePermissions(GuildMember guildMember, shared_ptr<DiscordCoreInternal::GuildManager> guilds, shared_ptr<DiscordCoreInternal::RoleManager> roles) {
-            Guild guild = guilds->getGuildAsync({ guildMember.guildId }).get();
+        static string computeBasePermissions(GuildMember guildMember) {
+            Guild guild = Guilds::getGuildAsync({ guildMember.guildId }).get();
 
             if (guild.ownerId == guildMember.user.id) {
                 return getAllPermissions();
             }
 
-            Role everyone = roles->getRoleAsync({ .guildId = guild.id, .roleId = guild.id }).get();
+            Role everyone = Roles::getRoleAsync({ .guildId = guild.id, .roleId = guild.id }).get();
             string permissionsString = everyone.permissions;
             __int64 permissionsInt = stoll(permissionsString);
 
             for (auto& role : guildMember.roles) {
-                Role currentRole = roles->getRoleAsync({ .guildId = guild.id, .roleId = role }).get();
+                Role currentRole = Roles::getRoleAsync({ .guildId = guild.id, .roleId = role }).get();
                 permissionsInt |= stoll(currentRole.permissions);
             }
 
@@ -529,7 +528,7 @@ namespace DiscordCoreAPI {
                 return getAllPermissions();
             }
 
-            Guild guild = guildMember.discordCoreClient->guilds->getGuildAsync({ .guildId = guildMember.guildId }).get();
+            Guild guild = Guilds::getGuildAsync({ .guildId = guildMember.guildId }).get();
 
             DiscordCoreInternal::OverWriteData overwriteEveryone;
             if (channel.permissionOverwrites.contains(guild.id)) {
@@ -545,7 +544,7 @@ namespace DiscordCoreAPI {
             __int64 allow = 0;
             __int64 deny = 0;
             for (auto& role : guildMember.roles) {
-                Role currentRole = guildMember.discordCoreClient->roles->getRoleAsync({ .guildId = guildMember.guildId, .roleId = role }).get();
+                Role currentRole = Roles::getRoleAsync({ .guildId = guildMember.guildId, .roleId = role }).get();
                 if (overWrites.contains(currentRole.id)) {
                     allow |= stoll(overWrites.at(currentRole.id).allow);
                     deny |= stoll(overWrites.at(currentRole.id).deny);
@@ -567,7 +566,7 @@ namespace DiscordCoreAPI {
 
         static string computePermissions(GuildMember guildMember, Channel channel) {
             string permissions;
-            permissions = computeBasePermissions(guildMember, guildMember.discordCoreClient->guilds, guildMember.discordCoreClient->roles);
+            permissions = computeBasePermissions(guildMember);
             permissions = computeOverwrites(permissions, guildMember, channel);
             return permissions;
         }
@@ -618,14 +617,14 @@ namespace DiscordCoreAPI {
                 InputEventData event = InputEvents::respondToEvent(responseData);
                 InputEvents::deleteInputEventResponseAsync(event, 20000);
             }
-        }        
+        }
         return false;
     }
 
     struct RecurseThroughMessagePagesData {
-        InputEventData inputEventData{};
-        int currentPageIndex{ -1 };
-        string buttonId{ "" };
+        InputEventData inputEventData;
+        unsigned int currentPageIndex;
+        string buttonId;
     };
 
     // Recurses through a succession of messages.
