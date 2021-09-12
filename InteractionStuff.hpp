@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
             this->user = dataPackage.user;
             this->id = dataPackage.id;
         }
-        
+
     protected:
         ButtonInteractionData() {}
     };
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
     struct DeferComponentResponseData {
 
         friend class InputEvents;
-        
+
         DeferComponentResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
         CreateInteractionResponseData(SelectMenuInteractionData dataPackage) {
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->interactionPackage.interactionToken = dataPackage.token;
-            this->interactionPackage.interactionId = dataPackage.id;            
+            this->interactionPackage.interactionId = dataPackage.id;
             if (dataPackage.member.user.id != "") {
                 this->requesterId = dataPackage.message.member.user.id;
             }
@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
         CreateInteractionResponseData(ButtonInteractionData dataPackage) {
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->interactionPackage.interactionToken = dataPackage.token;
-            this->interactionPackage.interactionId = dataPackage.id;            
+            this->interactionPackage.interactionId = dataPackage.id;
             if (dataPackage.member.user.id != "") {
                 this->requesterId = dataPackage.message.member.user.id;
             }
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
         void setTTSStatus(bool enabledTTs) {
             this->data.data.tts = enabledTTs;
         }
-        
+
     protected:
         InteractionPackageData interactionPackage{};
         InteractionResponseData data{};
@@ -366,7 +366,7 @@ namespace DiscordCoreAPI {
         InteractionPackageData interactionPackage{};
         InteractionResponseData data{};
         string requesterId{ "" };
-        
+
     };
 
     struct EditInteractionResponseData {
@@ -474,7 +474,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
         }
-        
+
     protected:
         InteractionPackageData interactionPackage{};
         unsigned int timeDelay{ 0 };
@@ -776,11 +776,11 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->messagePackage.messageId = dataPackage.getMessageId();
         }
-        
+
     protected:
         InteractionPackageData interactionPackage{};
         MessagePackageData messagePackage{};
-        unsigned int timeDelay{ 0 };        
+        unsigned int timeDelay{ 0 };
     };
 
     struct GetInteractionResponseData {
@@ -791,6 +791,7 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreInternal {
+    
 
     class InteractionManagerAgent : public agent {
     protected:
@@ -812,6 +813,7 @@ namespace DiscordCoreInternal {
         unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
+        unbounded_buffer<nlohmann::detail::type_error> errorBuffer2{ nullptr };
         DiscordCoreInternal::HttpAgentResources agentResources{};
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
@@ -829,6 +831,15 @@ namespace DiscordCoreInternal {
             while (try_receive(errorBuffer, error)) {
                 cout << stackTrace + "::InteractionManagerAgent Error: " << error.what() << endl << endl;
             }
+            while (1) {
+                try{
+                    nlohmann::detail::type_error error03 = receive(this->errorBuffer2, 1000);
+                    cout << stackTrace + "::InteractionManagerAgent Error: " << error03.what() << endl << endl;
+                }
+                catch (operation_timed_out&) {
+                    break;
+                }                
+            };
             return;
         }
 
@@ -959,10 +970,11 @@ namespace DiscordCoreInternal {
 
         void deleteObjectDataTimer(DiscordCoreInternal::DeleteInteractionResponseData dataPackage) {
             if (dataPackage.timeDelayInMs > 0) {
-                auto onSend = [=]() {
+                auto onSend = [=](DiscordCoreInternal::DeleteInteractionResponseData dataPackage) {
                     deleteObjectData(dataPackage);
                 };
-                DiscordCoreAPI::executeFunctionAfterTimePeriod(onSend, dataPackage.timeDelayInMs, false);
+                function<void(DiscordCoreInternal::DeleteInteractionResponseData)> functionNew = onSend;
+                DiscordCoreAPI::executeFunctionAfterTimePeriod(functionNew, dataPackage.timeDelayInMs, false, dataPackage);
             }
             else {
                 deleteObjectData(dataPackage);
@@ -987,10 +999,11 @@ namespace DiscordCoreInternal {
 
         void deleteObjectDataTimer(DiscordCoreInternal::DeleteFollowUpMessageData dataPackage) {
             if (dataPackage.timeDelayInMs > 0) {
-                auto onSend = [=]() {
+                auto onSend = [=](DiscordCoreInternal::DeleteFollowUpMessageData dataPackage) {
                     deleteObjectData(dataPackage);
                 };
-                DiscordCoreAPI::executeFunctionAfterTimePeriod(onSend, dataPackage.timeDelayInMs, false);
+                function<void(DiscordCoreInternal::DeleteFollowUpMessageData)> functionNew = onSend;
+                DiscordCoreAPI::executeFunctionAfterTimePeriod(functionNew, dataPackage.timeDelayInMs, false, dataPackage);
             }
             else {
                 deleteObjectData(dataPackage);
@@ -1042,6 +1055,9 @@ namespace DiscordCoreInternal {
                     send(this->outInteractionresponseDataBuffer, responseData);
                 }
             }
+            catch (nlohmann::detail::type_error& e) {
+                send(this->errorBuffer2, e);
+            }
             catch (const exception& e) {
                 send(this->errorBuffer, e);
             }
@@ -1068,7 +1084,7 @@ namespace DiscordCoreInternal {
         }
 
     protected:
-        
+
         shared_ptr<ThreadContext> threadContext{ nullptr };
         HttpAgentResources agentResources{};
 
@@ -1116,15 +1132,13 @@ namespace DiscordCoreInternal {
                 if (InteractionManagerAgent::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
                     shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
                     try {
-                        DiscordCoreAPI::MessageData messageData;
-                        while (messageData.id == "") {
-                            try_receive(*messageBlock, messageData);
-                        };
+                        DiscordCoreAPI::MessageData messageData = receive(*messageBlock, 2500);
                         co_await mainThread;
                         InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
                         co_return messageData;
                     }
-                    catch (exception&) {
+                    catch (operation_timed_out&) {
+                        InteractionManagerAgent::collectMessageDataBuffers.erase(dataPackage.interactionPackage.interactionId);
                         co_return DiscordCoreAPI::MessageData();
                     };
                 }

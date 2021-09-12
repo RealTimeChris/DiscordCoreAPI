@@ -368,7 +368,6 @@ namespace DiscordCoreAPI {
 			YouTubeSong tempSong = this->songQueue.at(firstSongPosition);
 			this->songQueue.at(firstSongPosition) = this->songQueue.at(secondSongPosition);
 			this->songQueue.at(secondSongPosition) = tempSong;
-			return;
 		}
 
 		YouTubeSong getCurrentSong() {

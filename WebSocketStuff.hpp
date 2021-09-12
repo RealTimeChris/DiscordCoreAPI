@@ -83,12 +83,11 @@ namespace DiscordCoreInternal {
 
 		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, bool* doWeQuitNew)
 			:ThreadContext(*ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
+			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectionData>>();
+			this->voiceConnectionDataBuffer = make_shared<unbounded_buffer<VoiceConnectionData>>();
 			this->webSocketWorkloadTarget = target;
 			this->botToken = botTokenNew;
 			this->doWeQuit = doWeQuitNew;
-			this->voiceConnectionDataBuffer = make_shared<unbounded_buffer<VoiceConnectionData>>();
-			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectionData>>();
-			return;
 		}
 
 	protected:
@@ -130,7 +129,6 @@ namespace DiscordCoreInternal {
 			stream << DiscordCoreInternal::getSocketPath(to_hstring(socketPathBase)).c_str();
 			stream << L"/?v=9&encoding=json";
 			this->socketPath = stream.str();
-			return;
 		}
 
 		void getVoiceConnectionData(GetVoiceConnectionData doWeCollect) {
@@ -143,7 +141,6 @@ namespace DiscordCoreInternal {
 			string newString = getVoiceStateUpdatePayload(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newString);
-			return;
 		}
 
 		~WebSocketConnectionAgent() {
@@ -161,12 +158,10 @@ namespace DiscordCoreInternal {
 		void run() {
 			try {
 				this->connect();
-				return;
 			}
 			catch (exception& e) {
 				send(this->errorBuffer, e);
 				done();
-				return;
 			}
 		}
 
@@ -188,7 +183,6 @@ namespace DiscordCoreInternal {
 			}
 
 			cout << "Send Complete" << endl << endl;
-			return;
 		}
 
 		void connect() {
@@ -213,7 +207,6 @@ namespace DiscordCoreInternal {
 			else {
 				this->terminate();
 			}
-			return;
 		}
 
 		void sendHeartBeat() {
@@ -324,7 +317,6 @@ namespace DiscordCoreInternal {
 				this->heartbeatInterval = payload.at("d").at("heartbeat_interval");
 				TimerElapsedHandler onHeartBeat = [this](ThreadPoolTimer timer) {
 					WebSocketConnectionAgent::sendHeartBeat();
-					return;
 				};
 				this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
 				std::string identity = getIdentifyPayload(to_string(this->botToken), this->intentsValue);
@@ -375,15 +367,14 @@ namespace DiscordCoreInternal {
 			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
 			agent(*this->scheduler->scheduler) {
 			this->voiceConnectionDataBuffer = webSocketConnectionAgentNew->voiceConnectionDataBuffer;
-			this->voiceConnectInitData = initDataNew;
 			this->webSocketConnectionAgent = webSocketConnectionAgentNew;
+			this->voiceConnectInitData = initDataNew;
 			GetVoiceConnectionData dataPackage;
 			dataPackage.channelId = this->voiceConnectInitData.channelId;
 			dataPackage.guildId = this->voiceConnectInitData.guildId;
 			dataPackage.userId = this->voiceConnectInitData.userId;
 			this->webSocketConnectionAgent->getVoiceConnectionData(dataPackage);
 			this->readyBuffer = readyBufferNew;
-			return;
 		}
 
 		void sendVoiceData(vector<uint8_t> data) {
@@ -396,7 +387,6 @@ namespace DiscordCoreInternal {
 				this->dataWriter.WriteBytes(message);
 				this->dataWriter.StoreAsync().get();
 			}
-			return;
 		}
 
 		void sendMessage(string text) {
@@ -459,7 +449,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << "VoiceChannelWebSocketAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		void connect() {
@@ -595,7 +584,6 @@ namespace DiscordCoreInternal {
 					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
 				}
 			}
-			return;
 		}
 
 		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args) {
@@ -658,10 +646,7 @@ namespace DiscordCoreInternal {
 
 		WebSocketReceiverAgent()
 			: ThreadContext(*ThreadManager::getThreadContext().get()),
-			agent(*this->scheduler->scheduler)
-		{
-			return;
-		}
+			agent(*this->scheduler->scheduler) {}
 
 	protected:
 		unbounded_buffer<WebSocketWorkload> webSocketWorkloadTarget{ nullptr };
@@ -674,7 +659,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << "WebSocketReceiverAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		void run() {
@@ -963,7 +947,6 @@ namespace DiscordCoreInternal {
 		~WebSocketReceiverAgent() {
 			this->terminate();
 			this->getError();
-			return;
 		}
 	};
 }

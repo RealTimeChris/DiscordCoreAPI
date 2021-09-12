@@ -87,12 +87,12 @@ namespace DiscordCoreAPI {
         unsigned long long startTime{ 0 };
     };
 
-    template <typename... T, typename Function>
-    void executeFunctionAfterTimePeriod(Function function, unsigned int timeDelayInMs, bool isRepeating, T... args) {
+    template <typename... T>
+    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, unsigned int timeDelayInMs, bool isRepeating, T... args) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0) {
             TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
-                function(args...);
+                theFunction(args...);
             };
             if (isRepeating) {
                 threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
@@ -102,29 +102,8 @@ namespace DiscordCoreAPI {
             }
         }
         else {
-            function(args...);
+            theFunction(args...);
         }
-        return;
-    }
-
-    template <>
-    void executeFunctionAfterTimePeriod(function<void(ThreadPoolTimer)> function, unsigned int timeDelayInMs, bool isRepeating) {
-        ThreadPoolTimer threadPoolTimer{ nullptr };
-        if (timeDelayInMs > 0) {
-            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
-                function(threadPoolTimerNew);
-            };
-            if (isRepeating) {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-            else {
-                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-        }
-        else {
-            function(threadPoolTimer);
-        }
-        return;
     }
 
     struct TimeStamp : public string {
@@ -197,7 +176,7 @@ namespace DiscordCoreAPI {
             if (err)
             {
                 printf("Invalid argument to _localtime64_s.");
-                exit(1);
+                return "";
             }
 
             string finalValue{};
@@ -211,15 +190,15 @@ namespace DiscordCoreAPI {
         __int64 timeValue = timeInMs / 1000;
         __time64_t rawTime(timeValue);
         tm timeInfo;
-        char timeBuffer[42];
+        char timeBuffer[25];
         errno_t error;
         error = localtime_s(&timeInfo, &rawTime);
         if (error) {
             printf("Invalid argument to _localtime64_s.");
         }
-        strftime(timeBuffer, 42, "%a %b %d %Y %X", &timeInfo);
+        strftime(timeBuffer, 25, "%a %b %d %Y %X", &timeInfo);
         TimeStamp timeStamp;
-        for (int x = 0; x < 42; x += 1) {
+        for (int x = 0; x < 24; x += 1) {
             timeStamp.push_back(timeBuffer[x]);
         }
         return timeStamp;
@@ -944,8 +923,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct HttpAgentResources {
-        hstring userAgent{ L"" };
-        string baseURL{ "" };       
+        string userAgent{ "" };
+        string baseURL{ "" };
     };
 
     struct DeleteInteractionResponseData {

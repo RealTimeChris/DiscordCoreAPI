@@ -111,7 +111,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::GuildMemberManagerAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage) {

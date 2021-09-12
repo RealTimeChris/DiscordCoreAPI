@@ -107,7 +107,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::ReactionManagerAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		DiscordCoreAPI::Reaction putObjectData(PutReactionData dataPackage) {
@@ -154,7 +153,6 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "this->deleteObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void run() {

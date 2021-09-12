@@ -1306,7 +1306,7 @@ namespace DiscordCoreInternal {
 			{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}},
 				},{"components", componentsActionRow} };
 			return data.dump();
-		}
+		};
 
 		string getCreateDeferredInteractionResponsePayload(PostDeferredInteractionResponseData dataPackage) {
 
@@ -1375,17 +1375,20 @@ namespace DiscordCoreInternal {
 
 			auto parseArray = json::array();
 			for (auto& value : dataPackage.data.allowedMentions.parse) {
-				parseArray.push_back(value);
+				json parseValue = parseValue.parse(value);
+				parseArray.push_back(parseValue);
 			};
 
 			auto rolesArray = json::array();
 			for (auto& value : dataPackage.data.allowedMentions.roles) {
-				rolesArray.push_back(value);
+				json parseValue = parseValue.parse(value);
+				rolesArray.push_back(parseValue);
 			}
 
 			auto usersArray = json::array();
 			for (auto& value : dataPackage.data.allowedMentions.users) {
-				usersArray.push_back(value);
+				json parseValue = parseValue.parse(value);
+				usersArray.push_back(parseValue);
 			}
 
 			auto componentsActionRow = json::array();

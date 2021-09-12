@@ -113,7 +113,6 @@ namespace DiscordCoreAPI {
 			dataPackageNew.selfMute = dataPackage.selfMute;
 			string payload = DiscordCoreInternal::getVoiceStateUpdatePayload(dataPackageNew);
 			this->pConnectionWebSocketAgent->sendMessage(payload);
-			return;
 		}
 
 		void updatePresence(UpdatePresenceData dataPackage) {
@@ -126,7 +125,6 @@ namespace DiscordCoreAPI {
 			dataPackageNew.status = dataPackage.status;
 			string payload = DiscordCoreInternal::getPresenceUpdatePayload(dataPackageNew);
 			this->pConnectionWebSocketAgent->sendMessage(payload);
-			return;
 		}
 
 	protected:
@@ -212,7 +210,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::UserManagerAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		DiscordCoreAPI::User getObjectData(GetUserData dataPackage) {

@@ -307,7 +307,6 @@ namespace DiscordCoreAPI {
                     av_frame_free(&this->newFrame);
                     cout << "Completed decoding!" << endl << endl;
                     this->done();
-                    return;
                 }
             }
             catch (exception& e) {

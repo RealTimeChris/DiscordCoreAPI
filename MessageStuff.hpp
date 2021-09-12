@@ -497,7 +497,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::MessageManagerAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage) {
@@ -673,7 +672,6 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "MessageManagerAgent::postObjectData_02 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void putObjectData(PutPinMessageData dataPackage) {
@@ -689,7 +687,6 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "MessageManagerAgent::putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void onDeleteData(DeleteMessageData dataPackage) {
@@ -711,7 +708,6 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "MessageManagerAgent::onDeleteData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void deleteObjectData(DeleteMessageData dataPackage) {
@@ -725,7 +721,6 @@ namespace DiscordCoreInternal {
 			else {
 				onDeleteData(dataPackage);
 			}
-			return;
 		}
 
 		void run() {

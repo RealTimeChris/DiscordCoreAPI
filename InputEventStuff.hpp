@@ -186,7 +186,6 @@ namespace DiscordCoreAPI {
 			dataPackageNew.interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNew.data.type = dataPackage.type;
 			InputEvents::interactions->createInteractionResponseAsync(dataPackageNew).get();
-			return;
 		}
 
 		static task<void> deleteInputEventResponseAsync(DeleteMessageData dataPackage, unsigned int timeDelayNew = 0) {

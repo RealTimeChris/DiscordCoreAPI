@@ -87,7 +87,6 @@ namespace DiscordCoreAPI {
 					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
 						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					}
-					return;
 				}
 			}
 		}
@@ -158,7 +157,6 @@ namespace DiscordCoreAPI {
 			this->icon = dataNew.icon;
 			this->name = dataNew.name;
 			this->id = dataNew.id;
-			return;
 		}
 
 		void initialize() {
@@ -205,7 +203,6 @@ namespace DiscordCoreAPI {
 			catch (exception error) {
 				cout << "Error: " << error.what() << endl;
 			}
-			return;
 		}
 	};
 
@@ -278,7 +275,6 @@ namespace DiscordCoreInternal {
 			this->agentResources = agentResourcesNew;
 			this->discordCoreClient = coreClientNew;
 			this->discordCoreClientBase = coreClientBaseNew;
-			return;
 		}
 
 		static void initialize(shared_ptr<ThreadContext> threadContextNew) {
@@ -294,7 +290,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::GuildManagerAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage) {
@@ -500,7 +495,6 @@ namespace DiscordCoreInternal {
 				send(this->errorBuffer, e);
 			}
 			done();
-			return;
 		}
 	};
 

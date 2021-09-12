@@ -151,7 +151,6 @@ namespace DiscordCoreInternal {
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::RoleManagerAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		vector<DiscordCoreAPI::Role> getObjectData(GetRolesData  dataPackage) {
@@ -290,7 +289,6 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "RoleManagerAgent::putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void deleteObjectData(DeleteGuildMemberRoleData dataPackage) {
@@ -306,7 +304,6 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "RoleManagerAgent::deleteObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void deleteObjectData(DeleteGuildRoleData dataPackage) {
@@ -322,7 +319,6 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "RoleManagerAgent::deleteObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void run() {

@@ -38,7 +38,6 @@ namespace DiscordCoreInternal {
             while (try_receive(errorBuffer, error)) {
                 cout << "ThreadManagerAgent Error: " << error.what() << endl << endl;
             }
-            return;
         }
 
         static void initialize(shared_ptr<ThreadContext> threadContextNew) {
@@ -71,7 +70,6 @@ namespace DiscordCoreInternal {
             shared_ptr<ThreadContext> threadContext = createThreadContext(ThreadType::Regular).get();
             ThreadManager::threads.push_back(threadContext);
             ThreadManagerAgent::initialize(threadContext);
-            return;
         }
 
         static task<shared_ptr<ThreadContext>> getThreadContext(ThreadType threadType = ThreadType::Regular) {

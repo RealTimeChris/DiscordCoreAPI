@@ -33,28 +33,28 @@ namespace DiscordCoreInternal {
 				cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
 				this->getHttpClient = HttpClient(filter);
 				this->getHeaders = this->getHttpClient.DefaultRequestHeaders();
-				if (agentResources.userAgent != L"") {
-					this->getHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				if (agentResources.userAgent != "") {
+					this->getHeaders.UserAgent().TryParseAdd(to_hstring(agentResources.userAgent));
 				}
 				this->putHttpClient = HttpClient(filter);
 				this->putHeaders = this->putHttpClient.DefaultRequestHeaders();
-				if (agentResources.userAgent != L"") {
-					this->putHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				if (agentResources.userAgent != "") {
+					this->putHeaders.UserAgent().TryParseAdd(to_hstring(agentResources.userAgent));
 				}
 				this->postHttpClient = HttpClient(filter);
 				this->postHeaders = this->postHttpClient.DefaultRequestHeaders();
-				if (agentResources.userAgent != L"") {
-					this->postHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				if (agentResources.userAgent != "") {
+					this->postHeaders.UserAgent().TryParseAdd(to_hstring(agentResources.userAgent));
 				}
 				this->patchHttpClient = HttpClient(filter);
 				this->patchHeaders = this->patchHttpClient.DefaultRequestHeaders();
-				if (agentResources.userAgent != L"") {
-					this->patchHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				if (agentResources.userAgent != "") {
+					this->patchHeaders.UserAgent().TryParseAdd(to_hstring(agentResources.userAgent));
 				}
 				this->deleteHttpClient = HttpClient(filter);
 				this->deleteHeaders = this->deleteHttpClient.DefaultRequestHeaders();
-				if (agentResources.userAgent != L"") {
-					this->deleteHeaders.UserAgent().TryParseAdd(agentResources.userAgent);
+				if (agentResources.userAgent != "") {
+					this->deleteHeaders.UserAgent().TryParseAdd(to_hstring(agentResources.userAgent));
 				}
 				if (HttpRequestAgent::botToken != "") {
 					this->botToken = HttpRequestAgent::botToken;

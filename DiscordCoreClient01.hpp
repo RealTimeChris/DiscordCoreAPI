@@ -712,7 +712,6 @@ namespace DiscordCoreAPI {
 				send(this->errorBuffer, e);
 			}
 			done();
-			return;
 		}
 
 	};

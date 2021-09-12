@@ -54,7 +54,6 @@ namespace DiscordCoreAPI {
 			this->nsfw = dataNew.nsfw;
 			this->icon = dataNew.icon;
 			this->id = dataNew.id;
-			return;
 		}
 	};
 
@@ -124,7 +123,6 @@ namespace DiscordCoreInternal	{
 			while (try_receive(errorBuffer, error)) {
 				cout << stackTrace + "::ChannelManagerAgent Error: " << error.what() << endl << endl;
 			}
-			return;
 		}
 
 		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage) {
@@ -183,7 +181,6 @@ namespace DiscordCoreInternal	{
 			else {
 				cout << "ChannelManagerAgent::putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void deleteObjectData(DeleteChannelPermissionOverwritesData dataPackage) {
@@ -199,7 +196,6 @@ namespace DiscordCoreInternal	{
 			else {
 				cout << "ChannelManagerAgent::deleteObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			return;
 		}
 
 		void run() {
