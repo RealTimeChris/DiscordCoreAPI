@@ -855,10 +855,7 @@ namespace DiscordCoreInternal {
 				{"roles", dataPackage.allowedMentions.roles},
 				{"users", dataPackage.allowedMentions.users}
 				}},
-			{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-				{"channel_id", dataPackage.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
-					}},
+					
 			{"content", dataPackage.content},
 			{"embeds" ,embedsArray},
 			{"components", componentsActionRow}

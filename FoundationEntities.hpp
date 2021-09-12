@@ -1571,7 +1571,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct PatchMessageData {
-        MessageReferenceData messageReference{};
         AllowedMentionsData allowedMentions{};
         vector<AttachmentData> attachments{};
         HttpAgentResources agentResources{};

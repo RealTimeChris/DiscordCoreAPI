@@ -214,7 +214,6 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
-		MessageReferenceData messageReference{};
 		AllowedMentionsData allowedMentions{};
 		vector<AttachmentData> attachments{};
 		vector<ActionRowData> components{};
@@ -897,8 +896,10 @@ namespace DiscordCoreInternal {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			PatchMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
-			dataPackageNew.channelId = dataPackage.messageReference.channelId;
-			dataPackageNew.messageId = dataPackage.messageReference.messageId;
+			dataPackageNew.channelId = dataPackage.channelId;
+			cout << "CHANNEL ID: " << dataPackageNew.channelId << endl;
+			dataPackageNew.messageId = dataPackage.messageId;
+			cout << "MESSAGE ID: " << dataPackageNew.messageId << endl;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
 			for (auto value : dataPackage.attachments) {
 				dataPackageNew.attachments.push_back(value);
@@ -911,7 +912,6 @@ namespace DiscordCoreInternal {
 				dataPackageNew.embeds.push_back(value);
 			}
 			dataPackageNew.flags = dataPackage.flags;
-			dataPackageNew.messageReference = dataPackage.messageReference;
 			dataPackageNew.requesterId = dataPackage.requesterId;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPatchMessageBuffer, dataPackageNew);
