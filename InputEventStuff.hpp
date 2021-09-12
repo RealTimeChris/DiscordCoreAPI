@@ -193,8 +193,7 @@ namespace DiscordCoreAPI {
 			apartment_context mainThread;
 			co_await resume_background();
 			DeleteMessageData deleteData;
-			deleteData.channelId = dataPackage.channelId;
-			deleteData.messageId = dataPackage.messageId;
+			deleteData.messageData = dataPackage.messageData;
 			deleteData.timeDelay = dataPackage.timeDelay;
 			InputEvents::messages->deleteMessageAsync(deleteData).get();
 			co_await mainThread;
@@ -206,8 +205,7 @@ namespace DiscordCoreAPI {
 			co_await resume_background();
 			if ((dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE) || (dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT)) {
 				DeleteMessageData deleteData;
-				deleteData.channelId = dataPackage.getChannelId();
-				deleteData.messageId = dataPackage.getMessageId();
+				deleteData.messageData = dataPackage.getMessageData();
 				deleteData.timeDelay = timeDelayNew;
 				InputEvents::messages->deleteMessageAsync(deleteData).get();
 			}

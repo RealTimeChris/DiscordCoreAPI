@@ -226,9 +226,13 @@ namespace DiscordCoreAPI {
     }
 
     long long convertTimestampToInteger(string timeStamp) {
+        int hours = stoi(timeStamp.substr(11, 12)) - 4;
+        if (hours < 0) {
+            hours = 24 + hours;
+        }
         CTime timeValue = CTime::CTime(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
-            stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
-        return timeValue.GetTime() * 1000;
+            hours, stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
+        return (timeValue.GetTime() * 1000);
     }
 
     string convertTimeStampToNewOne(string timeStamp) {
@@ -287,17 +291,15 @@ namespace DiscordCoreAPI {
     }
 
     bool hasTimeElapsed(string timeStamp, long long days = 0, long long hours = 0, long long minutes = 0) {
-        long long startTime = convertTimestampToInteger(timeStamp);
-        long long currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
+        long long startTimeRaw = convertTimestampToInteger(timeStamp);
+        chrono::milliseconds startTime(startTimeRaw);
+        auto currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
         long long secondsPerMinute = 60;
         long long secondsPerHour = secondsPerMinute * 60;
         long long secondsPerDay = secondsPerHour * 24;
-        long long targetElapsedTime = (days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute) * 1000;
-        long long actualElapsedTime = currentTime - startTime;
-        if (actualElapsedTime < 0) {
-            actualElapsedTime = 0;
-        }
-        if (actualElapsedTime >= targetElapsedTime) {
+        auto targetElapsedTime = chrono::milliseconds(((days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute)) * 1000);
+        auto actualElapsedTime = currentTime - startTime.count();
+        if (actualElapsedTime >= targetElapsedTime.count()) {
             return true;
         }
         else {
@@ -1173,7 +1175,8 @@ namespace  DiscordCoreInternal {
         PUT_BULK_OVERWRITE_APPLICATION_COMMANDS = 57,
         POST_GUILD_APPLICATION_COMMAND = 58,
         GET_GUILD_APPLICATION_COMMANDS = 59,
-        GET_GUILD_APPLICATION_COMMAND = 60
+        GET_GUILD_APPLICATION_COMMAND = 60,
+        DELETE_MESSAGE_OLD = 61
     };
 
     enum class MessageStickerItemType {
@@ -1236,6 +1239,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct MessageData : MessageDataOld {
+        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
         MessageDataOld referencedMessage{};
         string requesterId{ "" };
     };
@@ -1454,8 +1458,9 @@ namespace  DiscordCoreInternal {
     struct RateLimitData {
         HttpWorkloadType workloadType{};
         float nextExecutionTime{ 0.0f };
-        float timeStartedAt{ 0.0f };
+        float timeResettingAt{ 0.0f };
         float msRemainTotal{ 0.0f };
+        float timeStartedAt{ 0.0f };
         bool isItMarked{ false };
         int getsRemaining{ 1 };
         float msRemain{ 0.0f };
@@ -1604,8 +1609,7 @@ namespace  DiscordCoreInternal {
     struct DeleteMessageData {
         HttpAgentResources agentResources{};
         unsigned int timeDelay{ 0 };
-        string channelId{ "" };
-        string messageId{ "" };
+        MessageData message{};
     };
 
     struct PostDMData {
@@ -2774,6 +2778,14 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageActivityData {
+
+        operator DiscordCoreInternal::MessageActivityData() {
+            DiscordCoreInternal::MessageActivityData newData;
+            newData.partyId = this->partyId;
+            newData.type = this->type;
+            return newData;
+        }
+
         string partyId{ "" };
         int type{ 0 };
     };
@@ -3014,8 +3026,56 @@ namespace DiscordCoreAPI {
 
         operator DiscordCoreInternal::MessageData() {
             DiscordCoreInternal::MessageData newData;
+            newData.type = (DiscordCoreInternal::MessageType)this->type;
             newData.referencedMessage = this->referencedMessage;
+            newData.discordCoreClient = this->discordCoreClient;
+            newData.messageReference = this->messageReference;
+            for (auto value : this->mentionChannels) {
+                newData.mentionChannels.push_back(value);
+            }
+            newData.mentionEveryone = this->mentionEveryone;
+            newData.editedTimestamp = this->editedTimestamp;
+            newData.applicationId = this->applicationId;
+            newData.timestampRaw = this->timestampRaw;
+            newData.mentionRoles = this->mentionRoles;
+            for (auto value : this->stickerItems) {
+                newData.stickerItems.push_back(value);
+            }
+            for (auto value : this->attachments) {
+                newData.attachments.push_back(value);
+            }
+            newData.application = this->application;
+            newData.interaction = this->interaction;
+            for (auto value : this->components) {
+                newData.components.push_back(value);
+            }
             newData.requesterId = this->requesterId;
+            newData.channelId = this->channelId;
+            newData.timestamp = this->timestamp;
+            for (auto value : this->reactions) {
+                newData.reactions.push_back(value);
+            }
+            newData.webhookId = this->webhookId;
+            for (auto value : this->mentions) {
+                newData.mentions.push_back(value);
+            }
+            newData.activity = this->activity;
+            for (auto value : this->stickers) {
+                newData.stickers.push_back(value);
+            }
+            newData.guildId = this->guildId;
+            newData.content = this->content;
+            newData.author = this->author;
+            newData.member = this->member;
+            for (auto value : this->embeds) {
+                newData.embeds.push_back(value);
+            }
+            newData.pinned = this->pinned;
+            newData.thread = this->thread;
+            newData.nonce = this->nonce;
+            newData.flags = this->flags;
+            newData.tts = this->tts;
+            newData.id = this->id;
             return newData;
         }
 

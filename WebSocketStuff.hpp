@@ -523,8 +523,6 @@ namespace DiscordCoreInternal {
 					dataPackage.userId = this->voiceConnectInitData.userId;
 					this->webSocketConnectionAgent->getVoiceConnectionData(dataPackage);
 					this->connect();
-					string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
-					this->sendMessage(resumePayload);
 				}
 				else {
 					this->terminate();
@@ -700,7 +698,7 @@ namespace DiscordCoreInternal {
 				workload.eventType = WebSocketEventType::Application_Command_Create;
 				send(this->webSocketWorkloadTarget, workload);
 			}
-			
+
 			if (payload.at("t") == "APPLICATION_COMMAND_UPDATE") {
 				workload.eventType = WebSocketEventType::Application_Command_Update;
 				send(this->webSocketWorkloadTarget, workload);
@@ -840,7 +838,7 @@ namespace DiscordCoreInternal {
 				workload.eventType = WebSocketEventType::Guild_Role_Delete;
 				send(this->webSocketWorkloadTarget, workload);
 			}
-			
+
 			if (payload.at("t") == "INTEGRATION_ROLE_CREATE") {
 				workload.eventType = WebSocketEventType::Integration_Create;
 				send(this->webSocketWorkloadTarget, workload);
@@ -910,7 +908,7 @@ namespace DiscordCoreInternal {
 				workload.eventType = WebSocketEventType::Message_Reaction_Remove_Emoji;
 				send(this->webSocketWorkloadTarget, workload);
 			}
-			
+
 			if (payload.at("t") == "PRESENCE_UPDATE") {
 				workload.eventType = WebSocketEventType::Presence_Update;
 				send(this->webSocketWorkloadTarget, workload);
@@ -955,7 +953,7 @@ namespace DiscordCoreInternal {
 				workload.eventType = WebSocketEventType::Webhooks_Update;
 				send(this->webSocketWorkloadTarget, workload);
 			}
-						
+
 		}
 
 		void terminate() {

@@ -440,23 +440,9 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DeleteMessageData {
-
-		DeleteMessageData() {}
-
-		DeleteMessageData(string channelId, string messageId, unsigned int timeDelay = 0) {
-			this->channelId = channelId;
-			this->messageId = messageId;
-			this->timeDelay = timeDelay;
-		};
-
-		DeleteMessageData(Message dataPackage, int delayToDelete = 0) {
-			this->channelId = dataPackage.channelId;
-			this->messageId = dataPackage.id;
-			this->timeDelay = delayToDelete;
-		}
+	public:
 		unsigned int timeDelay{ 0 };
-		string channelId{ "" };
-		string messageId{ "" };
+		MessageData messageData;
 	};
 
 	struct DeleteMessagesBulkData {
@@ -515,7 +501,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
@@ -532,11 +518,12 @@ namespace DiscordCoreInternal {
 			DataParser::parseObject(returnData.data, &messageData);
 			messageData.requesterId = dataPackage.requesterId;
 			DiscordCoreAPI::Message messageNew(messageData);
+			cout << "MESSAGE ID: " << messageNew.id << endl;
 			return messageNew;
 		}
 
 		vector<DiscordCoreAPI::Message> getObjectData(GetMessagesData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_MESSAGES;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
@@ -583,7 +570,7 @@ namespace DiscordCoreInternal {
 		}
 
 		vector<DiscordCoreAPI::Message> getObjectData(GetPinnedMessagesData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_PINNED_MESSAGES;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
@@ -607,7 +594,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message patchObjectData(PatchMessageData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.workloadClass = HttpWorkloadClass::PATCH;
 			workload.workloadType = HttpWorkloadType::PATCH_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
@@ -629,7 +616,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message postObjectData(PostMessageData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.content = dataPackage.content;
 			workload.workloadType = HttpWorkloadType::POST_MESSAGE;
 			workload.workloadClass = HttpWorkloadClass::POST;
@@ -652,7 +639,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message postObjectData(PostDMData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.workloadType = HttpWorkloadType::POST_USER_DM;
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
@@ -673,9 +660,9 @@ namespace DiscordCoreInternal {
 		}
 
 		void postObjectData(DeleteMessagesBulkData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.workloadClass = HttpWorkloadClass::POST;
-			workload.workloadType = HttpWorkloadType::DELETE_MESSAGE;
+			workload.workloadType = HttpWorkloadType::DELETE_MESSAGES_BULK;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
 			workload.content = dataPackage.content;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
@@ -690,7 +677,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void putObjectData(PutPinMessageData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkload workload{};
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.workloadType = HttpWorkloadType::PUT_PIN_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
@@ -706,10 +693,16 @@ namespace DiscordCoreInternal {
 		}
 
 		void onDeleteData(DeleteMessageData dataPackage) {
-			HttpWorkload workload;
-			workload.workloadType = HttpWorkloadType::DELETE_MESSAGE;
+			HttpWorkload workload{};
+			bool hasTimeElapsed = DiscordCoreAPI::hasTimeElapsed(dataPackage.message.timestampRaw, 14);
+			if (hasTimeElapsed) {
+				workload.workloadType = HttpWorkloadType::DELETE_MESSAGE_OLD;
+			}
+			else {
+				workload.workloadType = HttpWorkloadType::DELETE_MESSAGE;
+			}
 			workload.workloadClass = HttpWorkloadClass::DELETED;
-			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
+			workload.relativePath = "/channels/" + dataPackage.message.channelId + "/messages/" + dataPackage.message.id;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -951,8 +944,7 @@ namespace DiscordCoreInternal {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DeleteMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
-			dataPackageNew.channelId = dataPackage.channelId;
-			dataPackageNew.messageId = dataPackage.messageId;
+			dataPackageNew.message = dataPackage.messageData;
 			dataPackageNew.timeDelay = dataPackage.timeDelay;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestDeleteMessageBuffer, dataPackageNew);
