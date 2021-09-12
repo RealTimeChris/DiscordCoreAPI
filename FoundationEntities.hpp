@@ -1576,7 +1576,6 @@ namespace  DiscordCoreInternal {
         vector<AttachmentData> attachments{};
         HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
-        MessageData originalMessageData{};
         vector<EmbedData> embeds{};
         string requesterId{ "" };
         string messageId{ "" };

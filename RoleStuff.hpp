@@ -110,6 +110,7 @@ namespace DiscordCoreInternal {
 
 	class RoleManagerAgent : agent {
 	protected:
+
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class RoleManager;
 		

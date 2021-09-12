@@ -76,6 +76,7 @@ namespace DiscordCoreInternal {
 
 	class ReactionManagerAgent : agent {
 	protected:
+
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class ReactionManager;
 

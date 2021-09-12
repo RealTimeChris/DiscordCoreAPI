@@ -120,15 +120,16 @@ namespace DiscordCoreAPI {
 						break;
 					}
 				}
-				catch (exception&) {};
-				
-				
+				catch (operation_timed_out&) {};
+
 				this->elapsedTime = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - this->startingTime;
 			}
 			done();
 		}
 
 	};
+
+	map<string, unbounded_buffer<Message>*> MessageCollector::messagesBufferMap;
 
 	struct EditMessageData {
 
@@ -137,7 +138,6 @@ namespace DiscordCoreAPI {
 		friend class InputEvents;
 		
 		EditMessageData(InputEventData dataPackage) {
-			this->originalMessageData = dataPackage.getMessageData();
 			this->requesterId = dataPackage.getRequesterId();
 			this->channelId = dataPackage.getChannelId();
 			this->messageId = dataPackage.getMessageId();
@@ -217,9 +217,7 @@ namespace DiscordCoreAPI {
 		MessageReferenceData messageReference{};
 		AllowedMentionsData allowedMentions{};
 		vector<AttachmentData> attachments{};
-		MessageData replyingToMessageData{};
 		vector<ActionRowData> components{};
-		MessageData originalMessageData{};
 		vector<EmbedData> embeds{};
 		string requesterId{ "" };
 		string channelId{ "" };
@@ -284,7 +282,6 @@ namespace DiscordCoreAPI {
 		ReplyMessageData(InputEventData dataPackage) {
 			this->messageReference.messageId = dataPackage.getMessageId();
 			this->messageReference.channelId = dataPackage.getChannelId();
-			this->replyingToMessageData = dataPackage.getMessageData();
 			this->messageReference.guildId = dataPackage.getGuildId();
 			this->requesterId = dataPackage.getRequesterId();
 			this->messageReference.failIfNotExists = false;
@@ -363,7 +360,6 @@ namespace DiscordCoreAPI {
 	protected:
 		MessageReferenceData messageReference{};
 		AllowedMentionsData allowedMentions{};
-		MessageData replyingToMessageData{};
 		vector<ActionRowData> components{};
 		vector<EmbedData> embeds{};
 		string requesterId{ "" };
@@ -449,8 +445,6 @@ namespace DiscordCoreAPI {
 		vector<string> messageIds{};
 		string channelId{ "" };
 	};
-
-	map<string, unbounded_buffer<Message>*> MessageCollector::messagesBufferMap;
 };
 
 namespace DiscordCoreInternal {
@@ -819,7 +813,7 @@ namespace DiscordCoreInternal {
 			dataPackageNew.messageReference = dataPackage.messageReference;
 			dataPackageNew.nonce = dataPackage.nonce;
 			dataPackageNew.tts = dataPackage.tts;
-			dataPackageNew.channelId = dataPackage.replyingToMessageData.channelId;
+			dataPackageNew.channelId = dataPackage.messageReference.channelId;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPostMessageBuffer, dataPackageNew);
 			requestAgent.start();
@@ -903,8 +897,8 @@ namespace DiscordCoreInternal {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			PatchMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
-			dataPackageNew.channelId = dataPackage.originalMessageData.channelId;
-			dataPackageNew.messageId = dataPackage.originalMessageData.id;
+			dataPackageNew.channelId = dataPackage.messageReference.channelId;
+			dataPackageNew.messageId = dataPackage.messageReference.messageId;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
 			for (auto value : dataPackage.attachments) {
 				dataPackageNew.attachments.push_back(value);
@@ -918,7 +912,6 @@ namespace DiscordCoreInternal {
 			}
 			dataPackageNew.flags = dataPackage.flags;
 			dataPackageNew.messageReference = dataPackage.messageReference;
-			dataPackageNew.originalMessageData = dataPackage.originalMessageData;
 			dataPackageNew.requesterId = dataPackage.requesterId;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestPatchMessageBuffer, dataPackageNew);
