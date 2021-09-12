@@ -315,8 +315,11 @@ namespace DiscordCoreAPI {
 					}
 					catch (operation_timed_out&) {};
 					
-					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0 || this->audioData.type == AudioFrameType::Cancel || this->audioData.type == AudioFrameType::Unset) {
+					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0 ||  this->audioData.type == AudioFrameType::Unset) {
 						goto start;
+					}
+					else if (this->audioData.type == AudioFrameType::Cancel) {
+						break;
 					}
 				}
 				this->sendSpeakingMessage(true);

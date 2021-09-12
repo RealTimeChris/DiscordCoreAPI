@@ -261,7 +261,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		const string baseURL{ "https://www.youtube.com" };
 		DiscordGuild* discordGuild{ new DiscordGuild };
-		const int refreshTimeForBuffer{ 50 };
 		SongDecoder* songDecoder{ nullptr };
 		const hstring newLine{ L"\n\r" };
 		vector<YouTubeSong> songQueue{};
@@ -270,8 +269,8 @@ namespace DiscordCoreAPI {
 		string playerResponse{ "" };
 		bool areWeStopping{ false };
 		YouTubeSong currentSong{};
-		task<bool> currentTask{};
 		string html5Player{ "" };
+		task<bool> currentTask{};
 		bool loopSong{ false };
 		bool loopAll{ false };
 		string guildId{ "" };

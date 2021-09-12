@@ -343,7 +343,7 @@ namespace DiscordCoreAPI {
                 buf[x] = stream->currentBuffer[x];
             }
 
-            if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize || stream->currentBuffer.size() == 0) {
+            if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
                 cout << "End of file reached!\n\n";
                 return AVERROR_EXIT;
             }

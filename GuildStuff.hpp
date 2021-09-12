@@ -85,6 +85,8 @@ namespace DiscordCoreAPI {
 						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
 					}
 					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
+						send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
+						send(voiceConnection->get()->playBuffer, true);
 						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					}
 				}
@@ -120,12 +122,12 @@ namespace DiscordCoreAPI {
 			this->preferredLocale = dataNew.preferredLocale;
 			this->widgetChannelId = dataNew.widgetChannelId;
 			this->systemChannelId = dataNew.systemChannelId;
+			this->rulesChannelId = dataNew.rulesChannelId;
 			this->stageInstances = dataNew.stageInstances;
 			this->welcomeScreen = dataNew.welcomeScreen;
 			this->widgetEnabled = dataNew.widgetEnabled;
 			this->vanityURLCode = dataNew.vanityURLCode;
-			this->applicationId = dataNew.applicationId;
-			this->rulesChannelId = dataNew.rulesChannelId;
+			this->applicationId = dataNew.applicationId;			
 			this->maxPresences = dataNew.maxPresences;
 			this->afkChannelId = dataNew.afkChannelId;
 			this->description = dataNew.description;
