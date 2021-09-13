@@ -336,7 +336,7 @@ namespace DiscordCoreAPI {
 				long long timeCounter{ 0 };
 				long long totalTime{ 0 };
 				int frameCounter{ 0 };
-
+				 
 				if (this->audioData.type == AudioFrameType::Encoded) {
 					this->areWePlaying = true;
 					while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
