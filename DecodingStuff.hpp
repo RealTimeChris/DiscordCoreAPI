@@ -325,7 +325,7 @@ namespace DiscordCoreAPI {
             try {
                 stream->currentBuffer = receive(stream->inputDataBuffer, stream->refreshTimeForBuffer);
             }
-            catch (operation_timed_out&) {
+            catch (...) {
                 return AVERROR_EXIT;
             };
             if (stream->currentBuffer.size() > 0) {

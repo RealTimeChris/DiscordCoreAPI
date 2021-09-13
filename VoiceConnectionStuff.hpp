@@ -40,7 +40,12 @@ namespace DiscordCoreAPI {
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
 				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyBuffer, voiceConnectInitDataNew, websocketAgent);
 				this->voicechannelWebSocketAgent->start();
-				receive(this->connectionReadyBuffer);
+				try {
+					receive(this->connectionReadyBuffer, 10000);
+				}
+				catch (operation_timed_out&) {
+					return;
+				}
 				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
 				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
@@ -432,12 +437,22 @@ namespace DiscordCoreAPI {
 				this->areWePlaying = false;
 				if (this->areWeStopping) {
 					send(this->stopBuffer, true);
-					receive(this->stopBuffer);
+					try {
+						receive(this->stopBuffer, 5000);
+					}
+					catch (operation_timed_out&) {
+						break;
+					}
 					this->areWeStopping = false;
 				}
 				if (this->areWeSkipping) {
 					send(this->skipBuffer, true);
-					receive(this->skipBuffer);
+					try {
+						receive(this->skipBuffer, 5000);
+					}
+					catch (operation_timed_out&) {
+						break;
+					}
 					this->areWeSkipping = false;
 				}
 				this->sendSpeakingMessage(false);

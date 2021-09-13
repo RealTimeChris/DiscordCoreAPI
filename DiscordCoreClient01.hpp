@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
 			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, &this->doWeQuitWebSocket);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
-			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->agentResources);
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::ReactionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			DiscordCoreInternal::ChannelManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());

@@ -791,7 +791,6 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreInternal {
-    
 
     class InteractionManagerAgent : public agent {
     protected:
@@ -802,6 +801,7 @@ namespace DiscordCoreInternal {
 
         static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
+        static DiscordCoreInternal::HttpAgentResources agentResources;
 
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer{ nullptr };
@@ -814,16 +814,15 @@ namespace DiscordCoreInternal {
         unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
         unbounded_buffer<nlohmann::detail::type_error> errorBuffer2{ nullptr };
-        DiscordCoreInternal::HttpAgentResources agentResources{};
+        
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
-        InteractionManagerAgent(DiscordCoreInternal::HttpAgentResources agentResourcesNew)
-            :agent(*InteractionManagerAgent::threadContext->scheduler->scheduler) {
-            this->agentResources = agentResourcesNew;
-        }
+        InteractionManagerAgent()
+            :agent(*InteractionManagerAgent::threadContext->scheduler->scheduler) {}
 
-        static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+        static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew) {
             InteractionManagerAgent::threadContext = threadContextNew;
+            InteractionManagerAgent::agentResources = agentResourcesNew;
         }
 
         void getError(string stackTrace) {
@@ -1103,7 +1102,7 @@ namespace DiscordCoreInternal {
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.data.type;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.flags = dataPackage.data.data.flags;
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestPostDeferredInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1123,7 +1122,7 @@ namespace DiscordCoreInternal {
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.data.type;
             DiscordCoreInternal::HttpAgentResources httpAgentResources;
             dataPackageNew.agentResources = httpAgentResources;
-            InteractionManagerAgent requestAgent(httpAgentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1152,7 +1151,7 @@ namespace DiscordCoreInternal {
             dataPackageNew.applicationId = dataPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionToken;
             dataPackageNew.agentResources = this->agentResources;
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestGetInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1181,7 +1180,7 @@ namespace DiscordCoreInternal {
             dataPackageNew.data.data.flags = dataPackage.data.data.flags;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.data.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.data.type;
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestPatchInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1200,7 +1199,7 @@ namespace DiscordCoreInternal {
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.timeDelayInMs = dataPackage.timeDelay;
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestDeleteInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1227,7 +1226,7 @@ namespace DiscordCoreInternal {
             }
             dataPackageNew.flags = dataPackage.data.data.flags;
             dataPackageNew.tts = dataPackage.data.data.tts;
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestPostFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1258,7 +1257,7 @@ namespace DiscordCoreInternal {
             }
             dataPackageNew.flags = dataPackage.data.data.flags;
             dataPackageNew.tts = dataPackage.data.data.tts;
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestPatchFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1278,7 +1277,7 @@ namespace DiscordCoreInternal {
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.timeDelayInMs = dataPackage.timeDelay;
             dataPackageNew.messageId = dataPackage.messagePackage.messageId;
-            InteractionManagerAgent requestAgent(this->agentResources);
+            InteractionManagerAgent requestAgent{};
             send(requestAgent.requestDeleteFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
@@ -1291,6 +1290,7 @@ namespace DiscordCoreInternal {
     };
     map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
     shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
+    DiscordCoreInternal::HttpAgentResources InteractionManagerAgent::agentResources{};
 };
 
 namespace DiscordCoreAPI {

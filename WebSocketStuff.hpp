@@ -165,24 +165,33 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-
 		void sendMessage(string& text) {
+			try {
+				string message = text;
+				if (message.empty()) {
+					cout << "Please specify text to send" << endl;
+					return;
+				}
 
-			string message = text;
-			if (message.empty()) {
-				cout << "Please specify text to send" << endl;
-				return;
+				cout << "Sending Message: ";
+				cout << message << endl;
+
+				if (this->messageWriter != nullptr) {
+					this->messageWriter.WriteString(to_hstring(message));
+					this->messageWriter.StoreAsync().get();
+				}
+
+				cout << "Send Complete" << endl << endl;
 			}
-
-			cout << "Sending Message: ";
-			cout << message << endl;
-
-			if (this->messageWriter != nullptr) {
-				this->messageWriter.WriteString(to_hstring(message));
-				this->messageWriter.StoreAsync().get();
+			catch (...) {
+				auto exceptionNew = current_exception();
+				try {
+					rethrow_exception(exceptionNew);
+				}
+				catch (exception& e) {
+					cout << "WebSocketConnectionAgent::sendMessage() Error: " << e.what() << endl;
+				}
 			}
-
-			cout << "Send Complete" << endl << endl;
 		}
 
 		void connect() {
@@ -417,8 +426,14 @@ namespace DiscordCoreInternal {
 
 				cout << "Send Complete" << endl << endl;
 			}
-			catch (hresult_error&e) {
-				cout << "VoiceChannelWebSocketAgent::sendMessage() Error: " << to_string(e.message()) << endl;
+			catch (...) {
+				auto exceptionNew = current_exception();
+				try {
+					rethrow_exception(exceptionNew);
+				}
+				catch (exception& e) {
+					cout << "VoiceChannelWebSocketAgent::sendMessage() Error: " << e.what() << endl;
+				}
 			}
 			
 		}
@@ -461,15 +476,35 @@ namespace DiscordCoreInternal {
 		void connect() {
 			try {
 				this->voiceConnectionData = receive(this->voiceConnectionDataBuffer.get(), 20000);
+				this->voiceConnectionData.endPoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
+				this->heartbeatTimer = ThreadPoolTimer(nullptr);
+				this->webSocket = MessageWebSocket();
+				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
+				this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
+				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
+				this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endPoint))).get();
 			}
-			catch (operation_timed_out&) {}
-			this->voiceConnectionData.endPoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
-			this->heartbeatTimer = ThreadPoolTimer(nullptr);
-			this->webSocket = MessageWebSocket();
-			this->webSocket.Control().MessageType(SocketMessageType::Utf8);
-			this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
-			this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
-			this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endPoint))).get();
+			catch (...) {
+				auto exceptionNew = current_exception();
+				try {
+					rethrow_exception(exceptionNew);
+				}
+				catch (exception& e) {
+					cout << "VoiceChannelWebSocketAgent::connect() Error: " << e.what() << endl;
+				}
+				if (this->maxReconnectTries > this->currentReconnectTries) {
+					this->currentReconnectTries += 1;
+					GetVoiceConnectionData dataPackage;
+					dataPackage.channelId = this->voiceConnectInitData.channelId;
+					dataPackage.guildId = this->voiceConnectInitData.guildId;
+					dataPackage.userId = this->voiceConnectInitData.userId;
+					this->webSocketConnectionAgent->getVoiceConnectionData(dataPackage);
+					this->connect();
+				}
+				else {
+					this->terminate();
+				}
+			}
 		}
 
 		void collectExternalIP() {
@@ -486,15 +521,26 @@ namespace DiscordCoreInternal {
 		}
 
 		void voiceConnect() {
-			receive(this->readyToVoiceConnectBuffer);
-			this->voiceSocket = DatagramSocket();
-			this->voiceSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
-			winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceConnectionData.voiceIp));
-			auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get();
-			this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
-			this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
-			this->dataWriter = DataWriter(this->voiceSocket.GetOutputStreamAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get());
-			this->dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+			try {
+				receive(this->readyToVoiceConnectBuffer, 10000);
+				this->voiceSocket = DatagramSocket();
+				this->voiceSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
+				winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceConnectionData.voiceIp));
+				auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get();
+				this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
+				this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
+				this->dataWriter = DataWriter(this->voiceSocket.GetOutputStreamAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get());
+				this->dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+			}
+			catch (...) {
+				auto exceptionNew = current_exception();
+				try {
+					rethrow_exception(exceptionNew);
+				}
+				catch (exception& e) {
+					cout << "VoiceChannelWebSocketAgent::voiceConnect() Error: " << e.what() << endl;
+				}
+			}
 		}
 
 		void run() {
@@ -669,8 +715,13 @@ namespace DiscordCoreInternal {
 		void run() {
 			try {
 				while (doWeQuit == false) {
-					json payload = receive(this->webSocketWorkloadSource);
-					this->onMessageReceived(payload);
+					try {
+						json payload = receive(this->webSocketWorkloadSource, 15000);
+						this->onMessageReceived(payload);
+					}
+					catch (operation_timed_out&) {
+						continue;
+					}					
 				}
 			}
 			catch (const exception& e) {

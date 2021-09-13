@@ -204,8 +204,8 @@ namespace DiscordCoreAPI {
 					this->discordCoreClientBase->users->insertUserAsync(user).get();
 				}
 			}
-			catch (exception error) {
-				cout << "Error: " << error.what() << endl;
+			catch (...) {
+				cout << "Guild::initialize() Error." << endl << endl;
 			}
 		}
 	};

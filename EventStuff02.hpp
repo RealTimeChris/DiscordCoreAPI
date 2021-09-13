@@ -165,20 +165,14 @@ namespace DiscordCoreAPI {
                 co_await mainThread;
                 co_return;
             }
-            catch (const exception& e) {
-                DiscordCoreClientBase::youtubeAPIMap->erase(dataPackage.eventData.getGuildId());
-                DiscordCoreClientBase::voiceConnectionMap->erase(dataPackage.eventData.getGuildId());
-                cout << "Exception: " << e.what() << endl;
-            }
-            catch (const winrt::hresult_invalid_argument& e) {
-                DiscordCoreClientBase::youtubeAPIMap->erase(dataPackage.eventData.getGuildId());
-                DiscordCoreClientBase::voiceConnectionMap->erase(dataPackage.eventData.getGuildId());
-                cout << "Exception: " << to_string(e.message()) << endl;
-            }
-            catch (winrt::hresult_error& e) {
-                DiscordCoreClientBase::youtubeAPIMap->erase(dataPackage.eventData.getGuildId());
-                DiscordCoreClientBase::voiceConnectionMap->erase(dataPackage.eventData.getGuildId());
-                cout << "Exception: " << to_string(e.message()) << endl;
+            catch (...) {
+                auto exceptionNew = current_exception();
+                try {
+                    rethrow_exception(exceptionNew);
+                }
+                catch (exception& e) {
+                    cout << "onInteractionCreation() Error: " << e.what() << endl;
+                }
             }
             co_await mainThread;
             co_return;
