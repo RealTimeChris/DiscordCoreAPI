@@ -399,22 +399,28 @@ namespace DiscordCoreInternal {
 			cout << "Sending Voice Message: ";
 			cout << message << endl;
 
-			// Buffer any data we want to send.
-			winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
-			DataWriter dataWriterMessage(randomAccessStream);
-			dataWriterMessage.UnicodeEncoding(UnicodeEncoding::Utf8);
-			dataWriterMessage.WriteString(to_hstring(message));
-			dataWriterMessage.StoreAsync().get();
-			randomAccessStream.FlushAsync().get();
-			if (randomAccessStream.CanRead()) {
-				DataReader dataReader(randomAccessStream.GetInputStreamAt(0));
-				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
-				dataReader.LoadAsync((uint32_t)message.length()).get();
-				IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.length());
-				this->webSocket.OutputStream().WriteAsync(buffer).get();
-			}
+			try {
+				// Buffer any data we want to send.
+				winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
+				DataWriter dataWriterMessage(randomAccessStream);
+				dataWriterMessage.UnicodeEncoding(UnicodeEncoding::Utf8);
+				dataWriterMessage.WriteString(to_hstring(message));
+				dataWriterMessage.StoreAsync().get();
+				randomAccessStream.FlushAsync().get();
+				if (randomAccessStream.CanRead()) {
+					DataReader dataReader(randomAccessStream.GetInputStreamAt(0));
+					dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+					dataReader.LoadAsync((uint32_t)message.length()).get();
+					IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.length());
+					this->webSocket.OutputStream().WriteAsync(buffer).get();
+				}
 
-			cout << "Send Complete" << endl << endl;
+				cout << "Send Complete" << endl << endl;
+			}
+			catch (hresult_error&e) {
+				cout << "VoiceChannelWebSocketAgent::sendMessage() Error: " << to_string(e.message()) << endl;
+			}
+			
 		}
 
 		~VoiceChannelWebSocketAgent() {
@@ -426,7 +432,7 @@ namespace DiscordCoreInternal {
 
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
-		unbounded_buffer<bool> connectReadyBuffer{ nullptr };
+		unbounded_buffer<bool> readyToVoiceConnectBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool>* readyBuffer{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
@@ -480,7 +486,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void voiceConnect() {
-			receive(this->connectReadyBuffer);
+			receive(this->readyToVoiceConnectBuffer);
 			this->voiceSocket = DatagramSocket();
 			this->voiceSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
 			winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceConnectionData.voiceIp));
@@ -554,7 +560,7 @@ namespace DiscordCoreInternal {
 							this->voiceConnectionData.voiceEncryptionMode = value;
 						}
 					}
-					send(this->connectReadyBuffer, true);
+					send(this->readyToVoiceConnectBuffer, true);
 					this->voiceConnect();
 					this->collectExternalIP();
 					while (this->areWeWaitingForIp) { cout << "Were here!" << endl; };

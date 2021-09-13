@@ -110,17 +110,16 @@ namespace DiscordCoreInternal {
         }
 
         DispatcherQueueOptions options{
-             sizeof(DispatcherQueueOptions),
-             DQTYPE_THREAD_DEDICATED,
-             DQTAT_COM_ASTA
-        };
+            .dwSize = sizeof(DispatcherQueueOptions),
+            .threadType = DQTYPE_THREAD_DEDICATED,
+            .apartmentType = DQTAT_COM_ASTA, };
 
         ABI::Windows::System::IDispatcherQueueController* ptrNew2{ nullptr };
         check_hresult(CreateDispatcherQueueController(options, &ptrNew2));
-        DispatcherQueueController queueController2 = { ptrNew2, take_ownership_from_abi };
-        DispatcherQueue threadQueue = queueController2.DispatcherQueue();
+        DispatcherQueueController queueController2{ ptrNew2, take_ownership_from_abi };
+        DispatcherQueue threadQueue{ queueController2.DispatcherQueue() };
         co_await resume_foreground(threadQueue);
-        SchedulerPolicy policy;
+        SchedulerPolicy policy{};
         policy.SetConcurrencyLimits(1, 1);
         if (threadType == ThreadType::Music) {
             policy.SetPolicyValue(PolicyElementKey::ContextPriority, THREAD_PRIORITY_HIGHEST);
@@ -135,7 +134,7 @@ namespace DiscordCoreInternal {
         policy.SetPolicyValue(PolicyElementKey::SchedulingProtocol, EnhanceScheduleGroupLocality);
         policy.SetPolicyValue(PolicyElementKey::TargetOversubscriptionFactor, 1);
         policy.SetPolicyValue(PolicyElementKey::WinRTInitialization, InitializeWinRTAsMTA);
-        Scheduler* newScheduler = Scheduler::Create(policy);
+        Scheduler* newScheduler{ Scheduler::Create(policy) };
         newScheduler->Attach();
         shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
         threadContext->scheduler = make_shared<ScheduleWrapper>(newScheduler);

@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClientBase;
 		friend class YouTubeAPICore;
-		friend class Guild;		
+		friend class Guild;
 
 		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew,  shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get()),
@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 				}
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->readyBuffer, voiceConnectInitDataNew, websocketAgent);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyBuffer, voiceConnectInitDataNew, websocketAgent);
 				this->voicechannelWebSocketAgent->start();
-				receive(this->readyBuffer);
+				receive(this->connectionReadyBuffer);
 				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
 				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
@@ -97,7 +97,6 @@ namespace DiscordCoreAPI {
 			if (this->areWePlaying) {
 				this->areWeStopping = true;
 				this->areWePlaying = false;
-				this->areWeStreaming = false;
 				try {
 					receive(this->stopBuffer, 1000);
 				}
@@ -116,7 +115,6 @@ namespace DiscordCoreAPI {
 			if (this->areWePlaying){
 				this->areWeSkipping = true;
 				this->areWePlaying = false;
-				this->areWeStreaming = false;
 				try {
 					receive(this->skipBuffer, 1000);
 				}
@@ -134,7 +132,7 @@ namespace DiscordCoreAPI {
 		void play() {
 			if (this != nullptr) {
 				try {
-					receive(this->readyBuffer, 1000);
+					receive(this->readyToPlayBuffer, 1000);
 				}
 				catch (operation_timed_out&) {};
 				if (!this->areWePlaying) {
@@ -172,7 +170,9 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		unbounded_buffer<bool> readyBuffer{ nullptr };
+		unbounded_buffer<bool> connectionReadyBuffer{ nullptr };
+		unbounded_buffer<bool>* disconnectionBuffer{ nullptr };
+		unbounded_buffer<bool> readyToPlayBuffer{ nullptr };
 		unbounded_buffer<bool> pauseBuffer{ nullptr };
 		unbounded_buffer<bool> stopBuffer{ nullptr };
 		unbounded_buffer<bool> skipBuffer{ nullptr };
@@ -183,7 +183,6 @@ namespace DiscordCoreAPI {
 		const int maxBufferSize{ 1276 };
 		bool areWeInstantiated{ false };
 		bool hasTerminateRun{ false };
-		bool areWeStreaming{ false };
 		bool areWeStopping{ false };
 		bool areWeSkipping{ false };
 		unsigned int timestamp{ 0 };
@@ -303,8 +302,11 @@ namespace DiscordCoreAPI {
 		void run() {
 			while (!this->doWeQuit) {
 				if (!this->areWePlaying) {
-					send(this->readyBuffer, true);
+					send(this->readyToPlayBuffer, true);
 					receive(this->playBuffer);
+					if (this->doWeQuit) {
+						break;
+					}
 					this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
@@ -331,7 +333,6 @@ namespace DiscordCoreAPI {
 				int frameCounter{ 0 };
 
 				if (this->audioData.type == AudioFrameType::Encoded) {
-					this->areWeStreaming = true;
 					this->areWePlaying = true;
 					while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
 						if (this->areWeSkipping) {
@@ -343,13 +344,11 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						if (this->areWePaused) {
-							this->areWeStreaming = false;
 							receive(this->pauseBuffer);
 							this->areWePaused = false;
 						}
 						if (this->doWeQuit) {
 							this->clearAudioData();
-							this->areWeStreaming = false;
 							this->areWePlaying = false;
 							frameCounter = 0;
 				 			break;
@@ -374,7 +373,6 @@ namespace DiscordCoreAPI {
 						}
 						else if (this->audioData.type == AudioFrameType::Cancel) {
 							this->onSongCompletionEvent(this);
-							this->areWeStreaming = false;
 							this->areWePlaying = false;
 							frameCounter = 0;
 							break;
@@ -383,7 +381,6 @@ namespace DiscordCoreAPI {
 					this->areWePlaying = false;
 				}
 				else if (this->audioData.type == AudioFrameType::RawPCM ) {
-					this->areWeStreaming = true;
 					this->areWePlaying = true;
 					while (this->audioData.rawFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
 						if (this->areWeSkipping) {
@@ -395,13 +392,11 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						if (this->areWePaused) {
-							this->areWeStreaming = false;
 							receive(this->pauseBuffer);
 							this->areWePaused = false;
 						}
 						if (this->doWeQuit) {
 							this->clearAudioData();
-							this->areWeStreaming = false;
 							this->areWePlaying = false;
 							frameCounter = 0;
 							break;
@@ -427,7 +422,6 @@ namespace DiscordCoreAPI {
 						}
 						else if (this->audioData.type == AudioFrameType::Cancel) {
 							this->onSongCompletionEvent(this);
-							this->areWeStreaming = false;
 							this->areWePlaying = false;
 							frameCounter = 0;
 							break;

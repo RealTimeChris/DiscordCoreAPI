@@ -61,6 +61,7 @@ namespace DiscordCoreAPI {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
+				(DiscordCoreClientBase::youtubeAPIMap->at(this->id))->stop();
 				YouTubeAPI::voiceConnectionMap.erase(this->id);
 				if (!(*voiceConnection)->hasTerminateRun) {
 					if ((*voiceConnection)->areWePlaying) {
@@ -76,17 +77,18 @@ namespace DiscordCoreAPI {
 					(*voiceConnection)->hasTerminateRun = true;
 					
 					if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-						DiscordCoreClientBase::youtubeAPIMap->at(this->id)->stop();
+						(DiscordCoreClientBase::youtubeAPIMap->at(this->id))->stop();
 						Playlist playlist{};
-						playlist.songQueue = *(DiscordCoreClientBase::youtubeAPIMap)->at(this->id)->getQueue();
-						playlist.isLoopAllEnabled = (DiscordCoreClientBase::youtubeAPIMap)->at(this->id)->isLoopAllEnabled();
-						playlist.isLoopSongEnabled = (DiscordCoreClientBase::youtubeAPIMap)->at(this->id)->isLoopSongEnabled();
+						playlist.songQueue = *(DiscordCoreClientBase::youtubeAPIMap->at(this->id))->getQueue();
+						playlist.isLoopAllEnabled = (DiscordCoreClientBase::youtubeAPIMap->at(this->id))->isLoopAllEnabled();
+						playlist.isLoopSongEnabled = (DiscordCoreClientBase::youtubeAPIMap->at(this->id))->isLoopSongEnabled();
 						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, playlist);
 						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
 					}
 					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
 						send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
-						send(voiceConnection->get()->playBuffer, true);
+						AudioFrameData frameData{};
+						while (try_receive(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), frameData)) {};
 						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					}
 				}

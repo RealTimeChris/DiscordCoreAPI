@@ -201,6 +201,10 @@ namespace DiscordCoreAPI {
 			this->components.push_back(dataPackage);
 		}
 
+		void addAttachment(AttachmentData dataPackage) {
+			this->attachments.push_back(dataPackage);
+		}
+
 		void addMessageEmbed(EmbedData dataPackage) {
 			this->embeds.push_back(dataPackage);
 		}
@@ -209,11 +213,8 @@ namespace DiscordCoreAPI {
 			this->content = dataPackage;
 		}
 
-		void setTTSStatus(bool enabledTTs) {
-			this->tts = enabledTTs;
-		}
-
 	protected:
+
 		AllowedMentionsData allowedMentions{};
 		vector<AttachmentData> attachments{};
 		vector<ActionRowData> components{};
@@ -222,9 +223,8 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };
 		string messageId{ "" };
 		string content{ "" };
-		bool tts{ false };
 		int flags{ 0 };
-		int nonce{ 0 };		
+		
 	};
 
 	struct CreateMessageData {
@@ -261,15 +261,17 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
+
 		MessageReferenceData messageReference{};
 		AllowedMentionsData allowedMentions{};
 		vector<ActionRowData> components{};
+		vector<string> stickerIds{};
 		vector<EmbedData> embeds{};
 		string requesterId{ "" };
 		string channelId{ "" };
 		string content{ "" };
 		bool tts{ false };
-		int nonce{ 0 };
+
 	};
 
 	struct ReplyMessageData {
@@ -684,7 +686,7 @@ namespace DiscordCoreInternal {
 
 		void onDeleteData(DeleteMessageData dataPackage) {
 			HttpWorkload workload{};
-			bool hasTimeElapsed = DiscordCoreAPI::hasTimeElapsed(dataPackage.message.timestampRaw, 14);
+			bool hasTimeElapsed = DiscordCoreAPI::hasTimeElapsed(dataPackage.messageTimeStamp, 14);
 			if (hasTimeElapsed) {
 				workload.workloadType = HttpWorkloadType::DELETE_MESSAGE_OLD;
 			}
@@ -692,7 +694,7 @@ namespace DiscordCoreInternal {
 				workload.workloadType = HttpWorkloadType::DELETE_MESSAGE;
 			}
 			workload.workloadClass = HttpWorkloadClass::DELETED;
-			workload.relativePath = "/channels/" + dataPackage.message.channelId + "/messages/" + dataPackage.message.id;
+			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 			HttpRequestAgent requestAgent(dataPackage.agentResources);
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -810,7 +812,6 @@ namespace DiscordCoreInternal {
 				dataPackageNew.embeds.push_back(value);
 			}
 			dataPackageNew.messageReference = dataPackage.messageReference;
-			dataPackageNew.nonce = dataPackage.nonce;
 			dataPackageNew.tts = dataPackage.tts;
 			dataPackageNew.channelId = dataPackage.messageReference.channelId;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
@@ -873,8 +874,6 @@ namespace DiscordCoreInternal {
 			for (auto value : dataPackage.embeds) {
 				dataPackageNew.embeds.push_back(value);
 			}
-			dataPackageNew.messageReference = dataPackage.messageReference;
-			dataPackageNew.nonce = dataPackage.nonce;
 			dataPackageNew.tts = dataPackage.tts;
 			dataPackageNew.channelId = dataPackage.channelId;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
@@ -930,7 +929,9 @@ namespace DiscordCoreInternal {
 			co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
 			DeleteMessageData dataPackageNew;
 			dataPackageNew.agentResources = this->agentResources;
-			dataPackageNew.message = dataPackage.messageData;
+			dataPackageNew.channelId = dataPackage.messageData.channelId;
+			dataPackageNew.messageId = dataPackage.messageData.id;
+			dataPackageNew.messageTimeStamp = dataPackage.messageData.timestampRaw;
 			dataPackageNew.timeDelay = dataPackage.timeDelay;
 			MessageManagerAgent requestAgent(dataPackageNew.agentResources, this->discordCoreClient);
 			send(requestAgent.requestDeleteMessageBuffer, dataPackageNew);

@@ -347,7 +347,12 @@ namespace DiscordCoreInternal {
 					"components", components} };
 			componentsActionRow.push_back(componentActionRow);
 		}
-		
+		auto stickersArray = json::array();
+
+		for (auto value : dataPackage.stickerIds) {
+			stickersArray.push_back(value);
+		}
+
 		auto embedsArray = json::array();
 
 		for (auto& value : dataPackage.embeds) {
@@ -407,74 +412,82 @@ namespace DiscordCoreInternal {
 
 		if (dataPackage.embeds.size() > 0){
 			if (dataPackage.messageReference.guildId != "") {
-				json data = {
-		{"allowed_mentions", {
-			{"parse", dataPackage.allowedMentions.parse},
-			{"replied_user", dataPackage.allowedMentions.repliedUser},
-			{"roles", dataPackage.allowedMentions.roles},
-			{"users", dataPackage.allowedMentions.users}
-			}},
-			{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-			{"channel_id", dataPackage.messageReference.channelId},
-			{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+				json data = { 
+					{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+				{"channel_id", dataPackage.messageReference.channelId},
+				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists},
 				}},
-		{"content", dataPackage.content},
-		{"tts" , dataPackage.tts},
-		{"embeds" ,embedsArray},
-					{"components", componentsActionRow}
+					{"allowed_mentions", {
+				{"parse", dataPackage.allowedMentions.parse},
+				{"replied_user", dataPackage.allowedMentions.repliedUser},
+				{"roles", dataPackage.allowedMentions.roles},
+				{"users", dataPackage.allowedMentions.users}
+				}},
+				{"components", componentsActionRow},
+					{"sticker_ids", stickersArray},
+					{"embeds", embedsArray},
+					{"content", dataPackage.content},
+			{"tts" , dataPackage.tts},
+
 				};
 				return data.dump();
 			}
 				else {
 				json data = {
-	{"allowed_mentions", {
-		{"parse", dataPackage.allowedMentions.parse},
-		{"replied_user", dataPackage.allowedMentions.repliedUser},
-		{"roles", dataPackage.allowedMentions.roles},
-		{"users", dataPackage.allowedMentions.users}
-		}},
-	{"content", dataPackage.content},
-	{"tts" , dataPackage.tts},
-	{"embeds" ,embedsArray},
-				{"components", componentsActionRow}
+					{"allowed_mentions", {
+				{"parse", dataPackage.allowedMentions.parse},
+				{"replied_user", dataPackage.allowedMentions.repliedUser},
+				{"roles", dataPackage.allowedMentions.roles},
+				{"users", dataPackage.allowedMentions.users}
+				}},
+				{"components", componentsActionRow},
+					{"sticker_ids", stickersArray},
+					{"embeds", embedsArray},
+					{"content", dataPackage.content},
+			{"tts" , dataPackage.tts},
+
 				};
 				return data.dump();
+					
 			}
 		}
 		else {
 			if (dataPackage.messageReference.guildId != "") {
 				json data = {
-			{"allowed_mentions", {
-				{"parse", dataPackage.allowedMentions.parse},
-				{"replied_user", dataPackage.allowedMentions.repliedUser},
-				{"roles", dataPackage.allowedMentions.roles},
-				{"users", dataPackage.allowedMentions.users}
-				}},
-				{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
+				{"message_reference", { {"message_id", dataPackage.messageReference.messageId},
 				{"channel_id", dataPackage.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
-					}},
-			{"content", dataPackage.content},
-			{"tts" , dataPackage.tts},
-					{"components", componentsActionRow}
-				};
-				return data.dump();
+				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists},
+				}},
+				{ "allowed_mentions", {
+			{"parse", dataPackage.allowedMentions.parse},
+			{"replied_user", dataPackage.allowedMentions.repliedUser},
+			{"roles", dataPackage.allowedMentions.roles},
+			{"users", dataPackage.allowedMentions.users}
+			} },
+				{ "components", componentsActionRow },
+				{ "sticker_ids", stickersArray },
+				{ "content", dataPackage.content },
+				{ "tts" , dataPackage.tts },
+
+			};
+			return data.dump();
 			}
 			else {
 				json data = {
-			{"allowed_mentions", {
-				{"parse", dataPackage.allowedMentions.parse},
-				{"replied_user", dataPackage.allowedMentions.repliedUser},
-				{"roles", dataPackage.allowedMentions.roles},
-				{"users", dataPackage.allowedMentions.users}
-				}},
-			{"content", dataPackage.content},
-			{"tts" , dataPackage.tts},
-				{"components", componentsActionRow}
+
+				{ "allowed_mentions", {
+			{"parse", dataPackage.allowedMentions.parse},
+			{"replied_user", dataPackage.allowedMentions.repliedUser},
+			{"roles", dataPackage.allowedMentions.roles},
+			{"users", dataPackage.allowedMentions.users}
+			} },
+				{ "components", componentsActionRow },
+				{ "sticker_ids", stickersArray },
+				{ "content", dataPackage.content },
+				{ "tts" , dataPackage.tts },
 				};
 				return data.dump();
 			}
-			
 		}
 		
 	}
@@ -559,6 +572,11 @@ namespace DiscordCoreInternal {
 					"components", components} };
 			componentsActionRow.push_back(componentActionRow);
 		}
+		auto stickersArray = json::array();
+
+		for (auto value : dataPackage.stickerIds) {
+			stickersArray.push_back(value);
+		}
 
 		auto embedsArray = json::array();
 
@@ -620,35 +638,39 @@ namespace DiscordCoreInternal {
 		if (dataPackage.embeds.size() > 0) {
 			if (dataPackage.messageReference.guildId != "") {
 				json data = {
-		{"allowed_mentions", {
-			{"parse", dataPackage.allowedMentions.parse},
-			{"replied_user", dataPackage.allowedMentions.repliedUser},
-			{"roles", dataPackage.allowedMentions.roles},
-			{"users", dataPackage.allowedMentions.users}
-			}},
-			{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-			{"channel_id", dataPackage.messageReference.channelId},
-			{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+					{"message_reference",{"message_id", dataPackage.messageReference.messageId},
+				{"channel_id", dataPackage.messageReference.channelId},
+				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists},
+				},
+			{"allowed_mentions", {
+				{"parse", dataPackage.allowedMentions.parse},
+				{"replied_user", dataPackage.allowedMentions.repliedUser},
+				{"roles", dataPackage.allowedMentions.roles},
+				{"users", dataPackage.allowedMentions.users}
 				}},
-		{"content", dataPackage.content},
-		{"tts" , dataPackage.tts},
-		{"embeds" ,embedsArray},
-					{"components", componentsActionRow}
+				{"components", componentsActionRow},
+					{"sticker_ids", stickersArray},
+					{"embeds", embedsArray},
+					{"content", dataPackage.content},
+			{"tts" , dataPackage.tts},
+
 				};
 				return data.dump();
 			}
 			else {
 				json data = {
-	{"allowed_mentions", {
-		{"parse", dataPackage.allowedMentions.parse},
-		{"replied_user", dataPackage.allowedMentions.repliedUser},
-		{"roles", dataPackage.allowedMentions.roles},
-		{"users", dataPackage.allowedMentions.users}
-		}},
-	{"content", dataPackage.content},
-	{"tts" , dataPackage.tts},
-	{"embeds" ,embedsArray},
-				{"components", componentsActionRow}
+			{"allowed_mentions", {
+				{"parse", dataPackage.allowedMentions.parse},
+				{"replied_user", dataPackage.allowedMentions.repliedUser},
+				{"roles", dataPackage.allowedMentions.roles},
+				{"users", dataPackage.allowedMentions.users}
+				}},
+				{"components", componentsActionRow},
+					{"sticker_ids", stickersArray},
+					{"embeds", embedsArray},
+					{"content", dataPackage.content},
+			{"tts" , dataPackage.tts},
+
 				};
 				return data.dump();
 			}
@@ -656,42 +678,43 @@ namespace DiscordCoreInternal {
 		else {
 			if (dataPackage.messageReference.guildId != "") {
 				json data = {
-			{"allowed_mentions", {
-				{"parse", dataPackage.allowedMentions.parse},
-				{"replied_user", dataPackage.allowedMentions.repliedUser},
-				{"roles", dataPackage.allowedMentions.roles},
-				{"users", dataPackage.allowedMentions.users}
-				}},
-				{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-				{"channel_id", dataPackage.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+						{"message_reference",{"message_id", dataPackage.messageReference.messageId},
+					{"channel_id", dataPackage.messageReference.channelId},
+					{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists},
+					},
+				{"allowed_mentions", {
+					{"parse", dataPackage.allowedMentions.parse},
+					{"replied_user", dataPackage.allowedMentions.repliedUser},
+					{"roles", dataPackage.allowedMentions.roles},
+					{"users", dataPackage.allowedMentions.users}
 					}},
-			{"content", dataPackage.content},
-			{"tts" , dataPackage.tts},
-					{"components", componentsActionRow}
+					{"components", componentsActionRow},
+						{"sticker_ids", stickersArray},
+						{"content", dataPackage.content},
+				{"tts" , dataPackage.tts},
+
 				};
 				return data.dump();
 			}
 			else {
 				json data = {
-			{"allowed_mentions", {
-				{"parse", dataPackage.allowedMentions.parse},
-				{"replied_user", dataPackage.allowedMentions.repliedUser},
-				{"roles", dataPackage.allowedMentions.roles},
-				{"users", dataPackage.allowedMentions.users}
-				}},
-					{"message_reference",{{"message_id", dataPackage.messageReference.messageId},
-				{"channel_id", dataPackage.messageReference.channelId},
-				{"fail_if_not_exists", dataPackage.messageReference.failIfNotExists}
+
+				{"allowed_mentions", {
+					{"parse", dataPackage.allowedMentions.parse},
+					{"replied_user", dataPackage.allowedMentions.repliedUser},
+					{"roles", dataPackage.allowedMentions.roles},
+					{"users", dataPackage.allowedMentions.users}
 					}},
-			{"content", dataPackage.content},
-			{"tts" , dataPackage.tts},
-				{"components", componentsActionRow}
+					{"components", componentsActionRow},
+						{"sticker_ids", stickersArray},
+						{"content", dataPackage.content},
+				{"tts" , dataPackage.tts},
+
 				};
 				return data.dump();
-			}
-
+			};
 		}
+		
 
 	}
 
@@ -833,33 +856,30 @@ namespace DiscordCoreInternal {
 
 		auto attachments = json::array();
 
-		for (unsigned int x = 0; x < dataPackage.attachments.size(); x += 1) {
-			json attachment = { {"content_type", dataPackage.attachments.at(x).contentType},
-				{"file_name",dataPackage.attachments.at(x).filename},
-				{"height",dataPackage.attachments.at(x).height},
-				{"id",dataPackage.attachments.at(x).id},
-				{"proxy_url",dataPackage.attachments.at(x).proxyUrl},
-				{"size",dataPackage.attachments.at(x).size},
-				{"url",dataPackage.attachments.at(x).url},
-				{"width",dataPackage.attachments.at(x).width} };
+		for (auto value:dataPackage.attachments) {
+			json attachment = { {"content_type", value.contentType},
+				{"file_name",value.filename},
+				{"height",value.height},
+				{"id",value.id},
+				{"proxy_url",value.proxyUrl},
+				{"size",value.size},
+				{"url",value.url},
+				{"width",value.width} };
 			attachments.push_back(attachment);
 		}
 
 		json data = {
-			{"flags", dataPackage.flags},
-			{"attachments", attachments},
-			{"components", componentsActionRow},
 			{"allowed_mentions", {
 				{"parse", dataPackage.allowedMentions.parse},
 				{"replied_user", dataPackage.allowedMentions.repliedUser},
 				{"roles", dataPackage.allowedMentions.roles},
 				{"users", dataPackage.allowedMentions.users}
 				}},
-					
-			{"content", dataPackage.content},
+			{"attachments", attachments},
+			{"components", componentsActionRow},
 			{"embeds" ,embedsArray},
-			{"components", componentsActionRow}
-
+			{"content", dataPackage.content},
+			{"flags", dataPackage.flags}
 		};
 
 		return data.dump();

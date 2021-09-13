@@ -29,11 +29,12 @@ BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreClient : public DiscordCoreClientBase, agent {
+	class DiscordCoreClient : public DiscordCoreClientBase, DiscordCoreInternal::ThreadContext, agent {
 	public:
 
 		friend class PermissionsConverter;
 		friend class ApplicationCommands;
+		friend class EventHandler;
 		friend class GuildMembers;
 		friend class Interactions;
 		friend class YouTubeAPI;
@@ -48,7 +49,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<EventManager> eventManager{ nullptr };
 		shared_ptr<DiscordUser> discordUser{ nullptr };
 
-		DiscordCoreClient(hstring botTokenNew) : DiscordCoreClientBase(), agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
+		DiscordCoreClient(hstring botTokenNew) : DiscordCoreClientBase(), ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
 			this->botToken = botTokenNew;
 		}
 
@@ -80,7 +81,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->webSocketReceiverAgent->terminate();
 			wait(DiscordCoreClient::thisPointer->webSocketConnectionAgent.get());
 			wait(DiscordCoreClient::thisPointer->webSocketReceiverAgent.get());
-			DiscordCoreClient::thisPointer->mainThreadContext->releaseGroup();
 		}
 
 		~DiscordCoreClient() {
@@ -91,7 +91,6 @@ namespace DiscordCoreAPI {
 
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
-		shared_ptr<DiscordCoreInternal::ThreadContext> mainThreadContext{ nullptr };
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
@@ -110,8 +109,7 @@ namespace DiscordCoreAPI {
 			SetConsoleCtrlHandler(handlerRoutine, true);
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
-			this->mainThreadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
-			co_await resume_foreground(*this->mainThreadContext->dispatcherQueue.get());
+			co_await resume_foreground(*this->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
@@ -221,7 +219,7 @@ namespace DiscordCoreAPI {
 						goto startingPoint;
 					}
 					switch (workload.eventType) {
-					case DiscordCoreInternal::WebSocketEventType::Application_Command_Create: 
+					case DiscordCoreInternal::WebSocketEventType::Application_Command_Create:
 					{
 						ApplicationCommandData appCommandData{};
 						ApplicationCommand appCommand(appCommandData);

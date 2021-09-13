@@ -24,12 +24,14 @@ namespace DiscordCoreAPI {
 
 	class BaseFunction {
 	public:
-		virtual ~BaseFunction() {};
+
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		virtual BaseFunction* create() = 0;
 		string helpDescription{ "" };
+		virtual ~BaseFunction() {};
 		string commandName{ "" };
 		EmbedData helpEmbed{};
+
 	};
 
 	class CommandCenter {
@@ -97,7 +99,6 @@ namespace DiscordCoreAPI {
 								isItFound = true;
 								lowestValue = value;
 								functionName = commandName.substr(1, key.length());
-								cout << "FUNCTION NAME: " << commandName.substr(1, key.length()) << endl;
 							}
 
 						}
@@ -131,7 +132,6 @@ namespace DiscordCoreAPI {
 									return commandName;
 								}
 							}
-
 						}
 					}
 				}

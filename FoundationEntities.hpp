@@ -746,31 +746,6 @@ namespace  DiscordCoreInternal {
         int flags{ 0 };
     };
 
-    struct ChannelData {
-        map<string, OverWriteData> permissionOverwrites{};
-        ThreadMetadataData threadMetadata{};
-        vector<UserData> recipients{};
-        string lastPinTimestamp{ "" };
-        string lastMessageId{ "" };
-        int rateLimitPerUser{ -1 };        
-        string applicationId{ "" };
-        int videoQualityMode{ -1 };
-        ThreadMemberData member{};
-        string rtcRegion{ "" };
-        string parentId{ "" };
-        string guildId{ "" };
-        string ownerId{ "" };
-        int userLimit{ -1 };
-        string topic{ "" };
-        bool nsfw{ false };
-        ChannelType type{};
-        int position{ -1 };
-        string name{ "" };
-        int bitrate{ -1 };
-        string icon{ "" };
-        string id{ "" };
-    };
-
     struct VoiceStateData {
         string requestToSpeakTimestamp{ "" };
         GuildMemberData guildMember{};
@@ -820,62 +795,6 @@ namespace  DiscordCoreInternal {
         string tags{ "" };
         string id{ "" };
         UserData user{};
-    };
-
-    struct GuildData {
-        shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
-        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-        DefaultMessageNotificationLevel defaultMessageNotifications{};        
-        ExplicitContentFilterLevel explicitContentFilter{};
-        vector<StageInstanceData> stageInstances{};
-        vector<PresenceUpdateData> presences{};
-        VerificationLevel verificationLevel{};
-        vector<VoiceStateData> voiceStates{};
-        string publicUpdatesChannelId{ "" };
-        vector<GuildMemberData> members{};
-        WelcomeScreenData welcomeScreen{};
-        int premiumSubscriptionCount{ 0 };
-        int approximatePresenceCount{ 0 };
-        int approximateMemberCount{ 0 };
-        vector<ChannelData> channels{};
-        vector<StickerData> stickers{};
-        vector<ChannelData> threads{};
-        int maxVideoChannelUsers{ 0 };
-        string discoverySplash{ "" };
-        string preferredLocale{ "" };
-        string widgetChannelId{ "" };
-        string systemChannelId{ "" };
-        string rulesChannelId{ "" };
-        bool widgetEnabled{ false };
-        int systemChannelFlags{ 0 };
-        string vanityURLCode{ "" };
-        string applicationId{ "" };
-        vector<EmojiData> emoji{};
-        string description{ "" };
-        string afkChannelId{ "" };
-        vector<string> features{};
-        bool unavailable{ false };        
-        PremiumTier premiumTier{};
-        string permissions{ "" };
-        vector<RoleData> roles{};
-        string createdAt{ "" };
-        string iconHash{ "" };
-        int maxPresences{ 0 };
-        string joinedAt{ "" };
-        string ownerId{ "" };
-        int memberCount{ 0 };
-        string region{ "" };
-        bool owner{ false };
-        int afkTimeOut{ 0 };
-        MFALevel mfaLevel{};
-        bool large{ false };
-        int maxMembers{ 0 };
-        string splash{ "" };
-        string banner{ "" };
-        int nsfwLevel{ 0 };
-        string icon{ "" };
-        string name{ "" };
-        string id{ "" };
     };
 
     struct ScheduleGroupWrapper {
@@ -1183,53 +1102,6 @@ namespace  DiscordCoreInternal {
         string id{ "" };
     };
 
-    struct MessageDataOld {
-        vector<MessageStickerItemData> stickerItems{};
-        vector<ChannelMentionData> mentionChannels{};
-        MessageReferenceData messageReference{};
-        vector<MessageStickerData> stickers{};
-        MessageInteractionData interaction{};
-        vector<AttachmentData> attachments{};
-        vector<ActionRowData> components{};
-        vector<ReactionData> reactions{};
-        MessageActivityData activity{};
-        bool mentionEveryone{ false };
-        vector<string> mentionRoles{};
-        ApplicationData application{};
-        string editedTimestamp{ "" };
-        vector<UserData> mentions{};
-        vector<EmbedData> embeds{};
-        string applicationId{ "" };
-        string timestampRaw{ "" };
-        GuildMemberData member{};
-        string webhookId{ "" };
-        string channelId{ "" };
-        string timestamp{ "" };
-        ChannelData thread{};
-        bool pinned{ false };
-        string guildId{ "" };
-        string content{ "" };
-        MessageType type{};
-        string nonce{ "" };
-        UserData author{};
-        bool tts{ false };
-        string id{ "" };
-        int flags{ 0 };
-    };
-
-    struct MessageData : MessageDataOld {
-        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
-        MessageDataOld referencedMessage{};
-        string requesterId{ "" };
-    };
-
-    struct ApplicationCommandInteractionDataResolved {
-        map<string, GuildMemberData> members{};
-        map<string, ChannelData> channels{};
-        map<string, UserData> users{};       
-        map<string, RoleData> roles{};        
-    };
-
     enum class ApplicationCommandOptionType {
         SUB_COMMAND = 1,
         SUB_COMMAND_GROUP = 2,
@@ -1252,15 +1124,6 @@ namespace  DiscordCoreInternal {
         string name{ "" };
     };
 
-    struct ApplicationCommandInteractionData {
-        vector<ApplicationCommandInteractionDataOption> options{};
-        ApplicationCommandInteractionDataResolved resolved{};
-        int componentType{ -1 };
-        string customId{ "" };
-        string name{ "" };
-        string id{ "" };
-    };
-
     enum class ApplicationCommandPermissionType {
         Role = 1,
         User = 2
@@ -1277,25 +1140,6 @@ namespace  DiscordCoreInternal {
         string applicationId{ "" };
         string guildId{ "" };
         string id{ "" };
-    };
-
-    struct InteractionData {
-        ApplicationCommandInteractionData data{};
-        ComponentType componentType{};
-        string applicationId{ "" };
-        GuildMemberData member{};
-        string requesterId{ "" };
-        vector<string> values{};
-        InteractionType type{};
-        string channelId{ "" };
-        MessageData message{};
-        string customId{ "" };
-        string guildId{ "" };
-        string token{ "" };
-        int version{ -1 };
-        string id{ "" };
-        UserData user{};
-        json dataRaw{};
     };
 
     enum class InputEventType {
@@ -1337,21 +1181,6 @@ namespace  DiscordCoreInternal {
         string token{ "" };
         string name{ "" };
         UserData users{};
-        int version{ 0 };
-    };
-
-    struct MessageCommandInteractionData {
-        ApplicationCommandType type{};
-        string interactionId{ "" };
-        string applicationId{ "" };
-        GuildMemberData member{};
-        string channelId{ "" };
-        MessageData messages{};
-        string targetId{ "" };
-        string guildId{ "" };
-        string menuId{ "" };
-        string token{ "" };
-        string name{ "" };
         int version{ 0 };
     };
 
@@ -1530,6 +1359,14 @@ namespace  DiscordCoreInternal {
         string messageId{ "" };
     };
 
+    struct DeleteMessageData{
+        HttpAgentResources agentResources{};
+        string messageTimeStamp{ "" };
+        string channelId{ "" };
+        string messageId{ "" };
+        int timeDelay{ 0 };
+    };
+
     enum class GetUserDataType {
         SELF = 0,
         USER = 1
@@ -1562,12 +1399,12 @@ namespace  DiscordCoreInternal {
         AllowedMentionsData allowedMentions{};
         HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
+        vector<string> stickerIds{};
         vector<EmbedData> embeds{};
         string requesterId{ "" };
         string channelId{ "" };
         string content{ "" };
         bool tts{ false };
-        int nonce{ 0 };
     };
 
     struct PatchMessageData {
@@ -1583,17 +1420,12 @@ namespace  DiscordCoreInternal {
         int flags{ 0 };
     };
 
-    struct DeleteMessageData {
-        HttpAgentResources agentResources{};
-        unsigned int timeDelay{ 0 };
-        MessageData message{};
-    };
-
     struct PostDMData {
         MessageReferenceData messageReference{};
         AllowedMentionsData allowedMentions{};
         HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
+        vector<string> stickerIds{};
         vector<EmbedData> embeds{};
         string requesterId{ "" };
         string channelId{ "" };
@@ -1751,11 +1583,6 @@ namespace  DiscordCoreInternal {
         string applicationId{ "" };
         string description{ "" };
         string name{ "" };
-    };
-
-    struct InteractionResponseFullData {
-        PostInteractionResponseData interactionResponseData{};
-        InteractionData interactionData{};
     };
 
     struct PatchFollowUpMessageData {
@@ -2481,38 +2308,6 @@ namespace DiscordCoreAPI {
     };
 
     struct ChannelData {
-
-        operator DiscordCoreInternal::ChannelData() {
-            DiscordCoreInternal::ChannelData newData;
-            for (auto [key, value] : this->permissionOverwrites) {
-                newData.permissionOverwrites.insert(make_pair(key, value));
-            }
-            newData.type = (DiscordCoreInternal::ChannelType)this->type;
-            newData.rateLimitPerUser = this->rateLimitPerUser;
-            newData.lastPinTimestamp = this->lastPinTimestamp;
-            newData.videoQualityMode = this->videoQualityMode;
-            newData.threadMetadata = this->threadMetadata;
-            newData.applicationId = this->applicationId;
-            newData.lastMessageId = this->lastMessageId;
-            for (auto value : this->recipients) {
-                newData.recipients.push_back(value);
-            }
-            newData.rtcRegion = this->rtcRegion;
-            newData.userLimit = this->userLimit;
-            newData.parentId = this->parentId;
-            newData.position = this->position;
-            newData.bitrate = this->bitrate;
-            newData.guildId = this->guildId;
-            newData.ownerId = this->ownerId;
-            newData.member = this->member;
-            newData.topic = this->topic;
-            newData.icon = this->icon;
-            newData.name = this->name;
-            newData.nsfw = this->nsfw;
-            newData.id = this->id;            
-            return newData;
-        }
-
         shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         map<string, OverWriteData> permissionOverwrites{};
         ThreadMetadataData threadMetadata{};
@@ -2590,23 +2385,6 @@ namespace DiscordCoreAPI {
 
     struct ApplicationCommandInteractionDataResolved {
 
-        operator DiscordCoreInternal::ApplicationCommandInteractionDataResolved() {
-            DiscordCoreInternal::ApplicationCommandInteractionDataResolved newData;
-            for (auto [key, value] : this->channels) {
-                newData.channels.insert(make_pair(key, value));
-            }
-            for (auto [key, value] : this->members) {
-                newData.members.insert(make_pair(key, value));
-            }
-            for (auto [key, value] : this->roles) {
-                newData.roles.insert(make_pair(key, value));
-            }
-            for (auto [key, value] : this->users) {
-                newData.users.insert(make_pair(key, value));
-            }
-            return newData;
-        }
-
         map<string, GuildMemberData> members{};
         map<string, ChannelData> channels{};
         map<string, UserData> users{};
@@ -2663,19 +2441,6 @@ namespace DiscordCoreAPI {
     }
 
     struct ApplicationCommandInteractionData {
-
-        operator DiscordCoreInternal::ApplicationCommandInteractionData() {
-            DiscordCoreInternal::ApplicationCommandInteractionData newData;
-            newData.componentType = this->componentType;
-            for (auto value : this->options) {
-                newData.options.push_back(value);
-            }
-            newData.customId = this->customId;
-            newData.resolved = this->resolved;
-            newData.name = this->name;
-            newData.id = this->id;
-            return newData;
-        }
 
         vector<ApplicationCommandInteractionDataOption> options{};
         ApplicationCommandInteractionDataResolved resolved{};
@@ -2915,57 +2680,6 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageDataOld {
-
-        operator DiscordCoreInternal::MessageDataOld() {
-            DiscordCoreInternal::MessageDataOld newData;
-            newData.type = (DiscordCoreInternal::MessageType)this->type;
-            newData.messageReference = this->messageReference;
-            newData.activity.partyId = this->activity.partyId;
-            newData.editedTimestamp = this->editedTimestamp;
-            newData.mentionEveryone = this->mentionEveryone;
-            for (auto value : this->mentionChannels) {
-                newData.mentionChannels.push_back(value);
-            }
-            newData.activity.type = this->activity.type;
-            for (auto value : this->stickerItems) {
-                newData.stickerItems.push_back(value);
-            }
-            newData.mentionRoles = this->mentionRoles;
-            for (auto value : this->attachments) {
-                newData.attachments.push_back(value);
-            }
-            for (auto value : this->components) {
-                newData.components.push_back(value);
-            }
-            newData.interaction = this->interaction;
-            newData.application = this->application;
-            for (auto value : this->reactions) {
-                newData.reactions.push_back(value);
-            }
-            for (auto value : this->stickers) {
-                newData.stickers.push_back(value);
-            }
-            for (auto value : this->mentions) {
-                newData.mentions.push_back(value);
-            }
-            for (auto value : this->embeds) {
-                newData.embeds.push_back(value);
-            }
-            newData.channelId = this->channelId;
-            newData.webhookId = this->webhookId;
-            newData.timestamp = this->timestamp;
-            newData.content = this->content;
-            newData.guildId = this->guildId;
-            newData.author = this->author;
-            newData.member = this->member;
-            newData.pinned = this->pinned;
-            newData.flags = this->flags;
-            newData.nonce = this->nonce;
-            newData.tts = this->tts;
-            newData.id = this->id;
-            return newData;
-        }
-
         vector<MessageStickerItemData> stickerItems{};
         vector<ChannelMentionData> mentionChannels{};
         MessageReferenceData messageReference{};
@@ -3000,90 +2714,12 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageData :public MessageDataOld {
-
-        operator DiscordCoreInternal::MessageData() {
-            DiscordCoreInternal::MessageData newData;
-            newData.type = (DiscordCoreInternal::MessageType)this->type;
-            newData.referencedMessage = this->referencedMessage;
-            newData.discordCoreClient = this->discordCoreClient;
-            newData.messageReference = this->messageReference;
-            for (auto value : this->mentionChannels) {
-                newData.mentionChannels.push_back(value);
-            }
-            newData.mentionEveryone = this->mentionEveryone;
-            newData.editedTimestamp = this->editedTimestamp;
-            newData.applicationId = this->applicationId;
-            newData.timestampRaw = this->timestampRaw;
-            newData.mentionRoles = this->mentionRoles;
-            for (auto value : this->stickerItems) {
-                newData.stickerItems.push_back(value);
-            }
-            for (auto value : this->attachments) {
-                newData.attachments.push_back(value);
-            }
-            newData.application = this->application;
-            newData.interaction = this->interaction;
-            for (auto value : this->components) {
-                newData.components.push_back(value);
-            }
-            newData.requesterId = this->requesterId;
-            newData.channelId = this->channelId;
-            newData.timestamp = this->timestamp;
-            for (auto value : this->reactions) {
-                newData.reactions.push_back(value);
-            }
-            newData.webhookId = this->webhookId;
-            for (auto value : this->mentions) {
-                newData.mentions.push_back(value);
-            }
-            newData.activity = this->activity;
-            for (auto value : this->stickers) {
-                newData.stickers.push_back(value);
-            }
-            newData.guildId = this->guildId;
-            newData.content = this->content;
-            newData.author = this->author;
-            newData.member = this->member;
-            for (auto value : this->embeds) {
-                newData.embeds.push_back(value);
-            }
-            newData.pinned = this->pinned;
-            newData.thread = this->thread;
-            newData.nonce = this->nonce;
-            newData.flags = this->flags;
-            newData.tts = this->tts;
-            newData.id = this->id;
-            return newData;
-        }
-
         shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         MessageDataOld referencedMessage{};
         string requesterId{ "" };        
     };
 
     struct InteractionData {
-
-        operator DiscordCoreInternal::InteractionData() {
-            DiscordCoreInternal::InteractionData newData;
-            newData.componentType = (DiscordCoreInternal::ComponentType)this->componentType;
-            newData.type = (DiscordCoreInternal::InteractionType)this->type;
-            newData.applicationId = this->applicationId;
-            newData.requesterId = this->requesterId;
-            newData.channelId = this->channelId;
-            newData.customId = this->customId;
-            newData.message = this->message;
-            newData.dataRaw = this->dataRaw;
-            newData.guildId = this->guildId;
-            newData.version = this->version;
-            newData.member = this->member;
-            newData.values = this->values;
-            newData.token = this->token;
-            newData.user = this->user;
-            newData.data = this->data;
-            newData.id = this->id;
-            return newData;
-        }
-
         ApplicationCommandInteractionData data{};
         ComponentType componentType{};
         string applicationId{ "" };

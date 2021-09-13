@@ -166,12 +166,18 @@ namespace DiscordCoreAPI {
                 co_return;
             }
             catch (const exception& e) {
+                DiscordCoreClientBase::youtubeAPIMap->erase(dataPackage.eventData.getGuildId());
+                DiscordCoreClientBase::voiceConnectionMap->erase(dataPackage.eventData.getGuildId());
                 cout << "Exception: " << e.what() << endl;
             }
             catch (const winrt::hresult_invalid_argument& e) {
+                DiscordCoreClientBase::youtubeAPIMap->erase(dataPackage.eventData.getGuildId());
+                DiscordCoreClientBase::voiceConnectionMap->erase(dataPackage.eventData.getGuildId());
                 cout << "Exception: " << to_string(e.message()) << endl;
             }
             catch (winrt::hresult_error& e) {
+                DiscordCoreClientBase::youtubeAPIMap->erase(dataPackage.eventData.getGuildId());
+                DiscordCoreClientBase::voiceConnectionMap->erase(dataPackage.eventData.getGuildId());
                 cout << "Exception: " << to_string(e.message()) << endl;
             }
             co_await mainThread;
