@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
 
 		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap, string guildIdNew, DiscordGuild* discordGuildNew, shared_ptr<VoiceConnection> voiceConnectionNew) {
 			this->sendAudioDataBufferMap = sendAudioDataBufferMap;
-			this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(guildIdNew);
+			this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(guildIdNew).get();
 			this->discordGuild = discordGuildNew;
 			this->guildId = guildIdNew;
 			this->voiceConnection = voiceConnectionNew;
@@ -254,9 +254,9 @@ namespace DiscordCoreAPI {
 
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap{ nullptr };
 		const string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
-		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		cancellation_token_source cancelTokenSource{ cancellation_token_source() };
 		cancellation_token cancelToken{ this->cancelTokenSource.get_token() };
+		unbounded_buffer<AudioFrameData>* sendAudioDataBuffer{ nullptr };
 		const string baseWatchURL{ "https://www.youtube.com/watch?v=" };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		const string baseURL{ "https://www.youtube.com" };
@@ -638,7 +638,7 @@ namespace DiscordCoreAPI {
 			BuildSongDecoderData dataPackage{};
 			try {
 				if (this->sendAudioDataBufferMap->contains(this->guildId)) {
-					this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(this->guildId);
+					this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(this->guildId).get();
 				}
 				else {
 					co_return false;
@@ -875,7 +875,7 @@ namespace DiscordCoreAPI {
 					vector<uint8_t> newVector;
 					AudioFrameData frameData{};
 					frameData.type = AudioFrameType::Cancel;
-					send(this->sendAudioDataBuffer.get(), frameData);
+					send(this->sendAudioDataBuffer, frameData);
 					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
 					this->currentTask = this->downloadAndStreamAudioToBeWrapped(this->currentSong, token, retryCountNew);
 					auto exceptionNew = current_exception();
@@ -922,7 +922,13 @@ namespace DiscordCoreAPI {
 					co_return true;
 				}
 				catch (...) {
-					cout << "YouTubeAPICore::downloadAndStreamAudio() Error." << endl << endl;
+					auto exceptionNew = current_exception();
+					try {
+						rethrow_exception(exceptionNew);
+					}
+					catch (exception& e) {
+						cout << "YouTubeAPICore::downloadAndStreamAudio() Error: " << e.what() << endl;
+					}
 					co_return false;
 				}
 				});
