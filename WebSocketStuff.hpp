@@ -144,14 +144,14 @@ namespace DiscordCoreInternal {
 		}
 
 		~WebSocketConnectionAgent() {
-			this->terminate();
 			this->getError();
+			this->terminate();
 		}
 
 		void getError() {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << "WebSocketConnectionAgent Error: " << error.what() << endl;
+				cout << "WebSocketConnectionAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -159,8 +159,8 @@ namespace DiscordCoreInternal {
 			try {
 				this->connect();
 			}
-			catch (exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::run() Error: ", &this->errorBuffer);
 				done();
 			}
 		}
@@ -184,13 +184,7 @@ namespace DiscordCoreInternal {
 				cout << "Send Complete" << endl << endl;
 			}
 			catch (...) {
-				auto exceptionNew = current_exception();
-				try {
-					rethrow_exception(exceptionNew);
-				}
-				catch (exception& e) {
-					cout << "WebSocketConnectionAgent::sendMessage() Error: " << e.what() << endl;
-				}
+				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::sendMessage() Error: ");
 			}
 		}
 
@@ -427,13 +421,7 @@ namespace DiscordCoreInternal {
 				cout << "Send Complete" << endl << endl;
 			}
 			catch (...) {
-				auto exceptionNew = current_exception();
-				try {
-					rethrow_exception(exceptionNew);
-				}
-				catch (exception& e) {
-					cout << "VoiceChannelWebSocketAgent::sendMessage() Error: " << e.what() << endl;
-				}
+				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
 			}
 			
 		}
@@ -485,13 +473,7 @@ namespace DiscordCoreInternal {
 				this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endPoint))).get();
 			}
 			catch (...) {
-				auto exceptionNew = current_exception();
-				try {
-					rethrow_exception(exceptionNew);
-				}
-				catch (exception& e) {
-					cout << "VoiceChannelWebSocketAgent::connect() Error: " << e.what() << endl;
-				}
+				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::connect() Error: ");
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
 					GetVoiceConnectionData dataPackage;
@@ -533,13 +515,7 @@ namespace DiscordCoreInternal {
 				this->dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 			}
 			catch (...) {
-				auto exceptionNew = current_exception();
-				try {
-					rethrow_exception(exceptionNew);
-				}
-				catch (exception& e) {
-					cout << "VoiceChannelWebSocketAgent::voiceConnect() Error: " << e.what() << endl;
-				}
+				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::voiceConnect() Error: ");
 			}
 		}
 
@@ -724,8 +700,8 @@ namespace DiscordCoreInternal {
 					}					
 				}
 			}
-			catch (const exception& e) {
-				send(errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("WebSocketReceiverAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
 		}

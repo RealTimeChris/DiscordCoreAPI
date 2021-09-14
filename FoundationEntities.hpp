@@ -286,6 +286,23 @@ namespace DiscordCoreAPI {
         }
     }
 
+    void rethrowException(string stackTrace, unbounded_buffer<exception>* sendBuffer = nullptr) {
+        try {
+            auto currentException = current_exception();
+            if (currentException) {
+                std::rethrow_exception(currentException);
+            }
+        }
+        catch (const exception& e) {
+            if (sendBuffer != nullptr) {
+                send(sendBuffer, e);
+            }
+            else {
+                cout << stackTrace << e.what() << "\n\n";
+            }
+        }
+    }
+
 };
 
 namespace  DiscordCoreInternal {

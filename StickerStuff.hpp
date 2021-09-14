@@ -58,9 +58,9 @@ namespace DiscordCoreInternal {
 		static overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> cache;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
-		
+
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		
+
 		StickerManagerAgent()
 			:agent(*StickerManagerAgent::threadContext->scheduler->scheduler) {}
 
@@ -76,20 +76,22 @@ namespace DiscordCoreInternal {
 
 		void getError(string stackTrace) {
 			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::StickerManagerAgentError: " << error.what() << endl << endl;
-			}
-			return;
+			while (try_receive(errorBuffer, error));
+			cout << stackTrace + "::StickerManagerAgentError::run() Error: " << error.what() << endl << endl;
 		}
 
 		void run() {
 			try {
 				
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("StickerManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
+		}
+
+		~StickerManagerAgent() {
+			this->getError("");
 		}
 	};
 

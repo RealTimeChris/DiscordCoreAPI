@@ -114,10 +114,14 @@ namespace DiscordCoreInternal	{
 			
 		}
 
+		static void cleanup() {
+			ChannelManagerAgent::threadContext->releaseGroup();
+		};
+
 		void getError(string stackTrace) {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::ChannelManagerAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::ChannelManagerAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -264,11 +268,16 @@ namespace DiscordCoreInternal	{
 					send(ChannelManagerAgent::cache, cacheTemp);
 				}
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("ChannelManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
 		}
+
+		~ChannelManagerAgent() {
+			this->getError("");
+		}
+
 	};
 
 	class ChannelManager : ThreadContext {

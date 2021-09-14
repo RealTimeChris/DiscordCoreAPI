@@ -105,7 +105,9 @@ namespace DiscordCoreAPI {
 				try {
 					receive(this->stopBuffer, 1000);
 				}
-				catch (operation_timed_out&) {};				
+				catch (...) {
+					rethrowException("VoiceConnection::stop() Error: ");
+				}				
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
 				send(this->stopBuffer, true);
@@ -123,7 +125,9 @@ namespace DiscordCoreAPI {
 				try {
 					receive(this->skipBuffer, 1000);
 				}
-				catch (operation_timed_out&) {};
+				catch (...) {
+					rethrowException("VoiceConnection::skip() Error: ");
+				}
 				bool shouldWePlay;
 				while (try_receive(this->playBuffer, shouldWePlay)) {};
 				send(this->skipBuffer, true);
@@ -139,7 +143,9 @@ namespace DiscordCoreAPI {
 				try {
 					receive(this->readyToPlayBuffer, 1000);
 				}
-				catch (operation_timed_out&) {};
+				catch (...) {
+					rethrowException("VoiceConnection::play() Error: ");
+				}
 				if (!this->areWePlaying) {
 					send(this->playBuffer, true);
 				}
@@ -165,7 +171,9 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		~VoiceConnection() {}
+		~VoiceConnection() {
+			this->getError();
+		}
 
 	protected:
 
@@ -178,10 +186,11 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<bool> connectionReadyBuffer{ nullptr };
 		unbounded_buffer<bool>* disconnectionBuffer{ nullptr };
 		unbounded_buffer<bool> readyToPlayBuffer{ nullptr };
+		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool> pauseBuffer{ nullptr };
 		unbounded_buffer<bool> stopBuffer{ nullptr };
 		unbounded_buffer<bool> skipBuffer{ nullptr };
-		unbounded_buffer<bool> playBuffer{ nullptr };
+		unbounded_buffer<bool> playBuffer{ nullptr };		
 		unsigned short sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
@@ -196,6 +205,13 @@ namespace DiscordCoreAPI {
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
 		bool doWeQuit{ false };
+
+		void getError() {
+			exception error;
+			while (try_receive(this->errorBuffer, error)) {
+				cout << "VoiceConnection::run() Error: " << error.what() << endl << endl;
+			}
+		}
 
 		void clearAudioData() {
 			if (this->audioData.encodedFrameData.data.size() != 0 && this->audioData.rawFrameData.data.size() != 0) {
@@ -305,164 +321,167 @@ namespace DiscordCoreAPI {
 		}
 
 		void run() {
-			while (!this->doWeQuit) {
-				if (!this->areWePlaying) {
-					send(this->readyToPlayBuffer, true);
-					receive(this->playBuffer);
-					if (this->doWeQuit) {
-						break;
-					}
-					this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
-					this->audioData.type = AudioFrameType::Unset;
-					this->audioData.encodedFrameData.data.clear();
-					this->audioData.rawFrameData.data.clear();
-				start:
-					try {
-						this->audioData = receive(this->audioDataBuffer.get(), 10000);
-					}
-					catch (operation_timed_out&) {};
-					
-					if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0 ||  this->audioData.type == AudioFrameType::Unset) {
-						goto start;
-					}
-					else if (this->audioData.type == AudioFrameType::Cancel) {
-						break;
-					}
-				}
-				this->sendSpeakingMessage(true);
-				long long startingValue{ (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() };
-				long long intervalCount{ 20000000 };
-				long long startingValueForCalc{ 0 };
-				long long timeCounter{ 0 };
-				long long totalTime{ 0 };
-				int frameCounter{ 0 };
-				 
-				if (this->audioData.type == AudioFrameType::Encoded) {
-					this->areWePlaying = true;
-					while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
-						if (this->areWeSkipping) {
-							frameCounter = 0;
-							break;
-						}
-						if (this->areWeStopping) {
-							frameCounter = 0;
-							break;
-						}
-						if (this->areWePaused) {
-							receive(this->pauseBuffer);
-							this->areWePaused = false;
-						}
+			try {
+				while (!this->doWeQuit) {
+					if (!this->areWePlaying) {
+						send(this->readyToPlayBuffer, true);
+						receive(this->playBuffer);
 						if (this->doWeQuit) {
-							this->clearAudioData();
-							this->areWePlaying = false;
-							frameCounter = 0;
-				 			break;
+							break;
 						}
-						frameCounter += 1;
-						try_receive(*this->audioDataBuffer, this->audioData);
-						nanoSleep(100000);
-						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
-							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
-							nanoSleep(18000000);
-							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
-							long long  waitTime = intervalCount - timeCounter;
-							spinLock(waitTime);
-							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-							startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-							this->sendSingleAudioFrame(newFrame);
-							totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
-							intervalCount = 20000000 - (totalTime / frameCounter);
-							this->audioData.type = AudioFrameType::Unset;
-							this->audioData.encodedFrameData.data.clear();
-							this->audioData.rawFrameData.data.clear();
+						this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
+						this->audioData.type = AudioFrameType::Unset;
+						this->audioData.encodedFrameData.data.clear();
+						this->audioData.rawFrameData.data.clear();
+					start:
+						try {
+							this->audioData = receive(this->audioDataBuffer.get(), 10000);
+						}
+						catch (...) {
+							rethrowException("VoiceConnection::run() Error: ");
+						}
+
+						if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0 || this->audioData.type == AudioFrameType::Unset) {
+							goto start;
 						}
 						else if (this->audioData.type == AudioFrameType::Cancel) {
-							this->onSongCompletionEvent(this);
-							this->areWePlaying = false;
-							frameCounter = 0;
 							break;
 						}
+					}
+					this->sendSpeakingMessage(true);
+					long long startingValue{ (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() };
+					long long intervalCount{ 20000000 };
+					long long startingValueForCalc{ 0 };
+					long long timeCounter{ 0 };
+					long long totalTime{ 0 };
+					int frameCounter{ 0 };
+
+					if (this->audioData.type == AudioFrameType::Encoded) {
+						this->areWePlaying = true;
+						while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
+							if (this->areWeSkipping) {
+								frameCounter = 0;
+								break;
+							}
+							if (this->areWeStopping) {
+								frameCounter = 0;
+								break;
+							}
+							if (this->areWePaused) {
+								receive(this->pauseBuffer);
+								this->areWePaused = false;
+							}
+							if (this->doWeQuit) {
+								this->clearAudioData();
+								this->areWePlaying = false;
+								frameCounter = 0;
+								break;
+							}
+							frameCounter += 1;
+							try_receive(*this->audioDataBuffer, this->audioData);
+							nanoSleep(100000);
+							if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
+								vector<uint8_t> newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
+								nanoSleep(18000000);
+								timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
+								long long  waitTime = intervalCount - timeCounter;
+								spinLock(waitTime);
+								startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+								startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+								this->sendSingleAudioFrame(newFrame);
+								totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
+								intervalCount = 20000000 - (totalTime / frameCounter);
+								this->audioData.type = AudioFrameType::Unset;
+								this->audioData.encodedFrameData.data.clear();
+								this->audioData.rawFrameData.data.clear();
+							}
+							else if (this->audioData.type == AudioFrameType::Cancel) {
+								this->onSongCompletionEvent(this);
+								this->areWePlaying = false;
+								frameCounter = 0;
+								break;
+							}
+						}
+						this->areWePlaying = false;
+					}
+					else if (this->audioData.type == AudioFrameType::RawPCM) {
+						this->areWePlaying = true;
+						while (this->audioData.rawFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
+							if (this->areWeSkipping) {
+								frameCounter = 0;
+								break;
+							}
+							if (this->areWeStopping) {
+								frameCounter = 0;
+								break;
+							}
+							if (this->areWePaused) {
+								receive(this->pauseBuffer);
+								this->areWePaused = false;
+							}
+							if (this->doWeQuit) {
+								this->clearAudioData();
+								this->areWePlaying = false;
+								frameCounter = 0;
+								break;
+							}
+							frameCounter += 1;
+							try_receive(*this->audioDataBuffer, this->audioData);
+							nanoSleep(100000);
+							if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
+								auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
+								vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
+								nanoSleep(18000000);
+								timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
+								long long  waitTime = intervalCount - timeCounter;
+								spinLock(waitTime);
+								startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+								startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+								this->sendSingleAudioFrame(newFrame);
+								totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
+								intervalCount = 20000000 - (totalTime / frameCounter);
+								this->audioData.type = AudioFrameType::Unset;
+								this->audioData.encodedFrameData.data.clear();
+								this->audioData.rawFrameData.data.clear();
+							}
+							else if (this->audioData.type == AudioFrameType::Cancel) {
+								this->onSongCompletionEvent(this);
+								this->areWePlaying = false;
+								frameCounter = 0;
+								break;
+							}
+						}
+						this->areWePlaying = false;
 					}
 					this->areWePlaying = false;
+					if (this->areWeStopping) {
+						send(this->stopBuffer, true);
+						try {
+							receive(this->stopBuffer, 5000);
+						}
+						catch (...) {
+							rethrowException("VoiceConnection::run() Error: ");
+						}
+						this->areWeStopping = false;
+					}
+					if (this->areWeSkipping) {
+						send(this->skipBuffer, true);
+						try {
+							receive(this->skipBuffer, 5000);
+						}
+						catch (...) {
+							rethrowException("VoiceConnection::run() Error: ");
+						}
+						this->areWeSkipping = false;
+					}
+					this->sendSpeakingMessage(false);
 				}
-				else if (this->audioData.type == AudioFrameType::RawPCM ) {
-					this->areWePlaying = true;
-					while (this->audioData.rawFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
-						if (this->areWeSkipping) {
-							frameCounter = 0;
-							break;
-						}
-						if (this->areWeStopping) {
-							frameCounter = 0;
-							break;
-						}
-						if (this->areWePaused) {
-							receive(this->pauseBuffer);
-							this->areWePaused = false;
-						}
-						if (this->doWeQuit) {
-							this->clearAudioData();
-							this->areWePlaying = false;
-							frameCounter = 0;
-							break;
-						}
-						frameCounter += 1;
-						try_receive(*this->audioDataBuffer, this->audioData);
-						nanoSleep(100000);
-						if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
-							auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
-							vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
-							nanoSleep(18000000);
-							timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
-							long long  waitTime = intervalCount - timeCounter;
-							spinLock(waitTime);
-							startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-							startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-							this->sendSingleAudioFrame(newFrame);
-							totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
-							intervalCount = 20000000 - (totalTime / frameCounter);
-							this->audioData.type = AudioFrameType::Unset;
-							this->audioData.encodedFrameData.data.clear();
-							this->audioData.rawFrameData.data.clear();
-						}
-						else if (this->audioData.type == AudioFrameType::Cancel) {
-							this->onSongCompletionEvent(this);
-							this->areWePlaying = false;
-							frameCounter = 0;
-							break;
-						}
-					}
-					this->areWePlaying = false;
-				}
-				this->areWePlaying = false;
-				if (this->areWeStopping) {
-					send(this->stopBuffer, true);
-					try {
-						receive(this->stopBuffer, 5000);
-					}
-					catch (operation_timed_out&) {
-						break;
-					}
-					this->areWeStopping = false;
-				}
-				if (this->areWeSkipping) {
-					send(this->skipBuffer, true);
-					try {
-						receive(this->skipBuffer, 5000);
-					}
-					catch (operation_timed_out&) {
-						break;
-					}
-					this->areWeSkipping = false;
-				}
-				this->sendSpeakingMessage(false);
+			}
+			catch (...) {
+				rethrowException("", &this->errorBuffer);
 			}
 			this->done();
-
 		}
-
-
 	};
-
 };
 #endif

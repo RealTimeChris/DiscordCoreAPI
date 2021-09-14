@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 					youtubeAPI->setLoopAllStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopAllEnabled);
 					youtubeAPI->setLoopSongStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopSongEnabled);
 				}
-				DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);				
+				DiscordCoreClientBase::youtubeAPICoreMap->insert_or_assign(this->id, youtubeAPI);
 				return &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			return voiceConnectionPtr;
@@ -60,8 +60,7 @@ namespace DiscordCoreAPI {
 		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
-				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
-				YouTubeAPI::voiceConnectionMap.erase(this->id);
+				YouTubeAPI::stop(this->id);
 				if (!(*voiceConnection)->hasTerminateRun) {
 					if ((*voiceConnection)->areWePlaying) {
 						(*voiceConnection)->areWePlaying = false;
@@ -75,15 +74,17 @@ namespace DiscordCoreAPI {
 					}
 					(*voiceConnection)->hasTerminateRun = true;
 					
-					if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-						(DiscordCoreClientBase::youtubeAPIMap->at(this->id))->stop();
+					if (DiscordCoreClientBase::youtubeAPICoreMap->contains(this->id)) {
+						(DiscordCoreClientBase::youtubeAPICoreMap)->at(this->id)->stop();
 						Playlist playlist{};
-						playlist.songQueue = *(DiscordCoreClientBase::youtubeAPIMap->at(this->id))->getQueue();
-						playlist.isLoopAllEnabled = (DiscordCoreClientBase::youtubeAPIMap->at(this->id))->isLoopAllEnabled();
-						playlist.isLoopSongEnabled = (DiscordCoreClientBase::youtubeAPIMap->at(this->id))->isLoopSongEnabled();
+						playlist.songQueue = *YouTubeAPI::getQueue(this->id);
+						playlist.isLoopAllEnabled = YouTubeAPI::isLoopAllEnabled(this->id);
+						playlist.isLoopSongEnabled = YouTubeAPI::isLoopSongEnabled(this->id);
 						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, playlist);
-						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
+						DiscordCoreClientBase::youtubeAPICoreMap->erase(this->id);
 					}
+					YouTubeAPI::voiceConnectionMap.erase(this->id);
+					DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
 					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
 						send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
 						AudioFrameData frameData{};
@@ -95,8 +96,8 @@ namespace DiscordCoreAPI {
 		}
 
 		shared_ptr<YouTubeAPICore> getYouTubeAPI() {
-			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-				return DiscordCoreClientBase::youtubeAPIMap->at(this->id);
+			if (DiscordCoreClientBase::youtubeAPICoreMap->contains(this->id)) {
+				return DiscordCoreClientBase::youtubeAPICoreMap->at(this->id);
 			}
 			else {
 				return shared_ptr<YouTubeAPICore>();
@@ -204,7 +205,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			catch (...) {
-				cout << "Guild::initialize() Error." << endl << endl;
+				rethrowException("Guild::initialize() Error: ");
 			}
 		}
 	};
@@ -290,7 +291,7 @@ namespace DiscordCoreInternal {
 		void getError(string stackTrace) {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::GuildManagerAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::GuildManagerAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -493,10 +494,14 @@ namespace DiscordCoreInternal {
 					send(GuildManagerAgent::cache, cacheTemp);
 				}
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("GuildManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
+		}
+
+		~GuildManagerAgent() {
+			this->getError("");
 		}
 	};
 

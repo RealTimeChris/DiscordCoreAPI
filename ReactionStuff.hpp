@@ -105,7 +105,7 @@ namespace DiscordCoreInternal {
 		void getError(string stackTrace) {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::ReactionManagerAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::ReactionManagerAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -167,10 +167,14 @@ namespace DiscordCoreInternal {
 					this->deleteObjectData(dataPackage02);
 				}
 			}
-			catch (const exception& error) {
-				send(this->errorBuffer, error);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("ReactionManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
+		}
+
+		~ReactionManagerAgent() {
+			this->getError("");
 		}
 	};
 

@@ -495,7 +495,7 @@ namespace DiscordCoreInternal {
 		void getError(string stackTrace) {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::MessageManagerAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::MessageManagerAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -768,10 +768,14 @@ namespace DiscordCoreInternal {
 					putObjectData(dataPackage10);
 				}
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("MessageManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
+		}
+
+		~MessageManagerAgent() {
+			this->getError("");
 		}
 	};
 

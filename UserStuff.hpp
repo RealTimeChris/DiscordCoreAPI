@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 		void getError(string stackTrace) {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::UserManagerAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::UserManagerAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -319,10 +319,14 @@ namespace DiscordCoreInternal {
 				}
 
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("UserManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
+		}
+
+		~UserManagerAgent() {
+			this->getError("");
 		}
 	};
 

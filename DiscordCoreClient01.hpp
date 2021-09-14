@@ -73,6 +73,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::GuildManagerAgent::cleanup();
 			DiscordCoreInternal::StickerManagerAgent::cleanup();
 			DiscordCoreInternal::MessageManagerAgent::cleanup();
+			DiscordCoreInternal::ChannelManagerAgent::cleanup();
 			DiscordCoreInternal::ReactionManagerAgent::cleanup();
 			DiscordCoreInternal::GuildMemberManagerAgent::cleanup();
 			DiscordCoreInternal::InteractionManagerAgent::cleanup();
@@ -144,7 +145,7 @@ namespace DiscordCoreAPI {
 			this->users->initialize(agentResources, this->thisPointer);
 			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap);
+			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPICoreMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, this->discordUser->data.userId);
@@ -205,7 +206,7 @@ namespace DiscordCoreAPI {
 		void getError() {
 			exception error;
 			while (try_receive(this->errorBuffer, error)) {
-				cout << "DiscordCoreClient Error: " << error.what() << endl;
+				cout << "DiscordCoreClient::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -217,7 +218,7 @@ namespace DiscordCoreAPI {
 					try {
 						workload = receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, 1000);
 					}
-					catch (operation_timed_out&) {
+					catch (...) {
 						goto startingPoint;
 					}
 					switch (workload.eventType) {
@@ -710,12 +711,11 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				rethrowException("DiscordCoreClient::run() Error: ", &this->errorBuffer);
 			}
 			done();
 		}
-
 	};
 	shared_ptr<DiscordCoreClient> DiscordCoreClient::thisPointer{ nullptr };
 

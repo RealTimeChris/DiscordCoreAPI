@@ -166,13 +166,7 @@ namespace DiscordCoreAPI {
                 co_return;
             }
             catch (...) {
-                auto exceptionNew = current_exception();
-                try {
-                    rethrow_exception(exceptionNew);
-                }
-                catch (exception& e) {
-                    cout << "onInteractionCreation() Error: " << e.what() << endl;
-                }
+                rethrowException("EventHandler::onInteractionCreation() Error: ");
             }
             co_await mainThread;
             co_return;

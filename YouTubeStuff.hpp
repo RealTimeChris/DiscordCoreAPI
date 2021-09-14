@@ -317,8 +317,8 @@ namespace DiscordCoreAPI {
 							previousTask.get();
 							co_return;
 						}
-						catch (exception& e) {
-							cout << "YouTubeAPICore::stop() Error: " << e.what() << endl;
+						catch (...) {
+							rethrowException("YouTubeAPICore::stop() Error: ");
 							co_return;
 						}
 						}).get();
@@ -354,8 +354,8 @@ namespace DiscordCoreAPI {
 							previousTask.get();
 							co_return;
 						}
-						catch (exception& e) {
-							cout << "YouTubeAPICore::stopWithoutSaving() Error: " << e.what() << endl;
+						catch (...) {
+							rethrowException("YouTubeAPICore::stopWithoutSaving() Error: ");
 							co_return;
 						}
 						}).get();
@@ -942,13 +942,7 @@ namespace DiscordCoreAPI {
 						frameData.type = AudioFrameType::Cancel;
 						send(thisPtr->sendAudioDataBuffer.get(), frameData);
 						thisPtr->downloadAndStreamAudio(thisPtr->currentSong, tokenNew, retryCountNew).get();
-						auto exceptionNew = current_exception();
-						try {
-							rethrow_exception(exceptionNew);
-						}
-						catch (...) {
-							cout << "YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Error: " << endl << endl;
-						}
+						rethrowException("YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Error: ");
 						co_return;
 					}
 					else {
@@ -956,13 +950,7 @@ namespace DiscordCoreAPI {
 						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
 						thisPtr->stopWithoutSaving();
 						thisPtr->voiceConnection->onSongCompletionEvent(thisPtr->voiceConnection.get());
-						auto exceptionNew = current_exception();
-						try {
-							rethrow_exception(exceptionNew);
-						}
-						catch (...) {
-							cout << "YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Final Error: " << endl << endl;
-						}
+						rethrowException("YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Final Error: ");
 						co_return;
 					}
 				};
@@ -1012,8 +1000,6 @@ namespace DiscordCoreAPI {
 				}
 				else {
 					return false;
-					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
-					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
 				}
 				youtubeAPI->setLoopSongStatus(isSongLooped);
 				youtubeAPI->setLoopAllStatus(isAllLooped);

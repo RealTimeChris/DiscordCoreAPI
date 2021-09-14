@@ -219,11 +219,8 @@ namespace DiscordCoreInternal {
 				HttpWorkload workload = receive(&this->workSubmissionBuffer);
 				send(&completeHttpRequest, workload);
 			}
-			catch (const exception& e) {
-				send(errorBuffer, e);
-			}
-			catch (const hresult_error& e) {
-				send(errorhBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("HttpRequestAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
 		}

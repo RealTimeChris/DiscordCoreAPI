@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 		void getError(string stackTrace) {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::RoleManagerAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::RoleManagerAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -409,10 +409,14 @@ namespace DiscordCoreInternal {
 					send(RoleManagerAgent::cache, cacheTemp);
 				}
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("RoleManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
+		}
+
+		~RoleManagerAgent() {
+			this->getError("");
 		}
 	};
 

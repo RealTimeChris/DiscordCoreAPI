@@ -112,7 +112,7 @@ namespace DiscordCoreInternal {
 		void getError(string stackTrace) {
 			exception error;
 			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::GuildMemberManagerAgent Error: " << error.what() << endl << endl;
+				cout << stackTrace + "::GuildMemberManagerAgent::run() Error: " << error.what() << endl << endl;
 			}
 		}
 
@@ -208,10 +208,14 @@ namespace DiscordCoreInternal {
 					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 			}
-			catch (const exception& e) {
-				send(this->errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("GuildMemberManagerAgent::run() Error: ", &this->errorBuffer);
 			}
 			done();
+		}
+
+		~GuildMemberManagerAgent() {
+			this->getError("");
 		}
 	};
 

@@ -36,7 +36,7 @@ namespace DiscordCoreInternal {
         void getError() {
             exception error;
             while (try_receive(errorBuffer, error)) {
-                cout << "ThreadManagerAgent Error: " << error.what() << endl << endl;
+                cout << "ThreadManagerAgent::run() Error: " << error.what() << endl << endl;
             }
         }
 
@@ -55,10 +55,15 @@ namespace DiscordCoreInternal {
                 send(ThreadManagerAgent::outputBuffer, threadContextNew);
                 done();
             }
-            catch (exception& e) {
-                send(this->errorBuffer, e);
+            catch (...) {
+                DiscordCoreAPI::rethrowException("ThreadManagerAgent::run() Error: ", &this->errorBuffer);
             }
         }
+
+        ~ThreadManagerAgent() {
+            this->getError();
+        }
+
     };
 
     class ThreadManager {

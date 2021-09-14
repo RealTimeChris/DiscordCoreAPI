@@ -33,14 +33,14 @@ namespace DiscordCoreAPI {
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(DiscordCoreClientBase::webSocketConnectionAgent);
 			DiscordCoreClientBase::thisPointer = this;
-			DiscordCoreClientBase::youtubeAPIMap = new map<string, shared_ptr<YouTubeAPICore>>;
+			DiscordCoreClientBase::youtubeAPICoreMap = new map<string, shared_ptr<YouTubeAPICore>>;
 		}
 
 	protected:
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent;
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
-		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPIMap;
+		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMap;
 		static map<string, Playlist>* guildYouTubeQueueMap;
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
 	map<string, Playlist>* DiscordCoreClientBase::guildYouTubeQueueMap{ new map<string, Playlist>() };
-	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPIMap{ nullptr };
+	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPICoreMap{ nullptr };
 	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }

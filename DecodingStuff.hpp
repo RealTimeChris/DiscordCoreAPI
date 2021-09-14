@@ -54,6 +54,7 @@ namespace DiscordCoreAPI {
         }
 
         ~SongDecoder() {
+            this->getError();
             if (this->formatContext) {
                 avformat_close_input(&this->formatContext);
             }
@@ -97,6 +98,13 @@ namespace DiscordCoreAPI {
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
+
+        void getError() {
+            exception error;
+            while (try_receive(this->errorBuffer, error)) {
+                cout << "SongDecoder::run() Error: " << error.what() << endl << endl;
+            }
+        }
 
         void run() {
             try {
@@ -310,8 +318,8 @@ namespace DiscordCoreAPI {
                     this->done();
                 }
             }
-            catch (exception& e) {
-                send(this->errorBuffer, e);
+            catch (...) {
+                rethrowException("SongDecoder::run() Error: ", &this->errorBuffer);
             }
             done();
         }
