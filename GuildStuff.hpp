@@ -61,7 +61,6 @@ namespace DiscordCoreAPI {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
-				(DiscordCoreClientBase::youtubeAPIMap->at(this->id))->stop();
 				YouTubeAPI::voiceConnectionMap.erase(this->id);
 				if (!(*voiceConnection)->hasTerminateRun) {
 					if ((*voiceConnection)->areWePlaying) {
