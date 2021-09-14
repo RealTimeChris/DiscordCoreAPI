@@ -1048,7 +1048,6 @@ namespace DiscordCoreInternal {
         unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<nlohmann::detail::type_error> errorBuffer2{ nullptr };
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
         InteractionManagerAgent()
@@ -1059,20 +1058,15 @@ namespace DiscordCoreInternal {
             InteractionManagerAgent::agentResources = agentResourcesNew;
         }
 
+        static void cleanup() {
+            InteractionManagerAgent::threadContext->releaseGroup();
+        }
+
         void getError(string stackTrace) {
             exception error;
             while (try_receive(errorBuffer, error)) {
                 cout << stackTrace + "::InteractionManagerAgent Error: " << error.what() << endl << endl;
             }
-            while (1) {
-                try{
-                    nlohmann::detail::type_error error03 = receive(this->errorBuffer2, 1000);
-                    cout << stackTrace + "::InteractionManagerAgent Error: " << error03.what() << endl << endl;
-                }
-                catch (operation_timed_out&) {
-                    break;
-                }                
-            };
             return;
         }
 
@@ -1283,9 +1277,6 @@ namespace DiscordCoreInternal {
                     auto responseData = getObjectData(dataPackage08);
                     send(this->outInteractionresponseDataBuffer, responseData);
                 }
-            }
-            catch (nlohmann::detail::type_error& e) {
-                send(this->errorBuffer2, e);
             }
             catch (const exception& e) {
                 send(this->errorBuffer, e);

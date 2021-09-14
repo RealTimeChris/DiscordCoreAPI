@@ -14,7 +14,7 @@
 #include "HttpStuff.hpp"
 
 namespace DiscordCoreAPI {
-	
+
 	class Message : public MessageData {
 	protected:
 
@@ -68,12 +68,12 @@ namespace DiscordCoreAPI {
 		vector<Message> messages;
 	};
 
-	class MessageCollector :DiscordCoreInternal::ThreadContext,  agent {
+	class MessageCollector :DiscordCoreInternal::ThreadContext, agent {
 	public:
 
 		friend class DiscordCoreClient;
 
-		MessageCollector(int quantityToCollect,  int msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) :
+		MessageCollector(int quantityToCollect, int msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
 			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
 			this->messagesBuffer = new unbounded_buffer<Message>();
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
-		
+
 		EditMessageData(InputEventData dataPackage) {
 			this->requesterId = dataPackage.getRequesterId();
 			this->channelId = dataPackage.getChannelId();
@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 		string messageId{ "" };
 		string content{ "" };
 		int flags{ 0 };
-		
+
 		EditMessageData() {};
 
 	};
@@ -281,7 +281,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
-		
+
 		ReplyMessageData(InputEventData dataPackage) {
 			this->messageReference.messageId = dataPackage.getMessageId();
 			this->messageReference.channelId = dataPackage.getChannelId();
@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
 		void setTTSStatus(bool enabledTTs) {
 			this->tts = enabledTTs;
 		}
-		
+
 	protected:
 		MessageReferenceData messageReference{};
 		AllowedMentionsData allowedMentions{};
@@ -477,8 +477,8 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<GetMessageData> requestGetMessageBuffer{ nullptr };
 		unbounded_buffer<PostDMData> requestPostDMMessageBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		
-		
+
+
 		MessageManagerAgent()
 			:agent(*MessageManagerAgent::threadContext->scheduler->scheduler) {}
 
@@ -526,19 +526,19 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_MESSAGES;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
-			if (dataPackage.aroundThisId != ""){
+			if (dataPackage.aroundThisId != "") {
 				workload.relativePath += "?around=" + dataPackage.aroundThisId;
 				if (dataPackage.limit != 0) {
 					workload.relativePath += "&limit=" + to_string(dataPackage.limit);
 				}
 			}
-			else if (dataPackage.beforeThisId!= "") {
+			else if (dataPackage.beforeThisId != "") {
 				workload.relativePath += "?before=" + dataPackage.beforeThisId;
 				if (dataPackage.limit != 0) {
 					workload.relativePath += "&limit=" + to_string(dataPackage.limit);
 				}
 			}
-			else if (dataPackage.afterThisId!= "") {
+			else if (dataPackage.afterThisId != "") {
 				workload.relativePath += "?after=" + dataPackage.afterThisId;
 				if (dataPackage.limit != 0) {
 					workload.relativePath += "&limit=" + to_string(dataPackage.limit);
@@ -786,7 +786,7 @@ namespace DiscordCoreInternal {
 
 		MessageManager(MessageManager* pointer)
 			: ThreadContext(*ThreadManager::getThreadContext().get()) {
-			if (pointer != nullptr){
+			if (pointer != nullptr) {
 				*this = *pointer;
 			}
 		}
@@ -839,11 +839,11 @@ namespace DiscordCoreInternal {
 			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.channelId = dataPackage.channelId;
-			dataPackageNew.allowedMentions= dataPackage.allowedMentions;
+			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
 			for (auto value : dataPackage.components) {
 				dataPackageNew.components.push_back(value);
 			}
-			dataPackageNew.content= dataPackage.content;
+			dataPackageNew.content = dataPackage.content;
 			for (auto value : dataPackage.embeds) {
 				dataPackageNew.embeds.push_back(value);
 			}
@@ -998,7 +998,7 @@ namespace DiscordCoreInternal {
 			std::optional<vector<DiscordCoreAPI::Message>> messageVector;
 			messageVector.emplace();
 			try_receive(requestAgent.outMultMessagesBuffer, *messageVector);
-			if (messageVector->size()==0){
+			if (messageVector->size() == 0) {
 				messageVector.reset();
 			}
 			co_await mainThread;

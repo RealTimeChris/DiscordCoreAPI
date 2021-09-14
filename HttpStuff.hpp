@@ -13,11 +13,13 @@
 
 namespace DiscordCoreInternal {
 
-	class HttpRequestAgent : shared_ptr<ThreadContext>, public agent {
+	class HttpRequestAgent : public agent {
 	public:
 
+		static shared_ptr<ThreadContext> threadContext;
+
 		HttpRequestAgent(HttpAgentResources agentResources)
-			: agent(*HttpRequestAgent::shared_ptr::get()->scheduler->scheduler), shared_ptr(DiscordCoreInternal::ThreadManager::getThreadContext().get())
+			: agent(*HttpRequestAgent::threadContext->scheduler->scheduler)
 		{
 			try {
 				if (agentResources.baseURL == "") {
@@ -78,6 +80,7 @@ namespace DiscordCoreInternal {
 		}
 
 		static void initialize(string botTokenNew, string baseURLNew) {
+			HttpRequestAgent::threadContext = ThreadManager::getThreadContext().get();
 			HttpRequestAgent::botToken = botTokenNew;
 			HttpRequestAgent::baseURL = baseURLNew;
 		};
@@ -103,9 +106,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		~HttpRequestAgent() {
-			this->get()->releaseGroup();
-		}
+		~HttpRequestAgent() {}
 
 	protected:
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
@@ -485,6 +486,7 @@ namespace DiscordCoreInternal {
 
 	};
 	map<HttpWorkloadType, string> HttpRequestAgent::rateLimitDataBucketValues{};
+	shared_ptr<ThreadContext> HttpRequestAgent::threadContext{ nullptr };
 	map<string, RateLimitData> HttpRequestAgent::rateLimitData{};
 	string HttpRequestAgent::botToken{ "" };
 	string HttpRequestAgent::baseURL{ "" };

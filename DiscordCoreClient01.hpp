@@ -75,6 +75,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::MessageManagerAgent::cleanup();
 			DiscordCoreInternal::ReactionManagerAgent::cleanup();
 			DiscordCoreInternal::GuildMemberManagerAgent::cleanup();
+			DiscordCoreInternal::InteractionManagerAgent::cleanup();
 			DiscordCoreClient::thisPointer->webSocketConnectionAgent->terminate();
 			DiscordCoreClient::thisPointer->webSocketReceiverAgent->terminate();
 			wait(DiscordCoreClient::thisPointer->webSocketConnectionAgent.get());
@@ -566,10 +567,16 @@ namespace DiscordCoreAPI {
 					}
 					case DiscordCoreInternal::WebSocketEventType::Message_Update:
 					{
-						DiscordCoreAPI::OnMessageUpdateData messageUpdateData{};
 						MessageData messageData{};
 						messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
+						if (messageData.interaction.id != "") {
+							if (DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
+								send(*DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
+							}
+						}
+						DiscordCoreAPI::OnMessageUpdateData messageUpdateData{};
+						messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 						Message message(messageData);
 						messageUpdateData.messageNew = message;
 						this->eventManager->onMessageUpdateEvent(messageUpdateData);

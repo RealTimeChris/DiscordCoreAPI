@@ -260,9 +260,9 @@ namespace DiscordCoreAPI {
 
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap{ nullptr };
 		const string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
+		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		cancellation_token_source cancelTokenSource{ cancellation_token_source() };
 		cancellation_token cancelToken{ this->cancelTokenSource.get_token() };
-		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		const string baseWatchURL{ "https://www.youtube.com/watch?v=" };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		const string baseURL{ "https://www.youtube.com" };
@@ -270,7 +270,6 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<bool> readyBuffer{ nullptr };
 		vector<YouTubeSong> songQueue{};
 		const string newLine{ "\n\r" };
-		bool isThisFirstCall{ true };
 		string html5PlayerFile{ "" };
 		const int maxBufSize{ 4096 };
 		string playerResponse{ "" };
@@ -421,7 +420,6 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -431,7 +429,6 @@ namespace DiscordCoreAPI {
 				}
 				else if (this->songQueue.size() > 0 && this->currentSong.description != "") {
 					this->currentSong = this->currentSong;
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -441,7 +438,6 @@ namespace DiscordCoreAPI {
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
 					this->currentSong = this->currentSong;
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -452,7 +448,6 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -475,7 +470,6 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -493,7 +487,6 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.at(this->songQueue.size() - 1) = tempSong02;
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -502,7 +495,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -513,7 +505,6 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -532,7 +523,6 @@ namespace DiscordCoreAPI {
 					for (int x = 0; x < this->songQueue.size() - 1; x += 1) {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -542,7 +532,6 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -554,7 +543,6 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
-					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
 					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
@@ -802,6 +790,7 @@ namespace DiscordCoreAPI {
 								}
 							}
 							if (counter > 0) {
+								cout << "WERE HERE WERE HERE 919191" << endl;
 								if (contentLengthCurrent > 0) {
 									if (tokenNew.is_canceled()) {
 										songDecoder->refreshTimeForBuffer = 10;
