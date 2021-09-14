@@ -268,6 +268,7 @@ namespace DiscordCoreAPI {
 		const string baseURL{ "https://www.youtube.com" };
 		DiscordGuild* discordGuild{ new DiscordGuild };
 		unbounded_buffer<bool> readyBuffer{ nullptr };
+		task<void>* currentTask{ nullptr };
 		vector<YouTubeSong> songQueue{};
 		const string newLine{ "\n\r" };
 		string html5PlayerFile{ "" };
@@ -276,7 +277,6 @@ namespace DiscordCoreAPI {
 		bool areWeStopping{ false };
 		YouTubeSong currentSong{};
 		string html5Player{ "" };
-		task<void> currentTask{};
 		bool loopSong{ false };
 		bool loopAll{ false };
 		string guildId{ "" };
@@ -310,19 +310,22 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->cancelTokenSource.cancel();
 				AudioFrameData dataFrame;
-				this->currentTask.then([](task<void> previousTask)->task<void> {
-					auto exceptionNew = current_exception();
-					try {
-						previousTask.get();
-						co_return;
-					}
-					catch (exception& e) {
-						cout << "YouTubeAPICore::stop() Error: " << e.what() << endl;
-						co_return;
-					}
-					}).get();
-					this->currentTask = task<void>();
-					while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
+				if (this->currentTask != nullptr) {
+					this->currentTask->then([](task<void> previousTask)->task<void> {
+						auto exceptionNew = current_exception();
+						try {
+							previousTask.get();
+							co_return;
+						}
+						catch (exception& e) {
+							cout << "YouTubeAPICore::stop() Error: " << e.what() << endl;
+							co_return;
+						}
+						}).get();
+						delete this->currentTask;
+						this->currentTask = nullptr;
+				}
+				while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
 				vector<YouTubeSong> newVector02;
 				if (this->currentSong.description != "") {
 					newVector02.push_back(this->currentSong);
@@ -344,19 +347,22 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->cancelTokenSource.cancel();
 				AudioFrameData dataFrame;
-				this->currentTask.then([](task<void> previousTask)->task<void>{
-					auto exceptionNew = current_exception();
-					try {
-						previousTask.get();
-						co_return;
-					}
-					catch (exception& e) {
-						cout << "YouTubeAPICore::stopWithoutSaving() Error: " << e.what() << endl;
-						co_return;
-					}
-					}).get();
-					this->currentTask = task<void>();
-					while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
+				if (this->currentTask != nullptr) {
+					this->currentTask->then([](task<void> previousTask)->task<void> {
+						auto exceptionNew = current_exception();
+						try {
+							previousTask.get();
+							co_return;
+						}
+						catch (exception& e) {
+							cout << "YouTubeAPICore::stopWithoutSaving() Error: " << e.what() << endl;
+							co_return;
+						}
+						}).get();
+						delete this->currentTask;
+						this->currentTask = nullptr;
+				}
+				while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
 				vector<YouTubeSong> newVector02;
 				this->currentSong = YouTubeSong();
 				return;
@@ -422,7 +428,9 @@ namespace DiscordCoreAPI {
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -431,7 +439,9 @@ namespace DiscordCoreAPI {
 					this->currentSong = this->currentSong;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -440,7 +450,9 @@ namespace DiscordCoreAPI {
 					this->currentSong = this->currentSong;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -450,7 +462,9 @@ namespace DiscordCoreAPI {
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -472,7 +486,9 @@ namespace DiscordCoreAPI {
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -489,7 +505,9 @@ namespace DiscordCoreAPI {
 					this->songQueue.at(this->songQueue.size() - 1) = tempSong02;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -497,7 +515,9 @@ namespace DiscordCoreAPI {
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -507,7 +527,9 @@ namespace DiscordCoreAPI {
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -525,7 +547,9 @@ namespace DiscordCoreAPI {
 					}
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					returnData.currentSong = this->currentSong;
@@ -534,7 +558,9 @@ namespace DiscordCoreAPI {
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					this->currentSong = YouTubeSong();
@@ -545,7 +571,9 @@ namespace DiscordCoreAPI {
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					auto currentTaskNew = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
+					this->currentTask = new task<void>();
+					*this->currentTask = currentTaskNew;
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -711,6 +739,8 @@ namespace DiscordCoreAPI {
 							agent::wait(songDecoder);
 							delete songDecoder;
 							songDecoder = nullptr;
+							delete thisPtr->currentTask;
+							thisPtr->currentTask = nullptr;
 							threadContext->releaseGroup();
 							cancel_current_task();
 							co_return;
@@ -766,6 +796,8 @@ namespace DiscordCoreAPI {
 								agent::wait(songDecoder);
 								delete songDecoder;
 								songDecoder = nullptr;
+								delete thisPtr->currentTask;
+								thisPtr->currentTask = nullptr;
 								threadContext->releaseGroup();
 								cancel_current_task();
 								co_return;
@@ -790,7 +822,6 @@ namespace DiscordCoreAPI {
 								}
 							}
 							if (counter > 0) {
-								cout << "WERE HERE WERE HERE 919191" << endl;
 								if (contentLengthCurrent > 0) {
 									if (tokenNew.is_canceled()) {
 										songDecoder->refreshTimeForBuffer = 10;
@@ -798,6 +829,8 @@ namespace DiscordCoreAPI {
 										agent::wait(songDecoder);
 										delete songDecoder;
 										songDecoder = nullptr;
+										delete thisPtr->currentTask;
+										thisPtr->currentTask = nullptr;
 										threadContext->releaseGroup();
 										cancel_current_task();
 										co_return;
@@ -844,6 +877,8 @@ namespace DiscordCoreAPI {
 									agent::wait(songDecoder);
 									delete songDecoder;
 									songDecoder = nullptr;
+									delete thisPtr->currentTask;
+									thisPtr->currentTask = nullptr;
 									threadContext->releaseGroup();
 									cancel_current_task();
 									co_return;
@@ -885,11 +920,6 @@ namespace DiscordCoreAPI {
 						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
 						RawFrameData frameData01;
 						while (songDecoder->getFrame(&frameData01));
-						AudioFrameData frameData02;
-						frameData02.encodedFrameData.sampleCount = 0;
-						frameData02.rawFrameData.sampleCount = 0;
-						frameData02.type = AudioFrameType::Cancel;
-						send(*thisPtr->sendAudioDataBuffer, frameData02);
 					}
 					vector<uint8_t> newVector;
 					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
@@ -897,6 +927,8 @@ namespace DiscordCoreAPI {
 					agent::wait(songDecoder);
 					delete songDecoder;
 					songDecoder = nullptr;
+					delete thisPtr->currentTask;
+					thisPtr->currentTask = nullptr;
 					threadContext->releaseGroup();
 					co_await mainThread;
 					co_return;
