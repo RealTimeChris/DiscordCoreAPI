@@ -916,10 +916,15 @@ namespace DiscordCoreAPI {
 						}
 					}
 					if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-						vector<uint8_t> newVector;
+						vector<uint8_t> newVector{};
 						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-						RawFrameData frameData01;
+						RawFrameData frameData01{};
 						while (songDecoder->getFrame(&frameData01));
+						AudioFrameData frameData{};
+						frameData.type = AudioFrameType::Cancel;
+						frameData.rawFrameData.sampleCount = 0;
+						frameData.encodedFrameData.sampleCount = 0;
+						send(thisPtr->sendAudioDataBuffer.get(), frameData);
 					}
 					vector<uint8_t> newVector;
 					send(dataPackage.sendEncodedAudioDataBuffer, newVector);

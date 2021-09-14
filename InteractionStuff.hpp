@@ -1065,9 +1065,8 @@ namespace DiscordCoreInternal {
         void getError(string stackTrace) {
             exception error;
             while (try_receive(errorBuffer, error)) {
-                cout << stackTrace + "::InteractionManagerAgent Error: " << error.what() << endl << endl;
+                cout << stackTrace + "::InteractionManagerAgent::run() Error: " << error.what() << endl << endl;
             }
-            return;
         }
 
         DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
@@ -1282,6 +1281,10 @@ namespace DiscordCoreInternal {
                 send(this->errorBuffer, e);
             }
             done();
+        }
+
+        ~InteractionManagerAgent(){
+            this->getError("");
         }
 
     };
@@ -1557,13 +1560,15 @@ namespace DiscordCoreAPI {
             start();
             agent::wait(this);
             exception error;
-            while (getError(error)) {
-                cout << "SelectMenu::run() Error: " << error.what() << endl;
-            }
+            this->getError();
             return this->responseVector;
         }
 
         ~SelectMenu() {
+            if (SelectMenu::selectMenuInteractionBufferMap.contains(this->channelId + this->messageId)) {
+                SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
+            }
+            this->getError();
             done();
         }
 
@@ -1583,8 +1588,11 @@ namespace DiscordCoreAPI {
         string messageId{ "" };
         string userId{ "" };
 
-        bool getError(exception& error) {
-            return try_receive(this->errorBuffer, error);
+        void getError() {
+            exception error;
+            while (try_receive(errorBuffer, error)) {
+                cout << "SelectMenu::run() Error: " << error.what() << endl << endl;
+            }
         }
 
         void run() {
@@ -1640,9 +1648,9 @@ namespace DiscordCoreAPI {
                 SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
                 done();
             }
-            catch (exception& e) {
+            catch (...) {
+                rethrowException("", &this->errorBuffer);
                 this->selectMenuId = "exit";
-                send(this->errorBuffer, e);
                 done();
                 SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
@@ -1692,15 +1700,16 @@ namespace DiscordCoreAPI {
             start();
             agent::wait(this);
             exception error;
-            while (getError(error)) {
-                cout << "Button::run() Error: " << error.what() << endl;
-            }
+            getError();
             return this->responseVector;
         }
 
         ~Button() {
+            if (Button::buttonInteractionBufferMap.contains(this->channelId + this->messageId)) {
+                Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+            }
+            this->getError();
             done();
-            Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
         }
 
     protected:
@@ -1718,8 +1727,11 @@ namespace DiscordCoreAPI {
         string buttonId{ "" };
         string userId{ "" };
 
-        bool getError(exception& error) {
-            return try_receive(this->errorBuffer, error);
+        void getError() {
+            exception error;
+            while (try_receive(errorBuffer, error)) {
+                cout << "Button::run() Error: " << error.what() << endl << endl;
+            }
         }
 
         void run() {
@@ -1771,11 +1783,10 @@ namespace DiscordCoreAPI {
                 Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
                 done();
             }
-            catch (exception& e) {
+            catch (...) {
+                rethrowException("", &this->errorBuffer);
                 this->buttonId = "exit";
-                send(this->errorBuffer, e);
                 done();
-
                 Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
             }
