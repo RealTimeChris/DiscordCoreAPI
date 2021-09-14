@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal{
 
-    class ApplicationCommandManager {
+    class ApplicationCommandManager : ThreadContext {
     public:
 
         template <class _Ty>
@@ -88,7 +88,8 @@ namespace DiscordCoreInternal{
         friend class DiscordCoreAPI::SelectMenu;
         friend class DiscordCoreAPI::Button;
 
-        ApplicationCommandManager(ApplicationCommandManager* pointer) {
+        ApplicationCommandManager(ApplicationCommandManager* pointer)
+            : ThreadContext(*ThreadManager::getThreadContext().get()) {
             if (pointer != nullptr) {
                 *this = *pointer;
             }
@@ -96,20 +97,18 @@ namespace DiscordCoreInternal{
 
     protected:
 
-        shared_ptr<ThreadContext> threadContext{ nullptr };
         HttpAgentResources agentResources{};
         string applicationId{ "" };
 
-        ApplicationCommandManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, string applicationIdNew) {
+        ApplicationCommandManager initialize(HttpAgentResources agentResourcesNew, string applicationIdNew) {
             this->agentResources = agentResourcesNew;
-            this->threadContext = threadContextNew;
             this->applicationId = applicationIdNew;
             return *this;
         }
 
         task<DiscordCoreAPI::ApplicationCommand> getGlobalApplicationCommandAsync(DiscordCoreAPI::GetGlobalApplicationCommandData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             HttpWorkload workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.workloadType = HttpWorkloadType::GET_APPLICATION_COMMAND;
@@ -131,7 +130,7 @@ namespace DiscordCoreInternal{
 
         task<vector<DiscordCoreAPI::ApplicationCommand>> getGlobalApplicationCommandsAsync() {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             HttpWorkload workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
@@ -157,7 +156,7 @@ namespace DiscordCoreInternal{
 
         task<DiscordCoreAPI::ApplicationCommand> createGlobalApplicationCommandAsync(DiscordCoreAPI::CreateApplicationCommandData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             PostApplicationCommandData dataPackageNew;
             dataPackageNew.applicationId = this->applicationId;
             dataPackageNew.defaultPermission = dataPackage.defaultPermission;
@@ -231,7 +230,7 @@ namespace DiscordCoreInternal{
 
         task<vector<DiscordCoreAPI::ApplicationCommand>> getGuildApplicationCommandsAsync(DiscordCoreAPI::GetGuildApplicationCommandsData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             HttpWorkload workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands";
@@ -330,7 +329,7 @@ namespace DiscordCoreInternal{
 
         task<DiscordCoreAPI::ApplicationCommand> createGuildApplicationCommandAsync(DiscordCoreAPI::CreateApplicationCommandData dataPackage){
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             PostApplicationCommandData dataPackageNew;
             dataPackageNew.applicationId = this->applicationId;
             dataPackageNew.defaultPermission = dataPackage.defaultPermission;
@@ -360,7 +359,7 @@ namespace DiscordCoreInternal{
 
         task<DiscordCoreAPI::ApplicationCommand> getGuildApplicationCommandAsync(DiscordCoreAPI::GetGuildApplicationCommandData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             HttpWorkload workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMAND;
@@ -382,7 +381,7 @@ namespace DiscordCoreInternal{
 
         task<void> displayGlobalApplicationCommandsAsync() {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             vector<DiscordCoreAPI::ApplicationCommand> applicationCommandsNew = getGlobalApplicationCommandsAsync().get();
             for (unsigned int x = 0; x < applicationCommandsNew.size(); x += 1) {
                 cout << "Command Name: " << applicationCommandsNew.at(x).name << endl;

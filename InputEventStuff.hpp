@@ -25,6 +25,125 @@ namespace DiscordCoreAPI {
 			InputEvents::messages = messagesNew;
 		}
 
+		static InputEventData respondToEvent(RespondToInputEventData dataPackage) {
+			switch (dataPackage.type) {
+			case DesiredInputEventResponseType::DeferredResponse: {
+				CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::InteractionResponse: {
+				CreateInteractionResponseData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::InteractionResponseEdit: {
+				EditInteractionResponseData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::EphemeralInteractionResponse: {
+				CreateEphemeralInteractionResponseData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::RegularMessage: {
+				ReplyMessageData dataPackage02{};
+				dataPackage02.messageReference.channelId = dataPackage.channelId;
+				dataPackage02.messageReference.messageId = dataPackage.messageId;
+				dataPackage02.addAllowedMentions(dataPackage.allowedMentions);
+				dataPackage02.requesterId = dataPackage.requesterId;
+				for (auto value : dataPackage.components) {
+					dataPackage02.components.push_back(value);
+				}
+				dataPackage02.addContent(dataPackage.content);
+				for (auto value : dataPackage.embeds) {
+					dataPackage02.embeds.push_back(value);
+				}
+				dataPackage02.tts = dataPackage.tts;
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::RegularMessageEdit: {
+				EditMessageData dataPackage02{};
+				dataPackage02.channelId = dataPackage.channelId;
+				dataPackage02.messageId = dataPackage.messageId;
+				dataPackage02.addAllowedMentions(dataPackage.allowedMentions);
+				dataPackage02.requesterId = dataPackage.requesterId;
+				for (auto value : dataPackage.components) {
+					dataPackage02.components.push_back(value);
+				}
+				dataPackage02.addContent(dataPackage.content);
+				for (auto value : dataPackage.embeds) {
+					dataPackage02.embeds.push_back(value);
+				}
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::FollowUpMessage: {
+				CreateFollowUpMessageData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::FollowUpMessageEdit: {
+				EditFollowUpMessageData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			case DesiredInputEventResponseType::EphemeralFollowUpMessage: {
+				CreateEphemeralFollowUpMessageData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			default:{
+				return InputEventData();
+			}
+
+			}
+		}
+
+		static task<void> deleteInputEventResponseAsync(DeleteMessageData dataPackage, unsigned int timeDelayNew = 0) {
+			apartment_context mainThread;
+			co_await resume_background();
+			DeleteMessageData deleteData;
+			deleteData.messageData = dataPackage.messageData;
+			deleteData.timeDelay = dataPackage.timeDelay;
+			InputEvents::messages->deleteMessageAsync(deleteData).get();
+			co_await mainThread;
+			co_return;
+		}
+
+		static task<void> deleteInputEventResponseAsync(InputEventData dataPackage, unsigned int timeDelayNew = 0) {
+			apartment_context mainThread;
+			co_await resume_background();
+			if ((dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE) || (dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT)) {
+				DeleteMessageData deleteData;
+				deleteData.messageData = dataPackage.getMessageData();
+				deleteData.timeDelay = timeDelayNew;
+				InputEvents::messages->deleteMessageAsync(deleteData).get();
+			}
+			else if (dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
+				DeleteFollowUpMessageData dataPackageNewer(dataPackage);
+				dataPackageNewer.timeDelay = timeDelayNew;
+				InputEvents::interactions->deleteFollowUpMessageAsync(dataPackageNewer).get();
+			}
+			else if (dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE || dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT
+				|| dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED) {
+				DeleteInteractionResponseData dataPackageNewer(dataPackage);
+				dataPackageNewer.timeDelay = timeDelayNew;
+				InputEvents::interactions->deleteInteractionResponseAsync(dataPackageNewer).get();
+			}
+			co_await mainThread;
+			co_return;
+		}
+
+		InputEvents() {}
+
+		static InputEventData respondToEvent(CreateDeferredInteractionResponseData dataPackage) {
+			InputEvents::interactions->createDeferredInteractionResponseAsync(dataPackage).get();
+			InputEventData dataPackageNewer;
+			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_RESPONSE_DEFERRED;
+			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
+			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
+			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
+			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
+			dataPackageNewer.interactionData.channelId = dataPackage.channelId;
+			dataPackageNewer.requesterId = dataPackage.requesterId;
+			return dataPackageNewer;
+		}
+
 		static InputEventData respondToEvent(CreateFollowUpMessageData dataPackage) {
 			MessageData messageData = InputEvents::interactions->createFollowUpMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
@@ -83,20 +202,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = messageData;
-			return dataPackageNewer;
-		}
-
-		static InputEventData respondToEvent(CreateDeferredInteractionResponseData dataPackage) {
-			InputEvents::interactions->createDeferredInteractionResponseAsync(dataPackage).get();
-			InputEventData dataPackageNewer;
-			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_RESPONSE_DEFERRED;
-			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
-			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
-			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
-			dataPackageNewer.interactionData.channelId = dataPackage.channelId;
-			dataPackageNewer.requesterId = dataPackage.requesterId;
 			return dataPackageNewer;
 		}
 
@@ -188,48 +293,13 @@ namespace DiscordCoreAPI {
 			InputEvents::interactions->createInteractionResponseAsync(dataPackageNew).get();
 		}
 
-		static task<void> deleteInputEventResponseAsync(DeleteMessageData dataPackage, unsigned int timeDelayNew = 0) {
-			apartment_context mainThread;
-			co_await resume_background();
-			DeleteMessageData deleteData;
-			deleteData.messageData = dataPackage.messageData;
-			deleteData.timeDelay = dataPackage.timeDelay;
-			InputEvents::messages->deleteMessageAsync(deleteData).get();
-			co_await mainThread;
-			co_return;
-		}
-
-		static task<void> deleteInputEventResponseAsync(InputEventData dataPackage, unsigned int timeDelayNew = 0) {
-			apartment_context mainThread;
-			co_await resume_background();
-			if ((dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE) || (dataPackage.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT)) {
-				DeleteMessageData deleteData;
-				deleteData.messageData = dataPackage.getMessageData();
-				deleteData.timeDelay = timeDelayNew;
-				InputEvents::messages->deleteMessageAsync(deleteData).get();
-			}
-			else if (dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-				DeleteFollowUpMessageData dataPackageNewer(dataPackage);
-				dataPackageNewer.timeDelay = timeDelayNew;
-				InputEvents::interactions->deleteFollowUpMessageAsync(dataPackageNewer).get();
-			}
-			else if (dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE || dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT
-				|| dataPackage.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED) {
-				DeleteInteractionResponseData dataPackageNewer(dataPackage);
-				dataPackageNewer.timeDelay = timeDelayNew;
-				InputEvents::interactions->deleteInteractionResponseAsync(dataPackageNewer).get();
-			}
-			co_await mainThread;
-			co_return;
-		}
-
 	protected:
+
 		static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
 		static shared_ptr<DiscordCoreInternal::MessageManager> messages;
 		static shared_ptr<DiscordCoreClientBase> discordCoreClientBase;
 		static shared_ptr<DiscordCoreClient> discordCoreClient;
 
-		InputEvents() {}
 	};
 	shared_ptr<DiscordCoreInternal::InteractionManager> InputEvents::interactions{ nullptr };
 	shared_ptr<DiscordCoreInternal::MessageManager> InputEvents::messages{ nullptr };

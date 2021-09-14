@@ -23,12 +23,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreClientBase {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		friend class YouTubeAPICore;
-		friend class EventHandler;
 		friend class InputEvents;
-		friend class YouTubeAPI;
 		friend class Guild;
 
 		static DiscordCoreClientBase* thisPointer;
@@ -53,11 +48,11 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 
 	};
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>> };
-	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>> };
-	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPIMap{ nullptr };
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
+	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
 	map<string, Playlist>* DiscordCoreClientBase::guildYouTubeQueueMap{ new map<string, Playlist>() };
+	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPIMap{ nullptr };
 	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }

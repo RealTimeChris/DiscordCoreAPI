@@ -54,21 +54,20 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::EventHandler;
 		friend class StickerManager;
 
+		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
 		static overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> cache;
 		static shared_ptr<ThreadContext> threadContext;
-
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+		static HttpAgentResources agentResources;
+		
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		HttpAgentResources agentResources{};
+		
+		StickerManagerAgent()
+			:agent(*StickerManagerAgent::threadContext->scheduler->scheduler) {}
 
-		StickerManagerAgent(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew)
-			:agent(*StickerManagerAgent::threadContext->scheduler->scheduler) {
-			this->agentResources = agentResourcesNew;
-			this->discordCoreClient = discordCoreClientNew;
-		}
-
-		static void intialize(shared_ptr<ThreadContext> threadContextNew) {
-			StickerManagerAgent::threadContext = threadContextNew;
+		static void intialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+			StickerManagerAgent::threadContext = ThreadManager::getThreadContext().get();
+			StickerManagerAgent::discordCoreClient = discordCoreClientNew;
+			StickerManagerAgent::agentResources = agentResourcesNew;
 		}
 
 		static void cleanup() {
@@ -94,7 +93,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class StickerManager {
+	class StickerManager : ThreadContext {
 	public:
 
 		template <class _Ty>
@@ -104,7 +103,8 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::GuildMembers;
 		friend class DiscordCoreAPI::Guild;
 
-		StickerManager(StickerManager* pointer) {
+		StickerManager(StickerManager* pointer)
+			: ThreadContext(*ThreadManager::getThreadContext().get()) {
 			if (pointer != nullptr) {
 				*this = *pointer;
 			}
@@ -116,15 +116,16 @@ namespace DiscordCoreInternal {
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
 
-		void initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->agentResources = agentResourcesNew;
+		void initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
 			this->discordCoreClient = discordCoreClientNew;
-			this->threadContext = threadContextNew;
+			this->agentResources = agentResourcesNew;
 		}
 
 		~StickerManager() {}
 	};
+	shared_ptr<DiscordCoreAPI::DiscordCoreClient> StickerManagerAgent::discordCoreClient{ nullptr };
 	overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> StickerManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> StickerManagerAgent::threadContext{ nullptr };
-};
+	HttpAgentResources StickerManagerAgent::agentResources{};
+	};
 #endif

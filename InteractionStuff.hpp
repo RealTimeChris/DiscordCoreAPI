@@ -83,9 +83,138 @@ namespace DiscordCoreAPI {
         SelectMenuInteractionData() {};
     };
 
+    enum class DesiredInputEventResponseType {
+        DeferredResponse = 0,
+        InteractionResponse = 1,
+        InteractionResponseEdit = 2,
+        EphemeralInteractionResponse = 3,
+        RegularMessage = 4,
+        RegularMessageEdit = 5,
+        FollowUpMessage = 6,
+        FollowUpMessageEdit = 7,
+        EphemeralFollowUpMessage = 8
+    };
+
+    struct RespondToInputEventData {
+
+        friend struct CreateEphemeralInteractionResponseData;
+        friend struct CreateDeferredInteractionResponseData;
+        friend struct CreateEphemeralFollowUpMessageData;
+        friend struct CreateInteractionResponseData;
+        friend struct EditInteractionResponseData;
+        friend struct DeferComponentResponseData;
+        friend struct CreateFollowUpMessageData;
+        friend struct EditFollowUpMessageData;
+        friend class InputEvents;
+
+        DesiredInputEventResponseType type{};
+
+        RespondToInputEventData(InputEventData dataPackage) {
+            this->interactionToken = dataPackage.getInteractionToken();
+            this->applicationId = dataPackage.getApplicationId();
+            this->interactionId = dataPackage.getInteractionId();
+            this->requesterId = dataPackage.getRequesterId();
+            this->channelId = dataPackage.getChannelId();
+            this->messageId = dataPackage.getMessageId();
+        }
+
+        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.type = ComponentType::Button;
+                    component.emoji.name = emojiName;
+                    component.label = buttonLabel;
+                    component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
+                    component.url = url;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+        }
+
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    this->components.at(this->components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+
+            }
+        }
+
+        void addAllowedMentions(AllowedMentionsData dataPackage) {
+            this->allowedMentions = dataPackage;
+        }
+
+        void addComponentRow(ActionRowData dataPackage) {
+            this->components.push_back(dataPackage);
+        }
+
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->content = dataPackage;
+        }
+
+        void setTTSStatus(bool enabledTTs) {
+            this->tts = enabledTTs;
+        }
+
+    protected:
+
+        AllowedMentionsData allowedMentions{};
+        vector<ActionRowData> components{};
+        string interactionToken{ "" };
+        vector<EmbedData> embeds{};
+        string interactionId{ "" };
+        string applicationId{ "" };
+        string requesterId{ "" };
+        string channelId{ "" };
+        string messageId{ "" };
+        string content{ "" };
+        bool tts{ false };
+        int flags{ 0 };
+    };
+
     struct DeferComponentResponseData {
 
         friend class InputEvents;
+
+        DeferComponentResponseData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->responseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->type = InteractionCallbackType::DeferredUpdateMessage;
+        }
 
         DeferComponentResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -106,6 +235,20 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
 
+        CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
+            this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.flags = dataPackage.flags;
+            this->data.data.tts = dataPackage.tts;
+        }
+
         CreateDeferredInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
@@ -117,6 +260,9 @@ namespace DiscordCoreAPI {
         }
 
     protected:
+
+        CreateDeferredInteractionResponseData() {};
+
         InteractionPackageData interactionPackage{};
         InteractionResponseData data{};
         string requesterId{ "" };
@@ -131,6 +277,20 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
         friend class SelectMenu;
         friend class Button;
+
+        CreateInteractionResponseData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.flags = dataPackage.flags;
+            this->data.data.tts = dataPackage.tts;
+        }
 
         CreateInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -252,6 +412,20 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
+
+        CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;            
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;            
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.tts = dataPackage.tts;
+            this->data.data.flags = 64;
+        }
 
         CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -375,6 +549,20 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
 
+        EditInteractionResponseData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.type = InteractionCallbackType::UpdateMessage;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.flags = dataPackage.flags;
+            this->data.data.tts = dataPackage.tts;
+        }
+
         EditInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
@@ -486,10 +674,25 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
 
+        CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.flags = dataPackage.flags;
+            this->data.data.tts = dataPackage.tts;
+        }
+
         CreateFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
         }
 
@@ -581,10 +784,25 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
 
+        CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.tts = dataPackage.tts;
+            this->data.data.flags = 64;
+        }
+
         CreateEphemeralFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->requesterId = dataPackage.getRequesterId();
             this->data.data.flags = 64;
         }
@@ -675,11 +893,28 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
 
+        EditFollowUpMessageData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.type = InteractionCallbackType::UpdateMessage;
+            this->messagePackage.channelId = dataPackage.channelId;
+            this->messagePackage.messageId = dataPackage.messageId;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;            
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.flags = dataPackage.flags;
+            this->data.data.tts = dataPackage.tts;
+        }
+
         EditFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->messagePackage.messageId = dataPackage.getMessageId();
+            this->data.type = InteractionCallbackType::UpdateMessage;
             this->requesterId = dataPackage.getRequesterId();
         }
 
@@ -792,7 +1027,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-    class InteractionManagerAgent : public agent {
+    class InteractionManagerAgent : agent {
     protected:
 
         friend class DiscordCoreAPI::DiscordCoreClient;
@@ -800,8 +1035,8 @@ namespace DiscordCoreInternal {
         friend class InteractionManager;
 
         static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
-        static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static DiscordCoreInternal::HttpAgentResources agentResources;
+        static shared_ptr<ThreadContext> threadContext;
 
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer{ nullptr };
@@ -814,14 +1049,13 @@ namespace DiscordCoreInternal {
         unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
         unbounded_buffer<nlohmann::detail::type_error> errorBuffer2{ nullptr };
-        
         unbounded_buffer<exception> errorBuffer{ nullptr };
 
         InteractionManagerAgent()
             :agent(*InteractionManagerAgent::threadContext->scheduler->scheduler) {}
 
-        static void initialize(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::HttpAgentResources agentResourcesNew) {
-            InteractionManagerAgent::threadContext = threadContextNew;
+        static void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew) {
+            InteractionManagerAgent::threadContext = ThreadManager::getThreadContext().get();
             InteractionManagerAgent::agentResources = agentResourcesNew;
         }
 
@@ -1009,10 +1243,6 @@ namespace DiscordCoreInternal {
             }
         }
 
-        static void cleanup() {
-            InteractionManagerAgent::threadContext->releaseGroup();
-        }
-
     protected:
 
         void run() {
@@ -1065,7 +1295,7 @@ namespace DiscordCoreInternal {
 
     };
 
-    class InteractionManager {
+    class InteractionManager : ThreadContext {
     public:
 
         template <class _Ty>
@@ -1076,7 +1306,8 @@ namespace DiscordCoreInternal {
         friend class DiscordCoreAPI::SelectMenu;
         friend class DiscordCoreAPI::Button;
 
-        InteractionManager(InteractionManager* pointer) {
+        InteractionManager(InteractionManager* pointer):
+        ThreadContext(*ThreadManager::getThreadContext().get()){
             if (pointer != nullptr) {
                 *this = *pointer;
             }
@@ -1084,18 +1315,16 @@ namespace DiscordCoreInternal {
 
     protected:
 
-        shared_ptr<ThreadContext> threadContext{ nullptr };
         HttpAgentResources agentResources{};
 
-        InteractionManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<ThreadContext> threadContextNew) {
+        InteractionManager initialize(HttpAgentResources agentResourcesNew) {
             this->agentResources = agentResourcesNew;
-            this->threadContext = threadContextNew;
             return *this;
         }
 
         task<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PostDeferredInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -1113,7 +1342,7 @@ namespace DiscordCoreInternal {
 
         task<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -1146,7 +1375,7 @@ namespace DiscordCoreInternal {
 
         task<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::GetInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionToken;
@@ -1164,7 +1393,7 @@ namespace DiscordCoreInternal {
 
         task<DiscordCoreAPI::MessageData> editInteractionResponseAsync(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PatchInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
             dataPackageNew.agentResources = this->agentResources;
@@ -1193,7 +1422,7 @@ namespace DiscordCoreInternal {
 
         task<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::DeleteInteractionResponseData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;;
@@ -1210,7 +1439,7 @@ namespace DiscordCoreInternal {
 
         task<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PostFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1239,7 +1468,7 @@ namespace DiscordCoreInternal {
 
         task<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PatchFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1270,7 +1499,7 @@ namespace DiscordCoreInternal {
 
         task<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage) {
             apartment_context mainThread;
-            co_await resume_foreground(*this->threadContext->dispatcherQueue.get());
+            co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::DeleteFollowUpMessageData dataPackageNew;
             dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1289,8 +1518,8 @@ namespace DiscordCoreInternal {
         ~InteractionManager() {}
     };
     map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
-    shared_ptr<DiscordCoreInternal::ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
     DiscordCoreInternal::HttpAgentResources InteractionManagerAgent::agentResources{};
+    shared_ptr<ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
 };
 
 namespace DiscordCoreAPI {

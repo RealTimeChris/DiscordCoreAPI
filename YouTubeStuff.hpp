@@ -242,12 +242,18 @@ namespace DiscordCoreAPI {
 		friend class YouTubeAPI;
 		friend class Guild;
 
+		static map<string, vector<YouTubeSong>>* youtubeQueueMap;
+
 		YouTubeAPICore(map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap, string guildIdNew, DiscordGuild* discordGuildNew, shared_ptr<VoiceConnection> voiceConnectionNew) {
 			this->sendAudioDataBufferMap = sendAudioDataBufferMap;
-			this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(guildIdNew).get();
+			this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(guildIdNew);
+			this->voiceConnection = voiceConnectionNew;
 			this->discordGuild = discordGuildNew;
 			this->guildId = guildIdNew;
-			this->voiceConnection = voiceConnectionNew;
+		}
+
+		static void initialize(map<string, vector<YouTubeSong>>* youtubeQueueMapNew) {
+			YouTubeAPICore::youtubeQueueMap = youtubeQueueMapNew;
 		}
 
 	protected:
@@ -256,7 +262,7 @@ namespace DiscordCoreAPI {
 		const string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
 		cancellation_token_source cancelTokenSource{ cancellation_token_source() };
 		cancellation_token cancelToken{ this->cancelTokenSource.get_token() };
-		unbounded_buffer<AudioFrameData>* sendAudioDataBuffer{ nullptr };
+		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		const string baseWatchURL{ "https://www.youtube.com/watch?v=" };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		const string baseURL{ "https://www.youtube.com" };
@@ -264,14 +270,14 @@ namespace DiscordCoreAPI {
 		unbounded_buffer<bool> readyBuffer{ nullptr };
 		vector<YouTubeSong> songQueue{};
 		const string newLine{ "\n\r" };
+		bool isThisFirstCall{ true };
 		string html5PlayerFile{ "" };
 		const int maxBufSize{ 4096 };
 		string playerResponse{ "" };
 		bool areWeStopping{ false };
-		SongEncoder songEncoder{};
 		YouTubeSong currentSong{};
 		string html5Player{ "" };
-		task<bool> currentTask{};
+		task<void> currentTask{};
 		bool loopSong{ false };
 		bool loopAll{ false };
 		string guildId{ "" };
@@ -305,8 +311,19 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->cancelTokenSource.cancel();
 				AudioFrameData dataFrame;
-				this->currentTask.wait();
-				while (try_receive(*this->sendAudioDataBuffer, dataFrame)) {};
+				this->currentTask.then([](task<void> previousTask)->task<void> {
+					auto exceptionNew = current_exception();
+					try {
+						previousTask.get();
+						co_return;
+					}
+					catch (exception& e) {
+						cout << "YouTubeAPICore::stop() Error: " << e.what() << endl;
+						co_return;
+					}
+					}).get();
+					this->currentTask = task<void>();
+					while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
 				vector<YouTubeSong> newVector02;
 				if (this->currentSong.description != "") {
 					newVector02.push_back(this->currentSong);
@@ -328,8 +345,19 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->cancelTokenSource.cancel();
 				AudioFrameData dataFrame;
-				this->currentTask.wait();
-				while (try_receive(*this->sendAudioDataBuffer, dataFrame)) {};
+				this->currentTask.then([](task<void> previousTask)->task<void>{
+					auto exceptionNew = current_exception();
+					try {
+						previousTask.get();
+						co_return;
+					}
+					catch (exception& e) {
+						cout << "YouTubeAPICore::stopWithoutSaving() Error: " << e.what() << endl;
+						co_return;
+					}
+					}).get();
+					this->currentTask = task<void>();
+					while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
 				vector<YouTubeSong> newVector02;
 				this->currentSong = YouTubeSong();
 				return;
@@ -393,27 +421,30 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->songQueue.size() > 0 && this->currentSong.description != "") {
 					this->currentSong = this->currentSong;
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
 					this->currentSong = this->currentSong;
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -421,9 +452,10 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -443,9 +475,10 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -460,17 +493,19 @@ namespace DiscordCoreAPI {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
 					this->songQueue.at(this->songQueue.size() - 1) = tempSong02;
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -478,9 +513,10 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -496,18 +532,20 @@ namespace DiscordCoreAPI {
 					for (int x = 0; x < this->songQueue.size() - 1; x += 1) {
 						this->songQueue[x] = this->songQueue[x + 1];
 					}
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
 					returnData.currentSong = this->currentSong;
 					return returnData;
 				}
 				else if (this->currentSong.description != "" && this->songQueue.size() == 0) {
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					this->currentSong = YouTubeSong();
@@ -516,9 +554,10 @@ namespace DiscordCoreAPI {
 				else if (this->songQueue.size() == 1 && this->currentSong.description == "") {
 					this->currentSong = this->songQueue.at(0);
 					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					this->isThisFirstCall = false;
 					this->cancelTokenSource = cancellation_token_source();
 					this->cancelToken = this->cancelTokenSource.get_token();
-					this->currentTask = create_task(this->downloadAndStreamAudio(this->currentSong, this->cancelToken));
+					this->currentTask = this->downloadAndStreamAudio(this->currentSong, this->cancelToken);
 					send(this->readyBuffer, true);
 					returnData.currentSong = this->currentSong;
 					return returnData;
@@ -630,308 +669,292 @@ namespace DiscordCoreAPI {
 			return searchResults;
 		}
 
-		task<bool> downloadAndStreamAudioToBeWrapped(YouTubeSong song, cancellation_token token, int retryCountNew = 0) {
-			apartment_context mainThread{};
-			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
-			co_await resume_foreground(*threadContext->dispatcherQueue);
-			this->areWeStopping = false;
-			BuildSongDecoderData dataPackage{};
-			try {
-				if (this->sendAudioDataBufferMap->contains(this->guildId)) {
-					this->sendAudioDataBuffer = this->sendAudioDataBufferMap->at(this->guildId).get();
-				}
-				else {
-					co_return false;
-				}
-				string downloadBaseURL;
-				if (currentSong.formatDownloadURL.find("https://") != string::npos && currentSong.formatDownloadURL.find("/videoplayback?") != string::npos) {
-					downloadBaseURL = currentSong.formatDownloadURL.substr(currentSong.formatDownloadURL.find("https://") + to_string(L"https://").length(), currentSong.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
-				}
-				// Creates GET request.
-				string request = "GET " + currentSong.formatDownloadURL + " HTTP/1.1" + newLine +
-					"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" + newLine + newLine;
-				StreamSocket streamSocket = StreamSocket();
-				streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
-				streamSocket.Control().NoDelay(true);
-				streamSocket.Control().SerializeConnectionAttempts(false);
-				winrt::Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
-				streamSocket.ConnectAsync(streamSocket.GetEndpointPairsAsync(hostName, L"443").get().First().Current()).get();
-				streamSocket.UpgradeToSslAsync(SocketProtectionLevel::Tls12, hostName).get();
-				DataReader dataReader(streamSocket.InputStream());
-				dataReader.InputStreamOptions(InputStreamOptions::None);
-				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
-				DataWriter dataWriter(streamSocket.OutputStream());
-				dataWriter.WriteString(to_hstring(request));
-				dataWriter.StoreAsync().get();
-				bool areWeDoneHeaders{ false };
-				int remainingDownloadContentLength{ this->currentSong.contentLength };
-				int contentLengthCurrent{ this->maxBufSize };
-				int bytesReadTotal{ 0 };
-				int counter{ 0 };
-				dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
-				dataPackage.totalFileSize = this->currentSong.contentLength - 585;
-				dataPackage.bufferMaxSize = this->maxBufSize;
-				send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
-				SongDecoder* songDecoder = new SongDecoder(dataPackage, DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get());
-				while (this->currentSong.contentLength > bytesReadTotal) {
-					if (token.is_canceled()) {
-						songDecoder->refreshTimeForBuffer = 10;
-						this->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
-						agent::wait(songDecoder);
-						delete songDecoder;
-						songDecoder = nullptr;
-						threadContext->releaseGroup();
-						cancel_current_task();
-						co_return true;
+		task<void> downloadAndStreamAudio(YouTubeSong song, cancellation_token token, int retryCountNew = 0) {
+			const std::function<task<void>(void)> theFunction = [&, this, retryCountNew]()->task<void> {
+				YouTubeAPICore* thisPtr = this;
+				auto tokenNew = thisPtr->cancelTokenSource.get_token();
+				apartment_context mainThread{};
+				shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
+				co_await resume_foreground(*threadContext->dispatcherQueue);
+				thisPtr->areWeStopping = false;
+				BuildSongDecoderData dataPackage{};
+				try {
+					if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
+						thisPtr->sendAudioDataBuffer = thisPtr->sendAudioDataBufferMap->at(thisPtr->guildId);
 					}
 					else {
-						int bytesRead{ 0 };
-						InMemoryRandomAccessStream outputStream{};
-						DataWriter streamDataWriter(outputStream);
-						streamDataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-						if (!areWeDoneHeaders) {
-							auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
-							while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
-								wait(150);
-								if (this->areWeStopping) {
-									break;
-								}
-							}
-							if (!this->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
-								bytesRead = bytesReadTask.get();
-							}
-							if (!token.is_canceled() && !this->areWeStopping) {
-								bytesReadTotal += bytesRead;
-								remainingDownloadContentLength -= bytesRead;
-								auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-								stringstream bufferStream;
-								bufferStream << buffer.data();
-								string headers = bufferStream.str();
-								int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
-								auto bytesReadTask02 = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
-								while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
-									wait(150);
-									if (this->areWeStopping) {
-										break;
-									}
-								}
-								if (!this->areWeStopping && bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
-									bytesRead = bytesReadTask02.get();
-								}
-								bytesReadTotal += bytesRead;
-								remainingDownloadContentLength -= bytesRead;
-								auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength + 4);
-								headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
-								streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4 - headerLength);
-								streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength + 4);
-								streamDataWriter.StoreAsync().get();
-								areWeDoneHeaders = true;
-								songDecoder->startMe();
-							}
-						}
-						if (token.is_canceled()) {
+						co_return;
+					}
+					string downloadBaseURL;
+					if (thisPtr->currentSong.formatDownloadURL.find("https://") != string::npos && thisPtr->currentSong.formatDownloadURL.find("/videoplayback?") != string::npos) {
+						downloadBaseURL = thisPtr->currentSong.formatDownloadURL.substr(thisPtr->currentSong.formatDownloadURL.find("https://") + to_string(L"https://").length(), thisPtr->currentSong.formatDownloadURL.find("/videoplayback?") - to_string(L"https://").length());
+					}
+					// Creates GET request.
+					string request = "GET " + thisPtr->currentSong.formatDownloadURL + " HTTP/1.1" + thisPtr->newLine +
+						"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" + thisPtr->newLine + thisPtr->newLine;
+					StreamSocket streamSocket = StreamSocket();
+					streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
+					streamSocket.Control().NoDelay(true);
+					streamSocket.Control().SerializeConnectionAttempts(false);
+					winrt::Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
+					streamSocket.ConnectAsync(streamSocket.GetEndpointPairsAsync(hostName, L"443").get().First().Current()).get();
+					streamSocket.UpgradeToSslAsync(SocketProtectionLevel::Tls12, hostName).get();
+					DataReader dataReader(streamSocket.InputStream());
+					dataReader.InputStreamOptions(InputStreamOptions::None);
+					dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+					DataWriter dataWriter(streamSocket.OutputStream());
+					dataWriter.WriteString(to_hstring(request));
+					dataWriter.StoreAsync().get();
+					bool areWeDoneHeaders{ false };
+					int remainingDownloadContentLength{ thisPtr->currentSong.contentLength };
+					int contentLengthCurrent{ thisPtr->maxBufSize };
+					int bytesReadTotal{ 0 };
+					int counter{ 0 };
+					dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
+					dataPackage.totalFileSize = thisPtr->currentSong.contentLength - 585;
+					dataPackage.bufferMaxSize = thisPtr->maxBufSize;
+					SongDecoder* songDecoder = new SongDecoder(dataPackage);
+					SongEncoder* songEncoder = new SongEncoder();
+					send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
+					while (thisPtr->currentSong.contentLength > bytesReadTotal) {
+						if (tokenNew.is_canceled()) {
 							songDecoder->refreshTimeForBuffer = 10;
-							this->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+							thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
 							agent::wait(songDecoder);
 							delete songDecoder;
 							songDecoder = nullptr;
 							threadContext->releaseGroup();
 							cancel_current_task();
-							co_return true;
+							co_return;
 						}
-						vector<RawFrameData> frames{};
-						if (counter == 0) {
-							if (!token.is_canceled() && !this->areWeStopping) {
-								DataReader streamDataReader(outputStream.GetInputStreamAt(0));
-								auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
-								while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+						else {
+							int bytesRead{ 0 };
+							InMemoryRandomAccessStream outputStream{};
+							DataWriter streamDataWriter(outputStream);
+							streamDataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+							if (!areWeDoneHeaders) {
+								auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
+								while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
 									wait(150);
-									if (this->areWeStopping) {
+									if (thisPtr->areWeStopping) {
 										break;
 									}
 								}
-								auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-								vector<uint8_t> newVector{};
-								for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
-									newVector.push_back(streamBuffer.data()[x]);
+								if (!thisPtr->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
+									bytesRead = bytesReadTask.get();
 								}
-								send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-							}
-						}
-						if (counter > 0) {
-							if (contentLengthCurrent > 0) {
-								if (token.is_canceled()) {
-									songDecoder->refreshTimeForBuffer = 10;
-									this->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
-									agent::wait(songDecoder);
-									delete songDecoder;
-									songDecoder = nullptr;
-									threadContext->releaseGroup();
-									cancel_current_task();
-									co_return true;
-								}
-								if (!token.is_canceled() && !this->areWeStopping) {
-									auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
-									while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+								if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+									bytesReadTotal += bytesRead;
+									remainingDownloadContentLength -= bytesRead;
+									auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+									stringstream bufferStream;
+									bufferStream << buffer.data();
+									string headers = bufferStream.str();
+									int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
+									auto bytesReadTask02 = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
+									while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
 										wait(150);
-										if (this->areWeStopping) {
+										if (thisPtr->areWeStopping) {
 											break;
 										}
 									}
-									if (!this->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
-										bytesRead = bytesReadTask.get();
+									if (!thisPtr->areWeStopping && bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
+										bytesRead = bytesReadTask02.get();
 									}
 									bytesReadTotal += bytesRead;
 									remainingDownloadContentLength -= bytesRead;
-									if (!token.is_canceled() && !this->areWeStopping) {
-										auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-										streamDataWriter.WriteBuffer(buffer);
-										streamDataWriter.StoreAsync().get();
-										DataReader streamDataReader(outputStream.GetInputStreamAt(0));
-										auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
-										while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
-											wait(150);
-											if (this->areWeStopping) {
-												break;
-											}
-										}
-										auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-										vector<uint8_t> newVector{};
-										for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
-											newVector.push_back(streamBuffer.data()[x]);
-										}
-										if (!token.is_canceled() && !this->areWeStopping) {
-											send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-										}
-									}
+									auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength + 4);
+									headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
+									streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4 - headerLength);
+									streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength + 4);
+									streamDataWriter.StoreAsync().get();
+									areWeDoneHeaders = true;
+									songDecoder->startMe();
 								}
 							}
-							if (token.is_canceled()) {
+							if (tokenNew.is_canceled()) {
 								songDecoder->refreshTimeForBuffer = 10;
-								this->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+								thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
 								agent::wait(songDecoder);
 								delete songDecoder;
 								songDecoder = nullptr;
 								threadContext->releaseGroup();
 								cancel_current_task();
-								co_return true;
+								co_return;
 							}
-							if (!token.is_canceled() && !this->areWeStopping) {
-								RawFrameData rawFrame{};
-								rawFrame.data.resize(0);
-								while (songDecoder->getFrame(&rawFrame)) {
-									if (rawFrame.data.size() != 0) {
-										frames.push_back(rawFrame);
-									}
-								}
-								if (!token.is_canceled() && !this->areWeStopping) {
-									auto encodedFrames = this->songEncoder.encodeFrames(frames);
-									for (auto value : encodedFrames) {
-										if (this->sendAudioDataBuffer != nullptr && !this->areWeStopping) {
-											send(*this->sendAudioDataBuffer, value);
-										}
-										else {
+							vector<RawFrameData> frames{};
+							if (counter == 0) {
+								if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+									DataReader streamDataReader(outputStream.GetInputStreamAt(0));
+									auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
+									while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+										wait(150);
+										if (thisPtr->areWeStopping) {
 											break;
 										}
+									}
+									auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+									vector<uint8_t> newVector{};
+									for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
+										newVector.push_back(streamBuffer.data()[x]);
+									}
+									send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+								}
+							}
+							if (counter > 0) {
+								if (contentLengthCurrent > 0) {
+									if (tokenNew.is_canceled()) {
+										songDecoder->refreshTimeForBuffer = 10;
+										thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+										agent::wait(songDecoder);
+										delete songDecoder;
+										songDecoder = nullptr;
+										threadContext->releaseGroup();
+										cancel_current_task();
+										co_return;
+									}
+									if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+										auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
+										while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+											wait(150);
+											if (thisPtr->areWeStopping) {
+												break;
+											}
+										}
+										if (!thisPtr->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
+											bytesRead = bytesReadTask.get();
+										}
+										bytesReadTotal += bytesRead;
+										remainingDownloadContentLength -= bytesRead;
+										if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+											auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+											streamDataWriter.WriteBuffer(buffer);
+											streamDataWriter.StoreAsync().get();
+											DataReader streamDataReader(outputStream.GetInputStreamAt(0));
+											auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
+											while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+												wait(150);
+												if (thisPtr->areWeStopping) {
+													break;
+												}
+											}
+											auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+											vector<uint8_t> newVector{};
+											for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
+												newVector.push_back(streamBuffer.data()[x]);
+											}
+											if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+												send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+											}
+										}
+									}
+								}
+								if (tokenNew.is_canceled()) {
+									songDecoder->refreshTimeForBuffer = 10;
+									thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+									agent::wait(songDecoder);
+									delete songDecoder;
+									songDecoder = nullptr;
+									threadContext->releaseGroup();
+									cancel_current_task();
+									co_return;
+								}
+								if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+									RawFrameData rawFrame{};
+									rawFrame.data.resize(0);
+									while (songDecoder->getFrame(&rawFrame)) {
+										if (rawFrame.data.size() != 0) {
+											frames.push_back(rawFrame);
+										}
+									}
+									if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+										auto encodedFrames = songEncoder->encodeFrames(frames);
+										for (auto value : encodedFrames) {
+											if (!thisPtr->areWeStopping) {
+												send(thisPtr->sendAudioDataBuffer.get(), value);
+											}
+											else {
+												break;
+											}
 
+										}
 									}
 								}
 							}
-						}
 
-						if (remainingDownloadContentLength >= this->maxBufSize) {
-							contentLengthCurrent = this->maxBufSize;
+							if (remainingDownloadContentLength >= thisPtr->maxBufSize) {
+								contentLengthCurrent = thisPtr->maxBufSize;
+							}
+							else {
+								contentLengthCurrent = remainingDownloadContentLength;
+							}
+							counter += 1;
 						}
-						else {
-							contentLengthCurrent = remainingDownloadContentLength;
+					}
+					if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+						vector<uint8_t> newVector;
+						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+						RawFrameData frameData01;
+						while (songDecoder->getFrame(&frameData01));
+						AudioFrameData frameData02;
+						frameData02.encodedFrameData.sampleCount = 0;
+						frameData02.rawFrameData.sampleCount = 0;
+						frameData02.type = AudioFrameType::Cancel;
+						send(*thisPtr->sendAudioDataBuffer, frameData02);
+					}
+					vector<uint8_t> newVector;
+					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+					songDecoder->refreshTimeForBuffer = 10;
+					agent::wait(songDecoder);
+					delete songDecoder;
+					songDecoder = nullptr;
+					threadContext->releaseGroup();
+					co_await mainThread;
+					co_return;
+				}
+				catch (...) {
+					if (retryCountNew < 5) {
+						int retryCountNewer = retryCountNew;
+						retryCountNewer += 1;
+						vector<uint8_t> newVector;
+						AudioFrameData frameData{};
+						frameData.type = AudioFrameType::Cancel;
+						send(thisPtr->sendAudioDataBuffer.get(), frameData);
+						thisPtr->downloadAndStreamAudio(thisPtr->currentSong, tokenNew, retryCountNew).get();
+						auto exceptionNew = current_exception();
+						try {
+							rethrow_exception(exceptionNew);
 						}
-						counter += 1;
+						catch (...) {
+							cout << "YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Error: " << endl << endl;
+						}
+						co_return;
 					}
-				}
-				if (!token.is_canceled() && !this->areWeStopping) {
-					vector<uint8_t> newVector;
-					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-					RawFrameData frameData01;
-					while (songDecoder->getFrame(&frameData01));
-					AudioFrameData frameData02;
-					frameData02.encodedFrameData.sampleCount = 0;
-					frameData02.rawFrameData.sampleCount = 0;
-					frameData02.type = AudioFrameType::Cancel;
-					send(*this->sendAudioDataBuffer, frameData02);
-				}
-				vector<uint8_t> newVector;
-				send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-				songDecoder->refreshTimeForBuffer = 10;
-				agent::wait(songDecoder);
-				delete songDecoder;
-				songDecoder = nullptr;
-				threadContext->releaseGroup();
-				co_await mainThread;
-				co_return true;
-			}
-			catch (...) {
-				if (retryCountNew < 5) {
-					retryCountNew += 1;
-					vector<uint8_t> newVector;
-					AudioFrameData frameData{};
-					frameData.type = AudioFrameType::Cancel;
-					send(this->sendAudioDataBuffer, frameData);
-					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-					this->currentTask = this->downloadAndStreamAudioToBeWrapped(this->currentSong, token, retryCountNew);
-					auto exceptionNew = current_exception();
-					try {
-						rethrow_exception(exceptionNew);
+					else {
+						vector<uint8_t> newVector;
+						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+						thisPtr->stopWithoutSaving();
+						thisPtr->voiceConnection->onSongCompletionEvent(thisPtr->voiceConnection.get());
+						auto exceptionNew = current_exception();
+						try {
+							rethrow_exception(exceptionNew);
+						}
+						catch (...) {
+							cout << "YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Final Error: " << endl << endl;
+						}
+						co_return;
 					}
-					catch (exception& e) {
-						cout << "YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Error: " << e.what() << endl;
-					}
-					co_return false;
-				}
-				else {
-					vector<uint8_t> newVector;
-					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-					this->stopWithoutSaving();
-					this->voiceConnection->onSongCompletionEvent(this->voiceConnection.get());
-					retryCountNew = 0;
-					auto exceptionNew = current_exception();
-					try {
-						rethrow_exception(exceptionNew);
-					}
-					catch (exception& e) {
-						cout << "YouTubeAPICore::downloadAndStreamAudioToBeWrapped() Final Error: " << e.what() << endl;
-					}
-					co_return false;
-				}
-			}
+				};
+				
+		};
+		return concurrency::task<void>(theFunction, this->cancelTokenSource.get_token());
+							
 		};
 
 		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>* sendAudioDataBufferNew){
 			send(sendAudioDataBufferNew, vector<uint8_t>());
 			send(sendAudioDataBufferNew, vector<uint8_t>());
 			send(sendAudioDataBufferNew, vector<uint8_t>());
-		}
-
-		task<bool> downloadAndStreamAudio(YouTubeSong song, cancellation_token token) {
-			auto lambda = [&, this](YouTubeSong song) ->task<bool> {
-				this->currentTask = create_task(this->downloadAndStreamAudioToBeWrapped(song, token));
-				return this->currentTask;
-			};
-			return lambda(song).then([](task<bool> returnTask)->task<bool> {
-				try {
-					returnTask.get();
-					co_return true;
-				}
-				catch (...) {
-					auto exceptionNew = current_exception();
-					try {
-						rethrow_exception(exceptionNew);
-					}
-					catch (exception& e) {
-						cout << "YouTubeAPICore::downloadAndStreamAudio() Error: " << e.what() << endl;
-					}
-					co_return false;
-				}
-				});
 		}
 
 		~YouTubeAPICore() {}
@@ -1250,6 +1273,7 @@ namespace DiscordCoreAPI {
 	};
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* YouTubeAPI::sendAudioDataBufferMap{ nullptr };
 	map<string, shared_ptr<YouTubeAPICore>>* YouTubeAPI::youtubeAPICoreMap{ nullptr };
+	map<string, vector<YouTubeSong>>* YouTubeAPICore::youtubeQueueMap{ nullptr };
 	map<string, shared_ptr<VoiceConnection>> YouTubeAPI::voiceConnectionMap{};
 	map<string, DiscordGuild*>* YouTubeAPI::discordGuildMap{};
 };

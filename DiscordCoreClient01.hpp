@@ -73,10 +73,8 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::GuildManagerAgent::cleanup();
 			DiscordCoreInternal::StickerManagerAgent::cleanup();
 			DiscordCoreInternal::MessageManagerAgent::cleanup();
-			DiscordCoreInternal::ChannelManagerAgent::cleanup();
 			DiscordCoreInternal::ReactionManagerAgent::cleanup();
 			DiscordCoreInternal::GuildMemberManagerAgent::cleanup();
-			DiscordCoreInternal::InteractionManagerAgent::cleanup();
 			DiscordCoreClient::thisPointer->webSocketConnectionAgent->terminate();
 			DiscordCoreClient::thisPointer->webSocketReceiverAgent->terminate();
 			wait(DiscordCoreClient::thisPointer->webSocketConnectionAgent.get());
@@ -97,6 +95,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources{};
+		map<string, vector<YouTubeSong>> youtubeQueueMap{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		hstring baseURL{ L"https://discord.com/api/v9" };
 		map<string, DiscordGuild*> discordGuildMap{};
@@ -115,39 +114,39 @@ namespace DiscordCoreAPI {
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
 			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, &this->doWeQuitWebSocket);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
-			DiscordCoreInternal::InteractionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->agentResources);
-			DiscordCoreInternal::GuildMemberManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::ReactionManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::ChannelManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::MessageManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::StickerManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::GuildManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::RoleManagerAgent::initialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			DiscordCoreInternal::UserManagerAgent::intialize(DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			DiscordCoreInternal::InteractionManagerAgent::initialize(this->agentResources);
+			DiscordCoreInternal::GuildMemberManagerAgent::intialize(this->agentResources, this->thisPointer);
+			DiscordCoreInternal::ReactionManagerAgent::initialize(this->agentResources, this->thisPointer);
+			DiscordCoreInternal::ChannelManagerAgent::initialize(this->agentResources, this->thisPointer);
+			DiscordCoreInternal::MessageManagerAgent::initialize(this->agentResources, this->thisPointer);
+			DiscordCoreInternal::StickerManagerAgent::intialize(this->agentResources, this->thisPointer);
+			DiscordCoreInternal::GuildManagerAgent::initialize(this->agentResources, this->thisPointer, this->thisPointer);
+			DiscordCoreInternal::RoleManagerAgent::initialize(this->agentResources, this->thisPointer);
+			DiscordCoreInternal::UserManagerAgent::intialize(this->agentResources, this->thisPointer);
 			this->interactions = make_shared<DiscordCoreInternal::InteractionManager>(nullptr);
-			this->interactions->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get());
+			this->interactions->initialize(this->agentResources);
 			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(nullptr);
-			this->guildMembers->initialize(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->guildMembers->initialize(agentResources, this->thisPointer);
 			this->reactions = make_shared<DiscordCoreInternal::ReactionManager>(nullptr);
-			this->reactions->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->reactions->initialize(this->agentResources, this->thisPointer);
 			this->channels = make_shared<DiscordCoreInternal::ChannelManager>(nullptr);
-			this->channels->initialize(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->channels->initialize(agentResources, this->thisPointer);
 			this->messages = make_shared<DiscordCoreInternal::MessageManager>(nullptr);
-			this->messages->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->messages->initialize(this->agentResources, this->thisPointer);
 			this->stickers = make_shared<DiscordCoreInternal::StickerManager>(nullptr);
-			this->stickers->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->stickers->initialize(this->agentResources, this->thisPointer);
 			this->guilds = make_shared<DiscordCoreInternal::GuildManager>(nullptr);
-			this->guilds->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer, make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this));
+			this->guilds->initialize(this->agentResources, this->thisPointer, make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this));
 			this->roles = make_shared<DiscordCoreInternal::RoleManager>(nullptr);
-			this->roles->initialize(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->roles->initialize(this->agentResources, this->thisPointer);
 			this->users = make_shared<DiscordCoreInternal::UserManager>(nullptr);
-			this->users->initialize(agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->thisPointer);
+			this->users->initialize(agentResources, this->thisPointer);
 			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
-			this->applicationCommands->initialize(this->agentResources, DiscordCoreInternal::ThreadManager::getThreadContext().get(), this->discordUser->data.userId);
+			this->applicationCommands->initialize(this->agentResources, this->discordUser->data.userId);
 			Button::initialize(this->interactions);
 			SelectMenu::initialize(this->interactions);
 			InputEvents::initialize(make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this), DiscordCoreClient::thisPointer, this->messages, this->interactions);
@@ -175,14 +174,16 @@ namespace DiscordCoreAPI {
 			bool isItFound = false;
 			Guild guild(guildData);
 			for (auto value : valueNew) {
+				DiscordGuild discordGuild(value);
 				if (guildData.id == value.id) {
 					isItFound = true;
-					DiscordGuild discordGuild(value);
 					discordGuild.getDataFromDB();
 					discordGuild.writeDataToDB();
 					guild = value;
 				}
+				this->youtubeQueueMap.insert_or_assign(discordGuild.data.guildId, discordGuild.data.playlist.songList);
 			}
+			YouTubeAPICore::initialize(&youtubeQueueMap);
 			if (!isItFound) {
 				this->discordUser->data.guildCount += 1;
 				this->discordUser->writeDataToDB();
