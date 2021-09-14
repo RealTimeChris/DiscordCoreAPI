@@ -302,7 +302,6 @@ namespace DiscordCoreAPI {
             }
         }
     }
-
 };
 
 namespace  DiscordCoreInternal {
@@ -3712,7 +3711,7 @@ namespace DiscordCoreAPI {
             finalCommandString += value + ", ";
         }
         return finalCommandString;
-    };
+    }
 
     struct ChannelPinsUpdateEventData {
         string lastPinTimestamp{ "" };

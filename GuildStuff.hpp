@@ -177,6 +177,7 @@ namespace DiscordCoreAPI {
 				cout << "Caching guild members for guild: " << this->name << endl;
 				for (unsigned int x = 0; x < this->members.size(); x += 1) {
 					GuildMemberData guildMemberData = this->members.at(x);
+					cout << "GUILD MEMBER ID: " << guildMemberData.user.id << endl;
 					for (auto value : this->voiceStates) {
 						if (value.userId == guildMemberData.user.id) {
 							guildMemberData.voiceData = value;
