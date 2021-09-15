@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
     }
 
     long long convertTimestampToInteger(string timeStamp) {
-        int hours = stoi(timeStamp.substr(11, 12)) - 4;
+        int hours = stoi(timeStamp.substr(11, 12));
         if (hours < 0) {
             hours = 24 + hours;
         }

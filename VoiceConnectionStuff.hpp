@@ -184,13 +184,12 @@ namespace DiscordCoreAPI {
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		unbounded_buffer<bool> connectionReadyBuffer{ nullptr };
-		unbounded_buffer<bool>* disconnectionBuffer{ nullptr };
 		unbounded_buffer<bool> readyToPlayBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		unbounded_buffer<bool> pauseBuffer{ nullptr };
 		unbounded_buffer<bool> stopBuffer{ nullptr };
 		unbounded_buffer<bool> skipBuffer{ nullptr };
-		unbounded_buffer<bool> playBuffer{ nullptr };		
+		unbounded_buffer<bool> playBuffer{ nullptr };
 		unsigned short sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
