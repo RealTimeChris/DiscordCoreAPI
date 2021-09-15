@@ -46,11 +46,6 @@ namespace DiscordCoreAPI {
 				YouTubeAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
 				YouTubeAPI::voiceConnectionMap.insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
 				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
-				if (DiscordCoreClientBase::guildYouTubeQueueMap->contains(this->id)) {
-					youtubeAPI->setQueue(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).songQueue);
-					youtubeAPI->setLoopAllStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopAllEnabled);
-					youtubeAPI->setLoopSongStatus(DiscordCoreClientBase::guildYouTubeQueueMap->at(this->id).isLoopSongEnabled);
-				}
 				DiscordCoreClientBase::youtubeAPICoreMap->insert_or_assign(this->id, youtubeAPI);
 				return &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
@@ -60,7 +55,7 @@ namespace DiscordCoreAPI {
 		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
-				YouTubeAPI::stop(this->id);
+				(*voiceConnection)->stop();
 				if (!(*voiceConnection)->hasTerminateRun) {
 					if ((*voiceConnection)->areWePlaying) {
 						(*voiceConnection)->areWePlaying = false;
@@ -75,12 +70,6 @@ namespace DiscordCoreAPI {
 					(*voiceConnection)->hasTerminateRun = true;
 					
 					if (DiscordCoreClientBase::youtubeAPICoreMap->contains(this->id)) {
-						(DiscordCoreClientBase::youtubeAPICoreMap)->at(this->id)->stop();
-						Playlist playlist{};
-						playlist.songQueue = *YouTubeAPI::getQueue(this->id);
-						playlist.isLoopAllEnabled = YouTubeAPI::isLoopAllEnabled(this->id);
-						playlist.isLoopSongEnabled = YouTubeAPI::isLoopSongEnabled(this->id);
-						DiscordCoreClientBase::guildYouTubeQueueMap->insert_or_assign(this->id, playlist);
 						DiscordCoreClientBase::youtubeAPICoreMap->erase(this->id);
 					}
 					YouTubeAPI::voiceConnectionMap.erase(this->id);
@@ -177,7 +166,6 @@ namespace DiscordCoreAPI {
 				cout << "Caching guild members for guild: " << this->name << endl;
 				for (unsigned int x = 0; x < this->members.size(); x += 1) {
 					GuildMemberData guildMemberData = this->members.at(x);
-					cout << "GUILD MEMBER ID: " << guildMemberData.user.id << endl;
 					for (auto value : this->voiceStates) {
 						if (value.userId == guildMemberData.user.id) {
 							guildMemberData.voiceData = value;

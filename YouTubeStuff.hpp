@@ -289,6 +289,12 @@ namespace DiscordCoreAPI {
 			return this->loopAll;
 		}
 
+		void setPlaylist(Playlist playlist) {
+			this->loopAll = playlist.isLoopAllEnabled;
+			this->loopSong = playlist.isLoopSongEnabled;
+			this->songQueue = playlist.songQueue;
+		}
+
 		void setLoopSongStatus(bool enabled) {
 			this->loopSong = enabled;
 		}
@@ -1189,6 +1195,24 @@ namespace DiscordCoreAPI {
 				}
 				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
 				return YouTubeAPI::youtubeAPICoreMap->at(guildId)->getQueue();
+			}
+		}
+
+		static void setPlaylist(Playlist playlist, string guildId) {
+			if (YouTubeAPI::youtubeAPICoreMap->contains(guildId)) {
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setPlaylist(playlist);
+			}
+			else {
+				shared_ptr<YouTubeAPICore> youtubeAPI;
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					auto discordGuildPtr = YouTubeAPI::discordGuildMap->at(guildId);
+					youtubeAPI = make_shared<YouTubeAPICore>(YouTubeAPI::sendAudioDataBufferMap, guildId, discordGuildPtr, YouTubeAPI::voiceConnectionMap.at(guildId));
+				}
+				else {
+					return;
+				}
+				YouTubeAPI::youtubeAPICoreMap->insert_or_assign(guildId, youtubeAPI);
+				YouTubeAPI::youtubeAPICoreMap->at(guildId)->setPlaylist(playlist);
 			}
 		}
 
