@@ -108,7 +108,6 @@ namespace DiscordCoreInternal {
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		MessageWebSocket webSocket{ nullptr };
-		bool didWeReceiveHeartbeatAck{ true };
 		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
@@ -215,7 +214,6 @@ namespace DiscordCoreInternal {
 		void sendHeartBeat() {
 			string heartbeat = getHeartbeatPayload(this->lastNumberReceived);
 			this->sendMessage(heartbeat);
-			this->didWeReceiveHeartbeatAck = false;
 		}
 
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args) {
@@ -326,9 +324,7 @@ namespace DiscordCoreInternal {
 				this->sendMessage(identity);
 			}
 
-			if (payload.at("op") == 11) {
-				this->didWeReceiveHeartbeatAck = true;
-			}
+			if (payload.at("op") == 11) {}
 
 			cout << "Message received from WebSocket: " << to_string(message) << endl << endl;
 		};
@@ -442,7 +438,6 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
-		bool didWeReceiveHeartbeatAck{ true };
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
 		concurrency::event* readyEvent {};
@@ -548,10 +543,9 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		void sendHeartBeat(bool* didWeReceiveHeartbeatAckNew) {
+		void sendHeartBeat() {
 			string heartbeatPayload = getVoiceHeartbeatPayload(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			this->sendMessage(heartbeatPayload);
-			*didWeReceiveHeartbeatAckNew = true;
 		}
 
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
@@ -569,9 +563,7 @@ namespace DiscordCoreInternal {
 			cout << "Message received from Voice WebSocket: " << to_string(message) << endl << endl;
 
 			if (payload.contains("op")) {
-				if (payload.at("op") == 6) {
-					this->didWeReceiveHeartbeatAck = true;
-				}
+				if (payload.at("op") == 6) {}
 
 				if (payload.at("op") == 2) {
 					this->voiceConnectionData.audioSSRC = payload.at("d").at("ssrc");
@@ -598,7 +590,6 @@ namespace DiscordCoreInternal {
 						this->voiceConnectionData.keys.push_back(value);
 					}
 					this->readyEvent->set();
-					this->readyEvent->reset();
 				}
 
 				if (payload.at("op") == 8) {
@@ -608,8 +599,7 @@ namespace DiscordCoreInternal {
 					string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData, this->voiceConnectInitData);
 					this->sendMessage(identifyPayload);
 					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void {
-						VoiceChannelWebSocketAgent::sendHeartBeat(&this->didWeReceiveHeartbeatAck);
-						this->didWeReceiveHeartbeatAck = false;
+						VoiceChannelWebSocketAgent::sendHeartBeat();
 					};
 					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
 				}

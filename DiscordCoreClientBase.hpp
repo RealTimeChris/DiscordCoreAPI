@@ -33,7 +33,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(DiscordCoreClientBase::webSocketConnectionAgent);
 			DiscordCoreClientBase::thisPointer = this;
-			DiscordCoreClientBase::youtubeAPICoreMap = new map<string, shared_ptr<YouTubeAPICore>>;
 		}
 
 	protected:
@@ -49,8 +48,8 @@ namespace DiscordCoreAPI {
 	};
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
+	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPICoreMap{ new map<string, shared_ptr<YouTubeAPICore>> };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
-	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPICoreMap{ nullptr };
 	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }

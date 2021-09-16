@@ -41,8 +41,10 @@ namespace DiscordCoreAPI {
 				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgent);
 				this->voicechannelWebSocketAgent->start();
 				if (this->connectionReadyEvent.wait(10000) != 0) {
+					this->connectionReadyEvent.reset();
 					return;
 				}
+				this->connectionReadyEvent.reset();
 				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
 				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
