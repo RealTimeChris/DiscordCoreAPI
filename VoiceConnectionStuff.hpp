@@ -15,7 +15,7 @@
 #include "GuildStuff.hpp"
 
 namespace DiscordCoreAPI {
-
+	
 	class VoiceConnection : DiscordCoreInternal::ThreadContext, agent {
 	public:
 
@@ -38,12 +38,9 @@ namespace DiscordCoreAPI {
 				}
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyBuffer, voiceConnectInitDataNew, websocketAgent);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgent);
 				this->voicechannelWebSocketAgent->start();
-				try {
-					receive(this->connectionReadyBuffer, 10000);
-				}
-				catch (operation_timed_out&) {
+				if (this->connectionReadyEvent.wait(10000) != 0) {
 					return;
 				}
 				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
@@ -102,15 +99,12 @@ namespace DiscordCoreAPI {
 			if (this->areWePlaying) {
 				this->areWeStopping = true;
 				this->areWePlaying = false;
-				try {
-					receive(this->stopBuffer, 1000);
+				if (this->stopWaitEvent.wait(1000) != 0) {
+					this->stopWaitEvent.reset();
+					return false;
 				}
-				catch (...) {
-					rethrowException("VoiceConnection::stop() Error: ");
-				}				
-				bool shouldWePlay;
-				while (try_receive(this->playBuffer, shouldWePlay)) {};
-				send(this->stopBuffer, true);
+				this->stopWaitEvent.reset();
+				this->stopSetEvent.set();
 				return true;
 			}
 			else {
@@ -122,15 +116,12 @@ namespace DiscordCoreAPI {
 			if (this->areWePlaying){
 				this->areWeSkipping = true;
 				this->areWePlaying = false;
-				try {
-					receive(this->skipBuffer, 1000);
+				if (this->skipWaitEvent.wait(1000) != 0) {
+					this->skipWaitEvent.reset();
+					return false;
 				}
-				catch (...) {
-					rethrowException("VoiceConnection::skip() Error: ");
-				}
-				bool shouldWePlay;
-				while (try_receive(this->playBuffer, shouldWePlay)) {};
-				send(this->skipBuffer, true);
+				this->skipWaitEvent.reset();
+				this->skipSetEvent.set();
 				return true;
 			}
 			else {
@@ -138,24 +129,22 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void play() {
+		bool play() {
 			if (this != nullptr) {
-				try {
-					receive(this->readyToPlayBuffer, 1000);
-				}
-				catch (...) {
-					rethrowException("VoiceConnection::play() Error: ");
-				}
-				if (!this->areWePlaying) {
-					send(this->playBuffer, true);
-				}
-
+				if (this->playWaitEvent.wait(2000) != 0) {
+					this->playWaitEvent.reset();
+					return false;
+				};
+				this->playWaitEvent.reset();
+				this->playSetEvent.set();
 				if (!this->areWeWaiting) {
 					this->areWeWaiting = true;
 					wait(this);
 					this->areWeWaiting = false;
 				}
+				return true;
 			}
+			return false;
 		}
 
 		void pauseToggle() {
@@ -166,7 +155,8 @@ namespace DiscordCoreAPI {
 				}
 				else {
 					sendSpeakingMessage(true);
-					send(this->pauseBuffer, true);
+					this->pauseEvent.set();
+					this->pauseEvent.reset();
 				}
 			}
 		}
@@ -180,18 +170,21 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* receiveAudioBufferMap{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
+		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent {};
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent;
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		unbounded_buffer<bool> connectionReadyBuffer{ nullptr };
-		unbounded_buffer<bool> readyToPlayBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		unbounded_buffer<bool> pauseBuffer{ nullptr };
-		unbounded_buffer<bool> stopBuffer{ nullptr };
-		unbounded_buffer<bool> skipBuffer{ nullptr };
-		unbounded_buffer<bool> playBuffer{ nullptr };
+		concurrency::event connectionReadyEvent {};
+		concurrency::event disconnectionEvent {};
+		concurrency::event playWaitEvent {};
+		concurrency::event skipWaitEvent {};
+		concurrency::event stopWaitEvent {};
+		concurrency::event playSetEvent {};
+		concurrency::event skipSetEvent {};
+		concurrency::event stopSetEvent {};
 		unsigned short sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };
+		concurrency::event pauseEvent {};
 		OpusEncoder* encoder{ nullptr };
 		const int maxBufferSize{ 1276 };
 		bool areWeInstantiated{ false };
@@ -323,28 +316,34 @@ namespace DiscordCoreAPI {
 			try {
 				while (!this->doWeQuit) {
 					if (!this->areWePlaying) {
-						send(this->readyToPlayBuffer, true);
-						receive(this->playBuffer);
-						if (this->doWeQuit) {
-							break;
-						}
+						this->playWaitEvent.set();
 						this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
 						this->audioData.type = AudioFrameType::Unset;
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
+						if (this->playSetEvent.wait(10000) != 0) {
+							this->playSetEvent.reset();
+							done();
+							continue;
+						};
+						this->playSetEvent.reset();
 					start:
+						if (this->doWeQuit) {
+							done();
+							break;
+						}
 						try {
 							this->audioData = receive(this->audioDataBuffer.get(), 10000);
 						}
 						catch (...) {
 							rethrowException("VoiceConnection::run() Error: ");
 						}
-
 						if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0 || this->audioData.type == AudioFrameType::Unset) {
 							goto start;
 						}
 						else if (this->audioData.type == AudioFrameType::Cancel) {
-							break;
+							done();
+							continue;
 						}
 					}
 					this->sendSpeakingMessage(true);
@@ -367,7 +366,7 @@ namespace DiscordCoreAPI {
 								break;
 							}
 							if (this->areWePaused) {
-								receive(this->pauseBuffer);
+								this->pauseEvent.wait();
 								this->areWePaused = false;
 							}
 							if (this->doWeQuit) {
@@ -406,71 +405,65 @@ namespace DiscordCoreAPI {
 					else if (this->audioData.type == AudioFrameType::RawPCM) {
 						this->areWePlaying = true;
 						while (this->audioData.rawFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
-							if (this->areWeSkipping) {
-								frameCounter = 0;
-								break;
-							}
-							if (this->areWeStopping) {
-								frameCounter = 0;
-								break;
-							}
-							if (this->areWePaused) {
-								receive(this->pauseBuffer);
-								this->areWePaused = false;
-							}
-							if (this->doWeQuit) {
-								this->clearAudioData();
-								this->areWePlaying = false;
-								frameCounter = 0;
-								break;
-							}
-							frameCounter += 1;
-							try_receive(*this->audioDataBuffer, this->audioData);
-							nanoSleep(100000);
-							if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
-								auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
-								vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
-								nanoSleep(18000000);
-								timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
-								long long  waitTime = intervalCount - timeCounter;
-								spinLock(waitTime);
-								startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-								startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-								this->sendSingleAudioFrame(newFrame);
-								totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
-								intervalCount = 20000000 - (totalTime / frameCounter);
-								this->audioData.type = AudioFrameType::Unset;
-								this->audioData.encodedFrameData.data.clear();
-								this->audioData.rawFrameData.data.clear();
-							}
-							else if (this->audioData.type == AudioFrameType::Cancel) {
-								this->onSongCompletionEvent(this);
-								this->areWePlaying = false;
-								frameCounter = 0;
-								break;
+							while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping && !this->areWeSkipping) {
+								if (this->areWeSkipping) {
+									frameCounter = 0;
+									break;
+								}
+								if (this->areWeStopping) {
+									frameCounter = 0;
+									break;
+								}
+								if (this->areWePaused) {
+									this->pauseEvent.wait();
+									this->areWePaused = false;
+								}
+								if (this->doWeQuit) {
+									this->clearAudioData();
+									this->areWePlaying = false;
+									frameCounter = 0;
+									break;
+								}
+								frameCounter += 1;
+								try_receive(*this->audioDataBuffer, this->audioData);
+								nanoSleep(100000);
+								if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
+									auto newFrames = encodeSingleAudioFrame(this->audioData.rawFrameData);
+									vector<uint8_t> newFrame = this->encryptSingleAudioFrame(newFrames);
+									nanoSleep(18000000);
+									timeCounter = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValue;
+									long long  waitTime = intervalCount - timeCounter;
+									spinLock(waitTime);
+									startingValue = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+									startingValueForCalc = (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+									this->sendSingleAudioFrame(newFrame);
+									totalTime += (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() - startingValueForCalc;
+									intervalCount = 20000000 - (totalTime / frameCounter);
+									this->audioData.type = AudioFrameType::Unset;
+									this->audioData.encodedFrameData.data.clear();
+									this->audioData.rawFrameData.data.clear();
+								}
+								else if (this->audioData.type == AudioFrameType::Cancel) {
+									this->onSongCompletionEvent(this);
+									this->areWePlaying = false;
+									frameCounter = 0;
+									break;
+								}
 							}
 						}
 						this->areWePlaying = false;
 					}
 					this->areWePlaying = false;
 					if (this->areWeStopping) {
-						send(this->stopBuffer, true);
-						try {
-							receive(this->stopBuffer, 5000);
-						}
-						catch (...) {
-							rethrowException("VoiceConnection::run() Error: ");
-						}
+						this->stopWaitEvent.set();
+						this->stopSetEvent.wait(5000);
+						this->stopSetEvent.reset();
 						this->areWeStopping = false;
 					}
 					if (this->areWeSkipping) {
-						send(this->skipBuffer, true);
-						try {
-							receive(this->skipBuffer, 5000);
-						}
-						catch (...) {
-							rethrowException("VoiceConnection::run() Error: ");
-						}
+						this->skipWaitEvent.set();
+						this->skipSetEvent.wait(5000);
+						this->skipSetEvent.reset();
 						this->areWeSkipping = false;
 					}
 					this->sendSpeakingMessage(false);

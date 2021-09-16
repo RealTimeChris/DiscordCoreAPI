@@ -3287,6 +3287,42 @@ namespace DiscordCoreInternal {
 
             *pDataStructure = newData;
         }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::SoundCloudSearchResult* pDataStructure) {
+            DiscordCoreAPI::SoundCloudSearchResult newData = *pDataStructure;
+
+            if (jsonObjectData.contains("description") && !jsonObjectData.at("description").is_null()) {
+                newData.description = to_string(to_hstring(jsonObjectData.at("description").get<string>()));
+                if (newData.description.size() > 256) {
+                    newData.description = newData.description.substr(0, 94);
+                    newData.description += "...";
+                }
+            }
+
+            if (jsonObjectData.contains("title") && !jsonObjectData.at("title").is_null()) {
+                newData.songTitle = to_string(to_hstring(jsonObjectData.at("title").get<string>()));
+            }
+            
+            if (jsonObjectData.contains("artwork_url") && !jsonObjectData.at("artwork_url").is_null()) {
+                newData.thumbNailURL = to_string(to_hstring(jsonObjectData.at("artwork_url").get<string>()));
+            }
+
+            if (jsonObjectData.contains("duration") && !jsonObjectData.at("duration").is_null()) {
+                int durationNew = jsonObjectData.at("duration").get<int>();
+                newData.duration = DiscordCoreAPI::convertMsToDurationString(durationNew);
+            }
+
+            if (jsonObjectData.contains("permalink_url") && !jsonObjectData.at("permalink_url").is_null()) {
+                newData.songURL = to_string(to_hstring(jsonObjectData.at("permalink_url").get<string>()));
+            }
+
+            if (jsonObjectData.contains("permalink_url") && !jsonObjectData.at("permalink_url").is_null()) {
+                string newString = to_string(to_hstring(jsonObjectData.at("permalink_url").get<string>()));
+                newData.songId = newString.substr(newString.find_last_of("/") + 1);
+            }
+
+            *pDataStructure = newData;
+        }
     };
 };
 #endif

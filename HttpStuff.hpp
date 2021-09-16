@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 			HttpRequestAgent::baseURL = baseURLNew;
 		};
 
-		HttpData submitWorkloadAndGetResult(HttpWorkload workload, string callStack) {
+		HttpData submitWorkloadAndGetResult(HttpWorkloadData workload, string callStack) {
 			send(this->workSubmissionBuffer, workload);
 			this->start();
 			wait(this);
@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 		static map<string, RateLimitData> rateLimitData;
 		static string botToken;
 		static string baseURL;
-		unbounded_buffer<HttpWorkload> workSubmissionBuffer{ nullptr };
+		unbounded_buffer<HttpWorkloadData> workSubmissionBuffer{ nullptr };
 		unbounded_buffer<hresult_error> errorhBuffer{ nullptr };
 		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
@@ -157,7 +157,7 @@ namespace DiscordCoreInternal {
 
 		void run() {
 			try {
-				transformer<HttpWorkload, HttpData> completeHttpRequest([this](HttpWorkload workload) -> HttpData {
+				transformer<HttpWorkloadData, HttpData> completeHttpRequest([this](HttpWorkloadData workload) -> HttpData {
 					RateLimitData rateLimitData;
 					rateLimitData.workloadType = workload.workloadType;
 					auto bucketIterator = HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType);
@@ -189,7 +189,7 @@ namespace DiscordCoreInternal {
 					rateLimitData.getsRemaining -= 1;
 					HttpData returnData;
 					if (workload.workloadClass == HttpWorkloadClass::GET) {
-						returnData = httpGETObjectData(workload.relativePath, &rateLimitData);
+						returnData = httpGETObjectData(workload, &rateLimitData);
 					}
 					else if (workload.workloadClass == HttpWorkloadClass::POST) {
 						returnData = httpPOSTObjectData(workload.relativePath, workload.content, &rateLimitData);
@@ -216,7 +216,7 @@ namespace DiscordCoreInternal {
 					return returnData;
 					});
 				completeHttpRequest.link_target(&this->workReturnBuffer);
-				HttpWorkload workload = receive(&this->workSubmissionBuffer);
+				HttpWorkloadData workload = receive(&this->workSubmissionBuffer);
 				send(&completeHttpRequest, workload);
 			}
 			catch (...) {
@@ -225,15 +225,20 @@ namespace DiscordCoreInternal {
 			done();
 		}
 
-		HttpData httpGETObjectData(string relativeURL, RateLimitData* pRateLimitData) {
+		HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData) {
 			HttpData getData;
-			string connectionPath = this->baseURLInd + relativeURL;
+			string connectionPath = this->baseURLInd + workloadData.relativePath;
 			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
 			HttpResponseMessage httpResponse;
 			httpResponse = getHttpClient.GetAsync(requestUri).get();
 			string returnMessage = to_string(httpResponse.Content().ReadAsStringAsync().get());
 			getData.returnCode = (unsigned int)httpResponse.StatusCode();
 			getData.returnMessage = returnMessage;
+			for (auto [key, value] : workloadData.headerValuesToCollect) {
+				if (httpResponse.Headers().HasKey(to_hstring(key))) {
+					workloadData.headerValuesToCollect.insert_or_assign(key, to_string(httpResponse.Headers().TryLookup(to_hstring(key)).value().c_str()));
+				}
+			}
 			json jsonValue;
 			if (returnMessage != "") {
 				if (returnMessage.find("var ytInitialData = ") != string::npos) {
@@ -243,7 +248,14 @@ namespace DiscordCoreInternal {
 					jsonValue = jsonValue.parse(newString);
 				}
 				else {
-					jsonValue = jsonValue.parse(returnMessage);
+					try {
+						cout << to_string(httpResponse.Headers().ToString()) << endl;
+						jsonValue = jsonValue.parse(returnMessage);
+						
+					}
+					catch (...) {
+						DiscordCoreAPI::rethrowException("HttpRequestAgent::httpGETObjectData() Error: ");
+					}
 				}
 			}
 			getData.data = jsonValue;
@@ -266,7 +278,7 @@ namespace DiscordCoreInternal {
 					HttpData returnData;
 					return returnData;
 				}
-				getData = httpGETObjectData(relativeURL, pRateLimitData);
+				getData = httpGETObjectData(workloadData, pRateLimitData);
 			}
 			if (returnMessage != "") {
 				if (jsonValue.contains("retry-after") && !jsonValue.at("retry-after").is_null()) {
@@ -295,7 +307,12 @@ namespace DiscordCoreInternal {
 			putData.returnMessage = returnMessage;
 			json jsonValue;
 			if (returnMessage != "") {
-				jsonValue = jsonValue.parse(returnMessage);
+				try {
+					jsonValue = jsonValue.parse(returnMessage);
+				}
+				catch (...) {
+					DiscordCoreAPI::rethrowException("HttpRequestAgent::httpPUTObjectData() Error: ");
+				}
 			}
 			putData.data = jsonValue;
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-reset-after")) {
@@ -346,7 +363,12 @@ namespace DiscordCoreInternal {
 			postData.returnMessage = returnMessage;
 			json jsonValue;
 			if (returnMessage != "") {
-				jsonValue = jsonValue.parse(returnMessage);
+				try {
+					jsonValue = jsonValue.parse(returnMessage);
+				}
+				catch (...) {
+					DiscordCoreAPI::rethrowException("HttpRequestAgent::httpPOSTObjectData() Error: ");
+				}
 			}
 			postData.data = jsonValue;
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-reset-after")) {
@@ -400,7 +422,12 @@ namespace DiscordCoreInternal {
 			patchData.returnMessage = returnMessage;
 			json jsonValue;
 			if (returnMessage != "") {
-				jsonValue = jsonValue.parse(returnMessage);
+				try {
+					jsonValue = jsonValue.parse(returnMessage);
+				}
+				catch (...) {
+					DiscordCoreAPI::rethrowException("HttpRequestAgent::httpPATCHObjectData() Error: ");
+				}
 			}
 			patchData.data = jsonValue;
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-reset-after")) {
@@ -443,7 +470,12 @@ namespace DiscordCoreInternal {
 			deleteData.returnMessage = returnMessage;
 			json jsonValue;
 			if (returnMessage != "") {
-				jsonValue = jsonValue.parse(returnMessage);
+				try {
+					jsonValue = jsonValue.parse(returnMessage);
+				}
+				catch (...) {
+					DiscordCoreAPI::rethrowException("HttpRequestAgent::httpDELETEObjectData() Error: ");
+				}
 			}
 			deleteData.data = jsonValue;
 			if (httpResponse.Headers().HasKey(L"x-ratelimit-reset-after")) {

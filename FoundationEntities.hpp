@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreClientBase;
     class DatabaseManagerAgent;
     class PermissionsConverter;
-    class ApplicationCommands;    
+    class ApplicationCommands;
     class DiscordCoreClient;
     class VoiceConnection;
     class Interactions;
@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
         if (!timer) {
             return FALSE;
         }
-        
+
         if (!SetWaitableTimerEx(timer, &largeInt, 0, NULL, NULL, NULL, 0)) {
             CloseHandle(timer);
             return FALSE;
@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
         return TRUE;
     }
 
-    void spinLock(long long timeInNsToSpinLockFor){
+    void spinLock(long long timeInNsToSpinLockFor) {
         long long startTime = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
         long long timePassed{ 0 };
         while (timePassed < timeInNsToSpinLockFor) {
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
             string secondVal{ "00" };
             string millisecondVal{ "00" };
             if (this->find(" ") != string::npos) {
-                if (this->substr(this->find_first_of(" ")+1, 3) == "Jan") {
+                if (this->substr(this->find_first_of(" ") + 1, 3) == "Jan") {
                     monthVal = "01";
                 }
                 else if (this->substr(this->find_first_of(" ") + 1, 3) == "Feb") {
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
             struct tm newtime;
             __time64_t long_time;
             errno_t err;
-            
+
             // Get time as 64-bit integer.
             _time64(&long_time);
             // Convert to local time.
@@ -302,7 +302,30 @@ namespace DiscordCoreAPI {
             }
         }
     }
+
+    string convertMsToDurationString(int durationInMs) {
+        string newString{ "" };
+        int msPerSecond{ 1000 };
+        int secondsPerMinute{ 60 };
+        int minutesPerHour{ 60 };
+        int msPerMinute{ msPerSecond * secondsPerMinute };
+        int msPerHour{ msPerMinute * minutesPerHour };
+        unsigned int hoursLeft = (unsigned int)trunc(durationInMs / msPerHour);
+        unsigned int minutesLeft = (unsigned int)trunc((durationInMs % msPerHour) / msPerMinute);
+        unsigned int secondsLeft = (unsigned int)trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond);
+        if (hoursLeft >= 1) {
+            newString += to_string(hoursLeft) + " Hours, ";
+            newString += to_string(minutesLeft) + " Minutes, ";
+            newString += to_string(secondsLeft) + " Seconds.";
+        }
+        else {
+            newString += to_string(minutesLeft) + " Minutes, ";
+            newString += to_string(secondsLeft) + " Seconds.";
+        }
+        return newString;
+    }
 };
+
 
 namespace  DiscordCoreInternal {
     
@@ -1090,7 +1113,8 @@ namespace  DiscordCoreInternal {
         POST_GUILD_APPLICATION_COMMAND = 58,
         GET_GUILD_APPLICATION_COMMANDS = 59,
         GET_GUILD_APPLICATION_COMMAND = 60,
-        DELETE_MESSAGE_OLD = 61
+        DELETE_MESSAGE_OLD = 61,
+        SOUNDCLOUD_AUTH = 61
     };
 
     enum class MessageStickerItemType {
@@ -1251,6 +1275,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct HttpData {
+        vector<string> responseHeaderValues{};
         unsigned int returnCode{ 0 };
         string returnMessage{ "" };
         json data{};
@@ -1272,7 +1297,8 @@ namespace  DiscordCoreInternal {
         string content{ "" };
     };
 
-    struct HttpWorkload {
+    struct HttpWorkloadData {
+        map<string, string> headerValuesToCollect{};
         HttpWorkloadClass workloadClass{};
         HttpWorkloadType workloadType{};
         string relativePath{ "" };

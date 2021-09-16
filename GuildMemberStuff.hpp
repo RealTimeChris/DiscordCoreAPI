@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_GUILD_MEMBER;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
@@ -137,7 +137,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::GuildMember patchObjectData(PatchGuildMemberData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::PATCH;
 			workload.workloadType = HttpWorkloadType::PATCH_GUILD_MEMBER;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;

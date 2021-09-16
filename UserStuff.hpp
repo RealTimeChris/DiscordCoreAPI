@@ -212,7 +212,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::User getObjectData(GetUserData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_GUILD;
 			if (dataPackage.userType == GetUserDataType::USER) {
@@ -237,7 +237,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Application getObjectData(GetApplicationData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_APPLICATION;
 			workload.relativePath = "/oauth2/applications/@me";
@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void deleteObjectData(LeaveGuildData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.workloadType = HttpWorkloadType::DELETE_LEAVE_GUILD;
 			workload.relativePath = "/users/@me/guilds/" + dataPackage.guildId;

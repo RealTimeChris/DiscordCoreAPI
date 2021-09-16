@@ -365,7 +365,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class Guild;
 
-		VoiceChannelWebSocketAgent(unbounded_buffer<bool>* readyBufferNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew)
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew)
 			:
 			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
 			agent(*this->scheduler->scheduler) {
@@ -377,7 +377,7 @@ namespace DiscordCoreInternal {
 			dataPackage.guildId = this->voiceConnectInitData.guildId;
 			dataPackage.userId = this->voiceConnectInitData.userId;
 			this->webSocketConnectionAgent->getVoiceConnectionData(dataPackage);
-			this->readyBuffer = readyBufferNew;
+			this->readyEvent = readyEventNew;
 		}
 
 		void sendVoiceData(vector<uint8_t> data) {
@@ -437,7 +437,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
 		unbounded_buffer<bool> readyToVoiceConnectBuffer{ nullptr };
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		unbounded_buffer<bool>* readyBuffer{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
@@ -446,6 +445,7 @@ namespace DiscordCoreInternal {
 		bool didWeReceiveHeartbeatAck{ true };
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
+		concurrency::event* readyEvent {};
 		const int maxReconnectTries{ 10 };
 		DataWriter dataWriter{ nullptr };
 		int currentReconnectTries{ 0 };
@@ -597,7 +597,8 @@ namespace DiscordCoreInternal {
 					for (auto value : this->voiceConnectionData.secretKey) {
 						this->voiceConnectionData.keys.push_back(value);
 					}
-					send(this->readyBuffer, true);
+					this->readyEvent->set();
+					this->readyEvent->reset();
 				}
 
 				if (payload.at("op") == 8) {

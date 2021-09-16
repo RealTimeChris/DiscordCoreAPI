@@ -126,7 +126,7 @@ namespace DiscordCoreInternal	{
 		}
 
 		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_CHANNEL;
 			workload.relativePath = "/channels/" + dataPackage.channelId;
@@ -146,7 +146,7 @@ namespace DiscordCoreInternal	{
 		}
 
 		DiscordCoreAPI::Channel postObjectData(GetDMChannelData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadType = HttpWorkloadType::POST_USER_DM;
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.relativePath = "/users/@me/channels";
@@ -168,7 +168,7 @@ namespace DiscordCoreInternal	{
 		}
 
 		void putObjectData(PutPermissionOverwritesData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadType = HttpWorkloadType::PUT_CHANNEL_PERMISSION_OVERWRITES;
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
@@ -184,7 +184,7 @@ namespace DiscordCoreInternal	{
 		}
 
 		void deleteObjectData(DeleteChannelPermissionOverwritesData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadType = HttpWorkloadType::DELETE_CHANNEL_PERMISSION_OVERWRITES;
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;

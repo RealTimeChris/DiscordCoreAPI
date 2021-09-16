@@ -81,6 +81,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->webSocketReceiverAgent->terminate();
 			wait(DiscordCoreClient::thisPointer->webSocketConnectionAgent.get());
 			wait(DiscordCoreClient::thisPointer->webSocketReceiverAgent.get());
+			exit(0);
 		}
 
 		~DiscordCoreClient() {
@@ -163,7 +164,7 @@ namespace DiscordCoreAPI {
 
 		string getGateWayUrl() {
 			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
-			DiscordCoreInternal::HttpWorkload workload;
+			DiscordCoreInternal::HttpWorkloadData workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
 			workload.relativePath = "/gateway/bot";

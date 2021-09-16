@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Reaction putObjectData(PutReactionData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadType = HttpWorkloadType::PUT_REACTION;
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.emoji + "/@me";
@@ -130,7 +130,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void deleteObjectData(DeleteReactionDataAll dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadType = HttpWorkloadType::DELETE_REACTION;
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			if (dataPackage.deletionType == ReactionDeletionType::SELF_DELETE) {

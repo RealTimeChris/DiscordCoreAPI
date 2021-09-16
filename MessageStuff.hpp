@@ -500,7 +500,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
@@ -522,7 +522,7 @@ namespace DiscordCoreInternal {
 		}
 
 		vector<DiscordCoreAPI::Message> getObjectData(GetMessagesData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_MESSAGES;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
@@ -569,7 +569,7 @@ namespace DiscordCoreInternal {
 		}
 
 		vector<DiscordCoreAPI::Message> getObjectData(GetPinnedMessagesData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_PINNED_MESSAGES;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
@@ -593,7 +593,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message patchObjectData(PatchMessageData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.workloadClass = HttpWorkloadClass::PATCH;
 			workload.workloadType = HttpWorkloadType::PATCH_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
@@ -615,7 +615,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message postObjectData(PostMessageData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.content = dataPackage.content;
 			workload.workloadType = HttpWorkloadType::POST_MESSAGE;
 			workload.workloadClass = HttpWorkloadClass::POST;
@@ -638,7 +638,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Message postObjectData(PostDMData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.workloadType = HttpWorkloadType::POST_USER_DM;
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
@@ -659,7 +659,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void postObjectData(DeleteMessagesBulkData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.workloadType = HttpWorkloadType::DELETE_MESSAGES_BULK;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
@@ -675,7 +675,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void putObjectData(PutPinMessageData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.workloadType = HttpWorkloadType::PUT_PIN_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
@@ -690,7 +690,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onDeleteData(DeleteMessageData dataPackage) {
-			HttpWorkload workload{};
+			HttpWorkloadData workload{};
 			bool hasTimeElapsed = DiscordCoreAPI::hasTimeElapsed(dataPackage.messageTimeStamp, 14);
 			if (hasTimeElapsed) {
 				workload.workloadType = HttpWorkloadType::DELETE_MESSAGE_OLD;

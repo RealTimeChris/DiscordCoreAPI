@@ -154,7 +154,7 @@ namespace DiscordCoreInternal {
 		}
 
 		vector<DiscordCoreAPI::Role> getObjectData(GetRolesData  dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_ROLES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Role getObjectData(GetRoleData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_ROLES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
@@ -210,7 +210,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Role patchObjectData(PatchRoleData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::PATCH;
 			workload.workloadType = HttpWorkloadType::PATCH_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
@@ -231,7 +231,7 @@ namespace DiscordCoreInternal {
 		}
 
 		vector<DiscordCoreAPI::Role> patchObjectData(PatchRolePositionData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::PATCH;
 			workload.workloadType = HttpWorkloadType::PATCH_GUILD_ROLES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Role postObjectData(PostRoleData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.workloadType = HttpWorkloadType::POST_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
@@ -277,7 +277,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void putObjectData(PutRoleData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.workloadType = HttpWorkloadType::PUT_GUILD_MEMBER_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId + "/roles/" + dataPackage.roleId;
@@ -292,7 +292,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void deleteObjectData(DeleteGuildMemberRoleData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.workloadType = HttpWorkloadType::DELETE_GUILD_MEMBER_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId + "/roles/" + dataPackage.roleId;
@@ -307,7 +307,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void deleteObjectData(DeleteGuildRoleData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.workloadType = HttpWorkloadType::DELETE_GUILD_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;

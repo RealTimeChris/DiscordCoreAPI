@@ -109,7 +109,7 @@ namespace DiscordCoreInternal{
         task<DiscordCoreAPI::ApplicationCommand> getGlobalApplicationCommandAsync(DiscordCoreAPI::GetGlobalApplicationCommandData dataPackage) {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.workloadType = HttpWorkloadType::GET_APPLICATION_COMMAND;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + dataPackage.commandId;
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal{
         task<vector<DiscordCoreAPI::ApplicationCommand>> getGlobalApplicationCommandsAsync() {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = HttpWorkloadType::GET_APPLICATION_COMMANDS;
@@ -164,7 +164,7 @@ namespace DiscordCoreInternal{
             dataPackageNew.name = dataPackage.name;
             dataPackageNew.type = (ApplicationCommandType)dataPackage.type;
             copyOptionsData(&dataPackageNew.options, dataPackage.options);
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::POST;
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = HttpWorkloadType::POST_APPLICATION_COMMAND;
@@ -208,7 +208,7 @@ namespace DiscordCoreInternal{
             dataPackageNew.description = dataPackage.description;
             dataPackageNew.name = dataPackage.name;
             copyOptionsData(&dataPackageNew.options, dataPackage.options);
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::PATCH;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + appCommandId;
             workload.workloadType = HttpWorkloadType::PATCH_SLASH_COMMAND;
@@ -231,7 +231,7 @@ namespace DiscordCoreInternal{
         task<vector<DiscordCoreAPI::ApplicationCommand>> getGuildApplicationCommandsAsync(DiscordCoreAPI::GetGuildApplicationCommandsData dataPackage) {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands";
             workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMANDS;
@@ -268,7 +268,7 @@ namespace DiscordCoreInternal{
                 cout << "ApplicationCommandManager::deleteGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
                 return;
             }
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + commandId;
             workload.workloadClass = HttpWorkloadClass::DELETED;
             workload.workloadType = HttpWorkloadType::DELETE_SLASH_COMMAND;
@@ -303,7 +303,7 @@ namespace DiscordCoreInternal{
                 newDataArray.push_back(getCreateApplicationCommandPayload(value));
             }
             json dataNew = { {"data", newDataArray.dump() } };
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadClass = HttpWorkloadClass::PUT;
             workload.workloadType = HttpWorkloadType::PUT_BULK_OVERWRITE_APPLICATION_COMMANDS;
@@ -337,7 +337,7 @@ namespace DiscordCoreInternal{
             dataPackageNew.name = dataPackage.name;
             dataPackageNew.type = (ApplicationCommandType)dataPackage.type;
             copyOptionsData(&dataPackageNew.options, dataPackage.options);
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::POST;
             workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands";
             workload.workloadType = HttpWorkloadType::POST_GUILD_APPLICATION_COMMAND;
@@ -360,7 +360,7 @@ namespace DiscordCoreInternal{
         task<DiscordCoreAPI::ApplicationCommand> getGuildApplicationCommandAsync(DiscordCoreAPI::GetGuildApplicationCommandData dataPackage) {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
-            HttpWorkload workload;
+            HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMAND;
             workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + dataPackage.commandId;

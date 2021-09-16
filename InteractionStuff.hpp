@@ -1070,7 +1070,7 @@ namespace DiscordCoreInternal {
         }
 
         DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_INTERACTION_RESPONSE;
@@ -1088,7 +1088,7 @@ namespace DiscordCoreInternal {
         }
 
         DiscordCoreAPI::MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_FOLLOW_UP_MESSAGE;
@@ -1107,7 +1107,7 @@ namespace DiscordCoreInternal {
         }
 
         DiscordCoreAPI::MessageData patchObjectData(DiscordCoreInternal::PatchInteractionResponseData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_INTERACTION_RESPONSE;
@@ -1126,7 +1126,7 @@ namespace DiscordCoreInternal {
         }
 
         void postObjectData(DiscordCoreInternal::PostInteractionResponseData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/interactions/" + dataPackage.interactionId + "/" + dataPackage.interactionToken + "/callback";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_INTERACTION_RESPONSE;
@@ -1143,7 +1143,7 @@ namespace DiscordCoreInternal {
         }
 
         void postObjectData(DiscordCoreInternal::PostDeferredInteractionResponseData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/interactions/" + dataPackage.interactionId + "/" + dataPackage.interactionToken + "/callback";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_DEFERRED_INTERACTION_RESPONSE;
@@ -1160,7 +1160,7 @@ namespace DiscordCoreInternal {
         }
 
         DiscordCoreAPI::MessageData postObjectData(DiscordCoreInternal::PostFollowUpMessageData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_FOLLOW_UP_MESSAGE;
@@ -1179,7 +1179,7 @@ namespace DiscordCoreInternal {
         }
 
         void deleteObjectData(DiscordCoreInternal::DeleteInteractionResponseData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_INTERACTION;
@@ -1208,7 +1208,7 @@ namespace DiscordCoreInternal {
         }
 
         void deleteObjectData(DiscordCoreInternal::DeleteFollowUpMessageData dataPackage) {
-            DiscordCoreInternal::HttpWorkload workload;
+            DiscordCoreInternal::HttpWorkloadData workload;
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_FOLLOW_UP_MESSAGE;

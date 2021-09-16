@@ -54,6 +54,16 @@ namespace DiscordCoreAPI {
 		
 		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
+				if (DiscordCoreClientBase::youtubeAPICoreMap->contains(this->id)) {
+					YouTubeAPI::stop(this->id);
+					DiscordGuild discordGuild(*this);
+					discordGuild.data.playlist.songList = *DiscordCoreClientBase::youtubeAPICoreMap->at(this->id).get()->getQueue();
+					discordGuild.data.playlist.isLoopAllEnabled = DiscordCoreClientBase::youtubeAPICoreMap->at(this->id).get()->isLoopAllEnabled();
+					discordGuild.data.playlist.isLoopSongEnabled = DiscordCoreClientBase::youtubeAPICoreMap->at(this->id).get()->isLoopSongEnabled();
+					discordGuild.writeDataToDB();
+					DiscordCoreClientBase::youtubeAPICoreMap->erase(this->id);
+				}
+
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 				(*voiceConnection)->stop();
 				if (!(*voiceConnection)->hasTerminateRun) {
@@ -68,10 +78,7 @@ namespace DiscordCoreAPI {
 						(*voiceConnection)->encoder = nullptr;
 					}
 					(*voiceConnection)->hasTerminateRun = true;
-					
-					if (DiscordCoreClientBase::youtubeAPICoreMap->contains(this->id)) {
-						DiscordCoreClientBase::youtubeAPICoreMap->erase(this->id);
-					}
+
 					YouTubeAPI::voiceConnectionMap.erase(this->id);
 					DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
 					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
@@ -285,7 +292,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_GUILD;
 			workload.relativePath = "/guilds/" + dataPackage.guildId;
@@ -306,7 +313,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::InviteData getObjectData(GetInviteData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_INVITE;
 			workload.relativePath = "/invites/" + dataPackage.inviteId + "?with_counts=true&with_expiration=true";
@@ -324,7 +331,7 @@ namespace DiscordCoreInternal {
 		}
 
 		vector<DiscordCoreAPI::InviteData> getObjectData(GetInvitesData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_INVITES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/invites";
@@ -346,7 +353,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::InviteData getObjectData(GetVanityInviteData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_VANITY_INVITE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/vanity-url";
@@ -364,7 +371,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_AUDIT_LOG;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/audit-logs";
@@ -400,7 +407,7 @@ namespace DiscordCoreInternal {
 		}
 
 		DiscordCoreAPI::BanData putObjectData(PutGuildBanData dataPackage) {
-			HttpWorkload workload;
+			HttpWorkloadData workload;
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.workloadType = HttpWorkloadType::PUT_GUILD_BAN;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.guildMemberId;
