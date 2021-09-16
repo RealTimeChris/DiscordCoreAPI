@@ -204,6 +204,7 @@ namespace DiscordCoreAPI {
 				rethrowException("Guild::initialize() Error: ");
 			}
 		}
+
 	};
 
 	struct CreateGuildBanData {
@@ -281,6 +282,10 @@ namespace DiscordCoreInternal {
 		}
 
 		static void cleanup() {
+			auto cacheNew = receive(GuildManagerAgent::cache);
+			for (auto [key, value] : cacheNew) {
+				value.disconnect();
+			}
 			GuildManagerAgent::threadContext->releaseGroup();
 		}
 
