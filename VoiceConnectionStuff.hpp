@@ -323,7 +323,6 @@ namespace DiscordCoreAPI {
 						this->audioData.rawFrameData.data.clear();
 						if (this->playSetEvent.wait(10000) != 0) {
 							this->playSetEvent.reset();
-							done();
 							continue;
 						};
 						this->playSetEvent.reset();
@@ -342,7 +341,6 @@ namespace DiscordCoreAPI {
 							goto start;
 						}
 						else if (this->audioData.type == AudioFrameType::Cancel) {
-							done();
 							continue;
 						}
 					}
