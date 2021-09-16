@@ -249,7 +249,6 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					try {
-						cout << to_string(httpResponse.Headers().ToString()) << endl;
 						jsonValue = jsonValue.parse(returnMessage);
 						
 					}
