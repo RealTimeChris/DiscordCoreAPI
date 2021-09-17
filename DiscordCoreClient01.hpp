@@ -98,10 +98,10 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources{};
-		map<string, vector<YouTubeSong>> youtubeQueueMap{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
 		hstring baseURL{ L"https://discord.com/api/v9" };
 		map<string, DiscordGuild*> discordGuildMap{};
+		map<string, vector<Song>> youtubeQueueMap{};
 		bool doWeQuitWebSocket{ false };
 		hstring botToken{ L"" };
 		bool doWeQuit{ false };
@@ -147,6 +147,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPICoreMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap);
+			SoundCloudAPI::initialize(DiscordCoreClientBase::soundCloudAPICoreMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, this->discordUser->data.userId);
@@ -216,11 +217,11 @@ namespace DiscordCoreAPI {
 			startingPoint:
 				while (!this->doWeQuit && !this->doWeQuitWebSocket) {
 					DiscordCoreInternal::WebSocketWorkload workload{};
-					try {
-						workload = receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, 1000);
-					}
-					catch (...) {
-						goto startingPoint;
+					while (!try_receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, workload)) {
+						concurrency::wait(50);
+						if (this->doWeQuit || this->doWeQuitWebSocket) {
+							goto startingPoint;
+						}
 					}
 					switch (workload.eventType) {
 					case DiscordCoreInternal::WebSocketEventType::Application_Command_Create:

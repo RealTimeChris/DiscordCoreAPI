@@ -189,7 +189,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<DiscordCoreAPI::User> outUserBuffer{ nullptr };
 		unbounded_buffer<GetUserData> requestGetUserBuffer{ nullptr };		
 		concurrent_queue<DiscordCoreAPI::User> usersToInsert{};
-		unbounded_buffer<exception> errorBuffer{ nullptr };		
 
 		UserManagerAgent()
 			:agent(*UserManagerAgent::threadContext->scheduler->scheduler) {}
@@ -202,13 +201,6 @@ namespace DiscordCoreInternal {
 
 		static void cleanup() {
 			UserManagerAgent::threadContext->releaseGroup();
-		}
-
-		void getError(string stackTrace) {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::UserManagerAgent::run() Error: " << error.what() << endl << endl;
-			}
 		}
 
 		DiscordCoreAPI::User getObjectData(GetUserData dataPackage) {
@@ -320,14 +312,11 @@ namespace DiscordCoreInternal {
 
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("UserManagerAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("UserManagerAgent::run() Error: ");
 			}
-			done();
+			this->done();
 		}
 
-		~UserManagerAgent() {
-			this->getError("");
-		}
 	};
 
 	class UserManager : ThreadContext {
@@ -368,7 +357,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("UserManager::fetchAsync");
 			DiscordCoreAPI::UserData userData;
 			userData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::User user(userData);
@@ -385,7 +373,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("UserManager::fetchCurrentUserAsync");
 			DiscordCoreAPI::UserData userData;
 			userData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::User user(userData);
@@ -402,7 +389,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestCollectUserBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("UserManager::getUserAsync");
 			DiscordCoreAPI::UserData userData;
 			userData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::User user(userData);
@@ -419,7 +405,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestLeaveGuildBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("UserManager::leaveGuildAsync");
 			co_return;
 		}
 
@@ -431,7 +416,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetApplicationBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("UserManager::fetchApplicationAsync");
 			DiscordCoreAPI::ApplicationData applicationData;
 			DiscordCoreAPI::Application application(applicationData);
 			try_receive(requestAgent.outApplicationBuffer, application);
@@ -445,7 +429,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
-			requestAgent.getError("UserManager::insertUserAsync");
 			co_return;
 		}
 

@@ -20,6 +20,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClientBase;
+		friend class SoundCloudAPICore;
 		friend class YouTubeAPICore;
 		friend class Guild;
 

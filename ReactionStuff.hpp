@@ -87,7 +87,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<DeleteReactionDataAll> requestDeleteReactionBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Reaction> outReactionBuffer{ nullptr };
 		unbounded_buffer<PutReactionData> requestPutReactionBuffer{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		
 		ReactionManagerAgent()
 			:agent(*ReactionManagerAgent::threadContext->scheduler->scheduler) {}
@@ -100,13 +99,6 @@ namespace DiscordCoreInternal {
 
 		static void cleanup() {
 			ReactionManagerAgent::threadContext->releaseGroup();
-		}
-
-		void getError(string stackTrace) {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::ReactionManagerAgent::run() Error: " << error.what() << endl << endl;
-			}
 		}
 
 		DiscordCoreAPI::Reaction putObjectData(PutReactionData dataPackage) {
@@ -168,13 +160,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("ReactionManagerAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("ReactionManagerAgent::run() Error: ");
 			}
-			done();
-		}
-
-		~ReactionManagerAgent() {
-			this->getError("");
+			this->done();
 		}
 	};
 
@@ -228,7 +216,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPutReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManager::createReactionAsync");
 			DiscordCoreAPI::ReactionData reactionData;
 			reactionData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Reaction reaction(reactionData);
@@ -264,7 +251,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManager::deleteUserReactionAsync");
 			co_await mainThread;
 			co_return;
 		}
@@ -294,7 +280,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManager::deleteOwnReactionAsync");
 			co_await mainThread;
 			co_return;
 		}
@@ -324,7 +309,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManager::deleteReactionByEmojiAsync");
 			co_await mainThread;
 			co_return;
 		}
@@ -341,7 +325,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestDeleteReactionBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("ReactionManager::deleteAllReactionsAsync");
 			co_await mainThread;
 			co_return;
 		}

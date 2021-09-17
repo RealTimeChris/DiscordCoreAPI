@@ -1646,15 +1646,14 @@ namespace DiscordCoreAPI {
                     }
                 }
                 SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
-                done();
             }
             catch (...) {
                 rethrowException("", &this->errorBuffer);
                 this->selectMenuId = "exit";
-                done();
                 SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
             }
+            this->done();
         }
     };
 

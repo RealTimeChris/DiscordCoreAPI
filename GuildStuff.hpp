@@ -44,9 +44,13 @@ namespace DiscordCoreAPI {
 				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::webSocketConnectionAgent));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
 				YouTubeAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
+				SoundCloudAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
 				YouTubeAPI::voiceConnectionMap.insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				SoundCloudAPI::voiceConnectionMap.insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
 				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
 				DiscordCoreClientBase::youtubeAPICoreMap->insert_or_assign(this->id, youtubeAPI);
+				auto soundCloudAPI = make_shared<SoundCloudAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				DiscordCoreClientBase::soundCloudAPICoreMap->insert_or_assign(this->id, soundCloudAPI);
 				return &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			return voiceConnectionPtr;
@@ -269,7 +273,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<GetInviteData> requestGetInviteBuffer{ nullptr };
 		unbounded_buffer<GetGuildData> requestGetGuildBuffer{ nullptr };
 		concurrent_queue<DiscordCoreAPI::Guild> guildsToInsert{};
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 
 		GuildManagerAgent()
 			: agent(*GuildManagerAgent::threadContext->scheduler->scheduler) {}
@@ -287,13 +290,6 @@ namespace DiscordCoreInternal {
 				value.disconnect();
 			}
 			GuildManagerAgent::threadContext->releaseGroup();
-		}
-
-		void getError(string stackTrace) {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::GuildManagerAgent::run() Error: " << error.what() << endl << endl;
-			}
 		}
 
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage) {
@@ -496,14 +492,11 @@ namespace DiscordCoreInternal {
 				}
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("GuildManagerAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("GuildManagerAgent::run() Error: ");
 			}
-			done();
+			this->done();
 		}
 
-		~GuildManagerAgent() {
-			this->getError("");
-		}
 	};
 
 	class GuildManager : ThreadContext {
@@ -545,7 +538,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetGuildBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::fetchAsync");
 			DiscordCoreAPI::GuildData guildData;
 			guildData.discordCoreClient = this->discordCoreClient;
 			guildData.discordCoreClientBase = this->discordCoreClientBase;
@@ -565,7 +557,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetInvitesBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::getInvitesAsync");
 			vector<DiscordCoreAPI::InviteData> inviteData;
 			try_receive(requestAgent.outInvitesBuffer, inviteData);
 			co_await mainThread;
@@ -585,7 +576,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPutGuildBanBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::createGuildBanAsync");
 			DiscordCoreAPI::BanData banData;
 			try_receive(requestAgent.outBanBuffer, banData);
 			co_await mainThread;
@@ -602,7 +592,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetVanityInviteBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::getVanityInviteAsync");
 			DiscordCoreAPI::InviteData inviteData;
 			try_receive(requestAgent.outInviteBuffer, inviteData);
 			co_await mainThread;
@@ -619,7 +608,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetInviteBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::getInviteAsync");
 			DiscordCoreAPI::InviteData inviteData;
 			try_receive(requestAgent.outInviteBuffer, inviteData);
 			co_await mainThread;
@@ -639,7 +627,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetAuditLogBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::getAuditLogDataAsync");
 			DiscordCoreAPI::AuditLogData auditLog;
 			try_receive(requestAgent.outAuditLogBuffer, auditLog);
 			co_await mainThread;
@@ -656,7 +643,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestCollectGuildBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::getGuildAsync");
 			DiscordCoreAPI::GuildData guildData;
 			guildData.discordCoreClient = this->discordCoreClient;
 			guildData.discordCoreClientBase = this->discordCoreClientBase;
@@ -687,7 +673,6 @@ namespace DiscordCoreInternal {
 			requestAgent.guildsToInsert.push(guild);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildManager::insertGuildAsync");
 			co_await mainThread;
 			co_return;
 		}

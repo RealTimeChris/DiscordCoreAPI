@@ -89,10 +89,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<DiscordCoreAPI::GuildMember> outGuildMemberBuffer{ nullptr };
 		unbounded_buffer<GetGuildMemberData> requestGetGuildMemberBuffer{ nullptr };
 		unbounded_buffer<GetGuildMemberRolesData> requestGetRolesBuffer{ nullptr };
-		
 		concurrent_queue<DiscordCoreAPI::GuildMember> guildMembersToInsert{};
-		unbounded_buffer<exception> errorBuffer{ nullptr };
-		
 
 		GuildMemberManagerAgent()
 			:agent(*GuildMemberManagerAgent::threadContext->scheduler->scheduler) {
@@ -107,13 +104,6 @@ namespace DiscordCoreInternal {
 
 		static void cleanup() {
 			GuildMemberManagerAgent::threadContext->releaseGroup();
-		}
-
-		void getError(string stackTrace) {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::GuildMemberManagerAgent::run() Error: " << error.what() << endl << endl;
-			}
 		}
 
 		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage) {
@@ -209,13 +199,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("GuildMemberManagerAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("GuildMemberManagerAgent::run() Error: ");
 			}
-			done();
-		}
-
-		~GuildMemberManagerAgent() {
-			this->getError("");
+			this->done();
 		}
 	};
 
@@ -258,7 +244,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetGuildMemberBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManager::fetchAsync");
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
@@ -285,7 +270,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPatchGuildMemberBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManager::modifyGuildMemberAsync");
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
@@ -306,7 +290,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestCollectGuildMemberBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManager::getGuildMemberAsync");
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
@@ -323,7 +306,6 @@ namespace DiscordCoreInternal {
 			requestAgent.guildMembersToInsert.push(guildMember);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("GuildMemberManager::insertGuildMemberAsync");
 			co_await mainThread;
 			co_return;
 		}

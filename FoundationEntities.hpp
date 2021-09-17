@@ -301,6 +301,15 @@ namespace DiscordCoreAPI {
                 cout << stackTrace << e.what() << "\n\n";
             }
         }
+        catch (const hresult_error& e) {
+            exception newException(to_string(e.message()).c_str(), e.code());
+            if (sendBuffer != nullptr) {
+                send(sendBuffer, newException);
+            }
+            else {
+                cout << stackTrace << newException.what() << "\n\n";
+            }
+        }
     }
 
     string convertMsToDurationString(int durationInMs) {
@@ -3655,27 +3664,28 @@ namespace DiscordCoreAPI {
         RawFrameData rawFrameData{};
     };
 
-    struct SoundCloudSearchResult {
+    enum class SongType {
+        YouTube = 0,
+        SoundCloud = 1
+    };
+
+    struct SongSearchResult {
+        string trackAuthorization{ "" };
+        vector<YouTubeFormat> formats{};
+        string downloadProtoURL{ "" };
+        string songDownloadURL{ "" };
         string thumbNailURL{ "" };
         string description{ "" };
         string songTitle{ "" };
         string duration{ "" };
         string songURL{ "" };
         string songId{ "" };
+        SongType songType{};
     };
 
-    struct YouTubeSearchResult {
-        vector<YouTubeFormat> formats{};
-        string thumbNailURL{ "" };
-        string description{ "" };
-        string videoTitle{ "" };
-        string duration{ "" };
-        string videoURL{ "" };
-        string videoId{ "" };
-    };
-
-    struct YouTubeSong {
+    struct Song {
         string formatDownloadURL{ "" };
+        vector<string> downloadURLs{};
         string addedByUserName{ "" };
         string description{ "" };
         int contentLength{ 0 };
@@ -3684,19 +3694,20 @@ namespace DiscordCoreAPI {
         string duration{ "" };
         string videoId{ "" };
         string songId{ "" };
+        SongType songType{};
         string title{ "" };
         string url{ "" };
     };
 
     struct Playlist {
-        vector<YouTubeSong> songQueue{};
+        vector<Song> songQueue{};
         bool isLoopSongEnabled{ false };
         bool isLoopAllEnabled{ false };
     };
 
     struct SendNextSongReturnData {
     public:
-        YouTubeSong currentSong{};
+        Song currentSong{};
     };
 
     static string commandPrefix;

@@ -476,8 +476,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<GetMessagesData> requestGetMessagesBuffer{ nullptr };
 		unbounded_buffer<GetMessageData> requestGetMessageBuffer{ nullptr };
 		unbounded_buffer<PostDMData> requestPostDMMessageBuffer{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
-
 
 		MessageManagerAgent()
 			:agent(*MessageManagerAgent::threadContext->scheduler->scheduler) {}
@@ -490,13 +488,6 @@ namespace DiscordCoreInternal {
 
 		static void cleanup() {
 			MessageManagerAgent::threadContext->releaseGroup();
-		}
-
-		void getError(string stackTrace) {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::MessageManagerAgent::run() Error: " << error.what() << endl << endl;
-			}
 		}
 
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage) {
@@ -769,13 +760,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("MessageManagerAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("MessageManagerAgent::run() Error: ");
 			}
-			done();
-		}
-
-		~MessageManagerAgent() {
-			this->getError("");
+			this->done();
 		}
 	};
 
@@ -826,7 +813,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPostMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::replyAsync");
 			DiscordCoreAPI::MessageData messageData;
 			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
@@ -859,7 +845,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPostDMMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::sendDMAsync");
 			DiscordCoreAPI::MessageData messageData;
 			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
@@ -888,7 +873,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPostMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::createMessageAsync");
 			DiscordCoreAPI::MessageData messageData;
 			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
@@ -922,7 +906,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPatchMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::editMessageAsync");
 			DiscordCoreAPI::MessageData messageData;
 			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
@@ -945,7 +928,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestDeleteMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::deleteMessageAsync");
 			co_await mainThread;
 			co_return;
 		}
@@ -962,7 +944,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestDeleteMultMessagesBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::deleteMessageBulkAsync");
 			co_await mainThread;
 			co_return;
 		}
@@ -977,7 +958,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetPinnedMessagesBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::fetchPinnedMessagesAsync");
 			vector<DiscordCoreAPI::Message> messageVector{};
 			try_receive(requestAgent.outMultMessagesBuffer, messageVector);
 			co_await mainThread;
@@ -998,7 +978,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetMessagesBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			requestAgent.getError("MessageManager::fetchMessagesAsync");
 			std::optional<vector<DiscordCoreAPI::Message>> messageVector;
 			messageVector.emplace();
 			try_receive(requestAgent.outMultMessagesBuffer, *messageVector);
@@ -1021,7 +1000,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
-			requestAgent.getError("MessageManager::pinMessageAsync");
 			co_await mainThread;
 			co_return;
 
@@ -1039,7 +1017,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			exception error;
-			requestAgent.getError("MessageManager::fetchAsync");
 			DiscordCoreAPI::MessageData messageData;
 			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);

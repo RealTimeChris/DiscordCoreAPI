@@ -59,8 +59,6 @@ namespace DiscordCoreInternal {
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
 
-		unbounded_buffer<exception> errorBuffer{ nullptr };
-
 		StickerManagerAgent()
 			:agent(*StickerManagerAgent::threadContext->scheduler->scheduler) {}
 
@@ -74,24 +72,14 @@ namespace DiscordCoreInternal {
 			StickerManagerAgent::threadContext->releaseGroup();
 		}
 
-		void getError(string stackTrace) {
-			exception error;
-			while (try_receive(errorBuffer, error));
-			cout << stackTrace + "::StickerManagerAgentError::run() Error: " << error.what() << endl << endl;
-		}
-
 		void run() {
 			try {
-				
+
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("StickerManagerAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("StickerManagerAgent::run() Error: ");
 			}
-			done();
-		}
-
-		~StickerManagerAgent() {
-			this->getError("");
+			this->done();
 		}
 	};
 

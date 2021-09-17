@@ -53,11 +53,13 @@ namespace DiscordCoreInternal {
                 ThreadType threadType = receive(ThreadManagerAgent::readyBuffer);
                 auto threadContextNew = createThreadContext(threadType).get();
                 send(ThreadManagerAgent::outputBuffer, threadContextNew);
-                done();
+                this->done();
             }
             catch (...) {
                 DiscordCoreAPI::rethrowException("ThreadManagerAgent::run() Error: ", &this->errorBuffer);
+                this->done();
             }
+            this->done();
         }
 
         ~ThreadManagerAgent() {

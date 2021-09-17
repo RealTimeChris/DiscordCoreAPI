@@ -22,6 +22,7 @@ namespace DiscordCoreAPI {
     class SongDecoder : DiscordCoreInternal::ThreadContext, agent {
     public:
 
+        friend class SoundCloudAPICore;
         friend class YouTubeAPICore;
 
         SongDecoder(BuildSongDecoderData dataPackage) 
@@ -54,7 +55,6 @@ namespace DiscordCoreAPI {
         }
 
         ~SongDecoder() {
-            this->getError();
             if (this->formatContext) {
                 avformat_close_input(&this->formatContext);
             }
@@ -83,7 +83,6 @@ namespace DiscordCoreAPI {
     protected:
         int audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
         unbounded_buffer<vector<uint8_t>>* inputDataBuffer{};
-        unbounded_buffer<exception> errorBuffer{ nullptr };
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
@@ -98,13 +97,6 @@ namespace DiscordCoreAPI {
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
-
-        void getError() {
-            exception error;
-            while (try_receive(this->errorBuffer, error)) {
-                cout << "SongDecoder::run() Error: " << error.what() << endl << endl;
-            }
-        }
 
         void run() {
             try {
@@ -319,7 +311,7 @@ namespace DiscordCoreAPI {
                 }
             }
             catch (...) {
-                rethrowException("SongDecoder::run() Error: ", &this->errorBuffer);
+                rethrowException("SongDecoder::run() Error: ");
             }
             done();
         }

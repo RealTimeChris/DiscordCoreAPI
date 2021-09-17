@@ -11,6 +11,7 @@
 #include "../pch.h"
 #include "VoiceConnectionStuff.hpp"
 #include "YouTubeStuff.hpp"
+#include "SoundCloudStuff.hpp"
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
 #include "ChannelStuff.hpp"
@@ -38,6 +39,7 @@ namespace DiscordCoreAPI {
 	protected:
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent;
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap;
+		static map<string, shared_ptr<SoundCloudAPICore>>* soundCloudAPICoreMap;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
 		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMap;
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
@@ -47,6 +49,7 @@ namespace DiscordCoreAPI {
 
 	};
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
+	map<string, shared_ptr<SoundCloudAPICore>>* DiscordCoreClientBase::soundCloudAPICoreMap{ new map<string, shared_ptr<SoundCloudAPICore>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPICoreMap{ new map<string, shared_ptr<YouTubeAPICore>> };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
