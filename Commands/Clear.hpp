@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			auto songQueue = YouTubeAPI::getQueue(guild.id);
+			auto songQueue = SongAPI::getQueue(guild.id);
 			songQueue->clear();
 
 			EmbedData msgEmbed;

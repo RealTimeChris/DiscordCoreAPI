@@ -12,6 +12,8 @@
 
 namespace DiscordCoreAPI {
 
+    class SoundCloudAPI;
+
     struct BuildSongDecoderData {
     public:
         unbounded_buffer<vector<uint8_t>>* sendEncodedAudioDataBuffer{};
@@ -22,8 +24,8 @@ namespace DiscordCoreAPI {
     class SongDecoder : DiscordCoreInternal::ThreadContext, agent {
     public:
 
-        friend class SoundCloudAPICore;
-        friend class YouTubeAPICore;
+        friend class SoundCloudAPI;
+        friend class YouTubeAPI;
 
         SongDecoder(BuildSongDecoderData dataPackage) 
             : ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get()), agent(*this->scheduler->scheduler) {
@@ -34,6 +36,7 @@ namespace DiscordCoreAPI {
 
         void startMe() {
             this->start();
+            this->readyToStartEvent.wait(2500);
         }
 
         bool getFrame(RawFrameData* dataPackage) {
@@ -52,6 +55,14 @@ namespace DiscordCoreAPI {
                 }
             }
             return false;
+        }
+
+        void submitDataForDecoding(vector<uint8_t> dataToDecode, int maxBufferSize = 0) {
+            send(this->inputDataBuffer, dataToDecode);
+            if (maxBufferSize != 0) {
+                this->ioContext->buffer_size = maxBufferSize;
+                this->bufferMaxSize = maxBufferSize;
+            }
         }
 
         ~SongDecoder() {
@@ -87,6 +98,7 @@ namespace DiscordCoreAPI {
         unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };
+        concurrency::event readyToStartEvent {};
         unbounded_buffer<bool> readyBuffer{};
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };
@@ -203,6 +215,7 @@ namespace DiscordCoreAPI {
                         av_dump_format(this->formatContext, 0, "memory", 0);
                         send(this->readyBuffer, true);
                     }
+                    this->readyToStartEvent.set();
                 }
                 if (this->currentBuffer.size() > 0) {
 

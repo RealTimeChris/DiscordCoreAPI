@@ -12,7 +12,7 @@
 
 namespace DiscordCoreAPI {
 
-    vector<EmbedData> updateMessageEmbeds(vector<YouTubeSong> playlist, DiscordGuild discordGuild, InputEventData interaction,InputEventData originalEvent, int currentPageIndex ){
+    vector<EmbedData> updateMessageEmbeds(vector<Song> playlist, DiscordGuild discordGuild, InputEventData interaction,InputEventData originalEvent, int currentPageIndex ){
         vector<vector<EmbedFieldData>> msgEmbedFields{};
         msgEmbedFields.push_back(vector<EmbedFieldData>());
         int msgEmbedFieldsPage{ 0 };
@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
                 InputEvents::respondToEvent(dataPackage02);
             }
 
-            if (YouTubeAPI::getQueue(guild.id)->size() == 0) {
+            if (SongAPI::getQueue(guild.id)->size() == 0) {
                 EmbedData msgEmbed;
                 msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
                 msgEmbed.setColor(discordGuild.data.borderColor);
@@ -167,15 +167,15 @@ namespace DiscordCoreAPI {
             vector<vector<EmbedFieldData>> msgEmbedFields;
             msgEmbedFields.push_back(vector<EmbedFieldData>());
             int msgEmbedFieldsPage{ 0 };
-            for (int y = 0; y < YouTubeAPI::getQueue(guild.id)->size(); y += 1) {
+            for (int y = 0; y < SongAPI::getQueue(guild.id)->size(); y += 1) {
                 if (y % 25 == 0 && y > 0) {
                     if (y > 0) {
                         msgEmbedFieldsPage += 1;
                     }
                     msgEmbedFields.push_back(vector<EmbedFieldData>());
                 }
-                EmbedFieldData msgEmbedField = { .Inline = false,.value = "__**Title:**__ [" + YouTubeAPI::getQueue(guild.id)->at(y).title + "](" + YouTubeAPI::getQueue(guild.id)->at(y).url + ")\n__**Added By:**__ <@!" +
-                    YouTubeAPI::getQueue(guild.id)->at(y).addedById + "> (" + YouTubeAPI::getQueue(guild.id)->at(y).addedByUserName + ")",.name = "__**" + to_string(y + 1) + " of " + to_string(YouTubeAPI::getQueue(guild.id)->size()) + "**__" };
+                EmbedFieldData msgEmbedField = { .Inline = false,.value = "__**Title:**__ [" + SongAPI::getQueue(guild.id)->at(y).title + "](" + SongAPI::getQueue(guild.id)->at(y).url + ")\n__**Added By:**__ <@!" +
+                    SongAPI::getQueue(guild.id)->at(y).addedById + "> (" + SongAPI::getQueue(guild.id)->at(y).addedByUserName + ")",.name = "__**" + to_string(y + 1) + " of " + to_string(SongAPI::getQueue(guild.id)->size()) + "**__" };
                 msgEmbedFields[msgEmbedFieldsPage].push_back(msgEmbedField);
             }
             vector<EmbedData> msgEmbeds;
@@ -352,7 +352,7 @@ namespace DiscordCoreAPI {
                     auto returnedMessages = messageCollector.collectMessages().get();
                     if (returnedMessages.messages.size() == 0) {
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*YouTubeAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
@@ -375,7 +375,7 @@ namespace DiscordCoreAPI {
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*YouTubeAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
@@ -400,7 +400,7 @@ namespace DiscordCoreAPI {
                         continue;
                     }
                     else if (convertToLowerCase(args2[0]) == "remove") {
-                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= YouTubeAPI::getQueue(guild.id)->size() || args2.size() < 1) {
+                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getQueue(guild.id)->size() || args2.size() < 1) {
                             msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
                             msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
                             DeleteMessageData dataPackage01{};
@@ -422,17 +422,17 @@ namespace DiscordCoreAPI {
                         }
                         int removeIndex = (int)stoll(args2[1]) - 1;
 
-                        YouTubeAPI::getQueue(guild.id)->erase(YouTubeAPI::getQueue(guild.id)->begin() + removeIndex, YouTubeAPI::getQueue(guild.id)->begin() + removeIndex + 1);
+                        SongAPI::getQueue(guild.id)->erase(SongAPI::getQueue(guild.id)->begin() + removeIndex, SongAPI::getQueue(guild.id)->begin() + removeIndex + 1);
                         DeleteMessageData dataPackage{};
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*YouTubeAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
                     else if (convertToLowerCase(args2[0]) == "swap") {
-                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= YouTubeAPI::getQueue(guild.id)->size() || (stoll(args2[2]) - 1) < 0 || (size_t)(stoll(args2[2]) - 1) >= YouTubeAPI::getQueue(guild.id)->size() || args2.size() < 2) {
+                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getQueue(guild.id)->size() || (stoll(args2[2]) - 1) < 0 || (size_t)(stoll(args2[2]) - 1) >= SongAPI::getQueue(guild.id)->size() || args2.size() < 2) {
                             msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
                             msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
                             DeleteMessageData dataPackage01{};
@@ -455,30 +455,30 @@ namespace DiscordCoreAPI {
 
                         int sourceIndex = (int)stoll(args2[1]) - 1;
                         int destinationIndex = (int)stoll(args2[2]) - 1;
-                        YouTubeAPI::modifyQueue(sourceIndex, destinationIndex, guild.id);
+                        SongAPI::modifyQueue(sourceIndex, destinationIndex, guild.id);
                         DeleteMessageData dataPackage{};
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*YouTubeAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
                     else if (convertToLowerCase(args2[0]) == "shuffle") {
-                        auto oldSongArray = YouTubeAPI::getQueue(guild.id);
-                        vector<YouTubeSong> newVector{};
+                        auto oldSongArray = SongAPI::getQueue(guild.id);
+                        vector<Song> newVector{};
                         while (oldSongArray->size() > 0) {
                             srand((unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
                             int randomIndex = (unsigned int)trunc(((float)rand() / (float)RAND_MAX) * oldSongArray->size());
                             newVector.push_back(oldSongArray->at(randomIndex));
                             oldSongArray->erase(oldSongArray->begin() + randomIndex, oldSongArray->begin() + randomIndex + 1);
                         }
-                        YouTubeAPI::setQueue(newVector, guild.id);
+                        SongAPI::setQueue(newVector, guild.id);
                         DeleteMessageData dataPackage{};
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*YouTubeAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }

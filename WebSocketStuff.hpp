@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		WebSocketConnectionAgent(unbounded_buffer<json>* target, hstring botTokenNew, bool* doWeQuitNew)
+		WebSocketConnectionAgent(unbounded_buffer<json>* target, string botTokenNew, bool* doWeQuitNew)
 			:ThreadContext(*ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
 			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectionData>>();
 			this->voiceConnectionDataBuffer = make_shared<unbounded_buffer<VoiceConnectionData>>();
@@ -103,7 +103,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<unbounded_buffer<GetVoiceConnectionData>> collectVoiceConnectionDataBuffer{ nullptr };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		GetVoiceConnectionData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
@@ -121,7 +120,7 @@ namespace DiscordCoreInternal {
 		event_token closedToken{};
 		bool* doWeQuit{ nullptr };
 		hstring sessionID{ L"" };
-		hstring botToken{ L"" };
+		string botToken{ "" };
 
 		void setSocketPath(string socketPathBase) {
 			std::wstringstream stream;
@@ -131,27 +130,25 @@ namespace DiscordCoreInternal {
 		}
 
 		void getVoiceConnectionData(GetVoiceConnectionData doWeCollect) {
-			this->voiceConnectInitData = doWeCollect;
-			UpdateVoiceStateData dataPackage;
-			dataPackage.channelId = doWeCollect.channelId;
-			dataPackage.guildId = doWeCollect.guildId;
-			dataPackage.selfDeaf = true;
-			dataPackage.selfMute = false;
-			string newString = getVoiceStateUpdatePayload(dataPackage);
-			this->areWeCollectingData = true;
-			this->sendMessage(newString);
+			try {
+				this->voiceConnectInitData = doWeCollect;
+				UpdateVoiceStateData dataPackage;
+				dataPackage.channelId = doWeCollect.channelId;
+				dataPackage.guildId = doWeCollect.guildId;
+				dataPackage.selfDeaf = true;
+				dataPackage.selfMute = false;
+				string newString = getVoiceStateUpdatePayload(dataPackage);
+				this->areWeCollectingData = true;
+				this->sendMessage(newString);
+			}
+			catch (...) {
+				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::getVoiceConnectionData() Error: ");
+			}
+			
 		}
 
 		~WebSocketConnectionAgent() {
-			this->getError();
 			this->terminate();
-		}
-
-		void getError() {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << "WebSocketConnectionAgent::run() Error: " << error.what() << endl << endl;
-			}
 		}
 
 		void run() {
@@ -159,7 +156,7 @@ namespace DiscordCoreInternal {
 				this->connect();
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::run() Error: ");
 				done();
 			}
 		}
@@ -203,7 +200,7 @@ namespace DiscordCoreInternal {
 				this->currentReconnectTries += 1;
 				this->cleanup();
 				this->connect();
-				string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+				string resume = getResumePayload(this->botToken, to_string(this->sessionID), this->lastNumberReceived);
 				this->sendMessage(resume);
 			}
 			else {
@@ -292,7 +289,7 @@ namespace DiscordCoreInternal {
 					this->currentReconnectTries += 1;
 					this->cleanup();
 					this->connect();
-					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+					string resume = getResumePayload(this->botToken, to_string(this->sessionID), this->lastNumberReceived);
 					this->sendMessage(resume);
 				}
 				else {
@@ -306,7 +303,7 @@ namespace DiscordCoreInternal {
 					this->currentReconnectTries += 1;
 					this->cleanup();
 					this->connect();
-					string resume = getResumePayload(to_string(this->botToken), to_string(this->sessionID), this->lastNumberReceived);
+					string resume = getResumePayload(this->botToken, to_string(this->sessionID), this->lastNumberReceived);
 					this->sendMessage(resume);
 				}
 				else {
@@ -320,7 +317,7 @@ namespace DiscordCoreInternal {
 					WebSocketConnectionAgent::sendHeartBeat();
 				};
 				this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
-				std::string identity = getIdentifyPayload(to_string(this->botToken), this->intentsValue);
+				std::string identity = getIdentifyPayload(this->botToken, this->intentsValue);
 				this->sendMessage(identity);
 			}
 
@@ -424,7 +421,6 @@ namespace DiscordCoreInternal {
 
 		~VoiceChannelWebSocketAgent() {
 			this->terminate();
-			this->getError();
 		}
 
 	protected:
@@ -432,7 +428,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
 		unbounded_buffer<bool> readyToVoiceConnectBuffer{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
@@ -448,13 +443,6 @@ namespace DiscordCoreInternal {
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
-
-		void getError() {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << "VoiceChannelWebSocketAgent Error: " << error.what() << endl << endl;
-			}
-		}
 
 		void connect() {
 			try {
@@ -518,8 +506,8 @@ namespace DiscordCoreInternal {
 			try {
 				this->connect();
 			}
-			catch (const exception& e) {
-				send(errorBuffer, e);
+			catch (...) {
+				DiscordCoreAPI::rethrowException("VoiceConnectionWebSocketAgent::run() Error: ");
 				done();
 			}
 		}
@@ -669,15 +657,7 @@ namespace DiscordCoreInternal {
 	protected:
 		unbounded_buffer<WebSocketWorkload> webSocketWorkloadTarget{ nullptr };
 		unbounded_buffer<json> webSocketWorkloadSource{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		bool doWeQuit{ false };
-
-		void getError() {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << "WebSocketReceiverAgent Error: " << error.what() << endl << endl;
-			}
-		}
 
 		void run() {
 			try {
@@ -692,7 +672,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("WebSocketReceiverAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("WebSocketReceiverAgent::run() Error: ");
 			}
 			done();
 		}
@@ -969,7 +949,6 @@ namespace DiscordCoreInternal {
 
 		~WebSocketReceiverAgent() {
 			this->terminate();
-			this->getError();
 		}
 	};
 }

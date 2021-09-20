@@ -85,17 +85,17 @@ namespace DiscordCoreAPI {
 				}
 			}
 
-			if (YouTubeAPI::isLoopAllEnabled(guild.id)) {
-				YouTubeAPI::setLoopAllStatus(false, guild.id);
+			if (SongAPI::isLoopAllEnabled(guild.id)) {
+				SongAPI::setLoopAllStatus(false, guild.id);
 			}
 			else {
-				YouTubeAPI::setLoopAllStatus(true, guild.id);
+				SongAPI::setLoopAllStatus(true, guild.id);
 			}
 			discordGuild.writeDataToDB();
 			EmbedData msgEmbed;
 			msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 			msgEmbed.setColor(discordGuild.data.borderColor);
-			if (YouTubeAPI::isLoopAllEnabled(guild.id)) {
+			if (SongAPI::isLoopAllEnabled(guild.id)) {
 				msgEmbed.setDescription("\n------\n__**Looping-All has been enabled!**__\n------\n");
 			}
 			else {

@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
         try {
             DiscordCoreAPI::commandPrefix = commandPrefixNew;
             DiscordCoreInternal::ThreadManager::intialize();
-            shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(to_hstring(botToken));
+            shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(botToken);
             DiscordCoreClient::thisPointer = pDiscordCoreClient;
             EventHandler::discordCoreClient = pDiscordCoreClient;
             pDiscordCoreClient->initialize().get();

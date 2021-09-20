@@ -39,9 +39,10 @@ namespace DiscordCoreAPI {
 	protected:
 		static shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent;
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap;
-		static map<string, shared_ptr<SoundCloudAPICore>>* soundCloudAPICoreMap;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
-		static map<string, shared_ptr<YouTubeAPICore>>* youtubeAPICoreMap;
+		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
+		static map<string, shared_ptr<SongAPI>>* songAPIMap;
+		static map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap;
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
 		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
@@ -49,10 +50,11 @@ namespace DiscordCoreAPI {
 
 	};
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* DiscordCoreClientBase::audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
-	map<string, shared_ptr<SoundCloudAPICore>>* DiscordCoreClientBase::soundCloudAPICoreMap{ new map<string, shared_ptr<SoundCloudAPICore>>() };
 	map<string, shared_ptr<VoiceConnection>>* DiscordCoreClientBase::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
-	map<string, shared_ptr<YouTubeAPICore>>* DiscordCoreClientBase::youtubeAPICoreMap{ new map<string, shared_ptr<YouTubeAPICore>> };
+	map<string, shared_ptr<SoundCloudAPI>>* DiscordCoreClientBase::soundCloudAPIMap{ new map<string, shared_ptr<SoundCloudAPI>>() };
+	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> DiscordCoreClientBase::webSocketConnectionAgent{ nullptr };
+	map<string, shared_ptr<SongAPI>>* DiscordCoreClientBase::songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
 	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }

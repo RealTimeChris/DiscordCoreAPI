@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			if (!YouTubeAPI::isThereAnySongs(guild.id)) {
+			if (!SongAPI::isThereAnySongs(guild.id)) {
 				string msgString = "------\n**There's no more songs for us to skip to!**\n------";
 				EmbedData msgEmbed02;
 				msgEmbed02.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -144,8 +144,8 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				
-				if ((*voiceConnection)->areWeCurrentlyPlaying() &&YouTubeAPI::isThereAnySongs(guild.id)) {
-					YouTubeAPI::skip(guild.id);
+				if ((*voiceConnection)->areWeCurrentlyPlaying() &&SongAPI::isThereAnySongs(guild.id)) {
+					SongAPI::skip(guild.id);
 					(*voiceConnection)->skip();
 					string msgString = "------\n**We're skipping to the next song!**\n------";
 					EmbedData msgEmbed02;
@@ -170,26 +170,26 @@ namespace DiscordCoreAPI {
 						InputEvents::deleteInputEventResponseAsync(newEvent);
 						InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 					}
-					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildMemberId = YouTubeAPI::getCurrentSong(guild.id).addedById,.guildId = args->eventData.getGuildId() }).get();
+					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildMemberId = SongAPI::getCurrentSong(guild.id).addedById,.guildId = args->eventData.getGuildId() }).get();
 					(*voiceConnection)->play();
 					EmbedData newEmbed;
 					newEmbed.setAuthor(guildMember02.user.userName, guildMember02.user.avatar);
-					newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
-						YouTubeAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guild.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guild.id).addedByUserName + ")");
-					newEmbed.setImage(YouTubeAPI::getCurrentSong(guild.id).imageURL);
+					newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).title + "](" + SongAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
+						SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedById + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
+					newEmbed.setImage(SongAPI::getCurrentSong(guild.id).imageURL);
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Now Playing:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
 					}
-					if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
 					}
-					if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
 					}
-					if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 					}
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 					}
 					
 				}
-				else if (!YouTubeAPI::isThereAnySongs(guild.id)) {
+				else if (!SongAPI::isThereAnySongs(guild.id)) {
 					discordGuild.getDataFromDB();
 					EmbedData newEmbed;
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -212,16 +212,16 @@ namespace DiscordCoreAPI {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Now Playing:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
 					}
-					else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					else if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
 					}
-					else if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					else if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
 					}
-					else if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+					else if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 					}
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {

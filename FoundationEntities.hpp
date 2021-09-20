@@ -28,6 +28,7 @@ namespace DiscordCoreAPI {
     class Messages;
     class Channels;
     class BotUser;
+    class SongAPI;
     class Button;
     class Guilds;
     class Roles;
@@ -193,15 +194,15 @@ namespace DiscordCoreAPI {
         char timeBuffer[25];
         errno_t error;
         error = localtime_s(&timeInfo, &rawTime);
-        if (error) {
-            printf("Invalid argument to _localtime64_s.");
-        }
-        strftime(timeBuffer, 25, "%a %b %d %Y %X", &timeInfo);
-        TimeStamp timeStamp;
-        for (int x = 0; x < 24; x += 1) {
-            timeStamp.push_back(timeBuffer[x]);
-        }
-        return timeStamp;
+if (error) {
+    printf("Invalid argument to _localtime64_s.");
+}
+strftime(timeBuffer, 25, "%a %b %d %Y %X", &timeInfo);
+TimeStamp timeStamp;
+for (int x = 0; x < 24; x += 1) {
+    timeStamp.push_back(timeBuffer[x]);
+}
+return timeStamp;
     }
 
     long long convertTimestampToInteger(string timeStamp) {
@@ -293,6 +294,15 @@ namespace DiscordCoreAPI {
                 std::rethrow_exception(currentException);
             }
         }
+        catch (const operation_timed_out& e){
+            exception newException(to_string(to_hstring(e.what())).c_str(), 0);
+            if (sendBuffer != nullptr) {
+                send(sendBuffer, newException);
+            }
+            else {
+                cout << stackTrace << e.what() << "\n\n";
+            }
+        }
         catch (const exception& e) {
             if (sendBuffer != nullptr) {
                 send(sendBuffer, e);
@@ -359,6 +369,7 @@ namespace  DiscordCoreInternal {
     class GuildManager;
     class RoleManager;
     class UserManager;
+    class DataParser;
 
     struct AllowedMentionsData {
         bool repliedUser{ false };
@@ -889,7 +900,17 @@ namespace  DiscordCoreInternal {
         shared_ptr<ScheduleWrapper> scheduler{ nullptr };        
     };
 
+    enum class HeaderTypes {
+        Bot_Auth = 0
+    };
+
+    struct Headers {
+        HeaderTypes headerType{};
+        string headerValue{ "" };
+    };
+
     struct HttpAgentResources {
+        vector<Headers> headers{};
         string userAgent{ "" };
         string baseURL{ "" };
     };
@@ -1123,7 +1144,8 @@ namespace  DiscordCoreInternal {
         GET_GUILD_APPLICATION_COMMANDS = 59,
         GET_GUILD_APPLICATION_COMMAND = 60,
         DELETE_MESSAGE_OLD = 61,
-        SOUNDCLOUD_AUTH = 61
+        SOUNDCLOUD_AUTH = 62,
+        SOUNDCLOUD_SONG_GET = 63
     };
 
     enum class MessageStickerItemType {
@@ -3669,46 +3691,206 @@ namespace DiscordCoreAPI {
         SoundCloud = 1
     };
 
-    struct SongSearchResult {
-        string trackAuthorization{ "" };
-        vector<YouTubeFormat> formats{};
-        string downloadProtoURL{ "" };
-        string songDownloadURL{ "" };
-        string thumbNailURL{ "" };
-        string description{ "" };
-        string songTitle{ "" };
-        string duration{ "" };
-        string songURL{ "" };
-        string songId{ "" };
-        SongType songType{};
+    struct DownloadURL {
+        string urlPath{ "" };
+        int contentSize{ 0 };
     };
+   
+    class SoundCloudSong;
+    class YouTubeSong;
 
-    struct Song {
-        string formatDownloadURL{ "" };
-        vector<string> downloadURLs{};
+    class Song {
+    public:
+
+        vector<DownloadURL> finalDownloadURLs{};
+        SongType type{ SongType::SoundCloud };
+        string secondDownloadURL{ "" };
+        string firstDownloadURL{ "" };
         string addedByUserName{ "" };
+        string addedByUserId{ "" };
+        string thumbnailURL{ "" };
         string description{ "" };
         int contentLength{ 0 };
-        string addedById{ "" };
-        string imageURL{ "" };
+        string songTitle{ "" };
         string duration{ "" };
-        string videoId{ "" };
+        string viewURL{ "" };
         string songId{ "" };
-        SongType songType{};
-        string title{ "" };
-        string url{ "" };
+
+        operator SoundCloudSong();
+
+        Song(YouTubeSong& e);
+
+        Song(){}
+
     };
+
+    class SoundCloudSong : public Song {
+    public:
+
+        friend class DiscordCoreInternal::DataParser;
+        friend class SoundCloudAPICore;
+        friend class SoundCloudAPI;
+        friend class SongAPICore;
+        friend class SongAPI;
+        friend class Song;
+
+        operator Song() {
+            Song newData{};
+            newData.finalDownloadURLs = this->finalDownloadURLs;
+            newData.secondDownloadURL = this->secondDownloadURL;
+            newData.firstDownloadURL = this->firstDownloadURL;
+            newData.addedByUserName = this->addedByUserName;
+            newData.addedByUserId = this->addedByUserId;
+            newData.contentLength = this->contentLength;
+            newData.thumbnailURL = this->thumbnailURL;
+            newData.description = this->description;
+            newData.songTitle = this->songTitle;
+            newData.duration = this->duration;
+            newData.viewURL = this->viewURL;
+            newData.songId = this->songId;
+            newData.type = this->type;
+            return newData;
+        }
+
+        static void initialize(string baseSearchURLNew, string baseSearchURL2New);
+
+        static vector<SoundCloudSong> searchForSong(string songQuery);
+
+        static string collectClientId(string searchQuery);
+
+        SoundCloudSong(string baseSearchURLNew, string baseSearchURL02New);
+
+        SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
+
+    protected:
+
+        static string baseSearchURL02;
+        static string baseSearchURL;
+        static string appVersion;
+        static string clientId;
+
+        HttpClient httpClientForGettingSecondURL{ HttpClient() };
+        HttpClient httpClientForGettingFinalURLs{ HttpClient() };
+        HttpRequestHeaderCollection headerCollectionForSecondURL{ httpClientForGettingSecondURL.DefaultRequestHeaders() };
+        HttpRequestHeaderCollection headerCollectionForFinalURLs{ httpClientForGettingSecondURL.DefaultRequestHeaders() };
+        string trackAuthorization{ "" };
+
+        SoundCloudSong();
+
+        SoundCloudSong findSecondDownloadURL(SoundCloudSong newSong);
+
+        SoundCloudSong findFinalDownloadURLs(SoundCloudSong newSong);
+    };
+
+    Song::operator SoundCloudSong() {
+        SoundCloudSong newData{};
+        newData.finalDownloadURLs = this->finalDownloadURLs;
+        newData.secondDownloadURL = this->secondDownloadURL;
+        newData.firstDownloadURL = this->firstDownloadURL;
+        newData.addedByUserName = this->addedByUserName;
+        newData.addedByUserId = this->addedByUserId;
+        newData.contentLength = this->contentLength;
+        newData.thumbnailURL = this->thumbnailURL;
+        newData.description = this->description;
+        newData.songTitle = this->songTitle;
+        newData.duration = this->duration;
+        newData.viewURL = this->viewURL;
+        newData.songId = this->songId;
+        newData.type = this->type;
+        return newData;
+    }
+
+    class YouTubeSong : public Song {
+    public:
+
+        friend class DiscordCoreInternal::DataParser;
+        friend class SoundCloudAPI;
+        friend class YouTubeAPI;
+        friend class SongAPI;
+        friend class SongAPI;
+        friend class Song;
+
+        YouTubeSong(const Song& e) {
+            this->finalDownloadURLs = e.finalDownloadURLs;
+            this->secondDownloadURL = e.secondDownloadURL;
+            this->firstDownloadURL = e.firstDownloadURL;
+            this->addedByUserName = e.addedByUserName;
+            this->addedByUserId = e.addedByUserId;
+            this->contentLength = e.contentLength;
+            this->thumbnailURL = e.thumbnailURL;
+            this->description = e.description;
+            this->songTitle = e.songTitle;
+            this->duration = e.duration;
+            this->viewURL = e.viewURL;
+            this->songId = e.songId;
+            this->type = e.type;
+        }
+
+        YouTubeSong(string baseSearchURLNew);
+
+        YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
+
+    protected:
+
+        static const string baseWatchURL;
+        static const string baseURL;
+
+        HttpRequestHeaderCollection headerCollectionForFinalURLs{ nullptr };
+        HttpClient httpClientForGettingFinalURLs{};
+        vector<YouTubeFormat> formats{};
+        string html5PlayerFile{ "" };
+        string playerResponse{ "" };
+        string baseSearchURL{ "" };
+        string html5Player{ "" };
+
+        YouTubeSong();
+
+        YouTubeSong collectDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
+
+    };
+
+    Song::Song(YouTubeSong & e) {
+        this->finalDownloadURLs = e.finalDownloadURLs;
+        this->secondDownloadURL = e.secondDownloadURL;
+        this->firstDownloadURL = e.firstDownloadURL;
+        this->addedByUserName = e.addedByUserName;
+        this->addedByUserId = e.addedByUserId;
+        this->contentLength = e.contentLength;
+        this->thumbnailURL = e.thumbnailURL;
+        this->description = e.description;
+        this->songTitle = e.songTitle;
+        this->duration = e.duration;
+        this->viewURL = e.viewURL;
+        this->songId = e.songId;
+        this->type = e.type;
+    }
+
+    struct DBPlaylist;
 
     struct Playlist {
-        vector<Song> songQueue{};
+        operator DBPlaylist();
         bool isLoopSongEnabled{ false };
         bool isLoopAllEnabled{ false };
-    };
-
-    struct SendNextSongReturnData {
-    public:
+        vector<Song> songQueue{};
         Song currentSong{};
     };
+
+    struct DBPlaylist {
+        operator Playlist();
+        bool isLoopSongEnabled{ false };
+        bool isLoopAllEnabled{ false };
+        vector<Song> songList{};
+        Song currentSong{};
+    };
+
+    Playlist::operator DBPlaylist() {
+        DBPlaylist newData{};
+        newData.currentSong = this->currentSong;
+        newData.isLoopAllEnabled = this->isLoopAllEnabled;
+        newData.isLoopSongEnabled = this->isLoopSongEnabled;
+        newData.songList = this->songQueue;
+        return newData;
+    }
 
     static string commandPrefix;
 
@@ -3756,6 +3938,12 @@ namespace DiscordCoreAPI {
         string guildId{ "" };
     };
 
+    const string YouTubeSong::baseWatchURL{ "https://www.youtube.com/watch?v=" };
+    const string YouTubeSong::baseURL{ "https://www.youtube.com" };
+    string SoundCloudSong::appVersion{ "1631696495" };
+    string SoundCloudSong::baseSearchURL02{ "" };
+    string SoundCloudSong::baseSearchURL{ "" };
+    string SoundCloudSong::clientId{ "" };    
 };
 
 #endif

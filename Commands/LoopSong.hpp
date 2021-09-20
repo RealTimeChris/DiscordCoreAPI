@@ -84,17 +84,17 @@ namespace DiscordCoreAPI {
 					co_return;
 				}
 			}
-			if (YouTubeAPI::isLoopSongEnabled(guild.id)) {
-				YouTubeAPI::setLoopSongStatus(false, guild.id);
+			if (SongAPI::isLoopSongEnabled(guild.id)) {
+				SongAPI::setLoopSongStatus(false, guild.id);
 			}
 			else {
-				YouTubeAPI::setLoopSongStatus(true, guild.id);
+				SongAPI::setLoopSongStatus(true, guild.id);
 			}
 			discordGuild.writeDataToDB();
 			EmbedData msgEmbed;
 			msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 			msgEmbed.setColor(discordGuild.data.borderColor);
-			if (YouTubeAPI::isLoopSongEnabled(guild.id)) {
+			if (SongAPI::isLoopSongEnabled(guild.id)) {
 				msgEmbed.setDescription("\n------\n__**Looping-Song has been enabled!**__\n------\n");
 			}
 			else {

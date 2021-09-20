@@ -16,9 +16,8 @@
 #include "EventStuff01.hpp"
 #include "InputEventStuff.hpp"
 #include "DatabaseStuff.hpp"
-#include "YouTubeStuff.hpp"
+#include "SongAPI.hpp"
 #include "StickerStuff.hpp"
-#include "SoundCloudStuff.hpp"
 #include "WebSocketStuff.hpp"
 
 void myPurecallHandler(void) {
@@ -49,7 +48,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<EventManager> eventManager{ nullptr };
 		shared_ptr<DiscordUser> discordUser{ nullptr };
 
-		DiscordCoreClient(hstring botTokenNew) : DiscordCoreClientBase(), ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
+		DiscordCoreClient(string botTokenNew) : DiscordCoreClientBase(), ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
 			this->botToken = botTokenNew;
 		}
 
@@ -99,12 +98,12 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources{};
 		unbounded_buffer<exception> errorBuffer{ nullptr };
-		hstring baseURL{ L"https://discord.com/api/v9" };
+		string baseURL{ "https://discord.com/api/v9" };
 		map<string, DiscordGuild*> discordGuildMap{};
 		map<string, vector<Song>> youtubeQueueMap{};
 		bool doWeQuitWebSocket{ false };
-		hstring botToken{ L"" };
 		bool doWeQuit{ false };
+		string botToken{ "" };
 
 		task<void> initialize() {
 			PHANDLER_ROUTINE handlerRoutine(&HandlerRoutine);
@@ -113,7 +112,8 @@ namespace DiscordCoreAPI {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
-			DiscordCoreInternal::HttpRequestAgent::initialize(to_string(this->botToken), to_string(baseURL));
+			DiscordCoreInternal::HttpRequestAgent::initialize(this->botToken, this->baseURL);
+			SoundCloudSong::initialize(SoundCloudAPI::baseSearchURL, SoundCloudAPI::baseSearchURL02);
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
 			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, &this->doWeQuitWebSocket);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
@@ -146,8 +146,7 @@ namespace DiscordCoreAPI {
 			this->users->initialize(agentResources, this->thisPointer);
 			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPICoreMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap);
-			SoundCloudAPI::initialize(DiscordCoreClientBase::soundCloudAPICoreMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap);
+			SongAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap, DiscordCoreClientBase::voiceConnectionMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, this->discordUser->data.userId);
@@ -164,12 +163,15 @@ namespace DiscordCoreAPI {
 		}
 
 		string getGateWayUrl() {
+			this->agentResources.headers.push_back(DiscordCoreInternal::Headers{ .headerType = DiscordCoreInternal::HeaderTypes::Bot_Auth,.headerValue = this->botToken });
+			this->agentResources.baseURL = this->baseURL;
 			DiscordCoreInternal::HttpRequestAgent requestAgent(this->agentResources);
 			DiscordCoreInternal::HttpWorkloadData workload;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
 			workload.relativePath = "/gateway/bot";
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "DiscordCoreClient::getGateWayUrl()");
+			cout << to_string(returnData.returnCode) << returnData.returnMessage << endl;
 			return returnData.data.dump();
 		}
 
@@ -184,10 +186,10 @@ namespace DiscordCoreAPI {
 					discordGuild.getDataFromDB();
 					discordGuild.writeDataToDB();
 					guild = value;
+					SongAPI::discordGuildMap->insert(make_pair(discordGuild.data.guildId, &discordGuild));
 				}
 				this->youtubeQueueMap.insert_or_assign(discordGuild.data.guildId, discordGuild.data.playlist.songList);
 			}
-			YouTubeAPICore::initialize(&youtubeQueueMap);
 			if (!isItFound) {
 				this->discordUser->data.guildCount += 1;
 				this->discordUser->writeDataToDB();

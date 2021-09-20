@@ -25,8 +25,8 @@ namespace DiscordCoreAPI {
     struct DBPlaylist {
         bool isLoopSongEnabled{ false };
         bool isLoopAllEnabled{ false };
-        vector<YouTubeSong> songList{};
-        YouTubeSong currentSong{};
+        vector<Song> songList{};
+        Song currentSong{};
     };
 
     struct DiscordGuildData {
@@ -367,8 +367,11 @@ namespace DiscordCoreAPI {
     class DiscordGuild {
     public:
 
+        friend class SoundCloudAPICore;
         friend class YouTubeAPICore;
+        friend class SongAPICore;
         friend class YouTubeAPI;
+        friend class SongAPI;
 
         DiscordGuildData data{};
 

@@ -58,24 +58,22 @@ namespace DiscordCoreInternal {
 				if (agentResources.userAgent != "") {
 					this->deleteHeaders.UserAgent().TryParseAdd(to_hstring(agentResources.userAgent));
 				}
-				if (HttpRequestAgent::botToken != "") {
-					this->botToken = HttpRequestAgent::botToken;
-					hstring headerString = L"Bot ";
-					hstring headerString2 = headerString + to_hstring(HttpRequestAgent::botToken);
-					HttpCredentialsHeaderValue credentialValue(nullptr);
-					credentialValue = credentialValue.Parse(headerString2.c_str());
-					this->getHeaders.Authorization(credentialValue);
-					this->putHeaders.Authorization(credentialValue);
-					this->postHeaders.Authorization(credentialValue);
-					this->patchHeaders.Authorization(credentialValue);
-					this->deleteHeaders.Authorization(credentialValue);
+				if (agentResources.headers.size() > 0) {
+					if (agentResources.headers.at(0).headerType == HeaderTypes::Bot_Auth) {
+						hstring headerString = L"Bot ";
+						hstring headerString2 = headerString + to_hstring(HttpRequestAgent::botToken);
+						HttpCredentialsHeaderValue credentialValue(nullptr);
+						credentialValue = credentialValue.Parse(headerString2.c_str());
+						this->getHeaders.Authorization(credentialValue);
+						this->putHeaders.Authorization(credentialValue);
+						this->postHeaders.Authorization(credentialValue);
+						this->patchHeaders.Authorization(credentialValue);
+						this->deleteHeaders.Authorization(credentialValue);
+					}
 				}
 			}
-			catch (hresult_error ex) {
-				wcout << "HttpRequestAgent() Error: " << ex.message().c_str() << endl << endl;
-			}
-			catch (const exception& e) {
-				cout << "HttpRequestAgent() Error: " << e.what() << endl << endl;
+			catch (...) {
+				DiscordCoreAPI::rethrowException("HttpRequestAgent::HttpRequestAgent() Error: ");
 			}
 		}
 
@@ -89,21 +87,14 @@ namespace DiscordCoreInternal {
 			send(this->workSubmissionBuffer, workload);
 			this->start();
 			wait(this);
-			this->getError(callStack);
-			auto returnData = receive(this->workReturnBuffer);
+			HttpData returnData;
+			try {
+				returnData = receive(this->workReturnBuffer, 10000);
+			}
+			catch (...) {
+				DiscordCoreAPI::rethrowException("HttpRequestAgent::submitWorkloadAndGetResult() Error: ");
+			}
 			return returnData;
-		}
-
-		void getError(string stackTrace) {
-			exception error;
-			while (try_receive(errorBuffer, error)) {
-				cout << stackTrace + "::HttpRequestAgent Error: " << error.what() << endl << endl;
-			}
-			hresult_error error02;
-			while (try_receive(errorhBuffer, error02)) {
-				cout << stackTrace + "::HttpRequestAgent Error: " << error02.code() << ", " << to_string(error02.message()) << endl << endl;
-			}
-			return;
 		}
 
 		~HttpRequestAgent() {}
@@ -114,7 +105,6 @@ namespace DiscordCoreInternal {
 		static string botToken;
 		static string baseURL;
 		unbounded_buffer<HttpWorkloadData> workSubmissionBuffer{ nullptr };
-		unbounded_buffer<hresult_error> errorhBuffer{ nullptr };
 		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
 		HttpRequestHeaderCollection patchHeaders{ nullptr };
@@ -220,7 +210,7 @@ namespace DiscordCoreInternal {
 				send(&completeHttpRequest, workload);
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("HttpRequestAgent::run() Error: ", &this->errorBuffer);
+				DiscordCoreAPI::rethrowException("HttpRequestAgent::run() Error: ");
 			}
 			done();
 		}
@@ -228,10 +218,13 @@ namespace DiscordCoreInternal {
 		HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData) {
 			HttpData getData;
 			string connectionPath = this->baseURLInd + workloadData.relativePath;
-			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
+			winrt::Windows::Foundation::Uri requestUri{ to_hstring(connectionPath) };
 			HttpResponseMessage httpResponse;
 			httpResponse = getHttpClient.GetAsync(requestUri).get();
-			string returnMessage = to_string(httpResponse.Content().ReadAsStringAsync().get());
+			string returnMessage{};
+			for (unsigned int x = 0; x < httpResponse.Content().ReadAsBufferAsync().get().Length(); x += 1) {
+				returnMessage.push_back(httpResponse.Content().ReadAsBufferAsync().get().data()[x]);
+			}
 			getData.returnCode = (unsigned int)httpResponse.StatusCode();
 			getData.returnMessage = returnMessage;
 			for (auto [key, value] : workloadData.headerValuesToCollect) {
@@ -247,7 +240,7 @@ namespace DiscordCoreInternal {
 					newString = newString.substr(0, newString.find(stringSequence));
 					jsonValue = jsonValue.parse(newString);
 				}
-				else {
+				else if ((returnMessage[0] == to_string(L"{")[0] && returnMessage[returnMessage.size() - 1] == to_string(L"}")[0]) || (returnMessage[0] == to_string(L"[")[0] && returnMessage[returnMessage.size() - 1] == to_string(L"]")[0])) {
 					try {
 						jsonValue = jsonValue.parse(returnMessage);
 						

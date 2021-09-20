@@ -20,8 +20,8 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClientBase;
-		friend class SoundCloudAPICore;
-		friend class YouTubeAPICore;
+		friend class SoundCloudAPI;
+		friend class YouTubeAPI;
 		friend class Guild;
 
 		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew,  shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) :
@@ -106,6 +106,7 @@ namespace DiscordCoreAPI {
 					this->stopWaitEvent.reset();
 					return false;
 				}
+				this->clearAudioData();
 				this->stopWaitEvent.reset();
 				this->stopSetEvent.set();
 				return true;
@@ -123,6 +124,7 @@ namespace DiscordCoreAPI {
 					this->stopWaitEvent.reset();
 					return false;
 				}
+				this->clearAudioData();
 				this->stopWaitEvent.reset();
 				this->stopSetEvent.set();
 				return true;
@@ -164,9 +166,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		~VoiceConnection() {
-			this->getError();
-		}
+		~VoiceConnection() {}
 
 	protected:
 
@@ -176,7 +176,6 @@ namespace DiscordCoreAPI {
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent {};
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		concurrency::event connectionReadyEvent {};
 		concurrency::event disconnectionEvent {};
 		concurrency::event playWaitEvent {};
@@ -197,13 +196,6 @@ namespace DiscordCoreAPI {
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
 		bool doWeQuit{ false };
-
-		void getError() {
-			exception error;
-			while (try_receive(this->errorBuffer, error)) {
-				cout << "VoiceConnection::run() Error: " << error.what() << endl << endl;
-			}
-		}
 
 		void clearAudioData() {
 			if (this->audioData.encodedFrameData.data.size() != 0 && this->audioData.rawFrameData.data.size() != 0) {
@@ -441,7 +433,6 @@ namespace DiscordCoreAPI {
 								break;
 							}
 						}
-
 					}
 					this->areWePlaying = false;
 					if (this->areWeStopping) {
@@ -454,7 +445,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			catch (...) {
-				rethrowException("", &this->errorBuffer);
+				rethrowException("VoiceConnection::run() Error: ");
 			}
 			this->done();
 		}

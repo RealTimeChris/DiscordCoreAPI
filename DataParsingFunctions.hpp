@@ -3251,95 +3251,10 @@ namespace DiscordCoreInternal {
             *pDataStructure = newData;
         }
 
-        static void parseObject(json jsonObjectData, DiscordCoreAPI::SongSearchResult* pDataStructure) {
-            DiscordCoreAPI::SongSearchResult newData = *pDataStructure;
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure);
 
-            if (jsonObjectData.contains("lengthText") && !jsonObjectData.at("lengthText").is_null()) {
-                newData.duration = jsonObjectData.at("lengthText").at("accessibility").at("accessibilityData").at("label").get<string>();
-            }
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::SoundCloudSong* pDataStructure);
 
-            if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData.at("detailedMetadataSnippets").is_null()) {
-                for (auto value : jsonObjectData.at("detailedMetadataSnippets").at(0).at("snippetText").at("runs")) {
-                    newData.description += value.at("text").get<string>();
-                }
-            }
-
-            if (jsonObjectData.contains("thumbnail") && !jsonObjectData.at("thumbnail").is_null()) {
-                newData.thumbNailURL = jsonObjectData.at("thumbnail").at("thumbnails").at(0).at("url").get<string>();
-            }
-
-            if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
-                newData.songURL = "https://www.youtube.com/watch?v=" + jsonObjectData.at("videoId").get<string>();
-            }
-
-            if (jsonObjectData.contains("title") && !jsonObjectData.at("title").is_null()) {
-                if (jsonObjectData.at("title").contains("runs")) {
-                    newData.songTitle= jsonObjectData.at("title").at("runs").at(0).at("text").get<string>();
-                }
-                else if (jsonObjectData.at("title").contains("simpleText")){
-                    newData.songTitle= jsonObjectData.at("title").at("simpleText").get<string>();
-                }
-            }
-
-            if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
-                newData.songId = jsonObjectData.at("videoId").get<string>();
-            }
-
-            if (jsonObjectData.contains("description") && !jsonObjectData.at("description").is_null()) {
-                string newString = to_string(to_hstring(jsonObjectData.at("description").get<string>()));
-                bool didItFail{ false };
-                if (!g_utf8_validate(newString.c_str(), -1, NULL)) {
-                    didItFail = true;
-                }
-                if (!didItFail) {
-                    if (newString.size() > 94) {
-                        newData.description = newString.substr(0, 94);
-                        newData.description += "...";
-                    }
-                }
-            }
-
-            if (jsonObjectData.contains("track_authorization") && !jsonObjectData.at("track_authorization").is_null()) {
-                newData.trackAuthorization = jsonObjectData.at("track_authorization").get<string>();
-            }
-
-            if (jsonObjectData.contains("media") && !jsonObjectData.at("media").is_null()) {
-                bool isItFound{ false };
-                for (auto value : jsonObjectData.at("media").at("transcodings")) {
-                    if (value.at("preset") == "opus_0_0") {
-                        isItFound = true;
-                        newData.downloadProtoURL = to_string(to_hstring(value.at("url").get<string>()));
-                    }
-                }
-                if (!isItFound) {
-                    newData.downloadProtoURL = to_string(to_hstring(jsonObjectData.at("media").at("transcodings").at(0).at("url").get<string>()));
-                }
-            }
-
-            if (jsonObjectData.contains("title") && !jsonObjectData.at("title").is_null()) {
-                newData.songTitle = to_string(to_hstring(jsonObjectData.at("title").get<string>()));
-            }
-            
-            if (jsonObjectData.contains("artwork_url") && !jsonObjectData.at("artwork_url").is_null()) {
-                newData.thumbNailURL = to_string(to_hstring(jsonObjectData.at("artwork_url").get<string>()));
-            }
-
-            if (jsonObjectData.contains("duration") && !jsonObjectData.at("duration").is_null()) {
-                int durationNew = jsonObjectData.at("duration").get<int>();
-                newData.duration = DiscordCoreAPI::convertMsToDurationString(durationNew);
-            }
-
-            if (jsonObjectData.contains("permalink_url") && !jsonObjectData.at("permalink_url").is_null()) {
-                newData.songURL = to_string(to_hstring(jsonObjectData.at("permalink_url").get<string>()));
-            }
-
-            if (jsonObjectData.contains("permalink_url") && !jsonObjectData.at("permalink_url").is_null()) {
-                string newString = to_string(to_hstring(jsonObjectData.at("permalink_url").get<string>()));
-                newData.songId = newString.substr(newString.find_last_of("/") + 1);
-            }
-
-            *pDataStructure = newData;
-        }
     };
 };
 #endif

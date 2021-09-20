@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 			EmbedData msgEmbed;
 			msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 			msgEmbed.setColor(discordGuild.data.borderColor);
-			msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + to_string(YouTubeAPI::getQueue(guild.id)->size()) + "\n------");
+			msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + to_string(SongAPI::getQueue(guild.id)->size()) + "\n------");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setTitle("__**Paused Playback:**__");
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {

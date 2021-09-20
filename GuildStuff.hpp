@@ -17,6 +17,7 @@
 #include "UserStuff.hpp"
 #include "RoleStuff.hpp"
 #include "YouTubeStuff.hpp"
+#include "SongAPI.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -43,14 +44,21 @@ namespace DiscordCoreAPI {
 				voiceConnectInitData.userId = this->discordCoreClientBase->currentUser.id;
 				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::webSocketConnectionAgent));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
+				YouTubeAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
+				SoundCloudAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
+				SongAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
 				YouTubeAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
 				SoundCloudAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
-				YouTubeAPI::voiceConnectionMap.insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
-				SoundCloudAPI::voiceConnectionMap.insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
-				auto youtubeAPI = make_shared<YouTubeAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
-				DiscordCoreClientBase::youtubeAPICoreMap->insert_or_assign(this->id, youtubeAPI);
-				auto soundCloudAPI = make_shared<SoundCloudAPICore>(DiscordCoreClientBase::audioBuffersMap, this->id, discordGuild, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
-				DiscordCoreClientBase::soundCloudAPICoreMap->insert_or_assign(this->id, soundCloudAPI);
+				SongAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
+				YouTubeAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				SoundCloudAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				SongAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				auto youtubeAPI = make_shared<YouTubeAPI>(this->id);
+				DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
+				auto soundCloudAPI = make_shared<SoundCloudAPI>(this->id);
+				DiscordCoreClientBase::soundCloudAPIMap->insert_or_assign(this->id, soundCloudAPI);
+				auto songAPI = make_shared<SongAPI>(discordGuild);
+				DiscordCoreClientBase::songAPIMap->insert_or_assign(this->id, songAPI);
 				return &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			return voiceConnectionPtr;
@@ -58,49 +66,49 @@ namespace DiscordCoreAPI {
 		
 		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
-				if (DiscordCoreClientBase::youtubeAPICoreMap->contains(this->id)) {
-					YouTubeAPI::stop(this->id);
+				if (DiscordCoreClientBase::songAPIMap->contains(this->id)) {
+					SongAPI::stop(this->id);
 					DiscordGuild discordGuild(*this);
-					discordGuild.data.playlist.songList = *DiscordCoreClientBase::youtubeAPICoreMap->at(this->id).get()->getQueue();
-					discordGuild.data.playlist.isLoopAllEnabled = DiscordCoreClientBase::youtubeAPICoreMap->at(this->id).get()->isLoopAllEnabled();
-					discordGuild.data.playlist.isLoopSongEnabled = DiscordCoreClientBase::youtubeAPICoreMap->at(this->id).get()->isLoopSongEnabled();
+					discordGuild.data.playlist = SongAPI::getPlaylist(this->id);
 					discordGuild.writeDataToDB();
-					DiscordCoreClientBase::youtubeAPICoreMap->erase(this->id);
+					DiscordCoreClientBase::songAPIMap->erase(this->id);
 				}
-
+				DiscordCoreClientBase::currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 				(*voiceConnection)->stop();
-				if (!(*voiceConnection)->hasTerminateRun) {
-					if ((*voiceConnection)->areWePlaying) {
-						(*voiceConnection)->areWePlaying = false;
-						(*voiceConnection)->areWeStopping = true;
-					}
-					(*voiceConnection)->doWeQuit = true;
-					DiscordCoreClientBase::currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
-					if ((*voiceConnection)->encoder != nullptr) {
-						opus_encoder_destroy((*voiceConnection)->encoder);
-						(*voiceConnection)->encoder = nullptr;
-					}
-					(*voiceConnection)->hasTerminateRun = true;
-
-					YouTubeAPI::voiceConnectionMap.erase(this->id);
-					DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
-					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
-						send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
-						AudioFrameData frameData{};
-						while (try_receive(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), frameData)) {};
-						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
-					}
+				if ((*voiceConnection)->areWePlaying) {
+					(*voiceConnection)->areWePlaying = false;
+					(*voiceConnection)->areWeStopping = true;
 				}
+				(*voiceConnection)->doWeQuit = true;
+				if ((*voiceConnection)->encoder != nullptr) {
+					opus_encoder_destroy((*voiceConnection)->encoder);
+					(*voiceConnection)->encoder = nullptr;
+				}
+				(*voiceConnection)->hasTerminateRun = true;
+
+				SongAPI::voiceConnectionMap->erase(this->id);
+				YouTubeAPI::voiceConnectionMap->erase(this->id);
+				SoundCloudAPI::voiceConnectionMap->erase(this->id);
+				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
+				if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
+					send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
+					AudioFrameData frameData{};
+					while (try_receive(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), frameData)) {};
+					DiscordCoreClientBase::audioBuffersMap->erase(this->id);
+					YouTubeAPI::sendAudioDataBufferMap->erase(this->id);
+					SoundCloudAPI::sendAudioDataBufferMap->erase(this->id);
+				}
+				
 			}
 		}
 
-		shared_ptr<YouTubeAPICore> getYouTubeAPI() {
-			if (DiscordCoreClientBase::youtubeAPICoreMap->contains(this->id)) {
-				return DiscordCoreClientBase::youtubeAPICoreMap->at(this->id);
+		shared_ptr<YouTubeAPI> getYouTubeAPI() {
+			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
+				return DiscordCoreClientBase::youtubeAPIMap->at(this->id);
 			}
 			else {
-				return shared_ptr<YouTubeAPICore>();
+				return shared_ptr<YouTubeAPI>();
 			}
 		}
 

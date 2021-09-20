@@ -60,22 +60,22 @@ namespace DiscordCoreAPI {
 
 			EmbedData newEmbed;
 			newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-			newEmbed.setDescription("__**Title:**__ [" + YouTubeAPI::getCurrentSong(guild.id).title + "](" + YouTubeAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + YouTubeAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
-				YouTubeAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + YouTubeAPI::getCurrentSong(guild.id).addedById + "> (" + YouTubeAPI::getCurrentSong(guild.id).addedByUserName + ")");
-			newEmbed.setImage(YouTubeAPI::getCurrentSong(guild.id).imageURL);
+			newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).title + "](" + SongAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
+				SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedById + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
+			newEmbed.setImage(SongAPI::getCurrentSong(guild.id).imageURL);
 			newEmbed.setTimeStamp(getTimeAndDate());
 			newEmbed.setTitle("__**Now Playing:**__");
 			newEmbed.setColor(discordGuild.data.borderColor);
-			if (YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+			if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
 				newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
 			}
-			if (!YouTubeAPI::isLoopAllEnabled(guild.id) && YouTubeAPI::isLoopSongEnabled(guild.id)) {
+			if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
 				newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
 			}
-			if (YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+			if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 				newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
 			}
-			if (!YouTubeAPI::isLoopAllEnabled(guild.id) && !YouTubeAPI::isLoopSongEnabled(guild.id)) {
+			if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 				newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 			}
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
