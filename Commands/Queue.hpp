@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
                msgEmbedFieldsPage += 1;
                msgEmbedFields.push_back(vector<EmbedFieldData>());
            }
-           EmbedFieldData msgEmbedField = { .Inline = false,.value = "__**Title:**__ [" + playlist.at(y).title + "](" + playlist.at(y).url + ")\n__**Added By:**__ <@!" + playlist.at(y).addedById + "> (" + playlist.at(y).addedByUserName + ")", .name = "__**" + to_string(y + 1) + " of " + to_string(playlist.size()) + "**__" };
+           EmbedFieldData msgEmbedField = { .Inline = false,.value = "__**Title:**__ [" + playlist.at(y).songTitle + "](" + playlist.at(y).viewURL + ")\n__**Added By:**__ <@!" + playlist.at(y).addedByUserId + "> (" + playlist.at(y).addedByUserName + ")", .name = "__**" + to_string(y + 1) + " of " + to_string(playlist.size()) + "**__" };
            msgEmbedFields[msgEmbedFieldsPage].push_back(msgEmbedField);
        }
        msgEmbedFieldsPage = 0;
@@ -105,9 +105,33 @@ namespace DiscordCoreAPI {
                 co_return;
             }
 
-            auto voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
+            shared_ptr<VoiceConnection>* voiceConnectionRaw = guild.connectToVoice(guildMember.voiceData.channelId);
+            SongAPI::setPlaylist(discordGuild.data.playlist, guild.id);
 
-            if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != (*voiceConnection)->getChannelId()) {
+            if (voiceConnectionRaw == nullptr) {
+                EmbedData newEmbed;
+                newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+                newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
+                newEmbed.setTimeStamp(getTimeAndDate());
+                newEmbed.setTitle("__**Connection Issue:**__");
+                newEmbed.setColor(discordGuild.data.borderColor);
+                if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                    ReplyMessageData dataPackage(args->eventData);
+                    dataPackage.addMessageEmbed(newEmbed);
+                    auto newEvent = InputEvents::respondToEvent(dataPackage);
+                    InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+                }
+                else {
+                    CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+                    dataPackage.addMessageEmbed(newEmbed);
+                    auto newEvent = InputEvents::respondToEvent(dataPackage);
+                }
+                co_return;
+            }
+
+            auto voiceConnection = *voiceConnectionRaw;
+
+            if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
                 EmbedData newEmbed;
                 newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
                 newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
@@ -144,7 +168,7 @@ namespace DiscordCoreAPI {
                 InputEvents::respondToEvent(dataPackage02);
             }
 
-            if (SongAPI::getQueue(guild.id)->size() == 0) {
+            if (SongAPI::getPlaylist(guild.id).songQueue.size() == 0) {
                 EmbedData msgEmbed;
                 msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
                 msgEmbed.setColor(discordGuild.data.borderColor);
@@ -167,15 +191,15 @@ namespace DiscordCoreAPI {
             vector<vector<EmbedFieldData>> msgEmbedFields;
             msgEmbedFields.push_back(vector<EmbedFieldData>());
             int msgEmbedFieldsPage{ 0 };
-            for (int y = 0; y < SongAPI::getQueue(guild.id)->size(); y += 1) {
+            for (int y = 0; y < SongAPI::getPlaylist(guild.id).songQueue.size(); y += 1) {
                 if (y % 25 == 0 && y > 0) {
                     if (y > 0) {
                         msgEmbedFieldsPage += 1;
                     }
                     msgEmbedFields.push_back(vector<EmbedFieldData>());
                 }
-                EmbedFieldData msgEmbedField = { .Inline = false,.value = "__**Title:**__ [" + SongAPI::getQueue(guild.id)->at(y).title + "](" + SongAPI::getQueue(guild.id)->at(y).url + ")\n__**Added By:**__ <@!" +
-                    SongAPI::getQueue(guild.id)->at(y).addedById + "> (" + SongAPI::getQueue(guild.id)->at(y).addedByUserName + ")",.name = "__**" + to_string(y + 1) + " of " + to_string(SongAPI::getQueue(guild.id)->size()) + "**__" };
+                EmbedFieldData msgEmbedField = { .Inline = false,.value = "__**Title:**__ [" + SongAPI::getPlaylist(guild.id).songQueue.at(y).songTitle + "](" + SongAPI::getPlaylist(guild.id).songQueue.at(y).viewURL+ ")\n__**Added By:**__ <@!" +
+                    SongAPI::getPlaylist(guild.id).songQueue.at(y).addedByUserId + "> (" + SongAPI::getPlaylist(guild.id).songQueue.at(y).addedByUserName + ")",.name = "__**" + to_string(y + 1) + " of " + to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "**__" };
                 msgEmbedFields[msgEmbedFieldsPage].push_back(msgEmbedField);
             }
             vector<EmbedData> msgEmbeds;
@@ -339,7 +363,7 @@ namespace DiscordCoreAPI {
                         newEvent = InputEvents::respondToEvent(dataPackage);
                     }
 
-                    function<bool(DiscordCoreAPI::Message)> messageFilter = [=](DiscordCoreAPI::Message message)-> bool {
+                    function<bool(Message)> messageFilter = [=](Message message)-> bool {
                         if (userID == message.author.id) {
                             return true;
                         }
@@ -352,7 +376,7 @@ namespace DiscordCoreAPI {
                     auto returnedMessages = messageCollector.collectMessages().get();
                     if (returnedMessages.messages.size() == 0) {
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(SongAPI::getPlaylist(guild.id).songQueue, discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
@@ -375,7 +399,7 @@ namespace DiscordCoreAPI {
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(SongAPI::getPlaylist(guild.id).songQueue, discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
@@ -400,7 +424,7 @@ namespace DiscordCoreAPI {
                         continue;
                     }
                     else if (convertToLowerCase(args2[0]) == "remove") {
-                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getQueue(guild.id)->size() || args2.size() < 1) {
+                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || args2.size() < 1) {
                             msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
                             msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
                             DeleteMessageData dataPackage01{};
@@ -420,19 +444,21 @@ namespace DiscordCoreAPI {
                             }
                             continue;
                         }
-                        int removeIndex = (int)stoll(args2[1]) - 1;
+                        int removeIndex = (int)stoll(args2[1]);
 
-                        SongAPI::getQueue(guild.id)->erase(SongAPI::getQueue(guild.id)->begin() + removeIndex, SongAPI::getQueue(guild.id)->begin() + removeIndex + 1);
+                        auto playlist = SongAPI::getPlaylist(guild.id);
+                        playlist.songQueue.erase(playlist.songQueue.begin() + removeIndex - 1, playlist.songQueue.begin() + removeIndex);
+                        SongAPI::setPlaylist(playlist, guild.id);
                         DeleteMessageData dataPackage{};
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(SongAPI::getPlaylist(guild.id).songQueue, discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
                     else if (convertToLowerCase(args2[0]) == "swap") {
-                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getQueue(guild.id)->size() || (stoll(args2[2]) - 1) < 0 || (size_t)(stoll(args2[2]) - 1) >= SongAPI::getQueue(guild.id)->size() || args2.size() < 2) {
+                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || (stoll(args2[2]) - 1) < 0 || (size_t)(stoll(args2[2]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || args2.size() < 2) {
                             msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
                             msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
                             DeleteMessageData dataPackage01{};
@@ -460,31 +486,34 @@ namespace DiscordCoreAPI {
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(SongAPI::getPlaylist(guild.id).songQueue, discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
                     else if (convertToLowerCase(args2[0]) == "shuffle") {
-                        auto oldSongArray = SongAPI::getQueue(guild.id);
+                        auto oldSongArray = SongAPI::getPlaylist(guild.id);
                         vector<Song> newVector{};
-                        while (oldSongArray->size() > 0) {
+                        while (oldSongArray.songQueue.size() > 0) {
                             srand((unsigned int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-                            int randomIndex = (unsigned int)trunc(((float)rand() / (float)RAND_MAX) * oldSongArray->size());
-                            newVector.push_back(oldSongArray->at(randomIndex));
-                            oldSongArray->erase(oldSongArray->begin() + randomIndex, oldSongArray->begin() + randomIndex + 1);
+                            int randomIndex = (unsigned int)trunc(((float)rand() / (float)RAND_MAX) * oldSongArray.songQueue.size());
+                            newVector.push_back(oldSongArray.songQueue.at(randomIndex));
+                            oldSongArray.songQueue.erase(oldSongArray.songQueue.begin() + randomIndex, oldSongArray.songQueue.begin() + randomIndex + 1);
                         }
-                        SongAPI::setQueue(newVector, guild.id);
+                        oldSongArray.songQueue = newVector;
+                        SongAPI::setPlaylist(oldSongArray, guild.id);
                         DeleteMessageData dataPackage{};
                         dataPackage.messageData = returnedMessages.messages.at(0);
                         InputEvents::deleteInputEventResponseAsync(dataPackage);
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*SongAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = updateMessageEmbeds(SongAPI::getPlaylist(guild.id).songQueue, discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }
                     
                 }
                 if (doWeQuit) {
+                    discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
+                    discordGuild.writeDataToDB();
                     continue;
                 }
                     

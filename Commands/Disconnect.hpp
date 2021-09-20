@@ -57,11 +57,34 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			if ((*guild.connectToVoice(guildMember.voiceData.channelId))->areWeConnected()) {
-				guild.disconnect();
+			shared_ptr<VoiceConnection>* voiceConnectionRaw = guild.connectToVoice(guildMember.voiceData.channelId);
+
+			if (voiceConnectionRaw == nullptr) {
 				EmbedData newEmbed;
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-				newEmbed.setDescription("------\n__**I have disconnected from the channel!**__\n------");
+				newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
+				newEmbed.setTimeStamp(getTimeAndDate());
+				newEmbed.setTitle("__**Connection Issue:**__");
+				newEmbed.setColor(discordGuild.data.borderColor);
+				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+					ReplyMessageData dataPackage(args->eventData);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+				}
+				else {
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent = InputEvents::respondToEvent(dataPackage);
+				}
+				co_return;
+			}
+			auto voiceConnection = *voiceConnectionRaw;
+
+			if (voiceConnection->areWeConnected()) {
+				EmbedData newEmbed;
+				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+				newEmbed.setDescription("------\n__**I'm disconnecting from the voice channel!**__\n------");
 				newEmbed.setTimeStamp(getTimeAndDate());
 				newEmbed.setTitle("__**Disconnected:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
@@ -77,6 +100,7 @@ namespace DiscordCoreAPI {
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
+				guild.disconnect();
 			}
 			else {
 				EmbedData newEmbed;

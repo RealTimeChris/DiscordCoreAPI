@@ -22,16 +22,13 @@ namespace DiscordCoreAPI {
 		vector<string> argumentsArray;
 	};
 
-	class BaseFunction {
-	public:
-
+	struct BaseFunction {
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		virtual BaseFunction* create() = 0;
 		string helpDescription{ "" };
 		virtual ~BaseFunction() {};
 		string commandName{ "" };
 		EmbedData helpEmbed{};
-
 	};
 
 	class CommandCenter {
@@ -75,7 +72,15 @@ namespace DiscordCoreAPI {
 			else if (messageOption == false) {
 				args.argumentsArray = commandData.optionsArgs;
 			}
-			functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
+			string commandName = functionPointer->commandName;
+			auto continuation = functionPointer->execute(make_shared<BaseFunctionArguments>(args)).then([=](task<void> previousTask) {
+				try {
+					previousTask.get();
+				}
+				catch (...) {
+					rethrowException("CommandCenter::" + commandName + "() Error: ");
+				}
+				});
 			functionPointer.~shared_ptr();
 			functionPointer = nullptr;
 		};
@@ -109,8 +114,8 @@ namespace DiscordCoreAPI {
 					return newValue;
 				}
 			}
-			catch (exception& e) {
-				cout << "CommandCenter::getCommand() Error: " << e.what() << endl << endl;
+			catch (...) {
+				rethrowException("CommandCenter::getCommand() Error: ");
 			}
 			return nullptr;
 		}
@@ -132,6 +137,7 @@ namespace DiscordCoreAPI {
 									return commandName;
 								}
 							}
+
 						}
 					}
 				}
@@ -199,8 +205,8 @@ namespace DiscordCoreAPI {
 				}
 				return args;
 			}
-			catch (exception& e) {
-				cout << "CommandCenter::parseArguments() Error: " << e.what() << endl << endl;
+			catch (...) {
+				rethrowException("CommandCenter::parseArguments() Error: ");
 				return args;
 			}
 		}

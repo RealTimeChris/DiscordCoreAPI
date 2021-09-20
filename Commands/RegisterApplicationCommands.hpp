@@ -262,8 +262,20 @@ namespace DiscordCoreAPI {
 			createNpData.defaultPermission = true;
 			createNpData.description = "Displays the currently playing song.";
 			ApplicationCommands::createGlobalApplicationCommandAsync(createNpData).get();
-			*/		
-
+			
+			CreateApplicationCommandData playRNCommandData;
+			playRNCommandData.type = ApplicationCommandType::CHAT_INPUT;
+			playRNCommandData.defaultPermission = true;
+			playRNCommandData.description = "Plays a song immediately.";
+			playRNCommandData.name = "playrn";
+			ApplicationCommandOptionData playRNCommandDataOptionOne;
+			playRNCommandDataOptionOne.name = "songname";
+			playRNCommandDataOptionOne.type = ApplicationCommandOptionType::STRING;
+			playRNCommandDataOptionOne.description = "The name of the song that you would like to search.";
+			playRNCommandDataOptionOne.required = false;
+			playRNCommandData.options.push_back(playRNCommandDataOptionOne);
+			ApplicationCommands::createGlobalApplicationCommandAsync(playRNCommandData);
+			*/
 			Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild);
 			EmbedData msgEmbed;

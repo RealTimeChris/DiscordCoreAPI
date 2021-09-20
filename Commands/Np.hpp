@@ -60,9 +60,9 @@ namespace DiscordCoreAPI {
 
 			EmbedData newEmbed;
 			newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-			newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).title + "](" + SongAPI::getCurrentSong(guild.id).url + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
-				SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedById + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
-			newEmbed.setImage(SongAPI::getCurrentSong(guild.id).imageURL);
+			newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
+				SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
+			newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
 			newEmbed.setTimeStamp(getTimeAndDate());
 			newEmbed.setTitle("__**Now Playing:**__");
 			newEmbed.setColor(discordGuild.data.borderColor);

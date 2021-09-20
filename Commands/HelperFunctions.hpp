@@ -24,13 +24,15 @@ namespace DiscordCoreAPI {
                 msgEmbed.setTimeStamp(getTimeAndDate());
                 msgEmbed.setTitle("__**Direct Message Issue:**__");
                 if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData responseData(eventData);
+                    RespondToInputEventData responseData(eventData);
+                    responseData.type = DesiredInputEventResponseType::RegularMessage;
                     responseData.addMessageEmbed(msgEmbed);
                     auto event01 = InputEvents::respondToEvent(responseData);
                     InputEvents::deleteInputEventResponseAsync(event01, 20000);
                 }
                 else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                    CreateEphemeralInteractionResponseData responseData(eventData);
+                    RespondToInputEventData responseData(eventData);
+                    responseData.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
                     responseData.addMessageEmbed(msgEmbed);
                     auto event01 = InputEvents::respondToEvent(responseData);
                 }

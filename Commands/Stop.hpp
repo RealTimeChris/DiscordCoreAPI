@@ -38,11 +38,10 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
-
 			Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 
 			DiscordGuild discordGuild(guild);
+			discordGuild.writeDataToDB();
 
 			bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(args->eventData, discordGuild);
 
@@ -50,7 +49,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId()  }).get();
+			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
 			bool doWeHaveControl = checkIfWeHaveControl(args->eventData, discordGuild, guildMember);
 
@@ -64,7 +63,31 @@ namespace DiscordCoreAPI {
 				newEvent = InputEvents::respondToEvent(dataPackage);
 			}
 
-			shared_ptr<VoiceConnection> voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
+			shared_ptr<VoiceConnection>* voiceConnectionRaw = guild.connectToVoice(guildMember.voiceData.channelId);
+
+			if (voiceConnectionRaw == nullptr) {
+				EmbedData newEmbed;
+				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+				newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
+				newEmbed.setTimeStamp(getTimeAndDate());
+				newEmbed.setTitle("__**Connection Issue:**__");
+				newEmbed.setColor(discordGuild.data.borderColor);
+				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+					ReplyMessageData dataPackage(newEvent);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
+				}
+				else {
+					CreateEphemeralInteractionResponseData dataPackage(newEvent);
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
+				}
+				co_return;
+			}
+
+			auto voiceConnection = *voiceConnectionRaw;
 
 			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
 				EmbedData newEmbed;
@@ -76,8 +99,9 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(newEvent);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 				}
 				else {
 					CreateFollowUpMessageData dataPackage(newEvent);
@@ -86,7 +110,7 @@ namespace DiscordCoreAPI {
 					CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
 					dataPackage02.addMessageEmbed(newEmbed);
 					InputEvents::respondToEvent(dataPackage02);
-					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent).get();
 				}
 				
 				co_return;
@@ -103,8 +127,9 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(newEvent);
 					dataPackage.addMessageEmbed(msgEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
+					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 				}
 				else {
 					CreateFollowUpMessageData dataPackage(newEvent);
@@ -113,24 +138,28 @@ namespace DiscordCoreAPI {
 					CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
 					dataPackage02.addMessageEmbed(msgEmbed);
 					InputEvents::respondToEvent(dataPackage02);
-					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent).get();
 				}
 				
 				co_return;
 			}
 			if (SongAPI::stop(guild.id)) {
 				voiceConnection->stop();
+				discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
+				discordGuild.data.playlist.currentSong = Song();
+				discordGuild.writeDataToDB();
 				EmbedData msgEmbed;
 				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				msgEmbed.setColor(discordGuild.data.borderColor);
-				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + to_string(SongAPI::getQueue(guild.id)->size()) + "\n------");
+				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Stopping Playback:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(newEvent);
 					dataPackage.addMessageEmbed(msgEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
+					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 				}
 				else {
 					CreateFollowUpMessageData dataPackage(newEvent);
@@ -139,7 +168,7 @@ namespace DiscordCoreAPI {
 					CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
 					dataPackage02.addMessageEmbed(msgEmbed);
 					InputEvents::respondToEvent(dataPackage02);
-					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent).get();
 				}
 			}
 			else {
@@ -153,8 +182,9 @@ namespace DiscordCoreAPI {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 					ReplyMessageData dataPackage(newEvent);
 					dataPackage.addMessageEmbed(msgEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
+					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 				}
 				else {
 					CreateFollowUpMessageData dataPackage(newEvent);
@@ -163,7 +193,7 @@ namespace DiscordCoreAPI {
 					CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
 					dataPackage02.addMessageEmbed(msgEmbed);
 					InputEvents::respondToEvent(dataPackage02);
-					InputEvents::deleteInputEventResponseAsync(newEvent);
+					InputEvents::deleteInputEventResponseAsync(newEvent).get();
 				}
 			}
 

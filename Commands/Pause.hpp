@@ -58,9 +58,32 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			shared_ptr<VoiceConnection>* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
+			shared_ptr<VoiceConnection>* voiceConnectionRaw = guild.connectToVoice(guildMember.voiceData.channelId);
 
-			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != (*voiceConnection)->getChannelId()) {
+			if (voiceConnectionRaw == nullptr) {
+				EmbedData newEmbed;
+				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+				newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
+				newEmbed.setTimeStamp(getTimeAndDate());
+				newEmbed.setTitle("__**Connection Issue:**__");
+				newEmbed.setColor(discordGuild.data.borderColor);
+				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+					ReplyMessageData dataPackage(args->eventData);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+				}
+				else {
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent = InputEvents::respondToEvent(dataPackage);
+				}
+				co_return;
+			}
+
+			auto voiceConnection = *voiceConnectionRaw;
+
+			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
 				EmbedData newEmbed;
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 				newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
@@ -81,7 +104,7 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			if (!(*voiceConnection)->areWeConnected() || !(*voiceConnection)->areWeCurrentlyPlaying()) {
+			if (!voiceConnection->areWeConnected() || !voiceConnection->areWeCurrentlyPlaying()) {
 				string msgString = "------\n**There's no music playing to be paused!**\n------";
 				EmbedData msgEmbed;
 				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -102,12 +125,12 @@ namespace DiscordCoreAPI {
 				}
 				co_return;
 			}
-			(*voiceConnection)->pauseToggle();
+			voiceConnection->pauseToggle();
 
 			EmbedData msgEmbed;
 			msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 			msgEmbed.setColor(discordGuild.data.borderColor);
-			msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + to_string(SongAPI::getQueue(guild.id)->size()) + "\n------");
+			msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "\n------");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setTitle("__**Paused Playback:**__");
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {

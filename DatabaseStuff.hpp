@@ -22,12 +22,14 @@ namespace DiscordCoreAPI {
         string userId{ "" };
     };
 
-    struct DBPlaylist {
-        bool isLoopSongEnabled{ false };
-        bool isLoopAllEnabled{ false };
-        vector<Song> songList{};
-        Song currentSong{};
-    };
+    DBPlaylist::operator Playlist() {
+        Playlist newData;
+        newData.isLoopAllEnabled = this->isLoopAllEnabled;
+        newData.isLoopSongEnabled = this->isLoopSongEnabled;
+        newData.currentSong = this->currentSong;
+        newData.songQueue = this->songList;
+        return newData;
+    }
 
     struct DiscordGuildData {
         vector<string> musicChannelIds{};
@@ -367,9 +369,9 @@ namespace DiscordCoreAPI {
     class DiscordGuild {
     public:
 
-        friend class SoundCloudAPICore;
-        friend class YouTubeAPICore;
+        friend class SoundCloudAPI;        
         friend class SongAPICore;
+        friend class YouTubeAPI;
         friend class YouTubeAPI;
         friend class SongAPI;
 

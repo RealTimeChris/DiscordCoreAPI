@@ -66,6 +66,12 @@ namespace DiscordCoreAPI {
                 co_return;
             }
 
+            auto guilds = Guilds::getAllGuildsAsync().get();
+            int userCount{ 0 };
+            for (auto value : guilds) {
+                userCount += value.memberCount;
+            }
+
             EmbedData messageEmbed;
             messageEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
             messageEmbed.setImage(args->eventData.discordCoreClient->currentUser.avatar);
@@ -76,6 +82,7 @@ namespace DiscordCoreAPI {
             messageEmbed.addField("__Bot ID:__", args->eventData.discordCoreClient->currentUser.id, true);
             messageEmbed.addField("__Guild Count:__", to_string(args->eventData.discordCoreClient->discordUser->data.guildCount), true);
             messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser.createdAt, true);
+            messageEmbed.addField("__Serving Users:__", to_string(userCount), true);
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 ReplyMessageData dataPackage(args->eventData);
                 dataPackage.addMessageEmbed(messageEmbed);

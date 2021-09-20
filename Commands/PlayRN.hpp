@@ -1,32 +1,33 @@
-// Play.hpp - Header for the "play" command.
-// Jun 30, 2021
+// PlayRN.hpp - Header for the "play right now" command.
+// Sep 9, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _PLAY_
-#define _PLAY_
+#ifndef _PLAY_RN_
+#define _PLAY_RN_
 
 #include "../DiscordCoreClient02.hpp"
 
 namespace DiscordCoreAPI {
 
-	class Play : public BaseFunction {
+	class PlayRN : public BaseFunction {
 	public:
-		Play() {
-			this->commandName = "play";
-			this->helpDescription = "Add a song to the queue and play it if nothing is playing.";
+
+		PlayRN() {
+			this->commandName = "playrn";
+			this->helpDescription = "Add a song to the front of the queue and play it if nothing is playing.";
 			EmbedData msgEmbed;
-			msgEmbed.setDescription("------\nSimply enter !play = SONGNAME OR URL, or /play SONGNAME OR URL.\n------");
-			msgEmbed.setTitle("__**Play Usage:**__");
+			msgEmbed.setDescription("------\nSimply enter !playrn = SONGNAME OR URL, or /playrn SONGNAME OR URL.\n------");
+			msgEmbed.setTitle("__**PlayRN Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
 			this->helpEmbed = msgEmbed;
 		}
 
-		Play* create() {
-			return new Play;
+		PlayRN* create() {
+			return new PlayRN;
 		}
 
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
@@ -56,21 +57,12 @@ namespace DiscordCoreAPI {
 			if (!doWeHaveControl) {
 				co_return;
 			}
-			
-			InputEventData newEvent = args->eventData;
-			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-				CreateDeferredInteractionResponseData dataPackage(newEvent);
-				newEvent = InputEvents::respondToEvent(dataPackage);
-			}
 
 			shared_ptr<VoiceConnection>* voiceConnectionRaw = guild.connectToVoice(guildMember.voiceData.channelId);
+
 			SongAPI::setPlaylist(discordGuild.data.playlist, discordGuild.data.guildId);
 
-			vector<Song> searchResults;
-			if (args->argumentsArray.size() > 0) {
-				searchResults = SongAPI::searchForSong(args->argumentsArray[0], guild.id);
-			}
-
+			InputEventData newEvent = args->eventData;
 			if (voiceConnectionRaw == nullptr) {
 				EmbedData newEmbed;
 				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -78,21 +70,28 @@ namespace DiscordCoreAPI {
 				newEmbed.setTimeStamp(getTimeAndDate());
 				newEmbed.setTitle("__**Connection Issue:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
+				RespondToInputEventData dataPackage(newEvent);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
-					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 				}
 				else {
-					EditInteractionResponseData dataPackage(args->eventData);
-					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
 				}
+				dataPackage.addMessageEmbed(newEmbed);
+				newEvent = InputEvents::respondToEvent(dataPackage);
+				InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				co_return;
 			}
 
 			auto voiceConnection = *voiceConnectionRaw;
+			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+				CreateDeferredInteractionResponseData dataPackage(newEvent);
+				newEvent = InputEvents::respondToEvent(dataPackage);
+			}
+			vector<Song> searchResults;
+			if (args->argumentsArray.size() > 0) {
+				searchResults = SongAPI::searchForSong(args->argumentsArray[0], guild.id);
+			}
 
 			vector<EmbedData> embedsFromSearch;
 			unsigned int x = 0;
@@ -117,51 +116,47 @@ namespace DiscordCoreAPI {
 				newEmbed.setColor(discordGuild.data.borderColor);
 				embedsFromSearch.push_back(newEmbed);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					EditInteractionResponseData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				co_return;
 			}
-			unsigned int currentPageIndex = 0;
-			RecurseThroughMessagePagesData returnData;
+
 			if (embedsFromSearch.size() > 0) {
-				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
-					dataPackage.addMessageEmbed(embedsFromSearch[0]);
-					newEvent = InputEvents::respondToEvent(dataPackage);
+				Song song{};
+				if (searchResults[0].type == SongType::SoundCloud) {
+					song = SongAPI::addSoundCloudSongToQueue(guildMember, guild.id, (SoundCloudSong)searchResults[0]);
+					discordGuild.data.playlist.songList.push_back(song);
+					discordGuild.writeDataToDB();
 				}
 				else {
-					EditInteractionResponseData dataPackage(newEvent);
-					dataPackage.addMessageEmbed(embedsFromSearch[0]);
-					newEvent = InputEvents::respondToEvent(dataPackage);
+					song = SongAPI::addYouTubeSongToQueue(guildMember, guild.id, (YouTubeSong)searchResults[0]);
+					discordGuild.data.playlist.songList.push_back(song);
+					discordGuild.writeDataToDB();
 				}
+				SongAPI::stop(guild.id);
+				auto playlist = SongAPI::getPlaylist(guild.id);
 
-				returnData = recurseThroughMessagePages(args->eventData.getAuthorId(), newEvent, currentPageIndex, embedsFromSearch, false, 120000, true);
-				discordGuild.getDataFromDB();
-				if (returnData.buttonId == "exit") {
-					co_return;
+				vector<Song> songVector{};
+				playlist.songQueue.erase(playlist.songQueue.end() - 1);
+				songVector.push_back(song);
+				for (auto value : playlist.songQueue) {
+					songVector.push_back(value);
 				}
-				if (returnData.currentPageIndex != -1) {
-
-					if (searchResults[returnData.currentPageIndex].type == SongType::SoundCloud) {
-						auto song = SongAPI::addSoundCloudSongToQueue(guildMember, guild.id, searchResults[returnData.currentPageIndex]);
-						discordGuild.data.playlist.songList.push_back(song);
-						discordGuild.writeDataToDB();
-					}
-					else {
-						auto song = SongAPI::addYouTubeSongToQueue(guildMember, guild.id, searchResults[returnData.currentPageIndex]);
-						discordGuild.data.playlist.songList.push_back(song);
-						discordGuild.writeDataToDB();
-					}
-				}
+				playlist.songQueue = songVector;
+				SongAPI::setPlaylist(playlist, guild.id);
+				discordGuild.data.playlist.songList = songVector;
+				discordGuild.writeDataToDB();
 			}
 
 			if (!voiceConnection->areWeCurrentlyPlaying()) {
@@ -222,84 +217,65 @@ namespace DiscordCoreAPI {
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 					}
 					});
-
-				if (!voiceConnection->areWeCurrentlyPlaying()) {
-					if (SongAPI::isThereAnySongs(guild.id)) {
-						SongAPI::sendNextSong(guild.id, guildMember);
-						discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
-						discordGuild.writeDataToDB();
-						EmbedData newEmbed;
-						newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-						newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
-							SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
-						newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
-						newEmbed.setTimeStamp(getTimeAndDate());
-						newEmbed.setTitle("__**Now Playing:**__");
-						newEmbed.setColor(discordGuild.data.borderColor);
-						if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
-						}
-						else if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
-						}
-						else if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
-						}
-						else if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
-						}
-						if (newEvent.eventType == InputEventType::REGULAR_MESSAGE) {
-							ReplyMessageData dataPackage(newEvent);
-							dataPackage.addMessageEmbed(newEmbed);
-							newEvent = InputEvents::respondToEvent(dataPackage);
-						}
-						else {
-							CreateFollowUpMessageData dataPackage(newEvent);
-							dataPackage.addMessageEmbed(newEmbed);
-							newEvent = InputEvents::respondToEvent(dataPackage);
-						}
-						voiceConnection->play();
-					}
-					else {
-						EmbedData newEmbed;
-						newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-						newEmbed.setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
-						newEmbed.setTimeStamp(getTimeAndDate());
-						newEmbed.setTitle("__**Playing Issue:**__");
-						newEmbed.setColor(discordGuild.data.borderColor);
-						embedsFromSearch.push_back(newEmbed);
-						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-							ReplyMessageData dataPackage(newEvent);
-							dataPackage.addMessageEmbed(newEmbed);
-							newEvent = InputEvents::respondToEvent(dataPackage);
-							InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
-						}
-						else {
-							CreateEphemeralFollowUpMessageData dataPackage(newEvent);
-							dataPackage.addMessageEmbed(newEmbed);
-							newEvent = InputEvents::respondToEvent(dataPackage);
-						}
-					}
+			}
+			if (SongAPI::isThereAnySongs(guild.id) && (args->argumentsArray.size() > 0 || !voiceConnection->areWeCurrentlyPlaying())) {
+				SongAPI::sendNextSong(guild.id, guildMember);
+				discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
+				discordGuild.writeDataToDB();
+				EmbedData newEmbed;
+				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+				newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
+					SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
+				newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
+				newEmbed.setTimeStamp(getTimeAndDate());
+				newEmbed.setTitle("__**Now Playing:**__");
+				newEmbed.setColor(discordGuild.data.borderColor);
+				if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
+					newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
 				}
-				else if (!SongAPI::isThereAnySongs(guild.id)) {
-					EmbedData newEmbed;
-					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-					newEmbed.setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
-					newEmbed.setTimeStamp(getTimeAndDate());
-					newEmbed.setTitle("__**Playing Issue:**__");
-					newEmbed.setColor(discordGuild.data.borderColor);
-					embedsFromSearch.push_back(newEmbed);
-					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(newEvent);
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
-					}
-					else {
-						CreateEphemeralFollowUpMessageData dataPackage(newEvent);
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
+				else if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
+					newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
+				}
+				else if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
+					newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
+				}
+				else if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
+					newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
+				}
+				if (newEvent.eventType == InputEventType::REGULAR_MESSAGE) {
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
+				}
+				else {
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
+				}
+				voiceConnection->play();
+			}
+			else if (!SongAPI::isThereAnySongs(guild.id)) {
+				EmbedData newEmbed;
+				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+				newEmbed.setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
+				newEmbed.setTimeStamp(getTimeAndDate());
+				newEmbed.setTitle("__**Playing Issue:**__");
+				newEmbed.setColor(discordGuild.data.borderColor);
+				embedsFromSearch.push_back(newEmbed);
+				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+				}
+				else {
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 			}
 			else if (args->argumentsArray.size() == 0) {
@@ -311,48 +287,24 @@ namespace DiscordCoreAPI {
 				newEmbed.setColor(discordGuild.data.borderColor);
 				embedsFromSearch.push_back(newEmbed);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateEphemeralFollowUpMessageData dataPackage(newEvent);
-					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
-				}
-			}
-			else if (returnData.currentPageIndex != -1) {
-				discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
-				discordGuild.writeDataToDB();
-				EmbedData newEmbed;
-				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-				newEmbed.setDescription("------\n__**Song Title:**__ [" + searchResults[returnData.currentPageIndex].songTitle + "](" + searchResults[returnData.currentPageIndex].viewURL + ")\n__**Duration:**__ " + searchResults[returnData.currentPageIndex].duration + "\n__**Description:**__ " +
-					searchResults[returnData.currentPageIndex].description + "\n------");
-				newEmbed.setTimeStamp(getTimeAndDate());
-				newEmbed.setTitle("__**Song Added To Queue Position: " + to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "**__ ");
-				newEmbed.setColor(discordGuild.data.borderColor);
-				newEmbed.setThumbnail(searchResults[returnData.currentPageIndex].thumbnailURL);
-				embedsFromSearch.push_back(newEmbed);
-				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
-					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = InputEvents::respondToEvent(dataPackage);
-				}
-				else {
-					CreateFollowUpMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 			}
 			co_return;
-
-
-			
 		};
 
 	};
-		
-	
-};
+
+}
+
 #endif

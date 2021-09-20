@@ -57,11 +57,34 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
-			auto voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
+			shared_ptr<VoiceConnection>* voiceConnectionRaw = guild.connectToVoice(guildMember.voiceData.channelId);
 
-			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != (*voiceConnection)->getChannelId()) {
-				if ((*voiceConnection)->getChannelId() == "" && guildMember.voiceData.channelId != "") {
-					voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
+			if (voiceConnectionRaw == nullptr) {
+				EmbedData newEmbed;
+				newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+				newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
+				newEmbed.setTimeStamp(getTimeAndDate());
+				newEmbed.setTitle("__**Connection Issue:**__");
+				newEmbed.setColor(discordGuild.data.borderColor);
+				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+					ReplyMessageData dataPackage(args->eventData);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent = InputEvents::respondToEvent(dataPackage);
+					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+				}
+				else {
+					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent = InputEvents::respondToEvent(dataPackage);
+				}
+				co_return;
+			}
+
+			auto voiceConnection = *voiceConnectionRaw;
+
+			if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
+				if (voiceConnection->getChannelId() == "" && guildMember.voiceData.channelId != "") {
+					voiceConnection = *guild.connectToVoice(guildMember.voiceData.channelId);
 				}
 				else {
 					EmbedData newEmbed;
@@ -112,7 +135,8 @@ namespace DiscordCoreAPI {
 				dataPackage.addMessageEmbed(msgEmbed);
 				auto newEvent = InputEvents::respondToEvent(dataPackage);
 			}
-			co_return;
+			discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
+			discordGuild.writeDataToDB();
 
 			co_return;
 		}
