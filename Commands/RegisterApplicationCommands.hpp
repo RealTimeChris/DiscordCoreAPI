@@ -34,7 +34,8 @@ namespace DiscordCoreAPI {
 
 			InputEventData newEvent = args->eventData;
 
-			CreateDeferredInteractionResponseData dataPackage(args->eventData);
+			RespondToInputEventData dataPackage(args->eventData);
+			dataPackage.type = DesiredInputEventResponseType::DeferredResponse;
 			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				newEvent = InputEvents::respondToEvent(dataPackage);
 			}
@@ -285,12 +286,14 @@ namespace DiscordCoreAPI {
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setTitle("__**Register Application Commands Complete:**__");
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				ReplyMessageData responseData(newEvent);
+				RespondToInputEventData responseData(args->eventData);
+				responseData.type = DesiredInputEventResponseType::RegularMessage;
 				responseData.addMessageEmbed(msgEmbed);
 				InputEventData  event01 = InputEvents::respondToEvent(responseData);
 			}
 			else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-				EditInteractionResponseData responseData(newEvent);
+				RespondToInputEventData responseData(args->eventData);
+				responseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
 				responseData.addMessageEmbed(msgEmbed);
 				auto event = InputEvents::respondToEvent(responseData);
 			}

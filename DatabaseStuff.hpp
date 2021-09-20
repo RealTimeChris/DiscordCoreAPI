@@ -22,15 +22,6 @@ namespace DiscordCoreAPI {
         string userId{ "" };
     };
 
-    DBPlaylist::operator Playlist() {
-        Playlist newData;
-        newData.isLoopAllEnabled = this->isLoopAllEnabled;
-        newData.isLoopSongEnabled = this->isLoopSongEnabled;
-        newData.currentSong = this->currentSong;
-        newData.songQueue = this->songList;
-        return newData;
-    }
-
     struct DiscordGuildData {
         vector<string> musicChannelIds{};
         string  borderColor{ "FEFEFE" };
@@ -74,8 +65,8 @@ namespace DiscordCoreAPI {
 
         friend class DiscordGuildMember;
         friend class DiscordCoreClient;
-        friend class DiscordUser;
         friend class DiscordGuild;
+        friend class DiscordUser;
 
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static mongocxx::collection collection;

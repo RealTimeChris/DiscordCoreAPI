@@ -64,15 +64,16 @@ namespace DiscordCoreAPI {
                 msgEmbed.setDescription(msgString);
                 msgEmbed.setTitle("__**Permissions Issue:**__");
                 if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData replyMessageData(eventData);
+                    RespondToInputEventData replyMessageData(eventData);
                     replyMessageData.addMessageEmbed(msgEmbed);
+                    replyMessageData.type = DesiredInputEventResponseType::RegularMessage;
                     InputEventData event01 = InputEvents::respondToEvent(replyMessageData);
                     InputEvents::deleteInputEventResponseAsync(event01, 20000);
                 }
                 else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                    CreateEphemeralInteractionResponseData responseData(eventData);
-                    responseData.addMessageEmbed(msgEmbed);
-                    InputEventData event01 = InputEvents::respondToEvent(responseData);
+                    RespondToInputEventData replyMessageData(eventData);
+                    replyMessageData.addMessageEmbed(msgEmbed); replyMessageData.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+                    InputEvents::respondToEvent(replyMessageData);
                 }
             }
         }
@@ -103,16 +104,17 @@ namespace DiscordCoreAPI {
                 msgEmbed.setTimeStamp(getTimeAndDate());
                 msgEmbed.setTitle("Permissions Issue");
                 if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData dataPackage(eventData);
+                    RespondToInputEventData dataPackage(eventData);
                     dataPackage.addMessageEmbed(msgEmbed);
+                    dataPackage.type = DesiredInputEventResponseType::RegularMessage;
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
                     InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
                 }
                 else {
-                    CreateEphemeralInteractionResponseData dataPackage(eventData);
+                    RespondToInputEventData dataPackage(eventData);
                     dataPackage.addMessageEmbed(msgEmbed);
+                    dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
-                    InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
                 }
             }
             return doWeHaveControl;
@@ -608,16 +610,17 @@ namespace DiscordCoreAPI {
             msgEmbed.setTimeStamp(getTimeAndDate());
             msgEmbed.setTitle("__**Permissions Issue:**__");
             if (eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                ReplyMessageData responseData(eventData);
-                responseData.addMessageEmbed(msgEmbed);
-                InputEventData event01 = InputEvents::respondToEvent(responseData);
-                InputEvents::deleteInputEventResponseAsync(event01, 20000);
+                RespondToInputEventData dataPackage(eventData);
+                dataPackage.addMessageEmbed(msgEmbed);
+                dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+                auto newEvent = InputEvents::respondToEvent(dataPackage);
+                InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
             }
             else if (eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                CreateInteractionResponseData responseData(eventData);
-                responseData.addMessageEmbed(msgEmbed);
-                InputEventData event = InputEvents::respondToEvent(responseData);
-                InputEvents::deleteInputEventResponseAsync(event, 20000);
+                RespondToInputEventData dataPackage(eventData);
+                dataPackage.addMessageEmbed(msgEmbed);
+                dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+                InputEvents::respondToEvent(dataPackage);
             }
         }
         return false;
@@ -636,7 +639,8 @@ namespace DiscordCoreAPI {
             InputEventData event01 = originalEvent;
             bool doWeQuit = false;
             if (originalEvent.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || originalEvent.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                EditMessageData responseDataRegularMessage(event01);
+                RespondToInputEventData responseDataRegularMessage(event01);
+                responseDataRegularMessage.type = DesiredInputEventResponseType::RegularMessageEdit;
                 responseDataRegularMessage.addMessageEmbed(messageEmbeds[currentPageIndex]);
                 if (returnFinalEmbed) {
                     responseDataRegularMessage.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
@@ -649,7 +653,8 @@ namespace DiscordCoreAPI {
             }
             else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                 || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                EditInteractionResponseData editResponseData(event01);
+                RespondToInputEventData editResponseData(event01);
+                editResponseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
                 editResponseData.addMessageEmbed(messageEmbeds[currentPageIndex]);
                 if (returnFinalEmbed) {
                     editResponseData.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
@@ -660,7 +665,8 @@ namespace DiscordCoreAPI {
                 event01 = InputEvents::respondToEvent(editResponseData);
             }
             else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                EditFollowUpMessageData dataPackage(event01);
+                RespondToInputEventData dataPackage(event01);
+                dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                 dataPackage.addMessageEmbed(messageEmbeds[currentPageIndex]);
                 if (returnFinalEmbed) {
                     dataPackage.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
@@ -681,7 +687,8 @@ namespace DiscordCoreAPI {
                     }
                     else {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                            EditMessageData dataPackage(event01);
+                            RespondToInputEventData dataPackage(event01);
+                            dataPackage.type = DesiredInputEventResponseType::RegularMessageEdit;
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
@@ -689,14 +696,16 @@ namespace DiscordCoreAPI {
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                            EditInteractionResponseData dataPackage(event01);
+                            RespondToInputEventData dataPackage(event01);
+                            dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
                             InputEvents::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                            EditFollowUpMessageData dataPackage(event01);
+                            RespondToInputEventData dataPackage(event01);
+                            dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
@@ -712,7 +721,8 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex = 0;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        EditMessageData editMessageData(event01);
+                        RespondToInputEventData editMessageData(event01);
+                        editMessageData.type = DesiredInputEventResponseType::RegularMessageEdit;
                         for (auto value : event01.getComponents()) {
                             editMessageData.addComponentRow(value);
                         }
@@ -721,7 +731,8 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        EditInteractionResponseData responseData(event01);
+                        RespondToInputEventData responseData(event01);
+                        responseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
                         for (auto value : event01.getComponents()) {
                             responseData.addComponentRow(value);
                         }
@@ -729,7 +740,8 @@ namespace DiscordCoreAPI {
                         event01 = InputEvents::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        EditFollowUpMessageData dataPackage(event01);
+                        RespondToInputEventData dataPackage(event01);
+                        dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                         for (auto value : event01.getComponents()) {
                             dataPackage.addComponentRow(value);
                         }
@@ -741,7 +753,8 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex += 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        EditMessageData editMessageData(event01);
+                        RespondToInputEventData editMessageData(event01);
+                        editMessageData.type = DesiredInputEventResponseType::RegularMessageEdit;
                         for (auto value : event01.getComponents()) {
                             editMessageData.addComponentRow(value);
                         }
@@ -750,7 +763,8 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        EditInteractionResponseData responseData(event01);
+                        RespondToInputEventData responseData(event01);
+                        responseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
                         for (auto value : event01.getComponents()) {
                             responseData.addComponentRow(value);
                         }
@@ -758,7 +772,8 @@ namespace DiscordCoreAPI {
                         event01 = InputEvents::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        EditFollowUpMessageData dataPackage(event01);
+                        RespondToInputEventData dataPackage(event01);
+                        dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                         for (auto value : event01.getComponents()) {
                             dataPackage.addComponentRow(value);
                         }
@@ -770,7 +785,8 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex -= 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        EditMessageData editMessageData(event01);
+                        RespondToInputEventData editMessageData(event01);
+                        editMessageData.type = DesiredInputEventResponseType::RegularMessageEdit;
                         for (auto value : event01.getComponents()) {
                             editMessageData.addComponentRow(value);
                         }
@@ -779,7 +795,8 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        EditInteractionResponseData responseData(event01);
+                        RespondToInputEventData responseData(event01);
+                        responseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
                         for (auto value : event01.getComponents()) {
                             responseData.addComponentRow(value);
                         }
@@ -787,7 +804,8 @@ namespace DiscordCoreAPI {
                         event01 = InputEvents::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        EditFollowUpMessageData dataPackage(event01);
+                        RespondToInputEventData dataPackage(event01);
+                        dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                         for (auto value : event01.getComponents()) {
                             dataPackage.addComponentRow(value);
                         }
@@ -799,7 +817,8 @@ namespace DiscordCoreAPI {
                     newCurrentPageIndex = (unsigned int)messageEmbeds.size() - 1;
                     EmbedData messageEmbed = messageEmbeds[newCurrentPageIndex];
                     if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                        EditMessageData editMessageData(event01);
+                        RespondToInputEventData editMessageData(event01);
+                        editMessageData.type = DesiredInputEventResponseType::RegularMessageEdit;
                         for (auto value : event01.getComponents()) {
                             editMessageData.addComponentRow(value);
                         }
@@ -808,7 +827,8 @@ namespace DiscordCoreAPI {
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                         || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                        EditInteractionResponseData responseData(event01);
+                        RespondToInputEventData responseData(event01);
+                        responseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
                         for (auto value : event01.getComponents()) {
                             responseData.addComponentRow(value);
                         }
@@ -816,7 +836,8 @@ namespace DiscordCoreAPI {
                         event01 = InputEvents::respondToEvent(responseData);
                     }
                     else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                        EditFollowUpMessageData dataPackage(event01);
+                        RespondToInputEventData dataPackage(event01);
+                        dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                         for (auto value : event01.getComponents()) {
                             dataPackage.addComponentRow(value);
                         }
@@ -830,7 +851,8 @@ namespace DiscordCoreAPI {
                     }
                     else {
                         if (event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_RESPONSE || event01.inputEventResponseType == InputEventResponseType::REGULAR_MESSAGE_EDIT) {
-                            EditMessageData dataPackage(event01);
+                            RespondToInputEventData dataPackage(event01);
+                            dataPackage.type = DesiredInputEventResponseType::RegularMessageEdit;
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
@@ -838,14 +860,16 @@ namespace DiscordCoreAPI {
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
-                            EditInteractionResponseData dataPackage(event01);
+                            RespondToInputEventData dataPackage(event01);
+                            dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
                             event01 = InputEvents::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
-                            EditFollowUpMessageData dataPackage(event01);
+                            RespondToInputEventData dataPackage(event01);
+                            dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }

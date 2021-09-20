@@ -25,6 +25,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class InputEvents;
+		friend class SongAPI;
 		friend class Guild;
 
 		static DiscordCoreClientBase* thisPointer;

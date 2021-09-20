@@ -316,22 +316,6 @@ namespace DiscordCoreAPI {
 
 		YouTubeAPI() {};
 
-		YouTubeAPI(const YouTubeAPI& e) {
-			this->sendAudioDataBufferMap = e.sendAudioDataBufferMap;
-			this->sendAudioDataBuffer = e.sendAudioDataBuffer;
-			this->cancelTokenSource = e.cancelTokenSource;
-			this->voiceConnection = e.voiceConnection;
-			this->areWeStopping = e.areWeStopping;
-			this->baseSearchURL = e.baseSearchURL;
-			this->discordGuild = e.discordGuild;
-			this->currentTask = e.currentTask;
-			this->cancelToken = e.cancelToken;
-			this->appVersion = e.appVersion;
-			this->theSong = e.theSong;
-			this->guildId = e.guildId;
-			return;
-		}
-
 		YouTubeAPI(string guildIdNew) {
 			this->sendAudioDataBuffer = YouTubeAPI::sendAudioDataBufferMap->at(guildIdNew);
 			this->voiceConnection = YouTubeAPI::voiceConnectionMap->at(guildIdNew);
@@ -342,20 +326,18 @@ namespace DiscordCoreAPI {
 		static void initialize(map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMapNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMapNew, map<string, DiscordGuild*>* discordGuildMapNew, map<string, shared_ptr<VoiceConnection>>* voiceConnectionMapNew) {
 			YouTubeAPI::sendAudioDataBufferMap = sendAudioDataBufferMapNew;
 			YouTubeAPI::voiceConnectionMap = voiceConnectionMapNew;
-			YouTubeAPI::youtubeAPIMap = youtubeAPIMapNew;
 			YouTubeAPI::discordGuildMap = discordGuildMapNew;
-
+			YouTubeAPI::youtubeAPIMap = youtubeAPIMapNew;
 		};
 
 	protected:
 
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap;
-		static const string baseWatchURL;
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
 		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
-		
 		static map<string, DiscordGuild*>* discordGuildMap;
 		static string baseSearchURL;
+		static string baseWatchURL;
 		static string clientId;
 
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
@@ -401,10 +383,10 @@ namespace DiscordCoreAPI {
 				YouTubeSong searchResult(this->baseSearchURL);
 				if (value.contains("videoRenderer")) {
 					DiscordCoreInternal::DataParser::parseObject(value.at("videoRenderer"), &searchResult);
-					searchResults.push_back(searchResult);
 					searchResult.type = SongType::YouTube;
 					searchResult.firstDownloadURL = this->baseWatchURL + searchResult.songId + "&hl=en";
 					searchResult.viewURL = searchResult.firstDownloadURL;
+					searchResults.push_back(searchResult);
 				}
 			}
 			if (returnData.returnCode != 200) {
@@ -688,7 +670,16 @@ namespace DiscordCoreAPI {
 				};
 
 			};
-			return concurrency::task<void>(theFunction, this->cancelTokenSource.get_token());
+			return concurrency::task<void>(theFunction, this->cancelTokenSource.get_token()).then([](task<void> previousTask)->task<void> {
+				try {
+					previousTask.get();
+					co_return;
+				}
+				catch (...) {
+					rethrowException("YouTubeAPI::downloadAndStreamAudioWrapper() Error: ");
+					co_return;
+				}
+				});
 
 		};
 
@@ -788,12 +779,12 @@ namespace DiscordCoreAPI {
 		}
 		
 	};
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* YouTubeAPI::sendAudioDataBufferMap;
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* YouTubeAPI::sendAudioDataBufferMap{ nullptr };
 	string YouTubeAPI::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
-	const string YouTubeAPI::baseWatchURL{ "https://www.youtube.com/watch?v=" };
-	map<string, shared_ptr<VoiceConnection>>* YouTubeAPI::voiceConnectionMap;
-	map<string, shared_ptr<YouTubeAPI>>* YouTubeAPI::youtubeAPIMap;
-	map<string, DiscordGuild*>* YouTubeAPI::discordGuildMap;
-	string YouTubeAPI::clientId;
+	map<string, shared_ptr<VoiceConnection>>* YouTubeAPI::voiceConnectionMap{ nullptr };
+	map<string, shared_ptr<YouTubeAPI>>* YouTubeAPI::youtubeAPIMap{ nullptr };
+	string YouTubeAPI::baseWatchURL{ "https://www.youtube.com/watch?v=" };
+	map<string, DiscordGuild*>* YouTubeAPI::discordGuildMap{ nullptr };
+	string YouTubeAPI::clientId{ "" };
 };
 #endif

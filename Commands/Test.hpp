@@ -44,13 +44,15 @@ namespace DiscordCoreAPI {
 				newEmbed.setTitle("__**Connection Issue:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					EditInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponseEdit;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -79,12 +81,14 @@ namespace DiscordCoreAPI {
 			RecurseThroughMessagePagesData returnData;
 			if (embedsFromSearch.size() > 0) {
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(embedsFromSearch[0]);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 					dataPackage.addMessageEmbed(embedsFromSearch[0]);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -135,7 +139,8 @@ namespace DiscordCoreAPI {
 						if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 						}
-						CreateMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(newEvent);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 						voiceConnection->play();
@@ -160,7 +165,8 @@ namespace DiscordCoreAPI {
 						else if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 						}
-						CreateMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(newEvent);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 					}
@@ -192,12 +198,14 @@ namespace DiscordCoreAPI {
 							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 						}
 						if (newEvent.eventType == InputEventType::REGULAR_MESSAGE) {
-							ReplyMessageData dataPackage(newEvent);
+							RespondToInputEventData dataPackage(newEvent);
+							dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 							dataPackage.addMessageEmbed(newEmbed);
 							newEvent = InputEvents::respondToEvent(dataPackage);
 						}
 						else {
-							CreateFollowUpMessageData dataPackage(newEvent);
+							RespondToInputEventData dataPackage(newEvent);
+							dataPackage.type = DesiredInputEventResponseType::FollowUpMessage;
 							dataPackage.addMessageEmbed(newEmbed);
 							newEvent = InputEvents::respondToEvent(dataPackage);
 						}
@@ -212,13 +220,15 @@ namespace DiscordCoreAPI {
 						newEmbed.setColor(discordGuild.data.borderColor);
 						embedsFromSearch.push_back(newEmbed);
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-							ReplyMessageData dataPackage(newEvent);
+							RespondToInputEventData dataPackage(newEvent);
+							dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 							dataPackage.addMessageEmbed(newEmbed);
 							newEvent = InputEvents::respondToEvent(dataPackage);
 							InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 						}
 						else {
-							CreateEphemeralFollowUpMessageData dataPackage(newEvent);
+							RespondToInputEventData dataPackage(newEvent);
+							dataPackage.type = DesiredInputEventResponseType::EphemeralFollowUpMessage;
 							dataPackage.addMessageEmbed(newEmbed);
 							newEvent = InputEvents::respondToEvent(dataPackage);
 						}
@@ -233,13 +243,15 @@ namespace DiscordCoreAPI {
 					newEmbed.setColor(discordGuild.data.borderColor);
 					embedsFromSearch.push_back(newEmbed);
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(newEvent);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						newEvent = InputEvents::respondToEvent(dataPackage);
 						InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 					}
 					else {
-						CreateEphemeralFollowUpMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(newEvent);
+						dataPackage.type = DesiredInputEventResponseType::EphemeralFollowUpMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						newEvent = InputEvents::respondToEvent(dataPackage);
 					}
@@ -254,13 +266,15 @@ namespace DiscordCoreAPI {
 				newEmbed.setColor(discordGuild.data.borderColor);
 				embedsFromSearch.push_back(newEmbed);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateEphemeralFollowUpMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralFollowUpMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -278,12 +292,14 @@ namespace DiscordCoreAPI {
 				newEmbed.setThumbnail(searchResults[returnData.currentPageIndex].thumbnailURL);
 				embedsFromSearch.push_back(newEmbed);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				else {
-					CreateFollowUpMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(newEvent);
+					dataPackage.type = DesiredInputEventResponseType::FollowUpMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}

@@ -67,13 +67,15 @@ namespace DiscordCoreAPI {
 				newEmbed.setTitle("__**Connection Issue:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -89,13 +91,15 @@ namespace DiscordCoreAPI {
 				newEmbed.setTitle("__**Disconnected:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
@@ -110,16 +114,17 @@ namespace DiscordCoreAPI {
 				newEmbed.setTitle("__**Disconnected:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 			}
 

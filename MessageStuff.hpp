@@ -379,6 +379,12 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
 
+		SendDMData(RespondToInputEventData dataPackage) {
+			this->requesterId = dataPackage.requesterId;
+			this->channelId = dataPackage.channelId;
+			this->userId = dataPackage.targetUserId;
+		}
+
 		SendDMData(InputEventData dataPackage, string targetUserId) {
 			this->requesterId = dataPackage.getRequesterId();
 			this->channelId = dataPackage.getChannelId();
@@ -508,7 +514,6 @@ namespace DiscordCoreInternal {
 			DataParser::parseObject(returnData.data, &messageData);
 			messageData.requesterId = dataPackage.requesterId;
 			DiscordCoreAPI::Message messageNew(messageData);
-			cout << "MESSAGE ID: " << messageNew.id << endl;
 			return messageNew;
 		}
 

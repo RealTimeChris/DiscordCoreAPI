@@ -171,7 +171,6 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_SOCKET_PATH;
 			workload.relativePath = "/gateway/bot";
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "DiscordCoreClient::getGateWayUrl()");
-			cout << to_string(returnData.returnCode) << returnData.returnMessage << endl;
 			return returnData.data.dump();
 		}
 

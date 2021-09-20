@@ -67,13 +67,15 @@ namespace DiscordCoreAPI {
 				newEmbed.setTitle("__**Connection Issue:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -94,27 +96,27 @@ namespace DiscordCoreAPI {
 					newEmbed.setTitle("__**Looping Issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(args->eventData);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent = InputEvents::respondToEvent(dataPackage);
 						InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 					}
 					else {
-						CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent = InputEvents::respondToEvent(dataPackage);
 					}
 					co_return;
 				}
 			}
-
 			if (SongAPI::isLoopAllEnabled(guild.id)) {
 				SongAPI::setLoopAllStatus(false, guild.id);
 			}
 			else {
 				SongAPI::setLoopAllStatus(true, guild.id);
 			}
-			discordGuild.writeDataToDB();
 			EmbedData msgEmbed;
 			msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 			msgEmbed.setColor(discordGuild.data.borderColor);
@@ -127,17 +129,17 @@ namespace DiscordCoreAPI {
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setTitle("__**Looping-All Change:**__");
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				ReplyMessageData dataPackage(args->eventData);
+				RespondToInputEventData dataPackage(args->eventData);
+				dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 				dataPackage.addMessageEmbed(msgEmbed);
 				auto newEvent = InputEvents::respondToEvent(dataPackage);
 			}
 			else {
-				CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+				RespondToInputEventData dataPackage(args->eventData);
+				dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 				dataPackage.addMessageEmbed(msgEmbed);
 				auto newEvent = InputEvents::respondToEvent(dataPackage);
 			}
-			discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
-			discordGuild.writeDataToDB();
 
 			co_return;
 		}

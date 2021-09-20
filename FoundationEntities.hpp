@@ -3716,9 +3716,13 @@ namespace DiscordCoreAPI {
         string viewURL{ "" };
         string songId{ "" };
 
-        operator SoundCloudSong();
+        Song(const SoundCloudSong& e);
 
-        Song(YouTubeSong& e);
+        Song operator=(const SoundCloudSong& e);
+
+        Song(const YouTubeSong& e);
+
+        Song operator=(const YouTubeSong& e);
 
         Song(){}
 
@@ -3734,22 +3738,37 @@ namespace DiscordCoreAPI {
         friend class SongAPI;
         friend class Song;
 
-        operator Song() {
-            Song newData{};
-            newData.finalDownloadURLs = this->finalDownloadURLs;
-            newData.secondDownloadURL = this->secondDownloadURL;
-            newData.firstDownloadURL = this->firstDownloadURL;
-            newData.addedByUserName = this->addedByUserName;
-            newData.addedByUserId = this->addedByUserId;
-            newData.contentLength = this->contentLength;
-            newData.thumbnailURL = this->thumbnailURL;
-            newData.description = this->description;
-            newData.songTitle = this->songTitle;
-            newData.duration = this->duration;
-            newData.viewURL = this->viewURL;
-            newData.songId = this->songId;
-            newData.type = this->type;
-            return newData;
+        SoundCloudSong operator= (const Song& e) {
+            this->finalDownloadURLs = e.finalDownloadURLs;
+            this->secondDownloadURL = e.secondDownloadURL;
+            this->firstDownloadURL = e.firstDownloadURL;
+            this->addedByUserName = e.addedByUserName;
+            this->addedByUserId = e.addedByUserId;
+            this->contentLength = e.contentLength;
+            this->thumbnailURL = e.thumbnailURL;
+            this->description = e.description;
+            this->songTitle = e.songTitle;
+            this->duration = e.duration;
+            this->viewURL = e.viewURL;
+            this->songId = e.songId;
+            this->type = e.type;
+            return *this;
+        }
+
+        SoundCloudSong(const Song& e) {
+            this->finalDownloadURLs = e.finalDownloadURLs;
+            this->secondDownloadURL = e.secondDownloadURL;
+            this->firstDownloadURL = e.firstDownloadURL;
+            this->addedByUserName = e.addedByUserName;
+            this->addedByUserId = e.addedByUserId;
+            this->contentLength = e.contentLength;
+            this->thumbnailURL = e.thumbnailURL;
+            this->description = e.description;
+            this->songTitle = e.songTitle;
+            this->duration = e.duration;
+            this->viewURL = e.viewURL;
+            this->songId = e.songId;
+            this->type = e.type;
         }
 
         static void initialize(string baseSearchURLNew, string baseSearchURL2New);
@@ -3782,22 +3801,37 @@ namespace DiscordCoreAPI {
         SoundCloudSong findFinalDownloadURLs(SoundCloudSong newSong);
     };
 
-    Song::operator SoundCloudSong() {
-        SoundCloudSong newData{};
-        newData.finalDownloadURLs = this->finalDownloadURLs;
-        newData.secondDownloadURL = this->secondDownloadURL;
-        newData.firstDownloadURL = this->firstDownloadURL;
-        newData.addedByUserName = this->addedByUserName;
-        newData.addedByUserId = this->addedByUserId;
-        newData.contentLength = this->contentLength;
-        newData.thumbnailURL = this->thumbnailURL;
-        newData.description = this->description;
-        newData.songTitle = this->songTitle;
-        newData.duration = this->duration;
-        newData.viewURL = this->viewURL;
-        newData.songId = this->songId;
-        newData.type = this->type;
-        return newData;
+    Song::Song(const SoundCloudSong& e) {
+        this->finalDownloadURLs = e.finalDownloadURLs;
+        this->secondDownloadURL = e.secondDownloadURL;
+        this->firstDownloadURL = e.firstDownloadURL;
+        this->addedByUserName = e.addedByUserName;
+        this->addedByUserId = e.addedByUserId;
+        this->contentLength = e.contentLength;
+        this->thumbnailURL = e.thumbnailURL;
+        this->description = e.description;
+        this->songTitle = e.songTitle;
+        this->duration = e.duration;
+        this->viewURL = e.viewURL;
+        this->songId = e.songId;
+        this->type = e.type;
+    }
+
+    Song Song::operator=(const SoundCloudSong& e) {
+        this->finalDownloadURLs = e.finalDownloadURLs;
+        this->secondDownloadURL = e.secondDownloadURL;
+        this->firstDownloadURL = e.firstDownloadURL;
+        this->addedByUserName = e.addedByUserName;
+        this->addedByUserId = e.addedByUserId;
+        this->contentLength = e.contentLength;
+        this->thumbnailURL = e.thumbnailURL;
+        this->description = e.description;
+        this->songTitle = e.songTitle;
+        this->duration = e.duration;
+        this->viewURL = e.viewURL;
+        this->songId = e.songId;
+        this->type = e.type;
+        return *this;
     }
 
     class YouTubeSong : public Song {
@@ -3826,6 +3860,23 @@ namespace DiscordCoreAPI {
             this->type = e.type;
         }
 
+        YouTubeSong operator= (const Song& e) {
+            this->finalDownloadURLs = e.finalDownloadURLs;
+            this->secondDownloadURL = e.secondDownloadURL;
+            this->firstDownloadURL = e.firstDownloadURL;
+            this->addedByUserName = e.addedByUserName;
+            this->addedByUserId = e.addedByUserId;
+            this->contentLength = e.contentLength;
+            this->thumbnailURL = e.thumbnailURL;
+            this->description = e.description;
+            this->songTitle = e.songTitle;
+            this->duration = e.duration;
+            this->viewURL = e.viewURL;
+            this->songId = e.songId;
+            this->type = e.type;
+            return *this;
+        }
+
         YouTubeSong(string baseSearchURLNew);
 
         YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
@@ -3849,7 +3900,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    Song::Song(YouTubeSong & e) {
+    Song::Song(const YouTubeSong & e) {
         this->finalDownloadURLs = e.finalDownloadURLs;
         this->secondDownloadURL = e.secondDownloadURL;
         this->firstDownloadURL = e.firstDownloadURL;
@@ -3865,10 +3916,29 @@ namespace DiscordCoreAPI {
         this->type = e.type;
     }
 
+    Song Song::operator=(const YouTubeSong& e) {
+        this->finalDownloadURLs = e.finalDownloadURLs;
+        this->secondDownloadURL = e.secondDownloadURL;
+        this->firstDownloadURL = e.firstDownloadURL;
+        this->addedByUserName = e.addedByUserName;
+        this->addedByUserId = e.addedByUserId;
+        this->contentLength = e.contentLength;
+        this->thumbnailURL = e.thumbnailURL;
+        this->description = e.description;
+        this->songTitle = e.songTitle;
+        this->duration = e.duration;
+        this->viewURL = e.viewURL;
+        this->songId = e.songId;
+        this->type = e.type;
+        return *this;
+    }
+
     struct DBPlaylist;
 
     struct Playlist {
-        operator DBPlaylist();
+        Playlist() {};
+        Playlist(const DBPlaylist& e);
+        Playlist operator=(const DBPlaylist& e);
         bool isLoopSongEnabled{ false };
         bool isLoopAllEnabled{ false };
         vector<Song> songQueue{};
@@ -3876,20 +3946,43 @@ namespace DiscordCoreAPI {
     };
 
     struct DBPlaylist {
-        operator Playlist();
+        DBPlaylist() {};
+        DBPlaylist(const Playlist& e);
+        DBPlaylist operator=(const Playlist& e);
         bool isLoopSongEnabled{ false };
         bool isLoopAllEnabled{ false };
         vector<Song> songList{};
         Song currentSong{};
     };
 
-    Playlist::operator DBPlaylist() {
-        DBPlaylist newData{};
-        newData.currentSong = this->currentSong;
-        newData.isLoopAllEnabled = this->isLoopAllEnabled;
-        newData.isLoopSongEnabled = this->isLoopSongEnabled;
-        newData.songList = this->songQueue;
-        return newData;
+    DBPlaylist DBPlaylist::operator=(const Playlist& e) {
+        this->isLoopSongEnabled = e.isLoopSongEnabled;
+        this->isLoopAllEnabled = e.isLoopAllEnabled;
+        this->currentSong = e.currentSong;
+        this->songList = e.songQueue;
+        return *this;
+    }
+
+    Playlist::Playlist(const DBPlaylist& e) {
+        this->isLoopSongEnabled = e.isLoopSongEnabled;
+        this->isLoopAllEnabled = e.isLoopAllEnabled;
+        this->currentSong = e.currentSong;
+        this->songQueue = e.songList;
+    }
+
+    DBPlaylist::DBPlaylist(const Playlist& e) {
+        this->isLoopSongEnabled = e.isLoopSongEnabled;
+        this->isLoopAllEnabled = e.isLoopAllEnabled;
+        this->currentSong = e.currentSong;
+        this->songList = e.songQueue;
+    }
+
+    Playlist Playlist::operator=(const DBPlaylist& e) {
+        this->isLoopSongEnabled = e.isLoopSongEnabled;
+        this->isLoopAllEnabled = e.isLoopAllEnabled;
+        this->currentSong = e.currentSong;
+        this->songQueue = e.songList;
+        return *this;
     }
 
     static string commandPrefix;
@@ -3936,6 +4029,139 @@ namespace DiscordCoreAPI {
         string lastPinTimestamp{ "" };
         string channelId{ "" };
         string guildId{ "" };
+    };
+
+    enum class DesiredInputEventResponseType {
+        DeferredResponse = 0,
+        InteractionResponse = 1,
+        InteractionResponseEdit = 2,
+        EphemeralInteractionResponse = 3,
+        RegularMessage = 4,
+        RegularMessageEdit = 5,
+        FollowUpMessage = 6,
+        FollowUpMessageEdit = 7,
+        EphemeralFollowUpMessage = 8,
+        SendDM = 9
+    };
+
+    struct RespondToInputEventData {
+
+        friend struct CreateEphemeralInteractionResponseData;
+        friend struct CreateDeferredInteractionResponseData;
+        friend struct CreateEphemeralFollowUpMessageData;
+        friend struct CreateInteractionResponseData;
+        friend struct EditInteractionResponseData;
+        friend struct DeferComponentResponseData;
+        friend struct CreateFollowUpMessageData;
+        friend struct EditFollowUpMessageData;
+        friend struct SendDMData;
+        friend class InputEvents;
+
+        DesiredInputEventResponseType type{};
+
+        RespondToInputEventData(string channelIdNew) {
+            this->channelId = channelIdNew;
+            this->type = DesiredInputEventResponseType::RegularMessage;
+        }
+
+        RespondToInputEventData(InputEventData dataPackage) {
+            this->interactionToken = dataPackage.getInteractionToken();
+            this->applicationId = dataPackage.getApplicationId();
+            this->interactionId = dataPackage.getInteractionId();
+            this->requesterId = dataPackage.getRequesterId();
+            this->channelId = dataPackage.getChannelId();
+            this->messageId = dataPackage.getMessageId();
+        }
+
+        void addButton(bool disabled, string customId, string buttonLabel, string emojiName, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiId = "", string url = "") {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.type = ComponentType::Button;
+                    component.emoji.name = emojiName;
+                    component.label = buttonLabel;
+                    component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
+                    component.url = url;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+        }
+
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int maxValues, int minValues) {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    this->components.at(this->components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+
+            }
+        }
+
+        void addAllowedMentions(AllowedMentionsData dataPackage) {
+            this->allowedMentions = dataPackage;
+        }
+
+        void addComponentRow(ActionRowData dataPackage) {
+            this->components.push_back(dataPackage);
+        }
+
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->embeds.push_back(dataPackage);
+        }
+
+        void addContent(string dataPackage) {
+            this->content = dataPackage;
+        }
+
+        void setTTSStatus(bool enabledTTs) {
+            this->tts = enabledTTs;
+        }
+
+        void setTargetUserID(string targetUserIdNew) {
+            this->targetUserId = targetUserIdNew;
+        }
+
+    protected:
+
+        AllowedMentionsData allowedMentions{};
+        vector<ActionRowData> components{};
+        string interactionToken{ "" };
+        vector<EmbedData> embeds{};
+        string interactionId{ "" };
+        string applicationId{ "" };
+        string targetUserId{ "" };
+        string requesterId{ "" };
+        string channelId{ "" };
+        string messageId{ "" };
+        string content{ "" };
+        bool tts{ false };
+        int flags{ 0 };
     };
 
     const string YouTubeSong::baseWatchURL{ "https://www.youtube.com/watch?v=" };

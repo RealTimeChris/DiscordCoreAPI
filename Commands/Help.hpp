@@ -43,14 +43,16 @@ namespace DiscordCoreAPI {
 					"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back to the previous menu)\n------";
 				InputEventData newEvent = args->eventData;
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData responseData(newEvent);
-					responseData.addContent("1");
-					newEvent = InputEvents::respondToEvent(responseData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+					dataPackage.addContent("1");
+					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-					CreateEphemeralInteractionResponseData responseData(newEvent);
-					responseData.addContent("1");
-					newEvent = InputEvents::respondToEvent(responseData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+					dataPackage.addContent("1");
+					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				while (1) {
 					vector<vector<SelectOptionData>> selectOptions;
@@ -95,20 +97,22 @@ namespace DiscordCoreAPI {
 					vector<string> numberEmojiId;
 
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						EditMessageData responseData(newEvent);
-						responseData.addMessageEmbed(msgEmbed);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessageEdit;
+						dataPackage.addMessageEmbed(msgEmbed);
 						counter02 = 0;
 						for (auto value : selectOptionsNew) {
 							counter02 += 1;
 							string customId{ "select_page_" + to_string(counter02) };
-							responseData.addButton(false, customId, to_string(counter02), numberEmojiNames[counter02], ButtonStyle::Success);
+							dataPackage.addButton(false, customId, to_string(counter02), numberEmojiNames[counter02], ButtonStyle::Success);
 							numberEmojiId.push_back(customId);
 						}
-						responseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
-						newEvent = InputEvents::respondToEvent(responseData);
+						dataPackage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
+						newEvent = InputEvents::respondToEvent(dataPackage);
 					}
 					else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-						EditInteractionResponseData responseData(newEvent);
+						RespondToInputEventData responseData(args->eventData);
+						responseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
 						responseData.addMessageEmbed(msgEmbed);
 						counter02 = 0;
 						for (auto value : selectOptionsNew) {
@@ -123,8 +127,8 @@ namespace DiscordCoreAPI {
 					Button button(newEvent);
 					auto buttonData = button.collectButtonData(false, 120000, args->eventData.getAuthorId());
 					int counter03{ 0 };
-					vector<EditMessageData> editMessageData00;
-					vector<EditInteractionResponseData> editInteractionResponseData00;
+					vector<RespondToInputEventData> editMessageData00;
+					vector<RespondToInputEventData> editInteractionResponseData00;
 					for (auto value : selectOptionsNew) {
 						EmbedData msgEmbed00;
 						msgEmbed00.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -132,11 +136,13 @@ namespace DiscordCoreAPI {
 						msgEmbed00.setTimeStamp(getTimeAndDate());
 						msgEmbed00.setDescription(messageString);
 						msgEmbed00.setTitle("__**" + args->eventData.discordCoreClient->currentUser.userName + " Help: Page " + to_string(counter03 + 1) + " of " + to_string(selectOptions.size()) + "**__");
-						EditMessageData responseData(newEvent);
+						RespondToInputEventData responseData(args->eventData);
+						responseData.type = DesiredInputEventResponseType::RegularMessageEdit;
 						responseData.addMessageEmbed(msgEmbed00);
 						responseData.addSelectMenu(false, "help_menu", value, "Commands", 1, 1);
 						editMessageData00.push_back(responseData);
-						EditInteractionResponseData responseData02(newEvent);
+						RespondToInputEventData responseData02(args->eventData);
+						responseData02.type = DesiredInputEventResponseType::InteractionResponseEdit;
 						responseData02.addMessageEmbed(msgEmbed00);
 						responseData02.addSelectMenu(false, "help_menu", value, "Commands", 1, 1);
 						editInteractionResponseData00.push_back(responseData02);
@@ -172,20 +178,17 @@ namespace DiscordCoreAPI {
 							continue;
 						}
 						EmbedData newEmbed = CommandCenter::functions.at(selectMenuReturnData.at(0).values.at(0))->helpEmbed;
+						RespondToInputEventData responseData(args->eventData);
+						responseData.addMessageEmbed(newEmbed);
+						responseData.addButton(false, "back", "Back", "🔙", ButtonStyle::Success);
+						responseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Success);
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-							EditMessageData responseData(newEvent);
-							responseData.addMessageEmbed(newEmbed);
-							responseData.addButton(false, "back", "Back", "🔙", ButtonStyle::Success);
-							responseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Success);
-							newEvent = InputEvents::respondToEvent(responseData);
+							responseData.type = DesiredInputEventResponseType::RegularMessageEdit;
 						}
 						else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-							EditInteractionResponseData responseData(newEvent);
-							responseData.addMessageEmbed(newEmbed);
-							responseData.addButton(false, "back", "Back", "🔙", ButtonStyle::Success);
-							responseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Success);
-							newEvent = InputEvents::respondToEvent(responseData);
+							responseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
 						}
+						newEvent = InputEvents::respondToEvent(responseData);
 						Button button02(newEvent);
 						auto buttonReturnData = button02.collectButtonData(false, 120000, args->eventData.getAuthorId());
 						if (buttonReturnData.size() > 0) {

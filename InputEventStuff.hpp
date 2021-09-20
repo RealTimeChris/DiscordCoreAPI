@@ -86,22 +86,15 @@ namespace DiscordCoreAPI {
 				CreateEphemeralFollowUpMessageData dataPackage02{ dataPackage };
 				return respondToEvent(dataPackage02);
 			}
-			default:{
+			case DesiredInputEventResponseType::SendDM: {
+				SendDMData dataPackage02{ dataPackage };
+				return respondToEvent(dataPackage02);
+			}
+			default: {
 				return InputEventData();
 			}
 
 			}
-		}
-
-		static task<void> deleteInputEventResponseAsync(DeleteMessageData dataPackage, unsigned int timeDelayNew = 0) {
-			apartment_context mainThread;
-			co_await resume_background();
-			DeleteMessageData deleteData;
-			deleteData.messageData = dataPackage.messageData;
-			deleteData.timeDelay = dataPackage.timeDelay;
-			InputEvents::messages->deleteMessageAsync(deleteData).get();
-			co_await mainThread;
-			co_return;
 		}
 
 		static task<void> deleteInputEventResponseAsync(InputEventData dataPackage, unsigned int timeDelayNew = 0) {
@@ -128,7 +121,9 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 
-		InputEvents() {}
+	protected:
+
+		InputEvents() {};
 
 		static InputEventData respondToEvent(CreateDeferredInteractionResponseData dataPackage) {
 			InputEvents::interactions->createDeferredInteractionResponseAsync(dataPackage).get();
@@ -292,8 +287,6 @@ namespace DiscordCoreAPI {
 			dataPackageNew.data.type = dataPackage.type;
 			InputEvents::interactions->createInteractionResponseAsync(dataPackageNew).get();
 		}
-
-	protected:
 
 		static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
 		static shared_ptr<DiscordCoreInternal::MessageManager> messages;

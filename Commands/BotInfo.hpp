@@ -49,15 +49,17 @@ namespace DiscordCoreAPI {
                 msgEmbed.setTimeStamp(getTimeAndDate());
                 msgEmbed.setTitle("__**Invalid Or Missing Arguments:**__");
                 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData dataPackage(args->eventData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::RegularMessage;
                     dataPackage.addMessageEmbed(msgEmbed);
                     auto eventNew = InputEvents::respondToEvent(dataPackage);
                     InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
                 }
                 else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                    CreateEphemeralInteractionResponseData responseData(args->eventData);
-                    responseData.addMessageEmbed(msgEmbed);
-                    auto eventNew = InputEvents::respondToEvent(responseData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+                    dataPackage.addMessageEmbed(msgEmbed);
+                    auto eventNew = InputEvents::respondToEvent(dataPackage);
                     InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
                 }
                 co_return;
@@ -84,12 +86,14 @@ namespace DiscordCoreAPI {
             messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser.createdAt, true);
             messageEmbed.addField("__Serving Users:__", to_string(userCount), true);
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                ReplyMessageData dataPackage(args->eventData);
+                RespondToInputEventData dataPackage(args->eventData);
+                dataPackage.type = DesiredInputEventResponseType::RegularMessage;
                 dataPackage.addMessageEmbed(messageEmbed);
                 auto eventNew = InputEvents::respondToEvent(dataPackage);
             }
             else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-                CreateInteractionResponseData dataPackage(args->eventData);
+                RespondToInputEventData dataPackage(args->eventData);
+                dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
                 dataPackage.addMessageEmbed(messageEmbed);
                 auto eventNew = InputEvents::respondToEvent(dataPackage);
             }

@@ -52,13 +52,15 @@ namespace DiscordCoreAPI {
                 msgEmbed.setTimeStamp(getTimeAndDate());
                 msgEmbed.setTitle("__**Missing Or Invalid Arguments:**__");
                 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData dataPackage(args->eventData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::RegularMessage;
                     dataPackage.addMessageEmbed(msgEmbed);
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
                     InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
                 }
                 else {
-                    CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
                     dataPackage.addMessageEmbed(msgEmbed);
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
                 }
@@ -76,13 +78,15 @@ namespace DiscordCoreAPI {
                 msgEmbed.setTimeStamp(getTimeAndDate());
                 msgEmbed.setTitle("__**Missing Or Invalid Arguments:**__");
                 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData dataPackage(args->eventData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::RegularMessage;
                     dataPackage.addMessageEmbed(msgEmbed);
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
                     InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
                 }
                 else {
-                    CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
                     dataPackage.addMessageEmbed(msgEmbed);
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
                 }
@@ -101,12 +105,14 @@ namespace DiscordCoreAPI {
                 msgEmbed.setTimeStamp(getTimeAndDate());
                 msgEmbed.setTitle("__**Updated Border Color:**__");
                 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-                    ReplyMessageData dataPackage(args->eventData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::RegularMessage;
                     dataPackage.addMessageEmbed(msgEmbed);
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
                 }
                 else {
-                    CreateInteractionResponseData dataPackage(args->eventData);
+                    RespondToInputEventData dataPackage(args->eventData);
+                    dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
                     dataPackage.addMessageEmbed(msgEmbed);
                     auto newEvent = InputEvents::respondToEvent(dataPackage);
                 }

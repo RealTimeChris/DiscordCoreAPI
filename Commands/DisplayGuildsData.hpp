@@ -52,16 +52,17 @@ namespace DiscordCoreAPI {
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Invalid Or Missing Arguments:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(msgEmbed);
 					auto eventNew = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-					CreateEphemeralInteractionResponseData responseData(args->eventData);
-					responseData.addMessageEmbed(msgEmbed);
-					auto eventNew = InputEvents::respondToEvent(responseData);
-					InputEvents::deleteInputEventResponseAsync(eventNew, 20000);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+					dataPackage.addMessageEmbed(msgEmbed);
+					auto eventNew = InputEvents::respondToEvent(dataPackage);
 				}
 				co_return;
 			}
@@ -91,21 +92,25 @@ namespace DiscordCoreAPI {
 				messageEmbed.setDescription(msgString);
 
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(inputEvent);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(messageEmbed);
 					InputEvents::respondToEvent(dataPackage);
 				}
 				else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 					if (currentCount == 0) {
-						CreateInteractionResponseData dataPackage(inputEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 						dataPackage.addMessageEmbed(messageEmbed);
 						inputEvent = InputEvents::respondToEvent(dataPackage);
-						EditInteractionResponseData editData(inputEvent);
-						editData.addMessageEmbed(messageEmbed);
-						inputEvent = InputEvents::respondToEvent(editData);
+						RespondToInputEventData dataPackage02(args->eventData);
+						dataPackage02.type = DesiredInputEventResponseType::InteractionResponseEdit;
+						dataPackage02.addMessageEmbed(messageEmbed);
+						inputEvent = InputEvents::respondToEvent(dataPackage02);
 					}
 					else {
-						ReplyMessageData dataPackage(inputEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(messageEmbed);
 						InputEvents::respondToEvent(dataPackage);
 					}

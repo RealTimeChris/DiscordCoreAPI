@@ -65,12 +65,14 @@ namespace DiscordCoreAPI {
 				messageEmbed.setDescription(msgString);
 				messageEmbed.setTitle("__**Music Channels Enabled:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -85,13 +87,15 @@ namespace DiscordCoreAPI {
 				messageEmbed.setDescription(msgString);
 				messageEmbed.setTitle("__**Missing Or Invalid Arguments:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
 				}
 				else {
-					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
@@ -111,13 +115,15 @@ namespace DiscordCoreAPI {
 						messageEmbed.setDescription(msgString);
 						messageEmbed.setTitle("__**Already Listed:**__");
 						if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-							ReplyMessageData dataPackage(args->eventData);
+							RespondToInputEventData dataPackage(args->eventData);
+							dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 							dataPackage.addMessageEmbed(messageEmbed);
 							auto newEvent = InputEvents::respondToEvent(dataPackage);
 							InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
 						}
 						else {
-							CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+							RespondToInputEventData dataPackage(args->eventData);
+							dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 							dataPackage.addMessageEmbed(messageEmbed);
 							auto newEvent = InputEvents::respondToEvent(dataPackage);
 							InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
@@ -135,12 +141,14 @@ namespace DiscordCoreAPI {
 				messageEmbed.setDescription("------\n**You've succesfully added <#" + channelID + "> to your list of accepted music channels!**\n------");
 				messageEmbed.setTitle("__**Music Channel Added:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -170,13 +178,15 @@ namespace DiscordCoreAPI {
 					messageEmbed.setDescription(msgString2);
 					messageEmbed.setTitle("__**Missing from List:**__");
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(args->eventData);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(messageEmbed);
 						auto newEvent = InputEvents::respondToEvent(dataPackage);
 						InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
 					}
 					else {
-						CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 						dataPackage.addMessageEmbed(messageEmbed);
 						auto newEvent = InputEvents::respondToEvent(dataPackage);
 						InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
@@ -191,12 +201,14 @@ namespace DiscordCoreAPI {
 				messageEmbed.setDescription(msgString);
 				messageEmbed.setTitle("__**Music Channel Removed:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -230,12 +242,14 @@ namespace DiscordCoreAPI {
 				messageEmbed.setDescription(msgString);
 				messageEmbed.setTitle("__**Music Channels Removed:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 				else {
-					CreateInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = InputEvents::respondToEvent(dataPackage);
 				}

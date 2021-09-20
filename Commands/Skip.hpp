@@ -45,6 +45,8 @@ namespace DiscordCoreAPI {
 				co_return;
 			}
 
+			InputEvents::deleteInputEventResponseAsync(args->eventData);
+
 			GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
 			bool doWeHaveControl = checkIfWeHaveControl(args->eventData, discordGuild, guildMember);
@@ -54,10 +56,6 @@ namespace DiscordCoreAPI {
 			}
 
 			InputEventData newEvent = args->eventData;
-			if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-				CreateDeferredInteractionResponseData dataPackage(newEvent);
-				newEvent = InputEvents::respondToEvent(dataPackage);
-			}
 
 			shared_ptr<VoiceConnection>* voiceConnectionRaw = guild.connectToVoice(guildMember.voiceData.channelId);
 
@@ -69,13 +67,15 @@ namespace DiscordCoreAPI {
 				newEmbed.setTitle("__**Connection Issue:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateEphemeralInteractionResponseData dataPackage(args->eventData);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
@@ -92,19 +92,17 @@ namespace DiscordCoreAPI {
 				newEmbed.setTitle("__**Skipping Issue:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 					InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 				}
 				else {
-					CreateFollowUpMessageData dataPackage(newEvent);
-					dataPackage.addContent("Empty Content");
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
+					RespondToInputEventData dataPackage02(args->eventData);
+					dataPackage02.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage02.addMessageEmbed(newEmbed);
 					InputEvents::respondToEvent(dataPackage02);
-					InputEvents::deleteInputEventResponseAsync(newEvent).get();
 				}
 				
 				co_return;
@@ -119,20 +117,17 @@ namespace DiscordCoreAPI {
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Skipping Issue:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(msgEmbed);
 					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent);
 					InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 				}
 				else {
-					CreateFollowUpMessageData dataPackage(newEvent);
-					dataPackage.addContent("Empty Content");
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
+					RespondToInputEventData dataPackage02(args->eventData);
+					dataPackage02.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage02.addMessageEmbed(msgEmbed);
 					InputEvents::respondToEvent(dataPackage02);
-					InputEvents::deleteInputEventResponseAsync(newEvent).get();
 				}
 				
 				co_return;
@@ -147,28 +142,30 @@ namespace DiscordCoreAPI {
 				msgEmbed02.setDescription(msgString);
 				msgEmbed02.setTitle("__**Song Queue Issue:**__");
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-					ReplyMessageData dataPackage(newEvent);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 					dataPackage.addMessageEmbed(msgEmbed02);
 					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(newEvent);
 					InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 				}
 				else {
-					CreateFollowUpMessageData dataPackage(newEvent);
-					dataPackage.addContent("Empty Content");
-					newEvent = InputEvents::respondToEvent(dataPackage);
-					CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
+					RespondToInputEventData dataPackage02(args->eventData);
+					dataPackage02.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 					dataPackage02.addMessageEmbed(msgEmbed02);
 					InputEvents::respondToEvent(dataPackage02);
-					InputEvents::deleteInputEventResponseAsync(newEvent).get();
 				}
 				
 				co_return;
 			}
 			else {
+				if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::DeferredResponse;
+					newEvent = InputEvents::respondToEvent(dataPackage);
+				}
+
 				SongAPI::skip(guild.id, guildMember);
 				if (voiceConnection->areWeCurrentlyPlaying() &&SongAPI::isThereAnySongs(guild.id)) {
-					discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
 					discordGuild.writeDataToDB();
 					string msgString = "------\n**We're skipping to the next song!**\n------";
 					EmbedData msgEmbed02;
@@ -178,17 +175,20 @@ namespace DiscordCoreAPI {
 					msgEmbed02.setDescription(msgString);
 					msgEmbed02.setTitle("__**Song Skip:**__");
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(msgEmbed02);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 						InputEvents::deleteInputEventResponseAsync(newEvent);
 						InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 					}
 					else {
-						CreateFollowUpMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::FollowUpMessage;
 						dataPackage.addContent("Empty Content");
 						newEvent = InputEvents::respondToEvent(dataPackage);
-						CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
+						RespondToInputEventData dataPackage02(args->eventData);
+						dataPackage02.type = DesiredInputEventResponseType::EphemeralFollowUpMessage;
 						dataPackage02.addMessageEmbed(msgEmbed02);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage02);
 						InputEvents::deleteInputEventResponseAsync(newEvent).get();
@@ -218,12 +218,14 @@ namespace DiscordCoreAPI {
 						newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 					}
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 					}
 					else {
-						CreateFollowUpMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::FollowUpMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 					}
@@ -249,14 +251,16 @@ namespace DiscordCoreAPI {
 						newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 					}
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 					}
 					else {
-						CreateEphemeralFollowUpMessageData dataPackage(newEvent);
-						dataPackage.addMessageEmbed(newEmbed);
-						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+						RespondToInputEventData dataPackage02(args->eventData);
+						dataPackage02.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+						dataPackage02.addMessageEmbed(newEmbed);
+						InputEvents::respondToEvent(dataPackage02);
 					}
 					
 					co_return;
@@ -270,17 +274,17 @@ namespace DiscordCoreAPI {
 					msgEmbed02.setDescription(msgString);
 					msgEmbed02.setTitle("__**Skipping Issue:**__");
 					if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-						ReplyMessageData dataPackage(newEvent);
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 						dataPackage.addMessageEmbed(msgEmbed02);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(newEvent);
 						InputEvents::deleteInputEventResponseAsync(newEvent02, 20000);
 					}
 					else {
-						CreateEphemeralFollowUpMessageData dataPackage02(newEvent);
+						RespondToInputEventData dataPackage02(args->eventData);
+						dataPackage02.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 						dataPackage02.addMessageEmbed(msgEmbed02);
 						InputEvents::respondToEvent(dataPackage02);
-						InputEvents::deleteInputEventResponseAsync(newEvent).get();
 					}
 					
 					co_return;

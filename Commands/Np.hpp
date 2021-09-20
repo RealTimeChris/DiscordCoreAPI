@@ -79,12 +79,14 @@ namespace DiscordCoreAPI {
 				newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 			}
 			if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-				ReplyMessageData dataPackage(args->eventData);
+				RespondToInputEventData dataPackage(args->eventData);
+				dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 				dataPackage.addMessageEmbed(newEmbed);
 				auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 			}
 			else {
-				CreateInteractionResponseData dataPackage(args->eventData);
+				RespondToInputEventData dataPackage(args->eventData);
+				dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
 				dataPackage.addMessageEmbed(newEmbed);
 				auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 			}

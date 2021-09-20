@@ -205,6 +205,7 @@ namespace DiscordCoreInternal {
 			}
 			else {
 				this->terminate();
+				exit(-1);
 			}
 		}
 
@@ -294,6 +295,7 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->terminate();
+					exit(-1);
 				}
 			}
 
@@ -308,6 +310,7 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->terminate();
+					exit(-1);
 				}
 			}
 
@@ -468,6 +471,7 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->terminate();
+					exit(-1);
 				}
 			}
 		}
@@ -527,6 +531,7 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->terminate();
+					exit(-1);
 				}
 			}
 		}
