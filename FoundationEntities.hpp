@@ -3877,12 +3877,13 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        YouTubeSong(string baseSearchURLNew);
-
         YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
+
+        static vector<YouTubeSong> searchForSong(string songQuery);
 
     protected:
 
+        static const string baseSearchURL;
         static const string baseWatchURL;
         static const string baseURL;
 
@@ -3891,7 +3892,6 @@ namespace DiscordCoreAPI {
         vector<YouTubeFormat> formats{};
         string html5PlayerFile{ "" };
         string playerResponse{ "" };
-        string baseSearchURL{ "" };
         string html5Player{ "" };
 
         YouTubeSong();
@@ -4164,6 +4164,7 @@ namespace DiscordCoreAPI {
         int flags{ 0 };
     };
 
+    const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
     const string YouTubeSong::baseWatchURL{ "https://www.youtube.com/watch?v=" };
     const string YouTubeSong::baseURL{ "https://www.youtube.com" };
     string SoundCloudSong::appVersion{ "1631696495" };

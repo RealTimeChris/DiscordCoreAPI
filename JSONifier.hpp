@@ -21,8 +21,8 @@ namespace DiscordCoreInternal {
 					{"token", botToken},
 					{"properties", {
 					{"$os", "Windows"},
-					{"$browser", "MyBotFW"},
-					{"$device", "MyBotFW"}
+					{"$browser", "DiscordCoreAPI"},
+					{"$device", "DiscordCoreAPI"}
 				}},
 				{"compress", false},
 				{"large_threshold", 250},

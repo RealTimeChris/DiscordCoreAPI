@@ -214,7 +214,7 @@ namespace DiscordCoreInternal {
 			}
 			done();
 		}
-
+ 
 		HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData) {
 			HttpData getData;
 			string connectionPath = this->baseURLInd + workloadData.relativePath;

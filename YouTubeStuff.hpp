@@ -233,10 +233,6 @@ namespace DiscordCoreAPI {
 		return decipheredFormat;
 	};
 
-	YouTubeSong::YouTubeSong(string baseSearchURLNew) {
-		this->baseSearchURL = baseSearchURLNew;
-	}
-
 	YouTubeSong::YouTubeSong() {};
 
 	YouTubeSong YouTubeSong::collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong) {
@@ -245,6 +241,38 @@ namespace DiscordCoreAPI {
 		newerSong.addedByUserId = addedByGuildMember.user.id;
 		newerSong.addedByUserName = addedByGuildMember.user.userName;
 		return newerSong;
+	}
+
+	vector<YouTubeSong> YouTubeSong::searchForSong(string searchQuery) {
+		DiscordCoreInternal::HttpAgentResources agentResources;
+		agentResources.baseURL = YouTubeSong::baseSearchURL;
+		DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
+		DiscordCoreInternal::HttpWorkloadData workload;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::YOUTUBE_SEARCH;
+		CURLU* urlHandle = curl_url();
+		curl_url_set(urlHandle, CURLUPart::CURLUPART_QUERY, searchQuery.c_str(), CURLU_URLENCODE);
+		char* charString{ nullptr };
+		curl_url_get(urlHandle, CURLUPart::CURLUPART_QUERY, &charString, 0);
+		workload.relativePath = charString;
+		curl_free(charString);
+		DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "YouTubeAPI::searchForSong");
+		vector<YouTubeSong> searchResults;
+		json partialSearchResultsJson = returnData.data;
+		for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
+			YouTubeSong searchResult{};
+			if (value.contains("videoRenderer")) {
+				DiscordCoreInternal::DataParser::parseObject(value.at("videoRenderer"), &searchResult);
+				searchResult.type = SongType::YouTube;
+				searchResult.firstDownloadURL = YouTubeSong::baseWatchURL + searchResult.songId + "&hl=en";
+				searchResult.viewURL = searchResult.firstDownloadURL;
+				searchResults.push_back(searchResult);
+			}
+		}
+		if (returnData.returnCode != 200) {
+			cout << "this::searchForSong() Error 01: " << returnData.returnCode << returnData.returnMessage.c_str() << endl;
+		}
+		return searchResults;
 	}
 
 	YouTubeSong YouTubeSong::collectDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong) {
@@ -343,17 +371,51 @@ namespace DiscordCoreAPI {
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		cancellation_token_source cancelTokenSource{ cancellation_token_source() };
 		cancellation_token cancelToken{ this->cancelTokenSource.get_token() };
-		
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		DiscordGuild* discordGuild{ new DiscordGuild };		
 		concurrency::event readyToBeDoneEvent {};
 		string appVersion{ "1631696495" };
 		const string newLine{ "\n\r" };
 		const int maxBufSize{ 4096 };
-		bool areWeStopping{ false };		
-		task<void> currentTask{};
+		bool areWeStopping{ false }; ;
+		task<void>* currentTask{};
 		YouTubeSong theSong{};
 		string guildId{ "" };
+
+		bool stop() {
+			if (this->voiceConnection->areWeCurrentlyPlaying()) {
+				this->areWeStopping = true;
+				this->cancelTokenSource.cancel();
+				if (this->currentTask != nullptr && !this->currentTask->is_done()) {
+					this->currentTask->then([](task<void> previousTask)->task<void> {
+						try {
+							previousTask.get();
+							co_return;
+						}
+						catch (...) {
+							rethrowException("YouTubeAPI::stop() Error: ");
+							co_return;
+						}
+						}).get();
+						this->currentTask = nullptr;
+				}
+				AudioFrameData dataFrame;
+				while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
+				this->readyToBeDoneEvent.wait(2000);
+				this->readyToBeDoneEvent.reset();
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		void sendNextSong(Song newSong) {
+			this->cancelTokenSource = cancellation_token_source();
+			this->cancelToken = this->cancelTokenSource.get_token();
+			this->downloadAndStreamAudioWrapper(newSong, 0);
+			return;
+		}
 
 		HRESULT GetRuntimeClassName(HSTRING*) {
 			return HRESULT();
@@ -363,55 +425,23 @@ namespace DiscordCoreAPI {
 			return HRESULT();
 		}
 
-		vector<YouTubeSong> searchForSong(string searchQuery) {
-			DiscordCoreInternal::HttpAgentResources agentResources;
-			agentResources.baseURL = this->baseSearchURL;
-			DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
-			DiscordCoreInternal::HttpWorkloadData workload;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::YOUTUBE_SEARCH;
-			CURLU* urlHandle = curl_url();
-			curl_url_set(urlHandle, CURLUPart::CURLUPART_QUERY, searchQuery.c_str(), CURLU_URLENCODE);
-			char* charString{ nullptr };
-			curl_url_get(urlHandle, CURLUPart::CURLUPART_QUERY, &charString, 0);
-			workload.relativePath = charString;
-			curl_free(charString);
-			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "YouTubeAPI::searchForSong");
-			vector<YouTubeSong> searchResults;
-			json partialSearchResultsJson = returnData.data;
-			for (auto value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
-				YouTubeSong searchResult(this->baseSearchURL);
-				if (value.contains("videoRenderer")) {
-					DiscordCoreInternal::DataParser::parseObject(value.at("videoRenderer"), &searchResult);
-					searchResult.type = SongType::YouTube;
-					searchResult.firstDownloadURL = this->baseWatchURL + searchResult.songId + "&hl=en";
-					searchResult.viewURL = searchResult.firstDownloadURL;
-					searchResults.push_back(searchResult);
-				}
-			}
-			if (returnData.returnCode != 200) {
-				cout << "this::searchForSong() Error 01: " << returnData.returnCode << returnData.returnMessage.c_str() << endl;
-			}
-			return searchResults;
-		}
-
-		task<void> downloadAndStreamAudio(YouTubeSong song, int retryCount = 0) {
-			const std::function<task<void>(void)> theFunction = [=, this]()->task<void> {
+		task<void> downloadAndStreamAudioWrapper(YouTubeSong song, int retryCount = 0) {
+			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
+			co_await resume_foreground(*threadContext->dispatcherQueue);
+			this->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
 				YouTubeAPI* thisPtr = this;
 				auto tokenNew = thisPtr->cancelTokenSource.get_token();
 				apartment_context mainThread{};
 				auto newSong = song;
-				shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
-				co_await resume_foreground(*threadContext->dispatcherQueue);
-				
+
 				thisPtr->areWeStopping = false;
-				BuildSongDecoderData dataPackage{};
+				BuildSongDecoderData dataPackage{};;
 				try {
 					if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
 						thisPtr->sendAudioDataBuffer = thisPtr->sendAudioDataBufferMap->at(thisPtr->guildId);
 					}
 					else {
-						co_return;
+						return;
 					}
 					string downloadBaseURL;
 					if (newSong.finalDownloadURLs.at(0).urlPath.find("https://") != string::npos && newSong.finalDownloadURLs.at(0).urlPath.find("/videoplayback?") != string::npos) {
@@ -454,7 +484,7 @@ namespace DiscordCoreAPI {
 							thisPtr->readyToBeDoneEvent.set();
 							threadContext->releaseGroup();
 							cancel_current_task();
-							co_return;
+							return;
 						}
 						else {
 							int bytesRead{ 0 };
@@ -510,7 +540,7 @@ namespace DiscordCoreAPI {
 								thisPtr->readyToBeDoneEvent.set();
 								threadContext->releaseGroup();
 								cancel_current_task();
-								co_return;
+								return;
 							}
 							vector<RawFrameData> frames{};
 							if (counter == 0) {
@@ -542,7 +572,7 @@ namespace DiscordCoreAPI {
 										thisPtr->readyToBeDoneEvent.set();
 										threadContext->releaseGroup();
 										cancel_current_task();
-										co_return;
+										return;
 									}
 									if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
 										auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
@@ -589,7 +619,7 @@ namespace DiscordCoreAPI {
 									thisPtr->readyToBeDoneEvent.set();
 									threadContext->releaseGroup();
 									cancel_current_task();
-									co_return;
+									return;
 								}
 								if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
 									RawFrameData rawFrame{};
@@ -642,17 +672,16 @@ namespace DiscordCoreAPI {
 					songDecoder = nullptr;
 					thisPtr->readyToBeDoneEvent.set();
 					threadContext->releaseGroup();
-					co_await mainThread;
-					co_return;
+					return;
 				}
 				catch (...) {
 					if (retryCount < 5) {
 						int retryCountNewer = retryCount;
 						retryCountNewer += 1;
-						thisPtr->downloadAndStreamAudio(newSong, retryCountNewer).get();
+						thisPtr->downloadAndStreamAudioWrapper(newSong, retryCountNewer).get();
 						rethrowException("YouTubeAPI::downloadAndStreamAudioToBeWrapped() Error: ");
 						thisPtr->readyToBeDoneEvent.set();
-						co_return;
+						return;
 					}
 					else {
 						vector<uint8_t> newVector;
@@ -663,24 +692,12 @@ namespace DiscordCoreAPI {
 						frameData.rawFrameData.sampleCount = 0;
 						send(thisPtr->sendAudioDataBuffer.get(), frameData);
 						thisPtr->voiceConnection->onSongCompletionEvent(thisPtr->voiceConnection.get());
-						rethrowException("YouTubeAPI::downloadAndStreamAudioToBeWrapped() Final Error: ");
+						rethrow_exception(current_exception());
 						thisPtr->readyToBeDoneEvent.set();
-						co_return;
+						return;
 					}
 				};
-
-			};
-			return concurrency::task<void>(theFunction, this->cancelTokenSource.get_token()).then([](task<void> previousTask)->task<void> {
-				try {
-					previousTask.get();
-					co_return;
-				}
-				catch (...) {
-					rethrowException("YouTubeAPI::downloadAndStreamAudioWrapper() Error: ");
-					co_return;
-				}
-				});
-
+			}, this->cancelToken));
 		};
 
 		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>* sendAudioDataBufferNew) {
@@ -689,63 +706,27 @@ namespace DiscordCoreAPI {
 			send(sendAudioDataBufferNew, vector<uint8_t>());
 		}
 
-		bool stop() {
-			if (this->voiceConnection->areWeCurrentlyPlaying()) {
-				this->areWeStopping = true;
-				this->cancelTokenSource.cancel();
-				if (this->currentTask != task<void>() && !this->currentTask.is_done()) {
-					this->currentTask.then([](task<void> previousTask)->task<void> {
-						try {
-							previousTask.get();
-							co_return;
-						}
-						catch (...) {
-							rethrowException("YouTubeAPI::stop() Error: ");
-							co_return;
-						}
-						}).get();
-						this->currentTask = task<void>();
-				}
-				AudioFrameData dataFrame;
-				while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
-				this->readyToBeDoneEvent.wait(2000);
-				this->readyToBeDoneEvent.reset();
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-
 		static bool stop(string guildId) {
 			if (!YouTubeAPI::youtubeAPIMap->at(guildId)->stop()) {
 				return false;
 			}
 			YouTubeAPI::youtubeAPIMap->erase(guildId);
-			shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
-			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
+			shared_ptr<YouTubeAPI> youTubeAPI = make_shared<YouTubeAPI>(guildId);
+			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
 			return true;
 		}
 
-		void sendNextSong(YouTubeSong newSong) {
-			this->cancelTokenSource = cancellation_token_source();
-			this->cancelToken = this->cancelTokenSource.get_token();
-			this->downloadAndStreamAudio(newSong);
-			wait(200);
-			return;
-		}
-
-		static void sendNextSong(YouTubeSong newSong, string guildId) {
+		static void sendNextSong(Song newSong, string guildId) {
 			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
 				YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong(newSong);
 				return;
 
 			}
 			else {
-				if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-					shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
-					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-					youtubeAPI->sendNextSong(newSong);
+				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
+					shared_ptr<YouTubeAPI> youTubeAPI = make_shared<YouTubeAPI>(guildId);
+					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
+					YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong(newSong, guildId);
 					return;
 				}
 				else {
@@ -757,19 +738,20 @@ namespace DiscordCoreAPI {
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId) {
 			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
 				YouTubeAPI::youtubeAPIMap->erase(guildId);
-				shared_ptr<YouTubeAPI> youtubeAPI;
-				youtubeAPI = make_shared<YouTubeAPI>(guildId);
-				auto returnValue = youtubeAPI->searchForSong(searchQuery);
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
+				shared_ptr<YouTubeAPI> youTubeAPI;
+
+				youTubeAPI = make_shared<YouTubeAPI>(guildId);
+				auto returnValue = youTubeAPI->theSong.searchForSong(searchQuery);
+				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
 				return returnValue;
 
 			}
 			else {
-				shared_ptr<YouTubeAPI> youtubeAPI;
+				shared_ptr<YouTubeAPI> youTubeAPI;
 				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
-					youtubeAPI = make_shared<YouTubeAPI>(guildId);
-					auto returnValue = youtubeAPI->searchForSong(searchQuery);
-					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
+					youTubeAPI = make_shared<YouTubeAPI>(guildId);
+					auto returnValue = youTubeAPI->theSong.searchForSong(searchQuery);
+					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
 					return returnValue;
 				}
 				else {

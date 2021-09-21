@@ -205,7 +205,6 @@ namespace DiscordCoreInternal {
 			}
 			else if ((args.Code() == 1000 || args.Code() == 4014) && this->maxReconnectTries > this->currentReconnectTries) {
 				this->~WebSocketConnectionAgent();
-				this->thisPtr = nullptr;
 			}
 			else {
 				this->terminate();
@@ -537,7 +536,6 @@ namespace DiscordCoreInternal {
 			}
 			else if ((args.Code() == 1000 || args.Code() == 4014) && this->maxReconnectTries > this->currentReconnectTries) {
 				this->~VoiceChannelWebSocketAgent();
-				this->thisPtr = nullptr;
 			}
 			else {
 				this->terminate();
