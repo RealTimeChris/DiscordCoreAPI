@@ -159,6 +159,13 @@ namespace DiscordCoreAPI {
 				if (!SoundCloudAPI::stop(guildId)) {
 					return false;
 				}
+				if (SongAPI::isLoopAllEnabled(guildId) || SongAPI::isLoopSongEnabled(guildId)) {
+					SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
+					SongAPI::setCurrentSong(Song(), guildId);
+				}
+				else {
+					SongAPI::setCurrentSong(Song(), guildId);
+				}
 				SongAPI::songAPIMap->at(guildId)->savePlaylist();
 				SongAPI::songAPIMap->erase(guildId);
 				DiscordGuild* discordGuild = SongAPI::discordGuildMap->at(guildId);
@@ -171,6 +178,13 @@ namespace DiscordCoreAPI {
 			else {
 				if (!YouTubeAPI::stop(guildId)) {
 					return false;
+				}
+				if (SongAPI::isLoopAllEnabled(guildId) || SongAPI::isLoopSongEnabled(guildId)) {
+					SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
+					SongAPI::setCurrentSong(Song(), guildId);
+				}
+				else {
+					SongAPI::setCurrentSong(Song(), guildId);
 				}
 				SongAPI::songAPIMap->at(guildId)->savePlaylist();
 				SongAPI::songAPIMap->erase(guildId);
