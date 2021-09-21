@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
                     this->currentBuffer = newVector;
                     unsigned char* fileStreamBuffer = (unsigned char*)av_malloc(this->bufferMaxSize);
                     if (fileStreamBuffer == nullptr) {
-                        cout << "Failed to allocate filestreambuffer.\n\n" << endl;
+                        throw exception("Failed to allocate filestreambuffer.\n\n");
                         return;
                     }
                     this->ioContext = avio_alloc_context(
@@ -135,14 +135,14 @@ namespace DiscordCoreAPI {
                     );
 
                     if (this->ioContext == nullptr) {
-                        cout << "Failed to allocate AVIOContext.\n\n" << endl;
+                        throw exception("Failed to allocate AVIOContext.\n\n");
                         return;
                     }
 
                     this->formatContext = avformat_alloc_context();
 
                     if (!this->formatContext) {
-                        cout << "Could not allocate the format context.\n\n" << endl;
+                        throw exception("Could not allocate the format context.\n\n");
                         return;
                     }
 
@@ -159,19 +159,19 @@ namespace DiscordCoreAPI {
                         string newString = "Could not find ";
                         newString += av_get_media_type_string(type);
                         newString += " stream in input memory stream.\n\n";
-                        cout << newString<< endl;
+                        throw exception(newString.c_str());
                         return;
                     }
                     else {
                         this->audioStreamIndex = ret;
                         this->audioStream = this->formatContext->streams[this->audioStreamIndex];
                         if (!this->audioStream) {
-                            cout << "Could not find an audio stream.\n\n" << endl;
+                            throw exception("Could not find an audio stream.\n\n");
                             return;
                         }
 
                         if (avformat_find_stream_info(this->formatContext, NULL) < 0) {
-                            cout << "Could not find stream information.\n\n" << endl;
+                            throw exception("Could not find stream information.\n\n");
                             return;
                         }
 
@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to find ";
                             newString += av_get_media_type_string(type);
                             newString += " decoder.\n\n";
-                            cout << newString<< endl;
+                            throw exception(newString.c_str());
                             return;
                         }
 
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to allocate the ";
                             newString += av_get_media_type_string(type);
                             newString += " AVCodecContext.\n\n";
-                            cout << newString<< endl;
+                            throw exception(newString.c_str());
                             return;
                         }
 
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to copy ";
                             newString += av_get_media_type_string(type);
                             newString += " codec parameters to decoder context.\n\n";
-                            cout << newString<< endl;
+                            throw exception(newString.c_str());
                             return;
                         }
 
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
                             string newString = "Failed to open ";
                             newString += av_get_media_type_string(type);
                             newString += " AVCodecContext.\n\n";
-                            cout << newString<< endl;
+                            throw exception(newString.c_str());
                             return;
                         }
 
@@ -221,19 +221,19 @@ namespace DiscordCoreAPI {
 
                     this->packet = av_packet_alloc();
                     if (!this->packet) {
-                        cout << "Error: Could not allocate packet\n\n" << endl;
+                        throw exception("Error: Could not allocate packet\n\n");
                         return;
                     }
 
                     this->frame = av_frame_alloc();
                     if (!this->frame) {
-                        cout << "Error: Could not allocate frame\n\n" << endl;
+                        throw exception("Error: Could not allocate frame\n\n");
                         return;
                     }
 
                     this->newFrame = av_frame_alloc();
                     if (!this->newFrame) {
-                        cout << "Error: Could not allocate new-frame\n\n" << endl;
+                        throw exception("Error: Could not allocate new-frame\n\n");
                         return;
                     }
 
@@ -244,14 +244,14 @@ namespace DiscordCoreAPI {
                                 char charString[32];
                                 av_strerror(ret, charString, 32);
                                 string newString = "Error submitting a packet for decoding (" + to_string(ret) + "), " + charString + ".\n\n";
-                                cout << newString<< endl;
+                                throw exception(newString.c_str());
                                 return;
                             }
                             if (ret >= 0) {
                                 ret = avcodec_receive_frame(this->audioDecodeContext, this->frame);
                                 if (ret < 0) {
                                     string newString = "Error during decoding (" + to_string(ret) + ")\n\n";
-                                    cout << newString<< endl;
+                                    throw exception(newString.c_str());
                                     return;
                                 }
 

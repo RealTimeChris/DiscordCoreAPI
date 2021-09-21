@@ -40,15 +40,15 @@ namespace DiscordCoreAPI {
 				}
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgent, this->voicechannelWebSocketAgent);
-				this->voicechannelWebSocketAgent->start();
+				this->voiceChannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgent, &this->stopSetEvent, &this->areWeStopping);
+				this->voiceChannelWebSocketAgent->start();
 				if (this->connectionReadyEvent.wait(10000) != 0) {
 					this->connectionReadyEvent.reset();
 					return;
 				}
 				this->connectionReadyEvent.reset();
-				this->voiceConnectInitData = this->voicechannelWebSocketAgent->voiceConnectInitData;
-				this->voiceConnectionData = this->voicechannelWebSocketAgent->voiceConnectionData;
+				this->voiceConnectInitData = this->voiceChannelWebSocketAgent->voiceConnectInitData;
+				this->voiceConnectionData = this->voiceChannelWebSocketAgent->voiceConnectionData;
 				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
 				this->areWeConnectedBool = true;
 			}
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voicechannelWebSocketAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* receiveAudioBufferMap{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent {};
@@ -290,17 +290,17 @@ namespace DiscordCoreAPI {
 		}
 
 		void sendSingleAudioFrame(vector<uint8_t> audioDataPacketNew) {
-			if (this->voicechannelWebSocketAgent->voiceSocket != nullptr) {
-				this->voicechannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
+			if (this->voiceChannelWebSocketAgent->voiceSocket != nullptr) {
+				this->voiceChannelWebSocketAgent->sendVoiceData(audioDataPacketNew);
 			}
 		}
 
 		void sendSpeakingMessage(bool isSpeaking) {
 			if (!this->doWeQuit) {
-				this->voiceConnectionData.audioSSRC = this->voicechannelWebSocketAgent->voiceConnectionData.audioSSRC;
+				this->voiceConnectionData.audioSSRC = this->voiceChannelWebSocketAgent->voiceConnectionData.audioSSRC;
 				string newString = DiscordCoreInternal::getIsSpeakingPayload(isSpeaking, this->voiceConnectionData.audioSSRC, 0);
-				if (this->voicechannelWebSocketAgent->webSocket != nullptr) {
-					this->voicechannelWebSocketAgent->sendMessage(newString);
+				if (this->voiceChannelWebSocketAgent->webSocket != nullptr) {
+					this->voiceChannelWebSocketAgent->sendMessage(newString);
 				}
 			}
 		}
@@ -439,6 +439,7 @@ namespace DiscordCoreAPI {
 					if (this->areWeStopping) {
 						this->stopWaitEvent.set();
 						this->stopSetEvent.wait(5000);
+						this->clearAudioData();
 						this->stopSetEvent.reset();
 						this->areWeStopping = false;
 					}

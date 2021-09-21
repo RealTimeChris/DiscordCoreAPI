@@ -56,7 +56,6 @@ namespace DiscordCoreAPI {
 
 		static void runBot() {
 			wait((agent*)DiscordCoreClient::thisPointer.get());
-			DiscordCoreClient::thisPointer->getError();
 		}
 
 		static void terminate() {
@@ -94,7 +93,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources{};
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		string baseURL{ "https://discord.com/api/v9" };
 		map<string, DiscordGuild*> discordGuildMap{};
 		map<string, vector<Song>> youtubeQueueMap{};
@@ -109,9 +107,9 @@ namespace DiscordCoreAPI {
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			DiscordCoreInternal::HttpRequestAgent::initialize(this->botToken, this->baseURL);
-			SoundCloudSong::initialize(SoundCloudAPI::baseSearchURL, SoundCloudAPI::baseSearchURL02);
+			SoundCloudSong::initialize();
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
-			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, DiscordCoreClientBase::webSocketConnectionAgent);
+			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(this->agentResources);
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize(this->agentResources, this->thisPointer);
@@ -202,34 +200,23 @@ namespace DiscordCoreAPI {
 			this->audioBuffersMap->erase(guildData.id);
 		}
 
-		void getError() {
-			exception error;
-			while (try_receive(this->errorBuffer, error)) {
-				cout << "DiscordCoreClient::run() Error: " << error.what() << endl << endl;
-			}
-		}
-
 		void run() {
 			try {
 			startingPoint:
 				while (!this->doWeQuit) {
+					for (auto [key, value] : *DiscordCoreClientBase::voiceConnectionMap) {
+						if (value->voiceChannelWebSocketAgent->doWeReconnect) {
+							string channelId = value->voiceChannelWebSocketAgent->voiceConnectInitData.channelId;
+							auto newGuild = this->guilds->getGuildAsync({ .guildId = value->voiceChannelWebSocketAgent->voiceConnectInitData.guildId }).get();
+							value->voiceChannelWebSocketAgent->doWeReconnect = false;
+							newGuild.disconnect();
+							newGuild.connectToVoice(channelId);
+						}
+					}
 					DiscordCoreInternal::WebSocketWorkload workload{};
 					while (!try_receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, workload)) {
 						concurrency::wait(50);
-						if (!this->doWeQuit) {
-							if (DiscordCoreClientBase::webSocketConnectionAgent == nullptr) {
-								DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, DiscordCoreClientBase::webSocketConnectionAgent);
-								DiscordCoreClientBase::webSocketConnectionAgent->connect();
-							}
-							for (auto [key, value] : *DiscordCoreClientBase::voiceConnectionMap) {
-								if (value->voicechannelWebSocketAgent == nullptr) {
-									DiscordCoreClientBase::voiceConnectionMap->at(key)->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&DiscordCoreClientBase::voiceConnectionMap->at(key)->connectionReadyEvent,
-										DiscordCoreClientBase::voiceConnectionMap->at(key)->voiceConnectInitData, DiscordCoreClientBase::webSocketConnectionAgent, DiscordCoreClientBase::voiceConnectionMap->at(key)->voicechannelWebSocketAgent);
-									DiscordCoreClientBase::voiceConnectionMap->at(key)->voicechannelWebSocketAgent->connect();
-								}
-							}
-						}
-						else {
+						if (this->doWeQuit) {
 							goto startingPoint;
 						}
 					}
@@ -724,7 +711,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			catch (...) {
-				rethrowException("DiscordCoreClient::run() Error: ", &this->errorBuffer);
+				rethrowException("DiscordCoreClient::run() Error: ");
 			}
 			done();
 		}

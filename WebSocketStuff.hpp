@@ -88,13 +88,12 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		WebSocketConnectionAgent(unbounded_buffer<json>* target, string botTokenNew, shared_ptr<WebSocketConnectionAgent> thisPtrNew)
+		WebSocketConnectionAgent(unbounded_buffer<json>* target, string botTokenNew)
 			:ThreadContext(*ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
 			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectionData>>();
 			this->voiceConnectionDataBuffer = make_shared<unbounded_buffer<VoiceConnectionData>>();
 			this->webSocketWorkloadTarget = target;
 			this->botToken = botTokenNew;
-			this->thisPtr = thisPtrNew;
 		}
 
 	protected:
@@ -103,11 +102,11 @@ namespace DiscordCoreInternal {
 		shared_ptr<unbounded_buffer<GetVoiceConnectionData>> collectVoiceConnectionDataBuffer{ nullptr };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
-		shared_ptr<WebSocketConnectionAgent> thisPtr{ nullptr };
+		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		GetVoiceConnectionData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		MessageWebSocket webSocket{ nullptr };
+		bool haveWeAlreadyConnected{ false };
 		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
@@ -119,7 +118,7 @@ namespace DiscordCoreInternal {
 		int heartbeatInterval{ 0 };
 		hstring socketPath{ L"" };
 		event_token closedToken{};
-		hstring sessionId{ L"" };
+		string sessionId{ "" };
 		string botToken{ "" };
 
 		void setSocketPath(string socketPathBase) {
@@ -165,19 +164,18 @@ namespace DiscordCoreInternal {
 			try {
 				string message = text;
 				if (message.empty()) {
-					cout << "Please specify text to send" << endl;
+					cout << "Please specify text to send." << endl;
 					return;
 				}
 
-				cout << "Sending Message: ";
-				cout << message << endl;
+				cout << "Sending Message: " << message << endl;
 
 				if (this->messageWriter != nullptr) {
 					this->messageWriter.WriteString(to_hstring(message));
 					this->messageWriter.StoreAsync().get();
 				}
 
-				cout << "Send Complete" << endl << endl;
+				cout << "Send Complete." << endl << endl;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::sendMessage() Error: ");
@@ -185,28 +183,30 @@ namespace DiscordCoreInternal {
 		}
 
 		void connect() {
-			this->webSocket = MessageWebSocket();
-			this->messageWriter = DataWriter(this->webSocket.OutputStream());
-			this->webSocket.Control().MessageType(SocketMessageType::Utf8);
+			this->webSocket = make_shared<MessageWebSocket>();
+			this->messageWriter = DataWriter(this->webSocket->OutputStream());
+			this->webSocket->Control().MessageType(SocketMessageType::Utf8);
 			this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-			this->closedToken = this->webSocket.Closed({ this, &WebSocketConnectionAgent::onClosed });
-			this->messageReceivedToken = this->webSocket.MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
-			this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(this->socketPath)).get();
+			this->closedToken = this->webSocket->Closed({ this, &WebSocketConnectionAgent::onClosed });
+			this->messageReceivedToken = this->webSocket->MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
+			this->webSocket->ConnectAsync(winrt::Windows::Foundation::Uri(this->socketPath)).get();
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() != 1000 && args.Code() != 4014) {
+			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1007 && this->sessionId != "") {
 				this->currentReconnectTries += 1;
 				this->cleanup();
 				this->connect();
-				string resume = getResumePayload(this->botToken, to_string(this->sessionId), this->lastNumberReceived);
-				this->sendMessage(resume);
+				string resumePayload = getResumePayload(this->botToken, this->sessionId, this->lastNumberReceived);
+				this->sendMessage(resumePayload);
 			}
-			else if ((args.Code() == 1000 || args.Code() == 4014) && this->maxReconnectTries > this->currentReconnectTries) {
-				this->~WebSocketConnectionAgent();
+			else if (this->maxReconnectTries > this->currentReconnectTries && args.Code() != 4014) {
+				this->currentReconnectTries += 1;
+				this->cleanup();
+				this->connect();
 			}
-			else {
+			else if (this->maxReconnectTries <= this->currentReconnectTries) {
 				this->terminate();
 				exit(-1);
 			}
@@ -245,6 +245,7 @@ namespace DiscordCoreInternal {
 					this->voiceConnectionData.token = payload.at("d").at("token").get<string>();
 					this->serverUpdateCollected = true;
 					send(*this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					this->haveWeAlreadyConnected = true;
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
@@ -259,6 +260,7 @@ namespace DiscordCoreInternal {
 				else {
 					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
 					send(*this->voiceConnectionDataBuffer, this->voiceConnectionData);
+					this->haveWeAlreadyConnected = true;
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
@@ -278,9 +280,8 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.at("t") == "READY") {
-				string sessionIDTemp;
-				sessionIDTemp = payload.at("d").at("session_id");
-				this->sessionId = to_hstring(sessionIDTemp);
+				this->sessionId = payload.at("d").at("session_id");
+				this->currentReconnectTries = 0;
 			}
 
 			if (payload.at("op") == 1) {
@@ -290,11 +291,7 @@ namespace DiscordCoreInternal {
 			if (payload.at("op") == 7) {
 				cout << "Reconnecting (Type 7)!" << endl << endl;
 				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->currentReconnectTries += 1;
-					this->cleanup();
-					this->connect();
-					string resume = getResumePayload(this->botToken, to_string(this->sessionId), this->lastNumberReceived);
-					this->sendMessage(resume);
+					this->webSocket->Close(1007, L"Closing for reconnect type 7.");
 				}
 				else {
 					this->terminate();
@@ -305,11 +302,7 @@ namespace DiscordCoreInternal {
 			if (payload.at("op") == 9) {
 				cout << "Reconnecting (Type 9)!" << endl << endl;
 				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->currentReconnectTries += 1;
-					this->cleanup();
-					this->connect();
-					string resume = getResumePayload(this->botToken, to_string(this->sessionId), this->lastNumberReceived);
-					this->sendMessage(resume);
+					this->webSocket->Close(1007, L"Closing for reconnect type 9.");
 				}
 				else {
 					this->terminate();
@@ -340,7 +333,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (this->webSocket != nullptr) {
-				this->webSocket.Close(1000, L"Closed due to user request.");
+				this->webSocket.~shared_ptr();
 				this->webSocket = nullptr;
 			}
 
@@ -362,13 +355,15 @@ namespace DiscordCoreInternal {
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class Guild;
+		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew, shared_ptr<VoiceChannelWebSocketAgent> thisPtrNew)
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew, concurrency::event* stopSetEventNew , bool* areWeStoppingNew)
 			:
 			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
 			agent(*this->scheduler->scheduler) {
 			this->voiceConnectionDataBuffer = webSocketConnectionAgentNew->voiceConnectionDataBuffer;
+			this->areWeStopping = areWeStoppingNew;
+			this->stopSetEvent = stopSetEventNew;
 			this->webSocketConnectionAgent = webSocketConnectionAgentNew;
 			this->voiceConnectInitData = initDataNew;
 			GetVoiceConnectionData dataPackage;
@@ -377,7 +372,6 @@ namespace DiscordCoreInternal {
 			dataPackage.userId = this->voiceConnectInitData.userId;
 			this->webSocketConnectionAgent->getVoiceConnectionData(dataPackage);
 			this->readyEvent = readyEventNew;
-			this->thisPtr = thisPtrNew;
 		}
 
 		void sendVoiceData(vector<uint8_t> data) {
@@ -387,8 +381,10 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			else {
-				this->dataWriter.WriteBytes(message);
-				this->dataWriter.StoreAsync().get();
+				if (this->dataWriter != nullptr) {
+					this->dataWriter.WriteBytes(message);
+					this->dataWriter.StoreAsync().get();
+				}
 			}
 		}
 
@@ -415,7 +411,7 @@ namespace DiscordCoreInternal {
 					dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
 					dataReader.LoadAsync((uint32_t)message.length()).get();
 					IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.length());
-					this->webSocket.OutputStream().WriteAsync(buffer).get();
+					this->webSocket->OutputStream().WriteAsync(buffer).get();
 				}
 
 				cout << "Send Complete" << endl << endl;
@@ -435,19 +431,21 @@ namespace DiscordCoreInternal {
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
 		unbounded_buffer<bool> readyToVoiceConnectBuffer{ nullptr };
-		shared_ptr<VoiceChannelWebSocketAgent> thisPtr{ nullptr };
+		shared_ptr<DatagramSocket> voiceSocket{ nullptr };
+		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
+		concurrency::event* stopSetEvent {nullptr};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		DatagramSocket voiceSocket{ nullptr };
-		MessageWebSocket webSocket{ nullptr };
-		event_token voiceDataReceivedToken{};		
+		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
 		concurrency::event* readyEvent {};
 		const int maxReconnectTries{ 10 };
 		DataWriter dataWriter{ nullptr };
 		int currentReconnectTries{ 0 };
 		bool areWeWaitingForIp{ true };
+		bool* areWeStopping{ nullptr };
+		bool doWeReconnect{ false };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
@@ -455,23 +453,18 @@ namespace DiscordCoreInternal {
 		void connect() {
 			try {
 				this->voiceConnectionData = receive(this->voiceConnectionDataBuffer.get(), 20000);
-				this->voiceConnectionData.endPoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
+				string newEndpoint = "wss://" + this->voiceConnectionData.endPoint + "/?v=4";
 				this->heartbeatTimer = ThreadPoolTimer(nullptr);
-				this->webSocket = MessageWebSocket();
-				this->webSocket.Control().MessageType(SocketMessageType::Utf8);
-				this->closedToken = this->webSocket.Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
-				this->messageReceivedToken = this->webSocket.MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
-				this->webSocket.ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->voiceConnectionData.endPoint))).get();
+				this->webSocket = make_shared<MessageWebSocket>();
+				this->webSocket->Control().MessageType(SocketMessageType::Utf8);
+				this->closedToken = this->webSocket->Closed({ this, &VoiceChannelWebSocketAgent::onClosed });
+				this->messageReceivedToken = this->webSocket->MessageReceived({ this, &VoiceChannelWebSocketAgent::onMessageReceived });
+				this->webSocket->ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(newEndpoint))).get();
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::connect() Error: ");
 				if (this->maxReconnectTries > this->currentReconnectTries) {
 					this->currentReconnectTries += 1;
-					GetVoiceConnectionData dataPackage;
-					dataPackage.channelId = this->voiceConnectInitData.channelId;
-					dataPackage.guildId = this->voiceConnectInitData.guildId;
-					dataPackage.userId = this->voiceConnectInitData.userId;
-					this->webSocketConnectionAgent->getVoiceConnectionData(dataPackage);
 					this->connect();
 				}
 				else {
@@ -482,6 +475,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void collectExternalIP() {
+			this->areWeWaitingForIp = true;
 			unsigned char packet[70] = { 0 };
 			packet[0] = (this->voiceConnectionData.audioSSRC >> 24) & 0xff;
 			packet[1] = (this->voiceConnectionData.audioSSRC >> 16) & 0xff;
@@ -497,13 +491,13 @@ namespace DiscordCoreInternal {
 		void voiceConnect() {
 			try {
 				receive(this->readyToVoiceConnectBuffer, 10000);
-				this->voiceSocket = DatagramSocket();
-				this->voiceSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
+				this->voiceSocket = make_shared<DatagramSocket>();
+				this->voiceSocket->Control().QualityOfService(SocketQualityOfService::LowLatency);
 				winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceConnectionData.voiceIp));
-				auto endpointPair = this->voiceSocket.GetEndpointPairsAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get();
-				this->voiceDataReceivedToken = this->voiceSocket.MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
-				this->voiceSocket.ConnectAsync(endpointPair.First().Current()).get();
-				this->dataWriter = DataWriter(this->voiceSocket.GetOutputStreamAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get());
+				auto endpointPair = this->voiceSocket->GetEndpointPairsAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get();
+				this->voiceDataReceivedToken = this->voiceSocket->MessageReceived({ this,&VoiceChannelWebSocketAgent::onVoiceDataReceived });
+				this->voiceSocket->ConnectAsync(endpointPair.First().Current()).get();
+				this->dataWriter = DataWriter(this->voiceSocket->GetOutputStreamAsync(hostName, to_hstring(this->voiceConnectionData.voicePort)).get());
 				this->dataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 			}
 			catch (...) {
@@ -516,28 +510,17 @@ namespace DiscordCoreInternal {
 				this->connect();
 			}
 			catch (...) {
-				DiscordCoreAPI::rethrowException("VoiceConnectionWebSocketAgent::run() Error: ");
+				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::run() Error: ");
 				done();
 			}
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
-			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() != 1000 && args.Code() != 4014) {
-				this->currentReconnectTries += 1;
-				this->cleanup();
-				GetVoiceConnectionData dataPackage;
-				dataPackage.channelId = this->voiceConnectInitData.channelId;
-				dataPackage.guildId = this->voiceConnectInitData.guildId;
-				dataPackage.userId = this->voiceConnectInitData.userId;
-				this->webSocketConnectionAgent->getVoiceConnectionData(dataPackage);
-				this->connect();
-				string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
+			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() != 4014) {
+				this->doWeReconnect = true;
 			}
-			else if ((args.Code() == 1000 || args.Code() == 4014) && this->maxReconnectTries > this->currentReconnectTries) {
-				this->~VoiceChannelWebSocketAgent();
-			}
-			else {
+			else if (this->maxReconnectTries <= this->currentReconnectTries) {
 				this->terminate();
 				exit(-1);
 			}
@@ -549,7 +532,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
-
+			
 			hstring message;
 			DataReader dataReader{ nullptr };
 			if (args.GetDataReader() != nullptr) {
@@ -561,9 +544,15 @@ namespace DiscordCoreInternal {
 			}
 			json payload = payload.parse(to_string(message));
 			cout << "Message received from Voice WebSocket: " << to_string(message) << endl << endl;
-
 			if (payload.contains("op")) {
-				if (payload.at("op") == 6) {}
+
+				if (payload.at("op") == 6) {};
+
+				if (payload.contains("t")) {
+					if (payload.at("t") == "READY") {
+						this->currentReconnectTries = 0;
+					}
+				}
 
 				if (payload.at("op") == 2) {
 					this->voiceConnectionData.audioSSRC = payload.at("d").at("ssrc");
@@ -577,7 +566,10 @@ namespace DiscordCoreInternal {
 					send(this->readyToVoiceConnectBuffer, true);
 					this->voiceConnect();
 					this->collectExternalIP();
-					while (this->areWeWaitingForIp) { cout << "Were here!" << endl; };
+					int counterValue{ 0 };
+					while (this->areWeWaitingForIp) {
+						counterValue += 1; cout << "Were here!" << endl;
+					};
 					string protocolPayloadSelectString = getSelectProtocolPayload(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode);
 					this->sendMessage(protocolPayloadSelectString);
 				}
@@ -591,6 +583,8 @@ namespace DiscordCoreInternal {
 					}
 					this->readyEvent->set();
 				}
+
+				if (payload.at("op") == 13) {}
 
 				if (payload.at("op") == 8) {
 					if (payload.at("d").contains("heartbeat_interval")) {
@@ -630,12 +624,18 @@ namespace DiscordCoreInternal {
 
 		void cleanup() {
 			if (this != nullptr) {
+				if (this->dataWriter != nullptr) {
+					this->dataWriter.DetachStream();
+					this->dataWriter.Close();
+					this->dataWriter = nullptr;
+				}
 				if (this->voiceSocket != nullptr) {
-					this->voiceSocket.Close();
+					this->voiceSocket->Close();
+					this->voiceSocket.~shared_ptr();
 					this->voiceSocket = nullptr;
 				}
 				if (this->webSocket != nullptr) {
-					this->webSocket.Close(1000, L"Disconnecting");
+					this->webSocket.~shared_ptr();
 					this->webSocket = nullptr;
 				}
 				if (this->heartbeatTimer != nullptr) {

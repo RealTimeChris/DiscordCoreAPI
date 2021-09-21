@@ -15,6 +15,16 @@
 
 namespace DiscordCoreAPI {
 
+	vector<Song> cleanQueue(vector<Song> originalQueue) {
+		auto newQueue = originalQueue;
+		for (int x = 0; x < newQueue.size(); x += 1) {
+			if (newQueue[x].songId == "") {
+				newQueue.erase(newQueue.begin() + x);
+			}
+		}
+		return newQueue;
+	}
+
 	class SongAPI {
 	public:
 
@@ -45,12 +55,14 @@ namespace DiscordCoreAPI {
 		}
 
 		void savePlaylist() {
+			this->playlist.songQueue = cleanQueue(this->playlist.songQueue);
 			this->discordGuild->data.playlist = this->playlist;
 			this->discordGuild->writeDataToDB();
 		}
 
 		void loadPlaylist() {
 			discordGuild->getDataFromDB();
+			discordGuild->data.playlist.songList = cleanQueue(discordGuild->data.playlist.songList);
 			this->playlist = discordGuild->data.playlist;
 		}
 
@@ -402,7 +414,7 @@ namespace DiscordCoreAPI {
 					auto newerSong = YouTubeAPI::youtubeAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
 					YouTubeAPI::sendNextSong(newerSong, guildId);
 				}
-			}
+			}			
 		}
 		
 	};

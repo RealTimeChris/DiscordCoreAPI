@@ -287,7 +287,7 @@ return timeStamp;
         }
     }
 
-    void rethrowException(string stackTrace, unbounded_buffer<exception>* sendBuffer = nullptr) {
+    void rethrowException(string stackTrace, unbounded_buffer<exception>* sendBuffer = nullptr, bool rethrow = false) {
         try {
             auto currentException = current_exception();
             if (currentException) {
@@ -302,6 +302,9 @@ return timeStamp;
             else {
                 cout << stackTrace << e.what() << "\n\n";
             }
+            if (rethrow) {
+                rethrow_exception(current_exception());
+            }
         }
         catch (const exception& e) {
             if (sendBuffer != nullptr) {
@@ -309,6 +312,9 @@ return timeStamp;
             }
             else {
                 cout << stackTrace << e.what() << "\n\n";
+            }
+            if (rethrow) {
+                rethrow_exception(current_exception());
             }
         }
         catch (const hresult_error& e) {
@@ -318,6 +324,9 @@ return timeStamp;
             }
             else {
                 cout << stackTrace << newException.what() << "\n\n";
+            }
+            if (rethrow) {
+                rethrow_exception(current_exception());
             }
         }
     }
@@ -3771,15 +3780,11 @@ namespace DiscordCoreAPI {
             this->type = e.type;
         }
 
-        static void initialize(string baseSearchURLNew, string baseSearchURL2New);
-
-        static vector<SoundCloudSong> searchForSong(string songQuery);
-
-        static string collectClientId(string searchQuery);
-
-        SoundCloudSong(string baseSearchURLNew, string baseSearchURL02New);
+        static void initialize();
 
         SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
+
+        static vector<SoundCloudSong> searchForSong(string songQuery);
 
     protected:
 
@@ -3795,6 +3800,8 @@ namespace DiscordCoreAPI {
         string trackAuthorization{ "" };
 
         SoundCloudSong();
+
+        static string collectClientId(string searchQuery);
 
         SoundCloudSong findSecondDownloadURL(SoundCloudSong newSong);
 
@@ -4168,8 +4175,8 @@ namespace DiscordCoreAPI {
     const string YouTubeSong::baseWatchURL{ "https://www.youtube.com/watch?v=" };
     const string YouTubeSong::baseURL{ "https://www.youtube.com" };
     string SoundCloudSong::appVersion{ "1631696495" };
-    string SoundCloudSong::baseSearchURL02{ "" };
-    string SoundCloudSong::baseSearchURL{ "" };
+    string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
+    string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };
     string SoundCloudSong::clientId{ "" };    
 };
 

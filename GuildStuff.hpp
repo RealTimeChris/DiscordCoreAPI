@@ -86,7 +86,6 @@ namespace DiscordCoreAPI {
 					(*voiceConnection)->encoder = nullptr;
 				}
 				(*voiceConnection)->hasTerminateRun = true;
-
 				SongAPI::voiceConnectionMap->erase(this->id);
 				YouTubeAPI::voiceConnectionMap->erase(this->id);
 				SoundCloudAPI::voiceConnectionMap->erase(this->id);

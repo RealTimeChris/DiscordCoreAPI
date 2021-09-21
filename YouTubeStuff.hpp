@@ -8,7 +8,6 @@
 #ifndef _YOUTUBE_STUFF_
 #define _YOUTUBE_STUFF_
 
-#include "DiscordCoreClientBase.hpp"
 #include "HttpStuff.hpp"
 #include "DataParsingFunctions.hpp"
 #include "DatabaseStuff.hpp"
@@ -429,7 +428,7 @@ namespace DiscordCoreAPI {
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			co_await resume_foreground(*threadContext->dispatcherQueue);
 			this->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
-				YouTubeAPI* thisPtr = this;
+				YouTubeAPI* thisPtr = strong_this.get();
 				auto tokenNew = thisPtr->cancelTokenSource.get_token();
 				apartment_context mainThread{};
 				auto newSong = song;
