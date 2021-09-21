@@ -1439,7 +1439,6 @@ namespace DiscordCoreAPI {
             start();
             agent::wait(this);
             exception error;
-            this->getError();
             return this->responseVector;
         }
 
@@ -1447,7 +1446,6 @@ namespace DiscordCoreAPI {
             if (SelectMenu::selectMenuInteractionBufferMap.contains(this->channelId + this->messageId)) {
                 SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
             }
-            this->getError();
             done();
         }
 
@@ -1456,7 +1454,6 @@ namespace DiscordCoreAPI {
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>* selectMenuIncomingInteractionBuffer{ nullptr };
         DiscordCoreAPI::SelectMenuInteractionData interactionData{};
-        unbounded_buffer<exception> errorBuffer{ nullptr };
         vector<SelectMenuResponseData> responseVector{};
         bool getButtonDataForAll{ false };
         unsigned int maxTimeInMs{ 0 };
@@ -1466,13 +1463,6 @@ namespace DiscordCoreAPI {
         string channelId{ "" };
         string messageId{ "" };
         string userId{ "" };
-
-        void getError() {
-            exception error;
-            while (try_receive(errorBuffer, error)) {
-                cout << "SelectMenu::run() Error: " << error.what() << endl << endl;
-            }
-        }
 
         void run() {
             try {
@@ -1527,7 +1517,7 @@ namespace DiscordCoreAPI {
                 SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
             }
             catch (...) {
-                rethrowException("", &this->errorBuffer);
+                rethrowException("SelectMenu::run() Error: ");
                 this->selectMenuId = "exit";
                 SelectMenu::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
@@ -1578,7 +1568,6 @@ namespace DiscordCoreAPI {
             start();
             agent::wait(this);
             exception error;
-            getError();
             return this->responseVector;
         }
 
@@ -1586,7 +1575,6 @@ namespace DiscordCoreAPI {
             if (Button::buttonInteractionBufferMap.contains(this->channelId + this->messageId)) {
                 Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
             }
-            this->getError();
             done();
         }
 
@@ -1595,7 +1583,6 @@ namespace DiscordCoreAPI {
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>* buttonIncomingInteractionBuffer{ nullptr };
         DiscordCoreAPI::ButtonInteractionData interactionData{};
-        unbounded_buffer<exception> errorBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};
         bool getButtonDataForAll{ false };
         unsigned int maxTimeInMs{ 0 };
@@ -1604,13 +1591,6 @@ namespace DiscordCoreAPI {
         bool doWeQuit{ false };
         string buttonId{ "" };
         string userId{ "" };
-
-        void getError() {
-            exception error;
-            while (try_receive(errorBuffer, error)) {
-                cout << "Button::run() Error: " << error.what() << endl << endl;
-            }
-        }
 
         void run() {
             try {
@@ -1662,7 +1642,7 @@ namespace DiscordCoreAPI {
                 done();
             }
             catch (...) {
-                rethrowException("", &this->errorBuffer);
+                rethrowException("Button::run() Error: ");
                 this->buttonId = "exit";
                 done();
                 Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
