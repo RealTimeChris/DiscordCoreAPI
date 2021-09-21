@@ -162,16 +162,19 @@ namespace DiscordCoreAPI {
 				if (SongAPI::isLoopAllEnabled(guildId) || SongAPI::isLoopSongEnabled(guildId)) {
 					SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
 					SongAPI::setCurrentSong(Song(), guildId);
+					
 				}
 				else {
 					SongAPI::setCurrentSong(Song(), guildId);
 				}
+				AudioFrameData frameData{};
+				while (try_receive(SongAPI::sendAudioDataBufferMap->at(guildId).get(), frameData)) {};
 				SongAPI::songAPIMap->at(guildId)->savePlaylist();
+				DiscordCoreClientBase::songAPIMap->erase(guildId);
 				SongAPI::songAPIMap->erase(guildId);
 				DiscordGuild* discordGuild = SongAPI::discordGuildMap->at(guildId);
 				shared_ptr<SongAPI> songAPICore = make_shared<SongAPI>(discordGuild);
 				SongAPI::songAPIMap->insert_or_assign(guildId, songAPICore);
-				SongAPI::songAPIMap->at(guildId)->loadPlaylist();
 				SongAPI::sendNextSong(guildId, guildMember);
 				return true;
 			}
@@ -186,12 +189,14 @@ namespace DiscordCoreAPI {
 				else {
 					SongAPI::setCurrentSong(Song(), guildId);
 				}
+				AudioFrameData frameData{};
+				while (try_receive(SongAPI::sendAudioDataBufferMap->at(guildId).get(), frameData)) {};
 				SongAPI::songAPIMap->at(guildId)->savePlaylist();
+				DiscordCoreClientBase::songAPIMap->erase(guildId);
 				SongAPI::songAPIMap->erase(guildId);
 				DiscordGuild* discordGuild = SongAPI::discordGuildMap->at(guildId);
 				shared_ptr<SongAPI> songAPICore = make_shared<SongAPI>(discordGuild);
 				SongAPI::songAPIMap->insert_or_assign(guildId, songAPICore);
-				SongAPI::songAPIMap->at(guildId)->loadPlaylist();
 				SongAPI::sendNextSong(guildId, guildMember);
 				return true;
 			}
