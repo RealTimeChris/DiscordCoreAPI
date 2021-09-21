@@ -23,7 +23,9 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreClientBase {
 	public:
-
+		
+		friend class DiscordCoreInternal::VoiceChannelWebSocketAgent;
+		friend class DiscordCoreInternal::WebSocketConnectionAgent;
 		friend class InputEvents;
 		friend class SongAPI;
 		friend class Guild;

@@ -35,9 +35,9 @@ namespace DiscordCoreAPI {
 			this->loadPlaylist();
 		}
 
-		static void initialize(map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMapNew, map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMapNew,map<string, shared_ptr<SongAPI>>*songAPICoreMapNew,  map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMapNew, map<string, DiscordGuild*>* discordGuildMapNew, map<string, shared_ptr<VoiceConnection>>* voiceConnectionMapNew) {
+		static void initialize(map<string, shared_ptr<SongAPI>>* songAPICoreMapNew, map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMapNew, map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMapNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMapNew, map<string, DiscordGuild*>* discordGuildMapNew, map<string, shared_ptr<VoiceConnection>>* voiceConnectionMapNew) {
 			SoundCloudAPI::initialize(soundCloudAPIMapNew, audioBuffersMapNew, discordGuildMapNew, voiceConnectionMapNew);
-			YouTubeAPI::initialize(youtubeAPIMapNew, audioBuffersMapNew, discordGuildMapNew, voiceConnectionMapNew);			
+			YouTubeAPI::initialize(youtubeAPIMapNew, audioBuffersMapNew, discordGuildMapNew, voiceConnectionMapNew);
 			SongAPI::sendAudioDataBufferMap = audioBuffersMapNew;
 			SongAPI::voiceConnectionMap = voiceConnectionMapNew;
 			SongAPI::discordGuildMap = discordGuildMapNew;

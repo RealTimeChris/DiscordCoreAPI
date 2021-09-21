@@ -20,6 +20,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClientBase;
+		friend class DiscordCoreClient;
 		friend class SoundCloudAPI;
 		friend class YouTubeAPI;
 		friend class Guild;
@@ -39,7 +40,7 @@ namespace DiscordCoreAPI {
 				}
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgent);
+				this->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgent, this->voicechannelWebSocketAgent);
 				this->voicechannelWebSocketAgent->start();
 				if (this->connectionReadyEvent.wait(10000) != 0) {
 					this->connectionReadyEvent.reset();

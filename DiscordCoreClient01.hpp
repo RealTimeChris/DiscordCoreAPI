@@ -56,9 +56,6 @@ namespace DiscordCoreAPI {
 
 		static void runBot() {
 			wait((agent*)DiscordCoreClient::thisPointer.get());
-			if (DiscordCoreClient::thisPointer->doWeQuitWebSocket) {
-				cout << "It appears as though there was a websocket issue!" << endl << endl;
-			}
 			DiscordCoreClient::thisPointer->getError();
 		}
 
@@ -101,7 +98,6 @@ namespace DiscordCoreAPI {
 		string baseURL{ "https://discord.com/api/v9" };
 		map<string, DiscordGuild*> discordGuildMap{};
 		map<string, vector<Song>> youtubeQueueMap{};
-		bool doWeQuitWebSocket{ false };
 		bool doWeQuit{ false };
 		string botToken{ "" };
 
@@ -115,7 +111,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpRequestAgent::initialize(this->botToken, this->baseURL);
 			SoundCloudSong::initialize(SoundCloudAPI::baseSearchURL, SoundCloudAPI::baseSearchURL02);
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
-			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, &this->doWeQuitWebSocket);
+			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, DiscordCoreClientBase::webSocketConnectionAgent);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(this->agentResources);
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize(this->agentResources, this->thisPointer);
@@ -146,7 +142,7 @@ namespace DiscordCoreAPI {
 			this->users->initialize(agentResources, this->thisPointer);
 			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			SongAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap, DiscordCoreClientBase::voiceConnectionMap);
+			SongAPI::initialize(DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap, DiscordCoreClientBase::voiceConnectionMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, this->discordUser->data.userId);
@@ -216,11 +212,22 @@ namespace DiscordCoreAPI {
 		void run() {
 			try {
 			startingPoint:
-				while (!this->doWeQuit && !this->doWeQuitWebSocket) {
+				while (!this->doWeQuit) {
 					DiscordCoreInternal::WebSocketWorkload workload{};
 					while (!try_receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, workload)) {
 						concurrency::wait(50);
-						if (this->doWeQuit || this->doWeQuitWebSocket) {
+						if (!this->doWeQuit) {
+							if (DiscordCoreClientBase::webSocketConnectionAgent == nullptr) {
+								DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken, DiscordCoreClientBase::webSocketConnectionAgent);
+								DiscordCoreClientBase::webSocketConnectionAgent->connect();
+							}
+							for (auto [key, value] : *DiscordCoreClientBase::voiceConnectionMap) {
+								if (value->voicechannelWebSocketAgent == nullptr) {
+									DiscordCoreClientBase::voiceConnectionMap->at(key)->voicechannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&DiscordCoreClientBase::voiceConnectionMap->at(key)->connectionReadyEvent,
+										DiscordCoreClientBase::voiceConnectionMap->at(key)->voiceConnectInitData, DiscordCoreClientBase::webSocketConnectionAgent, DiscordCoreClientBase::voiceConnectionMap->at(key)->voicechannelWebSocketAgent);
+									DiscordCoreClientBase::voiceConnectionMap->at(key)->voicechannelWebSocketAgent->connect();
+								}
+							}
 							goto startingPoint;
 						}
 					}
