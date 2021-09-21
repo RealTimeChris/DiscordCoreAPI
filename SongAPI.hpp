@@ -388,25 +388,20 @@ namespace DiscordCoreAPI {
 		}
 
 		static void sendNextSong(string guildId, GuildMember guildMember) {
-			try {
-				SongAPI::songAPIMap->at(guildId)->sendNextSong();
-				SongAPI::songAPIMap->at(guildId)->savePlaylist();
-				if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.songId == "") {
-					return;
+			SongAPI::songAPIMap->at(guildId)->sendNextSong();
+			SongAPI::songAPIMap->at(guildId)->savePlaylist();
+			if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.songId == "") {
+				return;
+			}
+			else {
+				if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.type == SongType::SoundCloud) {
+					auto newerSong = SoundCloudAPI::soundCloudAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
+					SoundCloudAPI::sendNextSong(newerSong, guildId);
 				}
 				else {
-					if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.type == SongType::SoundCloud) {
-						auto newerSong = SoundCloudAPI::soundCloudAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
-						SoundCloudAPI::sendNextSong(newerSong, guildId);
-					}
-					else {
-						auto newerSong = YouTubeAPI::youtubeAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
-						YouTubeAPI::sendNextSong(newerSong, guildId);
-					}
+					auto newerSong = YouTubeAPI::youtubeAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
+					YouTubeAPI::sendNextSong(newerSong, guildId);
 				}
-			}
-			catch (...) {
-				rethrowException("SongAPI::sendNextSong() Error: ");
 			}
 		}
 		
