@@ -228,6 +228,8 @@ namespace DiscordCoreAPI {
 									DiscordCoreClientBase::voiceConnectionMap->at(key)->voicechannelWebSocketAgent->connect();
 								}
 							}
+						}
+						else {
 							goto startingPoint;
 						}
 					}
