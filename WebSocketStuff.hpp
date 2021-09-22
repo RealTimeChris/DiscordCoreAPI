@@ -106,7 +106,6 @@ namespace DiscordCoreInternal {
 		GetVoiceConnectionData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		bool haveWeAlreadyConnected{ false };
 		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
@@ -131,6 +130,14 @@ namespace DiscordCoreInternal {
 		void getVoiceConnectionData(GetVoiceConnectionData doWeCollect) {
 			try {
 				this->voiceConnectInitData = doWeCollect;
+				UpdateVoiceStateData dataPackage01;
+				dataPackage01.channelId = "";
+				dataPackage01.guildId = this->voiceConnectInitData.guildId;
+				dataPackage01.selfDeaf = true;
+				dataPackage01.selfMute = false;
+				string newString01 = getVoiceStateUpdatePayload(dataPackage01);
+				this->sendMessage(newString01);
+				concurrency::wait(1500);
 				UpdateVoiceStateData dataPackage;
 				dataPackage.channelId = doWeCollect.channelId;
 				dataPackage.guildId = doWeCollect.guildId;
@@ -143,7 +150,7 @@ namespace DiscordCoreInternal {
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::getVoiceConnectionData() Error: ");
 			}
-
+			
 		}
 
 		~WebSocketConnectionAgent() {
@@ -246,7 +253,6 @@ namespace DiscordCoreInternal {
 					this->voiceConnectionData.token = payload.at("d").at("token").get<string>();
 					this->serverUpdateCollected = true;
 					send(*this->voiceConnectionDataBuffer, this->voiceConnectionData);
-					this->haveWeAlreadyConnected = true;
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
@@ -261,7 +267,6 @@ namespace DiscordCoreInternal {
 				else {
 					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<string>();
 					send(*this->voiceConnectionDataBuffer, this->voiceConnectionData);
-					this->haveWeAlreadyConnected = true;
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
@@ -358,13 +363,12 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew, concurrency::event* stopSetEventNew, bool* areWeStoppingNew)
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew, bool* doWeReconnectNew)
 			:
 			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
 			agent(*this->scheduler->scheduler) {
 			this->voiceConnectionDataBuffer = webSocketConnectionAgentNew->voiceConnectionDataBuffer;
-			this->areWeStopping = areWeStoppingNew;
-			this->stopSetEvent = stopSetEventNew;
+			this->doWeReconnect = doWeReconnectNew;
 			this->webSocketConnectionAgent = webSocketConnectionAgentNew;
 			this->voiceConnectInitData = initDataNew;
 			GetVoiceConnectionData dataPackage;
@@ -421,7 +425,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
 				this->webSocket->Close(1008, L"Message sending failed.");
 			}
-
+			
 		}
 
 		~VoiceChannelWebSocketAgent() {
@@ -436,7 +440,6 @@ namespace DiscordCoreInternal {
 		shared_ptr<DatagramSocket> voiceSocket{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
-		concurrency::event* stopSetEvent {nullptr};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		event_token voiceDataReceivedToken{};
@@ -446,8 +449,7 @@ namespace DiscordCoreInternal {
 		DataWriter dataWriter{ nullptr };
 		int currentReconnectTries{ 0 };
 		bool areWeWaitingForIp{ true };
-		bool* areWeStopping{ nullptr };
-		bool doWeReconnect{ false };
+		bool* doWeReconnect{ nullptr };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
@@ -520,7 +522,8 @@ namespace DiscordCoreInternal {
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
 			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() != 4014) {
-				this->doWeReconnect = true;
+				this->cleanup();
+				*this->doWeReconnect = true;
 			}
 			else if (this->maxReconnectTries <= this->currentReconnectTries) {
 				this->terminate();
@@ -534,7 +537,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
-
+			
 			hstring message;
 			DataReader dataReader{ nullptr };
 			if (args.GetDataReader() != nullptr) {
@@ -586,8 +589,11 @@ namespace DiscordCoreInternal {
 					this->readyEvent->set();
 				}
 
-				if (payload.at("op") == 13) {}
-
+				if (payload.at("op") == 13) {
+					if (payload.at("d").at("user_id") !="871943082805973015") {
+						this->webSocket->Close(1007, L"TESTING");
+					}
+				}
 
 				if (payload.at("op") == 8) {
 					if (payload.at("d").contains("heartbeat_interval")) {
@@ -683,7 +689,7 @@ namespace DiscordCoreInternal {
 					}
 					catch (operation_timed_out&) {
 						continue;
-					}
+					}					
 				}
 			}
 			catch (...) {

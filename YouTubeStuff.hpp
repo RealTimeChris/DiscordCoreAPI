@@ -690,7 +690,7 @@ namespace DiscordCoreAPI {
 						frameData.type = AudioFrameType::Cancel;
 						frameData.rawFrameData.sampleCount = 0;
 						send(thisPtr->sendAudioDataBuffer.get(), frameData);
-						thisPtr->voiceConnection->onSongCompletionEvent(thisPtr->voiceConnection.get());
+						(*thisPtr->voiceConnection->onSongCompletionEvent)(thisPtr->voiceConnection.get());
 						rethrow_exception(current_exception());
 						thisPtr->readyToBeDoneEvent.set();
 						return;

@@ -139,7 +139,6 @@ namespace DiscordCoreInternal {
 				{"self_deaf", dataPackage.selfDeaf}
 			}} };
 		}
-				
 
 		return data.dump();
 	}

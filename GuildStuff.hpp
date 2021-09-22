@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 				voiceConnectInitData.channelId = channelId;
 				voiceConnectInitData.guildId = this->id;
 				voiceConnectInitData.userId = this->discordCoreClientBase->currentUser.id;
-				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::webSocketConnectionAgent));
+				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::webSocketConnectionAgent, this->id, DiscordCoreClientBase::voiceConnectionMap));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
 				YouTubeAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
 				SoundCloudAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
@@ -56,14 +56,15 @@ namespace DiscordCoreAPI {
 				auto youtubeAPI = make_shared<YouTubeAPI>(this->id);
 				DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 				auto soundCloudAPI = make_shared<SoundCloudAPI>(this->id);
-				DiscordCoreClientBase::soundCloudAPIMap->insert_or_assign(this->id, soundCloudAPI);
+				DiscordCoreClientBase::soundCloudAPIMap->insert(make_pair(this->id, soundCloudAPI));
 				auto songAPI = make_shared<SongAPI>(discordGuild);
-				DiscordCoreClientBase::songAPIMap->insert_or_assign(this->id, songAPI);
+				DiscordCoreClientBase::songAPIMap->insert(make_pair(this->id, songAPI));
+				this->areWeConnectedBool = true;
 				return &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			return voiceConnectionPtr;
 		}
-		
+
 		void disconnect() {
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				if (DiscordCoreClientBase::songAPIMap->contains(this->id)) {
@@ -86,11 +87,9 @@ namespace DiscordCoreAPI {
 					(*voiceConnection)->encoder = nullptr;
 				}
 				(*voiceConnection)->hasTerminateRun = true;
-				SongAPI::voiceConnectionMap->erase(this->id);
-				YouTubeAPI::voiceConnectionMap->erase(this->id);
-				SoundCloudAPI::voiceConnectionMap->erase(this->id);
+				DiscordCoreClientBase::voiceConnectionMap->at(this->id)->voiceChannelWebSocketAgent->~VoiceChannelWebSocketAgent();
 				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
-				if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)){
+				if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)) {
 					send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
 					AudioFrameData frameData{};
 					while (try_receive(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), frameData)) {};
@@ -98,8 +97,12 @@ namespace DiscordCoreAPI {
 					YouTubeAPI::sendAudioDataBufferMap->erase(this->id);
 					SoundCloudAPI::sendAudioDataBufferMap->erase(this->id);
 				}
-				
+				this->areWeConnectedBool = false;
 			}
+		}
+
+		bool areWeConnected() {
+			return this->areWeConnectedBool;
 		}
 
 		shared_ptr<YouTubeAPI> getYouTubeAPI() {
@@ -112,6 +115,8 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
+
+		bool areWeConnectedBool{ false };
 
 		Guild() {};
 
@@ -136,7 +141,7 @@ namespace DiscordCoreAPI {
 			this->welcomeScreen = dataNew.welcomeScreen;
 			this->widgetEnabled = dataNew.widgetEnabled;
 			this->vanityURLCode = dataNew.vanityURLCode;
-			this->applicationId = dataNew.applicationId;			
+			this->applicationId = dataNew.applicationId;
 			this->maxPresences = dataNew.maxPresences;
 			this->afkChannelId = dataNew.afkChannelId;
 			this->description = dataNew.description;

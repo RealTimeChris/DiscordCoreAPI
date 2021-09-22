@@ -25,7 +25,8 @@ namespace DiscordCoreAPI {
 		friend class YouTubeAPI;
 		friend class Guild;
 
-		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew,  shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent) :
+		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew, 
+			shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgentNew, string guildIdNew, map<string, shared_ptr<VoiceConnection>>* voiceConnectionMapNew) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get()),
 			agent(*threadContextNew->scheduler->scheduler)
 		{
@@ -39,14 +40,24 @@ namespace DiscordCoreAPI {
 					cout << "Failed to create Opus encoder!" << endl << endl;
 				}
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
-				this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				this->voiceChannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(&this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgent, &this->stopSetEvent, &this->areWeStopping);
+				VoiceConnection::voiceConnectionMap = voiceConnectionMapNew;
+				this->guildId = guildIdNew;
+				this->guildIdNew = guildIdNew;
+				if (VoiceConnection::receiveAudioBufferMap->contains(guildIdNew)) {
+					this->audioDataBuffer = VoiceConnection::receiveAudioBufferMap->at(guildIdNew);
+				}
+				else {
+					this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
+				}
+				this->voiceChannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgentNew, &this->doWeReconnect);
 				this->voiceChannelWebSocketAgent->start();
-				if (this->connectionReadyEvent.wait(10000) != 0) {
-					this->connectionReadyEvent.reset();
+				this->websocketAgent = websocketAgentNew;
+				if (this->connectionReadyEvent->wait(10000) != 0) {
+					this->connectionReadyEvent->reset();
 					return;
 				}
-				this->connectionReadyEvent.reset();
+				this->connectionReadyEvent->reset();
+				this->onSongCompletionEvent = new winrt::event<delegate<VoiceConnection*>>();
 				this->voiceConnectInitData = this->voiceChannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voiceChannelWebSocketAgent->voiceConnectionData;
 				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
@@ -70,7 +81,7 @@ namespace DiscordCoreAPI {
 			if (!this->areWeInstantiated) {
 				this->areWeInstantiated = true;
 				this->start();
-				return onSongCompletionEvent.add(handler);
+				return onSongCompletionEvent->add(handler);
 			}
 			else {
 				return event_token();
@@ -78,7 +89,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void onSongCompletion(event_token const& token) {
-			onSongCompletionEvent.remove(token);
+			onSongCompletionEvent->remove(token);
 		}
 
 		bool areWeConnected() {
@@ -103,13 +114,13 @@ namespace DiscordCoreAPI {
 			if (this->areWePlaying) {
 				this->areWeStopping = true;
 				this->areWePlaying = false;
-				if (this->stopWaitEvent.wait(1000) != 0) {
-					this->stopWaitEvent.reset();
+				if (this->stopWaitEvent->wait(1000) != 0) {
+					this->stopWaitEvent->reset();
 					return false;
 				}
 				this->clearAudioData();
-				this->stopWaitEvent.reset();
-				this->stopSetEvent.set();
+				this->stopWaitEvent->reset();
+				this->stopSetEvent->set();
 				return true;
 			}
 			else {
@@ -121,13 +132,13 @@ namespace DiscordCoreAPI {
 			if (this->areWePlaying){
 				this->areWeStopping= true;
 				this->areWePlaying = false;
-				if (this->stopWaitEvent.wait(1000) != 0) {
-					this->stopWaitEvent.reset();
+				if (this->stopWaitEvent->wait(1000) != 0) {
+					this->stopWaitEvent->reset();
 					return false;
 				}
 				this->clearAudioData();
-				this->stopWaitEvent.reset();
-				this->stopSetEvent.set();
+				this->stopWaitEvent->reset();
+				this->stopSetEvent->set();
 				return true;
 			}
 			else {
@@ -137,12 +148,12 @@ namespace DiscordCoreAPI {
 
 		bool play() {
 			if (this != nullptr) {
-				if (this->playWaitEvent.wait(2000) != 0) {
-					this->playWaitEvent.reset();
+				if (this->playWaitEvent->wait(2000) != 0) {
+					this->playWaitEvent->reset();
 					return false;
 				};
-				this->playWaitEvent.reset();
-				this->playSetEvent.set();
+				this->playWaitEvent->reset();
+				this->playSetEvent->set();
 				if (!this->areWeWaiting) {
 					this->areWeWaiting = true;
 					wait(this);
@@ -153,6 +164,21 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
+		static void reconnect(string guildId) {
+			if (voiceConnectionMap->contains(guildId)) {
+				auto voiceConnectionData = VoiceConnection::voiceConnectionMap->at(guildId)->voiceConnectInitData;
+				auto webSocketAgent = VoiceConnection::voiceConnectionMap->at(guildId)->websocketAgent;
+				auto audioBuffersMap = VoiceConnection::voiceConnectionMap->at(guildId)->receiveAudioBufferMap;
+				auto onSongCompletionEvent = VoiceConnection::voiceConnectionMap->at(guildId)->onSongCompletionEvent;
+				voiceConnectionMap->erase(guildId);
+				voiceConnectionMap->insert_or_assign(guildId, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectionData, audioBuffersMap, webSocketAgent, guildId, VoiceConnection::voiceConnectionMap));
+				voiceConnectionMap->at(guildId)->onSongCompletionEvent = onSongCompletionEvent;
+				voiceConnectionMap->at(guildId)->sendSpeakingMessage(true);
+				voiceConnectionMap->at(guildId).get()->start();
+				voiceConnectionMap->at(guildId).get()->play();
+			}
+		}
+
 		void pauseToggle() {
 			if (this != nullptr) {
 				if (!this->areWePaused) {
@@ -161,8 +187,8 @@ namespace DiscordCoreAPI {
 				}
 				else {
 					sendSpeakingMessage(true);
-					this->pauseEvent.set();
-					this->pauseEvent.reset();
+					this->pauseEvent->set();
+					this->pauseEvent->reset();
 				}
 			}
 		}
@@ -171,32 +197,38 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
+
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* receiveAudioBufferMap{ nullptr };
+		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
-		winrt::event<delegate<VoiceConnection*>> onSongCompletionEvent {};
+		concurrency::event* connectionReadyEvent {new concurrency::event()};
+		winrt::event<delegate<VoiceConnection*>>* onSongCompletionEvent {};
+		concurrency::event* disconnectionEvent {new concurrency::event()};
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		concurrency::event connectionReadyEvent {};
-		concurrency::event disconnectionEvent {};
-		concurrency::event playWaitEvent {};
-		concurrency::event stopWaitEvent {};
-		concurrency::event playSetEvent {};
-		concurrency::event stopSetEvent {};
+		concurrency::event* playWaitEvent {new concurrency::event()};
+		concurrency::event* stopWaitEvent {new concurrency::event()};
+		concurrency::event* playSetEvent {new concurrency::event()};
+		concurrency::event* stopSetEvent {new concurrency::event()};
+		concurrency::event* pauseEvent {new concurrency::event()};
 		unsigned short sequenceIndex{ 0 };
-		bool areWeConnectedBool{ false };
-		concurrency::event pauseEvent {};
+		bool areWeConnectedBool{ false };		
 		OpusEncoder* encoder{ nullptr };
 		const int maxBufferSize{ 1276 };
 		bool areWeInstantiated{ false };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
+		bool doWeReconnect{ false };
 		unsigned int timestamp{ 0 };
 		bool areWeWaiting{ false };
 		bool areWePlaying{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
+		string guildIdNew{ "" };
 		bool doWeQuit{ false };
+		string guildId{ "" };
 
 		void clearAudioData() {
 			if (this->audioData.encodedFrameData.data.size() != 0 && this->audioData.rawFrameData.data.size() != 0) {
@@ -309,16 +341,16 @@ namespace DiscordCoreAPI {
 			try {
 				while (!this->doWeQuit) {
 					if (!this->areWePlaying) {
-						this->playWaitEvent.set();
+						this->playWaitEvent->set();
 						this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
 						this->audioData.type = AudioFrameType::Unset;
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
-						if (this->playSetEvent.wait(10000) != 0) {
-							this->playSetEvent.reset();
+						if (this->playSetEvent->wait(10000) != 0) {
+							this->playSetEvent->reset();
 							continue;
 						};
-						this->playSetEvent.reset();
+						this->playSetEvent->reset();
 					start:
 						if (this->doWeQuit) {
 							done();
@@ -348,13 +380,18 @@ namespace DiscordCoreAPI {
 					if (this->audioData.type == AudioFrameType::Encoded) {
 						this->areWePlaying = true;
 						while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping) {
+							if (this->doWeReconnect) {
+								VoiceConnection::reconnect(this->guildId);
+								this->done();
+								return;
+							}
 							if (this->areWeStopping) {
 								this->areWePlaying = false;
 								frameCounter = 0;
 								break;
 							}
 							if (this->areWePaused) {
-								this->pauseEvent.wait();
+								this->pauseEvent->wait();
 								this->areWePaused = false;
 							}
 							if (this->doWeQuit) {
@@ -382,7 +419,7 @@ namespace DiscordCoreAPI {
 								this->audioData.rawFrameData.data.clear();
 							}
 							else if (this->audioData.type == AudioFrameType::Cancel) {
-								this->onSongCompletionEvent(this);
+								(*this->onSongCompletionEvent)(this);
 								this->areWePlaying = false;
 								frameCounter = 0;
 								break;
@@ -393,13 +430,18 @@ namespace DiscordCoreAPI {
 					else if (this->audioData.type == AudioFrameType::RawPCM) {
 						this->areWePlaying = true;
 						while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping) {
+							if (this->doWeReconnect) {
+								VoiceConnection::reconnect(this->guildId);
+								this->done();
+								return;
+							}
 							if (this->areWeStopping) {
 								this->areWePlaying = false;
 								frameCounter = 0;
 								break;
 							}
 							if (this->areWePaused) {
-								this->pauseEvent.wait();
+								this->pauseEvent->wait();
 								this->areWePaused = false;
 							}
 							if (this->doWeQuit) {
@@ -428,7 +470,7 @@ namespace DiscordCoreAPI {
 								this->audioData.rawFrameData.data.clear();
 							}
 							else if (this->audioData.type == AudioFrameType::Cancel) {
-								this->onSongCompletionEvent(this);
+								(*this->onSongCompletionEvent)(this);
 								this->areWePlaying = false;
 								frameCounter = 0;
 								break;
@@ -437,10 +479,10 @@ namespace DiscordCoreAPI {
 					}
 					this->areWePlaying = false;
 					if (this->areWeStopping) {
-						this->stopWaitEvent.set();
-						this->stopSetEvent.wait(5000);
+						this->stopWaitEvent->set();
+						this->stopSetEvent->wait(5000);
 						this->clearAudioData();
-						this->stopSetEvent.reset();
+						this->stopSetEvent->reset();
 						this->areWeStopping = false;
 					}
 					this->sendSpeakingMessage(false);
@@ -452,5 +494,6 @@ namespace DiscordCoreAPI {
 			this->done();
 		}
 	};
+	map<string, shared_ptr<VoiceConnection>>* VoiceConnection::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
 };
 #endif
