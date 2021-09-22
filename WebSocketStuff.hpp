@@ -143,7 +143,7 @@ namespace DiscordCoreInternal {
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::getVoiceConnectionData() Error: ");
 			}
-			
+
 		}
 
 		~WebSocketConnectionAgent() {
@@ -358,7 +358,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew, concurrency::event* stopSetEventNew , bool* areWeStoppingNew)
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgentNew, concurrency::event* stopSetEventNew, bool* areWeStoppingNew)
 			:
 			ThreadContext(*ThreadManager::getThreadContext(ThreadType::Music).get()),
 			agent(*this->scheduler->scheduler) {
@@ -421,7 +421,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
 				this->webSocket->Close(1008, L"Message sending failed.");
 			}
-			
+
 		}
 
 		~VoiceChannelWebSocketAgent() {
@@ -534,7 +534,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args) {
-			
+
 			hstring message;
 			DataReader dataReader{ nullptr };
 			if (args.GetDataReader() != nullptr) {
@@ -586,9 +586,7 @@ namespace DiscordCoreInternal {
 					this->readyEvent->set();
 				}
 
-				if (payload.at("op") == 13) {
-					this->webSocket->Close(1007, L"TESTING");
-				}
+				if (payload.at("op") == 13) {}
 
 
 				if (payload.at("op") == 8) {
@@ -685,7 +683,7 @@ namespace DiscordCoreInternal {
 					}
 					catch (operation_timed_out&) {
 						continue;
-					}					
+					}
 				}
 			}
 			catch (...) {
