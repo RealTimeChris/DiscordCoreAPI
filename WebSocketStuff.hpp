@@ -179,6 +179,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::sendMessage() Error: ");
+				this->webSocket->Close(1008, L"Message sending failed.");
 			}
 		}
 
@@ -418,6 +419,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
+				this->webSocket->Close(1008, L"Message sending failed.");
 			}
 			
 		}
@@ -584,7 +586,10 @@ namespace DiscordCoreInternal {
 					this->readyEvent->set();
 				}
 
-				if (payload.at("op") == 13) {}
+				if (payload.at("op") == 13) {
+					this->webSocket->Close(1007, L"TESTING");
+				}
+
 
 				if (payload.at("op") == 8) {
 					if (payload.at("d").contains("heartbeat_interval")) {
