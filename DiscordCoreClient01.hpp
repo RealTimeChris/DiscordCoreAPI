@@ -123,11 +123,11 @@ namespace DiscordCoreAPI {
 			this->interactions = make_shared<DiscordCoreInternal::InteractionManager>(nullptr);
 			this->interactions->initialize(this->agentResources);
 			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(nullptr);
-			this->guildMembers->initialize(agentResources, this->thisPointer);
+			this->guildMembers->initialize(this->agentResources, this->thisPointer);
 			this->reactions = make_shared<DiscordCoreInternal::ReactionManager>(nullptr);
 			this->reactions->initialize(this->agentResources, this->thisPointer);
 			this->channels = make_shared<DiscordCoreInternal::ChannelManager>(nullptr);
-			this->channels->initialize(agentResources, this->thisPointer);
+			this->channels->initialize(this->agentResources, this->thisPointer);
 			this->messages = make_shared<DiscordCoreInternal::MessageManager>(nullptr);
 			this->messages->initialize(this->agentResources, this->thisPointer);
 			this->stickers = make_shared<DiscordCoreInternal::StickerManager>(nullptr);
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 			this->roles = make_shared<DiscordCoreInternal::RoleManager>(nullptr);
 			this->roles->initialize(this->agentResources, this->thisPointer);
 			this->users = make_shared<DiscordCoreInternal::UserManager>(nullptr);
-			this->users->initialize(agentResources, this->thisPointer);
+			this->users->initialize(this->agentResources, this->thisPointer);
 			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			SongAPI::initialize(DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap, DiscordCoreClientBase::voiceConnectionMap);

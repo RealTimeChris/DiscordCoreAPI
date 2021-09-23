@@ -873,8 +873,8 @@ namespace  DiscordCoreInternal {
         ScheduleGroup* scheduleGroup{ nullptr };
     };
 
-    struct ScheduleWrapper {
-        ScheduleWrapper(Scheduler* dataPackage) {
+    struct SchedulerWrapper {
+        SchedulerWrapper(Scheduler* dataPackage) {
             this->scheduler = dataPackage;
         }
         Scheduler* scheduler{ nullptr };
@@ -906,7 +906,7 @@ namespace  DiscordCoreInternal {
 
         shared_ptr<ScheduleGroupWrapper> scheduleGroup{ nullptr };
         shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
-        shared_ptr<ScheduleWrapper> scheduler{ nullptr };        
+        shared_ptr<SchedulerWrapper> scheduler{ nullptr };
     };
 
     enum class HeaderTypes {

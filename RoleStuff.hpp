@@ -15,7 +15,7 @@
 
 namespace DiscordCoreAPI {
 
-	class Role :public RoleData {
+	class Role : public RoleData {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Role>;

@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		vector<Message> messages;
 	};
 
-	class MessageCollector :DiscordCoreInternal::ThreadContext, agent {
+	class MessageCollector : DiscordCoreInternal::ThreadContext, agent {
 	public:
 
 		friend class DiscordCoreClient;

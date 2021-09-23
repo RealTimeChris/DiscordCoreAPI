@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
         Scheduler* newScheduler{ Scheduler::Create(policy) };
         newScheduler->Attach();
         shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
-        threadContext->scheduler = make_shared<ScheduleWrapper>(newScheduler);
+        threadContext->scheduler = make_shared<SchedulerWrapper>(newScheduler);
         threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
         threadContext->scheduleGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->scheduler->CreateScheduleGroup());
         co_return threadContext;
