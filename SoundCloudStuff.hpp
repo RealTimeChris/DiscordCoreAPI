@@ -251,135 +251,109 @@ namespace DiscordCoreAPI {
 			auto song = newSong;
 			auto thisPtr = soundCloudAPI;
 			thisPtr->currentTask =new task<void> (create_task([=, strong_this{ get_strong() }]()->task<void> {
-				try {
-					BuildSongDecoderData dataPackage{};
-					auto tokenNew = thisPtr->cancelTokenSource.get_token();
-					if (strong_this->sendAudioDataBufferMap->contains(strong_this->guildId)) {
-						strong_this->sendAudioDataBuffer = strong_this->sendAudioDataBufferMap->at(strong_this->guildId);
-					}
-					else {
-						co_return;
-					}
-					int counter{ 0 };
-					Filters::HttpBaseProtocolFilter filter;
-					Filters::HttpCacheControl cacheControl{ nullptr };
-					cacheControl = filter.CacheControl();
-					cacheControl.ReadBehavior(Filters::HttpCacheReadBehavior::NoCache);
-					cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
-					auto getHttpClient = HttpClient(filter);
-					auto getHeaders = getHttpClient.DefaultRequestHeaders();
-					winrt::Windows::Foundation::Uri uri(to_hstring(song.finalDownloadURLs.at(counter).urlPath));
-					auto results00 = getHttpClient.TryGetBufferAsync(uri).get();
-
-					DiscordCoreInternal::HttpAgentResources agentResources01{};
-					agentResources01.baseURL = song.finalDownloadURLs.at(counter).urlPath;
-					DiscordCoreInternal::HttpRequestAgent requestAgent01(agentResources01);
-					DiscordCoreInternal::HttpWorkloadData workloadData01{};
-					workloadData01.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-					workloadData01.workloadType = DiscordCoreInternal::HttpWorkloadType::SOUNDCLOUD_SONG_GET;
-					auto result01 = requestAgent01.submitWorkloadAndGetResult(workloadData01, "SoundCloudAPI::downloadAndStream Audio() Error: ");
-					dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
-					dataPackage.totalFileSize = song.contentLength;
-					dataPackage.bufferMaxSize = song.contentLength;
-					SongDecoder* songDecoder = new SongDecoder(dataPackage);
-					SongEncoder* songEncoder = new SongEncoder();
-					send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
-					while (counter < song.finalDownloadURLs.size()) {
-						if (tokenNew.is_canceled()) {
-							songDecoder->refreshTimeForBuffer = 10;
-							strong_this->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
-							agent::wait(songDecoder);
-							strong_this->readyToBeDoneEvent.set();
-							threadContext->releaseGroup();
-							cancel_current_task();
-							co_return;
-						}
-						DiscordCoreInternal::HttpAgentResources agentResources{};
-						agentResources.baseURL = song.finalDownloadURLs.at(counter).urlPath;
-						DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
-						DiscordCoreInternal::HttpWorkloadData workloadData{};
-						workloadData.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-						workloadData.workloadType = DiscordCoreInternal::HttpWorkloadType::SOUNDCLOUD_SONG_GET;
-						auto result = requestAgent.submitWorkloadAndGetResult(workloadData, "SoundCloudAPI::downloadAndStreamAudio() Error: ");
-						vector<uint8_t> newVector{};
-						for (unsigned int x = 0; x < result.returnMessage.size(); x += 1) {
-							newVector.push_back(result.returnMessage[x]);
-						}
-						if (counter == 0) {
-							songDecoder->startMe();
-						}
-						songDecoder->submitDataForDecoding(newVector);
-						if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
-							vector<RawFrameData> frames{};
-							RawFrameData rawFrame{};
-							rawFrame.data.resize(0);
-							while (songDecoder->getFrame(&rawFrame)) {
-								if (rawFrame.data.size() != 0) {
-									frames.push_back(rawFrame);
-								}
-							}
-							if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
-								auto encodedFrames = songEncoder->encodeFrames(frames);
-								for (auto value : encodedFrames) {
-									if (!strong_this->areWeStopping && !tokenNew.is_canceled()) {
-										send(strong_this->sendAudioDataBuffer.get(), value);
-									}
-
-								}
-							}
-						}
-						StopWatch stopWatch(1);
-						while (!stopWatch.hasTimePassed()) {
-							wait(1);
-						}
-						counter += 1;
-					}
-
-					if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
-						vector<uint8_t> newVector{};
-						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-						RawFrameData frameData01{};
-						while (songDecoder->getFrame(&frameData01)) {};
-						AudioFrameData frameData{};
-						frameData.type = AudioFrameType::Cancel;
-						frameData.rawFrameData.sampleCount = 0;
-						frameData.encodedFrameData.sampleCount = 0;
-						send(strong_this->sendAudioDataBuffer.get(), frameData);
-					}
-					vector<uint8_t> newVector;
-					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-					songDecoder->refreshTimeForBuffer = 10;
-					agent::wait(songDecoder);
-					delete songDecoder;
-					songDecoder = nullptr;
-					strong_this->currentTask = nullptr;
-					this->readyToBeDoneEvent.set();
+				BuildSongDecoderData dataPackage{};
+				auto tokenNew = thisPtr->cancelTokenSource.get_token();
+				if (strong_this->sendAudioDataBufferMap->contains(strong_this->guildId)) {
+					strong_this->sendAudioDataBuffer = strong_this->sendAudioDataBufferMap->at(strong_this->guildId);
+				}
+				else {
 					co_return;
 				}
-				catch (...) {
-					if (retryCountNew < 5) {
-						int retryCountNewer = retryCountNew;
-						retryCountNewer += 1;
-						thisPtr->downloadAndStreamAudioWrapper(newSong, thisPtr, retryCountNewer).get();
-						rethrowException("SoundCloudAPI::downloadAndStreamAudioToBeWrapped() Error: ");
-						thisPtr->readyToBeDoneEvent.set();
+				int counter{ 0 };
+				Filters::HttpBaseProtocolFilter filter;
+				Filters::HttpCacheControl cacheControl{ nullptr };
+				cacheControl = filter.CacheControl();
+				cacheControl.ReadBehavior(Filters::HttpCacheReadBehavior::NoCache);
+				cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
+				auto getHttpClient = HttpClient(filter);
+				auto getHeaders = getHttpClient.DefaultRequestHeaders();
+				winrt::Windows::Foundation::Uri uri(to_hstring(song.finalDownloadURLs.at(counter).urlPath));
+				auto results00 = getHttpClient.TryGetBufferAsync(uri).get();
+
+				DiscordCoreInternal::HttpAgentResources agentResources01{};
+				agentResources01.baseURL = song.finalDownloadURLs.at(counter).urlPath;
+				DiscordCoreInternal::HttpRequestAgent requestAgent01(agentResources01);
+				DiscordCoreInternal::HttpWorkloadData workloadData01{};
+				workloadData01.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+				workloadData01.workloadType = DiscordCoreInternal::HttpWorkloadType::SOUNDCLOUD_SONG_GET;
+				auto result01 = requestAgent01.submitWorkloadAndGetResult(workloadData01, "SoundCloudAPI::downloadAndStream Audio() Error: ");
+				dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
+				dataPackage.totalFileSize = song.contentLength;
+				dataPackage.bufferMaxSize = song.contentLength;
+				SongDecoder* songDecoder = new SongDecoder(dataPackage);
+				SongEncoder* songEncoder = new SongEncoder();
+				send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
+				while (counter < song.finalDownloadURLs.size()) {
+					if (tokenNew.is_canceled()) {
+						songDecoder->refreshTimeForBuffer = 10;
+						strong_this->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+						agent::wait(songDecoder);
+						strong_this->readyToBeDoneEvent.set();
+						threadContext->releaseGroup();
+						cancel_current_task();
 						co_return;
 					}
-					else {
-						vector<uint8_t> newVector;
-						AudioFrameData frameData{};
-						frameData.encodedFrameData.sampleCount = 0;
-						frameData.type = AudioFrameType::Cancel;
-						frameData.rawFrameData.sampleCount = 0;
-						send(thisPtr->sendAudioDataBuffer.get(), frameData);
-						thisPtr->discordGuild->data.playlist.currentSong = Song();
-						thisPtr->discordGuild->writeDataToDB();
-						(*thisPtr->voiceConnection->onSongCompletionEvent)(thisPtr->voiceConnection.get());
-						rethrow_exception(current_exception());
-						thisPtr->readyToBeDoneEvent.set();
-						co_return;
+					DiscordCoreInternal::HttpAgentResources agentResources{};
+					agentResources.baseURL = song.finalDownloadURLs.at(counter).urlPath;
+					DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
+					DiscordCoreInternal::HttpWorkloadData workloadData{};
+					workloadData.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
+					workloadData.workloadType = DiscordCoreInternal::HttpWorkloadType::SOUNDCLOUD_SONG_GET;
+					auto result = requestAgent.submitWorkloadAndGetResult(workloadData, "SoundCloudAPI::downloadAndStreamAudio() Error: ");
+					vector<uint8_t> newVector{};
+					for (unsigned int x = 0; x < result.returnMessage.size(); x += 1) {
+						newVector.push_back(result.returnMessage[x]);
 					}
+					if (counter == 0) {
+						songDecoder->startMe();
+					}
+					songDecoder->submitDataForDecoding(newVector);
+					if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
+						vector<RawFrameData> frames{};
+						RawFrameData rawFrame{};
+						rawFrame.data.resize(0);
+						while (songDecoder->getFrame(&rawFrame)) {
+							if (rawFrame.data.size() != 0) {
+								frames.push_back(rawFrame);
+							}
+						}
+						if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
+							auto encodedFrames = songEncoder->encodeFrames(frames);
+							for (auto value : encodedFrames) {
+								if (!strong_this->areWeStopping && !tokenNew.is_canceled()) {
+									send(strong_this->sendAudioDataBuffer.get(), value);
+								}
+
+							}
+						}
+					}
+					StopWatch stopWatch(1);
+					while (!stopWatch.hasTimePassed()) {
+						wait(1);
+					}
+					counter += 1;
 				}
+
+				if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
+					vector<uint8_t> newVector{};
+					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+					RawFrameData frameData01{};
+					while (songDecoder->getFrame(&frameData01)) {};
+					AudioFrameData frameData{};
+					frameData.type = AudioFrameType::Cancel;
+					frameData.rawFrameData.sampleCount = 0;
+					frameData.encodedFrameData.sampleCount = 0;
+					send(strong_this->sendAudioDataBuffer.get(), frameData);
+				}
+				vector<uint8_t> newVector;
+				send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+				songDecoder->refreshTimeForBuffer = 10;
+				agent::wait(songDecoder);
+				delete songDecoder;
+				songDecoder = nullptr;
+				strong_this->currentTask = nullptr;
+				this->readyToBeDoneEvent.set();
+				co_return;
 
 			}, thisPtr->cancelToken).then([](task<void> previousTask)->task<void> {
 				try {

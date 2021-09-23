@@ -23,6 +23,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class SoundCloudAPI;
 		friend class YouTubeAPI;
+		friend class SongAPI;
 		friend class Guild;
 
 		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew, 
@@ -57,7 +58,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				this->connectionReadyEvent->reset();
-				this->onSongCompletionEvent = new winrt::event<delegate<VoiceConnection*>>();
+				this->onSongCompletionEvent = new winrt::event<delegate<SongCompletionEventData>>();
 				this->voiceConnectInitData = this->voiceChannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voiceChannelWebSocketAgent->voiceConnectionData;
 				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
@@ -77,7 +78,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		event_token onSongCompletion(delegate<VoiceConnection*> const& handler) {
+		event_token onSongCompletion(delegate<SongCompletionEventData> const& handler) {
 			if (!this->areWeInstantiated) {
 				this->areWeInstantiated = true;
 				this->start();
@@ -204,7 +205,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent{ nullptr };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		concurrency::event* connectionReadyEvent {new concurrency::event()};
-		winrt::event<delegate<VoiceConnection*>>* onSongCompletionEvent {};
+		winrt::event<delegate<SongCompletionEventData>>* onSongCompletionEvent {};
 		concurrency::event* disconnectionEvent {new concurrency::event()};
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
@@ -419,7 +420,10 @@ namespace DiscordCoreAPI {
 								this->audioData.rawFrameData.data.clear();
 							}
 							else if (this->audioData.type == AudioFrameType::Cancel) {
-								(*this->onSongCompletionEvent)(this);
+								SongCompletionEventData completionEventData{};
+								completionEventData.voiceConnection = this;
+								completionEventData.isThisAReplay = false;
+								(*this->onSongCompletionEvent)(completionEventData);
 								this->areWePlaying = false;
 								frameCounter = 0;
 								break;
@@ -470,7 +474,10 @@ namespace DiscordCoreAPI {
 								this->audioData.rawFrameData.data.clear();
 							}
 							else if (this->audioData.type == AudioFrameType::Cancel) {
-								(*this->onSongCompletionEvent)(this);
+								SongCompletionEventData completionEventData{};
+								completionEventData.voiceConnection = this;
+								completionEventData.isThisAReplay = false;
+								(*this->onSongCompletionEvent)(completionEventData);
 								this->areWePlaying = false;
 								frameCounter = 0;
 								break;

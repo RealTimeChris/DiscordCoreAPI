@@ -387,12 +387,52 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.type == SongType::SoundCloud) {
-					auto newerSong = SoundCloudAPI::soundCloudAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
-					SoundCloudAPI::sendNextSong(newerSong, guildId);
+					try {
+						auto newerSong = SoundCloudAPI::soundCloudAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
+						SoundCloudAPI::sendNextSong(newerSong, guildId);
+						return;
+					}
+					catch (...) {
+						cout << "WERE HERE THIS IS IT" << endl;
+						vector<uint8_t> newVector;
+						AudioFrameData frameData{};
+						frameData.encodedFrameData.sampleCount = 0;
+						frameData.type = AudioFrameType::Cancel;
+						frameData.rawFrameData.sampleCount = 0;
+						SongCompletionEventData eventData{};
+						eventData.previousSong = SoundCloudAPI::soundCloudAPIMap->at(guildId)->discordGuild->data.playlist.currentSong;
+						SoundCloudAPI::soundCloudAPIMap->at(guildId)->discordGuild->data.playlist.currentSong = Song();
+						SoundCloudAPI::soundCloudAPIMap->at(guildId)->discordGuild->writeDataToDB();
+						send(SoundCloudAPI::soundCloudAPIMap->at(guildId)->sendAudioDataBuffer.get(), frameData);
+						eventData.isThisAReplay = true;
+						eventData.voiceConnection = SoundCloudAPI::soundCloudAPIMap->at(guildId)->voiceConnection.get();
+						(*SoundCloudAPI::soundCloudAPIMap->at(guildId)->voiceConnection->onSongCompletionEvent)(eventData);
+						return;
+					}
+					
 				}
 				else {
-					auto newerSong = YouTubeAPI::youtubeAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
-					YouTubeAPI::sendNextSong(newerSong, guildId);
+					try {
+						auto newerSong = YouTubeAPI::youtubeAPIMap->at(guildId)->theSong.collectFinalSong(guildMember, SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
+						YouTubeAPI::sendNextSong(newerSong, guildId);
+						return;
+					}
+					catch (...) {
+						vector<uint8_t> newVector;
+						AudioFrameData frameData{};
+						frameData.encodedFrameData.sampleCount = 0;
+						frameData.type = AudioFrameType::Cancel;
+						frameData.rawFrameData.sampleCount = 0;
+						SongCompletionEventData eventData{};
+						eventData.previousSong = YouTubeAPI::youtubeAPIMap->at(guildId)->discordGuild->data.playlist.currentSong;
+						YouTubeAPI::youtubeAPIMap->at(guildId)->discordGuild->data.playlist.currentSong = Song();
+						YouTubeAPI::youtubeAPIMap->at(guildId)->discordGuild->writeDataToDB();
+						send(YouTubeAPI::youtubeAPIMap->at(guildId)->sendAudioDataBuffer.get(), frameData);
+						eventData.isThisAReplay = true;
+						eventData.voiceConnection = YouTubeAPI::youtubeAPIMap->at(guildId)->voiceConnection.get();
+						(*YouTubeAPI::youtubeAPIMap->at(guildId)->voiceConnection->onSongCompletionEvent)(eventData);
+						return;
+					}
 				}
 			}			
 		}

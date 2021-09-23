@@ -4135,6 +4135,12 @@ namespace DiscordCoreAPI {
         string id{ "" };
     };
 
+    struct SongCompletionEventData {
+        VoiceConnection* voiceConnection;
+        bool isThisAReplay{ false };
+        Song previousSong{};
+    };
+
     const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
     const string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
     const string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };

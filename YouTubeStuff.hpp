@@ -435,45 +435,100 @@ namespace DiscordCoreAPI {
 
 				thisPtr->areWeStopping = false;
 				BuildSongDecoderData dataPackage{};;
-				try {
-					if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
-						thisPtr->sendAudioDataBuffer = thisPtr->sendAudioDataBufferMap->at(thisPtr->guildId);
-					}
-					else {
+				if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
+					thisPtr->sendAudioDataBuffer = thisPtr->sendAudioDataBufferMap->at(thisPtr->guildId);
+				}
+				else {
+					return;
+				}
+				string downloadBaseURL;
+				if (newSong.finalDownloadURLs.at(0).urlPath.find("https://") != string::npos && newSong.finalDownloadURLs.at(0).urlPath.find("/videoplayback?") != string::npos) {
+					downloadBaseURL = newSong.finalDownloadURLs.at(0).urlPath.substr(newSong.finalDownloadURLs.at(0).urlPath.find("https://") + to_string(L"https://").length(), newSong.finalDownloadURLs.at(0).urlPath.find("/videoplayback?") - to_string(L"https://").length());
+				}
+				// Creates GET request.
+				string request = "GET " + newSong.finalDownloadURLs.at(0).urlPath + " HTTP/1.1" + thisPtr->newLine +
+					"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" + thisPtr->newLine + thisPtr->newLine;
+				StreamSocket streamSocket = StreamSocket();
+				streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
+				streamSocket.Control().NoDelay(true);
+				streamSocket.Control().SerializeConnectionAttempts(false);
+				winrt::Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
+				streamSocket.ConnectAsync(streamSocket.GetEndpointPairsAsync(hostName, L"443").get().First().Current()).get();
+				streamSocket.UpgradeToSslAsync(SocketProtectionLevel::Tls12, hostName).get();
+				DataReader dataReader(streamSocket.InputStream());
+				dataReader.InputStreamOptions(InputStreamOptions::None);
+				dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
+				DataWriter dataWriter(streamSocket.OutputStream());
+				dataWriter.WriteString(to_hstring(request));
+				dataWriter.StoreAsync().get();
+				bool areWeDoneHeaders{ false };
+				int remainingDownloadContentLength{ newSong.contentLength };
+				int contentLengthCurrent{ thisPtr->maxBufSize };
+				int bytesReadTotal{ 0 };
+				int counter{ 0 };
+				dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
+				dataPackage.totalFileSize = newSong.contentLength - 585;
+				dataPackage.bufferMaxSize = thisPtr->maxBufSize;
+				SongDecoder* songDecoder = new SongDecoder(dataPackage);
+				SongEncoder* songEncoder = new SongEncoder();
+				send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
+				while (newSong.contentLength > bytesReadTotal) {
+					if (tokenNew.is_canceled()) {
+						songDecoder->refreshTimeForBuffer = 10;
+						thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+						agent::wait(songDecoder);
+						delete songDecoder;
+						songDecoder = nullptr;
+						thisPtr->readyToBeDoneEvent.set();
+						threadContext->releaseGroup();
+						cancel_current_task();
 						return;
 					}
-					string downloadBaseURL;
-					if (newSong.finalDownloadURLs.at(0).urlPath.find("https://") != string::npos && newSong.finalDownloadURLs.at(0).urlPath.find("/videoplayback?") != string::npos) {
-						downloadBaseURL = newSong.finalDownloadURLs.at(0).urlPath.substr(newSong.finalDownloadURLs.at(0).urlPath.find("https://") + to_string(L"https://").length(), newSong.finalDownloadURLs.at(0).urlPath.find("/videoplayback?") - to_string(L"https://").length());
-					}
-					// Creates GET request.
-					string request = "GET " + newSong.finalDownloadURLs.at(0).urlPath + " HTTP/1.1" + thisPtr->newLine +
-						"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" + thisPtr->newLine + thisPtr->newLine;
-					StreamSocket streamSocket = StreamSocket();
-					streamSocket.Control().QualityOfService(SocketQualityOfService::LowLatency);
-					streamSocket.Control().NoDelay(true);
-					streamSocket.Control().SerializeConnectionAttempts(false);
-					winrt::Windows::Networking::HostName hostName(to_hstring(downloadBaseURL));
-					streamSocket.ConnectAsync(streamSocket.GetEndpointPairsAsync(hostName, L"443").get().First().Current()).get();
-					streamSocket.UpgradeToSslAsync(SocketProtectionLevel::Tls12, hostName).get();
-					DataReader dataReader(streamSocket.InputStream());
-					dataReader.InputStreamOptions(InputStreamOptions::None);
-					dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
-					DataWriter dataWriter(streamSocket.OutputStream());
-					dataWriter.WriteString(to_hstring(request));
-					dataWriter.StoreAsync().get();
-					bool areWeDoneHeaders{ false };
-					int remainingDownloadContentLength{ newSong.contentLength };
-					int contentLengthCurrent{ thisPtr->maxBufSize };
-					int bytesReadTotal{ 0 };
-					int counter{ 0 };
-					dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
-					dataPackage.totalFileSize = newSong.contentLength - 585;
-					dataPackage.bufferMaxSize = thisPtr->maxBufSize;
-					SongDecoder* songDecoder = new SongDecoder(dataPackage);
-					SongEncoder* songEncoder = new SongEncoder();
-					send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
-					while (newSong.contentLength > bytesReadTotal) {
+					else {
+						int bytesRead{ 0 };
+						InMemoryRandomAccessStream outputStream{};
+						DataWriter streamDataWriter(outputStream);
+						streamDataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+						if (!areWeDoneHeaders) {
+							auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
+							while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+								wait(150);
+								if (thisPtr->areWeStopping) {
+									break;
+								}
+							}
+							if (!thisPtr->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
+								bytesRead = bytesReadTask.get();
+							}
+							if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+								bytesReadTotal += bytesRead;
+								remainingDownloadContentLength -= bytesRead;
+								auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+								stringstream bufferStream;
+								bufferStream << buffer.data();
+								string headers = bufferStream.str();
+								int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
+								auto bytesReadTask02 = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
+								while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+									wait(150);
+									if (thisPtr->areWeStopping) {
+										break;
+									}
+								}
+								if (!thisPtr->areWeStopping && bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
+									bytesRead = bytesReadTask02.get();
+								}
+								bytesReadTotal += bytesRead;
+								remainingDownloadContentLength -= bytesRead;
+								auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength + 4);
+								headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
+								streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4 - headerLength);
+								streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength + 4);
+								streamDataWriter.StoreAsync().get();
+								areWeDoneHeaders = true;
+								songDecoder->startMe();
+							}
+						}
 						if (tokenNew.is_canceled()) {
 							songDecoder->refreshTimeForBuffer = 10;
 							thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
@@ -485,49 +540,72 @@ namespace DiscordCoreAPI {
 							cancel_current_task();
 							return;
 						}
-						else {
-							int bytesRead{ 0 };
-							InMemoryRandomAccessStream outputStream{};
-							DataWriter streamDataWriter(outputStream);
-							streamDataWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-							if (!areWeDoneHeaders) {
-								auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
-								while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+						vector<RawFrameData> frames{};
+						if (counter == 0) {
+							if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+								DataReader streamDataReader(outputStream.GetInputStreamAt(0));
+								auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
+								while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
 									wait(150);
 									if (thisPtr->areWeStopping) {
 										break;
 									}
 								}
-								if (!thisPtr->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
-									bytesRead = bytesReadTask.get();
+								auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+								vector<uint8_t> newVector{};
+								for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
+									newVector.push_back(streamBuffer.data()[x]);
+								}
+								send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+							}
+						}
+						if (counter > 0) {
+							if (contentLengthCurrent > 0) {
+								if (tokenNew.is_canceled()) {
+									songDecoder->refreshTimeForBuffer = 10;
+									thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+									agent::wait(songDecoder);
+									delete songDecoder;
+									songDecoder = nullptr;
+									thisPtr->readyToBeDoneEvent.set();
+									threadContext->releaseGroup();
+									cancel_current_task();
+									return;
 								}
 								if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-									bytesReadTotal += bytesRead;
-									remainingDownloadContentLength -= bytesRead;
-									auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-									stringstream bufferStream;
-									bufferStream << buffer.data();
-									string headers = bufferStream.str();
-									int headerLength = (int)headers.find("gvs 1.0") + (int)to_string(L"gvs 1.0").length();
-									auto bytesReadTask02 = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
-									while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+									auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
+									while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
 										wait(150);
 										if (thisPtr->areWeStopping) {
 											break;
 										}
 									}
-									if (!thisPtr->areWeStopping && bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
-										bytesRead = bytesReadTask02.get();
+									if (!thisPtr->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
+										bytesRead = bytesReadTask.get();
 									}
 									bytesReadTotal += bytesRead;
 									remainingDownloadContentLength -= bytesRead;
-									auto buffer02 = dataReader.ReadBuffer((uint32_t)headerLength + 4);
-									headers = headers.substr(0, headers.find("gvs 1.0") + to_string(L"gvs 1.0").length());
-									streamDataWriter.WriteBuffer(buffer, headerLength + 4, (uint32_t)contentLengthCurrent - 4 - headerLength);
-									streamDataWriter.WriteBuffer(buffer02, 0, (uint32_t)headerLength + 4);
-									streamDataWriter.StoreAsync().get();
-									areWeDoneHeaders = true;
-									songDecoder->startMe();
+									if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+										auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+										streamDataWriter.WriteBuffer(buffer);
+										streamDataWriter.StoreAsync().get();
+										DataReader streamDataReader(outputStream.GetInputStreamAt(0));
+										auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
+										while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
+											wait(150);
+											if (thisPtr->areWeStopping) {
+												break;
+											}
+										}
+										auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
+										vector<uint8_t> newVector{};
+										for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
+											newVector.push_back(streamBuffer.data()[x]);
+										}
+										if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+											send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+										}
+									}
 								}
 							}
 							if (tokenNew.is_canceled()) {
@@ -541,163 +619,58 @@ namespace DiscordCoreAPI {
 								cancel_current_task();
 								return;
 							}
-							vector<RawFrameData> frames{};
-							if (counter == 0) {
+							if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+								RawFrameData rawFrame{};
+								rawFrame.data.resize(0);
+								while (songDecoder->getFrame(&rawFrame)) {
+									if (rawFrame.data.size() != 0) {
+										frames.push_back(rawFrame);
+									}
+								}
 								if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-									DataReader streamDataReader(outputStream.GetInputStreamAt(0));
-									auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
-									while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
-										wait(150);
-										if (thisPtr->areWeStopping) {
+									auto encodedFrames = songEncoder->encodeFrames(frames);
+									for (auto value : encodedFrames) {
+										if (!thisPtr->areWeStopping && !tokenNew.is_canceled()) {
+											send(thisPtr->sendAudioDataBuffer.get(), value);
+										}
+										else {
 											break;
 										}
-									}
-									auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-									vector<uint8_t> newVector{};
-									for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
-										newVector.push_back(streamBuffer.data()[x]);
-									}
-									send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-								}
-							}
-							if (counter > 0) {
-								if (contentLengthCurrent > 0) {
-									if (tokenNew.is_canceled()) {
-										songDecoder->refreshTimeForBuffer = 10;
-										thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
-										agent::wait(songDecoder);
-										delete songDecoder;
-										songDecoder = nullptr;
-										thisPtr->readyToBeDoneEvent.set();
-										threadContext->releaseGroup();
-										cancel_current_task();
-										return;
-									}
-									if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-										auto bytesReadTask = dataReader.LoadAsync((uint32_t)contentLengthCurrent);
-										while (bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
-											wait(150);
-											if (thisPtr->areWeStopping) {
-												break;
-											}
-										}
-										if (!thisPtr->areWeStopping && bytesReadTask.Status() != winrt::Windows::Foundation::AsyncStatus::Canceled) {
-											bytesRead = bytesReadTask.get();
-										}
-										bytesReadTotal += bytesRead;
-										remainingDownloadContentLength -= bytesRead;
-										if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-											auto buffer = dataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-											streamDataWriter.WriteBuffer(buffer);
-											streamDataWriter.StoreAsync().get();
-											DataReader streamDataReader(outputStream.GetInputStreamAt(0));
-											auto bytesReadTask02 = streamDataReader.LoadAsync((uint32_t)contentLengthCurrent);
-											while (bytesReadTask02.Status() != winrt::Windows::Foundation::AsyncStatus::Completed) {
-												wait(150);
-												if (thisPtr->areWeStopping) {
-													break;
-												}
-											}
-											auto streamBuffer = streamDataReader.ReadBuffer((uint32_t)contentLengthCurrent);
-											vector<uint8_t> newVector{};
-											for (unsigned int x = 0; x < streamBuffer.Length(); x += 1) {
-												newVector.push_back(streamBuffer.data()[x]);
-											}
-											if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-												send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-											}
-										}
-									}
-								}
-								if (tokenNew.is_canceled()) {
-									songDecoder->refreshTimeForBuffer = 10;
-									thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
-									agent::wait(songDecoder);
-									delete songDecoder;
-									songDecoder = nullptr;
-									thisPtr->readyToBeDoneEvent.set();
-									threadContext->releaseGroup();
-									cancel_current_task();
-									return;
-								}
-								if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-									RawFrameData rawFrame{};
-									rawFrame.data.resize(0);
-									while (songDecoder->getFrame(&rawFrame)) {
-										if (rawFrame.data.size() != 0) {
-											frames.push_back(rawFrame);
-										}
-									}
-									if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-										auto encodedFrames = songEncoder->encodeFrames(frames);
-										for (auto value : encodedFrames) {
-											if (!thisPtr->areWeStopping && !tokenNew.is_canceled()) {
-												send(thisPtr->sendAudioDataBuffer.get(), value);
-											}
-											else {
-												break;
-											}
 
-										}
 									}
 								}
 							}
-
-							if (remainingDownloadContentLength >= thisPtr->maxBufSize) {
-								contentLengthCurrent = thisPtr->maxBufSize;
-							}
-							else {
-								contentLengthCurrent = remainingDownloadContentLength;
-							}
-							counter += 1;
 						}
+
+						if (remainingDownloadContentLength >= thisPtr->maxBufSize) {
+							contentLengthCurrent = thisPtr->maxBufSize;
+						}
+						else {
+							contentLengthCurrent = remainingDownloadContentLength;
+						}
+						counter += 1;
 					}
-					if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
-						vector<uint8_t> newVector{};
-						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-						RawFrameData frameData01{};
-						while (songDecoder->getFrame(&frameData01)) {};
-						AudioFrameData frameData{};
-						frameData.type = AudioFrameType::Cancel;
-						frameData.rawFrameData.sampleCount = 0;
-						frameData.encodedFrameData.sampleCount = 0;
-						send(thisPtr->sendAudioDataBuffer.get(), frameData);
-					}
-					vector<uint8_t> newVector;
-					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-					songDecoder->refreshTimeForBuffer = 10;
-					agent::wait(songDecoder);
-					delete songDecoder;
-					songDecoder = nullptr;
-					thisPtr->readyToBeDoneEvent.set();
-					threadContext->releaseGroup();
-					return;
 				}
-				catch (...) {
-					if (retryCount < 5) {
-						int retryCountNewer = retryCount;
-						retryCountNewer += 1;
-						thisPtr->downloadAndStreamAudioWrapper(newSong, retryCountNewer).get();
-						rethrowException("YouTubeAPI::downloadAndStreamAudioToBeWrapped() Error: ");
-						thisPtr->readyToBeDoneEvent.set();
-						return;
-					}
-					else {
-						vector<uint8_t> newVector;
-						send(dataPackage.sendEncodedAudioDataBuffer, newVector);
-						AudioFrameData frameData{};
-						frameData.encodedFrameData.sampleCount = 0;
-						frameData.type = AudioFrameType::Cancel;
-						frameData.rawFrameData.sampleCount = 0;
-						send(thisPtr->sendAudioDataBuffer.get(), frameData);
-						thisPtr->discordGuild->data.playlist.currentSong = Song();
-						thisPtr->discordGuild->writeDataToDB();
-						(*thisPtr->voiceConnection->onSongCompletionEvent)(thisPtr->voiceConnection.get());
-						rethrow_exception(current_exception());
-						thisPtr->readyToBeDoneEvent.set();
-						return;
-					}
-				};
+				if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+					vector<uint8_t> newVector{};
+					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+					RawFrameData frameData01{};
+					while (songDecoder->getFrame(&frameData01)) {};
+					AudioFrameData frameData{};
+					frameData.type = AudioFrameType::Cancel;
+					frameData.rawFrameData.sampleCount = 0;
+					frameData.encodedFrameData.sampleCount = 0;
+					send(thisPtr->sendAudioDataBuffer.get(), frameData);
+				}
+				vector<uint8_t> newVector;
+				send(dataPackage.sendEncodedAudioDataBuffer, newVector);
+				songDecoder->refreshTimeForBuffer = 10;
+				agent::wait(songDecoder);
+				delete songDecoder;
+				songDecoder = nullptr;
+				thisPtr->readyToBeDoneEvent.set();
+				threadContext->releaseGroup();
+				return;
 			}, this->cancelToken));
 		};
 
