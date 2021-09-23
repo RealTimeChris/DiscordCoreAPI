@@ -187,12 +187,7 @@ namespace DiscordCoreAPI {
 
 			if (embedsFromSearch.size() > 0) {
 				Song song{};
-				if (searchResults[0].type == SongType::SoundCloud) {
-					song = SongAPI::addSoundCloudSongToQueue(guildMember, guild.id, (SoundCloudSong)searchResults[0]);
-				}
-				else {
-					song = SongAPI::addYouTubeSongToQueue(guildMember, guild.id, (YouTubeSong)searchResults[0]);
-				}
+				song = SongAPI::addSongToQueue(guildMember, guild.id, searchResults[0]);
 				SongAPI::stop(guild.id);
 				auto playlist = SongAPI::getPlaylist(guild.id);
 

@@ -164,16 +164,7 @@ namespace DiscordCoreAPI {
 				}
 				if (returnData.currentPageIndex != -1) {
 
-					if (searchResults[returnData.currentPageIndex].type == SongType::SoundCloud) {
-						auto song = SongAPI::addSoundCloudSongToQueue(guildMember, guild.id, searchResults[returnData.currentPageIndex]);
-						discordGuild.data.playlist.songList.push_back(song);
-						discordGuild.writeDataToDB();
-					}
-					else {
-						auto song = SongAPI::addYouTubeSongToQueue(guildMember, guild.id, searchResults[returnData.currentPageIndex]);
-						discordGuild.data.playlist.songList.push_back(song);
-						discordGuild.writeDataToDB();
-					}
+					auto song = SongAPI::addSongToQueue(guildMember, guild.id, searchResults[returnData.currentPageIndex]);
 				}
 			}
 
