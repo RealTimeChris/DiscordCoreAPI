@@ -3788,9 +3788,9 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static string baseSearchURL02;
-        static string baseSearchURL;
-        static string appVersion;
+        static const string baseSearchURL02;
+        static const string baseSearchURL;
+        static const string appVersion;
         static string clientId;
 
         HttpClient httpClientForGettingSecondURL{ HttpClient() };
@@ -4172,12 +4172,12 @@ namespace DiscordCoreAPI {
     };
 
     const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
+    const string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
+    const string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };
     const string YouTubeSong::baseWatchURL{ "https://www.youtube.com/watch?v=" };
     const string YouTubeSong::baseURL{ "https://www.youtube.com" };
-    string SoundCloudSong::appVersion{ "1631696495" };
-    string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
-    string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };
-    string SoundCloudSong::clientId{ "" };    
+    const string SoundCloudSong::appVersion{ "1631696495" };
+    string SoundCloudSong::clientId{ "" };
 };
 
 #endif

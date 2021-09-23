@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 		concurrency::event* stopSetEvent {new concurrency::event()};
 		concurrency::event* pauseEvent {new concurrency::event()};
 		unsigned short sequenceIndex{ 0 };
-		bool areWeConnectedBool{ false };		
+		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		const int maxBufferSize{ 1276 };
 		bool areWeInstantiated{ false };

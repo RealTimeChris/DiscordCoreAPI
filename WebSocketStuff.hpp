@@ -442,9 +442,9 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		concurrency::event* readyEvent {nullptr};
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
-		concurrency::event* readyEvent {};
 		const int maxReconnectTries{ 10 };
 		DataWriter dataWriter{ nullptr };
 		int currentReconnectTries{ 0 };
@@ -521,7 +521,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() != 4014) {
+			if (this->maxReconnectTries > this->currentReconnectTries) {
 				this->cleanup();
 				*this->doWeReconnect = true;
 			}

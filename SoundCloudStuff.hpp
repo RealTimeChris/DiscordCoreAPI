@@ -55,10 +55,6 @@ namespace DiscordCoreAPI {
 	}
 
 	SoundCloudSong::SoundCloudSong() {
-		string baseSearchFinal = SoundCloudSong::baseSearchURL;
-		string baseSearch02Final = SoundCloudSong::baseSearchURL02;
-		this->baseSearchURL02 = baseSearch02Final;
-		this->baseSearchURL = baseSearchFinal;
 		this->httpClientForGettingFinalURLs = HttpClient();
 		this->httpClientForGettingSecondURL = HttpClient();
 		this->headerCollectionForSecondURL = this->httpClientForGettingSecondURL.DefaultRequestHeaders();
