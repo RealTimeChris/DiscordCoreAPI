@@ -22,13 +22,16 @@ namespace DiscordCoreAPI {
 		vector<string> argumentsArray;
 	};
 
-	struct BaseFunction {
+	class BaseFunction {
+	public:
+
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) = 0;
 		virtual BaseFunction* create() = 0;
 		string helpDescription{ "" };
 		virtual ~BaseFunction() {};
 		string commandName{ "" };
 		EmbedData helpEmbed{};
+
 	};
 
 	class CommandCenter {
@@ -37,7 +40,7 @@ namespace DiscordCoreAPI {
 
 		static void registerFunction(vector<string> functionNames, BaseFunction* baseFunction) {
 			for (auto value : functionNames) {
-				CommandCenter::functions.insert(make_pair(value, baseFunction));
+				CommandCenter::functions.insert(make_pair(convertToLowerCase(value), baseFunction));
 			}
 		}
 
@@ -72,15 +75,7 @@ namespace DiscordCoreAPI {
 			else if (messageOption == false) {
 				args.argumentsArray = commandData.optionsArgs;
 			}
-			string commandName = functionPointer->commandName;
-			auto continuation = functionPointer->execute(make_shared<BaseFunctionArguments>(args)).then([=](task<void> previousTask) {
-				try {
-					previousTask.get();
-				}
-				catch (...) {
-					rethrowException("CommandCenter::" + commandName + "() Error: ");
-				}
-				});
+			functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
 			functionPointer.~shared_ptr();
 			functionPointer = nullptr;
 		};
@@ -100,10 +95,10 @@ namespace DiscordCoreAPI {
 					for (auto const& [key, value] : DiscordCoreAPI::CommandCenter::functions) {
 
 						if (commandName[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
-							if (key.find(commandName.substr(1, commandName.size() - 1)) != string::npos) {
+							if (key.find(convertToLowerCase(commandName.substr(1, commandName.size() - 1))) != string::npos) {
 								isItFound = true;
 								lowestValue = value;
-								functionName = commandName.substr(1, key.length());
+								functionName = convertToLowerCase(commandName.substr(1, key.length()));
 							}
 
 						}
@@ -114,8 +109,8 @@ namespace DiscordCoreAPI {
 					return newValue;
 				}
 			}
-			catch (...) {
-				rethrowException("CommandCenter::getCommand() Error: ");
+			catch (exception& e) {
+				cout << "CommandCenter::getCommand() Error: " << e.what() << endl << endl;
 			}
 			return nullptr;
 		}
@@ -205,8 +200,8 @@ namespace DiscordCoreAPI {
 				}
 				return args;
 			}
-			catch (...) {
-				rethrowException("CommandCenter::parseArguments() Error: ");
+			catch (exception& e) {
+				cout << "CommandCenter::parseArguments() Error: " << e.what() << endl << endl;
 				return args;
 			}
 		}
