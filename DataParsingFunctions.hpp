@@ -3251,6 +3251,80 @@ namespace DiscordCoreInternal {
             *pDataStructure = newData;
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ThreadListSyncData* pDataStructure) {
+            DiscordCoreAPI::ThreadListSyncData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("channel_ids") && !jsonObjectData.at("channel_ids").is_null()) {
+                vector<string> newVector{};
+                for (auto value : jsonObjectData.at("channel_ids")) {
+                    newVector.push_back(value);
+                }
+                newData.channelIds = newVector;
+            }
+
+            if (jsonObjectData.contains("members") && !jsonObjectData.at("members").is_null()) {
+                vector<DiscordCoreAPI::ThreadMemberData> newVector{};
+                for (auto value : jsonObjectData.at("members")) {
+                    DiscordCoreAPI::ThreadMemberData newData01;
+                    parseObject(value, &newData01);
+                    newVector.push_back(newData01);
+                }
+                newData.members = newVector;
+            }
+
+            if (jsonObjectData.contains("threads") && !jsonObjectData.at("threads").is_null()) {
+                vector<DiscordCoreAPI::ChannelData> newVector{};
+                for (auto value : jsonObjectData.at("threads")) {
+                    DiscordCoreAPI::ChannelData newData01;
+                    parseObject(value, &newData01);
+                    newVector.push_back(newData01);
+                }
+                newData.threads = newVector;
+            }
+
+            *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ThreadMembersUpdateData* pDataStructure) {
+            DiscordCoreAPI::ThreadMembersUpdateData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                newData.id = jsonObjectData.at("id").get<string>();
+            }
+
+            if (jsonObjectData.contains("member_count") && !jsonObjectData.at("member_count").is_null()) {
+                newData.memberCount = jsonObjectData.at("member_count").get<int>();
+            }
+
+            if (jsonObjectData.contains("added_members") && !jsonObjectData.at("added_members").is_null()) {
+                vector<DiscordCoreAPI::ThreadMemberData> newVector{};
+                for (auto value : jsonObjectData.at("added_members")) {
+                    DiscordCoreAPI::ThreadMemberData newData01;
+                    parseObject(value, &newData01);
+                    newVector.push_back(newData01);
+                }
+                newData.addedMembers = newVector;
+            }
+
+            if (jsonObjectData.contains("removed_member_ids") && !jsonObjectData.at("removed_member_ids").is_null()) {
+                vector<string> newVector{};
+                for (auto value : jsonObjectData.at("removed_member_ids")) {
+                    newVector.push_back(value);
+                }
+                newData.removedMemberIds = newVector;
+            }
+
+            *pDataStructure = newData;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure);
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::SoundCloudSong* pDataStructure);

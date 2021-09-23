@@ -419,7 +419,7 @@ namespace DiscordCoreInternal {
 					this->webSocket->OutputStream().WriteAsync(buffer).get();
 				}
 
-				cout << "Send Complete" << endl << endl;
+				cout << "Send Complete." << endl << endl;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");

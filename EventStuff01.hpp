@@ -39,8 +39,32 @@ namespace DiscordCoreAPI {
 		Channel channel{};
 	};
 
-	struct OnChannelPinsUpdateEventData {
+	struct OnChannelPinsUpdateData {
 		ChannelPinsUpdateEventData dataPackage{};
+	};
+
+	struct OnThreadCreationData {
+		Channel channel{};
+	};
+
+	struct OnThreadUpdateData {
+		Channel channel{};
+	};
+
+	struct OnThreadDeletionData {
+		Channel channel{};
+	};
+
+	struct OnThreadListSyncData {
+		ThreadListSyncData threadListSyncData{};
+	};
+
+	struct OnThreadMemberUpdateData {
+		ThreadMemberData threadMember{};
+	};
+
+	struct OnThreadMembersUpdateData {
+		ThreadMembersUpdateData threadMembersUpdateData{};
 	};
 
 	struct OnGuildCreationData {
@@ -229,12 +253,60 @@ namespace DiscordCoreAPI {
 			onChannelDeletionEvent.remove(token);
 		}
 
-		event_token onChannelPinsUpdate(delegate<OnChannelPinsUpdateEventData> const& handler) {
+		event_token onChannelPinsUpdate(delegate<OnChannelPinsUpdateData> const& handler) {
 			return onChannelPinsUpdateEvent.add(handler);
 		}
 
 		void onChannelPinsUpdate(event_token const& handler) {
 			return onChannelPinsUpdateEvent.remove(handler);
+		}
+
+		event_token onThreadCreation(delegate<OnThreadCreationData> const& handler) {
+			return onThreadCreationEvent.add(handler);
+		}
+
+		void onThreadCreation(event_token const& handler) {
+			return onThreadCreationEvent.remove(handler);
+		}
+
+		event_token onThreadUpdate(delegate<OnThreadUpdateData> const& handler) {
+			return onThreadUpdateEvent.add(handler);
+		}
+
+		void onThreadUpdate(event_token const& handler) {
+			return onThreadUpdateEvent.remove(handler);
+		}
+
+		event_token onThreadDeletion(delegate<OnThreadDeletionData> const& handler) {
+			return onThreadDeletionEvent.add(handler);
+		}
+
+		void onThreadDeletion(event_token const& handler) {
+			return onThreadDeletionEvent.remove(handler);
+		}
+
+		event_token onThreadListSync(delegate<OnThreadListSyncData> const& handler) {
+			return onThreadListSyncEvent.add(handler);
+		}
+
+		void onThreadListSync(event_token const& handler) {
+			return onThreadListSyncEvent.remove(handler);
+		}
+
+		event_token onThreadMemberUpdate(delegate<OnThreadMemberUpdateData> const& handler) {
+			return onThreadMemberUpdateEvent.add(handler);
+		}
+
+		void onThreadMemberUpdate(event_token const& handler) {
+			return onThreadMemberUpdateEvent.remove(handler);
+		}
+
+		event_token onThreadMembersUpdate(delegate<OnThreadMembersUpdateData> const& handler) {
+			return onThreadMembersUpdateEvent.add(handler);
+		}
+
+		void onThreadMembersUpdate(event_token const& handler) {
+			return onThreadMembersUpdateEvent.remove(handler);
 		}
 
 		event_token onGuildCreation(delegate<OnGuildCreationData> const& handler) {
@@ -467,8 +539,20 @@ namespace DiscordCoreAPI {
 
 		winrt::event<delegate<OnChannelDeletionData>> onChannelDeletionEvent;
 
-		winrt::event<delegate<OnChannelPinsUpdateEventData>> onChannelPinsUpdateEvent;
+		winrt::event<delegate<OnChannelPinsUpdateData>> onChannelPinsUpdateEvent;
 
+		winrt::event<delegate<OnThreadCreationData>> onThreadCreationEvent;
+
+		winrt::event<delegate<OnThreadUpdateData>> onThreadUpdateEvent;
+
+		winrt::event<delegate<OnThreadDeletionData>> onThreadDeletionEvent;
+
+		winrt::event<delegate<OnThreadListSyncData>> onThreadListSyncEvent;
+
+		winrt::event<delegate<OnThreadMemberUpdateData>> onThreadMemberUpdateEvent;
+
+		winrt::event<delegate<OnThreadMembersUpdateData>> onThreadMembersUpdateEvent;
+		
 		winrt::event<delegate<OnGuildCreationData>> onGuildCreationEvent;
 
 		winrt::event<delegate<OnGuildUpdateData>> onGuildUpdateEvent;

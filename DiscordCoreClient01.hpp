@@ -273,11 +273,65 @@ namespace DiscordCoreAPI {
 						}
 						case DiscordCoreInternal::WebSocketEventType::Channel_Pins_Update:
 						{
-							OnChannelPinsUpdateEventData dataPackage{};
+							OnChannelPinsUpdateData dataPackage{};
 							ChannelPinsUpdateEventData dataPackage02{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &dataPackage02);
 							dataPackage.dataPackage = dataPackage02;
 							this->eventManager->onChannelPinsUpdateEvent(dataPackage);
+							break;
+						}
+						case DiscordCoreInternal::WebSocketEventType::Thread_Create:
+						{
+							OnThreadCreationData dataPackage{};
+							Channel channel{};
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channel);
+							dataPackage.channel = channel;
+							this->eventManager->onThreadCreationEvent(dataPackage);
+							break;
+						}
+						case DiscordCoreInternal::WebSocketEventType::Thread_Update:
+						{
+							OnThreadUpdateData dataPackage{};
+							Channel channel{};
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channel);
+							dataPackage.channel = channel;
+							this->eventManager->onThreadUpdateEvent(dataPackage);
+							break;
+						}
+						case DiscordCoreInternal::WebSocketEventType::Thread_Delete:
+						{
+							OnThreadDeletionData dataPackage{};
+							Channel channel{};
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channel);
+							dataPackage.channel = channel;
+							this->eventManager->onThreadDeletionEvent(dataPackage);
+							break;
+						}
+						case DiscordCoreInternal::WebSocketEventType::Thread_List_Sync:
+						{
+							OnThreadListSyncData dataPackage{};
+							ThreadListSyncData threadListSyncData{};
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &threadListSyncData);
+							dataPackage.threadListSyncData = threadListSyncData;
+							this->eventManager->onThreadListSyncEvent(dataPackage);
+							break;
+						}
+						case DiscordCoreInternal::WebSocketEventType::Thread_Member_Update:
+						{
+							OnThreadMemberUpdateData dataPackage{};
+							ThreadMemberData threadListSyncData{};
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &threadListSyncData);
+							dataPackage.threadMember = threadListSyncData;
+							this->eventManager->onThreadMemberUpdateEvent(dataPackage);
+							break;
+						}
+						case DiscordCoreInternal::WebSocketEventType::Thread_Members_Update:
+						{
+							OnThreadMembersUpdateData dataPackage{};
+							ThreadMembersUpdateData threadListSyncData{};
+							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &threadListSyncData);
+							dataPackage.threadMembersUpdateData = threadListSyncData;
+							this->eventManager->onThreadMembersUpdateEvent(dataPackage);
 							break;
 						}
 						case DiscordCoreInternal::WebSocketEventType::Guild_Create:

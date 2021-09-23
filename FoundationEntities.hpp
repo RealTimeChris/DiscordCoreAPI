@@ -4171,6 +4171,21 @@ namespace DiscordCoreAPI {
         int flags{ 0 };
     };
 
+    struct ThreadListSyncData {
+        vector<ThreadMemberData> members{};
+        vector<ChannelData> threads{};
+        vector<string> channelIds{};
+        string guildId{ "" };
+    };
+
+    struct ThreadMembersUpdateData {
+        vector<ThreadMemberData> addedMembers{};
+        vector<string> removedMemberIds{};
+        string guildId{ "" };
+        int memberCount{ 0 };
+        string id{ "" };
+    };
+
     const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
     const string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
     const string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };
