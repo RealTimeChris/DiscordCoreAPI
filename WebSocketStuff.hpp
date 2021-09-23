@@ -201,7 +201,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001) {
+			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001 && this->sessionId != "") {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
@@ -298,23 +298,16 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 7) {
 				cout << "Reconnecting (Type 7)!" << endl << endl;
-				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->webSocket->Close(1001, L"Closing for reconnect type 7.");
-				}
-				else {
-					this->terminate();
-					exit(-1);
-				}
+				this->webSocket->Close(1001, L"Closing for reconnect type 7.");
 			}
 
 			if (payload.at("op") == 9) {
 				cout << "Reconnecting (Type 9)!" << endl << endl;
-				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->webSocket->Close(1001, L"Closing for reconnect type 9.");
+				if (payload.at("d") == false && this->sessionId != "") {
+					this->webSocket->Close(1002, L"Closing for reconnect type 9.");
 				}
 				else {
-					this->terminate();
-					exit(-1);
+					this->webSocket->Close(1001, L"Closing for reconnect type 9.");
 				}
 			}
 
@@ -524,7 +517,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001) {
+			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001 && this->voiceConnectionData.sessionId != "") {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
