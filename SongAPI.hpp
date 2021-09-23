@@ -324,36 +324,16 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		static Song addSoundCloudSongToQueue(GuildMember guildMember, string guildId, SoundCloudSong song) {
+		static Song addSongToQueue(GuildMember guildMember, string guildId, Song song) {
 			DiscordGuild* discordGuild = SongAPI::discordGuildMap->at(guildId);
 			shared_ptr<SongAPI> songAPI = make_shared<SongAPI>(discordGuild);
 			songAPI->playlist = discordGuild->data.playlist;
 			SongAPI::songAPIMap->insert_or_assign(guildId, songAPI);
-			discordGuild = SongAPI::discordGuildMap->at(guildId);
-			if (song.type == SongType::SoundCloud) {
-				song.addedByUserId = guildMember.user.id;
-				song.addedByUserName = guildMember.user.userName;
-				SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(song);
-				SongAPI::songAPIMap->at(guildId)->savePlaylist();
-				return song;
-			}
-			return Song();
-		}
-
-		static Song addYouTubeSongToQueue(GuildMember guildMember, string guildId, YouTubeSong song) {
-			DiscordGuild* discordGuild = SongAPI::discordGuildMap->at(guildId);
-			shared_ptr<SongAPI> songAPI = make_shared<SongAPI>(discordGuild);
-			songAPI->playlist = discordGuild->data.playlist;
-			SongAPI::songAPIMap->insert_or_assign(guildId, songAPI);
-			discordGuild = SongAPI::discordGuildMap->at(guildId);
-			if (song.type == SongType::YouTube) {
-				song.addedByUserId = guildMember.user.id;
-				song.addedByUserName = guildMember.user.userName;
-				SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(song);
-				SongAPI::songAPIMap->at(guildId)->savePlaylist();
-				return song;
-			}
-			return Song();
+			song.addedByUserId = guildMember.user.id;
+			song.addedByUserName = guildMember.user.userName;
+			SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(song);
+			SongAPI::songAPIMap->at(guildId)->savePlaylist();
+			return song;
 		}
 
 		static void setPlaylist(Playlist playlistNew, string guildId) {

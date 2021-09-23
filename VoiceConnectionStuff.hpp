@@ -164,6 +164,20 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
+		void pauseToggle() {
+			if (this != nullptr) {
+				if (!this->areWePaused) {
+					sendSpeakingMessage(false);
+					this->areWePaused = true;
+				}
+				else {
+					sendSpeakingMessage(true);
+					this->pauseEvent->set();
+					this->pauseEvent->reset();
+				}
+			}
+		}
+
 		static void reconnect(string guildId) {
 			if (voiceConnectionMap->contains(guildId)) {
 				auto voiceConnectionData = VoiceConnection::voiceConnectionMap->at(guildId)->voiceConnectInitData;
@@ -176,20 +190,6 @@ namespace DiscordCoreAPI {
 				voiceConnectionMap->at(guildId)->sendSpeakingMessage(true);
 				voiceConnectionMap->at(guildId).get()->start();
 				voiceConnectionMap->at(guildId).get()->play();
-			}
-		}
-
-		void pauseToggle() {
-			if (this != nullptr) {
-				if (!this->areWePaused) {
-					sendSpeakingMessage(false);
-					this->areWePaused = true;
-				}
-				else {
-					sendSpeakingMessage(true);
-					this->pauseEvent->set();
-					this->pauseEvent->reset();
-				}
 			}
 		}
 
