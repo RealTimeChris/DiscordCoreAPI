@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 			dataPackageNew.data = dataPackage.data;
 			MessageData messageData = InputEvents::interactions->createFollowUpMessageAsync(dataPackageNew).get();
 			InputEventData dataPackageNewer;
-			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE;
+			dataPackageNewer.inputEventResponseType = InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EPHEMERAL;
 			dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
