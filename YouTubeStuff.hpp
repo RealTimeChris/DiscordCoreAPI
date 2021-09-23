@@ -690,6 +690,8 @@ namespace DiscordCoreAPI {
 						frameData.type = AudioFrameType::Cancel;
 						frameData.rawFrameData.sampleCount = 0;
 						send(thisPtr->sendAudioDataBuffer.get(), frameData);
+						thisPtr->discordGuild->data.playlist.currentSong = Song();
+						thisPtr->discordGuild->writeDataToDB();
 						(*thisPtr->voiceConnection->onSongCompletionEvent)(thisPtr->voiceConnection.get());
 						rethrow_exception(current_exception());
 						thisPtr->readyToBeDoneEvent.set();
