@@ -110,6 +110,7 @@ namespace DiscordCoreInternal {
 		event_token messageReceivedToken{};
 		const int maxReconnectTries{ 10 };
 		bool areWeCollectingData{ false };
+		bool areWeAuthenticated{ false };
 		int currentReconnectTries{ 0 };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
@@ -184,7 +185,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::sendMessage() Error: ");
-				this->webSocket->Close(1008, L"Message sending failed.");
+				this->webSocket->Close(1001, L"Message sending failed.");
 			}
 		}
 
@@ -200,7 +201,16 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries) {
+			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001) {
+				this->areWeAuthenticated = false;
+				this->currentReconnectTries += 1;
+				this->cleanup();
+				this->connect();
+				string resumePayload = getResumePayload(this->botToken, this->sessionId, this->lastNumberReceived);
+				this->sendMessage(resumePayload);
+			}
+			else if (this->maxReconnectTries > this->currentReconnectTries) {
+				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
 				this->connect();
@@ -278,6 +288,7 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("t") == "READY") {
 				this->sessionId = payload.at("d").at("session_id");
+				this->areWeAuthenticated = true;
 				this->currentReconnectTries = 0;
 			}
 
@@ -288,7 +299,7 @@ namespace DiscordCoreInternal {
 			if (payload.at("op") == 7) {
 				cout << "Reconnecting (Type 7)!" << endl << endl;
 				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->webSocket->Close(1007, L"Closing for reconnect type 7.");
+					this->webSocket->Close(1001, L"Closing for reconnect type 7.");
 				}
 				else {
 					this->terminate();
@@ -299,7 +310,7 @@ namespace DiscordCoreInternal {
 			if (payload.at("op") == 9) {
 				cout << "Reconnecting (Type 9)!" << endl << endl;
 				if (this->maxReconnectTries > this->currentReconnectTries) {
-					this->webSocket->Close(1007, L"Closing for reconnect type 9.");
+					this->webSocket->Close(1001, L"Closing for reconnect type 9.");
 				}
 				else {
 					this->terminate();
@@ -313,8 +324,10 @@ namespace DiscordCoreInternal {
 					WebSocketConnectionAgent::sendHeartBeat();
 				};
 				this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
-				std::string identity = getIdentifyPayload(this->botToken, this->intentsValue);
-				this->sendMessage(identity);
+				if (!this->areWeAuthenticated) {
+					std::string identity = getIdentifyPayload(this->botToken, this->intentsValue);
+					this->sendMessage(identity);
+				}
 			}
 
 			if (payload.at("op") == 11) {}
@@ -414,7 +427,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
-				this->webSocket->Close(1008, L"Message sending failed.");
+				this->webSocket->Close(1001, L"Message sending failed.");
 			}
 			
 		}
@@ -436,6 +449,7 @@ namespace DiscordCoreInternal {
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
 		const int maxReconnectTries{ 10 };
+		bool areWeAuthenticated{ false };
 		DataWriter dataWriter{ nullptr };
 		int currentReconnectTries{ 0 };
 		bool areWeWaitingForIp{ true };
@@ -510,7 +524,16 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries) {
+			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001) {
+				this->areWeAuthenticated = false;
+				this->currentReconnectTries += 1;
+				this->cleanup();
+				*this->doWeReconnect = true;
+				string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
+				this->sendMessage(resumePayload);
+			}
+			else if (this->maxReconnectTries > this->currentReconnectTries) {
+				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
 				*this->doWeReconnect = true;
@@ -573,18 +596,24 @@ namespace DiscordCoreInternal {
 					this->readyEvent->set();
 				}
 
+				if (payload.at("op") == 9) {
+					this->areWeAuthenticated = true;
+				}
+
 				if (payload.at("op") == 13) {}
 
 				if (payload.at("op") == 8) {
 					if (payload.at("d").contains("heartbeat_interval")) {
 						this->heartbeatInterval = (int)payload.at("d").at("heartbeat_interval").get<float>();
 					}
-					string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData, this->voiceConnectInitData);
-					this->sendMessage(identifyPayload);
 					TimerElapsedHandler onHeartBeat = [&, this](ThreadPoolTimer timer) ->void {
 						VoiceChannelWebSocketAgent::sendHeartBeat();
 					};
 					this->heartbeatTimer = this->heartbeatTimer.CreatePeriodicTimer(onHeartBeat, winrt::Windows::Foundation::TimeSpan(this->heartbeatInterval * 10000));
+					if (!this->areWeAuthenticated) {
+						string identifyPayload = getVoiceIdentifyPayload(this->voiceConnectionData, this->voiceConnectInitData);
+						this->sendMessage(identifyPayload);
+					}					
 				}
 			}
 		}
