@@ -200,14 +200,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1007 && this->sessionId != "") {
-				this->currentReconnectTries += 1;
-				this->cleanup();
-				this->connect();
-				string resumePayload = getResumePayload(this->botToken, this->sessionId, this->lastNumberReceived);
-				this->sendMessage(resumePayload);
-			}
-			else if (this->maxReconnectTries > this->currentReconnectTries) {
+			if (this->maxReconnectTries > this->currentReconnectTries) {
 				this->currentReconnectTries += 1;
 				this->cleanup();
 				this->connect();

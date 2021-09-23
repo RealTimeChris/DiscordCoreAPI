@@ -3725,11 +3725,7 @@ namespace DiscordCoreAPI {
         string viewURL{ "" };
         string songId{ "" };
 
-        Song(const SoundCloudSong& e);
-
         Song operator=(const SoundCloudSong& e);
-
-        Song(const YouTubeSong& e);
 
         Song operator=(const YouTubeSong& e);
 
@@ -3747,7 +3743,7 @@ namespace DiscordCoreAPI {
         friend class SongAPI;
         friend class Song;
 
-        SoundCloudSong operator= (const Song& e) {
+        SoundCloudSong operator=(const Song& e) {
             this->finalDownloadURLs = e.finalDownloadURLs;
             this->secondDownloadURL = e.secondDownloadURL;
             this->firstDownloadURL = e.firstDownloadURL;
@@ -3808,22 +3804,6 @@ namespace DiscordCoreAPI {
         SoundCloudSong findFinalDownloadURLs(SoundCloudSong newSong);
     };
 
-    Song::Song(const SoundCloudSong& e) {
-        this->finalDownloadURLs = e.finalDownloadURLs;
-        this->secondDownloadURL = e.secondDownloadURL;
-        this->firstDownloadURL = e.firstDownloadURL;
-        this->addedByUserName = e.addedByUserName;
-        this->addedByUserId = e.addedByUserId;
-        this->contentLength = e.contentLength;
-        this->thumbnailURL = e.thumbnailURL;
-        this->description = e.description;
-        this->songTitle = e.songTitle;
-        this->duration = e.duration;
-        this->viewURL = e.viewURL;
-        this->songId = e.songId;
-        this->type = e.type;
-    }
-
     Song Song::operator=(const SoundCloudSong& e) {
         this->finalDownloadURLs = e.finalDownloadURLs;
         this->secondDownloadURL = e.secondDownloadURL;
@@ -3867,7 +3847,7 @@ namespace DiscordCoreAPI {
             this->type = e.type;
         }
 
-        YouTubeSong operator= (const Song& e) {
+        YouTubeSong operator=(const Song& e) {
             this->finalDownloadURLs = e.finalDownloadURLs;
             this->secondDownloadURL = e.secondDownloadURL;
             this->firstDownloadURL = e.firstDownloadURL;
@@ -3907,22 +3887,6 @@ namespace DiscordCoreAPI {
 
     };
 
-    Song::Song(const YouTubeSong & e) {
-        this->finalDownloadURLs = e.finalDownloadURLs;
-        this->secondDownloadURL = e.secondDownloadURL;
-        this->firstDownloadURL = e.firstDownloadURL;
-        this->addedByUserName = e.addedByUserName;
-        this->addedByUserId = e.addedByUserId;
-        this->contentLength = e.contentLength;
-        this->thumbnailURL = e.thumbnailURL;
-        this->description = e.description;
-        this->songTitle = e.songTitle;
-        this->duration = e.duration;
-        this->viewURL = e.viewURL;
-        this->songId = e.songId;
-        this->type = e.type;
-    }
-
     Song Song::operator=(const YouTubeSong& e) {
         this->finalDownloadURLs = e.finalDownloadURLs;
         this->secondDownloadURL = e.secondDownloadURL;
@@ -3944,7 +3908,6 @@ namespace DiscordCoreAPI {
 
     struct Playlist {
         Playlist() {};
-        Playlist(const DBPlaylist& e);
         Playlist operator=(const DBPlaylist& e);
         bool isLoopSongEnabled{ false };
         bool isLoopAllEnabled{ false };
@@ -3954,7 +3917,6 @@ namespace DiscordCoreAPI {
 
     struct DBPlaylist {
         DBPlaylist() {};
-        DBPlaylist(const Playlist& e);
         DBPlaylist operator=(const Playlist& e);
         bool isLoopSongEnabled{ false };
         bool isLoopAllEnabled{ false };
@@ -3968,20 +3930,6 @@ namespace DiscordCoreAPI {
         this->currentSong = e.currentSong;
         this->songList = e.songQueue;
         return *this;
-    }
-
-    Playlist::Playlist(const DBPlaylist& e) {
-        this->isLoopSongEnabled = e.isLoopSongEnabled;
-        this->isLoopAllEnabled = e.isLoopAllEnabled;
-        this->currentSong = e.currentSong;
-        this->songQueue = e.songList;
-    }
-
-    DBPlaylist::DBPlaylist(const Playlist& e) {
-        this->isLoopSongEnabled = e.isLoopSongEnabled;
-        this->isLoopAllEnabled = e.isLoopAllEnabled;
-        this->currentSong = e.currentSong;
-        this->songList = e.songQueue;
     }
 
     Playlist Playlist::operator=(const DBPlaylist& e) {
