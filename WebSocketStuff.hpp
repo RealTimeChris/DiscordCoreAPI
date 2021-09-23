@@ -208,6 +208,7 @@ namespace DiscordCoreInternal {
 				this->connect();
 				string resumePayload = getResumePayload(this->botToken, this->sessionId, this->lastNumberReceived);
 				this->sendMessage(resumePayload);
+				this->areWeAuthenticated = true;
 			}
 			else if (this->maxReconnectTries > this->currentReconnectTries) {
 				this->areWeAuthenticated = false;
@@ -288,7 +289,6 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("t") == "READY") {
 				this->sessionId = payload.at("d").at("session_id");
-				this->areWeAuthenticated = true;
 				this->currentReconnectTries = 0;
 			}
 
