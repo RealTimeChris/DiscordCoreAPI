@@ -90,7 +90,6 @@ namespace DiscordCoreInternal {
 
 		WebSocketConnectionAgent(unbounded_buffer<json>* target, string botTokenNew)
 			:ThreadContext(*ThreadManager::getThreadContext().get()), agent(*this->scheduler->scheduler) {
-			this->collectVoiceConnectionDataBuffer = make_shared<unbounded_buffer<GetVoiceConnectionData>>();
 			this->voiceConnectionDataBuffer = make_shared<unbounded_buffer<VoiceConnectionData>>();
 			this->webSocketWorkloadTarget = target;
 			this->botToken = botTokenNew;
@@ -99,7 +98,6 @@ namespace DiscordCoreInternal {
 	protected:
 
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		shared_ptr<unbounded_buffer<GetVoiceConnectionData>> collectVoiceConnectionDataBuffer{ nullptr };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
@@ -115,15 +113,15 @@ namespace DiscordCoreInternal {
 		int currentReconnectTries{ 0 };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
-		hstring socketPath{ L"" };
 		event_token closedToken{};
+		string socketPath{ "" };
 		string sessionId{ "" };
 		string botToken{ "" };
 
 		void setSocketPath(string socketPathBase) {
-			std::wstringstream stream;
-			stream << DiscordCoreInternal::getSocketPath(to_hstring(socketPathBase)).c_str();
-			stream << L"/?v=9&encoding=json";
+			std::stringstream stream;
+			stream << DiscordCoreInternal::getSocketPath(socketPathBase).c_str();
+			stream << "/?v=9&encoding=json";
 			this->socketPath = stream.str();
 		}
 
@@ -197,7 +195,7 @@ namespace DiscordCoreInternal {
 			this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
 			this->closedToken = this->webSocket->Closed({ this, &WebSocketConnectionAgent::onClosed });
 			this->messageReceivedToken = this->webSocket->MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
-			this->webSocket->ConnectAsync(winrt::Windows::Foundation::Uri(this->socketPath)).get();
+			this->webSocket->ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->socketPath))).get();
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
@@ -209,7 +207,7 @@ namespace DiscordCoreInternal {
 				string resumePayload = getResumePayload(this->botToken, this->sessionId, this->lastNumberReceived);
 				this->sendMessage(resumePayload);
 			}
-			else if (this->maxReconnectTries > this->currentReconnectTries && args.Code() != 4014) {
+			else if (this->maxReconnectTries > this->currentReconnectTries) {
 				this->currentReconnectTries += 1;
 				this->cleanup();
 				this->connect();
@@ -520,6 +518,7 @@ namespace DiscordCoreInternal {
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
 			if (this->maxReconnectTries > this->currentReconnectTries) {
+				this->currentReconnectTries += 1;
 				this->cleanup();
 				*this->doWeReconnect = true;
 			}
@@ -551,13 +550,8 @@ namespace DiscordCoreInternal {
 
 				if (payload.at("op") == 6) {};
 
-				if (payload.contains("t")) {
-					if (payload.at("t") == "READY") {
-						this->currentReconnectTries = 0;
-					}
-				}
-
 				if (payload.at("op") == 2) {
+					this->currentReconnectTries = 0;
 					this->voiceConnectionData.audioSSRC = payload.at("d").at("ssrc");
 					this->voiceConnectionData.voiceIp = payload.at("d").at("ip");
 					this->voiceConnectionData.voicePort = to_string(payload.at("d").at("port"));

@@ -247,10 +247,10 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
-	string getSocketPath(hstring initialPayload) {
+	string getSocketPath(string initialPayload) {
 		string finalString = "";
 		json jsonVal;
-		jsonVal = jsonVal.parse(to_string(initialPayload));
+		jsonVal = jsonVal.parse(initialPayload);
 		if (jsonVal.contains("url")){
 			finalString = jsonVal.at("url");
 		}
