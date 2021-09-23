@@ -185,7 +185,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::sendMessage() Error: ");
-				this->webSocket->Close(1001, L"Message sending failed.");
+				this->webSocket->Close(1002, L"Message sending failed.");
 			}
 		}
 
@@ -427,7 +427,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
-				this->webSocket->Close(1001, L"Message sending failed.");
+				this->webSocket->Close(1002, L"Message sending failed.");
 			}
 			
 		}
