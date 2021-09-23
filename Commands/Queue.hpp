@@ -408,7 +408,7 @@ namespace DiscordCoreAPI {
                     for (; next != end; ++next) {
                         args2.push_back(next->str());
                     }
-
+                    regex digitRegex("\\d{1,3}");
                     if (args2.size() == 0 || convertToLowerCase(args2[0]) == "exit") {
                         InputEventData dataPackage(returnedMessages.messages.at(0), InteractionData(), InputEventType::REGULAR_MESSAGE, args->eventData.discordCoreClient);
                         dataPackage.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
@@ -441,6 +441,28 @@ namespace DiscordCoreAPI {
                         continue;
                     }
                     else if (convertToLowerCase(args2[0]) == "remove") {
+                        if (args2.size() < 2 || !regex_search(args2[1].c_str(), digitRegex)) {
+                            msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
+                            msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
+                            InputEventData dataPackage(returnedMessages.messages.at(0), InteractionData(), InputEventType::REGULAR_MESSAGE, args->eventData.discordCoreClient);
+                            dataPackage.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
+                            InputEvents::deleteInputEventResponseAsync(dataPackage).get();;
+                            if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                                RespondToInputEventData dataPackage02(args->eventData);
+                                dataPackage02.type = DesiredInputEventResponseType::RegularMessageEdit;
+                                dataPackage02.addMessageEmbed(msgEmbeds[currentPageIndex]);
+                                dataPackage02.addContent("");
+                                newEvent = InputEvents::respondToEvent(dataPackage02);
+                            }
+                            else {
+                                RespondToInputEventData dataPackage02(args->eventData);
+                                dataPackage02.type = DesiredInputEventResponseType::InteractionResponseEdit;
+                                dataPackage02.addMessageEmbed(msgEmbeds[currentPageIndex]);
+                                dataPackage02.addContent("");
+                                newEvent = InputEvents::respondToEvent(dataPackage02);
+                            }
+                            continue;
+                        }
                         if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || args2.size() < 1) {
                             msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
                             msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
@@ -477,7 +499,29 @@ namespace DiscordCoreAPI {
                         break;
                     }
                     else if (convertToLowerCase(args2[0]) == "swap") {
-                        if ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || (stoll(args2[2]) - 1) < 0 || (size_t)(stoll(args2[2]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || args2.size() < 2) {
+                        if (args2.size() < 3 || !regex_search(args2[1].c_str(), digitRegex) || !regex_search(args2[2].c_str(), digitRegex)) {
+                            msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
+                            msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
+                            InputEventData dataPackage(returnedMessages.messages.at(0), InteractionData(), InputEventType::REGULAR_MESSAGE, args->eventData.discordCoreClient);
+                            dataPackage.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
+                            InputEvents::deleteInputEventResponseAsync(dataPackage).get();;
+                            if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+                                RespondToInputEventData dataPackage02(args->eventData);
+                                dataPackage02.type = DesiredInputEventResponseType::RegularMessageEdit;
+                                dataPackage02.addMessageEmbed(msgEmbeds[currentPageIndex]);
+                                dataPackage02.addContent("");
+                                newEvent = InputEvents::respondToEvent(dataPackage02);
+                            }
+                            else {
+                                RespondToInputEventData dataPackage02(args->eventData);
+                                dataPackage02.type = DesiredInputEventResponseType::InteractionResponseEdit;
+                                dataPackage02.addMessageEmbed(msgEmbeds[currentPageIndex]);
+                                dataPackage02.addContent("");
+                                newEvent = InputEvents::respondToEvent(dataPackage02);
+                            }
+                            continue;
+                        }
+                        if (args2.size() < 2|| ((stoll(args2[1]) - 1) < 0 || (size_t)(stoll(args2[1]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || (stoll(args2[2]) - 1) < 0 || (size_t)(stoll(args2[2]) - 1) >= SongAPI::getPlaylist(guild.id).songQueue.size() || args2.size() < 2)) {
                             msgEmbeds[currentPageIndex].setDescription("__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType exit to exit.__\n");
                             msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
                             InputEventData dataPackage(returnedMessages.messages.at(0), InteractionData(), InputEventType::REGULAR_MESSAGE, args->eventData.discordCoreClient);

@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		Test* create() {
 			return new Test;
 		}
-		
+
 		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 
 			InputEvents::deleteInputEventResponseAsync(args->eventData);

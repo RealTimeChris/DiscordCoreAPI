@@ -169,59 +169,64 @@ namespace DiscordCoreAPI {
 			}
 
 			if (!voiceConnection->areWeCurrentlyPlaying()) {
-				voiceConnection->onSongCompletion([=](VoiceConnection* voiceConnection) mutable noexcept ->task<void> {
+				voiceConnection->onSongCompletion([=](SongCompletionEventData eventData) mutable noexcept ->task<void> {
 					co_await resume_background();
 					discordGuild.getDataFromDB();
 					if (SongAPI::isThereAnySongs(guild.id)) {
-						try {
-							SongAPI::sendNextSong(guild.id, guildMember);
-						}
-						catch (...) {
-							unbounded_buffer<exception> outwardBuffer;
-							rethrowException("__------\nOh no! There was an error trying to play your last track! It is as follows: ", &outwardBuffer);
-							auto newException = receive(outwardBuffer);
-							discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
-							discordGuild.writeDataToDB();
-							EmbedData newEmbed;
+						SongAPI::sendNextSong(guild.id, guildMember);
+
+						EmbedData newEmbed;
+						if (!eventData.isThisAReplay) {
 							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
-							newEmbed.setDescription("__------\nOh no! There was an error trying to play your last track! It is as follows:\n" + to_string(to_hstring(newException.what())) + "\n------");
+							newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
+								SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
 							newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
 							newEmbed.setTimeStamp(getTimeAndDate());
-							newEmbed.setTitle("__**Playing Error:**__");
+							newEmbed.setTitle("__**Now Playing:**__");
 							newEmbed.setColor(discordGuild.data.borderColor);
+							if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
+							}
+							if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
+							}
+							if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
+							}
+							if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
+							}
 							RespondToInputEventData dataPackage(args->eventData);
 							dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 							dataPackage.addMessageEmbed(newEmbed);
 							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-							voiceConnection->play();
 						}
-						discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
-						discordGuild.writeDataToDB();
-						EmbedData newEmbed;
-						newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
-						newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
-							SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
-						newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
-						newEmbed.setTimeStamp(getTimeAndDate());
-						newEmbed.setTitle("__**Now Playing:**__");
-						newEmbed.setColor(discordGuild.data.borderColor);
-						if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
+						else {
+							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
+							newEmbed.setDescription("__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" + eventData.previousSong.songTitle + "](" + eventData.previousSong.viewURL + ")" + "\n__**Description:**__ " + eventData.previousSong.description + "\n__**Duration:**__ " +
+								eventData.previousSong.duration + "\n__**Added By:**__ <@!" + eventData.previousSong.addedByUserId + "> (" + eventData.previousSong.addedByUserName + ")");
+							newEmbed.setImage(eventData.previousSong.thumbnailURL);
+							newEmbed.setTimeStamp(getTimeAndDate());
+							newEmbed.setTitle("__**Playing Error:**__");
+							newEmbed.setColor(discordGuild.data.borderColor);
+							if (SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ✅ Loop-Song");
+							}
+							if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
+							}
+							if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
+							}
+							if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
+								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
+							}
+							RespondToInputEventData dataPackage(args->eventData);
+							dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+							dataPackage.addMessageEmbed(newEmbed);
+							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 						}
-						if (!SongAPI::isLoopAllEnabled(guild.id) && SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("❌ Loop-All, ✅ Loop-Song");
-						}
-						if (SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("✅ Loop-All, ❌ Loop-Song");
-						}
-						if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
-							newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
-						}
-						RespondToInputEventData dataPackage(args->eventData);
-						dataPackage.type = DesiredInputEventResponseType::RegularMessage;
-						dataPackage.addMessageEmbed(newEmbed);
-						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-						voiceConnection->play();
+						eventData.voiceConnection->play();
 					}
 					else {
 						discordGuild.getDataFromDB();
@@ -252,30 +257,8 @@ namespace DiscordCoreAPI {
 
 				if (!voiceConnection->areWeCurrentlyPlaying()) {
 					if (SongAPI::isThereAnySongs(guild.id)) {
-						try {
-							SongAPI::sendNextSong(guild.id, guildMember);
-						}
-						catch (...) {
-							unbounded_buffer<exception> outwardBuffer;
-							rethrowException("__------\nOh no! There was an error trying to play your last track! It is as follows: ", &outwardBuffer);
-							auto newException = receive(outwardBuffer);
-							discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
-							discordGuild.writeDataToDB();
-							EmbedData newEmbed;
-							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
-							newEmbed.setDescription("__------\nOh no! There was an error trying to play your last track! It is as follows:\n" + to_string(to_hstring(newException.what())) + "\n------");
-							newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
-							newEmbed.setTimeStamp(getTimeAndDate());
-							newEmbed.setTitle("__**Playing Error:**__");
-							newEmbed.setColor(discordGuild.data.borderColor);
-							RespondToInputEventData dataPackage(args->eventData);
-							dataPackage.type = DesiredInputEventResponseType::RegularMessage;
-							dataPackage.addMessageEmbed(newEmbed);
-							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-							voiceConnection->play();
-						}
-						discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
-						discordGuild.writeDataToDB();
+						SongAPI::sendNextSong(guild.id, guildMember);
+
 						EmbedData newEmbed;
 						newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 						newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +

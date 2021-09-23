@@ -164,9 +164,51 @@ namespace DiscordCoreAPI {
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 
-				SongAPI::skip(guild.id, guildMember);
+				try {
+					SongAPI::skip(guild.id, guildMember);
+				}
+				catch (...) {
+					unbounded_buffer<exception> outwardBuffer;
+					rethrowException("__------\nOh no! There was an error trying to play your last track! It is as follows: ", &outwardBuffer);
+					auto newException = receive(outwardBuffer);
+					EmbedData newEmbed;
+					newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
+					newEmbed.setDescription("------\n__Oh no! There was an error trying to play your last track! It is as follows:__**\n" + to_string(to_hstring(newException.what())) + "**\n------");
+					newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
+					newEmbed.setTimeStamp(getTimeAndDate());
+					newEmbed.setTitle("__**Playing Error:**__");
+					newEmbed.setColor(discordGuild.data.borderColor);
+					RespondToInputEventData dataPackage(args->eventData);
+					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+					SongAPI::setCurrentSong(Song(), guild.id);
+					if (args->argumentsArray.size() > 0) {
+						int currentIndex = stoi(args->argumentsArray[0]);
+						currentIndex += 1;
+						args->argumentsArray[0] = to_string(currentIndex);
+						if (currentIndex < 5) {
+							this->execute(args).get();
+						}
+						else {
+							co_return;
+						}
+					}
+					else {
+						int currentIndex = 1;
+						args->argumentsArray.resize(1);
+						args->argumentsArray[0] = to_string(currentIndex);
+						if (currentIndex < 5) {
+							this->execute(args).get();
+						}
+						else {
+							co_return;
+						}
+					}
+					co_return;
+				}
+				
 				if (voiceConnection->areWeCurrentlyPlaying() &&SongAPI::isThereAnySongs(guild.id)) {
-					discordGuild.writeDataToDB();
 					string msgString = "------\n**We're skipping to the next song!**\n------";
 					EmbedData msgEmbed02;
 					msgEmbed02.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
@@ -195,8 +237,6 @@ namespace DiscordCoreAPI {
 						InputEvents::deleteInputEventResponseAsync(newEvent02, 20000).get();
 					}
 					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildMemberId = SongAPI::getCurrentSong(guild.id).addedByUserId,.guildId = args->eventData.getGuildId() }).get();
-					voiceConnection->skip();
-					voiceConnection->play();
 					EmbedData newEmbed;
 					newEmbed.setAuthor(guildMember02.user.userName, guildMember02.user.avatar);
 					newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
@@ -229,6 +269,8 @@ namespace DiscordCoreAPI {
 						dataPackage.addMessageEmbed(newEmbed);
 						auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 					}
+					voiceConnection->skip();
+					voiceConnection->play();
 				}
 				else if (!SongAPI::isThereAnySongs(guild.id)) {
 					discordGuild.getDataFromDB();

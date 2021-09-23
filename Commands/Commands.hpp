@@ -75,7 +75,13 @@ namespace DiscordCoreAPI {
 			else if (messageOption == false) {
 				args.argumentsArray = commandData.optionsArgs;
 			}
-			functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
+			try {
+				functionPointer->execute(make_shared<BaseFunctionArguments>(args)).get();
+			}
+			catch (...) {
+				rethrowException("CommandCenter::execute() Error: ");
+			}
+			
 			functionPointer.~shared_ptr();
 			functionPointer = nullptr;
 		};
