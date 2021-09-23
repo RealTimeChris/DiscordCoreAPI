@@ -436,7 +436,6 @@ namespace DiscordCoreInternal {
 
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
-		unbounded_buffer<bool> readyToVoiceConnectBuffer{ nullptr };
 		shared_ptr<DatagramSocket> voiceSocket{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
@@ -494,7 +493,6 @@ namespace DiscordCoreInternal {
 
 		void voiceConnect() {
 			try {
-				receive(this->readyToVoiceConnectBuffer, 10000);
 				this->voiceSocket = make_shared<DatagramSocket>();
 				this->voiceSocket->Control().QualityOfService(SocketQualityOfService::LowLatency);
 				winrt::Windows::Networking::HostName hostName(to_hstring(this->voiceConnectionData.voiceIp));
@@ -568,7 +566,6 @@ namespace DiscordCoreInternal {
 							this->voiceConnectionData.voiceEncryptionMode = value;
 						}
 					}
-					send(this->readyToVoiceConnectBuffer, true);
 					this->voiceConnect();
 					this->collectExternalIP();
 					int counterValue{ 0 };
