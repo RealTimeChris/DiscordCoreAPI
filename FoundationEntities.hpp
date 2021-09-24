@@ -1863,7 +1863,6 @@ namespace DiscordCoreAPI {
             return newData;
         }
 
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         bool mentionable{ false };
         string permissions{ "" };
         bool managed{ false };
@@ -1896,7 +1895,6 @@ namespace DiscordCoreAPI {
             return newData;
         }
 
-        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
         string discriminator{ "" };
         bool mfaEnabled{ false };
         bool verified{ false };
@@ -2391,7 +2389,6 @@ namespace DiscordCoreAPI {
     };
 
     struct ChannelData {
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         map<string, OverWriteData> permissionOverwrites{};
         ThreadMetadataData threadMetadata{};
         ChannelType type{ ChannelType::DM };
@@ -2451,7 +2448,6 @@ namespace DiscordCoreAPI {
             return newData;
         }
 
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         VoiceStateData voiceData{};
         string premiumSince{ "" };
         string permissions{ "" };
@@ -2566,7 +2562,6 @@ namespace DiscordCoreAPI {
             return newData;
         }
 
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         GuildMemberData member{};
         string channelId{ "" };
         string messageId{ "" };
@@ -2797,7 +2792,6 @@ namespace DiscordCoreAPI {
     };
 
     struct MessageData :public MessageDataOld {
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         MessageDataOld referencedMessage{};
         string requesterId{ "" };        
     };
@@ -3026,7 +3020,6 @@ namespace DiscordCoreAPI {
     };
 
     struct StickerData {
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         StickerFormatType formatType{};
         string description{ "" };
         bool available{ false };
@@ -3042,9 +3035,7 @@ namespace DiscordCoreAPI {
     };
 
     struct GuildData {
-        shared_ptr<DiscordCoreClientBase> discordCoreClientBase{ nullptr };
         DefaultMessageNotificationLevel defaultMessageNotifications{};
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         ExplicitContentFilterLevel explicitContentFilter{};
         vector<StageInstanceData> stageInstances{};
         vector<PresenceUpdateData> presences{};
@@ -3098,7 +3089,6 @@ namespace DiscordCoreAPI {
     };
 
     struct ReactionAddData {
-        DiscordCoreClient* discordCoreClient{ nullptr };
         GuildMemberData member{};
         string channelId{ "" };
         string messageId{ "" };
@@ -3108,7 +3098,6 @@ namespace DiscordCoreAPI {
     };
 
     struct ReactionRemoveData {
-        DiscordCoreClient* discordCoreClient{ nullptr };
         string channelId{ "" };
         string messageId{ "" };
         string guildId{ "" };

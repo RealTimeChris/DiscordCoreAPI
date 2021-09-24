@@ -218,7 +218,6 @@ namespace DiscordCoreInternal {
 			}
 			else if (this->maxReconnectTries <= this->currentReconnectTries) {
 				this->terminate();
-				exit(-1);
 			}
 		}
 
@@ -476,7 +475,6 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->terminate();
-					exit(-1);
 				}
 			}
 		}
@@ -539,7 +537,6 @@ namespace DiscordCoreInternal {
 			}
 			else if (this->maxReconnectTries <= this->currentReconnectTries) {
 				this->terminate();
-				exit(-1);
 			}
 		}
 
@@ -690,15 +687,15 @@ namespace DiscordCoreInternal {
 
 		void run() {
 			try {
-				while (doWeQuit == false) {
-					try {
-						json payload = receive(this->webSocketWorkloadSource, 15000);
+				while (!this->doWeQuit) {
+					json payload;
+					if (try_receive(this->webSocketWorkloadSource, payload)) {
 						this->onMessageReceived(payload);
 					}
-					catch (operation_timed_out&) {
-						continue;
-					}					
-				}
+					else {
+						concurrency::wait(150);
+					}
+				};
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketReceiverAgent::run() Error: ");

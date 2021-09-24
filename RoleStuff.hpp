@@ -30,7 +30,6 @@ namespace DiscordCoreAPI {
 		Role() {};
 
 		Role(RoleData dataNew) {
-			this->discordCoreClient = dataNew.discordCoreClient;
 			this->permissions = dataNew.permissions;
 			this->mentionable = dataNew.mentionable;
 			this->position = dataNew.position;
@@ -114,7 +113,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class RoleManager;
 		
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
 		static overwrite_buffer<map<string, DiscordCoreAPI::Role>> cache;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
@@ -135,9 +133,8 @@ namespace DiscordCoreInternal {
 		RoleManagerAgent()
 			:agent(*RoleManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		static void initialize(HttpAgentResources agentResourcesNew) {
 			RoleManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			RoleManagerAgent::discordCoreClient = discordCoreClientNew;
 			RoleManagerAgent::agentResources = agentResourcesNew;
 		}
 
@@ -161,7 +158,6 @@ namespace DiscordCoreInternal {
 			vector<DiscordCoreAPI::Role> roleVector;
 			for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
 				DiscordCoreAPI::RoleData roleData;
-				roleData.discordCoreClient = this->discordCoreClient;
 				DataParser::parseObject(returnData.data.at(x), &roleData);
 				DiscordCoreAPI::Role newRole(roleData);
 				roleVector.push_back(newRole);
@@ -186,7 +182,6 @@ namespace DiscordCoreInternal {
 			for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
 				DiscordCoreAPI::RoleData roleData;
 				DataParser::parseObject(returnData.data.at(x), &roleData);
-				roleData.discordCoreClient = this->discordCoreClient;
 				DiscordCoreAPI::Role newRole(roleData);
 				cacheTemp.insert(make_pair(newRole.id, newRole));
 			}
@@ -196,7 +191,6 @@ namespace DiscordCoreInternal {
 				roleData = cacheTemp.at(dataPackage.roleId);
 				cacheTemp.erase(dataPackage.roleId);
 			}
-			roleData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Role newRole(roleData);
 			return newRole;
 		}
@@ -216,7 +210,6 @@ namespace DiscordCoreInternal {
 				cout << "RoleManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::RoleData roleData;
-			roleData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &roleData);
 			DiscordCoreAPI::Role newRole(roleData);
 			return newRole;
@@ -239,7 +232,6 @@ namespace DiscordCoreInternal {
 			vector<DiscordCoreAPI::Role> roleVector;
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::RoleData newRoleData;
-				newRoleData.discordCoreClient = this->discordCoreClient;
 				DataParser::parseObject(value, &newRoleData);
 				DiscordCoreAPI::Role newRole(newRoleData);
 				roleVector.push_back(newRole);
@@ -262,7 +254,6 @@ namespace DiscordCoreInternal {
 				cout << "RoleManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::RoleData roleData;
-			roleData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &roleData);
 			DiscordCoreAPI::Role newRole(roleData);
 			return newRole;
@@ -388,7 +379,6 @@ namespace DiscordCoreInternal {
 					send(RoleManagerAgent::cache, cacheTemp);
 				}
 				DiscordCoreAPI::RoleData dataPackage10;
-				dataPackage10.discordCoreClient = this->discordCoreClient;
 				DiscordCoreAPI::Role roleNew(dataPackage10);
 				while (this->rolesToInsert.try_pop(roleNew)) {
 					map<string, DiscordCoreAPI::Role> cacheTemp;
@@ -429,11 +419,9 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		HttpAgentResources agentResources{};
 
-		RoleManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
+		RoleManager initialize(HttpAgentResources agentResourcesNew) {
 			this->agentResources = agentResourcesNew;
 			return *this;
 		}
@@ -454,7 +442,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::RoleData roleData;
-			roleData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Role newRole(roleData);
 			try_receive(requestAgent.outRoleBuffer, newRole);
 			co_await mainThread;
@@ -476,7 +463,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::RoleData roleData;
-			roleData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Role newRole(roleData);
 			try_receive(requestAgent.outRoleBuffer, newRole);
 			co_return newRole;
@@ -499,7 +485,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::RoleData roleData;
-			roleData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Role newRole(roleData);
 			try_receive(requestAgent.outRoleBuffer, newRole);
 			co_await mainThread;
@@ -586,7 +571,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::RoleData roleData;
-			roleData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Role newRole(roleData);
 			try_receive(requestAgent.outRoleBuffer, newRole);
 			updateRolePositions({ .newPosition = dataPackage.position,.guildId = dataPackage.guildId,.roleId = roleData.id });
@@ -668,7 +652,6 @@ namespace DiscordCoreInternal {
 
 		~RoleManager() {}
 	};
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> RoleManagerAgent::discordCoreClient{ nullptr };
 	overwrite_buffer<map<string, DiscordCoreAPI::Role>> RoleManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> RoleManagerAgent::threadContext{ nullptr };
 	HttpAgentResources RoleManagerAgent::agentResources{};

@@ -25,7 +25,6 @@ namespace DiscordCoreAPI {
 		Reaction() {};
 
 		Reaction(ReactionData dataNew) {
-			this->discordCoreClient = dataNew.discordCoreClient;
 			this->channelId = dataNew.channelId;
 			this->messageId = dataNew.messageId;
 			this->guildId = dataNew.guildId;
@@ -80,7 +79,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class ReactionManager;
 
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
 
@@ -91,9 +89,8 @@ namespace DiscordCoreInternal {
 		ReactionManagerAgent()
 			:agent(*ReactionManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		static void initialize(HttpAgentResources agentResourcesNew) {
 			ReactionManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			ReactionManagerAgent::discordCoreClient = discordCoreClientNew;
 			ReactionManagerAgent::agentResources = agentResourcesNew;
 		}
 
@@ -115,7 +112,6 @@ namespace DiscordCoreInternal {
 				cout << "this->putObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::ReactionData reactionData;
-			reactionData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &reactionData);
 			DiscordCoreAPI::Reaction reaction(reactionData);
 			return reaction;
@@ -183,11 +179,9 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		HttpAgentResources agentResources{};
 
-		ReactionManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
+		ReactionManager initialize(HttpAgentResources agentResourcesNew) {
 			this->agentResources = agentResourcesNew;
 			return *this;
 		}
@@ -217,7 +211,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::ReactionData reactionData;
-			reactionData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Reaction reaction(reactionData);
 			try_receive(requestAgent.outReactionBuffer, reaction);
 			co_await mainThread;
@@ -331,7 +324,6 @@ namespace DiscordCoreInternal {
 
 		~ReactionManager() {}
 	};
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> ReactionManagerAgent::discordCoreClient{ nullptr };
 	shared_ptr<ThreadContext> ReactionManagerAgent::threadContext{ nullptr };
 	HttpAgentResources ReactionManagerAgent::agentResources{};
 }

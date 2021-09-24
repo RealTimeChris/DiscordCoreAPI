@@ -29,7 +29,6 @@ namespace DiscordCoreAPI {
 		GuildMember() {};
 
 		GuildMember(GuildMemberData dataNew, string guildIdNew) {
-			this->discordCoreClient = dataNew.discordCoreClient;
 			this->premiumSince = dataNew.premiumSince;
 			this->permissions = dataNew.permissions;
 			this->userMention = dataNew.userMention;
@@ -80,7 +79,6 @@ namespace DiscordCoreInternal {
 		friend class GuildMemberManager;
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> cache;
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
 
@@ -96,9 +94,8 @@ namespace DiscordCoreInternal {
 			
 		}
 
-		static void intialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		static void intialize(HttpAgentResources agentResourcesNew) {
 			GuildMemberManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			GuildMemberManagerAgent::discordCoreClient = discordCoreClientNew;
 			GuildMemberManagerAgent::agentResources = agentResourcesNew;
 		}
 
@@ -121,7 +118,6 @@ namespace DiscordCoreInternal {
 			}
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DataParser::parseObject(returnData.data, &guildMemberData);
-			guildMemberData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::GuildMember guildMemberNew(guildMemberData, dataPackage.guildId);
 			return guildMemberNew;
 		}
@@ -142,7 +138,6 @@ namespace DiscordCoreInternal {
 			}
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DataParser::parseObject(returnData.data, &guildMemberData);
-			guildMemberData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::GuildMember guildMemberNew(guildMemberData, dataPackage.guildId);
 			return guildMemberNew;
 		}
@@ -224,11 +219,9 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		HttpAgentResources agentResources{};
 
-		GuildMemberManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
+		GuildMemberManager initialize(HttpAgentResources agentResourcesNew) {
 			this->agentResources = agentResourcesNew;
 			return *this;
 		}
@@ -247,7 +240,6 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
-			guildMember.discordCoreClient = this->discordCoreClient;
 			guildMember.guildId = dataPackage.guildId;
 			co_await mainThread;
 			co_return guildMember;
@@ -274,7 +266,6 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
 			guildMember.guildId = dataPackage.guildId;
-			guildMember.discordCoreClient = this->discordCoreClient;
 			co_await mainThread;
 			co_return guildMember;
 		}
@@ -293,7 +284,6 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildMemberData guildMemberData;
 			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId);
 			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
-			guildMember.discordCoreClient = this->discordCoreClient;
 			guildMember.guildId = dataPackage.guildId;
 			co_await mainThread;
 			co_return guildMember;
@@ -327,7 +317,6 @@ namespace DiscordCoreInternal {
 		~GuildMemberManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> GuildMemberManagerAgent::cache{ nullptr };
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> GuildMemberManagerAgent::discordCoreClient{ nullptr };
 	shared_ptr<ThreadContext> GuildMemberManagerAgent::threadContext{ nullptr };
 	HttpAgentResources GuildMemberManagerAgent::agentResources{};
 };

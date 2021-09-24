@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		static void finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* functionVector);
 
 		static void runBot() {
-			wait((agent*)DiscordCoreClient::thisPointer.get());
+			wait(DiscordCoreClient::thisPointer.get());
 		}
 
 		static void terminate() {
@@ -114,33 +114,33 @@ namespace DiscordCoreAPI {
 			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize(this->agentResources);
-			DiscordCoreInternal::GuildMemberManagerAgent::intialize(this->agentResources, this->thisPointer);
-			DiscordCoreInternal::ReactionManagerAgent::initialize(this->agentResources, this->thisPointer);
-			DiscordCoreInternal::ChannelManagerAgent::initialize(this->agentResources, this->thisPointer);
-			DiscordCoreInternal::MessageManagerAgent::initialize(this->agentResources, this->thisPointer);
-			DiscordCoreInternal::StickerManagerAgent::intialize(this->agentResources, this->thisPointer);
-			DiscordCoreInternal::GuildManagerAgent::initialize(this->agentResources, this->thisPointer, this->thisPointer);
-			DiscordCoreInternal::RoleManagerAgent::initialize(this->agentResources, this->thisPointer);
-			DiscordCoreInternal::UserManagerAgent::intialize(this->agentResources, this->thisPointer);
+			DiscordCoreInternal::GuildMemberManagerAgent::intialize(this->agentResources);
+			DiscordCoreInternal::ReactionManagerAgent::initialize(this->agentResources);
+			DiscordCoreInternal::ChannelManagerAgent::initialize(this->agentResources);
+			DiscordCoreInternal::MessageManagerAgent::initialize(this->agentResources);
+			DiscordCoreInternal::StickerManagerAgent::intialize(this->agentResources);
+			DiscordCoreInternal::GuildManagerAgent::initialize(this->agentResources);
+			DiscordCoreInternal::RoleManagerAgent::initialize(this->agentResources);
+			DiscordCoreInternal::UserManagerAgent::intialize(this->agentResources);
 			this->interactions = make_shared<DiscordCoreInternal::InteractionManager>(nullptr);
 			this->interactions->initialize(this->agentResources);
 			this->guildMembers = make_shared<DiscordCoreInternal::GuildMemberManager>(nullptr);
-			this->guildMembers->initialize(this->agentResources, this->thisPointer);
+			this->guildMembers->initialize(this->agentResources);
 			this->reactions = make_shared<DiscordCoreInternal::ReactionManager>(nullptr);
-			this->reactions->initialize(this->agentResources, this->thisPointer);
+			this->reactions->initialize(this->agentResources);
 			this->channels = make_shared<DiscordCoreInternal::ChannelManager>(nullptr);
-			this->channels->initialize(this->agentResources, this->thisPointer);
+			this->channels->initialize(this->agentResources);
 			this->messages = make_shared<DiscordCoreInternal::MessageManager>(nullptr);
-			this->messages->initialize(this->agentResources, this->thisPointer);
+			this->messages->initialize(this->agentResources);
 			this->stickers = make_shared<DiscordCoreInternal::StickerManager>(nullptr);
-			this->stickers->initialize(this->agentResources, this->thisPointer);
+			this->stickers->initialize(this->agentResources);
 			this->guilds = make_shared<DiscordCoreInternal::GuildManager>(nullptr);
-			this->guilds->initialize(this->agentResources, this->thisPointer, make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this));
+			this->guilds->initialize(this->agentResources);
 			this->roles = make_shared<DiscordCoreInternal::RoleManager>(nullptr);
-			this->roles->initialize(this->agentResources, this->thisPointer);
+			this->roles->initialize(this->agentResources);
 			this->users = make_shared<DiscordCoreInternal::UserManager>(nullptr);
-			this->users->initialize(this->agentResources, this->thisPointer);
-			DiscordCoreClientBase::initialize();
+			this->users->initialize(this->agentResources);
+			DiscordCoreClientBase::initialize(DiscordCoreClient::thisPointer);
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			SongAPI::initialize(DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, this->discordGuildMap, DiscordCoreClientBase::voiceConnectionMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 			this->applicationCommands->initialize(this->agentResources, this->discordUser->data.userId);
 			Button::initialize(this->interactions);
 			SelectMenu::initialize(this->interactions);
-			InputEvents::initialize(make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this), DiscordCoreClient::thisPointer, this->messages, this->interactions);
+			InputEvents::initialize(DiscordCoreClientBase::thisPointer, DiscordCoreClient::thisPointer, this->messages, this->interactions);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
 			this->webSocketReceiverAgent->start();
@@ -239,7 +239,6 @@ namespace DiscordCoreAPI {
 						{
 							OnChannelCreationData channelCreationData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channelCreationData.channel);
-							channelCreationData.channel.discordCoreClient = DiscordCoreClient::thisPointer;
 							this->eventManager->onChannelCreationEvent(channelCreationData);
 							break;
 						}
@@ -255,7 +254,6 @@ namespace DiscordCoreAPI {
 						{
 							OnChannelDeletionData channelDeleteData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &channelDeleteData.channel);
-							channelDeleteData.channel.discordCoreClient = DiscordCoreClient::thisPointer;
 							this->eventManager->onChannelDeletionEvent(channelDeleteData);
 							break;
 						}
@@ -312,8 +310,6 @@ namespace DiscordCoreAPI {
 						{
 							OnGuildCreationData guildCreationData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildCreationData.guild);
-							guildCreationData.guild.discordCoreClient = DiscordCoreClient::thisPointer;
-							guildCreationData.guild.discordCoreClientBase = make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this);
 							this->eventManager->onGuildCreationEvent(guildCreationData);
 							break;
 						}
@@ -322,8 +318,6 @@ namespace DiscordCoreAPI {
 							DiscordCoreAPI::OnGuildUpdateData guildUpdateData{};
 							guildUpdateData.guildOld = this->guilds->getGuildAsync({ .guildId = workload.payLoad.at("id") }).get();
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildUpdateData.guildNew);
-							guildUpdateData.guildNew.discordCoreClientBase = make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this);
-							guildUpdateData.guildNew.discordCoreClient = DiscordCoreClient::thisPointer;
 							this->eventManager->onGuildUpdateEvent(guildUpdateData);
 							break;
 						}
@@ -331,8 +325,6 @@ namespace DiscordCoreAPI {
 						{
 							DiscordCoreAPI::OnGuildDeletionData guildDeletionData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildDeletionData.guild);
-							guildDeletionData.guild.discordCoreClient = DiscordCoreClient::thisPointer;
-							guildDeletionData.guild.discordCoreClientBase = make_shared<DiscordCoreClientBase>((DiscordCoreClientBase)*this);
 							removeGuild(guildDeletionData.guild);
 							this->eventManager->onGuildDeletionEvent(guildDeletionData);
 							break;
@@ -378,7 +370,6 @@ namespace DiscordCoreAPI {
 						{
 							DiscordCoreAPI::OnGuildMemberAddData guildMemberAddData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildMemberAddData.guildMember);
-							guildMemberAddData.guildMember.discordCoreClient = DiscordCoreClient::thisPointer;
 							guildMemberAddData.guildMember.guildId = workload.payLoad.at("guild_id");
 							this->eventManager->onGuildMemberAddEvent(guildMemberAddData);
 							break;
@@ -387,7 +378,6 @@ namespace DiscordCoreAPI {
 						{
 							DiscordCoreAPI::OnGuildMemberRemoveData guildMemberRemoveData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("user"), &guildMemberRemoveData.user);
-							guildMemberRemoveData.user.discordCoreClient = DiscordCoreClient::thisPointer;
 							guildMemberRemoveData.guildId = workload.payLoad.at("guild_id");
 							this->eventManager->onGuildMemberRemoveEvent(guildMemberRemoveData);
 							break;
@@ -397,7 +387,6 @@ namespace DiscordCoreAPI {
 							DiscordCoreAPI::OnGuildMemberUpdateData guildMemberUpdateData{};
 							guildMemberUpdateData.guildMemberOld = this->guildMembers->getGuildMemberAsync({ .guildMemberId = workload.payLoad.at("user").at("id"),.guildId = workload.payLoad.at("guild_id") }).get();
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildMemberUpdateData.guildMemberNew);
-							guildMemberUpdateData.guildMemberNew.discordCoreClient = DiscordCoreClient::thisPointer;
 							guildMemberUpdateData.guildMemberNew.guildId = workload.payLoad.at("guild_id");
 							this->eventManager->onGuildMemberUpdateEvent(guildMemberUpdateData);
 							break;
@@ -413,7 +402,6 @@ namespace DiscordCoreAPI {
 						{
 							DiscordCoreAPI::OnRoleCreationData roleCreationData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("role"), &roleCreationData.role);
-							roleCreationData.role.discordCoreClient = DiscordCoreClient::thisPointer;
 							roleCreationData.guildId = workload.payLoad.at("guild_id");
 							this->eventManager->onRoleCreationEvent(roleCreationData);
 							break;
@@ -423,7 +411,6 @@ namespace DiscordCoreAPI {
 							DiscordCoreAPI::OnRoleUpdateData roleUpdateData{};
 							roleUpdateData.roleOld = this->roles->getRoleAsync({ .guildId = workload.payLoad.at("guild_id"), .roleId = workload.payLoad.at("role").at("id") }).get();
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("role"), &roleUpdateData.roleNew);
-							roleUpdateData.roleNew.discordCoreClient = DiscordCoreClient::thisPointer;
 							roleUpdateData.guildId = workload.payLoad.at("guild_id");
 							this->eventManager->onRoleUpdateEvent(roleUpdateData);
 							break;
@@ -577,7 +564,6 @@ namespace DiscordCoreAPI {
 						case DiscordCoreInternal::WebSocketEventType::Message_Create:
 						{
 							MessageData messageData{};
-							messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
 							if (messageData.interaction.id != "") {
 								if (DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
@@ -607,7 +593,6 @@ namespace DiscordCoreAPI {
 						case DiscordCoreInternal::WebSocketEventType::Message_Update:
 						{
 							MessageData messageData{};
-							messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
 							if (messageData.interaction.id != "") {
 								if (DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
@@ -615,7 +600,6 @@ namespace DiscordCoreAPI {
 								}
 							}
 							DiscordCoreAPI::OnMessageUpdateData messageUpdateData{};
-							messageData.discordCoreClient = DiscordCoreClient::thisPointer;
 							Message message(messageData);
 							messageUpdateData.messageNew = message;
 							this->eventManager->onMessageUpdateEvent(messageUpdateData);
@@ -647,7 +631,6 @@ namespace DiscordCoreAPI {
 						{
 							OnReactionAddData reactionAddData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &reactionAddData.reaction);
-							reactionAddData.reaction.discordCoreClient = DiscordCoreClient::thisPointer;
 							this->eventManager->onReactionAddEvent(reactionAddData);
 							break;
 						}
@@ -655,7 +638,6 @@ namespace DiscordCoreAPI {
 						{
 							OnReactionRemoveData reactionRemoveData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &reactionRemoveData.reactionRemoveData);
-							reactionRemoveData.reactionRemoveData.discordCoreClient = this;
 							this->eventManager->onReactionRemoveEvent(reactionRemoveData);
 							break;
 						}
@@ -718,7 +700,6 @@ namespace DiscordCoreAPI {
 							OnUserUpdateData userUpdateData{};
 							DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &userUpdateData.userNew);
 							userUpdateData.userOld = this->users->getUserAsync({ .userId = userUpdateData.userNew.id }).get();
-							userUpdateData.userNew.discordCoreClient = DiscordCoreClient::thisPointer;
 							this->users->insertUserAsync(userUpdateData.userNew).get();
 							this->eventManager->onUserUpdateEvent(userUpdateData);
 							break;
@@ -911,6 +892,10 @@ namespace DiscordCoreAPI {
 
 		static task<User> fetchUserAsync(FetchUserData dataPackage) {
 			return DiscordCoreClient::thisPointer->users->fetchAsync(dataPackage);
+		}
+
+		static task<void> insertUserAsync(User user) {
+			return DiscordCoreClient::thisPointer->users->insertUserAsync(user);
 		}
 	};
 

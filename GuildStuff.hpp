@@ -18,6 +18,7 @@
 #include "RoleStuff.hpp"
 #include "YouTubeStuff.hpp"
 #include "SongAPI.hpp"
+#include "DiscordCoreClientBase.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -41,7 +42,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData;
 				voiceConnectInitData.channelId = channelId;
 				voiceConnectInitData.guildId = this->id;
-				voiceConnectInitData.userId = this->discordCoreClientBase->currentUser.id;
+				voiceConnectInitData.userId = DiscordCoreClientBase::currentUser.id;
 				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::webSocketConnectionAgent, this->id, DiscordCoreClientBase::voiceConnectionMap));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
 				YouTubeAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
@@ -127,11 +128,9 @@ namespace DiscordCoreAPI {
 			this->publicUpdatesChannelId = dataNew.publicUpdatesChannelId;
 			this->approximateMemberCount = dataNew.approximateMemberCount;
 			this->explicitContentFilter = dataNew.explicitContentFilter;
-			this->discordCoreClientBase = dataNew.discordCoreClientBase;
 			this->maxVideoChannelUsers = dataNew.maxVideoChannelUsers;
 			this->systemChannelFlags = dataNew.systemChannelFlags;
 			this->verificationLevel = dataNew.verificationLevel;
-			this->discordCoreClient = dataNew.discordCoreClient;
 			this->discoverySplash = dataNew.discoverySplash;
 			this->preferredLocale = dataNew.preferredLocale;
 			this->widgetChannelId = dataNew.widgetChannelId;
@@ -182,9 +181,8 @@ namespace DiscordCoreAPI {
 				for (auto value : channels) {
 					value.guildId = this->id;
 					ChannelData channelData = value;
-					channelData.discordCoreClient = this->discordCoreClient;
 					Channel channel(channelData);
-					this->discordCoreClientBase->channels->insertChannelAsync(channel).get();
+					DiscordCoreClientBase::thisPointer->channels->insertChannelAsync(channel).get();
 				}
 				cout << "Caching guild members for guild: " << this->name << endl;
 				for (unsigned int x = 0; x < this->members.size(); x += 1) {
@@ -195,25 +193,22 @@ namespace DiscordCoreAPI {
 						}
 					}
 					guildMemberData.guildId = this->id;
-					guildMemberData.discordCoreClient = this->discordCoreClient;
 					DiscordGuildMember discordGuildMember(guildMemberData);
 					discordGuildMember.writeDataToDB();
 					GuildMember guildMember(guildMemberData, this->id);
-					this->discordCoreClientBase->guildMembers->insertGuildMemberAsync(guildMember, this->id).get();
+					DiscordCoreClientBase::thisPointer->guildMembers->insertGuildMemberAsync(guildMember, this->id).get();
 				}
 				cout << "Caching roles for guild: " << this->name << endl;
 				for (auto const& value : roles) {
 					RoleData roleData = value;
-					roleData.discordCoreClient = this->discordCoreClient;
 					Role role(roleData);
-					this->discordCoreClientBase->roles->insertRoleAsync(role).get();
+					DiscordCoreClientBase::thisPointer->roles->insertRoleAsync(role).get();
 				}
 				cout << "Caching users for guild: " << this->name << endl << endl;
 				for (auto value : members) {
 					UserData userData = value.user;
-					userData.discordCoreClient = this->discordCoreClient;
 					User user(userData);
-					this->discordCoreClientBase->users->insertUserAsync(user).get();
+					DiscordCoreClientBase::thisPointer->users->insertUserAsync(user).get();
 				}
 			}
 			catch (...) {
@@ -265,10 +260,8 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildManager;
-
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase;
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
-		static overwrite_buffer<map<string, DiscordCoreAPI::Guild>> cache;
+		
+		static overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* cache;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
 
@@ -289,19 +282,22 @@ namespace DiscordCoreInternal {
 		GuildManagerAgent()
 			: agent(*GuildManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBaseNew) {
+		static void initialize(HttpAgentResources agentResourcesNew) {
 			GuildManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			GuildManagerAgent::discordCoreClientBase = discordCoreClientBaseNew;
-			GuildManagerAgent::discordCoreClient = discordCoreClientNew;
 			GuildManagerAgent::agentResources = agentResourcesNew;
+			GuildManagerAgent::cache = new overwrite_buffer<map<string, DiscordCoreAPI::Guild>>();
 		}
 
 		static void cleanup() {
-			auto cacheNew = receive(GuildManagerAgent::cache);
-			for (auto [key, value] : cacheNew) {
-				value.disconnect();
-			}
-			GuildManagerAgent::threadContext->releaseGroup();
+			if (GuildManagerAgent::cache != nullptr) {
+				auto cacheNew = receive(GuildManagerAgent::cache);
+				for (auto [key, value] : cacheNew) {
+					value.disconnect();
+				}
+				GuildManagerAgent::threadContext->releaseGroup();
+				delete GuildManagerAgent::cache;
+				GuildManagerAgent::cache = nullptr;
+			} 
 		}
 
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage) {
@@ -318,8 +314,6 @@ namespace DiscordCoreInternal {
 				cout << "GuildManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::GuildData guildData;
-			guildData.discordCoreClient = this->discordCoreClient;
-			guildData.discordCoreClientBase = this->discordCoreClientBase;
 			DataParser::parseObject(returnData.data, &guildData);
 			DiscordCoreAPI::Guild guildNew(guildData);
 			return guildNew;
@@ -529,13 +523,9 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBase{ nullptr };
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		HttpAgentResources agentResources{};
 
-		GuildManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew, shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> discordCoreClientBaseNew) {
-			this->discordCoreClientBase = discordCoreClientBaseNew;
-			this->discordCoreClient = discordCoreClientNew;
+		GuildManager initialize(HttpAgentResources agentResourcesNew) {
 			this->agentResources = agentResourcesNew;
 			return *this;
 		}
@@ -551,8 +541,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::GuildData guildData;
-			guildData.discordCoreClient = this->discordCoreClient;
-			guildData.discordCoreClientBase = this->discordCoreClientBase;
 			DiscordCoreAPI::Guild guildNew(guildData);
 			try_receive(requestAgent.outGuildBuffer, guildNew);
 			co_await mainThread;
@@ -656,8 +644,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::GuildData guildData;
-			guildData.discordCoreClient = this->discordCoreClient;
-			guildData.discordCoreClientBase = this->discordCoreClientBase;
 			DiscordCoreAPI::Guild guildNew(guildData);
 			try_receive(requestAgent.outGuildBuffer, guildNew);
 			co_await mainThread;
@@ -704,10 +690,8 @@ namespace DiscordCoreInternal {
 
 		~GuildManager() {}
 	};
-	shared_ptr<DiscordCoreAPI::DiscordCoreClientBase> GuildManagerAgent::discordCoreClientBase;
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> GuildManagerAgent::discordCoreClient;
-	overwrite_buffer<map<string, DiscordCoreAPI::Guild>> GuildManagerAgent::cache;
-	shared_ptr<ThreadContext> GuildManagerAgent::threadContext;
-	HttpAgentResources GuildManagerAgent::agentResources;
+	overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* GuildManagerAgent::cache{ nullptr };
+	shared_ptr<ThreadContext> GuildManagerAgent::threadContext{ nullptr };
+	HttpAgentResources GuildManagerAgent::agentResources{};
 }
 #endif

@@ -28,7 +28,6 @@ namespace DiscordCoreAPI {
 		Message() {};
 
 		Message(MessageData dataNew) {
-			this->discordCoreClient = dataNew.discordCoreClient;
 			this->referencedMessage = dataNew.referencedMessage;
 			this->messageReference = dataNew.messageReference;
 			this->mentionChannels = dataNew.mentionChannels;
@@ -467,7 +466,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class MessageManager;
 
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
 
@@ -486,9 +484,8 @@ namespace DiscordCoreInternal {
 		MessageManagerAgent()
 			:agent(*MessageManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		static void initialize(HttpAgentResources agentResourcesNew) {
 			MessageManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			MessageManagerAgent::discordCoreClient = discordCoreClientNew;
 			MessageManagerAgent::agentResources = agentResourcesNew;
 		}
 
@@ -510,7 +507,6 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::getObject_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
 			messageData.requesterId = dataPackage.requesterId;
 			DiscordCoreAPI::Message messageNew(messageData);
@@ -556,7 +552,6 @@ namespace DiscordCoreInternal {
 			vector<DiscordCoreAPI::Message> messagesVector{};
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::MessageData messageData;
-				messageData.discordCoreClient = this->discordCoreClient;
 				DataParser::parseObject(value, &messageData);
 				DiscordCoreAPI::Message messageNew(messageData);
 				messagesVector.push_back(messageNew);
@@ -580,7 +575,6 @@ namespace DiscordCoreInternal {
 			vector<DiscordCoreAPI::Message> messagesVector{};
 			for (auto value : returnData.data) {
 				DiscordCoreAPI::MessageData messageData;
-				messageData.discordCoreClient = this->discordCoreClient;
 				DataParser::parseObject(value, &messageData);
 				DiscordCoreAPI::Message messageNew(messageData);
 				messagesVector.push_back(messageNew);
@@ -603,7 +597,6 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::patchObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
 			messageData.requesterId = dataPackage.requesterId;
 			DiscordCoreAPI::Message messageNew(messageData);
@@ -626,7 +619,6 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::postObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
 			messageData.requesterId = dataPackage.requesterId;
 			DiscordCoreAPI::Message messageNew(messageData);
@@ -648,7 +640,6 @@ namespace DiscordCoreInternal {
 				cout << "MessageManagerAgent::postObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &messageData);
 			DiscordCoreAPI::Message messageNew(messageData);
 			return messageNew;
@@ -789,11 +780,9 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		HttpAgentResources agentResources{};
 
-		MessageManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
+		MessageManager initialize(HttpAgentResources agentResourcesNew) {
 			this->agentResources = agentResourcesNew;
 			return *this;
 		}
@@ -819,7 +808,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.requesterId = dataPackage.requesterId;
@@ -851,7 +839,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.requesterId = dataPackage.requesterId;
@@ -879,7 +866,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.requesterId = dataPackage.requesterId;
@@ -912,7 +898,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.requesterId = dataPackage.requesterId;
@@ -1023,7 +1008,6 @@ namespace DiscordCoreInternal {
 			agent::wait(&requestAgent);
 			exception error;
 			DiscordCoreAPI::MessageData messageData;
-			messageData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
 			messageNew.requesterId = dataPackage.requesterId;
@@ -1033,7 +1017,6 @@ namespace DiscordCoreInternal {
 
 		~MessageManager() {}
 	};
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> MessageManagerAgent::discordCoreClient{ nullptr };
 	shared_ptr<ThreadContext> MessageManagerAgent::threadContext{ nullptr };
 	HttpAgentResources MessageManagerAgent::agentResources{};
 }

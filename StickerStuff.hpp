@@ -28,7 +28,6 @@ namespace DiscordCoreAPI {
 		Sticker() {};
 
 		Sticker(StickerData dataNew) {
-			this->discordCoreClient = dataNew.discordCoreClient;
 			this->description = dataNew.description;
 			this->formatType = dataNew.formatType;
 			this->sortValue = dataNew.sortValue;
@@ -54,7 +53,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::EventHandler;
 		friend class StickerManager;
 
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
 		static overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> cache;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
@@ -62,9 +60,8 @@ namespace DiscordCoreInternal {
 		StickerManagerAgent()
 			:agent(*StickerManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void intialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		static void intialize(HttpAgentResources agentResourcesNew) {
 			StickerManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			StickerManagerAgent::discordCoreClient = discordCoreClientNew;
 			StickerManagerAgent::agentResources = agentResourcesNew;
 		}
 
@@ -102,18 +99,15 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		shared_ptr<ThreadContext> threadContext{ nullptr };
 		HttpAgentResources agentResources{};
 
-		void initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
+		void initialize(HttpAgentResources agentResourcesNew) {
 			this->agentResources = agentResourcesNew;
 		}
 
 		~StickerManager() {}
 	};
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> StickerManagerAgent::discordCoreClient{ nullptr };
 	overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> StickerManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> StickerManagerAgent::threadContext{ nullptr };
 	HttpAgentResources StickerManagerAgent::agentResources{};

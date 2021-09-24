@@ -62,7 +62,6 @@ namespace DiscordCoreAPI {
 		User() {};
 
 		User(UserData dataNew) {
-			this->discordCoreClient = dataNew.discordCoreClient;
 			this->discriminator = dataNew.discriminator;
 			this->premiumType = dataNew.premiumType;
 			this->publicFlags = dataNew.publicFlags;
@@ -130,7 +129,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		BotUser(UserData dataPackage) {
-			this->discordCoreClient = dataPackage.discordCoreClient;
 			this->discriminator = dataPackage.discriminator;
 			this->premiumType = dataPackage.premiumType;
 			this->publicFlags = dataPackage.publicFlags;
@@ -177,7 +175,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class UserManager;
 
-		static shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient;
 		static overwrite_buffer<map<string, DiscordCoreAPI::User>> cache;
 		static shared_ptr<ThreadContext> threadContext;
 		static HttpAgentResources agentResources;
@@ -193,9 +190,8 @@ namespace DiscordCoreInternal {
 		UserManagerAgent()
 			:agent(*UserManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void intialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+		static void intialize(HttpAgentResources agentResourcesNew) {
 			UserManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			UserManagerAgent::discordCoreClient = discordCoreClientNew;
 			UserManagerAgent::agentResources = agentResourcesNew;
 		}
 
@@ -222,7 +218,6 @@ namespace DiscordCoreInternal {
 				cout << "UserManagerAgent::getObjectData_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
 			DiscordCoreAPI::UserData userData;
-			userData.discordCoreClient = this->discordCoreClient;
 			DataParser::parseObject(returnData.data, &userData);
 			DiscordCoreAPI::User userNew(userData);
 			return userNew;
@@ -297,7 +292,6 @@ namespace DiscordCoreInternal {
 					deleteObjectData(dataPackage04);
 				}
 				DiscordCoreAPI::UserData dataPackage05;
-				dataPackage05.discordCoreClient = this->discordCoreClient;
 				DiscordCoreAPI::User user(dataPackage05);
 				while (this->usersToInsert.try_pop(user)) {
 					map<string, DiscordCoreAPI::User> cacheTemp;
@@ -338,11 +332,9 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
 		HttpAgentResources agentResources{};
 
-		UserManager initialize(HttpAgentResources agentResourcesNew, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
+		UserManager initialize(HttpAgentResources agentResourcesNew) {
 			this->agentResources = agentResourcesNew;
 			return *this;
 		}
@@ -358,7 +350,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::UserData userData;
-			userData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::User user(userData);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
@@ -374,7 +365,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::UserData userData;
-			userData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::User user(userData);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
@@ -390,7 +380,6 @@ namespace DiscordCoreInternal {
 			requestAgent.start();
 			agent::wait(&requestAgent);
 			DiscordCoreAPI::UserData userData;
-			userData.discordCoreClient = this->discordCoreClient;
 			DiscordCoreAPI::User user(userData);
 			try_receive(requestAgent.outUserBuffer, user);
 			co_return user;
@@ -434,7 +423,6 @@ namespace DiscordCoreInternal {
 
 		~UserManager() {}
 	};
-	shared_ptr<DiscordCoreAPI::DiscordCoreClient> UserManagerAgent::discordCoreClient{ nullptr };
 	overwrite_buffer<map<string, DiscordCoreAPI::User>> UserManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> UserManagerAgent::threadContext{ nullptr };
 	HttpAgentResources UserManagerAgent::agentResources{};
