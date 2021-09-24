@@ -661,50 +661,22 @@ namespace DiscordCoreAPI {
 			if (!YouTubeAPI::youtubeAPIMap->at(guildId)->stop()) {
 				return false;
 			}
-			YouTubeAPI::youtubeAPIMap->erase(guildId);
 			shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
 			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
 			return true;
 		}
 
 		static void sendNextSong(Song newSong, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong(newSong);
-				return;
-
-			}
-			else {
-				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
-					shared_ptr<YouTubeAPI> soundCloudAPI = make_shared<YouTubeAPI>(guildId);
-					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, soundCloudAPI);
-					soundCloudAPI->sendNextSong(newSong);
-					return;
-				}
-				else {
-					return;
-				}
-			}
+			shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
+			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
+			youtubeAPI->sendNextSong(newSong);
 		}
 
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId) {
-			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
-				YouTubeAPI::youtubeAPIMap->erase(guildId);
-				shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
-				auto returnValue = youtubeAPI->theSong.searchForSong(searchQuery);
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-				return returnValue;
-			}
-			else {
-				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
-					shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
-					auto returnValue = youtubeAPI->theSong.searchForSong(searchQuery);
-					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-					return returnValue;
-				}
-				else {
-					return vector<YouTubeSong>();
-				}
-			}
+			shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
+			auto returnValue = youtubeAPI->theSong.searchForSong(searchQuery);
+			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
+			return returnValue;
 		}
 
 		HRESULT GetRuntimeClassName(HSTRING*) {

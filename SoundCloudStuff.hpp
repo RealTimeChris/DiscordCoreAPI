@@ -334,50 +334,23 @@ namespace DiscordCoreAPI {
 			if (!SoundCloudAPI::soundCloudAPIMap->at(guildId)->stop()) {
 				return false;
 			}
-			SoundCloudAPI::soundCloudAPIMap->erase(guildId);
 			shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
 			SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
 			return true;
 		}
 
 		static void sendNextSong(Song newSong, string guildId) {
-			if (SoundCloudAPI::soundCloudAPIMap->contains(guildId)) {
-				SoundCloudAPI::soundCloudAPIMap->at(guildId)->sendNextSong(newSong);
-				return;
-
-			}
-			else {
-				if (SoundCloudAPI::discordGuildMap->contains(guildId)) {
-					shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
-					SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
-					soundCloudAPI->sendNextSong(newSong);
-					return;
-				}
-				else {
-					return;
-				}
-			}
+			shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
+			SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
+			soundCloudAPI->sendNextSong(newSong);
+			return;
 		}
 
 		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId) {
-			if (SoundCloudAPI::soundCloudAPIMap->contains(guildId)) {
-				SoundCloudAPI::soundCloudAPIMap->erase(guildId);
-				shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
-				auto returnValue = soundCloudAPI->theSong.searchForSong(searchQuery);
-				SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
-				return returnValue;
-			}
-			else {
-				if (SoundCloudAPI::discordGuildMap->contains(guildId)) {
-					shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
-					auto returnValue = soundCloudAPI->theSong.searchForSong(searchQuery);
-					SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
-					return returnValue;
-				}
-				else {
-					return vector<SoundCloudSong>();
-				}
-			}
+			shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
+			auto returnValue = soundCloudAPI->theSong.searchForSong(searchQuery);
+			SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
+			return returnValue;
 		}
 
 		HRESULT GetRuntimeClassName(HSTRING*) {
