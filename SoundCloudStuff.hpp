@@ -233,8 +233,7 @@ namespace DiscordCoreAPI {
 		void sendNextSong(Song newSong) {
 			this->cancelTokenSource = cancellation_token_source();
 			this->cancelToken = this->cancelTokenSource.get_token();
-			this->downloadAndStreamAudioWrapper(newSong, this);
-			return;
+			this->downloadAndStreamAudioWrapper(newSong);
 		}
 
 		HRESULT GetRuntimeClassName(HSTRING*) {
@@ -245,15 +244,15 @@ namespace DiscordCoreAPI {
 			return HRESULT();
 		}
 
-		task<void> downloadAndStreamAudioWrapper(Song newSong, SoundCloudAPI* soundCloudAPI, int retryCountNew = 0) {
+		task<void> downloadAndStreamAudioWrapper(SoundCloudSong newSong, int retryCountNew = 0) {
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			apartment_context mainThread{};
 			co_await resume_foreground(*threadContext->dispatcherQueue);
 			this->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
 				auto tokenNew = strong_this->cancelTokenSource.get_token();
 				auto song = newSong;
-				BuildSongDecoderData dataPackage{};
 				strong_this->areWeStopping = false;
+				BuildSongDecoderData dataPackage{};				
 				if (strong_this->sendAudioDataBufferMap->contains(strong_this->guildId)) {
 					strong_this->sendAudioDataBuffer = strong_this->sendAudioDataBufferMap->at(strong_this->guildId);
 				}
@@ -352,12 +351,12 @@ namespace DiscordCoreAPI {
 				agent::wait(songDecoder);
 				delete songDecoder;
 				songDecoder = nullptr;
-				strong_this->currentTask = nullptr;
 				strong_this->readyToBeDoneEvent.set();
 				threadContext->releaseGroup();
+				strong_this->currentTask = nullptr;
 				return;
 			}, this->cancelToken));
-
+			co_await mainThread;
 		};
 
 		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>* sendAudioDataBufferNew) {
