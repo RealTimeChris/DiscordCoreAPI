@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 				if (SongAPI::isLoopAllEnabled(guildId) || SongAPI::isLoopSongEnabled(guildId)) {
 					SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
 					SongAPI::setCurrentSong(Song(), guildId);
-					
+
 				}
 				else {
 					SongAPI::setCurrentSong(Song(), guildId);
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 				shared_ptr<SongAPI> songAPI = make_shared<SongAPI>(discordGuild);
 				SongAPI::songAPIMap->insert_or_assign(guildId, songAPI);
 				SongAPI::songAPIMap->at(guildId)->loadPlaylist();
-				
+
 				return true;
 			}
 			else {
@@ -268,7 +268,7 @@ namespace DiscordCoreAPI {
 			int vector01Used{ 0 };
 			int vector02Used{ 0 };
 			for (int x = 0; x < totalLength; x += 1) {
-				if ((vector01Used < vector01.size() - 1) && (x % 2 == 0)&&vector01.size()>0) {
+				if ((vector01Used < vector01.size() - 1) && (x % 2 == 0) && vector01.size() > 0) {
 					Song newSong = vector01[vector01Used];
 					newSong.type = SongType::SoundCloud;
 					newVector.push_back(newSong);
@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 
 		static bool isThereAnySongs(string guildId) {
 			SongAPI::songAPIMap->at(guildId)->loadPlaylist();
-			if (SongAPI::songAPIMap->at(guildId)->playlist.isLoopAllEnabled|| SongAPI::songAPIMap->at(guildId)->playlist.isLoopSongEnabled) {
+			if (SongAPI::songAPIMap->at(guildId)->playlist.isLoopAllEnabled || SongAPI::songAPIMap->at(guildId)->playlist.isLoopSongEnabled) {
 				if (SongAPI::songAPIMap->at(guildId)->playlist.songQueue.size() == 0 && SongAPI::songAPIMap->at(guildId)->playlist.currentSong.songId == "") {
 					return false;
 				}
@@ -363,7 +363,7 @@ namespace DiscordCoreAPI {
 
 		static Song getCurrentSong(string guildId) {
 			SongAPI::songAPIMap->at(guildId)->loadPlaylist();
-			if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.songId!= "") {
+			if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.songId != "") {
 				return SongAPI::songAPIMap->at(guildId)->playlist.currentSong;
 			}
 			else if (SongAPI::songAPIMap->at(guildId)->playlist.songQueue.size() > 0) {
@@ -393,7 +393,6 @@ namespace DiscordCoreAPI {
 						return;
 					}
 					catch (...) {
-						cout << "WERE HERE THIS IS IT" << endl;
 						vector<uint8_t> newVector;
 						AudioFrameData frameData{};
 						frameData.encodedFrameData.sampleCount = 0;
@@ -409,7 +408,7 @@ namespace DiscordCoreAPI {
 						(*SoundCloudAPI::soundCloudAPIMap->at(guildId)->voiceConnection->onSongCompletionEvent)(eventData);
 						return;
 					}
-					
+
 				}
 				else {
 					try {
@@ -434,9 +433,9 @@ namespace DiscordCoreAPI {
 						return;
 					}
 				}
-			}			
+			}
 		}
-		
+
 	};
 
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* SongAPI::sendAudioDataBufferMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };

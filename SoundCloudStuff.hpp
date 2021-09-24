@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 
 	class SoundCloudAPI : public implements<SoundCloudAPI, IInspectable> {
 	public:
-		
+
 		template <class _Ty>
 		friend 	_CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreClient;
@@ -250,14 +250,14 @@ namespace DiscordCoreAPI {
 			co_await resume_foreground(*threadContext->dispatcherQueue);
 			auto song = newSong;
 			auto thisPtr = soundCloudAPI;
-			thisPtr->currentTask =new task<void> (create_task([=, strong_this{ get_strong() }]()->task<void> {
+			thisPtr->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
 				BuildSongDecoderData dataPackage{};
 				auto tokenNew = thisPtr->cancelTokenSource.get_token();
 				if (strong_this->sendAudioDataBufferMap->contains(strong_this->guildId)) {
 					strong_this->sendAudioDataBuffer = strong_this->sendAudioDataBufferMap->at(strong_this->guildId);
 				}
 				else {
-					co_return;
+					return;
 				}
 				int counter{ 0 };
 				Filters::HttpBaseProtocolFilter filter;
@@ -291,7 +291,7 @@ namespace DiscordCoreAPI {
 						strong_this->readyToBeDoneEvent.set();
 						threadContext->releaseGroup();
 						cancel_current_task();
-						co_return;
+						return;
 					}
 					DiscordCoreInternal::HttpAgentResources agentResources{};
 					agentResources.baseURL = song.finalDownloadURLs.at(counter).urlPath;
@@ -352,8 +352,8 @@ namespace DiscordCoreAPI {
 				delete songDecoder;
 				songDecoder = nullptr;
 				strong_this->currentTask = nullptr;
-				this->readyToBeDoneEvent.set();
-				co_return;
+				strong_this->readyToBeDoneEvent.set();
+				return;
 
 			}, thisPtr->cancelToken).then([](task<void> previousTask)->task<void> {
 				try {
