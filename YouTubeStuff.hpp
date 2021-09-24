@@ -414,14 +414,6 @@ namespace DiscordCoreAPI {
 			this->downloadAndStreamAudioWrapper(newSong);
 		}
 
-		HRESULT GetRuntimeClassName(HSTRING*) {
-			return HRESULT();
-		}
-
-		HRESULT GetTrustLevel(TrustLevel*) {
-			return HRESULT();
-		}
-
 		task<void> downloadAndStreamAudioWrapper(YouTubeSong newSong, int retryCount = 0) {
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			apartment_context mainThread{};
@@ -683,8 +675,8 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			YouTubeAPI::youtubeAPIMap->erase(guildId);
-			shared_ptr<YouTubeAPI> youTubeAPI = make_shared<YouTubeAPI>(guildId);
-			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
+			shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
+			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
 			return true;
 		}
 
@@ -696,9 +688,9 @@ namespace DiscordCoreAPI {
 			}
 			else {
 				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
-					shared_ptr<YouTubeAPI> youTubeAPI = make_shared<YouTubeAPI>(guildId);
-					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
-					YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong(newSong, guildId);
+					shared_ptr<YouTubeAPI> soundCloudAPI = make_shared<YouTubeAPI>(guildId);
+					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, soundCloudAPI);
+					soundCloudAPI->sendNextSong(newSong);
 					return;
 				}
 				else {
@@ -710,20 +702,16 @@ namespace DiscordCoreAPI {
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId) {
 			if (YouTubeAPI::youtubeAPIMap->contains(guildId)) {
 				YouTubeAPI::youtubeAPIMap->erase(guildId);
-				shared_ptr<YouTubeAPI> youTubeAPI;
-
-				youTubeAPI = make_shared<YouTubeAPI>(guildId);
-				auto returnValue = youTubeAPI->theSong.searchForSong(searchQuery);
-				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
+				shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
+				auto returnValue = youtubeAPI->theSong.searchForSong(searchQuery);
+				YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
 				return returnValue;
-
 			}
 			else {
-				shared_ptr<YouTubeAPI> youTubeAPI;
 				if (YouTubeAPI::discordGuildMap->contains(guildId)) {
-					youTubeAPI = make_shared<YouTubeAPI>(guildId);
-					auto returnValue = youTubeAPI->theSong.searchForSong(searchQuery);
-					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youTubeAPI);
+					shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
+					auto returnValue = youtubeAPI->theSong.searchForSong(searchQuery);
+					YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
 					return returnValue;
 				}
 				else {
@@ -731,7 +719,14 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		
+
+		HRESULT GetRuntimeClassName(HSTRING*) {
+			return HRESULT();
+		}
+
+		HRESULT GetTrustLevel(TrustLevel*) {
+			return HRESULT();
+		}		
 	};
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* YouTubeAPI::sendAudioDataBufferMap{ nullptr };
 	string YouTubeAPI::baseSearchURL{ "https://www.youtube.com/results?search_query=" };

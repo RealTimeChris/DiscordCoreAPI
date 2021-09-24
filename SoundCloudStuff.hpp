@@ -236,14 +236,6 @@ namespace DiscordCoreAPI {
 			this->downloadAndStreamAudioWrapper(newSong);
 		}
 
-		HRESULT GetRuntimeClassName(HSTRING*) {
-			return HRESULT();
-		}
-
-		HRESULT GetTrustLevel(TrustLevel*) {
-			return HRESULT();
-		}
-
 		task<void> downloadAndStreamAudioWrapper(SoundCloudSong newSong, int retryCountNew = 0) {
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			apartment_context mainThread{};
@@ -260,23 +252,6 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				int counter{ 0 };
-				Filters::HttpBaseProtocolFilter filter;
-				Filters::HttpCacheControl cacheControl{ nullptr };
-				cacheControl = filter.CacheControl();
-				cacheControl.ReadBehavior(Filters::HttpCacheReadBehavior::NoCache);
-				cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
-				auto getHttpClient = HttpClient(filter);
-				auto getHeaders = getHttpClient.DefaultRequestHeaders();
-				winrt::Windows::Foundation::Uri uri(to_hstring(song.finalDownloadURLs.at(counter).urlPath));
-				auto results00 = getHttpClient.TryGetBufferAsync(uri).get();
-
-				DiscordCoreInternal::HttpAgentResources agentResources01{};
-				agentResources01.baseURL = song.finalDownloadURLs.at(counter).urlPath;
-				DiscordCoreInternal::HttpRequestAgent requestAgent01(agentResources01);
-				DiscordCoreInternal::HttpWorkloadData workloadData01{};
-				workloadData01.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
-				workloadData01.workloadType = DiscordCoreInternal::HttpWorkloadType::SOUNDCLOUD_SONG_GET;
-				auto result01 = requestAgent01.submitWorkloadAndGetResult(workloadData01, "SoundCloudAPI::downloadAndStream Audio() Error: ");
 				dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();
 				dataPackage.totalFileSize = song.contentLength;
 				dataPackage.bufferMaxSize = song.contentLength;
@@ -397,18 +372,14 @@ namespace DiscordCoreAPI {
 		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId) {
 			if (SoundCloudAPI::soundCloudAPIMap->contains(guildId)) {
 				SoundCloudAPI::soundCloudAPIMap->erase(guildId);
-				shared_ptr<SoundCloudAPI> soundCloudAPI;
-
-				soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
+				shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
 				auto returnValue = soundCloudAPI->theSong.searchForSong(searchQuery);
 				SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
 				return returnValue;
-
 			}
 			else {
-				shared_ptr<SoundCloudAPI> soundCloudAPI;
 				if (SoundCloudAPI::discordGuildMap->contains(guildId)) {
-					soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
+					shared_ptr<SoundCloudAPI> soundCloudAPI = make_shared<SoundCloudAPI>(guildId);
 					auto returnValue = soundCloudAPI->theSong.searchForSong(searchQuery);
 					SoundCloudAPI::soundCloudAPIMap->insert_or_assign(guildId, soundCloudAPI);
 					return returnValue;
@@ -417,6 +388,14 @@ namespace DiscordCoreAPI {
 					return vector<SoundCloudSong>();
 				}
 			}
+		}
+
+		HRESULT GetRuntimeClassName(HSTRING*) {
+			return HRESULT();
+		}
+
+		HRESULT GetTrustLevel(TrustLevel*) {
+			return HRESULT();
 		}
 	};
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* SoundCloudAPI::sendAudioDataBufferMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
