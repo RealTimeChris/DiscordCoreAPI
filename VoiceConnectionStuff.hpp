@@ -340,14 +340,18 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			try {
+				cout << "WERE HERE 0000" << endl;
 				while (!this->doWeQuit) {
+					cout << "WERE HERE 1111" << endl;
 					if (!this->areWePlaying) {
+						cout << "WERE HERE 2222" << endl;
 						this->playWaitEvent->set();
 						this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
 						this->audioData.type = AudioFrameType::Unset;
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
 						if (this->playSetEvent->wait(10000) != 0) {
+							cout << "WERE HERE 3333" << endl;
 							this->playSetEvent->reset();
 							continue;
 						};
@@ -357,19 +361,25 @@ namespace DiscordCoreAPI {
 							done();
 							break;
 						}
-						try {
-							this->audioData = receive(this->audioDataBuffer.get(), 10000);
-						}
-						catch (...) {
-							rethrowException("VoiceConnection::run() Error: ");
+						StopWatch stopWatch(10000);
+						while (!this->doWeQuit) {
+							concurrency::wait(100);
+							if (try_receive(this->audioDataBuffer.get(), this->audioData) || stopWatch.hasTimePassed()) {
+								stopWatch.resetTimer();
+								cout << "WERE HERE 4444" << endl;
+								break;
+							};
 						}
 						if (this->audioData.encodedFrameData.sampleCount == 0 || this->audioData.rawFrameData.sampleCount == 0 || this->audioData.type == AudioFrameType::Unset) {
+							cout << "WERE HERE 5555" << endl;
 							goto start;
 						}
 						else if (this->audioData.type == AudioFrameType::Cancel) {
+							cout << "WERE HERE 6666" << endl;
 							continue;
 						}
 					}
+					cout << "WERE HERE 7777" << endl;
 					this->sendSpeakingMessage(true);
 					long long startingValue{ (long long)chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count() };
 					long long intervalCount{ 20000000 };
@@ -379,6 +389,7 @@ namespace DiscordCoreAPI {
 					int frameCounter{ 0 };
 
 					if (this->audioData.type == AudioFrameType::Encoded) {
+						cout << "WERE HERE 8888" << endl;
 						this->areWePlaying = true;
 						while (this->audioData.encodedFrameData.sampleCount != 0 && !this->areWeStopping) {
 							if (this->doWeReconnect) {

@@ -80,7 +80,6 @@ namespace DiscordCoreInternal {
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> cache;
 		static shared_ptr<ThreadContext> threadContext;
-		static HttpAgentResources agentResources;
 
 		unbounded_buffer<CollectGuildMemberData> requestCollectGuildMemberBuffer{ nullptr };
 		unbounded_buffer<PatchGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
@@ -94,9 +93,8 @@ namespace DiscordCoreInternal {
 			
 		}
 
-		static void intialize(HttpAgentResources agentResourcesNew) {
+		static void intialize() {
 			GuildMemberManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			GuildMemberManagerAgent::agentResources = agentResourcesNew;
 		}
 
 		static void cleanup() {
@@ -108,7 +106,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_GUILD_MEMBER;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildMemberManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildMemberManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -128,7 +126,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::PATCH_GUILD_MEMBER;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 			workload.content = getModifyGuildMemberPayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildMemberManagerAgent::patchObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildMemberManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -219,18 +217,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		HttpAgentResources agentResources{};
-
-		GuildMemberManager initialize(HttpAgentResources agentResourcesNew) {
-			this->agentResources = agentResourcesNew;
-			return *this;
-		}
-
 		task<DiscordCoreAPI::GuildMember> fetchAsync(DiscordCoreAPI::FetchGuildMemberData dataPackage) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetGuildMemberData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.guildMemberId = dataPackage.guildMemberId;
 			GuildMemberManagerAgent requestAgent{};
@@ -249,7 +239,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PatchGuildMemberData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.deaf = dataPackage.deaf;
 			dataPackageNew.mute = dataPackage.mute;
 			dataPackageNew.newVoiceChannelId = dataPackage.newVoiceChannelId;
@@ -274,7 +263,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			CollectGuildMemberData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.guildMemberId = dataPackage.guildMemberId;
 			GuildMemberManagerAgent requestAgent{};
@@ -318,6 +306,5 @@ namespace DiscordCoreInternal {
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> GuildMemberManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> GuildMemberManagerAgent::threadContext{ nullptr };
-	HttpAgentResources GuildMemberManagerAgent::agentResources{};
 };
 #endif

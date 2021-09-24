@@ -467,7 +467,6 @@ namespace DiscordCoreInternal {
 		friend class MessageManager;
 
 		static shared_ptr<ThreadContext> threadContext;
-		static HttpAgentResources agentResources;
 
 		unbounded_buffer<DeleteMessagesBulkData> requestDeleteMultMessagesBuffer{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::Message>> outMultMessagesBuffer{ nullptr };
@@ -484,9 +483,8 @@ namespace DiscordCoreInternal {
 		MessageManagerAgent()
 			:agent(*MessageManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew) {
+		static void initialize() {
 			MessageManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			MessageManagerAgent::agentResources = agentResourcesNew;
 		}
 
 		static void cleanup() {
@@ -498,7 +496,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::getObject_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -541,7 +539,7 @@ namespace DiscordCoreInternal {
 					workload.relativePath += "?limit=" + to_string(dataPackage.limit);
 				}
 			}
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::getObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -564,7 +562,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_PINNED_MESSAGES;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::getObjectData_02");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::getObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -588,7 +586,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::PATCH_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 			workload.content = getEditMessagePayload(dataPackage);;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::patchObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -610,7 +608,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 			workload.content = getCreateMessagePayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::postObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -631,7 +629,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::POST;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 			workload.content = getCreateMessagePayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::postObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::postObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -651,7 +649,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::DELETE_MESSAGES_BULK;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
 			workload.content = dataPackage.content;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::postObjectData_02");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::postObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -666,7 +664,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.workloadType = HttpWorkloadType::PUT_PIN_MESSAGE;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::putObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent:putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -687,7 +685,7 @@ namespace DiscordCoreInternal {
 			}
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "MessageManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "MessageManagerAgent::onDeleteData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -780,18 +778,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		HttpAgentResources agentResources{};
-
-		MessageManager initialize(HttpAgentResources agentResourcesNew) {
-			this->agentResources = agentResourcesNew;
-			return *this;
-		}
-
 		task<DiscordCoreAPI::Message> replyAsync(DiscordCoreAPI::ReplyMessageData dataPackage) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostMessageData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
 			for (auto value : dataPackage.components) {
 				dataPackageNew.components.push_back(value);
@@ -819,7 +809,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostDMData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
@@ -850,7 +839,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostMessageData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
 			for (auto value : dataPackage.components) {
 				dataPackageNew.components.push_back(value);
@@ -877,7 +865,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PatchMessageData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
@@ -909,7 +896,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteMessageData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.messageData.channelId;
 			dataPackageNew.messageId = dataPackage.messageData.id;
 			dataPackageNew.messageTimeStamp = dataPackage.messageData.timestampRaw;
@@ -926,7 +912,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteMessagesBulkData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageIds = dataPackage.messageIds;
 			dataPackageNew.content = getDeleteMessagesBulkPayload(dataPackageNew);
@@ -942,7 +927,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetPinnedMessagesData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			MessageManagerAgent requestAgent{};
 			send(requestAgent.requestGetPinnedMessagesBuffer, dataPackageNew);
@@ -958,7 +942,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetMessagesData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.afterThisId = dataPackage.afterThisId;
 			dataPackageNew.aroundThisId = dataPackage.aroundThisId;
@@ -982,7 +965,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutPinMessageData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
 			MessageManagerAgent requestAgent{};
@@ -999,7 +981,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetMessageData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.id;
 			MessageManagerAgent requestAgent{};
@@ -1018,6 +999,5 @@ namespace DiscordCoreInternal {
 		~MessageManager() {}
 	};
 	shared_ptr<ThreadContext> MessageManagerAgent::threadContext{ nullptr };
-	HttpAgentResources MessageManagerAgent::agentResources{};
 }
 #endif

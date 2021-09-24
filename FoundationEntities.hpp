@@ -12,6 +12,7 @@
 
 namespace DiscordCoreAPI {
 
+    struct SongCompletionEventData;
     struct RespondToInputEventData;
     class DiscordCoreClientBase;
     class DatabaseManagerAgent;
@@ -19,10 +20,12 @@ namespace DiscordCoreAPI {
     class ApplicationCommands;
     class DiscordCoreClient;
     class VoiceConnection;
+    class SoundCloudSong;
     class Interactions;
     class EventHandler;
     class GuildMembers;
-    class InputEvents;
+    class InputEvents;    
+    class YouTubeSong;
     class SelectMenu;
     class Reactions;
     class Messages;
@@ -194,15 +197,15 @@ namespace DiscordCoreAPI {
         char timeBuffer[25];
         errno_t error;
         error = localtime_s(&timeInfo, &rawTime);
-if (error) {
-    printf("Invalid argument to _localtime64_s.");
-}
-strftime(timeBuffer, 25, "%a %b %d %Y %X", &timeInfo);
-TimeStamp timeStamp;
-for (int x = 0; x < 24; x += 1) {
-    timeStamp.push_back(timeBuffer[x]);
-}
-return timeStamp;
+        if (error) {
+            printf("Invalid argument to _localtime64_s.");
+        }
+        strftime(timeBuffer, 25, "%a %b %d %Y %X", &timeInfo);
+        TimeStamp timeStamp;
+        for (int x = 0; x < 24; x += 1) {
+            timeStamp.push_back(timeBuffer[x]);
+        }
+        return timeStamp;
     }
 
     long long convertTimestampToInteger(string timeStamp) {
@@ -925,14 +928,12 @@ namespace  DiscordCoreInternal {
     };
 
     struct DeleteInteractionResponseData {
-        HttpAgentResources agentResources{};
         unsigned int timeDelayInMs{ 0 };
         string interactionToken{ "" };
         string applicationId{ "" };        
     };
 
     struct DeleteFollowUpMessageData {
-        HttpAgentResources agentResources{};
         unsigned int timeDelayInMs{ 0 };
         string interactionToken{ "" };
         string applicationId{ "" };
@@ -1264,17 +1265,12 @@ namespace  DiscordCoreInternal {
         int version{ 0 };
     };
 
-    struct GetApplicationData {
-        HttpAgentResources agentResources{};
-    };
-
     struct InteractionResponseData {
         InteractionApplicationCommandCallbackData data{};
         InteractionCallbackType type{};
     };
 
     struct PatchInteractionResponseData {
-        HttpAgentResources agentResources{};
         InteractionResponseData data{};
         string interactionToken{ "" };
         string applicationId{ "" };
@@ -1282,7 +1278,6 @@ namespace  DiscordCoreInternal {
 
     struct PostInteractionResponseData {
         InteractionApplicationCommandCallbackData data{};
-        HttpAgentResources agentResources{};
         InteractionCallbackType type{};
         string interactionToken{ "" };
         string interactionId{ "" };
@@ -1290,7 +1285,6 @@ namespace  DiscordCoreInternal {
 
     struct PostFollowUpMessageData {
         AllowedMentionsData allowedMentions{};
-        HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
         string interactionToken{ "" };
         string applicationId{ "" };
@@ -1301,13 +1295,11 @@ namespace  DiscordCoreInternal {
     };
 
     struct GetInteractionResponseData {
-        HttpAgentResources agentResources{};
         string interactionToken{ "" };
         string applicationId{ "" };
     };
 
     struct PostDeferredInteractionResponseData {
-        HttpAgentResources agentResources{};
         InteractionCallbackType type{};
         string interactionToken{ "" };
         string interactionId{ "" };
@@ -1322,7 +1314,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct GetMessagesData {
-        HttpAgentResources agentResources{};
         string beforeThisId{ "" };
         string aroundThisId{ "" };
         string afterThisId{ "" };
@@ -1331,7 +1322,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct DeleteMessagesBulkData {
-        HttpAgentResources agentResources{};
         vector<string> messageIds{};
         string channelId{ "" };
         string content{ "" };
@@ -1359,17 +1349,14 @@ namespace  DiscordCoreInternal {
     };
 
     struct CollectGuildData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
     };
 
     struct GetGuildData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
     };
 
     struct PutReactionData {
-        HttpAgentResources agentResources{};
         string channelId{ "" };
         string messageId{ "" };
         string emoji{ "" };
@@ -1383,7 +1370,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct DeleteReactionDataAll {
-        HttpAgentResources agentResources{};
         ReactionDeletionType deletionType{};
         string encodedEmoji{ "" };
         string channelId{ "" };
@@ -1399,18 +1385,15 @@ namespace  DiscordCoreInternal {
     };
 
     struct CollectChannelData {
-        HttpAgentResources agentResources{};
         string channelId{ "" };
     };
 
     struct GetChannelData {
-        HttpAgentResources agentResources{};
         string channelId{ "" };
     };
 
     struct PutPermissionOverwritesData {
         EditChannelPermissionOverwritesType type{};
-        HttpAgentResources agentResources{};
         string roleOrUserId{ "" };
         string channelId{ "" };
         string allow{ "" };
@@ -1418,31 +1401,26 @@ namespace  DiscordCoreInternal {
     };
 
     struct DeleteChannelPermissionOverwritesData {
-        HttpAgentResources agentResources{};
         string roleOrUserId{ "" };
         string channelId{ "" };
     };
 
     struct GetDMChannelData {
-        HttpAgentResources agentResources{};
         string userId{ "" };
     };
 
     struct GetMessageData {
-        HttpAgentResources agentResources{};
         string requesterId{ "" };
         string channelId{ "" };
         string messageId{ "" };
     };
 
     struct PutPinMessageData {
-        HttpAgentResources agentResources{};
         string channelId{ "" };
         string messageId{ "" };
     };
 
-    struct DeleteMessageData{
-        HttpAgentResources agentResources{};
+    struct DeleteMessageData {
         string messageTimeStamp{ "" };
         string channelId{ "" };
         string messageId{ "" };
@@ -1455,31 +1433,26 @@ namespace  DiscordCoreInternal {
     };
 
     struct CollectUserData {
-        HttpAgentResources agentResources{};
         GetUserDataType userType{};
         string userId{ "" };        
     };
 
     struct LeaveGuildData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
     };
 
     struct GetUserData {
-        HttpAgentResources agentResources{};
         GetUserDataType userType{};
         string userId{ "" };        
     };
 
     struct GetPinnedMessagesData {
-        HttpAgentResources agentResources{};
         string channelId{ "" };
     };
 
     struct PostMessageData {
         MessageReferenceData messageReference{};
         AllowedMentionsData allowedMentions{};
-        HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
         vector<string> stickerIds{};
         vector<EmbedData> embeds{};
@@ -1492,7 +1465,6 @@ namespace  DiscordCoreInternal {
     struct PatchMessageData {
         AllowedMentionsData allowedMentions{};
         vector<AttachmentData> attachments{};
-        HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
         vector<EmbedData> embeds{};
         string requesterId{ "" };
@@ -1505,7 +1477,6 @@ namespace  DiscordCoreInternal {
     struct PostDMData {
         MessageReferenceData messageReference{};
         AllowedMentionsData allowedMentions{};
-        HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
         vector<string> stickerIds{};
         vector<EmbedData> embeds{};
@@ -1518,24 +1489,20 @@ namespace  DiscordCoreInternal {
     };
 
     struct CollectGuildMemberData {
-        HttpAgentResources agentResources{};
         string guildMemberId{ "" };
         string guildId{ "" };
     };
 
     struct GetGuildMemberData {
-        HttpAgentResources agentResources{};
         string guildMemberId{ "" };
         string guildId{ "" };
     };
 
     struct GetGuildMemberRolesData {
-        HttpAgentResources agentResources{};
         vector<string> roleIds{};
     };
 
     struct PatchGuildMemberData {
-        HttpAgentResources agentResources{};
         string newVoiceChannelId{ "" };
         string currentChannelId{ "" };
         string guildMemberId{ "" };
@@ -1554,25 +1521,21 @@ namespace  DiscordCoreInternal {
     };
 
     struct GetRolesData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
     };
 
     struct GetRoleData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
         string roleId{ "" };
     };
 
     struct DeleteGuildMemberRoleData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
         string userId{ "" };
         string roleId{ "" };
     };
 
     struct DeleteGuildRoleData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
         string roleId{ "" };
     };
@@ -1584,18 +1547,15 @@ namespace  DiscordCoreInternal {
 
     struct PatchRolePositionData {
         vector<RolePositionData> rolePositions{};
-        HttpAgentResources agentResources{};
         string guildId{ "" };
     };
 
     struct CollectRoleData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
         string roleId{ "" };
     };
 
     struct PostRoleData {
-        HttpAgentResources agentResources{};
         string hexColorValue{ "" };
         bool mentionable{ false };
         __int64 permissions{ 0 };
@@ -1606,14 +1566,12 @@ namespace  DiscordCoreInternal {
     };
 
     struct PutRoleData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
         string userId{ "" };
         string roleId{ "" };
     };
 
     struct PatchRoleData {
-        HttpAgentResources agentResources{};
         string hexColorValue{ "" };
         bool mentionable{ false };
         string permissions{ "" };
@@ -1669,7 +1627,6 @@ namespace  DiscordCoreInternal {
 
     struct PatchFollowUpMessageData {
         DiscordCoreInternal::AllowedMentionsData allowedMentions{};
-        HttpAgentResources agentResources{};
         vector<ActionRowData> components{};
         string interactionToken{ "" };
         string applicationId{ "" };
@@ -1720,7 +1677,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct GetAuditLogData {
-        HttpAgentResources agentResources{};
         AuditLogEvent actionType{};
         unsigned int limit{ 0 };
         string guildId{ "" };
@@ -1728,17 +1684,14 @@ namespace  DiscordCoreInternal {
     };
 
     struct GetInviteData {
-        HttpAgentResources agentResources{};
         string inviteId{ "" };
     };
 
     struct GetVanityInviteData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
     };
 
     struct GetInvitesData {
-        HttpAgentResources agentResources{};
         string guildId{ "" };
     };
 
@@ -1769,7 +1722,6 @@ namespace  DiscordCoreInternal {
     };
 
     struct PutGuildBanData {
-        HttpAgentResources agentResources{};
         string guildMemberId{ "" };
         int deleteMessageDays{ 0 };
         string guildId{ "" };
@@ -3694,10 +3646,6 @@ namespace DiscordCoreAPI {
         string urlPath{ "" };
         int contentSize{ 0 };
     };
-   
-    struct SongCompletionEventData;
-    class SoundCloudSong;
-    class YouTubeSong;
 
     class Song {
     public:

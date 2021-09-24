@@ -34,12 +34,6 @@ namespace DiscordCoreAPI {
 		static BotUser currentUser;
 		static shared_ptr<DiscordCoreClientBase> thisPointer;
 
-		DiscordCoreClientBase() {}
-		
-		DiscordCoreClientBase(DiscordCoreClientBase * thisPtr) {
-			*this = *thisPtr;
-		}
-
 		void initialize(shared_ptr<DiscordCoreClientBase> thisPtrNew) {
 			DiscordCoreClientBase::thisPointer = thisPtrNew;
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());

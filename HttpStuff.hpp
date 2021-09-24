@@ -18,6 +18,42 @@ namespace DiscordCoreInternal {
 
 		static shared_ptr<ThreadContext> threadContext;
 
+		HttpRequestAgent()
+			: agent(*HttpRequestAgent::threadContext->scheduler->scheduler)
+		{
+			try {
+				this->baseURLInd = HttpRequestAgent::baseURL;
+			
+				Filters::HttpBaseProtocolFilter filter;
+				Filters::HttpCacheControl cacheControl{ nullptr };
+				cacheControl = filter.CacheControl();
+				cacheControl.ReadBehavior(Filters::HttpCacheReadBehavior::NoCache);
+				cacheControl.WriteBehavior(Filters::HttpCacheWriteBehavior::NoCache);
+				this->getHttpClient = HttpClient(filter);
+				this->getHeaders = this->getHttpClient.DefaultRequestHeaders();
+				this->putHttpClient = HttpClient(filter);
+				this->putHeaders = this->putHttpClient.DefaultRequestHeaders();
+				this->postHttpClient = HttpClient(filter);
+				this->postHeaders = this->postHttpClient.DefaultRequestHeaders();
+				this->patchHttpClient = HttpClient(filter);
+				this->patchHeaders = this->patchHttpClient.DefaultRequestHeaders();
+				this->deleteHttpClient = HttpClient(filter);
+				this->deleteHeaders = this->deleteHttpClient.DefaultRequestHeaders();
+				hstring headerString = L"Bot ";
+				hstring headerString2 = headerString + to_hstring(HttpRequestAgent::botToken);
+				HttpCredentialsHeaderValue credentialValue(nullptr);
+				credentialValue = credentialValue.Parse(headerString2.c_str());
+				this->getHeaders.Authorization(credentialValue);
+				this->putHeaders.Authorization(credentialValue);
+				this->postHeaders.Authorization(credentialValue);
+				this->patchHeaders.Authorization(credentialValue);
+				this->deleteHeaders.Authorization(credentialValue);
+			}
+			catch (...) {
+				DiscordCoreAPI::rethrowException("HttpRequestAgent::HttpRequestAgent() Error: ");
+			}
+		}
+
 		HttpRequestAgent(HttpAgentResources agentResources)
 			: agent(*HttpRequestAgent::threadContext->scheduler->scheduler)
 		{

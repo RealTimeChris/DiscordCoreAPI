@@ -914,7 +914,6 @@ namespace DiscordCoreInternal {
         friend class InteractionManager;
 
         static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
-        static DiscordCoreInternal::HttpAgentResources agentResources;
         static shared_ptr<ThreadContext> threadContext;
 
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
@@ -932,9 +931,8 @@ namespace DiscordCoreInternal {
         InteractionManagerAgent()
             :agent(*InteractionManagerAgent::threadContext->scheduler->scheduler) {}
 
-        static void initialize(DiscordCoreInternal::HttpAgentResources agentResourcesNew) {
+        static void initialize() {
             InteractionManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-            InteractionManagerAgent::agentResources = agentResourcesNew;
         }
 
         static void cleanup() {
@@ -953,7 +951,7 @@ namespace DiscordCoreInternal {
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::GET_INTERACTION_RESPONSE;
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::getObjectData_00");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -972,7 +970,7 @@ namespace DiscordCoreInternal {
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_FOLLOW_UP_MESSAGE;
             workload.content = DiscordCoreInternal::getEditFollowUpMessagePayload(dataPackage);
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::patchObjectData_00");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -991,7 +989,7 @@ namespace DiscordCoreInternal {
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::PATCH;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::PATCH_INTERACTION_RESPONSE;
             workload.content = DiscordCoreInternal::getEditInteractionResponsePayload(dataPackage);
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::patchObjectData_01");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::patchObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -1010,7 +1008,7 @@ namespace DiscordCoreInternal {
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_INTERACTION_RESPONSE;
             workload.content = DiscordCoreInternal::getCreateInteractionResponsePayload(dataPackage);
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::postObjectData_00");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -1027,7 +1025,7 @@ namespace DiscordCoreInternal {
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_DEFERRED_INTERACTION_RESPONSE;
             workload.content = DiscordCoreInternal::getCreateDeferredInteractionResponsePayload(dataPackage);
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::postObjectData_01");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::postObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -1044,7 +1042,7 @@ namespace DiscordCoreInternal {
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::POST;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::POST_FOLLOW_UP_MESSAGE;
             workload.content = DiscordCoreInternal::getPostFollowUpMessagePayload(dataPackage);
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::postObjectData_02");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::postObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -1062,7 +1060,7 @@ namespace DiscordCoreInternal {
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_INTERACTION;
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::deleteObjectData_00");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -1091,7 +1089,7 @@ namespace DiscordCoreInternal {
             workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::DELETED;
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::DELETE_FOLLOW_UP_MESSAGE;
-            DiscordCoreInternal::HttpRequestAgent requestAgent(dataPackage.agentResources);
+            DiscordCoreInternal::HttpRequestAgent requestAgent{};
             HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "InteractionManagerAgent::deleteObjectData_01");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "InteractionManagerAgent::deleteObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -1188,13 +1186,6 @@ namespace DiscordCoreInternal {
 
     protected:
 
-        HttpAgentResources agentResources{};
-
-        InteractionManager initialize(HttpAgentResources agentResourcesNew) {
-            this->agentResources = agentResourcesNew;
-            return *this;
-        }
-
         task<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
@@ -1202,7 +1193,6 @@ namespace DiscordCoreInternal {
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.data.type;
-            dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.flags = dataPackage.data.data.flags;
             InteractionManagerAgent requestAgent{};
             send(requestAgent.requestPostDeferredInteractionResponseBuffer, dataPackageNew);
@@ -1222,8 +1212,6 @@ namespace DiscordCoreInternal {
             InteractionManagerAgent::collectMessageDataBuffers.insert(make_pair(dataPackage.interactionPackage.interactionId, make_shared<unbounded_buffer<DiscordCoreAPI::MessageData>>()));
             dataPackageNew.data = dataPackage.data.data;
             dataPackageNew.type = (DiscordCoreInternal::InteractionCallbackType)dataPackage.data.type;
-            DiscordCoreInternal::HttpAgentResources httpAgentResources;
-            dataPackageNew.agentResources = httpAgentResources;
             InteractionManagerAgent requestAgent{};
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
@@ -1252,7 +1240,6 @@ namespace DiscordCoreInternal {
             DiscordCoreInternal::GetInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionToken;
-            dataPackageNew.agentResources = this->agentResources;
             InteractionManagerAgent requestAgent{};
             send(requestAgent.requestGetInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
@@ -1269,7 +1256,6 @@ namespace DiscordCoreInternal {
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PatchInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
-            dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.data.data.allowedMentions = dataPackage.data.data.allowedMentions;
             for (auto value : dataPackage.data.data.components) {
@@ -1297,7 +1283,6 @@ namespace DiscordCoreInternal {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::DeleteInteractionResponseData dataPackageNew;
-            dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.timeDelayInMs = dataPackage.timeDelay;
@@ -1314,7 +1299,6 @@ namespace DiscordCoreInternal {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PostFollowUpMessageData dataPackageNew;
-            dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.content = dataPackage.data.data.content;
@@ -1343,7 +1327,6 @@ namespace DiscordCoreInternal {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PatchFollowUpMessageData dataPackageNew;
-            dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.content = dataPackage.data.data.content;
@@ -1374,7 +1357,6 @@ namespace DiscordCoreInternal {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::DeleteFollowUpMessageData dataPackageNew;
-            dataPackageNew.agentResources = this->agentResources;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
             dataPackageNew.interactionToken = dataPackage.interactionPackage.interactionToken;
             dataPackageNew.timeDelayInMs = dataPackage.timeDelay;
@@ -1391,7 +1373,6 @@ namespace DiscordCoreInternal {
         ~InteractionManager() {}
     };
     map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
-    DiscordCoreInternal::HttpAgentResources InteractionManagerAgent::agentResources{};
     shared_ptr<ThreadContext> InteractionManagerAgent::threadContext{ nullptr };
 };
 

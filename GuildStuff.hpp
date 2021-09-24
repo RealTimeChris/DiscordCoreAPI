@@ -263,7 +263,6 @@ namespace DiscordCoreInternal {
 		
 		static overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* cache;
 		static shared_ptr<ThreadContext> threadContext;
-		static HttpAgentResources agentResources;
 
 		unbounded_buffer<vector<DiscordCoreAPI::InviteData>> outInvitesBuffer{ nullptr };
 		unbounded_buffer<GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
@@ -282,9 +281,8 @@ namespace DiscordCoreInternal {
 		GuildManagerAgent()
 			: agent(*GuildManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew) {
+		static void initialize() {
 			GuildManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			GuildManagerAgent::agentResources = agentResourcesNew;
 			GuildManagerAgent::cache = new overwrite_buffer<map<string, DiscordCoreAPI::Guild>>();
 		}
 
@@ -305,7 +303,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_GUILD;
 			workload.relativePath = "/guilds/" + dataPackage.guildId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -324,7 +322,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_INVITE;
 			workload.relativePath = "/invites/" + dataPackage.inviteId + "?with_counts=true&with_expiration=true";
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -342,7 +340,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_INVITES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/invites";
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_02");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_02 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -364,7 +362,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_VANITY_INVITE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/vanity-url";
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_03");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_03 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -400,7 +398,7 @@ namespace DiscordCoreInternal {
 			else if (dataPackage.limit != 0) {
 				workload.relativePath += "?limit=" + to_string(dataPackage.limit);
 			}
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::getObjectData_04");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "GuildManagerAgent::getObjectData_04 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -419,7 +417,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::PUT_GUILD_BAN;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.guildMemberId;
 			workload.content = getAddBanPayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "GuildManagerAgent::putObjectData_00");
 			DiscordCoreAPI::BanData banData;
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -523,18 +521,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		HttpAgentResources agentResources{};
-
-		GuildManager initialize(HttpAgentResources agentResourcesNew) {
-			this->agentResources = agentResourcesNew;
-			return *this;
-		}
-
 		task<DiscordCoreAPI::Guild> fetchAsync(DiscordCoreAPI::FetchGuildData dataPackage) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetGuildData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent{};
 			send(requestAgent.requestGetGuildBuffer, dataPackageNew);
@@ -551,7 +541,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetInvitesData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent{};
 			send(requestAgent.requestGetInvitesBuffer, dataPackageNew);
@@ -567,7 +556,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutGuildBanData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.guildMemberId = dataPackage.guildMemberId;
 			dataPackageNew.deleteMessageDays = dataPackage.deleteMessageDays;
@@ -586,7 +574,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetVanityInviteData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent{};
 			send(requestAgent.requestGetVanityInviteBuffer, dataPackageNew);
@@ -602,7 +589,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetInviteData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.inviteId = dataPackage.inviteId;
 			GuildManagerAgent requestAgent{};
 			send(requestAgent.requestGetInviteBuffer, dataPackageNew);
@@ -618,7 +604,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetAuditLogData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.actionType = (AuditLogEvent)dataPackage.actionType;
 			dataPackageNew.limit = dataPackage.limit;
@@ -637,7 +622,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			CollectGuildData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			GuildManagerAgent requestAgent{};
 			send(requestAgent.requestCollectGuildBuffer, dataPackageNew);
@@ -692,6 +676,5 @@ namespace DiscordCoreInternal {
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* GuildManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> GuildManagerAgent::threadContext{ nullptr };
-	HttpAgentResources GuildManagerAgent::agentResources{};
 }
 #endif

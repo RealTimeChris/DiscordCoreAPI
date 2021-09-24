@@ -185,7 +185,6 @@ namespace DiscordCoreAPI {
 				if (SongAPI::isLoopAllEnabled(guildId) || SongAPI::isLoopSongEnabled(guildId)) {
 					SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
 					SongAPI::setCurrentSong(Song(), guildId);
-
 				}
 				else {
 					SongAPI::setCurrentSong(Song(), guildId);
@@ -392,7 +391,6 @@ namespace DiscordCoreAPI {
 
 		static void sendNextSong(string guildId, GuildMember guildMember) {
 			SongAPI::songAPIMap->at(guildId)->sendNextSong();
-			SongAPI::songAPIMap->at(guildId)->savePlaylist();
 			if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.songId == "") {
 				return;
 			}
@@ -404,18 +402,10 @@ namespace DiscordCoreAPI {
 						return;
 					}
 					catch (...) {
-						vector<uint8_t> newVector;
-						AudioFrameData frameData{};
-						frameData.encodedFrameData.sampleCount = 0;
-						frameData.type = AudioFrameType::Cancel;
-						frameData.rawFrameData.sampleCount = 0;
-						SongCompletionEventData eventData{};
-						eventData.previousSong = SoundCloudAPI::soundCloudAPIMap->at(guildId)->discordGuild->data.playlist.currentSong;
-						SoundCloudAPI::soundCloudAPIMap->at(guildId)->discordGuild->data.playlist.currentSong = Song();
-						SoundCloudAPI::soundCloudAPIMap->at(guildId)->discordGuild->writeDataToDB();
+						AudioFrameData frameData{ .type = AudioFrameType::Cancel, .encodedFrameData = {.sampleCount = 0},.rawFrameData = {.sampleCount = 0} };
 						send(SoundCloudAPI::soundCloudAPIMap->at(guildId)->sendAudioDataBuffer.get(), frameData);
-						eventData.isThisAReplay = true;
-						eventData.voiceConnection = SoundCloudAPI::soundCloudAPIMap->at(guildId)->voiceConnection.get();
+						SongCompletionEventData eventData{ .voiceConnection = SoundCloudAPI::soundCloudAPIMap->at(guildId)->voiceConnection.get(), .isThisAReplay = true, .previousSong = SoundCloudAPI::soundCloudAPIMap->at(guildId)->discordGuild->data.playlist.currentSong };
+						SongAPI::setCurrentSong(Song(), guildId);
 						(*SoundCloudAPI::soundCloudAPIMap->at(guildId)->voiceConnection->onSongCompletionEvent)(eventData);
 						return;
 					}
@@ -428,18 +418,10 @@ namespace DiscordCoreAPI {
 						return;
 					}
 					catch (...) {
-						vector<uint8_t> newVector;
-						AudioFrameData frameData{};
-						frameData.encodedFrameData.sampleCount = 0;
-						frameData.type = AudioFrameType::Cancel;
-						frameData.rawFrameData.sampleCount = 0;
-						SongCompletionEventData eventData{};
-						eventData.previousSong = YouTubeAPI::youtubeAPIMap->at(guildId)->discordGuild->data.playlist.currentSong;
-						YouTubeAPI::youtubeAPIMap->at(guildId)->discordGuild->data.playlist.currentSong = Song();
-						YouTubeAPI::youtubeAPIMap->at(guildId)->discordGuild->writeDataToDB();
+						AudioFrameData frameData{ .type = AudioFrameType::Cancel, .encodedFrameData = {.sampleCount = 0},.rawFrameData = {.sampleCount = 0} };
 						send(YouTubeAPI::youtubeAPIMap->at(guildId)->sendAudioDataBuffer.get(), frameData);
-						eventData.isThisAReplay = true;
-						eventData.voiceConnection = YouTubeAPI::youtubeAPIMap->at(guildId)->voiceConnection.get();
+						SongCompletionEventData eventData{ .voiceConnection = YouTubeAPI::youtubeAPIMap->at(guildId)->voiceConnection.get(), .isThisAReplay = true, .previousSong = YouTubeAPI::youtubeAPIMap->at(guildId)->discordGuild->data.playlist.currentSong };
+						SongAPI::setCurrentSong(Song(), guildId);
 						(*YouTubeAPI::youtubeAPIMap->at(guildId)->voiceConnection->onSongCompletionEvent)(eventData);
 						return;
 					}

@@ -199,7 +199,6 @@ namespace DiscordCoreAPI {
 		cancellation_token cancelToken{ this->cancelTokenSource.get_token() };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		DiscordGuild* discordGuild{ new DiscordGuild };
-		concurrency::event readyToBeDoneEvent {};
 		string appVersion{ "1631696495" };
 		bool areWeStopping{ false };
 		task<void>* currentTask{};
@@ -212,22 +211,11 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->cancelTokenSource.cancel();
 				if (this->currentTask != nullptr && !this->currentTask->is_done()) {
-					this->currentTask->then([](task<void> previousTask)->task<void> {
-						try {
-							previousTask.get();
-							co_return;
-						}
-						catch (...) {
-							rethrowException("YouTubeAPI::stop() Error: ");
-							co_return;
-						}
-						}).get();
-						this->currentTask = nullptr;
+					while (!this->currentTask->is_done()) {};
+					this->currentTask = nullptr;
 				}
 				AudioFrameData dataFrame;
 				while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
-				this->readyToBeDoneEvent.wait(2000);
-				this->readyToBeDoneEvent.reset();
 				return true;
 			}
 			else {
@@ -238,20 +226,20 @@ namespace DiscordCoreAPI {
 		void sendNextSong(Song newSong) {
 			this->cancelTokenSource = cancellation_token_source();
 			this->cancelToken = this->cancelTokenSource.get_token();
-			this->downloadAndStreamAudioWrapper(newSong);
+			this->downloadAndStreamAudioWrapper(newSong).get();
 		}
 
-		task<void> downloadAndStreamAudioWrapper(SoundCloudSong newSong, int retryCountNew = 0) {
+		task<void> downloadAndStreamAudioWrapper(SoundCloudSong newSong) {
+			SoundCloudAPI* thisPtr = this;
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
-			apartment_context mainThread{};
 			co_await resume_foreground(*threadContext->dispatcherQueue);
-			this->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
-				auto tokenNew = strong_this->cancelTokenSource.get_token();
+			this->currentTask = new task<void>(create_task([=]()->void {
+				auto tokenNew = thisPtr->cancelTokenSource.get_token();
 				auto song = newSong;
-				strong_this->areWeStopping = false;
-				BuildSongDecoderData dataPackage{};				
-				if (strong_this->sendAudioDataBufferMap->contains(strong_this->guildId)) {
-					strong_this->sendAudioDataBuffer = strong_this->sendAudioDataBufferMap->at(strong_this->guildId);
+				thisPtr->areWeStopping = false;
+				BuildSongDecoderData dataPackage{};
+				if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
+					thisPtr->sendAudioDataBuffer = thisPtr->sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
 				else {
 					return;
@@ -266,9 +254,8 @@ namespace DiscordCoreAPI {
 				while (counter < song.finalDownloadURLs.size()) {
 					if (tokenNew.is_canceled()) {
 						songDecoder->refreshTimeForBuffer = 10;
-						strong_this->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
+						thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
 						agent::wait(songDecoder);
-						strong_this->readyToBeDoneEvent.set();
 						threadContext->releaseGroup();
 						cancel_current_task();
 						return;
@@ -288,7 +275,7 @@ namespace DiscordCoreAPI {
 						songDecoder->startMe();
 					}
 					songDecoder->submitDataForDecoding(newVector);
-					if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
+					if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
 						vector<RawFrameData> frames{};
 						RawFrameData rawFrame{};
 						rawFrame.data.resize(0);
@@ -297,11 +284,11 @@ namespace DiscordCoreAPI {
 								frames.push_back(rawFrame);
 							}
 						}
-						if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
+						if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
 							auto encodedFrames = songEncoder->encodeFrames(frames);
 							for (auto value : encodedFrames) {
-								if (!strong_this->areWeStopping && !tokenNew.is_canceled()) {
-									send(strong_this->sendAudioDataBuffer.get(), value);
+								if (!thisPtr->areWeStopping && !tokenNew.is_canceled()) {
+									send(thisPtr->sendAudioDataBuffer.get(), value);
 								}
 
 							}
@@ -314,7 +301,7 @@ namespace DiscordCoreAPI {
 					counter += 1;
 				}
 
-				if (!tokenNew.is_canceled() && !strong_this->areWeStopping) {
+				if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
 					vector<uint8_t> newVector{};
 					send(dataPackage.sendEncodedAudioDataBuffer, newVector);
 					RawFrameData frameData01{};
@@ -323,7 +310,7 @@ namespace DiscordCoreAPI {
 					frameData.type = AudioFrameType::Cancel;
 					frameData.rawFrameData.sampleCount = 0;
 					frameData.encodedFrameData.sampleCount = 0;
-					send(strong_this->sendAudioDataBuffer.get(), frameData);
+					send(thisPtr->sendAudioDataBuffer.get(), frameData);
 				}
 				vector<uint8_t> newVector;
 				send(dataPackage.sendEncodedAudioDataBuffer, newVector);
@@ -331,12 +318,10 @@ namespace DiscordCoreAPI {
 				agent::wait(songDecoder);
 				delete songDecoder;
 				songDecoder = nullptr;
-				strong_this->readyToBeDoneEvent.set();
-				threadContext->releaseGroup();
-				strong_this->currentTask = nullptr;
 				return;
-			}, this->cancelToken));
-			co_await mainThread;
+				}, this->cancelToken));
+			threadContext->releaseGroup();
+			co_return;
 		};
 
 		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>* sendAudioDataBufferNew) {

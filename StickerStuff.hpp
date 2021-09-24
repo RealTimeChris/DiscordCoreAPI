@@ -55,14 +55,12 @@ namespace DiscordCoreInternal {
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> cache;
 		static shared_ptr<ThreadContext> threadContext;
-		static HttpAgentResources agentResources;
 
 		StickerManagerAgent()
 			:agent(*StickerManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void intialize(HttpAgentResources agentResourcesNew) {
+		static void intialize() {
 			StickerManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			StickerManagerAgent::agentResources = agentResourcesNew;
 		}
 
 		static void cleanup() {
@@ -100,16 +98,10 @@ namespace DiscordCoreInternal {
 	protected:
 
 		shared_ptr<ThreadContext> threadContext{ nullptr };
-		HttpAgentResources agentResources{};
-
-		void initialize(HttpAgentResources agentResourcesNew) {
-			this->agentResources = agentResourcesNew;
-		}
 
 		~StickerManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> StickerManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> StickerManagerAgent::threadContext{ nullptr };
-	HttpAgentResources StickerManagerAgent::agentResources{};
 	};
 #endif

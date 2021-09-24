@@ -115,7 +115,6 @@ namespace DiscordCoreInternal {
 		
 		static overwrite_buffer<map<string, DiscordCoreAPI::Role>> cache;
 		static shared_ptr<ThreadContext> threadContext;
-		static HttpAgentResources agentResources;
 
 		unbounded_buffer<PatchRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
 		unbounded_buffer<DeleteGuildMemberRoleData> requestDeleteRoleBuffer{ nullptr };
@@ -133,9 +132,8 @@ namespace DiscordCoreInternal {
 		RoleManagerAgent()
 			:agent(*RoleManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew) {
+		static void initialize() {
 			RoleManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			RoleManagerAgent::agentResources = agentResourcesNew;
 		}
 
 		static void cleanup() {
@@ -147,7 +145,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_ROLES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -170,7 +168,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_ROLES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::getObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::getObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -201,7 +199,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::PATCH_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
 			workload.content = getModifyRolePayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::patchObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::patchObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -221,7 +219,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::PATCH_GUILD_ROLES;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
 			workload.content = getUpdateRolePositionsPayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::patchObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::patchObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -245,7 +243,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::POST_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
 			workload.content = getCreateRolePayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::postObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -264,7 +262,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.workloadType = HttpWorkloadType::PUT_GUILD_MEMBER_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId + "/roles/" + dataPackage.roleId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::putObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -279,7 +277,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.workloadType = HttpWorkloadType::DELETE_GUILD_MEMBER_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId + "/roles/" + dataPackage.roleId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -294,7 +292,7 @@ namespace DiscordCoreInternal {
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.workloadType = HttpWorkloadType::DELETE_GUILD_ROLE;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "RoleManagerAgent::deleteObjectData_01");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "RoleManagerAgent::deleteObjectData_01 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -419,13 +417,6 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		HttpAgentResources agentResources{};
-
-		RoleManager initialize(HttpAgentResources agentResourcesNew) {
-			this->agentResources = agentResourcesNew;
-			return *this;
-		}
-
 		task<DiscordCoreAPI::Role> fetchAsync(DiscordCoreAPI::FetchRoleData dataPackage) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
@@ -434,7 +425,6 @@ namespace DiscordCoreInternal {
 				throw failError;
 			}
 			GetRoleData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.roleId = dataPackage.roleId;
 			RoleManagerAgent requestAgent{};
@@ -455,7 +445,6 @@ namespace DiscordCoreInternal {
 				throw failError;
 			}
 			CollectRoleData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.roleId = dataPackage.roleId;
 			RoleManagerAgent requestAgent{};
@@ -477,7 +466,6 @@ namespace DiscordCoreInternal {
 			dataPackageNew.mentionable = dataPackage.mentionable;
 			dataPackageNew.name = dataPackage.name;
 			dataPackageNew.permissions = dataPackage.permissions;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.roleId = dataPackage.roleId;
 			RoleManagerAgent requestAgent{};
@@ -513,7 +501,6 @@ namespace DiscordCoreInternal {
 			newData.roleId = newRole.id;
 			newData.rolePosition = dataPackage.newPosition;
 			dataPackageNew.rolePositions.push_back(newData);
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			RoleManagerAgent requestAgent{};
 			send(requestAgent.requestPatchGuildRolesBuffer, dataPackageNew);
@@ -544,7 +531,6 @@ namespace DiscordCoreInternal {
 				throw failError;
 			}
 			GetRolesData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			RoleManagerAgent requestAgent{};
 			send(requestAgent.requestGetRolesBuffer, dataPackageNew);
@@ -559,7 +545,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostRoleData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.hexColorValue = dataPackage.hexColorValue;
 			dataPackageNew.hoist = dataPackage.hoist;
@@ -582,7 +567,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutRoleData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.roleId = dataPackage.roleId;
@@ -598,7 +582,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteGuildMemberRoleData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.roleId = dataPackage.roleId;
@@ -614,7 +597,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteGuildRoleData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.guildId = dataPackage.guildId;
 			dataPackageNew.roleId = dataPackage.roleId;
 			RoleManagerAgent requestAgent{};
@@ -654,6 +636,5 @@ namespace DiscordCoreInternal {
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Role>> RoleManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> RoleManagerAgent::threadContext{ nullptr };
-	HttpAgentResources RoleManagerAgent::agentResources{};
 }
 #endif

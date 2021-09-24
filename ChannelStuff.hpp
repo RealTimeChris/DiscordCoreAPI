@@ -94,7 +94,6 @@ namespace DiscordCoreInternal	{
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::Channel>> cache;
 		static shared_ptr<ThreadContext> threadContext;
-		static HttpAgentResources agentResources;
 
 		unbounded_buffer<DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
 		unbounded_buffer<PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
@@ -107,9 +106,8 @@ namespace DiscordCoreInternal	{
 		ChannelManagerAgent()
 			: agent(*ChannelManagerAgent::threadContext->scheduler->scheduler) {};
 
-		static void initialize(HttpAgentResources agentResourcesNew) {
+		static void initialize() {
 			ChannelManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			ChannelManagerAgent::agentResources = agentResourcesNew;
 			
 		}
 
@@ -122,7 +120,7 @@ namespace DiscordCoreInternal	{
 			workload.workloadClass = HttpWorkloadClass::GET;
 			workload.workloadType = HttpWorkloadType::GET_CHANNEL;
 			workload.relativePath = "/channels/" + dataPackage.channelId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ChannelManagerAgent::getObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::getObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -143,7 +141,7 @@ namespace DiscordCoreInternal	{
 			workload.relativePath = "/users/@me/channels";
 			json theValue = { {"recipient_id", dataPackage.userId } };
 			workload.content = theValue.dump();
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ChannelManagerAgent::postObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::postObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -163,7 +161,7 @@ namespace DiscordCoreInternal	{
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
 			workload.content = getEditChannelPermissionOverwritesPayload(dataPackage);
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ChannelManagerAgent::putObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -178,7 +176,7 @@ namespace DiscordCoreInternal	{
 			workload.workloadType = HttpWorkloadType::DELETE_CHANNEL_PERMISSION_OVERWRITES;
 			workload.workloadClass = HttpWorkloadClass::DELETED;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ChannelManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "ChannelManagerAgent::deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -285,18 +283,10 @@ namespace DiscordCoreInternal	{
 
 	protected:
 
-		HttpAgentResources agentResources{};
-
-		ChannelManager initialize(HttpAgentResources agentResourcesNew) {
-			this->agentResources = agentResourcesNew;
-			return *this;
-		}
-
 		task<DiscordCoreAPI::Channel> fetchAsync(DiscordCoreAPI::FetchChannelData dataPackage) {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetChannelData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			ChannelManagerAgent requestAgent{};
 			send(requestAgent.requestGetChannelBuffer, dataPackageNew);
@@ -313,7 +303,6 @@ namespace DiscordCoreInternal	{
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			CollectChannelData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			ChannelManagerAgent requestAgent{};
 			send(requestAgent.requestCollectChannelBuffer, dataPackageNew);
@@ -330,7 +319,6 @@ namespace DiscordCoreInternal	{
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetDMChannelData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.userId = dataPackage.userId;
 			ChannelManagerAgent requestAgent{};
 			send(requestAgent.requestGetDMChannelBuffer, dataPackageNew);
@@ -347,7 +335,6 @@ namespace DiscordCoreInternal	{
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutPermissionOverwritesData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.allow = dataPackage.allow;
 			dataPackageNew.deny = dataPackage.deny;
@@ -365,7 +352,6 @@ namespace DiscordCoreInternal	{
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteChannelPermissionOverwritesData dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.roleOrUserId = dataPackage.roleOrUserId;
 			ChannelManagerAgent requestAgent{};
@@ -404,6 +390,5 @@ namespace DiscordCoreInternal	{
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Channel>> ChannelManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> ChannelManagerAgent::threadContext{ nullptr };
-	HttpAgentResources ChannelManagerAgent::agentResources{};
 }
 #endif

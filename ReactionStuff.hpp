@@ -80,7 +80,6 @@ namespace DiscordCoreInternal {
 		friend class ReactionManager;
 
 		static shared_ptr<ThreadContext> threadContext;
-		static HttpAgentResources agentResources;
 
 		unbounded_buffer<DeleteReactionDataAll> requestDeleteReactionBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Reaction> outReactionBuffer{ nullptr };
@@ -89,9 +88,8 @@ namespace DiscordCoreInternal {
 		ReactionManagerAgent()
 			:agent(*ReactionManagerAgent::threadContext->scheduler->scheduler) {}
 
-		static void initialize(HttpAgentResources agentResourcesNew) {
+		static void initialize() {
 			ReactionManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			ReactionManagerAgent::agentResources = agentResourcesNew;
 		}
 
 		static void cleanup() {
@@ -103,7 +101,7 @@ namespace DiscordCoreInternal {
 			workload.workloadType = HttpWorkloadType::PUT_REACTION;
 			workload.workloadClass = HttpWorkloadClass::PUT;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.emoji + "/@me";
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ReactionManagerAgent::putObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "this->putObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -133,7 +131,7 @@ namespace DiscordCoreInternal {
 			else if (dataPackage.deletionType == ReactionDeletionType::USER_DELETE) {
 				workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.encodedEmoji + "/" + dataPackage.userId;
 			}
-			HttpRequestAgent requestAgent(dataPackage.agentResources);
+			HttpRequestAgent requestAgent{};
 			HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ReactionManagerAgent::deleteObjectData_00");
 			if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 				cout << "this->deleteObjectData_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -179,20 +177,12 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		HttpAgentResources agentResources{};
-
-		ReactionManager initialize(HttpAgentResources agentResourcesNew) {
-			this->agentResources = agentResourcesNew;
-			return *this;
-		}
-
 		task<DiscordCoreAPI::Reaction> createReactionAsync(DiscordCoreAPI::CreateReactionData dataPackage){
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutReactionData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
-			dataPackageNew.agentResources = this->agentResources;
 			string emoji;
 			if (dataPackage.emojiId != string()) {
 				emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
@@ -225,7 +215,6 @@ namespace DiscordCoreInternal {
 			dataPackageNew.messageId = dataPackage.messageId;
 			dataPackageNew.userId = dataPackage.userId;
 			dataPackageNew.deletionType = ReactionDeletionType::USER_DELETE;
-			dataPackageNew.agentResources = this->agentResources;
 			string emoji;
 			if (dataPackage.emojiId != string()) {
 				emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
@@ -255,7 +244,6 @@ namespace DiscordCoreInternal {
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
 			dataPackageNew.deletionType = ReactionDeletionType::SELF_DELETE;
-			dataPackageNew.agentResources = this->agentResources;
 			string emoji;
 			if (dataPackage.emojiId != string()) {
 				emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
@@ -284,7 +272,6 @@ namespace DiscordCoreInternal {
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
 			dataPackageNew.deletionType = ReactionDeletionType::EMOJI_DELETE;
-			dataPackageNew.agentResources = this->agentResources;
 			string emoji;
 			if (dataPackage.emojiId != string()) {
 				emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
@@ -310,7 +297,6 @@ namespace DiscordCoreInternal {
 			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
-			dataPackageNew.agentResources = this->agentResources;
 			dataPackageNew.channelId = dataPackage.channelId;
 			dataPackageNew.messageId = dataPackage.messageId;
 			dataPackageNew.deletionType = ReactionDeletionType::ALL_DELETE;
@@ -325,6 +311,5 @@ namespace DiscordCoreInternal {
 		~ReactionManager() {}
 	};
 	shared_ptr<ThreadContext> ReactionManagerAgent::threadContext{ nullptr };
-	HttpAgentResources ReactionManagerAgent::agentResources{};
 }
 #endif
