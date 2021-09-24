@@ -358,14 +358,8 @@ namespace DiscordCoreAPI {
 		};
 
 		static void cleanup() {
-			delete YouTubeAPI::sendAudioDataBufferMap;
-			YouTubeAPI::sendAudioDataBufferMap = nullptr;
-			delete YouTubeAPI::voiceConnectionMap;
-			YouTubeAPI::voiceConnectionMap = nullptr;
 			delete YouTubeAPI::youtubeAPIMap;
 			YouTubeAPI::youtubeAPIMap = nullptr;
-			delete YouTubeAPI::discordGuildMap;
-			YouTubeAPI::discordGuildMap = nullptr;
 		}
 
 	protected:

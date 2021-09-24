@@ -79,7 +79,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->webSocketReceiverAgent->terminate();
 			wait(DiscordCoreClient::thisPointer->webSocketConnectionAgent.get());
 			wait(DiscordCoreClient::thisPointer->webSocketReceiverAgent.get());
-			exit(0);
 		}
 
 		~DiscordCoreClient() {
@@ -90,6 +89,7 @@ namespace DiscordCoreAPI {
 
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
+		map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
@@ -97,7 +97,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		DiscordCoreInternal::HttpAgentResources agentResources{};
 		string baseURL{ "https://discord.com/api/v9" };
-		map<string, DiscordGuild*> discordGuildMap{};
 		map<string, vector<Song>> youtubeQueueMap{};
 		bool doWeQuit{ false };
 		string botToken{ "" };
@@ -143,7 +142,7 @@ namespace DiscordCoreAPI {
 			this->users->initialize(this->agentResources, this->thisPointer);
 			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
-			SongAPI::initialize(DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, &this->discordGuildMap, DiscordCoreClientBase::voiceConnectionMap);
+			SongAPI::initialize(DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, this->discordGuildMap, DiscordCoreClientBase::voiceConnectionMap);
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->agentResources, this->discordUser->data.userId);
