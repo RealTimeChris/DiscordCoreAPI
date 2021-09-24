@@ -197,8 +197,8 @@ namespace DiscordCoreAPI {
 		concurrency::event readyToBeDoneEvent {};
 		string appVersion{ "1631696495" };
 		bool areWeStopping{ false };
-		SoundCloudSong theSong{};
 		task<void>* currentTask{};
+		SoundCloudSong theSong{};
 		string guildId{ "" };
 		int retryCount{ 0 };
 
