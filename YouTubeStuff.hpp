@@ -376,7 +376,7 @@ namespace DiscordCoreAPI {
 		string appVersion{ "1631696495" };
 		const string newLine{ "\n\r" };
 		const int maxBufSize{ 4096 };
-		bool areWeStopping{ false }; ;
+		bool areWeStopping{ false };
 		task<void>* currentTask{};
 		YouTubeSong theSong{};
 		string guildId{ "" };
@@ -426,13 +426,12 @@ namespace DiscordCoreAPI {
 
 		task<void> downloadAndStreamAudioWrapper(YouTubeSong song, int retryCount = 0) {
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
+			apartment_context mainThread{};
 			co_await resume_foreground(*threadContext->dispatcherQueue);
 			this->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
 				YouTubeAPI* thisPtr = strong_this.get();
 				auto tokenNew = thisPtr->cancelTokenSource.get_token();
-				apartment_context mainThread{};
 				auto newSong = song;
-
 				thisPtr->areWeStopping = false;
 				BuildSongDecoderData dataPackage{};;
 				if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {

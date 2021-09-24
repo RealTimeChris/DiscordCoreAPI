@@ -247,12 +247,13 @@ namespace DiscordCoreAPI {
 
 		task<void> downloadAndStreamAudioWrapper(Song newSong, SoundCloudAPI* soundCloudAPI, int retryCountNew = 0) {
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
+			apartment_context mainThread{};
 			co_await resume_foreground(*threadContext->dispatcherQueue);
-			auto song = newSong;
-			auto thisPtr = soundCloudAPI;
-			thisPtr->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
+			this->currentTask = new task<void>(create_task([=, strong_this{ get_strong() }]()->void {
+				auto tokenNew = strong_this->cancelTokenSource.get_token();
+				auto song = newSong;
 				BuildSongDecoderData dataPackage{};
-				auto tokenNew = thisPtr->cancelTokenSource.get_token();
+				strong_this->areWeStopping = false;
 				if (strong_this->sendAudioDataBufferMap->contains(strong_this->guildId)) {
 					strong_this->sendAudioDataBuffer = strong_this->sendAudioDataBufferMap->at(strong_this->guildId);
 				}
@@ -353,19 +354,10 @@ namespace DiscordCoreAPI {
 				songDecoder = nullptr;
 				strong_this->currentTask = nullptr;
 				strong_this->readyToBeDoneEvent.set();
+				threadContext->releaseGroup();
 				return;
+			}, this->cancelToken));
 
-			}, thisPtr->cancelToken).then([](task<void> previousTask)->task<void> {
-				try {
-					previousTask.get();
-					co_return;
-				}
-				catch (...) {
-					rethrowException("SoundClouAPI::downloadAndStreamAudioWrapper() Error: ");
-					co_return;
-				}
-				}));
-			co_return;
 		};
 
 		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>* sendAudioDataBufferNew) {
