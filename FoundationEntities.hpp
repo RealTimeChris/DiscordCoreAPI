@@ -4151,6 +4151,26 @@ namespace DiscordCoreAPI {
         Song previousSong{};
     };
 
+    struct GuildEmojisUpdateEventData {
+        vector<EmojiData> emojis{};
+        string guildId{ "" };
+    };
+
+    struct GuildStickersUpdateEventData {
+        vector<StickerData> stickers{};
+        string guildId{ "" };
+    };
+    
+    struct GuildMembersChunkEventData {
+        vector<PresenceUpdateData> presences{};
+        vector<GuildMemberData> members{};
+        vector<string> notFound{};
+        string guildId{ "" };
+        int chunkIndex{ 0 };
+        int chunkCount{ 0 };
+        string nonce{ "" };
+    };
+    
     const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
     const string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
     const string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };

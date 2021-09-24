@@ -90,6 +90,18 @@ namespace DiscordCoreAPI {
 		User user{};
 	};
 
+	struct OnGuildEmojisUpdateData {
+		GuildEmojisUpdateEventData updateData{};
+	};
+
+	struct OnGuildStickersUpdateData {
+		GuildStickersUpdateEventData updateData{};
+	};
+
+	struct OnGuildIntegrationsUpdateData {
+		string guildId{ "" };
+	};
+
 	struct OnGuildMemberAddData {
 		GuildMember guildMember{};
 	};
@@ -102,6 +114,10 @@ namespace DiscordCoreAPI {
 	struct OnGuildMemberUpdateData {
 		GuildMember guildMemberOld{};
 		GuildMember guildMemberNew{};
+	};
+
+	struct OnGuildMembersChunkData {
+		GuildMembersChunkEventData chunkEventData{};
 	};
 
 	struct OnRoleCreationData {
@@ -118,6 +134,22 @@ namespace DiscordCoreAPI {
 	struct OnRoleDeletionData {
 		string guildId{ "" };
 		Role roleOld{};		
+	};
+
+	struct OnIntegrationCreationData {
+		IntegrationData integrationData{};
+		string guildId{ "" };
+	};
+
+	struct OnIntegrationUpdateData {
+		IntegrationData integrationData{};
+		string guildId{ "" };
+	};
+
+	struct OnIntegrationDeletionData {
+		string applicationId{ "" };
+		string guildId{ "" };
+		string id{ "" };
 	};
 
 	struct OnInviteCreationData {
@@ -181,6 +213,18 @@ namespace DiscordCoreAPI {
 		PresenceUpdateData presenceData{};
 	};
 
+	struct OnStageInstanceCreationData {
+		StageInstanceData stageInstance{};
+	};
+
+	struct OnStageInstanceUpdateData {
+		StageInstanceData stageInstance{};
+	};
+
+	struct OnStageInstanceDeletionData {
+		StageInstanceData stageInstance{};
+	};
+
 	struct OnTypingStartData {
 		TypingStartData typingStartData{};
 	};
@@ -198,6 +242,11 @@ namespace DiscordCoreAPI {
 		string endpoint{ "" };
 		string guildId{ "" };
 		string token{ "" };
+	};
+
+	struct OnWebhookUpdateData {
+		string channelId{ "" };
+		string guildId{ "" };
 	};
 
 	class EventManager {
@@ -349,6 +398,38 @@ namespace DiscordCoreAPI {
 			onGuildBanRemoveEvent.remove(token);
 		}
 
+		event_token onGuildEmojisUpdate(delegate<OnGuildEmojisUpdateData> const& handler) {
+			return onGuildEmojisUpdateEvent.add(handler);
+		}
+
+		void onGuildEmojisUpdate(event_token const& token) {
+			onGuildEmojisUpdateEvent.remove(token);
+		}
+
+		event_token onGuildStickersUpdate(delegate<OnGuildStickersUpdateData> const& handler) {
+			return onGuildStickersUpdateEvent.add(handler);
+		}
+
+		void onGuildStickersUpdate(event_token const& token) {
+			onGuildStickersUpdateEvent.remove(token);
+		}
+
+		event_token onGuildIntegrationsUpdate(delegate<OnGuildIntegrationsUpdateData> const& handler) {
+			return onGuildIntegrationsUpdateEvent.add(handler);
+		}
+
+		void onGuildIntegrationsUpdate(event_token const& token) {
+			onGuildIntegrationsUpdateEvent.remove(token);
+		}
+
+		event_token onGuildMembersChunk(delegate<OnGuildMembersChunkData> const& handler) {
+			return onGuildMembersChunkEvent.add(handler);
+		}
+
+		void onGuildMembersChunk(event_token const& token) {
+			onGuildMembersChunkEvent.remove(token);
+		}
+
 		event_token onGuildMemberAdd(delegate<OnGuildMemberAddData> const& handler) {
 			return onGuildMemberAddEvent.add(handler);
 		}
@@ -395,6 +476,38 @@ namespace DiscordCoreAPI {
 
 		void onRoleDeletion(event_token const& token) {
 			onRoleDeletionEvent.remove(token);
+		}
+
+		event_token onIntegrationCreation(delegate<OnIntegrationCreationData> const& handler) {
+			return onIntegrationCreationEvent.add(handler);
+		}
+
+		void onIntegrationCreation(event_token const& token) {
+			onIntegrationCreationEvent.remove(token);
+		}
+
+		event_token onIntegrationUpdate(delegate<OnIntegrationUpdateData> const& handler) {
+			return onIntegrationUpdateEvent.add(handler);
+		}
+
+		void onIntegrationUpdate(event_token const& token) {
+			onIntegrationUpdateEvent.remove(token);
+		}
+
+		event_token onIntegrationDeletion(delegate<OnIntegrationDeletionData> const& handler) {
+			return onIntegrationDeletionEvent.add(handler);
+		}
+
+		void onIntegrationDeletion(event_token const& token) {
+			onIntegrationDeletionEvent.remove(token);
+		}
+
+		event_token onInteractionCreation(delegate<OnInteractionCreationData> const& handler) {
+			return onInteractionCreationEvent.add(handler);
+		}
+
+		void onInteractionCreation(event_token const& token) {
+			onInteractionCreationEvent.remove(token);
 		}
 
 		event_token onInviteCreation(delegate<OnInviteCreationData> const& handler) {
@@ -485,6 +598,30 @@ namespace DiscordCoreAPI {
 			onPresenceUpdateEvent.remove(token);
 		}
 
+		event_token onStageInstanceCreation(delegate<OnStageInstanceCreationData> const& handler) {
+			return onStageInstanceCreationEvent.add(handler);
+		}
+
+		void onStageInstanceCreation(event_token const& token) {
+			onStageInstanceCreationEvent.remove(token);
+		}
+
+		event_token onStageInstanceUpdate(delegate<OnStageInstanceUpdateData> const& handler) {
+			return onStageInstanceUpdateEvent.add(handler);
+		}
+
+		void onStageInstanceUpdate(event_token const& token) {
+			onStageInstanceUpdateEvent.remove(token);
+		}
+
+		event_token onStageInstanceDeletion(delegate<OnStageInstanceDeletionData> const& handler) {
+			return onStageInstanceDeletionEvent.add(handler);
+		}
+
+		void onStageInstanceDeletion(event_token const& token) {
+			onStageInstanceDeletionEvent.remove(token);
+		}
+
 		event_token onTypingStart(delegate<OnTypingStartData> const& handler) {
 			return onTypingStartEvent.add(handler);
 		}
@@ -516,13 +653,13 @@ namespace DiscordCoreAPI {
 		void onVoiceServerUpdate(event_token const& token) {
 			onVoiceServerUpdateEvent.remove(token);
 		}
-
-		event_token onInteractionCreation(delegate<OnInteractionCreationData> const& handler) {
-			return onInteractionCreationEvent.add(handler);
+	
+		event_token onWebhookUpdate(delegate<OnWebhookUpdateData> const& handler) {
+			return onWebhookUpdateEvent.add(handler);
 		}
 
-		void onInteractionCreation(event_token const& token) {
-			onInteractionCreationEvent.remove(token);
+		void onWebhookUpdate(event_token const& token) {
+			onWebhookUpdateEvent.remove(token);
 		}
 
 	protected:
@@ -563,17 +700,33 @@ namespace DiscordCoreAPI {
 
 		winrt::event<delegate<OnGuildBanRemoveData>> onGuildBanRemoveEvent;
 
+		winrt::event<delegate<OnGuildEmojisUpdateData>> onGuildEmojisUpdateEvent;
+
+		winrt::event<delegate<OnGuildStickersUpdateData>> onGuildStickersUpdateEvent;
+		
+		winrt::event<delegate<OnGuildIntegrationsUpdateData>> onGuildIntegrationsUpdateEvent;
+
 		winrt::event<delegate<OnGuildMemberAddData>> onGuildMemberAddEvent;
 
 		winrt::event<delegate<OnGuildMemberRemoveData>> onGuildMemberRemoveEvent;
 
 		winrt::event<delegate<OnGuildMemberUpdateData>> onGuildMemberUpdateEvent;
 
+		winrt::event<delegate<OnGuildMembersChunkData>> onGuildMembersChunkEvent;
+
 		winrt::event<delegate<OnRoleCreationData>> onRoleCreationEvent;
 
 		winrt::event<delegate<OnRoleUpdateData>> onRoleUpdateEvent;
 
 		winrt::event<delegate<OnRoleDeletionData>> onRoleDeletionEvent;
+
+		winrt::event<delegate<OnIntegrationCreationData>> onIntegrationCreationEvent;
+
+		winrt::event<delegate<OnIntegrationUpdateData>> onIntegrationUpdateEvent;
+
+		winrt::event<delegate<OnIntegrationDeletionData>> onIntegrationDeletionEvent;
+
+		winrt::event<delegate<OnInteractionCreationData>> onInteractionCreationEvent;
 
 		winrt::event<delegate<OnInviteCreationData>> onInviteCreationEvent;
 
@@ -597,6 +750,12 @@ namespace DiscordCoreAPI {
 
 		winrt::event<delegate<OnPresenceUpdateData>> onPresenceUpdateEvent;
 
+		winrt::event<delegate<OnStageInstanceCreationData>> onStageInstanceCreationEvent;
+
+		winrt::event<delegate<OnStageInstanceUpdateData>> onStageInstanceUpdateEvent;
+
+		winrt::event<delegate<OnStageInstanceDeletionData>> onStageInstanceDeletionEvent;
+
 		winrt::event<delegate<OnTypingStartData>> onTypingStartEvent;
 
 		winrt::event<delegate<OnUserUpdateData>> onUserUpdateEvent;
@@ -605,7 +764,7 @@ namespace DiscordCoreAPI {
 
 		winrt::event<delegate<OnVoiceServerUpdateData>> onVoiceServerUpdateEvent;
 
-		winrt::event<delegate<OnInteractionCreationData>> onInteractionCreationEvent;
+		winrt::event<delegate<OnWebhookUpdateData>> onWebhookUpdateEvent;
 
 	};
 }

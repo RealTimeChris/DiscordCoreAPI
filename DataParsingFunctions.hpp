@@ -3325,6 +3325,96 @@ namespace DiscordCoreInternal {
             *pDataStructure = newData;
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildEmojisUpdateEventData* pDataStructure) {
+            DiscordCoreAPI::GuildEmojisUpdateEventData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("emojis") && !jsonObjectData.at("emojis").is_null()) {
+                vector<DiscordCoreAPI::EmojiData> newVector{};
+                for (auto value : jsonObjectData.at("emojis")) {
+                    DiscordCoreAPI::EmojiData newData01{};
+                    parseObject(value, &newData01);
+                    newVector.push_back(newData01);
+                }
+                newData.emojis = newVector;
+            }
+
+            *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildStickersUpdateEventData* pDataStructure) {
+            DiscordCoreAPI::GuildStickersUpdateEventData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("stickers") && !jsonObjectData.at("stickers").is_null()) {
+                vector<DiscordCoreAPI::StickerData> newVector{};
+                for (auto value : jsonObjectData.at("stickers")) {
+                    DiscordCoreAPI::StickerData newData01{};
+                    parseObject(value, &newData01);
+                    newVector.push_back(newData01);
+                }
+                newData.stickers = newVector;
+            }
+
+            *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildMembersChunkEventData* pDataStructure) {
+            DiscordCoreAPI::GuildMembersChunkEventData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("nonce") && !jsonObjectData.at("nonce").is_null()) {
+                newData.nonce = jsonObjectData.at("nonce").get<string>();
+            }
+
+            if (jsonObjectData.contains("chunk_index") && !jsonObjectData.at("chunk_index").is_null()) {
+                newData.chunkIndex = jsonObjectData.at("chunk_index").get<int>();
+            }
+
+            if (jsonObjectData.contains("chunk_count") && !jsonObjectData.at("chunk_count").is_null()) {
+                newData.chunkCount = jsonObjectData.at("chunk_count").get<int>();
+            }
+
+            if (jsonObjectData.contains("presences") && !jsonObjectData.at("presences").is_null()) {
+                vector<DiscordCoreAPI::PresenceUpdateData> newVector{};
+                for (auto value : jsonObjectData.at("presences")) {
+                    DiscordCoreAPI::PresenceUpdateData newData01{};
+                    parseObject(value, &newData01);
+                    newVector.push_back(newData01);
+                }
+                newData.presences = newVector;
+            }
+
+            if (jsonObjectData.contains("not_found") && !jsonObjectData.at("not_found").is_null()) {
+                vector<string> newVector{};
+                for (auto value : jsonObjectData.at("not_found")) {
+                    newVector.push_back(value);
+                }
+                newData.notFound = newVector;
+            }
+
+            if (jsonObjectData.contains("members") && !jsonObjectData.at("members").is_null()) {
+                vector<DiscordCoreAPI::GuildMemberData> newVector{};
+                for (auto value : jsonObjectData.at("members")) {
+                    DiscordCoreAPI::GuildMemberData newData01{};
+                    parseObject(value, &newData01);
+                    newVector.push_back(newData01);
+                }
+                newData.members = newVector;
+            }
+
+            *pDataStructure = newData;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure);
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::SoundCloudSong* pDataStructure);
