@@ -211,8 +211,7 @@ namespace DiscordCoreAPI {
 				this->areWeStopping = true;
 				this->cancelTokenSource.cancel();
 				if (this->currentTask != nullptr && !this->currentTask->is_done()) {
-					while (!this->currentTask->is_done()) {};
-					this->currentTask = nullptr;
+					this->currentTask->get();
 				}
 				AudioFrameData dataFrame;
 				while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
@@ -223,10 +222,19 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void sendNextSong(Song newSong) {
+		task<void> sendNextSong(Song newSong) {
 			this->cancelTokenSource = cancellation_token_source();
 			this->cancelToken = this->cancelTokenSource.get_token();
 			this->downloadAndStreamAudioWrapper(newSong).get();
+			apartment_context mainThread;
+			auto threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
+			co_await resume_foreground(*threadContext->dispatcherQueue.get());
+			this->currentTask->get();
+			delete this->currentTask;
+			this->currentTask = nullptr;
+			threadContext->releaseGroup();
+			co_await mainThread;
+			co_return;
 		}
 
 		task<void> downloadAndStreamAudioWrapper(SoundCloudSong newSong) {

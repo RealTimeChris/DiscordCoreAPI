@@ -358,7 +358,7 @@ namespace DiscordCoreAPI {
 						this->playSetEvent->reset();
 					start:
 						if (this->doWeQuit) {
-							done();
+							this->done();
 							break;
 						}
 						StopWatch stopWatch(10000);

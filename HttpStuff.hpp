@@ -123,23 +123,25 @@ namespace DiscordCoreInternal {
 			send(this->workSubmissionBuffer, workload);
 			this->start();
 			wait(this);
-			HttpData returnData;
-			try {
-				returnData = receive(this->workReturnBuffer, 10000);
+			DiscordCoreAPI::StopWatch stopWatch{ 10000 };
+			while (!stopWatch.hasTimePassed()) {
+				HttpData returnData;
+				if (try_receive(this->workReturnBuffer, returnData)) {
+					return returnData;
+				};
 			}
-			catch (...) {
-				DiscordCoreAPI::rethrowException("HttpRequestAgent::submitWorkloadAndGetResult() Error: ");
-			}
-			return returnData;
+			return HttpData();
 		}
 
 		~HttpRequestAgent() {}
 
 	protected:
+
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static map<string, RateLimitData> rateLimitData;
 		static string botToken;
 		static string baseURL;
+
 		unbounded_buffer<HttpWorkloadData> workSubmissionBuffer{ nullptr };
 		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
@@ -250,7 +252,7 @@ namespace DiscordCoreInternal {
 			}
 			done();
 		}
- 
+
 		HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData) {
 			HttpData getData;
 			string connectionPath = this->baseURLInd + workloadData.relativePath;
