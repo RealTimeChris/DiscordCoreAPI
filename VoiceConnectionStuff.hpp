@@ -203,9 +203,9 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* receiveAudioBufferMap{ nullptr };
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgent{ nullptr };
+		winrt::event<delegate<SongCompletionEventData>>* onSongCompletionEvent {};
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		concurrency::event* connectionReadyEvent {new concurrency::event()};
-		winrt::event<delegate<SongCompletionEventData>>* onSongCompletionEvent {};
 		concurrency::event* disconnectionEvent {new concurrency::event()};
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};

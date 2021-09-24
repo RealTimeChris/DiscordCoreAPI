@@ -377,30 +377,36 @@ namespace DiscordCoreInternal {
 		}
 
 		void sendVoiceData(vector<uint8_t> data) {
-			vector<uint8_t> message = data;
-			if (message.size() == 0) {
-				cout << "Please specify voice data to send" << endl << endl;
-				return;
-			}
-			else {
-				if (this->dataWriter != nullptr) {
-					this->dataWriter.WriteBytes(message);
-					this->dataWriter.StoreAsync().get();
+			try {
+				vector<uint8_t> message = data;
+				if (message.size() == 0) {
+					cout << "Please specify voice data to send" << endl << endl;
+					return;
 				}
+				else {
+					if (this->dataWriter != nullptr) {
+						this->dataWriter.WriteBytes(message);
+						this->dataWriter.StoreAsync().get();
+					}
+				}
+			}
+			catch (...) {
+				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendVoiceData() Error: ");
+				this->webSocket->Close(1002, L"Failed to send voice data.");
 			}
 		}
 
 		void sendMessage(string text) {
-			string message = text;
-			if (message.empty()) {
-				cout << "Please specify text to send" << endl;
-				return;
-			}
-
-			cout << "Sending Voice Message: ";
-			cout << message << endl;
-
 			try {
+				string message = text;
+				if (message.empty()) {
+					cout << "Please specify text to send" << endl;
+					return;
+				}
+
+				cout << "Sending Voice Message: ";
+				cout << message << endl;
+							
 				// Buffer any data we want to send.
 				winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
 				DataWriter dataWriterMessage(randomAccessStream);
@@ -517,7 +523,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001 && this->voiceConnectionData.sessionId != "") {
+			if (this->maxReconnectTries > this->currentReconnectTries && this->voiceConnectionData.sessionId != "") {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
