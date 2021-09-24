@@ -200,7 +200,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
-			wcout << L"WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			cout << "WebSocket Closed; Code: " << args.Code() << ", Reason: " << to_string(args.Reason().c_str()) << endl;
 			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001 && this->sessionId != "") {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
@@ -520,7 +520,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
-			wcout << L"Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << args.Reason().c_str() << endl;
+			cout << "Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << to_string(args.Reason().c_str()) << endl;
 			if (this->maxReconnectTries > this->currentReconnectTries && this->voiceConnectionData.sessionId != "") {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
