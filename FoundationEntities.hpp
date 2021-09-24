@@ -3706,32 +3706,42 @@ namespace DiscordCoreAPI {
         int contentSize{ 0 };
     };
    
+    struct SongCompletionEventData;
     class SoundCloudSong;
     class YouTubeSong;
 
     class Song {
     public:
 
-        vector<DownloadURL> finalDownloadURLs{};
-        SongType type{ SongType::SoundCloud };
-        string secondDownloadURL{ "" };
-        string firstDownloadURL{ "" };
+        friend vector<Song> cleanQueue(vector<Song> originalQueue);
+        friend class DatabaseManagerAgent;
+        friend class SoundCloudSong;
+        friend class YouTubeSong;
+        friend class SongAPI;
+
         string addedByUserName{ "" };
         string addedByUserId{ "" };
         string thumbnailURL{ "" };
         string description{ "" };
-        int contentLength{ 0 };
         string songTitle{ "" };
         string duration{ "" };
         string viewURL{ "" };
-        string songId{ "" };
+        
+        Song() {}
+
+    protected:
 
         Song operator=(const SoundCloudSong& e);
 
         Song operator=(const YouTubeSong& e);
 
-        Song(){}
-
+        vector<DownloadURL> finalDownloadURLs{};
+        SongType type{ SongType::SoundCloud };
+        string secondDownloadURL{ "" };
+        string firstDownloadURL{ "" };
+        int contentLength{ 0 };
+        string songId{ "" };
+        
     };
 
     class SoundCloudSong : public Song {

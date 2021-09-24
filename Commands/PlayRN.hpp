@@ -186,8 +186,7 @@ namespace DiscordCoreAPI {
 			}
 
 			if (embedsFromSearch.size() > 0) {
-				Song song{};
-				song = SongAPI::addSongToQueue(guildMember, guild.id, searchResults[0]);
+				Song song = SongAPI::addSongToQueue(guildMember, guild.id, searchResults[0]);
 				SongAPI::stop(guild.id);
 				auto playlist = SongAPI::getPlaylist(guild.id);
 
