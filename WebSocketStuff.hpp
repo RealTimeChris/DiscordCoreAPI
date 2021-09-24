@@ -302,7 +302,7 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 9) {
 				cout << "Reconnecting (Type 9)!" << endl << endl;
-				if (payload.at("d") == false && this->sessionId != "") {
+				if (payload.at("d") == false || this->sessionId != "") {
 					this->webSocket->Close(1002, L"Closing for reconnect type 9.");
 				}
 				else {
