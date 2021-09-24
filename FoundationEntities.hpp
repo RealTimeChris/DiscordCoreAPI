@@ -3748,9 +3748,7 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreInternal::DataParser;
-        friend class SoundCloudAPICore;
         friend class SoundCloudAPI;
-        friend class SongAPICore;
         friend class SongAPI;
         friend class Song;
 
@@ -3838,7 +3836,6 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::DataParser;
         friend class SoundCloudAPI;
         friend class YouTubeAPI;
-        friend class SongAPI;
         friend class SongAPI;
         friend class Song;
 

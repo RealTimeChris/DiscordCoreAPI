@@ -179,6 +179,17 @@ namespace DiscordCoreAPI {
 			SoundCloudAPI::discordGuildMap = discordGuildMapNew;
 		};
 
+		static void cleanup() {
+			delete SoundCloudAPI::sendAudioDataBufferMap;
+			SoundCloudAPI::sendAudioDataBufferMap = nullptr;
+			delete SoundCloudAPI::voiceConnectionMap;
+			SoundCloudAPI::voiceConnectionMap = nullptr;
+			delete SoundCloudAPI::soundCloudAPIMap;
+			SoundCloudAPI::soundCloudAPIMap = nullptr;
+			delete SoundCloudAPI::discordGuildMap;
+			SoundCloudAPI::discordGuildMap = nullptr;
+		}
+
 	protected:
 
 		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap;

@@ -54,6 +54,17 @@ namespace DiscordCoreAPI {
 			SongAPI::songAPIMap = songAPICoreMapNew;
 		}
 
+		static void cleanup() {
+			delete SongAPI::sendAudioDataBufferMap;
+			SongAPI::sendAudioDataBufferMap = nullptr;
+			delete SongAPI::voiceConnectionMap;
+			SongAPI::voiceConnectionMap = nullptr;
+			delete SongAPI::songAPIMap;
+			SongAPI::songAPIMap = nullptr;
+			delete SongAPI::discordGuildMap;
+			SongAPI::discordGuildMap = nullptr;
+		}
+
 		void savePlaylist() {
 			this->playlist.songQueue = cleanQueue(this->playlist.songQueue);
 			this->discordGuild->data.playlist = this->playlist;

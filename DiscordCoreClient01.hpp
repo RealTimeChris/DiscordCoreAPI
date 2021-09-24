@@ -62,6 +62,9 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->doWeQuit = true;
 			SelectMenu::cleanup();
 			Button::cleanup();
+			YouTubeAPI::cleanup();
+			SoundCloudAPI::cleanup();
+			SongAPI::cleanup();
 			DatabaseManagerAgent::cleanup();
 			DiscordCoreInternal::UserManagerAgent::cleanup();
 			DiscordCoreInternal::RoleManagerAgent::cleanup();
