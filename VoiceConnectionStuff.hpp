@@ -26,10 +26,10 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		VoiceConnection(shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew, DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew, 
+		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioBufferMapNew, 
 			shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> websocketAgentNew, string guildIdNew, map<string, shared_ptr<VoiceConnection>>* voiceConnectionMapNew) :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get()),
-			agent(*threadContextNew->scheduler->scheduler)
+			agent(*this->scheduler->scheduler)
 		{
 			if (voiceConnectInitDataNew.channelId != "") {
 				if (sodium_init() == -1) {
@@ -185,8 +185,7 @@ namespace DiscordCoreAPI {
 				auto webSocketAgent = VoiceConnection::voiceConnectionMap->at(guildId)->websocketAgent;
 				auto audioBuffersMap = VoiceConnection::voiceConnectionMap->at(guildId)->receiveAudioBufferMap;
 				auto onSongCompletionEvent = VoiceConnection::voiceConnectionMap->at(guildId)->onSongCompletionEvent;
-				voiceConnectionMap->erase(guildId);
-				voiceConnectionMap->insert_or_assign(guildId, make_shared<VoiceConnection>(DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get(), voiceConnectionData, audioBuffersMap, webSocketAgent, guildId, VoiceConnection::voiceConnectionMap));
+				voiceConnectionMap->insert_or_assign(guildId, make_shared<VoiceConnection>(voiceConnectionData, audioBuffersMap, webSocketAgent, guildId, VoiceConnection::voiceConnectionMap));
 				voiceConnectionMap->at(guildId)->onSongCompletionEvent = onSongCompletionEvent;
 				voiceConnectionMap->at(guildId)->sendSpeakingMessage(true);
 				voiceConnectionMap->at(guildId).get()->start();

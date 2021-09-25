@@ -388,8 +388,16 @@ namespace DiscordCoreAPI {
 			if (this->voiceConnection->areWeCurrentlyPlaying()) {
 				this->areWeStopping = true;
 				this->cancelTokenSource.cancel();
-				if (this->currentTask != nullptr && !this->currentTask->is_done()) {
-					this->currentTask->get();
+				if (this->currentTask != nullptr) {
+					if (!this->currentTask->is_done()) {
+						while (!this->currentTask->is_done()) {};
+						delete this->currentTask;
+						this->currentTask = nullptr;
+					}
+					else {
+						delete this->currentTask;
+						this->currentTask = nullptr;
+					}
 				}
 				AudioFrameData dataFrame;
 				while (try_receive(this->sendAudioDataBuffer.get(), dataFrame)) {};
@@ -404,14 +412,9 @@ namespace DiscordCoreAPI {
 			this->cancelTokenSource = cancellation_token_source();
 			this->cancelToken = this->cancelTokenSource.get_token();
 			this->downloadAndStreamAudioWrapper(newSong).get();
-			apartment_context mainThread;
-			auto threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
+			auto threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			co_await resume_foreground(*threadContext->dispatcherQueue.get());
-			this->currentTask->get();
-			delete this->currentTask;
-			this->currentTask = nullptr;
-			threadContext->releaseGroup();
-			co_await mainThread;
+			this->currentTask;
 			co_return;
 		}
 
@@ -675,16 +678,12 @@ namespace DiscordCoreAPI {
 		}
 
 		static void sendNextSong(Song newSong, string guildId) {
-			shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
-			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-			youtubeAPI->sendNextSong(newSong);
+			YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong(newSong).get();
+			return;
 		}
 
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId) {
-			shared_ptr<YouTubeAPI> youtubeAPI = make_shared<YouTubeAPI>(guildId);
-			auto returnValue = youtubeAPI->theSong.searchForSong(searchQuery);
-			YouTubeAPI::youtubeAPIMap->insert_or_assign(guildId, youtubeAPI);
-			return returnValue;
+			return YouTubeAPI::youtubeAPIMap->at(guildId)->theSong.searchForSong(searchQuery);
 		}
 
 		HRESULT GetRuntimeClassName(HSTRING*) {

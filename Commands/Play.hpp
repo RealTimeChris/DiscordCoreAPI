@@ -171,12 +171,15 @@ namespace DiscordCoreAPI {
 			if (!voiceConnection->areWeCurrentlyPlaying()) {
 				voiceConnection->onSongCompletion([=](SongCompletionEventData eventData) mutable noexcept ->task<void> {
 					co_await resume_background();
-					discordGuild.getDataFromDB();
 					if (SongAPI::isThereAnySongs(guild.id)) {
-						SongAPI::sendNextSong(guild.id, guildMember);
-
+						
 						EmbedData newEmbed;
 						if (!eventData.isThisAReplay) {
+							if (!SongAPI::sendNextSong(guild.id, guildMember)) {
+								InputEvents::deleteInputEventResponseAsync(newEvent);
+								co_return;
+							};
+							eventData.voiceConnection->play();
 							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 							newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
 								SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
@@ -202,6 +205,8 @@ namespace DiscordCoreAPI {
 							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 						}
 						else {
+							eventData.voiceConnection->play();
+							
 							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 							newEmbed.setDescription("__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" + eventData.previousSong.songTitle + "](" + eventData.previousSong.viewURL + ")" + "\n__**Description:**__ " + eventData.previousSong.description + "\n__**Duration:**__ " +
 								eventData.previousSong.duration + "\n__**Added By:**__ <@!" + eventData.previousSong.addedByUserId + "> (" + eventData.previousSong.addedByUserName + ")");
@@ -225,8 +230,9 @@ namespace DiscordCoreAPI {
 							dataPackage.type = DesiredInputEventResponseType::RegularMessage;
 							dataPackage.addMessageEmbed(newEmbed);
 							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+							
+							
 						}
-						eventData.voiceConnection->play();
 					}
 					else {
 						discordGuild.getDataFromDB();
@@ -257,8 +263,10 @@ namespace DiscordCoreAPI {
 
 				if (!voiceConnection->areWeCurrentlyPlaying()) {
 					if (SongAPI::isThereAnySongs(guild.id)) {
-						SongAPI::sendNextSong(guild.id, guildMember);
-
+						if (!SongAPI::sendNextSong(guild.id, guildMember)) {
+							InputEvents::deleteInputEventResponseAsync(newEvent);
+							co_return;
+						};
 						EmbedData newEmbed;
 						newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 						newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewURL + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +

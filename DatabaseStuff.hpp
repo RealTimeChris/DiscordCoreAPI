@@ -16,6 +16,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordUserData {
         vector<string> botCommanders{ "", "", "" };
+        bool didWeShutDownProperly{ false };
         int32_t guildCount{ 0 };
         string userName{ "" };
         string prefix{ "!" };
@@ -27,9 +28,9 @@ namespace DiscordCoreAPI {
         string  borderColor{ "FEFEFE" };
         unsigned int memberCount{ 0 };
         string guildName{ "" };
-        string djRoleId{ "" };
         DBPlaylist playlist{};
-        string guildId{ "" };        
+        string djRoleId{ "" };
+        string guildId{ "" };
     };
 
     struct DiscordGuildMemberData {
@@ -65,8 +66,8 @@ namespace DiscordCoreAPI {
 
         friend class DiscordGuildMember;
         friend class DiscordCoreClient;
-        friend class DiscordGuild;
         friend class DiscordUser;
+        friend class DiscordGuild;
 
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static mongocxx::collection collection;
@@ -79,7 +80,6 @@ namespace DiscordCoreAPI {
         unbounded_buffer<DiscordGuildData> discordGuildOutputBuffer{ nullptr };
         unbounded_buffer<DiscordUserData>discordUserOutputBuffer{ nullptr };
         unbounded_buffer<DatabaseWorkload> requestBuffer{ nullptr };
-        unbounded_buffer<exception> errorBuffer{ nullptr };
 
         DatabaseManagerAgent()
             : agent(*DatabaseManagerAgent::threadContext->scheduler->scheduler) {
@@ -99,13 +99,6 @@ namespace DiscordCoreAPI {
             DatabaseManagerAgent::threadContext->releaseGroup();
         }
 
-        void getError(string stackTrace) {
-            exception error;
-            while (try_receive(errorBuffer, error)) {
-                cout << stackTrace << "Error: " << error.what() << endl << endl;
-            }
-        }
-
         static bsoncxx::builder::basic::document convertUserDataToDBDoc(DiscordUserData discordUserData) {
             bsoncxx::builder::basic::document buildDoc;
             try {
@@ -114,6 +107,7 @@ namespace DiscordCoreAPI {
                 buildDoc.append(kvp("userId", discordUserData.userId));
                 buildDoc.append(kvp("userName", discordUserData.userName));
                 buildDoc.append(kvp("guildCount", bsoncxx::types::b_int32(discordUserData.guildCount)));
+                buildDoc.append(kvp("didWeShutDownProperly", bsoncxx::types::b_bool(discordUserData.didWeShutDownProperly)));
                 buildDoc.append(kvp("prefix", discordUserData.prefix));
                 buildDoc.append(kvp("botCommanders", [discordUserData](bsoncxx::builder::basic::sub_array subArray) {
                     for (auto& value : discordUserData.botCommanders) {
@@ -136,6 +130,7 @@ namespace DiscordCoreAPI {
                 userData.guildCount = docValue.view()["guildCount"].get_int32();
                 userData.prefix = docValue.view()["prefix"].get_utf8().value.to_string();
                 userData.userId = docValue.view()["userId"].get_utf8().value.to_string();
+                userData.didWeShutDownProperly = docValue.view()["didWeShutDownProperly"].get_bool().value;
                 auto botCommandersArray = docValue.view()["botCommanders"].get_array();
                 vector<string> newVector;
                 for (const auto& value : botCommandersArray.value) {
@@ -165,6 +160,38 @@ namespace DiscordCoreAPI {
                         subArray.append(value);
                     }
                     }));
+                buildDoc.append(kvp("playlist", [discordGuildData](bsoncxx::builder::basic::sub_document subDocument01) {
+                    subDocument01.append(kvp("isLoopAllEnabled", bsoncxx::types::b_bool(discordGuildData.playlist.isLoopAllEnabled)));
+                    subDocument01.append(kvp("isLoopSongEnabled", bsoncxx::types::b_bool(discordGuildData.playlist.isLoopSongEnabled)));
+                    subDocument01.append(kvp("currentSong", [&](bsoncxx::builder::basic::sub_document subDocument02) {
+                        subDocument02.append(kvp("downloadURLs", [discordGuildData](bsoncxx::builder::basic::sub_array subArray01) {
+                            for (auto value : discordGuildData.playlist.currentSong.finalDownloadURLs) {
+                                subArray01.append([&](bsoncxx::builder::basic::sub_document subDocument03) {
+                                    subDocument03.append(kvp("contentSize", bsoncxx::types::b_int32(value.contentSize)));
+                                    subDocument03.append(kvp("urlPath", value.urlPath)); });
+                            }; }));
+
+                        subDocument02.append(kvp("addedByUserId", discordGuildData.playlist.currentSong.addedByUserId), kvp("addedByUserName", discordGuildData.playlist.currentSong.addedByUserName),
+                            kvp("contentLength", bsoncxx::types::b_int32(discordGuildData.playlist.currentSong.contentLength)), kvp("description", discordGuildData.playlist.currentSong.description), kvp("secondDownloadURL", discordGuildData.playlist.currentSong.secondDownloadURL),
+                            kvp("duration", discordGuildData.playlist.currentSong.duration), kvp("songTitle", discordGuildData.playlist.currentSong.songTitle),
+                            kvp("firstDownloadURL", discordGuildData.playlist.currentSong.firstDownloadURL), kvp("thumbnailURL", discordGuildData.playlist.currentSong.thumbnailURL),
+                            kvp("type", bsoncxx::types::b_int32((int)discordGuildData.playlist.currentSong.type)), kvp("songId", discordGuildData.playlist.currentSong.songId), kvp("viewURL", discordGuildData.playlist.currentSong.viewURL)); }));
+                    
+                    subDocument01.append(kvp("songList", [discordGuildData](bsoncxx::builder::basic::sub_array subArray01) {
+                        for (auto value : discordGuildData.playlist.songList) {
+                            subArray01.append([&](bsoncxx::builder::basic::sub_document subDocument02) {
+                                subDocument02.append(kvp("downloadURLs", [discordGuildData](bsoncxx::builder::basic::sub_array subArray02) {
+                                    for (auto value02 : discordGuildData.playlist.currentSong.finalDownloadURLs) {
+                                        subArray02.append([&](bsoncxx::builder::basic::sub_document subDocument03) {
+                                            subDocument03.append(kvp("contentSize", bsoncxx::types::b_int32(value02.contentSize)));
+                                            subDocument03.append(kvp("urlPath", value02.urlPath)); });
+                                    }; }));
+                                subDocument02.append(kvp("addedByUserId", value.addedByUserId), kvp("addedByUserName", value.addedByUserName), kvp("contentLength", bsoncxx::types::b_int32(value.contentLength)), kvp("description", value.description),
+                                    kvp("duration", value.duration), kvp("thumbnailURL", value.thumbnailURL), kvp("songId", value.songId), kvp("type", bsoncxx::types::b_int32((int)value.type)), kvp("viewURL", value.viewURL));
+                                subDocument02.append(kvp("songTitle", value.songTitle), kvp("firstDownloadURL", value.firstDownloadURL), kvp("secondDownloadURL", value.secondDownloadURL)); });
+                        }
+                        }));
+                    }));
                 return buildDoc;
             }
 
@@ -177,15 +204,58 @@ namespace DiscordCoreAPI {
         static DiscordGuildData parseGuildData(bsoncxx::document::value docValue) {
             DiscordGuildData guildData;
             try {
-                guildData.guildId = docValue.view()["guildId"].get_utf8().value.to_string();
-                guildData.guildName = docValue.view()["guildName"].get_utf8().value.to_string();
-                guildData.memberCount = docValue.view()["memberCount"].get_int32().value;
+
+                guildData.playlist.currentSong.addedByUserId = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["addedByUserId"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.addedByUserName = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["addedByUserName"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.firstDownloadURL = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["firstDownloadURL"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.secondDownloadURL = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["secondDownloadURL"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.contentLength = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["contentLength"].get_int32().value; ;
+                guildData.playlist.currentSong.description = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["description"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.thumbnailURL = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["thumbnailURL"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.duration = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["duration"].get_utf8().value.to_string(); ;
+                guildData.playlist.currentSong.songId = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["songId"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.songTitle = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["songTitle"].get_utf8().value.to_string();
+                guildData.playlist.currentSong.type = (SongType)docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["type"].get_int32().value;
+                guildData.playlist.currentSong.viewURL = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["viewURL"].get_utf8().value.to_string();
+                guildData.playlist.isLoopSongEnabled = docValue.view()["playlist"].get_document().value["isLoopSongEnabled"].get_bool().value;
+                guildData.playlist.isLoopAllEnabled = docValue.view()["playlist"].get_document().value["isLoopAllEnabled"].get_bool().value;
+                
+                for (auto value02 : docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["downloadURLs"].get_array().value) {
+                    DownloadURL downloadURL;
+                    downloadURL.contentSize = value02["contentSize"].get_int32().value;
+                    downloadURL.urlPath = value02["urlPath"].get_utf8().value.to_string();
+                    guildData.playlist.currentSong.finalDownloadURLs.push_back(downloadURL);
+                }
+                for (auto value : docValue.view()["playlist"].get_document().view()["songList"].get_array().value) {
+                    Song newSong{};
+                    for (auto value02 : value["downloadURLs"].get_array().value) {
+                        DownloadURL downloadURL;
+                        downloadURL.contentSize = value02["contentSize"].get_int32().value;
+                        downloadURL.urlPath = value02["urlPath"].get_utf8().value.to_string();
+                        newSong.finalDownloadURLs.push_back(downloadURL);
+                    }
+                    newSong.addedByUserName = value["addedByUserName"].get_utf8().value.to_string();
+                    newSong.description = value["description"].get_utf8().value.to_string();
+                    newSong.addedByUserId = value["addedByUserId"].get_utf8().value.to_string();
+                    newSong.duration = value["duration"].get_utf8().value.to_string();
+                    newSong.thumbnailURL = value["thumbnailURL"].get_utf8().value.to_string();
+                    newSong.contentLength = value["contentLength"].get_int32().value;
+                    newSong.type = (SongType)value["type"].get_int32().value;
+                    newSong.songId = value["songId"].get_utf8().value.to_string();
+                    newSong.firstDownloadURL = value["firstDownloadURL"].get_utf8().value.to_string();
+                    newSong.secondDownloadURL = value["secondDownloadURL"].get_utf8().value.to_string();
+                    newSong.songTitle = value["songTitle"].get_utf8().value.to_string();
+                    newSong.viewURL = value["viewURL"].get_utf8().value.to_string();
+                    guildData.playlist.songList.push_back(newSong);
+                }
                 guildData.borderColor = docValue.view()["borderColor"].get_utf8().value.to_string();
+                guildData.guildName = docValue.view()["guildName"].get_utf8().value.to_string();
                 guildData.djRoleId = docValue.view()["djRoleId"].get_utf8().value.to_string();
+                guildData.guildId = docValue.view()["guildId"].get_utf8().value.to_string();
                 for (auto& value : docValue.view()["musicChannelIds"].get_array().value) {
                     guildData.musicChannelIds.push_back(value.get_utf8().value.to_string());
                 }
-
+                guildData.memberCount = docValue.view()["memberCount"].get_int32().value;
                 return guildData;
             }
             catch (bsoncxx::v_noabi::exception& e) {
@@ -307,8 +377,8 @@ namespace DiscordCoreAPI {
                     }
                 }
             }
-            catch (const exception& e) {
-                send(errorBuffer, e);
+            catch (...) {
+                rethrowException("DatabaseManagerAgent::run() Error: ");
             }
             done();
         }
@@ -318,6 +388,12 @@ namespace DiscordCoreAPI {
     public:
 
         DiscordUserData data{};
+
+        DiscordUser& operator=(DiscordUser&) {
+            this->getDataFromDB();
+            this->writeDataToDB();
+            return *this;
+        }
 
         DiscordUser(string userNameNew, string userIdNew) {
             this->data.userId = userIdNew;
@@ -334,7 +410,6 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("DiscordUser::WriteDataToDB() ");
             return;
         }
 
@@ -346,7 +421,6 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("DiscordUser::getDataFromDB() ");
             DiscordUserData userData;
             try_receive(requestAgent.discordUserOutputBuffer, userData);
             if (userData.userId != "") {
@@ -360,13 +434,20 @@ namespace DiscordCoreAPI {
     class DiscordGuild {
     public:
 
-        friend class SoundCloudAPI;        
+        friend class SoundCloudAPICore;
+        friend class YouTubeAPICore;
+        friend class SoundCloudAPI;
         friend class SongAPICore;
-        friend class YouTubeAPI;
         friend class YouTubeAPI;
         friend class SongAPI;
 
         DiscordGuildData data{};
+
+        DiscordGuild operator=(DiscordGuild newGuild){
+            this->getDataFromDB();
+            this->writeDataToDB();
+            return *this;
+        }
 
         DiscordGuild(GuildData guildData) {
             this->data.guildId = guildData.id;
@@ -383,7 +464,6 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("DiscordGuild::writeDataToDB() ");
             return;
         }
 
@@ -395,7 +475,6 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("DiscordGuild::getDataFromDB() ");
             DiscordGuildData guildData;
             try_receive(requestAgent.discordGuildOutputBuffer, guildData);
             if (guildData.guildId != "") {
@@ -414,6 +493,12 @@ namespace DiscordCoreAPI {
     public:
 
         DiscordGuildMemberData data{};
+
+        DiscordGuildMember operator=(DiscordGuildMember newGuildMember) {
+            this->getDataFromDB();
+            this->writeDataToDB();
+            return *this;
+        }
 
         DiscordGuildMember(DiscordCoreInternal::GuildMemberData guildMemberData) {
             this->data.guildMemberId = guildMemberData.user.id;
@@ -438,7 +523,6 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("DiscordGuildMember::writeDataToDB() ");
             return;
         }
 
@@ -450,7 +534,6 @@ namespace DiscordCoreAPI {
             send(requestAgent.requestBuffer, workload);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("DiscordGuildMember::getDataFromDB() ");
             DiscordGuildMemberData guildMemberData;
             try_receive(requestAgent.discordGuildMemberOutputBuffer, guildMemberData);
             if (guildMemberData.globalId != "") {

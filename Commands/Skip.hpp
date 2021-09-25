@@ -164,50 +164,6 @@ namespace DiscordCoreAPI {
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 
-				try {
-					SongAPI::skip(guild.id, guildMember);
-				}
-				catch (...) {
-					unbounded_buffer<exception> outwardBuffer;
-					rethrowException("__------\nOh no! There was an error trying to play your last track! It is as follows: ", &outwardBuffer);
-					auto newException = receive(outwardBuffer);
-					EmbedData newEmbed;
-					newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
-					newEmbed.setDescription("------\n__Oh no! There was an error trying to play your last track! It is as follows:__**\n" + to_string(to_hstring(newException.what())) + "**\n------");
-					newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailURL);
-					newEmbed.setTimeStamp(getTimeAndDate());
-					newEmbed.setTitle("__**Playing Error:**__");
-					newEmbed.setColor(discordGuild.data.borderColor);
-					RespondToInputEventData dataPackage(args->eventData);
-					dataPackage.type = DesiredInputEventResponseType::RegularMessage;
-					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-					SongAPI::setCurrentSong(Song(), guild.id);
-					if (args->argumentsArray.size() > 0) {
-						int currentIndex = stoi(args->argumentsArray[0]);
-						currentIndex += 1;
-						args->argumentsArray[0] = to_string(currentIndex);
-						if (currentIndex < 5) {
-							this->execute(args).get();
-						}
-						else {
-							co_return;
-						}
-					}
-					else {
-						int currentIndex = 1;
-						args->argumentsArray.resize(1);
-						args->argumentsArray[0] = to_string(currentIndex);
-						if (currentIndex < 5) {
-							this->execute(args).get();
-						}
-						else {
-							co_return;
-						}
-					}
-					co_return;
-				}
-				
 				if (voiceConnection->areWeCurrentlyPlaying() &&SongAPI::isThereAnySongs(guild.id)) {
 					string msgString = "------\n**We're skipping to the next song!**\n------";
 					EmbedData msgEmbed02;
@@ -236,6 +192,9 @@ namespace DiscordCoreAPI {
 						InputEvents::deleteInputEventResponseAsync(newEvent).get();
 						InputEvents::deleteInputEventResponseAsync(newEvent02, 20000).get();
 					}
+					if (!SongAPI::skip(guild.id, guildMember)) {
+						co_return;
+					};
 					GuildMember guildMember02 = GuildMembers::getGuildMemberAsync({ .guildMemberId = SongAPI::getCurrentSong(guild.id).addedByUserId,.guildId = args->eventData.getGuildId() }).get();
 					EmbedData newEmbed;
 					newEmbed.setAuthor(guildMember02.user.userName, guildMember02.user.avatar);
