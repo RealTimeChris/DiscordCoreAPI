@@ -363,9 +363,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static bool sendNextSong(string guildId, GuildMember guildMember) {
-			if (!SongAPI::songAPIMap->at(guildId)->sendNextSong()) {
-				return false;
-			}
+			SongAPI::songAPIMap->at(guildId)->sendNextSong();
 			SongAPI::songAPIMap->at(guildId)->discordGuild->getDataFromDB();
 			if (SongAPI::songAPIMap->at(guildId)->discordGuild->data.playlist.currentSong.songId == "") {
 				if (!SongAPI::songAPIMap->at(guildId)->sendNextSong()) {

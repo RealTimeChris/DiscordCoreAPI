@@ -678,7 +678,14 @@ namespace DiscordCoreAPI {
 		}
 
 		static void sendNextSong(Song newSong, string guildId) {
-			YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong(newSong).get();
+			YouTubeAPI::youtubeAPIMap->at(guildId)->sendNextSong(newSong).then([](task<void> previousTask) {
+				try {
+					previousTask.get();
+				}
+				catch (...) {
+					rethrowException("YouTubeAPI::sendNextSong() Error: ", nullptr, true);
+				}
+				});
 			return;
 		}
 

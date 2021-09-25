@@ -351,7 +351,14 @@ namespace DiscordCoreAPI {
 		}
 
 		static void sendNextSong(Song newSong, string guildId) {
-			SoundCloudAPI::soundCloudAPIMap->at(guildId)->sendNextSong(newSong).get();
+			SoundCloudAPI::soundCloudAPIMap->at(guildId)->sendNextSong(newSong).then([](task<void> previousTask) {
+				try {
+					previousTask.get();
+				}
+				catch (...) {
+					rethrowException("SoundCloudAPI::sendNextSong() Error: ", nullptr, true);
+				}
+				});
 			return;
 		}
 
