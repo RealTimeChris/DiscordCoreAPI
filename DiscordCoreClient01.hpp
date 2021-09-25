@@ -978,6 +978,10 @@ namespace DiscordCoreAPI {
 		static task<ApplicationCommand> getGuildApplicationCommandAsync(GetGuildApplicationCommandData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->getGuildApplicationCommandAsync(dataPackage);
 		}
+
+		static task<ApplicationCommand> editGuildApplicationCommandAsync(EditGuildApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->editGuildApplicationCommandAsync(dataPackage);
+		}
 	};
 
 	class Reactions {

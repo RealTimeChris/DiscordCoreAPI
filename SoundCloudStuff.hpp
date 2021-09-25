@@ -243,6 +243,7 @@ namespace DiscordCoreAPI {
 			shared_ptr<DiscordCoreInternal::ThreadContext> threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			co_await resume_foreground(*threadContext->dispatcherQueue);
 			this->currentTask = new task<void>(create_task([=]()->void {
+				cout << "WERE NOT HERE 0000" << endl;
 				auto tokenNew = thisPtr->cancelTokenSource.get_token();
 				auto song = newSong;
 				thisPtr->areWeStopping = false;
@@ -260,6 +261,7 @@ namespace DiscordCoreAPI {
 				SongDecoder* songDecoder = new SongDecoder(dataPackage);
 				SongEncoder* songEncoder = new SongEncoder();
 				send(dataPackage.sendEncodedAudioDataBuffer, vector<uint8_t>());
+				cout << "WERE NOT HERE 1111" << endl;
 				while (counter < song.finalDownloadURLs.size()) {
 					if (tokenNew.is_canceled()) {
 						songDecoder->refreshTimeForBuffer = 10;
@@ -303,10 +305,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 					}
-					StopWatch stopWatch(1);
-					while (!stopWatch.hasTimePassed()) {
-						wait(1);
-					}
+					cout << "WERE NOT HERE 2222" << endl;
 					counter += 1;
 				}
 

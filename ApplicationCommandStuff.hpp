@@ -20,6 +20,14 @@ namespace DiscordCoreAPI {
         string name{ "" };
     };
 
+    struct EditGuildApplicationCommandData {
+        vector<DiscordCoreAPI::ApplicationCommandOptionData> options{};
+        bool defaultPermission{ false };
+        string description{ "" };
+        string guildId{ "" };
+        string name{ "" };
+    };
+
     struct CreateApplicationCommandData {
         vector<DiscordCoreAPI::ApplicationCommandOptionData> options{};
         bool defaultPermission{ true };
@@ -209,7 +217,51 @@ namespace DiscordCoreInternal{
             HttpWorkloadData workload;
             workload.workloadClass = HttpWorkloadClass::PATCH;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + appCommandId;
-            workload.workloadType = HttpWorkloadType::PATCH_SLASH_COMMAND;
+            workload.workloadType = HttpWorkloadType::PATCH_APPLICATION_COMMAND;
+            workload.content = getEditApplicationCommandPayload(dataPackageNew);
+            HttpRequestAgent requestAgent{};
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::editGlobalApplicationCommandAsync");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::editGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::editGlobalApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            DiscordCoreAPI::ApplicationCommandData appCommandData;
+            DataParser::parseObject(returnData.data, &appCommandData);
+            DiscordCoreAPI::ApplicationCommand appCommand(appCommandData);
+            co_await mainThread;
+            co_return appCommand;
+        }
+
+        task<DiscordCoreAPI::ApplicationCommand> editGuildApplicationCommandAsync(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage) {
+            apartment_context mainThread;
+            co_await resume_background();
+            vector<DiscordCoreAPI::ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
+            bool isItFound = false;
+            string appCommandId;
+            for (auto value : appCommands) {
+                cout << value.name << endl;
+                if (value.name == dataPackage.name) {
+                    appCommandId = value.id;
+                    isItFound = true;
+                }
+            }
+            if (isItFound == false) {
+                cout << "ApplicationCommandManager::editGlobalApplicationCommand_00 Error: Sorry, it could not be found!" << endl;
+                DiscordCoreAPI::ApplicationCommand appCommand;
+                co_await mainThread;
+                co_return appCommand;
+            }
+            PatchApplicationCommandData dataPackageNew;
+            dataPackageNew.defaultPermission = dataPackage.defaultPermission;
+            dataPackageNew.description = dataPackage.description;
+            dataPackageNew.name = dataPackage.name;
+            copyOptionsData(&dataPackageNew.options, dataPackage.options);
+            HttpWorkloadData workload;
+            workload.workloadClass = HttpWorkloadClass::PATCH;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + appCommandId;
+            workload.workloadType = HttpWorkloadType::PATCH_APPLICATION_COMMAND;
             workload.content = getEditApplicationCommandPayload(dataPackageNew);
             HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::editGlobalApplicationCommandAsync");
@@ -269,7 +321,7 @@ namespace DiscordCoreInternal{
             HttpWorkloadData workload;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + commandId;
             workload.workloadClass = HttpWorkloadClass::DELETED;
-            workload.workloadType = HttpWorkloadType::DELETE_SLASH_COMMAND;
+            workload.workloadType = HttpWorkloadType::DELETE_APPLICATION_COMMAND;
             HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::deleteGlobalApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
