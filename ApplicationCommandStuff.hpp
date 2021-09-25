@@ -111,7 +111,7 @@ namespace DiscordCoreInternal{
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.workloadType = HttpWorkloadType::GET_APPLICATION_COMMAND;
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + dataPackage.commandId;
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGlobalApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::getGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -133,7 +133,7 @@ namespace DiscordCoreInternal{
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = HttpWorkloadType::GET_APPLICATION_COMMANDS;
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGlobalApplicationCommandsAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::getGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -167,7 +167,7 @@ namespace DiscordCoreInternal{
             workload.relativePath = "/applications/" + this->applicationId + "/commands";
             workload.workloadType = HttpWorkloadType::POST_APPLICATION_COMMAND;
             workload.content = getCreateApplicationCommandPayload(dataPackageNew);
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::createGlobalApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::createGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -211,7 +211,7 @@ namespace DiscordCoreInternal{
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + appCommandId;
             workload.workloadType = HttpWorkloadType::PATCH_SLASH_COMMAND;
             workload.content = getEditApplicationCommandPayload(dataPackageNew);
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::editGlobalApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::editGlobalApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -233,7 +233,7 @@ namespace DiscordCoreInternal{
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands";
             workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMANDS;
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGuildApplicationCommandsAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::getGuildApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -270,7 +270,7 @@ namespace DiscordCoreInternal{
             workload.relativePath = "/applications/" + this->applicationId + "/commands/" + commandId;
             workload.workloadClass = HttpWorkloadClass::DELETED;
             workload.workloadType = HttpWorkloadType::DELETE_SLASH_COMMAND;
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::deleteGlobalApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::deleteGlobalApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -307,7 +307,7 @@ namespace DiscordCoreInternal{
             workload.workloadType = HttpWorkloadType::PUT_BULK_OVERWRITE_APPLICATION_COMMANDS;
             workload.content = dataNew.dump();
             cout << workload.content << endl;
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::bulkOverwriteApplicationCommandsAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::bulkOverwriteApplicationCommandsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -340,7 +340,7 @@ namespace DiscordCoreInternal{
             workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands";
             workload.workloadType = HttpWorkloadType::POST_GUILD_APPLICATION_COMMAND;
             workload.content = getCreateApplicationCommandPayload(dataPackageNew);
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::createGuildApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
                 cout << "ApplicationCommandManager::createGuildApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
@@ -362,7 +362,7 @@ namespace DiscordCoreInternal{
             workload.workloadClass = HttpWorkloadClass::GET;
             workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMAND;
             workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + dataPackage.commandId;
-            HttpRequestAgent requestAgent{ HttpAgentResources() };
+            HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGuildApplicationCommandAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200){
                 cout << "ApplicationCommandManager::getGuildApplicationCommandAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;

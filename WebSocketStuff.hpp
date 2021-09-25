@@ -185,7 +185,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::sendMessage() Error: ");
-				this->webSocket->Close(1002, L"Message sending failed.");
+				this->webSocket->Close(1001, L"Message sending failed.");
 			}
 		}
 
@@ -201,7 +201,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			cout << "WebSocket Closed; Code: " << args.Code() << ", Reason: " << to_string(args.Reason().c_str()) << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1001 && this->sessionId != "") {
+			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1000 && this->sessionId != "") {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
@@ -297,13 +297,13 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 7) {
 				cout << "Reconnecting (Type 7)!" << endl << endl;
-				this->webSocket->Close(1001, L"Closing for reconnect type 7.");
+				this->webSocket->Close(1000, L"Closing for reconnect type 7.");
 			}
 
 			if (payload.at("op") == 9) {
 				cout << "Reconnecting (Type 9)!" << endl << endl;
-				if (payload.at("d") == false || this->sessionId != "") {
-					this->webSocket->Close(1002, L"Closing for reconnect type 9.");
+				if (payload.at("d") == true && this->sessionId != "") {
+					this->webSocket->Close(1000, L"Closing for reconnect type 9.");
 				}
 				else {
 					this->webSocket->Close(1001, L"Closing for reconnect type 9.");
@@ -391,7 +391,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendVoiceData() Error: ");
-				this->webSocket->Close(1002, L"Failed to send voice data.");
+				this->webSocket->Close(1001, L"Failed to send voice data.");
 			}
 		}
 
@@ -425,7 +425,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
-				this->webSocket->Close(1002, L"Message sending failed.");
+				this->webSocket->Close(1001, L"Message sending failed.");
 			}
 			
 		}
