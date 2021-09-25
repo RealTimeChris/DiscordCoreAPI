@@ -27,6 +27,8 @@
 
 ## User Stuff:
 
+## Sticker Stuff:
+
 ## Reaction Stuff:
 
 ## Role Stuff:
