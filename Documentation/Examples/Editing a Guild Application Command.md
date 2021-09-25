@@ -2,7 +2,7 @@
 ### **Editing a Guild Application Command:**
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
-- Select, from the `ApplicationCommands` class, the `editGuildApplicationCommandAsync()` function and execute it, while passing in a data structure of type `EditApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
+- Select, from the `ApplicationCommands` class, the `editGuildApplicationCommandAsync()` function and execute it, while passing in a data structure of type `EditGuildApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -18,7 +18,7 @@
 
 namespace DiscordCoreAPI {
 
-	class Test : public BaseFunction {
+	class Test : public  BaseFunction {
 	public:
 		Test() {
 			this->commandName = "test";
@@ -35,17 +35,24 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 
-			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
+			InputEvents::deleteInputEventResponseAsync(args->eventData);
 
-			EditGuildApplicationCommandsData dataPackage{};
+			auto returnVector = ApplicationCommands::getGuildApplicationCommandsAsync({ .guildId = args->eventData.getGuildId() }).get();
 
-			auto returnValue = ApplicationCommands::editGuildApplicationCommandsAsync(dataPackage).get();
+			EditGuildApplicationCommandData dataPackage{};
+			dataPackage.guildId = args->eventData.getGuildId();
+			dataPackage.name = returnVector.at(0).name;
+			dataPackage.defaultPermission = true;
+			dataPackage.description = "a test description";
 
-			cout << returnValue.name << endl;
+			auto returnValue = ApplicationCommands::editGuildApplicationCommandAsync(dataPackage).get();
+
+			cout << returnValue.description << endl;
 
 			co_return;
+
 		}
 	};
 }
