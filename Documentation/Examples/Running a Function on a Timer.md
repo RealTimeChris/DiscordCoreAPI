@@ -4,7 +4,7 @@
 - Create a function who's argument is of type `shared_ptr<DiscordCoreAPI::DiscordCoreClient>`, with a return type of `void`.
 - Create a data value of type `vector<DiscordCoreAPI::RepeatedFunctionData>`.
 - Create a data value of type `DiscordCoreAPI::RepeatedFunctionData`, and fill out its members, and stuff it inside the vector. Be sure to set `repeated` to true if you would like the function call to be recurring.
-- Pass a reference to this vector as a third argument to the `DiscordCoreAPI::DiscordCoreClient::finalSetup()` function - now the functions it contains will run on a schedule defined by the `intervalInMS` member of the data structure.
+- Pass a reference to this vector as a third argument to the `DiscordCoreAPI::DiscordCoreClient::finalSetup()` function - now the functions it contains will run on a schedule defined by the `intervalInMs` member of the data structure.
 - Do this with as many functions as you would like!
 
 ```cpp
