@@ -193,8 +193,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		~VoiceConnection() {}
-
 	protected:
 
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;

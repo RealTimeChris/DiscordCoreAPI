@@ -13,29 +13,6 @@
 
 namespace DiscordCoreAPI {
 
-	class Reaction : public ReactionData {
-	protected:
-
-		friend struct Concurrency::details::_ResultHolder<Reaction>;
-		friend class DiscordCoreInternal::ReactionManagerAgent;
-		friend class DiscordCoreInternal::ReactionManager;
-		friend struct OnReactionAddData;
-		friend class DiscordCoreClient;
-
-		Reaction() {};
-
-		Reaction(ReactionData dataNew) {
-			this->channelId = dataNew.channelId;
-			this->messageId = dataNew.messageId;
-			this->guildId = dataNew.guildId;
-			this->userId = dataNew.userId;
-			this->member = dataNew.member;
-			this->count = dataNew.count;
-			this->emoji = dataNew.emoji;
-			this->me = dataNew.me;
-		}
-	};
-
 	struct CreateReactionData {
 		string channelId{ "" };
 		string messageId{ "" };
@@ -68,6 +45,29 @@ namespace DiscordCoreAPI {
 	struct DeleteAllReactionsData {
 		string channelId{ "" };
 		string messageId{ "" };
+	};
+
+	class Reaction : public ReactionData {
+	protected:
+
+		friend struct Concurrency::details::_ResultHolder<Reaction>;
+		friend class DiscordCoreInternal::ReactionManagerAgent;
+		friend class DiscordCoreInternal::ReactionManager;
+		friend struct OnReactionAddData;
+		friend class DiscordCoreClient;
+
+		Reaction() {};
+
+		Reaction(ReactionData dataNew) {
+			this->channelId = dataNew.channelId;
+			this->messageId = dataNew.messageId;
+			this->guildId = dataNew.guildId;
+			this->userId = dataNew.userId;
+			this->member = dataNew.member;
+			this->count = dataNew.count;
+			this->emoji = dataNew.emoji;
+			this->me = dataNew.me;
+		}
 	};
 };
 
@@ -307,8 +307,6 @@ namespace DiscordCoreInternal {
 			co_await mainThread;
 			co_return;
 		}
-
-		~ReactionManager() {}
 	};
 	shared_ptr<ThreadContext> ReactionManagerAgent::threadContext{ nullptr };
 }

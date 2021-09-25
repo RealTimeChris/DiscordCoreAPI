@@ -15,120 +15,39 @@
 
 namespace DiscordCoreAPI {
 
-	class Message : public MessageData {
-	protected:
-
-		friend struct Concurrency::details::_ResultHolder<Message>;
-		friend class DiscordCoreInternal::MessageManagerAgent;
-		friend class DiscordCoreInternal::MessageManager;
-		friend struct OnMessageCreationData;
-		friend struct OnMessageUpdateData;
-		friend class DiscordCoreClient;
-
-		Message() {};
-
-		Message(MessageData dataNew) {
-			this->referencedMessage = dataNew.referencedMessage;
-			this->messageReference = dataNew.messageReference;
-			this->mentionChannels = dataNew.mentionChannels;
-			this->mentionEveryone = dataNew.mentionEveryone;
-			this->editedTimestamp = dataNew.editedTimestamp;
-			this->applicationId = dataNew.applicationId;
-			this->timestampRaw = dataNew.timestampRaw;
-			this->mentionRoles = dataNew.mentionRoles;
-			this->stickerItems = dataNew.stickerItems;
-			this->attachments = dataNew.attachments;
-			this->application = dataNew.application;
-			this->interaction = dataNew.interaction;
-			this->components = dataNew.components;
-			this->channelId = dataNew.channelId;
-			this->timestamp = dataNew.timestamp;
-			this->reactions = dataNew.reactions;
-			this->webhookId = dataNew.webhookId;
-			this->mentions = dataNew.mentions;
-			this->activity = dataNew.activity;
-			this->stickers = dataNew.stickers;
-			this->guildId = dataNew.guildId;
-			this->content = dataNew.content;
-			this->author = dataNew.author;
-			this->member = dataNew.member;
-			this->embeds = dataNew.embeds;
-			this->pinned = dataNew.pinned;
-			this->thread = dataNew.thread;
-			this->nonce = dataNew.nonce;
-			this->flags = dataNew.flags;
-			this->type = dataNew.type;
-			this->tts = dataNew.tts;
-			this->id = dataNew.id;
-		}
+	struct FetchPinnedMessagesData {
+		string channelId{ "" };
 	};
 
-	struct MessageCollectorReturnData {
-		vector<Message> messages;
+	struct FetchMessagesData {
+		string aroundThisId{ "" };
+		string beforeThisId{ "" };
+		string afterThisId{ "" };
+		unsigned int limit{ 0 };
+		string channelId{ "" };
 	};
 
-	class MessageCollector : DiscordCoreInternal::ThreadContext, agent {
+	struct FetchMessageData {
+		string requesterId{ "" };
+		string channelId{ "" };
+		string id{ "" };
+	};
+
+	struct PinMessageData {
+		string channelId{ "" };
+		string messageId{ "" };
+	};
+
+	struct DeleteMessageData {
 	public:
-
-		friend class DiscordCoreClient;
-
-		MessageCollector(int quantityToCollect, int msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) :
-			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
-			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
-			this->messagesBuffer = new unbounded_buffer<Message>();
-			MessageCollector::messagesBufferMap.insert_or_assign(userId, this->messagesBuffer);
-			this->quantityOfMessageToCollect = quantityToCollect;
-			this->filteringFunction = filteringFunctionNew;
-			this->msToCollectFor = msToCollectForNew;
-			this->userId = userIdNew;
-		}
-
-		task<MessageCollectorReturnData> collectMessages() {
-			apartment_context mainThread;
-			co_await resume_background();
-			this->start();
-			wait(this);
-			co_await mainThread;
-			co_return this->messageReturnData;
-		}
-
-		~MessageCollector() {
-			MessageCollector::messagesBufferMap.erase(this->userId);
-		}
-
-	protected:
-		static map<string, unbounded_buffer<Message>*> messagesBufferMap;
-		unbounded_buffer<Message>* messagesBuffer{ nullptr };
-		function<bool(Message)> filteringFunction{ nullptr };
-		MessageCollectorReturnData messageReturnData{};
-		int quantityOfMessageToCollect{ 0 };
-		int msToCollectFor{ 0 };
-		int startingTime{ 0 };
-		int elapsedTime{ 0 };
-		string userId{ "" };
-
-		void run() {
-			this->startingTime = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
-			while (this->elapsedTime < this->msToCollectFor) {
-				try {
-					Message message = receive(this->messagesBuffer, this->msToCollectFor - this->elapsedTime);
-					if (this->filteringFunction(message)) {
-						this->messageReturnData.messages.push_back(message);
-					}
-					if (this->messageReturnData.messages.size() >= this->quantityOfMessageToCollect) {
-						break;
-					}
-				}
-				catch (operation_timed_out&) {};
-
-				this->elapsedTime = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - this->startingTime;
-			}
-			done();
-		}
-
+		unsigned int timeDelay{ 0 };
+		MessageData messageData;
 	};
 
-	map<string, unbounded_buffer<Message>*> MessageCollector::messagesBufferMap;
+	struct DeleteMessagesBulkData {
+		vector<string> messageIds{};
+		string channelId{ "" };
+	};
 
 	struct EditMessageData {
 
@@ -423,39 +342,120 @@ namespace DiscordCoreAPI {
 		int nonce{ 0 };
 	};
 
-	struct FetchPinnedMessagesData {
-		string channelId{ "" };
+	class Message : public MessageData {
+	protected:
+
+		friend struct Concurrency::details::_ResultHolder<Message>;
+		friend class DiscordCoreInternal::MessageManagerAgent;
+		friend class DiscordCoreInternal::MessageManager;
+		friend struct OnMessageCreationData;
+		friend struct OnMessageUpdateData;
+		friend class DiscordCoreClient;
+
+		Message() {};
+
+		Message(MessageData dataNew) {
+			this->referencedMessage = dataNew.referencedMessage;
+			this->messageReference = dataNew.messageReference;
+			this->mentionChannels = dataNew.mentionChannels;
+			this->mentionEveryone = dataNew.mentionEveryone;
+			this->editedTimestamp = dataNew.editedTimestamp;
+			this->applicationId = dataNew.applicationId;
+			this->timestampRaw = dataNew.timestampRaw;
+			this->mentionRoles = dataNew.mentionRoles;
+			this->stickerItems = dataNew.stickerItems;
+			this->attachments = dataNew.attachments;
+			this->application = dataNew.application;
+			this->interaction = dataNew.interaction;
+			this->components = dataNew.components;
+			this->channelId = dataNew.channelId;
+			this->timestamp = dataNew.timestamp;
+			this->reactions = dataNew.reactions;
+			this->webhookId = dataNew.webhookId;
+			this->mentions = dataNew.mentions;
+			this->activity = dataNew.activity;
+			this->stickers = dataNew.stickers;
+			this->guildId = dataNew.guildId;
+			this->content = dataNew.content;
+			this->author = dataNew.author;
+			this->member = dataNew.member;
+			this->embeds = dataNew.embeds;
+			this->pinned = dataNew.pinned;
+			this->thread = dataNew.thread;
+			this->nonce = dataNew.nonce;
+			this->flags = dataNew.flags;
+			this->type = dataNew.type;
+			this->tts = dataNew.tts;
+			this->id = dataNew.id;
+		}
 	};
 
-	struct FetchMessagesData {
-		string aroundThisId{ "" };
-		string beforeThisId{ "" };
-		string afterThisId{ "" };
-		unsigned int limit{ 0 };
-		string channelId{ "" };
+	struct MessageCollectorReturnData {
+		vector<Message> messages;
 	};
 
-	struct FetchMessageData {
-		string requesterId{ "" };
-		string channelId{ "" };
-		string id{ "" };
-	};
-
-	struct PinMessageData {
-		string channelId{ "" };
-		string messageId{ "" };
-	};
-
-	struct DeleteMessageData {
+	class MessageCollector : DiscordCoreInternal::ThreadContext, agent {
 	public:
-		unsigned int timeDelay{ 0 };
-		MessageData messageData;
+
+		friend class DiscordCoreClient;
+
+		MessageCollector(int quantityToCollect, int msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) :
+			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
+			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
+			this->messagesBuffer = new unbounded_buffer<Message>();
+			MessageCollector::messagesBufferMap.insert_or_assign(userId, this->messagesBuffer);
+			this->quantityOfMessageToCollect = quantityToCollect;
+			this->filteringFunction = filteringFunctionNew;
+			this->msToCollectFor = msToCollectForNew;
+			this->userId = userIdNew;
+		}
+
+		task<MessageCollectorReturnData> collectMessages() {
+			apartment_context mainThread;
+			co_await resume_background();
+			this->start();
+			wait(this);
+			co_await mainThread;
+			co_return this->messageReturnData;
+		}
+
+		~MessageCollector() {
+			MessageCollector::messagesBufferMap.erase(this->userId);
+		}
+
+	protected:
+		static map<string, unbounded_buffer<Message>*> messagesBufferMap;
+		unbounded_buffer<Message>* messagesBuffer{ nullptr };
+		function<bool(Message)> filteringFunction{ nullptr };
+		MessageCollectorReturnData messageReturnData{};
+		int quantityOfMessageToCollect{ 0 };
+		int msToCollectFor{ 0 };
+		int startingTime{ 0 };
+		int elapsedTime{ 0 };
+		string userId{ "" };
+
+		void run() {
+			this->startingTime = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
+			while (this->elapsedTime < this->msToCollectFor) {
+				try {
+					Message message = receive(this->messagesBuffer, this->msToCollectFor - this->elapsedTime);
+					if (this->filteringFunction(message)) {
+						this->messageReturnData.messages.push_back(message);
+					}
+					if (this->messageReturnData.messages.size() >= this->quantityOfMessageToCollect) {
+						break;
+					}
+				}
+				catch (operation_timed_out&) {};
+
+				this->elapsedTime = (int)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - this->startingTime;
+			}
+			done();
+		}
+
 	};
 
-	struct DeleteMessagesBulkData {
-		vector<string> messageIds{};
-		string channelId{ "" };
-	};
+	map<string, unbounded_buffer<Message>*> MessageCollector::messagesBufferMap;
 };
 
 namespace DiscordCoreInternal {
@@ -971,7 +971,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestPutPinMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
 			co_await mainThread;
 			co_return;
 
@@ -987,7 +986,6 @@ namespace DiscordCoreInternal {
 			send(requestAgent.requestGetMessageBuffer, dataPackageNew);
 			requestAgent.start();
 			agent::wait(&requestAgent);
-			exception error;
 			DiscordCoreAPI::MessageData messageData;
 			DiscordCoreAPI::Message messageNew(messageData);
 			try_receive(requestAgent.outMessageBuffer, messageNew);
@@ -995,8 +993,6 @@ namespace DiscordCoreInternal {
 			co_await mainThread;
 			co_return messageNew;
 		}
-
-		~MessageManager() {}
 	};
 	shared_ptr<ThreadContext> MessageManagerAgent::threadContext{ nullptr };
 }

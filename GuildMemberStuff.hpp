@@ -14,6 +14,27 @@
 
 namespace DiscordCoreAPI {
 
+	struct ModifyGuildMemberData {
+		string newVoiceChannelId{ "" };
+		string currentChannelId{ "" };
+		string guildMemberId{ "" };
+		vector<string> roleIds{};
+		string guildId{ "" };
+		bool mute{ false };
+		bool deaf{ false };
+		string nick{ "" };
+	};
+
+	struct FetchGuildMemberData {
+		string guildMemberId{ "" };
+		string guildId{ "" };
+	};
+
+	struct GetGuildMemberData {
+		string guildMemberId{ "" };
+		string guildId{ "" };
+	};
+
 	class GuildMember : public GuildMemberData {
 	protected:
 
@@ -45,27 +66,6 @@ namespace DiscordCoreAPI {
 			this->deaf = dataNew.deaf;
 			this->mute = dataNew.mute;
 		}
-	};
-
-	struct ModifyGuildMemberData {
-		string newVoiceChannelId{ "" };
-		string currentChannelId{ "" };
-		string guildMemberId{ "" };
-		vector<string> roleIds{};
-		string guildId{ "" };
-		bool mute{ false };
-		bool deaf{ false };
-		string nick{ "" };
-	};
-
-	struct FetchGuildMemberData {
-		string guildMemberId{ "" };
-		string guildId{ "" };
-	};
-
-	struct GetGuildMemberData {
-		string guildMemberId{ "" };
-		string guildId{ "" };
 	};
 };
 
@@ -301,8 +301,6 @@ namespace DiscordCoreInternal {
 			co_await mainThread;
 			co_return;
 		}
-
-		~GuildMemberManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> GuildMemberManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> GuildMemberManagerAgent::threadContext{ nullptr };

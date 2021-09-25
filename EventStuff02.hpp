@@ -12,6 +12,7 @@
 #include "Commands\CommandsList.hpp"
 
 namespace DiscordCoreAPI {
+
     class EventHandler {
     public:
 

@@ -405,8 +405,6 @@ namespace DiscordCoreInternal {
 			exception error;
 			co_return;
 		}
-
-		~UserManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::User>> UserManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> UserManagerAgent::threadContext{ nullptr };

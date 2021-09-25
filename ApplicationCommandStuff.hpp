@@ -446,8 +446,6 @@ namespace DiscordCoreInternal{
             }
 
         }
-
-        ~ApplicationCommandManager() {}
     };
 }
 

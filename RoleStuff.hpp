@@ -15,33 +15,6 @@
 
 namespace DiscordCoreAPI {
 
-	class Role : public RoleData {
-	protected:
-
-		friend struct Concurrency::details::_ResultHolder<Role>;
-		friend class DiscordCoreInternal::RoleManagerAgent;
-		friend class DiscordCoreInternal::RoleManager;
-		friend struct OnRoleDeletionData;
-		friend struct OnRoleCreationData;
-		friend class DiscordCoreClient;
-		friend struct OnRoleUpdateData;
-		friend class Guild;
-
-		Role() {};
-
-		Role(RoleData dataNew) {
-			this->permissions = dataNew.permissions;
-			this->mentionable = dataNew.mentionable;
-			this->position = dataNew.position;
-			this->managed = dataNew.managed;
-			this->color = dataNew.color;
-			this->hoist = dataNew.hoist;
-			this->name = dataNew.name;
-			this->tags = dataNew.tags;
-			this->id = dataNew.id;
-		}
-	};
-
 	struct UpdateRoleData {
 		string hexColorValue{ "" };
 		bool mentionable{ false };
@@ -102,6 +75,33 @@ namespace DiscordCoreAPI {
 	struct GetGuildMemberRolesData {
 		GuildMember guildMember{};
 		string guildId{ "" };
+	};
+
+	class Role : public RoleData {
+	protected:
+
+		friend struct Concurrency::details::_ResultHolder<Role>;
+		friend class DiscordCoreInternal::RoleManagerAgent;
+		friend class DiscordCoreInternal::RoleManager;
+		friend struct OnRoleDeletionData;
+		friend struct OnRoleCreationData;
+		friend class DiscordCoreClient;
+		friend struct OnRoleUpdateData;
+		friend class Guild;
+
+		Role() {};
+
+		Role(RoleData dataNew) {
+			this->permissions = dataNew.permissions;
+			this->mentionable = dataNew.mentionable;
+			this->position = dataNew.position;
+			this->managed = dataNew.managed;
+			this->color = dataNew.color;
+			this->hoist = dataNew.hoist;
+			this->name = dataNew.name;
+			this->tags = dataNew.tags;
+			this->id = dataNew.id;
+		}
 	};
 };
 
@@ -631,8 +631,6 @@ namespace DiscordCoreInternal {
 			co_await mainThread;
 			co_return;
 		}
-
-		~RoleManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Role>> RoleManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> RoleManagerAgent::threadContext{ nullptr };

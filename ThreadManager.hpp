@@ -20,7 +20,7 @@ namespace DiscordCoreInternal {
 
     task<shared_ptr<ThreadContext>> createThreadContext(ThreadType threadType);
 
-    class ThreadManagerAgent :public agent {
+    class ThreadManagerAgent : agent {
     protected:
 
         friend class ThreadManager;
@@ -53,8 +53,6 @@ namespace DiscordCoreInternal {
             }
             this->done();
         }
-
-        ~ThreadManagerAgent() {}
 
     };
 
@@ -138,7 +136,7 @@ namespace DiscordCoreInternal {
         threadContext->scheduleGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->scheduler->CreateScheduleGroup());
         co_return threadContext;
     }
-    concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads{};
     shared_ptr<ThreadContext> ThreadManagerAgent::threadContext{ nullptr };
+    concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads{};    
 }
 #endif

@@ -926,7 +926,6 @@ namespace DiscordCoreInternal {
         unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<exception> errorBuffer{ nullptr };
 
         InteractionManagerAgent()
             :agent(*InteractionManagerAgent::threadContext->scheduler->scheduler) {}
@@ -937,13 +936,6 @@ namespace DiscordCoreInternal {
 
         static void cleanup() {
             InteractionManagerAgent::threadContext->releaseGroup();
-        }
-
-        void getError(string stackTrace) {
-            exception error;
-            while (try_receive(errorBuffer, error)) {
-                cout << stackTrace + "::InteractionManagerAgent::run() Error: " << error.what() << endl << endl;
-            }
         }
 
         DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
@@ -1154,14 +1146,10 @@ namespace DiscordCoreInternal {
                     send(this->outInteractionresponseDataBuffer, responseData);
                 }
             }
-            catch (const exception& e) {
-                send(this->errorBuffer, e);
+            catch (...) {
+                DiscordCoreAPI::rethrowException("InteractionManagerAgent::run() Error: ");
             }
             done();
-        }
-
-        ~InteractionManagerAgent(){
-            this->getError("");
         }
 
     };
@@ -1198,7 +1186,6 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestPostDeferredInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::createDeferredInteractionResponseAsync");
             co_await mainThread;
             co_return;
         }
@@ -1216,7 +1203,6 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestPostInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::createInteractionResponseAsync");
             if (dataPackage.data.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessage || dataPackage.data.type == DiscordCoreAPI::InteractionCallbackType::ChannelMessageWithSource) {
                 if (InteractionManagerAgent::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
                     shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>> messageBlock = InteractionManagerAgent::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId);
@@ -1244,7 +1230,6 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestGetInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::getInteractionResponseAsync");
             DiscordCoreAPI::InteractionResponseData outData;
             try_receive(requestAgent.outInteractionresponseDataBuffer, outData);
             co_await mainThread;
@@ -1272,7 +1257,6 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestPatchInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::editInteractionResponseAsync");
             DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_await mainThread;
@@ -1290,7 +1274,6 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestDeleteInteractionResponseBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::deleteInteractionResponseAsync");
             co_await mainThread;
             co_return;
         }
@@ -1316,7 +1299,6 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestPostFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::createFollowUpMessageAsync");
             DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_await mainThread;
@@ -1346,7 +1328,6 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestPatchFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::editFollowUpMessageAsync");
             DiscordCoreAPI::MessageData messageData;
             try_receive(requestAgent.outInteractionResponseBuffer, messageData);
             co_await mainThread;
@@ -1365,12 +1346,9 @@ namespace DiscordCoreInternal {
             send(requestAgent.requestDeleteFollowUpMessageBuffer, dataPackageNew);
             requestAgent.start();
             agent::wait(&requestAgent);
-            requestAgent.getError("InteractionManager::deleteFollowUpMessageAsync");
             co_await mainThread;
             co_return;
         }
-
-        ~InteractionManager() {}
     };
     map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> InteractionManagerAgent::collectMessageDataBuffers{};
     shared_ptr<ThreadContext> InteractionManagerAgent::threadContext{ nullptr };

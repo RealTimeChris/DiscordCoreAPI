@@ -22,6 +22,40 @@
 
 namespace DiscordCoreAPI {
 
+	struct CreateGuildBanData {
+		string guildMemberId{ "" };
+		int deleteMessageDays{ 0 };
+		string guildId{ "" };
+		string reason{ "" };
+	};
+
+	struct GetGuildData {
+		string guildId{ "" };
+	};
+
+	struct FetchVanityInviteData {
+		string guildId{ "" };
+	};
+
+	struct FetchGuildData {
+		string guildId{ "" };
+	};
+
+	struct FetchAuditLogData {
+		AuditLogEvent actionType{};
+		unsigned int limit{ 0 };
+		string guildId{ "" };
+		string userId{ "" };
+	};
+
+	struct FetchInviteData {
+		string inviteId{ "" };
+	};
+
+	struct FetchInvitesData {
+		string guildId{ "" };
+	};
+
 	class Guild : public GuildData {
 	public:
 
@@ -104,15 +138,6 @@ namespace DiscordCoreAPI {
 
 		bool areWeConnected() {
 			return this->areWeConnectedBool;
-		}
-
-		shared_ptr<YouTubeAPI> getYouTubeAPI() {
-			if (DiscordCoreClientBase::youtubeAPIMap->contains(this->id)) {
-				return DiscordCoreClientBase::youtubeAPIMap->at(this->id);
-			}
-			else {
-				return shared_ptr<YouTubeAPI>();
-			}
 		}
 
 	protected:
@@ -217,46 +242,13 @@ namespace DiscordCoreAPI {
 		}
 
 	};
-
-	struct CreateGuildBanData {
-		string guildMemberId{ "" };
-		int deleteMessageDays{ 0 };
-		string guildId{ "" };
-		string reason{ "" };
-	};
-
-	struct GetGuildData {
-		string guildId{ "" };
-	};
-
-	struct FetchVanityInviteData {
-		string guildId{ "" };
-	};
-
-	struct FetchGuildData {
-		string guildId{ "" };
-	};
-
-	struct FetchAuditLogData {
-		AuditLogEvent actionType{};
-		unsigned int limit{ 0 };
-		string guildId{ "" };
-		string userId{ "" };
-	};
-
-	struct FetchInviteData {
-		string inviteId{ "" };
-	};
-
-	struct FetchInvitesData {
-		string guildId{ "" };
-	};
 };
 
 namespace DiscordCoreInternal {
 
 	class GuildManagerAgent : agent {
 	protected:
+
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildManager;
@@ -282,8 +274,8 @@ namespace DiscordCoreInternal {
 			: agent(*GuildManagerAgent::threadContext->scheduler->scheduler) {}
 
 		static void initialize() {
-			GuildManagerAgent::threadContext = ThreadManager::getThreadContext().get();
 			GuildManagerAgent::cache = new overwrite_buffer<map<string, DiscordCoreAPI::Guild>>();
+			GuildManagerAgent::threadContext = ThreadManager::getThreadContext().get();
 		}
 
 		static void cleanup() {
@@ -295,7 +287,7 @@ namespace DiscordCoreInternal {
 				GuildManagerAgent::threadContext->releaseGroup();
 				delete GuildManagerAgent::cache;
 				GuildManagerAgent::cache = nullptr;
-			} 
+			}
 		}
 
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage) {
@@ -671,8 +663,6 @@ namespace DiscordCoreInternal {
 			co_await mainThread;
 			co_return;
 		}
-
-		~GuildManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* GuildManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> GuildManagerAgent::threadContext{ nullptr };

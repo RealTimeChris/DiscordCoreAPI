@@ -13,7 +13,32 @@
 #include "HttpStuff.hpp"
 
 namespace DiscordCoreAPI {
-	
+
+	struct EditChannelPermissionOverwritesData {
+		EditChannelPermissionOverwritesType type{};
+		string roleOrUserId{ "" };
+		string channelId{ "" };
+		string allow{ "" };
+		string deny{ "" };
+	};
+
+	struct FetchChannelData {
+		string channelId{ "" };
+	};
+
+	struct GetChannelData {
+		string channelId{ "" };
+	};
+
+	struct DeleteChannelPermissionOverwritesData {
+		string roleOrUserId{ "" };
+		string channelId{ "" };
+	};
+
+	struct FetchDMChannelData {
+		string userId{ "" };
+	};
+
 	class Channel : public ChannelData {
 	protected:
 
@@ -58,37 +83,13 @@ namespace DiscordCoreAPI {
 			this->id = dataNew.id;
 		}
 	};
-
-	struct EditChannelPermissionOverwritesData {
-		EditChannelPermissionOverwritesType type{};
-		string roleOrUserId{ "" };
-		string channelId{ "" };
-		string allow{ "" };
-		string deny{ "" };
-	};
-
-	struct FetchChannelData {
-		string channelId{ "" };
-	};
-
-	struct GetChannelData {
-		string channelId{ "" };
-	};
-
-	struct DeleteChannelPermissionOverwritesData {
-		string roleOrUserId{ "" };
-		string channelId{ "" };
-	};
-
-	struct FetchDMChannelData {
-		string userId{ "" };
-	};
 };
 
 namespace DiscordCoreInternal	{
 
 	class ChannelManagerAgent : agent {
 	protected:
+
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class ChannelManager;
 
@@ -108,7 +109,6 @@ namespace DiscordCoreInternal	{
 
 		static void initialize() {
 			ChannelManagerAgent::threadContext = ThreadManager::getThreadContext().get();
-			
 		}
 
 		static void cleanup() {
@@ -385,8 +385,6 @@ namespace DiscordCoreInternal	{
 			co_await mainThread;
 			co_return;
 		}
-
-		~ChannelManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Channel>> ChannelManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> ChannelManagerAgent::threadContext{ nullptr };

@@ -133,8 +133,6 @@ namespace DiscordCoreInternal {
 			return HttpData();
 		}
 
-		~HttpRequestAgent() {}
-
 	protected:
 
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
@@ -146,7 +144,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
 		HttpRequestHeaderCollection patchHeaders{ nullptr };
-		unbounded_buffer<exception> errorBuffer{ nullptr };
 		HttpRequestHeaderCollection postHeaders{ nullptr };
 		HttpRequestHeaderCollection putHeaders{ nullptr };
 		HttpRequestHeaderCollection getHeaders{ nullptr };
@@ -229,7 +226,7 @@ namespace DiscordCoreInternal {
 						returnData = httpPATCHObjectData(workload.relativePath, workload.content, &rateLimitData);
 					}
 					else if (workload.workloadClass == HttpWorkloadClass::DELETED) {
-						returnData = httpDELETEObjectData(workload.relativePath, &rateLimitData, workload.workloadType);
+						returnData = httpDELETEObjectData(workload.relativePath, workload.workloadType, &rateLimitData);
 					}
 					auto bucketValueIterator = HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType);
 					if (bucketValueIterator != end(HttpRequestAgent::rateLimitDataBucketValues)) {
@@ -305,8 +302,7 @@ namespace DiscordCoreInternal {
 			if ((int)httpResponse.StatusCode() == 429) {
 				cout << "httpGETObjectDataAsync(), We've hit rate limit! Time Remaining: " << to_string(pRateLimitData->msRemain) << endl << endl;
 				if (executeByRateLimitData(pRateLimitData)) {
-					HttpData returnData;
-					return returnData;
+					return HttpData();
 				}
 				getData = httpGETObjectData(workloadData, pRateLimitData);
 			}
@@ -361,8 +357,7 @@ namespace DiscordCoreInternal {
 			if ((int)httpResponse.StatusCode() == 429) {
 				cout << "httpPUTObjectDataAsync(), We've hit rate limit! Time Remaining: " << to_string(pRateLimitData->msRemain) << endl << endl;
 				if (executeByRateLimitData(pRateLimitData)) {
-					HttpData returnData;
-					return returnData;
+					return HttpData();
 				}
 				putData = httpPUTObjectData(relativeURL, content, pRateLimitData);
 			}
@@ -417,8 +412,7 @@ namespace DiscordCoreInternal {
 			if ((int)httpResponse.StatusCode() == 429) {
 				cout << "httpPOSTObjectDataAsync(), We've hit rate limit! Time Remaining: " << to_string(pRateLimitData->msRemain) << endl << endl;
 				if (executeByRateLimitData(pRateLimitData)) {
-					HttpData returnData;
-					return returnData;
+					return HttpData();
 				}
 				postData = httpPOSTObjectData(relativeURL, content, pRateLimitData);
 			}
@@ -476,8 +470,7 @@ namespace DiscordCoreInternal {
 			if ((int)httpResponse.StatusCode() == 429) {
 				cout << "httpPATCHObjectDataAsync(), We've hit rate limit! Time Remaining: " << to_string(pRateLimitData->msRemain) << endl << endl;
 				if (executeByRateLimitData(pRateLimitData)) {
-					HttpData returnData;
-					return returnData;
+					return HttpData();
 				}
 				patchData = httpPATCHObjectData(relativeURL, content, pRateLimitData);
 			}
@@ -489,7 +482,7 @@ namespace DiscordCoreInternal {
 			return patchData;
 		}
 
-		HttpData httpDELETEObjectData(string relativeURL, RateLimitData* pRateLimitData, HttpWorkloadType workloadType) {
+		HttpData httpDELETEObjectData(string relativeURL, HttpWorkloadType workloadType, RateLimitData* pRateLimitData) {
 			HttpData deleteData;
 			string connectionPath = this->baseURLInd + relativeURL;
 			winrt::Windows::Foundation::Uri requestUri = winrt::Windows::Foundation::Uri(to_hstring(connectionPath.c_str()));
@@ -535,10 +528,9 @@ namespace DiscordCoreInternal {
 			if ((int)httpResponse.StatusCode() == 429) {
 				cout << "httpDELETEObjectDataAsync(), We've hit rate limit! Time Remaining: " << to_string(pRateLimitData->msRemain) << endl << endl;
 				if (executeByRateLimitData(pRateLimitData)) {
-					HttpData returnData;
-					return returnData;
+					return HttpData();
 				}
-				deleteData = httpDELETEObjectData(relativeURL, pRateLimitData, workloadType);
+				deleteData = httpDELETEObjectData(relativeURL, workloadType, pRateLimitData);
 			}
 			return deleteData;
 		}

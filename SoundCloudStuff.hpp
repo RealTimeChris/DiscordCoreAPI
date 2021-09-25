@@ -163,8 +163,6 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		SoundCloudAPI() {};
-
 		SoundCloudAPI(string guildIdNew) {
 			this->sendAudioDataBuffer = SoundCloudAPI::sendAudioDataBufferMap->at(guildIdNew);
 			this->voiceConnection = SoundCloudAPI::voiceConnectionMap->at(guildIdNew);

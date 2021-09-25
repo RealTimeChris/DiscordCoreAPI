@@ -95,11 +95,6 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-	protected:
-
-		shared_ptr<ThreadContext> threadContext{ nullptr };
-
-		~StickerManager() {}
 	};
 	overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> StickerManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> StickerManagerAgent::threadContext{ nullptr };

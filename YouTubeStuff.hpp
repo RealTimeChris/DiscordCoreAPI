@@ -341,8 +341,6 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		YouTubeAPI() {};
-
 		YouTubeAPI(string guildIdNew) {
 			this->sendAudioDataBuffer = YouTubeAPI::sendAudioDataBufferMap->at(guildIdNew);
 			this->voiceConnection = YouTubeAPI::voiceConnectionMap->at(guildIdNew);
