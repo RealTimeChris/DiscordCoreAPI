@@ -154,17 +154,13 @@ namespace DiscordCoreInternal {
 			
 		}
 
-		~WebSocketConnectionAgent() {
-			this->terminate();
-		}
-
 		void run() {
 			try {
 				this->connect();
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::run() Error: ");
-				done();
+				this->done();
 			}
 		}
 
@@ -356,11 +352,16 @@ namespace DiscordCoreInternal {
 			this->cleanup();
 		}
 
+		~WebSocketConnectionAgent() {
+			this->terminate();
+		}
 	};
 
 	class VoiceChannelWebSocketAgent : ThreadContext, agent {
 	public:
 
+		template <class _Ty>
+		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
@@ -411,7 +412,7 @@ namespace DiscordCoreInternal {
 
 				cout << "Sending Voice Message: ";
 				cout << message << endl;
-							
+
 				// Buffer any data we want to send.
 				winrt::Windows::Storage::Streams::InMemoryRandomAccessStream randomAccessStream;
 				DataWriter dataWriterMessage(randomAccessStream);
@@ -433,11 +434,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::sendMessage() Error: ");
 				this->webSocket->Close(1001, L"Message sending failed.");
 			}
-			
-		}
 
-		~VoiceChannelWebSocketAgent() {
-			this->terminate();
 		}
 
 	protected:
@@ -521,7 +518,7 @@ namespace DiscordCoreInternal {
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::run() Error: ");
-				done();
+				this->done();
 			}
 		}
 
@@ -673,10 +670,13 @@ namespace DiscordCoreInternal {
 		}
 
 		void terminate() {
-			done();
+			this->done();
 			this->cleanup();
 		}
 
+		~VoiceChannelWebSocketAgent() {
+			this->terminate();
+		}
 	};
 
 	class WebSocketReceiverAgent : ThreadContext, agent {
@@ -693,6 +693,7 @@ namespace DiscordCoreInternal {
 			agent(*this->scheduler->scheduler) {}
 
 	protected:
+
 		unbounded_buffer<WebSocketWorkload> webSocketWorkloadTarget{ nullptr };
 		unbounded_buffer<json> webSocketWorkloadSource{ nullptr };
 		bool doWeQuit{ false };
@@ -712,7 +713,7 @@ namespace DiscordCoreInternal {
 			catch (...) {
 				DiscordCoreAPI::rethrowException("WebSocketReceiverAgent::run() Error: ");
 			}
-			done();
+			this->done();
 		}
 
 		void onMessageReceived(json payload) {
