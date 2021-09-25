@@ -100,6 +100,7 @@ namespace DiscordCoreInternal {
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<json>* webSocketWorkloadTarget{ nullptr };
+		unbounded_buffer<bool> reconnectionBuffer{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		GetVoiceConnectionData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
@@ -112,6 +113,7 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		int currentReconnectTries{ 0 };
+		bool didWeDisconnect{ false };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
@@ -197,11 +199,14 @@ namespace DiscordCoreInternal {
 			this->closedToken = this->webSocket->Closed({ this, &WebSocketConnectionAgent::onClosed });
 			this->messageReceivedToken = this->webSocket->MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
 			this->webSocket->ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->socketPath))).get();
+			send(this->reconnectionBuffer, true);
+			this->didWeDisconnect = false;
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			cout << "WebSocket Closed; Code: " << args.Code() << ", Reason: " << to_string(args.Reason().c_str()) << endl;
 			if (this->maxReconnectTries > this->currentReconnectTries && args.Code() == 1000 && this->sessionId != "") {
+				this->didWeDisconnect = true;
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
@@ -211,6 +216,7 @@ namespace DiscordCoreInternal {
 				this->areWeAuthenticated = true;
 			}
 			else if (this->maxReconnectTries > this->currentReconnectTries) {
+				this->didWeDisconnect = true;
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
@@ -525,6 +531,9 @@ namespace DiscordCoreInternal {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
+				if (this->webSocketConnectionAgent->didWeDisconnect) {
+					receive(this->webSocketConnectionAgent->reconnectionBuffer);
+				}
 				*this->doWeReconnect = true;
 				string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
 				this->sendMessage(resumePayload);
@@ -533,6 +542,9 @@ namespace DiscordCoreInternal {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				this->cleanup();
+				if (this->webSocketConnectionAgent->didWeDisconnect){
+					receive(this->webSocketConnectionAgent->reconnectionBuffer);
+			}
 				*this->doWeReconnect = true;
 			}
 			else if (this->maxReconnectTries <= this->currentReconnectTries) {
