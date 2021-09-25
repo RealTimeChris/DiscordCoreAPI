@@ -280,9 +280,9 @@ namespace DiscordCoreAPI {
         long long secondsPerMinute = 60;
         long long secondsPerHour = secondsPerMinute * 60;
         long long secondsPerDay = secondsPerHour * 24;
-        auto targetElapsedTime = chrono::milliseconds(((days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute)) * 1000);
+        auto targetElapsedTime = chrono::milliseconds(((days * secondsPerDay) + ((hours - 4) * secondsPerHour) + (minutes * secondsPerMinute)) * 1000).count();
         auto actualElapsedTime = currentTime - startTime.count();
-        if (actualElapsedTime >= targetElapsedTime.count()) {
+        if (actualElapsedTime >= targetElapsedTime) {
             return true;
         }
         else {
