@@ -22,6 +22,8 @@
     
     [`DiscordCoreAPI::Users`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#user-stuff)
     
+    [`DiscordCoreAPI::Stickers`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#sticker-stuff)
+    
     [`DiscordCoreAPI::InputEvents`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md#input-event-stuff)
     
     
