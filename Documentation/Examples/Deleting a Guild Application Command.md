@@ -1,8 +1,8 @@
 
-### **Deleting a Global Application Command:**
+### **Deleting a Guild Application Command:**
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
-- Select, from the `ApplicationCommands` class, the `deleteGlobalApplicationCommand()` function and execute it, while passing in a data structure of type `DeleteApplicationCommandData`, with no return value.
+- Select, from the `ApplicationCommands` class, the `deleteGuildApplicationCommand()` function and execute it, while passing in a data structure of type `DeleteGuildApplicationCommandData`, with no return value.
 
 ```cpp
 // Test.hpp - Header for the "test" command.
@@ -17,7 +17,7 @@
 
 namespace DiscordCoreAPI {
 
-	class Test : public BaseFunction {
+	class Test : public  BaseFunction {
 	public:
 		Test() {
 			this->commandName = "test";
@@ -34,13 +34,18 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 
-			DeleteApplicationCommandData dataPackage;
-			dataPackage.name = "testcommandname";
-			ApplicationCommands::deleteGlobalApplicationCommand(dataPackage);
+			InputEvents::deleteInputEventResponseAsync(args->eventData);
+
+			DiscordCoreAPI::DeleteGuildApplicationCommandData dataPackage01;
+			dataPackage01.name = "botinfo";
+			dataPackage01.guildId = args->eventData.getGuildId();
+
+			ApplicationCommands::deleteGuildApplicationCommand(dataPackage01);
 
 			co_return;
+
 		}
 	};
 }
