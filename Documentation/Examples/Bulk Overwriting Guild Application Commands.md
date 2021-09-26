@@ -53,6 +53,7 @@ namespace DiscordCoreAPI {
 
 			BulkOverwriteGuildApplicationCommandsData dataPackage{};
 			dataPackage.data = newVector;
+			dataPackage.guildId = args->eventData.getGuildId();
 
 			auto returnValue = ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync(dataPackage).get();
 
@@ -65,5 +66,4 @@ namespace DiscordCoreAPI {
 	};
 }
 #endif
-
 ```
