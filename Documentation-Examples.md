@@ -47,6 +47,7 @@
 - ### [Getting a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Application%20Command.md)
 - ### [Editing a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Guild%20Application%20Command.md)
 - ### [Deleting a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Application%20Command.md)
+- ### [Bulk Overwriting Guild Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Overwriting%Guild%20Application%20Commands.md)
 ## Interaction Stuff:
 
 ## Button Manager:
