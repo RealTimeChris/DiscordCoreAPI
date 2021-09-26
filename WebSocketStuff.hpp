@@ -702,11 +702,11 @@ namespace DiscordCoreInternal {
 			try {
 				while (!this->doWeQuit) {
 					json payload;
-					if (try_receive(this->webSocketWorkloadSource, payload)) {
-						this->onMessageReceived(payload);
+					if (!try_receive(this->webSocketWorkloadSource, payload)) {
+						concurrency::wait(50);
 					}
 					else {
-						concurrency::wait(150);
+						this->onMessageReceived(payload);
 					}
 				};
 			}

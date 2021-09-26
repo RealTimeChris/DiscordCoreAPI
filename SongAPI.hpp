@@ -38,14 +38,14 @@ namespace DiscordCoreAPI {
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		DiscordGuild* discordGuild{ new DiscordGuild };
-		Playlist playlist{};
 		string guildId{ "" };
+		Playlist playlist{};
 
 		SongAPI(DiscordGuild* discordGuildNew) {
+			this->sendAudioDataBuffer = SongAPI::sendAudioDataBufferMap->at(discordGuildNew->data.guildId);
+			this->voiceConnection = SongAPI::voiceConnectionMap->at(discordGuildNew->data.guildId);
+			this->guildId = discordGuildNew->data.guildId;
 			this->discordGuild = discordGuildNew;
-			this->guildId = this->discordGuild->data.guildId;
-			this->voiceConnection = SongAPI::voiceConnectionMap->at(this->guildId);
-			this->sendAudioDataBuffer = SongAPI::sendAudioDataBufferMap->at(this->guildId);
 			this->loadPlaylist();
 		}
 

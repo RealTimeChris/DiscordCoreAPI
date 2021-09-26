@@ -32,19 +32,16 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class PermissionsConverter;
-		friend class ApplicationCommands;
 		friend class EventHandler;
-		friend class GuildMembers;
-		friend class Interactions;
-		friend class YouTubeAPI;
-		friend class Reactions;
-		friend class Channels;
-		friend class Messages;
-		friend class Guilds;
-		friend class Roles;
-		friend class Users;
 
 		static shared_ptr<DiscordCoreClient> thisPointer;
+
+		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
+		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
+		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
+		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
+		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
+		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		shared_ptr<EventManager> eventManager{ nullptr };
 		shared_ptr<DiscordUser> discordUser{ nullptr };
 
@@ -55,6 +52,12 @@ namespace DiscordCoreAPI {
 		static void finalSetup(string botToken, string commandPrefix, vector<RepeatedFunctionData>* functionVector);
 
 		static void runBot() {
+			DiscordCoreClient::thisPointer->start();
+			if (DiscordCoreClient::thisPointer->functionsToExecute != nullptr) {
+				for (auto value : *DiscordCoreClient::thisPointer->functionsToExecute) {
+					executeFunctionAfterTimePeriod(value.function, (unsigned int)value.intervalInMs, value.repeated, DiscordCoreClient::thisPointer);
+				}
+			}
 			wait(DiscordCoreClient::thisPointer.get());
 		}
 
@@ -88,15 +91,9 @@ namespace DiscordCoreAPI {
 	protected:
 
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
-		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
-		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
-		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
-		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
-		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
-		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
+		vector<RepeatedFunctionData>* functionsToExecute{};
 		string baseURL{ "https://discord.com/api/v9" };
-		map<string, vector<Song>> youtubeQueueMap{};
 		bool doWeQuit{ false };
 		string botToken{ "" };
 
@@ -143,7 +140,6 @@ namespace DiscordCoreAPI {
 			this->discordUser->writeDataToDB();
 			this->webSocketReceiverAgent->start();
 			this->webSocketConnectionAgent->start();
-			this->start();
 			co_await mainThread;
 			co_return;
 		}
@@ -174,7 +170,6 @@ namespace DiscordCoreAPI {
 					guild = value;
 					SongAPI::discordGuildMap->insert(make_pair(discordGuild.data.guildId, &discordGuild));
 				}
-				this->youtubeQueueMap.insert_or_assign(discordGuild.data.guildId, discordGuild.data.playlist.songList);
 			}
 			if (!isItFound) {
 				this->discordUser->data.guildCount += 1;

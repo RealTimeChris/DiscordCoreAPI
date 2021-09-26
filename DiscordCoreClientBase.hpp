@@ -34,6 +34,11 @@ namespace DiscordCoreAPI {
 		static BotUser currentUser;
 		static shared_ptr<DiscordCoreClientBase> thisPointer;
 
+		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
+		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
+		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
+		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
+
 		void initialize(shared_ptr<DiscordCoreClientBase> thisPtrNew) {
 			DiscordCoreClientBase::thisPointer = thisPtrNew;
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
@@ -47,10 +52,6 @@ namespace DiscordCoreAPI {
 		static map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap;
 		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
 		static map<string, shared_ptr<SongAPI>>* songAPIMap;
-		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
-		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
-		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
-		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 		
 
 	};

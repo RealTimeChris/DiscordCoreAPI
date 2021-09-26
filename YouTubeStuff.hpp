@@ -413,6 +413,7 @@ namespace DiscordCoreAPI {
 			auto threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			co_await resume_foreground(*threadContext->dispatcherQueue.get());
 			this->currentTask;
+			threadContext->releaseGroup();
 			co_return;
 		}
 
@@ -426,10 +427,12 @@ namespace DiscordCoreAPI {
 				thisPtr->areWeStopping = false;
 				BuildSongDecoderData dataPackage{};;
 				if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
-					thisPtr->sendAudioDataBuffer = thisPtr->sendAudioDataBufferMap->at(thisPtr->guildId);
+					cout << "WERE NOT HERE 0123012301230123" << endl;
+					thisPtr->sendAudioDataBuffer = YouTubeAPI::sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
 				else {
-					return;
+					YouTubeAPI::sendAudioDataBufferMap->insert_or_assign(thisPtr->guildId, make_shared<unbounded_buffer<AudioFrameData>>());
+					thisPtr->sendAudioDataBuffer = YouTubeAPI::sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
 				string downloadBaseURL;
 				if (song.finalDownloadURLs.at(0).urlPath.find("https://") != string::npos && song.finalDownloadURLs.at(0).urlPath.find("/videoplayback?") != string::npos) {

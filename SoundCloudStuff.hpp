@@ -235,6 +235,7 @@ namespace DiscordCoreAPI {
 			auto threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			co_await resume_foreground(*threadContext->dispatcherQueue.get());
 			this->currentTask;
+			threadContext->releaseGroup();
 			co_return;
 		}
 
@@ -249,10 +250,12 @@ namespace DiscordCoreAPI {
 				thisPtr->areWeStopping = false;
 				BuildSongDecoderData dataPackage{};
 				if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
-					thisPtr->sendAudioDataBuffer = thisPtr->sendAudioDataBufferMap->at(thisPtr->guildId);
+					cout << "WERE NOT HERE 0123012301230123" << endl;
+					thisPtr->sendAudioDataBuffer = SoundCloudAPI::sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
 				else {
-					return;
+					SoundCloudAPI::sendAudioDataBufferMap->insert_or_assign(thisPtr->guildId, make_shared<unbounded_buffer<AudioFrameData>>());
+					thisPtr->sendAudioDataBuffer = SoundCloudAPI::sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
 				int counter{ 0 };
 				dataPackage.sendEncodedAudioDataBuffer = new unbounded_buffer<vector<uint8_t>>();

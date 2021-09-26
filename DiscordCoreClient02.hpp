@@ -12,19 +12,15 @@
 
 namespace DiscordCoreAPI {
 
-    void DiscordCoreClient::finalSetup(string botToken, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecute = nullptr) {
+    void DiscordCoreClient::finalSetup(string botToken, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecuteNew = nullptr) {
         try {
             DiscordCoreAPI::commandPrefix = commandPrefixNew;
             DiscordCoreInternal::ThreadManager::intialize();
             shared_ptr<DiscordCoreClient> pDiscordCoreClient = make_shared<DiscordCoreClient>(botToken);
             DiscordCoreClient::thisPointer = pDiscordCoreClient;
+            DiscordCoreClient::thisPointer->functionsToExecute = functionsToExecuteNew;
             EventHandler::discordCoreClient = pDiscordCoreClient;
-            pDiscordCoreClient->initialize().get();
-            if (functionsToExecute != nullptr) {
-                for (auto value : *functionsToExecute) {
-                    executeFunctionAfterTimePeriod(value.function, (unsigned int)value.intervalInMs, value.repeated, pDiscordCoreClient);
-                }
-            }
+            DiscordCoreClient::thisPointer->initialize().get();
             pDiscordCoreClient->eventManager->onChannelCreation(&EventHandler::onChannelCreation);
             pDiscordCoreClient->eventManager->onChannelUpdate(&EventHandler::onChannelUpdate);
             pDiscordCoreClient->eventManager->onChannelDeletion(&EventHandler::onChannelDeletion);
