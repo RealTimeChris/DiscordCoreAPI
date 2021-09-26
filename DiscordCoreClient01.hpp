@@ -296,6 +296,7 @@ namespace DiscordCoreAPI {
 					{
 						OnGuildCreationData guildCreationData{};
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildCreationData.guild);
+						guildCreationData.guild = createGuild(guildCreationData.guild);
 						this->eventManager->onGuildCreationEvent(guildCreationData);
 						break;
 					}
@@ -973,6 +974,15 @@ namespace DiscordCoreAPI {
 		static task<ApplicationCommand> editGuildApplicationCommandAsync(EditGuildApplicationCommandData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->editGuildApplicationCommandAsync(dataPackage);
 		}
+
+		static void deleteGuildApplicationCommand(DeleteGuildApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->deleteGuildApplicationCommand(dataPackage);
+		}
+
+		static task<vector<ApplicationCommand>>  bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->bulkOverwriteGuildApplicationCommandsAsync(dataPackage);
+		}
+
 	};
 
 	class Reactions {
