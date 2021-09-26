@@ -299,6 +299,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						if (!tokenNew.is_canceled() && !thisPtr->areWeStopping) {
+							cout << "WERE NOT HERE 2222" << endl;
 							auto encodedFrames = songEncoder->encodeFrames(frames);
 							for (auto value : encodedFrames) {
 								if (!thisPtr->areWeStopping && !tokenNew.is_canceled()) {
@@ -308,7 +309,8 @@ namespace DiscordCoreAPI {
 							}
 						}
 					}
-					cout << "WERE NOT HERE 2222" << endl;
+					cout << "WERE NOT HERE 3333" << endl;
+					
 					counter += 1;
 				}
 
