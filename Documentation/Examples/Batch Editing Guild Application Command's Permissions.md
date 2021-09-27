@@ -2,7 +2,6 @@
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
 - Select, from the `ApplicationCommands` class, the `batchEditApplicationCommandPermissions()` function and execute it, while passing in a data structure of type `BatchEditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `vector<GuildApplicationCommandPermissionsData>`.
-- Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
 // Test.hpp - Header for the "test" command.
