@@ -50,6 +50,7 @@
 - ### [Bulk Overwriting Guild Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Overwriting%20Guild%20Application%20Commands.md)
 - ### [Getting Guild Application Command Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Application%20Command%20Permissions.md)
 - ### [Getting a Single Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Single%20Guild%20Application%20Command's%20Permissions.md)
+- ### [Editing a Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Guild%20Application%20Command's%20Permissions.md)
 ## Interaction Stuff:
 
 ## Button Manager:
