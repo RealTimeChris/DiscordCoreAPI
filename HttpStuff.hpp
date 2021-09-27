@@ -23,7 +23,6 @@ namespace DiscordCoreInternal {
 		{
 			try {
 				this->baseURLInd = HttpRequestAgent::baseURL;
-			
 				Filters::HttpBaseProtocolFilter filter;
 				Filters::HttpCacheControl cacheControl{ nullptr };
 				cacheControl = filter.CacheControl();
@@ -42,7 +41,7 @@ namespace DiscordCoreInternal {
 				hstring headerString = L"Bot ";
 				hstring headerString2 = headerString + to_hstring(HttpRequestAgent::botToken);
 				HttpCredentialsHeaderValue credentialValue(nullptr);
-				credentialValue = credentialValue.Parse(headerString2.c_str());
+				credentialValue = credentialValue.Parse(headerString2);
 				this->getHeaders.Authorization(credentialValue);
 				this->putHeaders.Authorization(credentialValue);
 				this->postHeaders.Authorization(credentialValue);

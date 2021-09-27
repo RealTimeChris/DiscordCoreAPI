@@ -31,8 +31,8 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		static BotUser currentUser;
 		static shared_ptr<DiscordCoreClientBase> thisPointer;
+		static BotUser currentUser;
 
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
@@ -60,6 +60,6 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	map<string, shared_ptr<SongAPI>>* DiscordCoreClientBase::songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointer{ nullptr };
-	BotUser DiscordCoreClientBase::currentUser{ nullptr };	
+	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }
 #endif
