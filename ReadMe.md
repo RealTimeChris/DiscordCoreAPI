@@ -32,30 +32,27 @@
 ### A Unified "Input-Event" System
 - Both user messages and user interactions are accepted via the `onInputEventCreation` event.
 - They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToEvent()` function.
-```C++
-if (rolesMsgEmbeds.size() == 0 && itemsMessageEmbeds.size() == 0) {
-	string msgString = "Sorry, but we are all out of inventory!";
-	DiscordCoreAPI::EmbedData messageEmbed;
-	messageEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-	messageEmbed.setColor(discordGuild.data.borderColor);
-	messageEmbed.setDescription(msgString);
-	messageEmbed.setTimeStamp(getTimeAndDate());
-	messageEmbed.setTitle("__**Empty Inventory:**__");
+```cpp
+	EmbedData newEmbed;
+	newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+	newEmbed.setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
+	newEmbed.setTimeStamp(getTimeAndDate());
+	newEmbed.setTitle("__**Playing Issue:**__");
+	newEmbed.setColor(discordGuild.data.borderColor);
+	embedsFromSearch.push_back(newEmbed);
 	if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-		DiscordCoreAPI::ReplyMessageData responseData(args->eventData);
-		responseData.embeds.push_back(messageEmbed);
-		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
-		DiscordCoreAPI::InputEvents::deleteInputEventResponse(event01, 20000).get();
+		RespondToInputEventData dataPackage(args->eventData);
+		dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+		dataPackage.addMessageEmbed(newEmbed);
+		newEvent = InputEvents::respondToEvent(dataPackage);
+		InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 	}
-	else if (args->eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-		DiscordCoreAPI::CreateInteractionResponseData responseData(args->eventData);
-		responseData.data.embeds.push_back(messageEmbed);
-		InputEventData event01 = DiscordCoreAPI::InputEventManager::respondToEvent(responseData).get();
-		DiscordCoreAPI::InputEvents::deleteInputEventResponse(event01, 20000).get();
+	else {
+		RespondToInputEventData dataPackage(args->eventData);
+		dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+		dataPackage.addMessageEmbed(newEmbed);
+		newEvent = InputEvents::respondToEvent(dataPackage);
 	}
-	co_await mainThread;
-	co_return;
-}
 ```
 ## Important Settings
 - Under Solution Properties -> General -> C++ Language Standard, is set to "Preview – Features from the Latest C++ Working Draft (/std:c++latest)".
