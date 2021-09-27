@@ -425,7 +425,9 @@ namespace DiscordCoreInternal {
 					dataReader.UnicodeEncoding(UnicodeEncoding::Utf8);
 					dataReader.LoadAsync((uint32_t)message.length()).get();
 					IBuffer buffer = dataReader.ReadBuffer((uint32_t)message.length());
-					this->webSocket->OutputStream().WriteAsync(buffer).get();
+					if (this->webSocket != nullptr) {
+						this->webSocket->OutputStream().WriteAsync(buffer).get();
+					}
 				}
 
 				cout << "Send Complete." << endl << endl;
@@ -654,6 +656,13 @@ namespace DiscordCoreInternal {
 				}
 				if (this->voiceSocket != nullptr) {
 					this->voiceSocket->Close();
+					UpdateVoiceStateData dataPackage01;
+					dataPackage01.channelId = "";
+					dataPackage01.guildId = this->voiceConnectInitData.guildId;
+					dataPackage01.selfDeaf = true;
+					dataPackage01.selfMute = false;
+					string newString01 = getVoiceStateUpdatePayload(dataPackage01);
+					this->webSocketConnectionAgent->sendMessage(newString01);
 					this->voiceSocket.~shared_ptr();
 					this->voiceSocket = nullptr;
 				}

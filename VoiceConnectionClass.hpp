@@ -43,7 +43,6 @@ namespace DiscordCoreAPI {
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				VoiceConnection::voiceConnectionMap = voiceConnectionMapNew;
 				this->guildId = guildIdNew;
-				this->guildIdNew = guildIdNew;
 				if (VoiceConnection::receiveAudioBufferMap->contains(guildIdNew)) {
 					this->audioDataBuffer = VoiceConnection::receiveAudioBufferMap->at(guildIdNew);
 				}
@@ -224,7 +223,6 @@ namespace DiscordCoreAPI {
 		bool areWePlaying{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
-		string guildIdNew{ "" };
 		bool doWeQuit{ false };
 		string guildId{ "" };
 
@@ -343,10 +341,6 @@ namespace DiscordCoreAPI {
 					if (!this->areWePlaying) {
 						cout << "WERE HERE 2222" << endl;
 						this->playWaitEvent->set();
-						this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
-						this->audioData.type = AudioFrameType::Unset;
-						this->audioData.encodedFrameData.data.clear();
-						this->audioData.rawFrameData.data.clear();
 						if (this->playSetEvent->wait(10000) != 0) {
 							cout << "WERE HERE 3333" << endl;
 							this->playSetEvent->reset();
@@ -354,6 +348,10 @@ namespace DiscordCoreAPI {
 						};
 						this->playSetEvent->reset();
 					start:
+						this->audioDataBuffer = this->receiveAudioBufferMap->at(this->voiceConnectInitData.guildId);
+						this->audioData.type = AudioFrameType::Unset;
+						this->audioData.encodedFrameData.data.clear();
+						this->audioData.rawFrameData.data.clear();
 						if (this->doWeQuit) {
 							this->done();
 							break;

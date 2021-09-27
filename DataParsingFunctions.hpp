@@ -1535,7 +1535,7 @@ namespace DiscordCoreInternal {
             DiscordCoreAPI::MessageActivityData messageActivityData = *pDataStructure;
 
             if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
-                messageActivityData.type = jsonObjectData.at("type").get<int>();
+                messageActivityData.type = jsonObjectData.at("type").get<DiscordCoreAPI::MessageActivityType>();
             }
 
             if (jsonObjectData.contains("party_id") && !jsonObjectData.at("party_id").is_null()) {

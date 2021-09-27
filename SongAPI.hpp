@@ -42,6 +42,7 @@ namespace DiscordCoreAPI {
 		Playlist playlist{};
 
 		SongAPI(DiscordGuild* discordGuildNew) {
+			SongAPI::sendAudioDataBufferMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<unbounded_buffer<AudioFrameData>>());
 			this->sendAudioDataBuffer = SongAPI::sendAudioDataBufferMap->at(discordGuildNew->data.guildId);
 			this->voiceConnection = SongAPI::voiceConnectionMap->at(discordGuildNew->data.guildId);
 			this->guildId = discordGuildNew->data.guildId;
@@ -68,6 +69,13 @@ namespace DiscordCoreAPI {
 			SongAPI::songAPIMap = nullptr;
 			delete SongAPI::discordGuildMap;
 			SongAPI::discordGuildMap = nullptr;
+		}
+		
+		void refreshInterfaces() {
+			DiscordGuild* discordGuildNew = this->discordGuild;
+			SongAPI::songAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<SongAPI>(discordGuildNew));
+			YouTubeAPI::youtubeAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<YouTubeAPI>(discordGuildNew->data.guildId));
+			SoundCloudAPI::soundCloudAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<SoundCloudAPI>(discordGuildNew->data.guildId));
 		}
 
 		void savePlaylist() {
@@ -183,6 +191,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static bool skip(string guildId, GuildMember guildMember) {
+			SongAPI::songAPIMap->at(guildId)->refreshInterfaces();
 			if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 				if (!SoundCloudAPI::stop(guildId)) {
 					return false;
@@ -215,6 +224,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static bool stop(string guildId) {
+			SongAPI::songAPIMap->at(guildId)->refreshInterfaces();
 			if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 				if (!SoundCloudAPI::stop(guildId)) {
 					return false;
@@ -363,6 +373,7 @@ namespace DiscordCoreAPI {
 		}
 
 		static bool sendNextSong(string guildId, GuildMember guildMember) {
+			SongAPI::songAPIMap->at(guildId)->refreshInterfaces();
 			SongAPI::songAPIMap->at(guildId)->sendNextSong();
 			SongAPI::songAPIMap->at(guildId)->discordGuild->getDataFromDB();
 			if (SongAPI::songAPIMap->at(guildId)->discordGuild->data.playlist.currentSong.songId == "") {

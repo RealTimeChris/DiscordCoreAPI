@@ -102,7 +102,6 @@ namespace DiscordCoreAPI {
 		}
 
 		void disconnect() {
-			DiscordCoreClientBase::currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
 			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
 				if (DiscordCoreClientBase::songAPIMap->contains(this->id)) {
 					SongAPI::stop(this->id);
@@ -132,6 +131,13 @@ namespace DiscordCoreAPI {
 					DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					YouTubeAPI::sendAudioDataBufferMap->erase(this->id);
 					SoundCloudAPI::sendAudioDataBufferMap->erase(this->id);
+					SongAPI::sendAudioDataBufferMap->erase(this->id);
+					SoundCloudAPI::voiceConnectionMap->erase(this->id);
+					YouTubeAPI::voiceConnectionMap->erase(this->id);
+					SongAPI::voiceConnectionMap->erase(this->id);
+					SongAPI::songAPIMap->erase(this->id);
+					SoundCloudAPI::soundCloudAPIMap->erase(this->id);
+					YouTubeAPI::youtubeAPIMap->erase(this->id);
 				}
 				this->areWeConnectedBool = false;
 			}
