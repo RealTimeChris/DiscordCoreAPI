@@ -6,13 +6,13 @@
  
 ## A bot library for Discord, written in C++ using WinRT and a few other useful libraries.
 
+## [Discord Server (Where I can be found!](https://discord.gg/W8RemUnqMm)
+
 ## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
 
 ## [Example "Game" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-GameHouse-Cpp)
 
 ## [Example "Music" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-MusicHouse-Cpp)
-
-## [Discord Server](https://discord.gg/W8RemUnqMm)
 
 ## Features
 ### Concurrent Discord API Access
