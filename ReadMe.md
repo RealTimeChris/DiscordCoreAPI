@@ -33,26 +33,26 @@
 - Both user messages and user interactions are accepted via the `onInputEventCreation` event.
 - They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToEvent()` function.
 ```cpp
-	EmbedData newEmbed;
-	newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-	newEmbed.setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
-	newEmbed.setTimeStamp(getTimeAndDate());
-	newEmbed.setTitle("__**Playing Issue:**__");
-	newEmbed.setColor(discordGuild.data.borderColor);
-	embedsFromSearch.push_back(newEmbed);
-	if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-		RespondToInputEventData dataPackage(args->eventData);
-		dataPackage.type = DesiredInputEventResponseType::RegularMessage;
-		dataPackage.addMessageEmbed(newEmbed);
-		newEvent = InputEvents::respondToEvent(dataPackage);
-		InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
-	}
-	else {
-		RespondToInputEventData dataPackage(args->eventData);
-		dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
-		dataPackage.addMessageEmbed(newEmbed);
-		newEvent = InputEvents::respondToEvent(dataPackage);
-	}
+EmbedData newEmbed;
+newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
+newEmbed.setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
+newEmbed.setTimeStamp(getTimeAndDate());
+newEmbed.setTitle("__**Playing Issue:**__");
+newEmbed.setColor(discordGuild.data.borderColor);
+embedsFromSearch.push_back(newEmbed);
+if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
+	RespondToInputEventData dataPackage(args->eventData);
+	dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+	dataPackage.addMessageEmbed(newEmbed);
+	newEvent = InputEvents::respondToEvent(dataPackage);
+	InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+}
+else {
+	RespondToInputEventData dataPackage(args->eventData);
+	dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+	dataPackage.addMessageEmbed(newEmbed);
+	newEvent = InputEvents::respondToEvent(dataPackage);
+}
 ```
 ## Important Settings
 - Under Solution Properties -> General -> C++ Language Standard, is set to "Preview – Features from the Latest C++ Working Draft (/std:c++latest)".
