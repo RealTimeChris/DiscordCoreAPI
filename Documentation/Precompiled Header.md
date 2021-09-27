@@ -1,11 +1,15 @@
 ```cpp
-// pch.h - Precomiled header.	
+// pch.h - Precomiled header.
 // https://github.com/RealTimeChris
 
 #pragma once
 
 #ifndef _PCH_
 #define _PCH_
+
+#ifndef __cplusplus
+#define __cplusplus
+#endif
 
 #ifndef WINRT_LEAN_AND_MEAN
 #define WINRT_LEAN_AND_MEAN
@@ -79,6 +83,7 @@ extern "C"
 #include <nlohmann/json.hpp>
 #include <dispatcherqueue.h>
 #include <opus/opusfile.h>
+#include <glib-2.0/glib.h>
 #include <pplinterface.h>
 #include <ogg/os_types.h>
 #include <winrt/base.h>
@@ -100,6 +105,7 @@ extern "C"
 #include <xiosbase>
 #include <stdio.h>
 #include <fstream>
+#include <winnt.h>
 #include <bitset>
 #include <ppl.h>
 #include <regex>
