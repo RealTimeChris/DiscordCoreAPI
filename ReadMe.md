@@ -6,7 +6,7 @@
  
 ## A bot library for Discord, written in C++ using WinRT and a few other useful libraries.
 
-## [Discord Server (Where I can be found!](https://discord.gg/W8RemUnqMm)
+## [Discord Server (Where I can be found!)](https://discord.gg/W8RemUnqMm)
 
 ## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
 
