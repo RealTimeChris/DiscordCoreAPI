@@ -981,6 +981,22 @@ namespace DiscordCoreAPI {
 
 		static task<vector<ApplicationCommand>>  bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage) {
 			return DiscordCoreClient::thisPointer->applicationCommands->bulkOverwriteGuildApplicationCommandsAsync(dataPackage);
+		};
+
+		static task<vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(GetGuildApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGuildApplicationCommandPermissionsAsync(dataPackage);
+		}
+
+		static GuildApplicationCommandPermissionsData getApplicationCommandPermissions(GetApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getApplicationCommandPermissions(dataPackage);
+		}
+
+		static GuildApplicationCommandPermissionsData editApplicationCommandPermissions(EditApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->editApplicationCommandPermissions(dataPackage);
+		}
+
+		static vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> batchEditApplicationCommandPermissions(BatchEditGuildApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->batchEditApplicationCommandPermissions(dataPackage);
 		}
 
 	};

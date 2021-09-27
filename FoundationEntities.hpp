@@ -1155,7 +1155,11 @@ namespace  DiscordCoreInternal {
         GET_GUILD_APPLICATION_COMMAND = 60,
         DELETE_MESSAGE_OLD = 61,
         SOUNDCLOUD_AUTH = 62,
-        SOUNDCLOUD_SONG_GET = 63
+        SOUNDCLOUD_SONG_GET = 63,
+        GET_GUILD_APPLICATION_COMMAND_PERMISSIONS = 64,
+        GET_APPLICATION_COMMAND_PERMISSIONS = 65,
+        PUT_EDIT_APPLICATION_COMMAND_PERMISSIONS = 66,
+        PUT_BATCH_EDIT_APPLICATION_COMMAND_PERMISSIONS = 67
     };
 
     enum class MessageStickerItemType {
@@ -1205,24 +1209,6 @@ namespace  DiscordCoreInternal {
         string name{ "" };
     };
 
-    enum class ApplicationCommandPermissionType {
-        Role = 1,
-        User = 2
-    };
-
-    struct ApplicationCommandPermissionData {
-        ApplicationCommandPermissionType type;
-        bool permission{ false };
-        string id{ "" };
-    };
-
-    struct GuildApplicationCommandPermissionData {
-        vector<ApplicationCommandPermissionData> permissions{};
-        string applicationId{ "" };
-        string guildId{ "" };
-        string id{ "" };
-    };
-
     enum class InputEventType {
         SLASH_COMMAND_INTERACTION = 1,
         BUTTON_INTERACTION = 2,
@@ -1247,6 +1233,24 @@ namespace  DiscordCoreInternal {
         CHAT_INPUT = 1,
         USER = 2,
         MESSAGE = 3
+    };
+
+    enum class ApplicationCommandPermissionType {
+        Role = 1,
+        User = 2
+    };
+
+    struct ApplicationCommandPermissionData {
+        ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };
+        bool permission{ false };
+        string id{ "" };
+    };
+
+    struct GuildApplicationCommandPermissionData {
+        vector<ApplicationCommandPermissionData> permissions{};
+        string applicationId{ "" };
+        string guildId{ "" };
+        string id{ "" };
     };
 
     struct UserCommandInteractionData {
@@ -1623,6 +1627,17 @@ namespace  DiscordCoreInternal {
         string applicationId{ "" };
         string description{ "" };
         string name{ "" };
+    };
+
+    struct PutEditApplicationCommandPermissionsData {
+        vector<ApplicationCommandPermissionData> permissions{};
+        string commandName{ "" };
+        string guildId{ "" };
+    };
+
+    struct PutBatchEditApplicationCommandPermissionsData {
+        vector<GuildApplicationCommandPermissionData> permissions{};
+        string guildId{ "" };
     };
 
     struct PatchFollowUpMessageData {
@@ -2433,6 +2448,31 @@ namespace DiscordCoreAPI {
         ROLE = 8,
         MENTIONABLE = 9,
         NUMBER = 10
+    };
+
+    enum class ApplicationCommandPermissionType {
+        Role = 1,
+        User = 2
+    };
+
+    struct ApplicationCommandPermissionData {
+        operator DiscordCoreInternal::ApplicationCommandPermissionData() {
+            DiscordCoreInternal::ApplicationCommandPermissionData newData{};
+            newData.id = this->id;
+            newData.permission = this->permission;
+            newData.type = (DiscordCoreInternal::ApplicationCommandPermissionType)this->type;
+            return newData;
+        }
+        ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };
+        bool permission{ false };
+        string id{ "" };
+    };
+
+    struct GuildApplicationCommandPermissionsData {
+        vector<ApplicationCommandPermissionData> permissions{};
+        string applicationId{ "" };
+        string guildId{ "" };
+        string id{ "" };
     };
 
     struct ApplicationCommandInteractionDataOption;

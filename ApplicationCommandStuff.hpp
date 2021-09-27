@@ -41,6 +41,32 @@ namespace DiscordCoreAPI {
         string guildId{ "" };
     };
 
+    struct GetGuildApplicationCommandPermissionsData {
+        string guildId{ "" };
+    };
+
+    struct GetApplicationCommandPermissionsData {
+        string commandName{ "" };
+        string guildId{ "" };
+    };
+
+    struct EditApplicationCommandPermissionsData {
+        vector<ApplicationCommandPermissionData> permissions{};
+        string commandName{ "" };
+        string guildId{ "" };
+    };
+
+    struct EditGuildApplicationCommandPermissionsData {
+        vector<ApplicationCommandPermissionData> permissions{};
+        string commandName{ "" };
+        string commandId{ "" };
+    };
+
+    struct BatchEditGuildApplicationCommandPermissionsData {
+        vector<EditGuildApplicationCommandPermissionsData> permissions{};
+        string guildId{ "" };
+    };
+
     struct GetGuildApplicationCommandData {
         string commandId{ "" };
         string guildId{ "" };
@@ -207,7 +233,6 @@ namespace DiscordCoreInternal{
             bool isItFound = false;
             string appCommandId;
             for (auto value : appCommands) {
-                cout << value.name << endl;
                 if (value.name == dataPackage.name) {
                     appCommandId = value.id;
                     isItFound = true;
@@ -304,9 +329,9 @@ namespace DiscordCoreInternal{
                 cout << "ApplicationCommandManager::getGuildApplicationCommandsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
             }
             vector<DiscordCoreAPI::ApplicationCommand> appCommands;
-            for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
+            for (auto value : returnData.data) {
                 DiscordCoreAPI::ApplicationCommandData appCommandData;
-                DataParser::parseObject(returnData.data.at(x), &appCommandData);
+                DataParser::parseObject(value, &appCommandData);
                 DiscordCoreAPI::ApplicationCommand appCommand(appCommandData);
                 appCommands.push_back(appCommand);
             }
@@ -429,7 +454,6 @@ namespace DiscordCoreInternal{
                 }
                 dataPackageNew.type = (ApplicationCommandType)value.type;
                 newVector.push_back(dataPackageNew);
-
             }
             for (auto value : newVector) {
                 json newData = json::parse(getCreateApplicationCommandPayload(value));
@@ -441,7 +465,6 @@ namespace DiscordCoreInternal{
             workload.workloadClass = HttpWorkloadClass::PUT;
             workload.workloadType = HttpWorkloadType::PUT_BULK_OVERWRITE_APPLICATION_COMMANDS;
             workload.content = dataNew.dump();
-            cout << workload.content << endl;
             HttpRequestAgent requestAgent{};
             DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::bulkOverwriteGuildApplicationCommandsAsync");
             if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
@@ -512,6 +535,63 @@ namespace DiscordCoreInternal{
             co_return appCommand;
         }
 
+        task<vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(DiscordCoreAPI::GetGuildApplicationCommandPermissionsData dataPackage) {
+            apartment_context mainThread;
+            co_await resume_foreground(*this->dispatcherQueue.get());
+            HttpWorkloadData workload;
+            workload.workloadClass = HttpWorkloadClass::GET;
+            workload.workloadType = HttpWorkloadType::GET_GUILD_APPLICATION_COMMAND_PERMISSIONS;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
+            HttpRequestAgent requestAgent{};
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getGuildApplicationCommandPermissionsAsync");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200){
+                cout << "ApplicationCommandManager::getGuildApplicationCommandPermissionsAsync_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::getGuildApplicationCommandPermissionsAsync_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> appCommandData;
+            for (auto value : returnData.data) {
+                DiscordCoreAPI::GuildApplicationCommandPermissionsData newData{};
+                DataParser::parseObject(value, &newData);
+                appCommandData.push_back(newData);
+            }
+            co_await mainThread;
+            co_return appCommandData;
+        }
+
+        DiscordCoreAPI::GuildApplicationCommandPermissionsData getApplicationCommandPermissions(DiscordCoreAPI::GetApplicationCommandPermissionsData dataPackage) {
+            vector<DiscordCoreAPI::ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
+            string commandId;
+            bool isItFound = false;
+            for (auto value : appCommands) {
+                if (value.name == dataPackage.commandName) {
+                    commandId = value.id;
+                    isItFound = true;
+                }
+            }
+            if (isItFound == false) {
+                cout << "ApplicationCommandManager::getApplicationCommandPermissionsAsync_00 Error: Sorry, it could not be found!" << endl;
+                return DiscordCoreAPI::GuildApplicationCommandPermissionsData();
+            }
+            apartment_context mainThread;
+            HttpWorkloadData workload;
+            workload.workloadClass = HttpWorkloadClass::GET;
+            workload.workloadType = HttpWorkloadType::GET_APPLICATION_COMMAND_PERMISSIONS;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
+            HttpRequestAgent requestAgent{};
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::getApplicationCommandPermissions");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::getApplicationCommandPermissions_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::getApplicationCommandPermissions_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            DiscordCoreAPI::GuildApplicationCommandPermissionsData appCommandData;
+            DataParser::parseObject(returnData.data, &appCommandData);
+            return appCommandData;
+        }
+
         task<void> displayGlobalApplicationCommandsAsync() {
             apartment_context mainThread;
             co_await resume_foreground(*this->dispatcherQueue.get());
@@ -523,6 +603,86 @@ namespace DiscordCoreInternal{
             }
             co_await mainThread;
             co_return;
+        }
+
+        DiscordCoreAPI::GuildApplicationCommandPermissionsData editApplicationCommandPermissions(DiscordCoreAPI::EditApplicationCommandPermissionsData dataPackage) {
+            vector<DiscordCoreAPI::ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
+            string commandId;
+            bool isItFound = false;
+            for (auto value : appCommands) {
+                if (value.name == dataPackage.commandName) {
+                    commandId = value.id;
+                    isItFound = true;
+                }
+            }
+            if (isItFound == false) {
+                cout << "ApplicationCommandManager::editApplicationCommandPermissions_00 Error: Sorry, it could not be found!" << endl;
+                return DiscordCoreAPI::GuildApplicationCommandPermissionsData();
+            }
+            PutEditApplicationCommandPermissionsData newDataPackage;
+            newDataPackage.commandName = dataPackage.commandName;
+            newDataPackage.guildId = dataPackage.guildId;
+            for (auto value : dataPackage.permissions) {
+                newDataPackage.permissions.push_back(value);
+            }
+            apartment_context mainThread;
+            HttpWorkloadData workload;
+            workload.workloadClass = HttpWorkloadClass::PUT;
+            workload.workloadType = HttpWorkloadType::PUT_EDIT_APPLICATION_COMMAND_PERMISSIONS;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
+            json newData = { {"permissions",json::parse(getEditApplicationCommandPermissionsPayload(newDataPackage))} };
+            workload.content = newData.dump();
+            HttpRequestAgent requestAgent{};
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::editApplicationCommandPermissions");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::editApplicationCommandPermissions_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::editApplicationCommandPermissions_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            DiscordCoreAPI::GuildApplicationCommandPermissionsData appCommandData;
+            DataParser::parseObject(returnData.data, &appCommandData);
+            return appCommandData;
+        }
+
+        vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> batchEditApplicationCommandPermissions(DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage) {
+            vector<DiscordCoreAPI::ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
+            PutBatchEditApplicationCommandPermissionsData newDataPackage{};
+            for (auto value01 : dataPackage.permissions) {
+                for (auto value : appCommands) {
+                    if (value.name == value01.commandName) {
+                        GuildApplicationCommandPermissionData newData{};
+                        newData.id = value.id;
+                        newData.guildId = dataPackage.guildId;
+                        for (auto value02 : value01.permissions) {
+                            newData.permissions.push_back(value02);
+                        }
+                        newDataPackage.permissions.push_back(newData);
+                    }
+                }
+            }
+            newDataPackage.guildId = dataPackage.guildId;
+            apartment_context mainThread;
+            HttpWorkloadData workload;
+            workload.workloadClass = HttpWorkloadClass::PUT;
+            workload.workloadType = HttpWorkloadType::PUT_BATCH_EDIT_APPLICATION_COMMAND_PERMISSIONS;
+            workload.relativePath = "/applications/" + this->applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
+            workload.content = getBatchEditApplicationCommandPermissionsPayload(newDataPackage);
+            HttpRequestAgent requestAgent{};
+            DiscordCoreInternal::HttpData returnData = requestAgent.submitWorkloadAndGetResult(workload, "ApplicationCommandManager::batchEditApplicationCommandPermissions");
+            if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
+                cout << "ApplicationCommandManager::batchEditApplicationCommandPermissions_00 Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            else {
+                cout << "ApplicationCommandManager::batchEditApplicationCommandPermissions_00 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
+            }
+            vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> appCommandData;
+            for (auto value : returnData.data) {
+                DiscordCoreAPI::GuildApplicationCommandPermissionsData newData02{};
+                DataParser::parseObject(value, &newData02);
+                appCommandData.push_back(newData02);
+            }
+            return appCommandData;
         }
 
         void displayOptions(vector<DiscordCoreAPI::ApplicationCommandOptionData> applicationCommandOptionData) {

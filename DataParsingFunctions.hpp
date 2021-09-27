@@ -3415,6 +3415,52 @@ namespace DiscordCoreInternal {
             *pDataStructure = newData;
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandPermissionData* pDataStructure) {
+            DiscordCoreAPI::ApplicationCommandPermissionData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                newData.id = jsonObjectData.at("id").get<string>();
+            }
+
+            if (jsonObjectData.contains("permission") && !jsonObjectData.at("permission").is_null()) {
+                newData.permission = jsonObjectData.at("permission").get<bool>();
+            }
+
+            if (jsonObjectData.contains("type") && !jsonObjectData.at("type").is_null()) {
+                newData.type = jsonObjectData.at("type").get<DiscordCoreAPI::ApplicationCommandPermissionType>();
+            }
+
+            *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildApplicationCommandPermissionsData* pDataStructure) {
+            DiscordCoreAPI::GuildApplicationCommandPermissionsData newData = *pDataStructure;
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData.at("guild_id").is_null()) {
+                newData.guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("application_id") && !jsonObjectData.at("application_id").is_null()) {
+                newData.applicationId = jsonObjectData.at("application_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                newData.id = jsonObjectData.at("id").get<string>();
+            }
+
+            if (jsonObjectData.contains("permissions") && !jsonObjectData.at("permissions").is_null()) {
+                vector<DiscordCoreAPI::ApplicationCommandPermissionData> newVector{};
+                for (auto value : jsonObjectData.at("permissions")) {
+                    DiscordCoreAPI::ApplicationCommandPermissionData newData02{};
+                    DataParser::parseObject(value, &newData02);
+                    newVector.push_back(newData02);
+                }
+                newData.permissions = newVector;
+            }
+
+            *pDataStructure = newData;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure);
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::SoundCloudSong* pDataStructure);

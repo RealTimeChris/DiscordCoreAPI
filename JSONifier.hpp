@@ -936,6 +936,35 @@ namespace DiscordCoreInternal {
 		pJSONData->emplace_back(newOption);
 	}
 
+	string getEditApplicationCommandPermissionsPayload(PutEditApplicationCommandPermissionsData dataPackage) {
+		json newDataArray = json::array();
+
+		for (auto value : dataPackage.permissions) {
+			json newData = {
+				{"id",value.id},
+				{"permission",value.permission},
+				{"type", value.type}
+			};
+			newDataArray.push_back(newData);
+		}
+
+		return newDataArray.dump();
+	}
+
+	string getBatchEditApplicationCommandPermissionsPayload(PutBatchEditApplicationCommandPermissionsData dataPackage) {
+		json newDataArray = json();
+
+		for (auto value : dataPackage.permissions) {
+			json newData01 = json::array();
+			for (auto value01 : value.permissions) {
+				newData01.push_back({ {"id", value01.id}, {"permission",value01.permission},{"type",value01.type} });
+			}
+			newDataArray.push_back({ {"id", value.id}, {"permissions",newData01} });
+		}
+
+		return newDataArray.dump();
+	}
+
 	string getCreateApplicationCommandPayload(PostApplicationCommandData dataPackage) {
 		json data;
 		if (dataPackage.type == ApplicationCommandType::MESSAGE || dataPackage.type == ApplicationCommandType::USER) {
