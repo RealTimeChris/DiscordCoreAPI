@@ -1,12 +1,12 @@
-// InteractionStuff.hpp - Header for the interaction manager class.
+// InteractionEntities.hpp - Header for the interaction related classes and structs.
 // May 28, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _INTERACTION_STUFF_
-#define _INTERACTION_STUFF_
+#ifndef _INTERACTION_ENTITIES_
+#define _INTERACTION_ENTITIES_
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"

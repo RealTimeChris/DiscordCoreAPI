@@ -1,17 +1,17 @@
-// InputEventStuff.hpp - Header for the "input event" stuff.
+// InputEventClass.hpp - Header for the input event class.
 // Aug 18, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _INPUT_EVENT_STUFF_
-#define _INPUT_EVENT_STUFF_
+#ifndef _INPUT_EVENT_CLASS_
+#define _INPUT_EVENT_CLASS_
 
 #include "../pch.h"
-#include "MessageStuff.hpp"
-#include "InteractionStuff.hpp"
-#include "GuildStuff.hpp"
+#include "MessageEntities.hpp"
+#include "InteractionEntities.hpp"
+#include "GuildEntities.hpp"
 
 namespace DiscordCoreAPI {
 

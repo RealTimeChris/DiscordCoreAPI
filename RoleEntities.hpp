@@ -1,16 +1,16 @@
-// RoleStuff.hpp - Header for the Role-related classes.
+// RoleEntities.hpp - Header for the role related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _ROLE_STUFF_
-#define _ROLE_STUFF_
+#ifndef _ROLE_ENTITIES_
+#define _ROLE_ENTITIES_
 
 #include "pch.h"
 #include "JSONifier.hpp"
-#include "GuildMemberStuff.hpp"
+#include "GuildMemberEntities.hpp"
 #include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {

@@ -1,16 +1,16 @@
-// DatabaseStuff.hpp - Database stuff.
+// DatabaseEntities.hpp - Database stuff.
 // May 24, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _DATABASE_STUFF_
-#define _DATABASE_STUFF_
+#ifndef _DATABASE_ENTITIES_
+#define _DATABASE_ENTITIES_
 
 #include "../pch.h"
-#include "GuildStuff.hpp"
-#include "GuildMemberStuff.hpp"
+#include "GuildEntities.hpp"
+#include "GuildMemberEntities.hpp"
 
 namespace DiscordCoreAPI {
 

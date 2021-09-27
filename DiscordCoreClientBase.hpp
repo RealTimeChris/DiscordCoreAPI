@@ -9,15 +9,15 @@
 #define _DISCORD_CORE_CLIENT_BASE_
 
 #include "../pch.h"
-#include "VoiceConnectionStuff.hpp"
-#include "YouTubeStuff.hpp"
-#include "SoundCloudStuff.hpp"
-#include "UserStuff.hpp"
-#include "RoleStuff.hpp"
-#include "ChannelStuff.hpp"
-#include "MessageStuff.hpp"
-#include "GuildMemberStuff.hpp"
-#include "WebSocketStuff.hpp"
+#include "VoiceConnectionClass.hpp"
+#include "YouTubeAPI.hpp"
+#include "SoundCloudAPI.hpp"
+#include "UserEntities.hpp"
+#include "RoleEntities.hpp"
+#include "ChannelEntities.hpp"
+#include "MessageEntities.hpp"
+#include "GuildMemberEntities.hpp"
+#include "WebSocketEntities.hpp"
 
 namespace DiscordCoreAPI {
 

@@ -1,4 +1,4 @@
-// SongAPI.hpp - Header for the "song api" stuff.
+// SongAPI.hpp - Header for the song api related stuff.
 // Sep 17, 2021
 // Chris M.
 // https://github.com/RealTimeChris
@@ -9,9 +9,9 @@
 #define _SONG_API_
 
 #include "../DiscordCoreAPI-main/DiscordCoreClient02.hpp"
-#include "YouTubeStuff.hpp"
-#include "SoundCloudStuff.hpp"
-#include "GuildStuff.hpp"
+#include "YouTubeAPI.hpp"
+#include "SoundCloudAPI.hpp"
+#include "GuildEntities.hpp"
 
 namespace DiscordCoreAPI {
 

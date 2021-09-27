@@ -10,15 +10,15 @@
 
 #include "../pch.h"
 #include "ThreadManager.hpp"
-#include "HttpStuff.hpp"
-#include "GuildStuff.hpp"
-#include "InteractionStuff.hpp"
-#include "EventStuff01.hpp"
-#include "InputEventStuff.hpp"
-#include "DatabaseStuff.hpp"
+#include "HttpClass.hpp"
+#include "GuildEntities.hpp"
+#include "InteractionEntities.hpp"
+#include "EventTypes.hpp"
+#include "InputEventClass.hpp"
+#include "DatabaseEntities.hpp"
 #include "SongAPI.hpp"
-#include "StickerStuff.hpp"
-#include "WebSocketStuff.hpp"
+#include "StickerEntities.hpp"
+#include "WebSocketEntities.hpp"
 
 void myPurecallHandler(void) {
 	cout << "CURRENT THREAD: " << this_thread::get_id() << endl;

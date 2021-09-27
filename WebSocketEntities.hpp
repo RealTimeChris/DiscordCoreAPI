@@ -1,12 +1,12 @@
-// WebSocketStuff.hpp - Header for the Websocket things of the library.
+// WebSocketEntities.hpp - Header for the websocket related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _WEBSOCKET_STUFF_
-#define _WEBSOCKET_STUFF_
+#ifndef _WEBSOCKET_ENTITIES_
+#define _WEBSOCKET_ENTITIES_
 
 #include "../pch.h"
 #include "DataParsingFunctions.hpp"

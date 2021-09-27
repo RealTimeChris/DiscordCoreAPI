@@ -1,17 +1,17 @@
-﻿// YouTubeStuff.hpp - Header for the "YouTube stuff".
+﻿// YouTubeAPI.hpp - Header for the YouTube API related stuff.
 // Jun 30, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _YOUTUBE_STUFF_
-#define _YOUTUBE_STUFF_
+#ifndef _YOUTUBE_API_
+#define _YOUTUBE_API_
 
-#include "HttpStuff.hpp"
+#include "HttpClass.hpp"
 #include "DataParsingFunctions.hpp"
-#include "DatabaseStuff.hpp"
-#include "VoiceConnectionStuff.hpp"
+#include "DatabaseEntities.hpp"
+#include "VoiceConnectionClass.hpp"
 
 namespace DiscordCoreAPI {
 

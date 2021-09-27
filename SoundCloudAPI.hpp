@@ -1,18 +1,18 @@
-// SoundCloudStuff.hpp - Header for the "SoundCloud stuff".
+// SoundCloudAPI.hpp - Header for the SoundCloud api related stuff.
 // Aug 25, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _SOUNDCLOUD_STUFF_
-#define _SOUNDCLOUD_STUFF_
+#ifndef _SOUNDCLOUD_API_
+#define _SOUNDCLOUD_API_
 
 #include "DiscordCoreClientBase.hpp"
-#include "HttpStuff.hpp"
+#include "HttpClass.hpp"
 #include "DataParsingFunctions.hpp"
-#include "DatabaseStuff.hpp"
-#include "VoiceConnectionStuff.hpp"
+#include "DatabaseEntities.hpp"
+#include "VoiceConnectionClass.hpp"
 
 namespace DiscordCoreAPI {
 

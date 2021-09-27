@@ -1,15 +1,15 @@
-// GuildMemberStuff.hpp - Header for the guild member related stuff.
+// GuildMemberEntities.hpp - Header for the guild member related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _GUILD_MEMBER_STUFF_
-#define _GUILD_MEMBER_STUFF_
+#ifndef _GUILD_MEMBER_ENTITIES
+#define _GUILD_MEMBER_ENTITIES
 
 #include "../pch.h"
-#include "DatabaseStuff.hpp"
+#include "DatabaseEntities.hpp"
 #include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {

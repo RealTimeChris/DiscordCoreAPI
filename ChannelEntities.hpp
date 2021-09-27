@@ -1,16 +1,16 @@
-// ChannelStuff.hpp - Header for the Channels classes et al.
+// ChannelEntities.hpp - Header for the classes related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _CHANNEL_STUFF_
-#define _CHANNEL_STUFF_
+#ifndef _CHANNEL_ENTITIES_
+#define _CHANNEL_ENTITIES_
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"
-#include "HttpStuff.hpp"
+#include "HttpClass.hpp"
 
 namespace DiscordCoreAPI {
 

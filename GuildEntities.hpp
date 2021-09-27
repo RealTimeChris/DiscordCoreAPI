@@ -1,22 +1,23 @@
+// GuildEntities.hpp - Header for the guild classes and structs.
 // May 12, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _GUILD_STUFF_
-#define _GUILD_STUFF_
+#ifndef _GUILD_ENTITIES_
+#define _GUILD_ENTITIES_
 
 #include "../pch.h"
-#include "VoiceConnectionStuff.hpp"
+#include "VoiceConnectionClass.hpp"
 #include "DataParsingFunctions.hpp"
-#include "HttpStuff.hpp"
-#include "ChannelStuff.hpp"
-#include "MessageStuff.hpp"
-#include "GuildMemberStuff.hpp"
-#include "UserStuff.hpp"
-#include "RoleStuff.hpp"
-#include "YouTubeStuff.hpp"
+#include "HttpClass.hpp"
+#include "ChannelEntities.hpp"
+#include "MessageEntities.hpp"
+#include "GuildMemberEntities.hpp"
+#include "UserEntities.hpp"
+#include "RoleEntities.hpp"
+#include "YouTubeAPI.hpp"
 #include "SongAPI.hpp"
 #include "DiscordCoreClientBase.hpp"
 

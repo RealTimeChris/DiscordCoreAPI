@@ -1,12 +1,12 @@
-// ReactionStuff.hpp - Reaction related classes.
+// ReactionEntities.hpp - Header for the reaction related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _REACTION_STUFF_
-#define _REACTION_STUFF_
+#ifndef _REACTION_ENTITIES_
+#define _REACTION_ENTITIES_
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"

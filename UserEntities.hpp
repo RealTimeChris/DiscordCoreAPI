@@ -1,17 +1,17 @@
-// UserStuff.hpp - Header for user-related classes.
+// UserEntities.hpp - Header for user related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _USER_STUFF_
-#define _USER_STUFF_
+#ifndef _USER_ENTITIES_
+#define _USER_ENTITIES_
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
-#include "WebSocketStuff.hpp"
+#include "WebSocketEntities.hpp"
 
 namespace DiscordCoreAPI {
 

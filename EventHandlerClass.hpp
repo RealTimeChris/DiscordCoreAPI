@@ -1,12 +1,12 @@
-// EventStuff02.hpp - An index file to round everything up.
+// EventHandlerClass.hpp - Header for the event-handler class.
 // Jun 7, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _EVENT_STUFF_02_
-#define _EVENT_STUFF_02_
+#ifndef _EVENT_HANDLER_CLASS_
+#define _EVENT_HANDLER_CLASS_
 
 #include "DiscordCoreClient01.hpp"
 #include "Commands\CommandsList.hpp"

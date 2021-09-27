@@ -1,17 +1,17 @@
-// MessageStuff.hpp - Header for Message classes.
+// MessageEntities.hpp - Header for the message related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _MESSAGE_STUFF_
-#define _MESSAGE_STUFF_
+#ifndef _MESSAGE_ENTITIES_
+#define _MESSAGE_ENTITIES_
 
 #include "../pch.h"
-#include "ReactionStuff.hpp"
+#include "ReactionEntities.hpp"
 #include "JSONifier.hpp"
-#include "HttpStuff.hpp"
+#include "HttpClass.hpp"
 
 namespace DiscordCoreAPI {
 

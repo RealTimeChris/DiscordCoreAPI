@@ -1,12 +1,12 @@
-// EncodingStuff.hpp - Header for the "encoding stuff".
+// EncodingClass.hpp - Header for the encoder class.
 // Aug 22, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _ENCODING_STUFF_
-#define _ENCODING_STUFF_
+#ifndef _ENCODING_CLASS_
+#define _ENCODING_CLASS_
 
 #include "../pch.h"
 #include "DiscordCoreClient02.hpp"

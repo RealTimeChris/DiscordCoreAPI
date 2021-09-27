@@ -1,12 +1,12 @@
-// StickerStuff.hpp - Header for the guild member related stuff.
+// StickerEntities.hpp - Header for the sticker related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _STICKER_STUFF_
-#define _STICKER_STUFF_
+#ifndef _STICKER_ENTITIES_
+#define _STICKER_ENTITIES_
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"

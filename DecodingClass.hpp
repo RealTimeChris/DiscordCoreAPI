@@ -1,12 +1,12 @@
-// DecodingStuff.hpp - Header for the "decoding stuff".
+// DecodingClass.hpp - Header for the decoder class.
 // Jul 29, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _DECODING_STUFF_
-#define _DECODING_STUFF_
+#ifndef _DECODING_CLASS_
+#define _DECODING_CLASS_
 
 #include "../pch.h"
 

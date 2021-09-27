@@ -1,12 +1,12 @@
-// ApplicationCommandStuff.hpp - Header for the "application command" stuff.
+// ApplicationCommandEntities.hpp - Header for the application command classes and structs.
 // Aug 25, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _APPLICATION_COMMAND_STUFF_
-#define _APPLICATION_COMMAND_STUFF_
+#ifndef _APPLICATION_COMMAND_ENTITIES_
+#define _APPLICATION_COMMAND_ENTITIES_
 
 #include "../pch.h"
 #include "DiscordCoreClient02.hpp"

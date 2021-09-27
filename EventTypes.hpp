@@ -1,16 +1,16 @@
-// EventStuff01.hpp - Header for the winrt::event-manager class.
+// EventTypes.hpp - Header for the event types.
 // Apr 26, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _EVENT_STUFF_01_
-#define _EVENT_STUFF_01_
+#ifndef _EVENT_TYPES_
+#define _EVENT_TYPES_
 
 #include "../pch.h"
-#include "GuildMemberStuff.hpp"
-#include "ApplicationCommandStuff.hpp"
+#include "GuildMemberEntities.hpp"
+#include "ApplicationCommandEntities.hpp"
 
 namespace DiscordCoreAPI {
 
