@@ -112,25 +112,8 @@ namespace DiscordCoreInternal {
         threadContext->queueController = make_shared<DispatcherQueueController>(queueController2);
         threadContext->scheduler = make_shared<SchedulerWrapper>(newScheduler);
         threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
-        threadContext->scheduleGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->scheduler->CreateScheduleGroup());
         co_return threadContext;
     }
-
-    task<void> ThreadContext::releaseContext() {
-        if (this->scheduleGroup != nullptr) {
-            this->scheduleGroup->scheduleGroup->Release();
-            this->scheduleGroup = nullptr;
-        }
-        if (this->scheduler != nullptr) {
-            this->scheduler->scheduler->Release();
-            this->scheduler = nullptr;
-        }
-        if (this->dispatcherQueue != nullptr) {
-            co_await this->queueController->ShutdownQueueAsync();
-            this->dispatcherQueue = nullptr;
-        }        
-        this->~ThreadContext();
-    };
 
     shared_ptr<ThreadContext> ThreadManagerAgent::threadContext{ nullptr };
 }

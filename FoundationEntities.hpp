@@ -868,14 +868,6 @@ namespace  DiscordCoreInternal {
         UserData user{};
     };
 
-    struct ScheduleGroupWrapper {
-        ScheduleGroupWrapper(ScheduleGroup* dataPackage) {
-            this->scheduleGroup = dataPackage;
-
-        }
-        ScheduleGroup* scheduleGroup{ nullptr };
-    };
-
     struct SchedulerWrapper {
         SchedulerWrapper(Scheduler* dataPackage) {
             this->scheduler = dataPackage;
@@ -885,21 +877,36 @@ namespace  DiscordCoreInternal {
 
     struct ThreadContext {
 
+        shared_ptr<DispatcherQueueController> queueController{ nullptr };
+        shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
+        shared_ptr<SchedulerWrapper> scheduler{ nullptr };
+
         ThreadContext() {};
 
         ThreadContext(ThreadContext* threadContext) {
             this->queueController = threadContext->queueController;
             this->dispatcherQueue = threadContext->dispatcherQueue;
-            this->scheduleGroup = threadContext->scheduleGroup;
             this->scheduler = threadContext->scheduler;
         }
 
-        task<void> releaseContext();
+        void releaseContext() {
+            if (this->dispatcherQueue != nullptr) {
+                this->queueController->ShutdownQueueAsync();
+                this->dispatcherQueue = nullptr;
+            }
+            if (this->scheduler != nullptr) {
+                this->scheduler->scheduler->Release();
+                this->scheduler = nullptr;
+            }
+            
+        };
 
-        shared_ptr<DispatcherQueueController> queueController{ nullptr };
-        shared_ptr<ScheduleGroupWrapper> scheduleGroup{ nullptr };
-        shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
-        shared_ptr<SchedulerWrapper> scheduler{ nullptr };
+        ~ThreadContext() {
+            if (this->scheduler != nullptr) {
+                this->scheduler->scheduler->Release();
+                this->scheduler = nullptr;
+            }
+        }
     };
 
     enum class HeaderTypes {
