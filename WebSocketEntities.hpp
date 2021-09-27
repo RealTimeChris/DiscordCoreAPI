@@ -527,10 +527,10 @@ namespace DiscordCoreInternal {
 			if (this->maxReconnectTries > this->currentReconnectTries && this->voiceConnectionData.sessionId != "") {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
-				this->cleanup();
 				if (this->webSocketConnectionAgent->didWeDisconnect) {
 					receive(this->webSocketConnectionAgent->reconnectionBuffer);
 				}
+				this->cleanup();
 				*this->doWeReconnect = true;
 				string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
 				this->sendMessage(resumePayload);
@@ -538,10 +538,10 @@ namespace DiscordCoreInternal {
 			else if (this->maxReconnectTries > this->currentReconnectTries) {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
-				this->cleanup();
 				if (this->webSocketConnectionAgent->didWeDisconnect){
 					receive(this->webSocketConnectionAgent->reconnectionBuffer);
-			}
+				}
+				this->cleanup();
 				*this->doWeReconnect = true;
 			}
 			else if (this->maxReconnectTries <= this->currentReconnectTries) {
