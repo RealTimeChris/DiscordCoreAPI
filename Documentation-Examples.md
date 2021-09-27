@@ -62,4 +62,4 @@
 ## Select-Menu Manager:
 
 ## Voice:
-- ### [Connecting To/Disconnecting From a Voice Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Connecting%20To%20/%20Disconnecting%From%20a%20Voice%20Channel.md)
+- ### [Connecting To/Disconnecting From a Voice Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Conneting%20To-Disconnnecting%20From%20 a%20Voice%20Channel)
