@@ -129,22 +129,30 @@ namespace DiscordCoreAPI {
 					send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
 					AudioFrameData frameData{};
 					while (try_receive(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), frameData)) {};
-					DiscordCoreClientBase::audioBuffersMap->erase(this->id);
-					YouTubeAPI::sendAudioDataBufferMap->erase(this->id);
-					SoundCloudAPI::sendAudioDataBufferMap->erase(this->id);
-					SongAPI::sendAudioDataBufferMap->erase(this->id);
-					audioBuffer.~shared_ptr();
-					SoundCloudAPI::voiceConnectionMap->erase(this->id);
-					YouTubeAPI::voiceConnectionMap->erase(this->id);
-					SongAPI::voiceConnectionMap->erase(this->id);
-					auto soundCloudAPI = SoundCloudAPI::soundCloudAPIMap->at(this->id);
-					SoundCloudAPI::soundCloudAPIMap->erase(this->id);
-					DiscordCoreClientBase::soundCloudAPIMap->erase(this->id);
-					soundCloudAPI.~shared_ptr();
-					auto youtubeAPI = YouTubeAPI::youtubeAPIMap->at(this->id);
-					YouTubeAPI::youtubeAPIMap->erase(this->id);
-					DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
-					youtubeAPI.~shared_ptr();
+					if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)) {
+						DiscordCoreClientBase::audioBuffersMap->erase(this->id);
+						YouTubeAPI::sendAudioDataBufferMap->erase(this->id);
+						SoundCloudAPI::sendAudioDataBufferMap->erase(this->id);
+						SongAPI::sendAudioDataBufferMap->erase(this->id);
+						audioBuffer.~shared_ptr();
+					}
+					if (SoundCloudAPI::voiceConnectionMap->contains(this->id)) {
+						SoundCloudAPI::voiceConnectionMap->erase(this->id);
+						YouTubeAPI::voiceConnectionMap->erase(this->id);
+						SongAPI::voiceConnectionMap->erase(this->id);
+					}
+					if (SoundCloudAPI::soundCloudAPIMap->contains(this->id) ){
+						auto soundCloudAPI = SoundCloudAPI::soundCloudAPIMap->at(this->id);
+						SoundCloudAPI::soundCloudAPIMap->erase(this->id);
+						DiscordCoreClientBase::soundCloudAPIMap->erase(this->id);
+						soundCloudAPI.~shared_ptr();
+					}
+					if (YouTubeAPI::youtubeAPIMap->contains(this->id) ){
+						auto youtubeAPI = YouTubeAPI::youtubeAPIMap->at(this->id);
+						YouTubeAPI::youtubeAPIMap->erase(this->id);
+						DiscordCoreClientBase::youtubeAPIMap->erase(this->id);
+						youtubeAPI.~shared_ptr();
+					}
 				}
 				this->areWeConnectedBool = false;
 			}
