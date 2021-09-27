@@ -69,48 +69,48 @@ namespace DiscordCoreAPI {
 
 		shared_ptr<VoiceConnection>* connectToVoice(string channelId) {
 			shared_ptr<VoiceConnection>* voiceConnectionPtr{ nullptr };
-			if (DiscordCoreClientBase::thisPointer->voiceConnectionMap->contains(this->id)) {
-				return  &DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id);
+			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
+				return  &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			else if (channelId != "") {
 				DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData;
 				voiceConnectInitData.channelId = channelId;
 				voiceConnectInitData.guildId = this->id;
-				voiceConnectInitData.userId = DiscordCoreClientBase::thisPointer->currentUser.id;
-				DiscordCoreClientBase::thisPointer->voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(voiceConnectInitData, DiscordCoreClientBase::thisPointer->audioBuffersMap, DiscordCoreClientBase::thisPointer->webSocketConnectionAgent, this->id, DiscordCoreClientBase::thisPointer->voiceConnectionMap));
+				voiceConnectInitData.userId = DiscordCoreClientBase::currentUser.id;
+				DiscordCoreClientBase::voiceConnectionMap->insert_or_assign(this->id, make_shared<VoiceConnection>(voiceConnectInitData, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::thisPointer->webSocketConnectionAgent, this->id, DiscordCoreClientBase::voiceConnectionMap));
 				DiscordGuild* discordGuild = new DiscordGuild(*this);
-				YouTubeAPI::voiceConnectionMap = DiscordCoreClientBase::thisPointer->voiceConnectionMap;
-				SoundCloudAPI::voiceConnectionMap = DiscordCoreClientBase::thisPointer->voiceConnectionMap;
-				SongAPI::voiceConnectionMap = DiscordCoreClientBase::thisPointer->voiceConnectionMap;
+				YouTubeAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
+				SoundCloudAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
+				SongAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
 				YouTubeAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
 				SoundCloudAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
 				SongAPI::discordGuildMap->insert(make_pair(this->id, discordGuild));
-				YouTubeAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id));
-				SoundCloudAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id));
-				SongAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id));
+				YouTubeAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				SoundCloudAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
+				SongAPI::voiceConnectionMap->insert_or_assign(this->id, DiscordCoreClientBase::voiceConnectionMap->at(this->id));
 				auto youtubeAPI = make_shared<YouTubeAPI>(this->id);
-				DiscordCoreClientBase::thisPointer->youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
+				DiscordCoreClientBase::youtubeAPIMap->insert_or_assign(this->id, youtubeAPI);
 				auto soundCloudAPI = make_shared<SoundCloudAPI>(this->id);
-				DiscordCoreClientBase::thisPointer->soundCloudAPIMap->insert(make_pair(this->id, soundCloudAPI));
+				DiscordCoreClientBase::soundCloudAPIMap->insert(make_pair(this->id, soundCloudAPI));
 				auto songAPI = make_shared<SongAPI>(discordGuild);
-				DiscordCoreClientBase::thisPointer->songAPIMap->insert(make_pair(this->id, songAPI));
+				DiscordCoreClientBase::songAPIMap->insert(make_pair(this->id, songAPI));
 				this->areWeConnectedBool = true;
-				return &DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id);
+				return &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 			}
 			return voiceConnectionPtr;
 		}
 
 		void disconnect() {
-			DiscordCoreClientBase::thisPointer->currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
-			if (DiscordCoreClientBase::thisPointer->voiceConnectionMap->contains(this->id)) {
-				if (DiscordCoreClientBase::thisPointer->songAPIMap->contains(this->id)) {
+			DiscordCoreClientBase::currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
+			if (DiscordCoreClientBase::voiceConnectionMap->contains(this->id)) {
+				if (DiscordCoreClientBase::songAPIMap->contains(this->id)) {
 					SongAPI::stop(this->id);
 					DiscordGuild discordGuild(*this);
 					discordGuild.data.playlist = SongAPI::getPlaylist(this->id);
 					discordGuild.writeDataToDB();
-					DiscordCoreClientBase::thisPointer->songAPIMap->erase(this->id);
+					DiscordCoreClientBase::songAPIMap->erase(this->id);
 				}
-				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id);
+				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::voiceConnectionMap->at(this->id);
 				(*voiceConnection)->stop();
 				if ((*voiceConnection)->areWePlaying) {
 					(*voiceConnection)->areWePlaying = false;
@@ -122,13 +122,13 @@ namespace DiscordCoreAPI {
 					(*voiceConnection)->encoder = nullptr;
 				}
 				(*voiceConnection)->hasTerminateRun = true;
-				DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id)->voiceChannelWebSocketAgent->~VoiceChannelWebSocketAgent();
-				DiscordCoreClientBase::thisPointer->voiceConnectionMap->erase(this->id);
-				if (DiscordCoreClientBase::thisPointer->audioBuffersMap->contains(this->id)) {
-					send(DiscordCoreClientBase::thisPointer->audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
+				DiscordCoreClientBase::voiceConnectionMap->at(this->id)->voiceChannelWebSocketAgent->~VoiceChannelWebSocketAgent();
+				DiscordCoreClientBase::voiceConnectionMap->erase(this->id);
+				if (DiscordCoreClientBase::audioBuffersMap->contains(this->id)) {
+					send(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), AudioFrameData{ .type = AudioFrameType::Cancel });
 					AudioFrameData frameData{};
-					while (try_receive(DiscordCoreClientBase::thisPointer->audioBuffersMap->at(this->id).get(), frameData)) {};
-					DiscordCoreClientBase::thisPointer->audioBuffersMap->erase(this->id);
+					while (try_receive(DiscordCoreClientBase::audioBuffersMap->at(this->id).get(), frameData)) {};
+					DiscordCoreClientBase::audioBuffersMap->erase(this->id);
 					YouTubeAPI::sendAudioDataBufferMap->erase(this->id);
 					SoundCloudAPI::sendAudioDataBufferMap->erase(this->id);
 				}
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 					value.guildId = this->id;
 					ChannelData channelData = value;
 					Channel channel(channelData);
-					DiscordCoreClientBase::thisPointer->thisPointer->channels->insertChannelAsync(channel).get();
+					DiscordCoreClientBase::thisPointer->channels->insertChannelAsync(channel).get();
 				}
 				cout << "Caching guild members for guild: " << this->name << endl;
 				for (unsigned int x = 0; x < this->members.size(); x += 1) {
@@ -221,19 +221,19 @@ namespace DiscordCoreAPI {
 					DiscordGuildMember discordGuildMember(guildMemberData);
 					discordGuildMember.writeDataToDB();
 					GuildMember guildMember(guildMemberData, this->id);
-					DiscordCoreClientBase::thisPointer->thisPointer->guildMembers->insertGuildMemberAsync(guildMember, this->id).get();
+					DiscordCoreClientBase::thisPointer->guildMembers->insertGuildMemberAsync(guildMember, this->id).get();
 				}
 				cout << "Caching roles for guild: " << this->name << endl;
 				for (auto const& value : roles) {
 					RoleData roleData = value;
 					Role role(roleData);
-					DiscordCoreClientBase::thisPointer->thisPointer->roles->insertRoleAsync(role).get();
+					DiscordCoreClientBase::thisPointer->roles->insertRoleAsync(role).get();
 				}
 				cout << "Caching users for guild: " << this->name << endl << endl;
 				for (auto value : members) {
 					UserData userData = value.user;
 					User user(userData);
-					DiscordCoreClientBase::thisPointer->thisPointer->users->insertUserAsync(user).get();
+					DiscordCoreClientBase::thisPointer->users->insertUserAsync(user).get();
 				}
 			}
 			catch (...) {
