@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 			DiscordCoreAPI::EditApplicationCommandPermissionsData dataPackage;
 			ApplicationCommandPermissionData dataPackage02{ .type = ApplicationCommandPermissionType::User,.permission = true, .id = "859853159115259905" };
-			dataPackage.commandName = "selldrugs";
+			dataPackage.commandName = "botinfo";
 			dataPackage.permissions.push_back(dataPackage02);
 			dataPackage.guildId = args->eventData.getGuildId();
 
