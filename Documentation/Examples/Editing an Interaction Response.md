@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 			RespondToInputEventData dataPackage03{ inputEventData };
 			dataPackage03.type = DesiredInputEventResponseType::InteractionResponseEdit;
 			dataPackage03.addContent("Test Response, Edited!");
-			InputEvents::respondToEvent(dataPackage02);
+			InputEvents::respondToEvent(dataPackage03);
 
 			co_return;
 		}
