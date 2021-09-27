@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpRequestAgent::initialize(this->botToken, this->baseURL);
 			SoundCloudSong::initialize();
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
-			DiscordCoreClientBase::webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
+			this->webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
 			SongAPI::initialize(DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::voiceConnectionMap, this->discordGuildMap);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize();

@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 			AudioFrameData frameData{};
 			while (try_receive(SongAPI::sendAudioDataBufferMap->at(guildId).get(), frameData)) {};
 			SongAPI::songAPIMap->at(guildId)->savePlaylist();
-			DiscordCoreClientBase::songAPIMap->erase(guildId);
+			DiscordCoreClientBase::thisPointer->songAPIMap->erase(guildId);
 			SongAPI::songAPIMap->erase(guildId);
 			DiscordGuild* discordGuild = SongAPI::discordGuildMap->at(guildId);
 			shared_ptr<SongAPI> songAPICore = make_shared<SongAPI>(discordGuild);

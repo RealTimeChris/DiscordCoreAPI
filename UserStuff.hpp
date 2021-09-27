@@ -98,6 +98,8 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClientBase;
 		friend class DiscordCoreClient;
 
+		BotUser() {};
+
 		BotUser(BotUser* dataPackage) {
 			if (dataPackage != nullptr) {
 				*this = *dataPackage;
