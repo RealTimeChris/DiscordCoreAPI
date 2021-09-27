@@ -36,16 +36,16 @@ namespace DiscordCoreAPI {
 
 		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
-			
+			InputEvents::deleteInputEventResponseAsync(args->eventData).get();			
+
 			RespondToInputEventData dataPackage{ args->eventData };
 			dataPackage.type = DesiredInputEventResponseType::DeferredResponse;
 			InputEvents::respondToEvent(dataPackage);
 
-			RespondToInputEventData dataPackage{ args->eventData };
-			dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
-			dataPackage.addContent("Test Response");
-			InputEvents::respondToEvent(dataPackage);
+			RespondToInputEventData dataPackage01{ args->eventData };
+			dataPackage01.type = DesiredInputEventResponseType::InteractionResponse;
+			dataPackage01.addContent("Test Response");
+			InputEvents::respondToEvent(dataPackage01);
 
 			co_return;
 		}
