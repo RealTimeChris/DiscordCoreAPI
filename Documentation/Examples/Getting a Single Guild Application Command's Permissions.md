@@ -3,7 +3,6 @@
 ---
 - Access the `ApplicationCommands` class of the `DiscordCoreAPI` namespace.
 - Select, from the `ApplicationCommands` class, the `getApplicationCommandPermissionsAsync()` function and execute it, while passing in an argument of type `DiscordCoreAPI::GetApplicationCommandPermissionsData`, with a return value of type `auto` or `GuildApplicationCommandPermissionData`.
-- Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
 // Test.hpp - Header for the "test" command.
