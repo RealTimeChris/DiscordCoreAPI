@@ -10,11 +10,11 @@
 
 #include "../pch.h"
 #include "ThreadManager.hpp"
-#include "HttpClass.hpp"
+#include "Http.hpp"
 #include "GuildEntities.hpp"
 #include "InteractionEntities.hpp"
 #include "EventTypes.hpp"
-#include "InputEventClass.hpp"
+#include "InputEvents.hpp"
 #include "DatabaseEntities.hpp"
 #include "SongAPI.hpp"
 #include "StickerEntities.hpp"
@@ -65,7 +65,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::thisPointer->doWeQuit = true;
 			SelectMenu::cleanup();
 			Button::cleanup();
-			DatabaseManagerAgent::cleanup();
 			DiscordCoreInternal::UserManagerAgent::cleanup();
 			DiscordCoreInternal::RoleManagerAgent::cleanup();
 			DiscordCoreInternal::GuildManagerAgent::cleanup();
@@ -75,6 +74,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::ReactionManagerAgent::cleanup();
 			DiscordCoreInternal::GuildMemberManagerAgent::cleanup();
 			DiscordCoreInternal::InteractionManagerAgent::cleanup();
+			DatabaseManagerAgent::cleanup();
 			YouTubeAPI::cleanup();
 			SoundCloudAPI::cleanup();
 			SongAPI::cleanup();
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 			SoundCloudSong::initialize();
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
 			this->webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
-			SongAPI::initialize(DiscordCoreClientBase::songAPIMap, DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, DiscordCoreClientBase::voiceConnectionMap, this->discordGuildMap);
+			SongAPI::initialize(this->discordGuildMap);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize();
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize();

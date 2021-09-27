@@ -137,7 +137,7 @@ namespace DiscordCoreInternal {
 		}
 
 		static void cleanup() {
-			RoleManagerAgent::threadContext->releaseGroup();
+			RoleManagerAgent::threadContext->releaseContext();
 		}
 
 		vector<DiscordCoreAPI::Role> getObjectData(GetRolesData  dataPackage) {

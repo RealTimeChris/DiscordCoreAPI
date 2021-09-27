@@ -11,7 +11,7 @@
 #include "../pch.h"
 #include "ReactionEntities.hpp"
 #include "JSONifier.hpp"
-#include "HttpClass.hpp"
+#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -488,7 +488,7 @@ namespace DiscordCoreInternal {
 		}
 
 		static void cleanup() {
-			MessageManagerAgent::threadContext->releaseGroup();
+			MessageManagerAgent::threadContext->releaseContext();
 		}
 
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage) {

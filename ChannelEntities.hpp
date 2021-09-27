@@ -10,7 +10,7 @@
 
 #include "../pch.h"
 #include "FoundationEntities.hpp"
-#include "HttpClass.hpp"
+#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -112,7 +112,7 @@ namespace DiscordCoreInternal	{
 		}
 
 		static void cleanup() {
-			ChannelManagerAgent::threadContext->releaseGroup();
+			ChannelManagerAgent::threadContext->releaseContext();
 		};
 
 		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage) {

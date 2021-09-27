@@ -1,12 +1,12 @@
-// EncodingClass.hpp - Header for the encoder class.
+// SongEncoder.hpp - Header for the song encoder class.
 // Aug 22, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _ENCODING_CLASS_
-#define _ENCODING_CLASS_
+#ifndef _SONG_ENCODER_
+#define _SONG_ENCODER_
 
 #include "../pch.h"
 #include "DiscordCoreClient02.hpp"

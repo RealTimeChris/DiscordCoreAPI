@@ -1,12 +1,12 @@
-// HttpClass.hpp - Header for the Http class.
+// Http.hpp - Header for the Http class.
 // May 12, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _HTTP_CLASS_
-#define _HTTP_CLASS_
+#ifndef _HTTP_
+#define _HTTP_
 
 #include "../pch.h"
 #include "JSONifier.hpp"

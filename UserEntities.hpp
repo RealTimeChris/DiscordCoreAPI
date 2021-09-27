@@ -194,7 +194,7 @@ namespace DiscordCoreInternal {
 		}
 
 		static void cleanup() {
-			UserManagerAgent::threadContext->releaseGroup();
+			UserManagerAgent::threadContext->releaseContext();
 		}
 
 		DiscordCoreAPI::User getObjectData(GetUserData dataPackage) {

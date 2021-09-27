@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
         }
 
         static void cleanup() {
-            DatabaseManagerAgent::threadContext->releaseGroup();
+            DatabaseManagerAgent::threadContext->releaseContext();
         }
 
         static bsoncxx::builder::basic::document convertUserDataToDBDoc(DiscordUserData discordUserData) {

@@ -935,7 +935,7 @@ namespace DiscordCoreInternal {
         }
 
         static void cleanup() {
-            InteractionManagerAgent::threadContext->releaseGroup();
+            InteractionManagerAgent::threadContext->releaseContext();
         }
 
         DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage) {
@@ -1382,7 +1382,9 @@ namespace DiscordCoreAPI {
         }
 
         static void cleanup() {
-            SelectMenu::threadContext->releaseGroup();
+            if (SelectMenu::threadContext != nullptr) {
+                SelectMenu::threadContext->releaseContext();
+            }
         }
 
         string getSelectMenuId() {
@@ -1511,9 +1513,10 @@ namespace DiscordCoreAPI {
         }
 
         static void cleanup() {
-            Button::threadContext->releaseGroup();
+            if (Button::threadContext != nullptr) {
+                Button::threadContext->releaseContext();
+            }
         }
-
         string getButtonId() {
             return this->buttonId;
         }

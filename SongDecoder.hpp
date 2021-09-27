@@ -1,12 +1,12 @@
-// DecodingClass.hpp - Header for the decoder class.
+// SongDecoder.hpp - Header for the song decoder class.
 // Jul 29, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _DECODING_CLASS_
-#define _DECODING_CLASS_
+#ifndef _SONG_DECODER_
+#define _SONG_DECODER_
 
 #include "../pch.h"
 

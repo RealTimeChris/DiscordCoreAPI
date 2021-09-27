@@ -173,10 +173,11 @@ namespace DiscordCoreInternal {
 				}
 
 				cout << "Sending Message: " << message << endl;
-
-				if (this->messageWriter != nullptr) {
-					this->messageWriter.WriteString(to_hstring(message));
-					this->messageWriter.StoreAsync().get();
+				if (this->webSocket != nullptr) {
+					if (this->messageWriter != nullptr) {
+						this->messageWriter.WriteString(to_hstring(message));
+						this->messageWriter.StoreAsync().get();
+					}
 				}
 
 				cout << "Send Complete." << endl << endl;

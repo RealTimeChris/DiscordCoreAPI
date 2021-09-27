@@ -8,7 +8,7 @@
 #ifndef _DISCORD_CORE_CLIENT_02_
 #define _DISCORD_CORE_CLIENT_02_
 
-#include "EventHandlerClass.hpp"
+#include "EventHandler.hpp"
 
 namespace DiscordCoreAPI {
 

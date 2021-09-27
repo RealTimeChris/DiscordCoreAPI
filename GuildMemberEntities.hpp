@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 		}
 
 		static void cleanup() {
-			GuildMemberManagerAgent::threadContext->releaseGroup();
+			GuildMemberManagerAgent::threadContext->releaseContext();
 		}
 
 		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage) {

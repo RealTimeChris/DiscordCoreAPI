@@ -9,7 +9,7 @@
 #define _DISCORD_CORE_CLIENT_BASE_
 
 #include "../pch.h"
-#include "VoiceConnectionClass.hpp"
+#include "VoiceConnection.hpp"
 #include "YouTubeAPI.hpp"
 #include "SoundCloudAPI.hpp"
 #include "UserEntities.hpp"
@@ -27,7 +27,9 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::VoiceChannelWebSocketAgent;
 		friend class DiscordCoreInternal::WebSocketConnectionAgent;
 		friend class VoiceConnection;
+		friend class SoundCloudAPI;
 		friend class InputEvents;
+		friend class YouTubeAPI;
 		friend class SongAPI;
 		friend class Guild;
 

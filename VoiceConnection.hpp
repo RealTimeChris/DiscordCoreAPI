@@ -1,17 +1,17 @@
-// VoiceConnectionClass.hpp - Header for the voice connection class.
+// VoiceConnection.hpp - Header for the voice connection class.
 // Jul 15, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _VOICE_CONNECTION_CLASS_
-#define _VOICE_CONNECTION_CLASS_
+#ifndef _VOICE_CONNECTION_
+#define _VOICE_CONNECTION_
 
 #include "../pch.h"
 #include "WebSocketEntities.hpp"
-#include "DecodingClass.hpp"
-#include "EncodingClass.hpp"
+#include "SongDecoder.hpp"
+#include "SongEncoder.hpp"
 #include "GuildEntities.hpp"
 
 namespace DiscordCoreAPI {

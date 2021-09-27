@@ -1,12 +1,12 @@
-// InputEventClass.hpp - Header for the input event class.
+// InputEvents.hpp - Header for the input event handler class.
 // Aug 18, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
 
-#ifndef _INPUT_EVENT_CLASS_
-#define _INPUT_EVENT_CLASS_
+#ifndef _INPUT_EVENTS_
+#define _INPUT_EVENTS_
 
 #include "../pch.h"
 #include "MessageEntities.hpp"

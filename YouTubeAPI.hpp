@@ -8,10 +8,10 @@
 #ifndef _YOUTUBE_API_
 #define _YOUTUBE_API_
 
-#include "HttpClass.hpp"
+#include "Http.hpp"
 #include "DataParsingFunctions.hpp"
 #include "DatabaseEntities.hpp"
-#include "VoiceConnectionClass.hpp"
+#include "VoiceConnection.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -413,7 +413,7 @@ namespace DiscordCoreAPI {
 			auto threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			co_await resume_foreground(*threadContext->dispatcherQueue.get());
 			this->currentTask;
-			threadContext->releaseGroup();
+			threadContext->releaseContext();
 			co_return;
 		}
 
@@ -426,7 +426,7 @@ namespace DiscordCoreAPI {
 				auto song = newSong;
 				thisPtr->areWeStopping = false;
 				BuildSongDecoderData dataPackage{};;
-				if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
+				if (YouTubeAPI::sendAudioDataBufferMap->contains(thisPtr->guildId)) {
 					cout << "WERE NOT HERE 0123012301230123" << endl;
 					thisPtr->sendAudioDataBuffer = YouTubeAPI::sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
@@ -472,7 +472,7 @@ namespace DiscordCoreAPI {
 						agent::wait(songDecoder);
 						delete songDecoder;
 						songDecoder = nullptr;
-						threadContext->releaseGroup();
+						threadContext->releaseContext();
 						cancel_current_task();
 						return;
 					}
@@ -527,7 +527,7 @@ namespace DiscordCoreAPI {
 							agent::wait(songDecoder);
 							delete songDecoder;
 							songDecoder = nullptr;
-							threadContext->releaseGroup();
+							threadContext->releaseContext();
 							cancel_current_task();
 							return;
 						}
@@ -558,7 +558,7 @@ namespace DiscordCoreAPI {
 									agent::wait(songDecoder);
 									delete songDecoder;
 									songDecoder = nullptr;
-									threadContext->releaseGroup();
+									threadContext->releaseContext();
 									cancel_current_task();
 									return;
 								}
@@ -604,7 +604,7 @@ namespace DiscordCoreAPI {
 								agent::wait(songDecoder);
 								delete songDecoder;
 								songDecoder = nullptr;
-								threadContext->releaseGroup();
+								threadContext->releaseContext();
 								cancel_current_task();
 								return;
 							}
@@ -659,7 +659,7 @@ namespace DiscordCoreAPI {
 				songDecoder = nullptr;
 				return;
 				}, this->cancelToken));
-				threadContext->releaseGroup();
+				threadContext->releaseContext();
 				co_return;
 		};
 

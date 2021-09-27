@@ -9,10 +9,10 @@
 #define _SOUNDCLOUD_API_
 
 #include "DiscordCoreClientBase.hpp"
-#include "HttpClass.hpp"
+#include "Http.hpp"
 #include "DataParsingFunctions.hpp"
 #include "DatabaseEntities.hpp"
-#include "VoiceConnectionClass.hpp"
+#include "VoiceConnection.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -235,7 +235,7 @@ namespace DiscordCoreAPI {
 			auto threadContext = DiscordCoreInternal::ThreadManager::getThreadContext(DiscordCoreInternal::ThreadType::Music).get();
 			co_await resume_foreground(*threadContext->dispatcherQueue.get());
 			this->currentTask;
-			threadContext->releaseGroup();
+			threadContext->releaseContext();
 			co_return;
 		}
 
@@ -249,11 +249,12 @@ namespace DiscordCoreAPI {
 				auto song = newSong;
 				thisPtr->areWeStopping = false;
 				BuildSongDecoderData dataPackage{};
-				if (thisPtr->sendAudioDataBufferMap->contains(thisPtr->guildId)) {
+				if (SoundCloudAPI::sendAudioDataBufferMap->contains(thisPtr->guildId)) {
 					cout << "WERE NOT HERE 0123012301230123" << endl;
 					thisPtr->sendAudioDataBuffer = SoundCloudAPI::sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
 				else {
+					cout << "WERE NOT HERE 01010101" << endl;
 					SoundCloudAPI::sendAudioDataBufferMap->insert_or_assign(thisPtr->guildId, make_shared<unbounded_buffer<AudioFrameData>>());
 					thisPtr->sendAudioDataBuffer = SoundCloudAPI::sendAudioDataBufferMap->at(thisPtr->guildId);
 				}
@@ -270,7 +271,7 @@ namespace DiscordCoreAPI {
 						songDecoder->refreshTimeForBuffer = 10;
 						thisPtr->sendEmptyingFrames(dataPackage.sendEncodedAudioDataBuffer);
 						agent::wait(songDecoder);
-						threadContext->releaseGroup();
+						threadContext->releaseContext();
 						cancel_current_task();
 						return;
 					}
@@ -333,7 +334,7 @@ namespace DiscordCoreAPI {
 				songDecoder = nullptr;
 				return;
 				}, this->cancelToken));
-			threadContext->releaseGroup();
+			threadContext->releaseContext();
 			co_return;
 		};
 
@@ -376,10 +377,10 @@ namespace DiscordCoreAPI {
 			return HRESULT();
 		}
 	};
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* SoundCloudAPI::sendAudioDataBufferMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
-	map<string, shared_ptr<VoiceConnection>>* SoundCloudAPI::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
-	map<string, shared_ptr<SoundCloudAPI>>* SoundCloudAPI::soundCloudAPIMap{ new map<string, shared_ptr<SoundCloudAPI>>() };
-	map<string, DiscordGuild*>* SoundCloudAPI::discordGuildMap{ new map<string, DiscordGuild*>() };
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* SoundCloudAPI::sendAudioDataBufferMap{ nullptr };
+	map<string, shared_ptr<VoiceConnection>>* SoundCloudAPI::voiceConnectionMap{ nullptr };
+	map<string, shared_ptr<SoundCloudAPI>>* SoundCloudAPI::soundCloudAPIMap{ nullptr };
+	map<string, DiscordGuild*>* SoundCloudAPI::discordGuildMap{ nullptr };
 	string SoundCloudAPI::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
 	string SoundCloudAPI::baseSearchURL{ "https://soundcloud.com/search?q=" };
 	string SoundCloudAPI::clientId{ "" };

@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 		}
 
 		static void cleanup() {
-			ReactionManagerAgent::threadContext->releaseGroup();
+			ReactionManagerAgent::threadContext->releaseContext();
 		}
 
 		DiscordCoreAPI::Reaction putObjectData(PutReactionData dataPackage) {

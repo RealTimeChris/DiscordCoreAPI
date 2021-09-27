@@ -49,15 +49,14 @@ namespace DiscordCoreAPI {
 			this->discordGuild = discordGuildNew;
 			this->loadPlaylist();
 		}
-
-		static void initialize(map<string, shared_ptr<SongAPI>>* songAPICoreMapNew, map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMapNew, map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMapNew, 
-			map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMapNew, map<string, shared_ptr<VoiceConnection>>* voiceConnectionMapNew, map<string, DiscordGuild*>* discordGuildMapNew) {
-			SoundCloudAPI::initialize(soundCloudAPIMapNew, audioBuffersMapNew, discordGuildMapNew, voiceConnectionMapNew);
-			YouTubeAPI::initialize(youtubeAPIMapNew, audioBuffersMapNew, discordGuildMapNew, voiceConnectionMapNew);
-			SongAPI::sendAudioDataBufferMap = audioBuffersMapNew;
-			SongAPI::voiceConnectionMap = voiceConnectionMapNew;
+		
+		static void initialize(map<string, DiscordGuild*>* discordGuildMapNew) {
+			SoundCloudAPI::initialize(DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::audioBuffersMap, discordGuildMapNew, DiscordCoreClientBase::voiceConnectionMap);
+			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, discordGuildMapNew, DiscordCoreClientBase::voiceConnectionMap);
+			SongAPI::sendAudioDataBufferMap = DiscordCoreClientBase::audioBuffersMap;
+			SongAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
 			SongAPI::discordGuildMap = discordGuildMapNew;
-			SongAPI::songAPIMap = songAPICoreMapNew;
+			SongAPI::songAPIMap = DiscordCoreClientBase::songAPIMap;
 		}
 
 		static void cleanup() {
@@ -73,11 +72,17 @@ namespace DiscordCoreAPI {
 		
 		void refreshInterfaces() {
 			DiscordGuild* discordGuildNew = this->discordGuild;
+			auto songAPI = SongAPI::songAPIMap->at(discordGuildNew->data.guildId);
+			songAPI.~shared_ptr();
 			SongAPI::songAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<SongAPI>(discordGuildNew));
+			auto youtubeAPI = YouTubeAPI::youtubeAPIMap->at(discordGuildNew->data.guildId);
+			youtubeAPI.~shared_ptr();
 			YouTubeAPI::youtubeAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<YouTubeAPI>(discordGuildNew->data.guildId));
+			auto soundCloudAPI = SoundCloudAPI::soundCloudAPIMap->at(discordGuildNew->data.guildId);
+			soundCloudAPI.~shared_ptr();
 			SoundCloudAPI::soundCloudAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<SoundCloudAPI>(discordGuildNew->data.guildId));
 		}
-
+		
 		void savePlaylist() {
 			this->playlist.songQueue = cleanQueue(this->playlist.songQueue);
 			this->discordGuild->data.playlist = this->playlist;
@@ -191,7 +196,6 @@ namespace DiscordCoreAPI {
 		}
 
 		static bool skip(string guildId, GuildMember guildMember) {
-			SongAPI::songAPIMap->at(guildId)->refreshInterfaces();
 			if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 				if (!SoundCloudAPI::stop(guildId)) {
 					return false;
@@ -202,6 +206,7 @@ namespace DiscordCoreAPI {
 					return false;
 				}
 			}
+			SongAPI::songAPIMap->at(guildId)->refreshInterfaces();
 			if (SongAPI::isLoopAllEnabled(guildId) || SongAPI::isLoopSongEnabled(guildId)) {
 				SongAPI::songAPIMap->at(guildId)->playlist.songQueue.push_back(SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
 				SongAPI::setCurrentSong(Song(), guildId);
@@ -224,7 +229,6 @@ namespace DiscordCoreAPI {
 		}
 
 		static bool stop(string guildId) {
-			SongAPI::songAPIMap->at(guildId)->refreshInterfaces();
 			if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 				if (!SoundCloudAPI::stop(guildId)) {
 					return false;
@@ -235,6 +239,7 @@ namespace DiscordCoreAPI {
 					return false;
 				}
 			}
+			SongAPI::songAPIMap->at(guildId)->refreshInterfaces();
 			vector<Song> newVector02;
 			if (SongAPI::songAPIMap->at(guildId)->playlist.currentSong.description != "") {
 				newVector02.push_back(SongAPI::songAPIMap->at(guildId)->playlist.currentSong);
@@ -405,12 +410,13 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 		}
+
 	};
 
-	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* SongAPI::sendAudioDataBufferMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
-	map<string, shared_ptr<VoiceConnection>>* SongAPI::voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
-	map<string, shared_ptr<SongAPI>>* SongAPI::songAPIMap{ new map <string, shared_ptr<SongAPI >>() };
-	map<string, DiscordGuild*>* SongAPI::discordGuildMap{ new map<string, DiscordGuild*>() };
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* SongAPI::sendAudioDataBufferMap{ nullptr };
+	map<string, shared_ptr<VoiceConnection>>* SongAPI::voiceConnectionMap{ nullptr };
+	map<string, shared_ptr<SongAPI>>* SongAPI::songAPIMap{ nullptr };
+	map<string, DiscordGuild*>* SongAPI::discordGuildMap{ nullptr };
 }
 
 void DiscordCoreInternal::DataParser::parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure) {

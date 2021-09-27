@@ -888,25 +888,15 @@ namespace  DiscordCoreInternal {
         ThreadContext() {};
 
         ThreadContext(ThreadContext* threadContext) {
+            this->queueController = threadContext->queueController;
             this->dispatcherQueue = threadContext->dispatcherQueue;
             this->scheduleGroup = threadContext->scheduleGroup;
             this->scheduler = threadContext->scheduler;
         }
 
-        void releaseGroup() {
-            if (this->scheduleGroup != nullptr) {
-                this->scheduleGroup->scheduleGroup->Release();
-                this->scheduleGroup = nullptr;
-            }
-        };
+        task<void> releaseContext();
 
-        ~ThreadContext() {
-            if (this->scheduleGroup != nullptr) {
-                this->scheduleGroup->scheduleGroup->Release();
-                this->scheduleGroup = nullptr;
-            }
-        }
-
+        shared_ptr<DispatcherQueueController> queueController{ nullptr };
         shared_ptr<ScheduleGroupWrapper> scheduleGroup{ nullptr };
         shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
         shared_ptr<SchedulerWrapper> scheduler{ nullptr };

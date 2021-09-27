@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 		}
 
 		static void cleanup() {
-			StickerManagerAgent::threadContext->releaseGroup();
+			StickerManagerAgent::threadContext->releaseContext();
 		}
 
 		void run() {

@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
         }
 
         static void cleanup() {
-            ThreadManagerAgent::threadContext->releaseGroup();
+            ThreadManagerAgent::threadContext->releaseContext();
         }
 
         void run() {
@@ -59,11 +59,8 @@ namespace DiscordCoreInternal {
     class ThreadManager {
     public:
 
-        static concurrent_vector<shared_ptr<ThreadContext>> threads;
-
         static void intialize() {
             shared_ptr<ThreadContext> threadContext = createThreadContext(ThreadType::Regular).get();
-            ThreadManager::threads.push_back(threadContext);
             ThreadManagerAgent::initialize(threadContext);
         }
 
@@ -73,35 +70,16 @@ namespace DiscordCoreInternal {
             requestAgent.start();
             agent::wait(&requestAgent);
             auto threadContext = receive(requestAgent.outputBuffer);
-            ThreadManager::threads.push_back(threadContext);
             co_return threadContext;
         }
 
         ~ThreadManager() {
-            for (auto value : ThreadManager::threads) {
-                value->scheduler->scheduler->Release();
-                value->scheduleGroup->scheduleGroup->Release();
-            }
             ThreadManagerAgent::cleanup();
         };
 
     };
 
     task<shared_ptr<ThreadContext>> createThreadContext(ThreadType threadType) {
-        for (auto value : ThreadManager::threads) {
-            if (value->scheduleGroup == nullptr) {
-                if (threadType == ThreadType::Music) {
-                    if (value->scheduler->scheduler->GetPolicy().GetPolicyValue(PolicyElementKey::ContextPriority) == THREAD_PRIORITY_HIGHEST) {
-                        value->scheduleGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->scheduler->CreateScheduleGroup());
-                        co_return value;
-                    }
-                }
-                else {
-                    value->scheduleGroup = make_shared<ScheduleGroupWrapper>(value->scheduler->scheduler->CreateScheduleGroup());
-                    co_return value;
-                }
-            }
-        }
 
         DispatcherQueueOptions options{
             .dwSize = sizeof(DispatcherQueueOptions),
@@ -131,12 +109,29 @@ namespace DiscordCoreInternal {
         Scheduler* newScheduler{ Scheduler::Create(policy) };
         newScheduler->Attach();
         shared_ptr<ThreadContext> threadContext = make_shared<ThreadContext>();
+        threadContext->queueController = make_shared<DispatcherQueueController>(queueController2);
         threadContext->scheduler = make_shared<SchedulerWrapper>(newScheduler);
         threadContext->dispatcherQueue = make_shared<DispatcherQueue>(threadQueue.GetForCurrentThread());
         threadContext->scheduleGroup = make_shared<ScheduleGroupWrapper>(threadContext->scheduler->scheduler->CreateScheduleGroup());
         co_return threadContext;
     }
+
+    task<void> ThreadContext::releaseContext() {
+        if (this->scheduleGroup != nullptr) {
+            this->scheduleGroup->scheduleGroup->Release();
+            this->scheduleGroup = nullptr;
+        }
+        if (this->scheduler != nullptr) {
+            this->scheduler->scheduler->Release();
+            this->scheduler = nullptr;
+        }
+        if (this->dispatcherQueue != nullptr) {
+            co_await this->queueController->ShutdownQueueAsync();
+            this->dispatcherQueue = nullptr;
+        }        
+        this->~ThreadContext();
+    };
+
     shared_ptr<ThreadContext> ThreadManagerAgent::threadContext{ nullptr };
-    concurrent_vector<shared_ptr<ThreadContext>> ThreadManager::threads{};    
 }
 #endif
