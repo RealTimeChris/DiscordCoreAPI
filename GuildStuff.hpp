@@ -101,6 +101,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void disconnect() {
+			DiscordCoreClientBase::thisPointer->currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
 			if (DiscordCoreClientBase::thisPointer->voiceConnectionMap->contains(this->id)) {
 				if (DiscordCoreClientBase::thisPointer->songAPIMap->contains(this->id)) {
 					SongAPI::stop(this->id);
@@ -109,7 +110,6 @@ namespace DiscordCoreAPI {
 					discordGuild.writeDataToDB();
 					DiscordCoreClientBase::thisPointer->songAPIMap->erase(this->id);
 				}
-				DiscordCoreClientBase::thisPointer->currentUser.updateVoiceStatus({ .channelId = "",.selfMute = false,.selfDeaf = false,.guildId = this->id });
 				shared_ptr<VoiceConnection>* voiceConnection = &DiscordCoreClientBase::thisPointer->voiceConnectionMap->at(this->id);
 				(*voiceConnection)->stop();
 				if ((*voiceConnection)->areWePlaying) {
