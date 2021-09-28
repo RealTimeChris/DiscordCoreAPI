@@ -455,6 +455,7 @@ namespace DiscordCoreInternal {
 		const int maxReconnectTries{ 10 };
 		bool areWeAuthenticated{ false };
 		DataWriter dataWriter{ nullptr };
+		bool areWeTerminating{ false };
 		int currentReconnectTries{ 0 };
 		bool areWeWaitingForIp{ true };
 		bool* doWeReconnect{ nullptr };
@@ -527,7 +528,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
 			cout << "Voice WebSocket Closed; Code: " << args.Code() << ", Reason: " << to_string(args.Reason().c_str()) << endl;
-			if (this->maxReconnectTries > this->currentReconnectTries && this->voiceConnectionData.sessionId != "") {
+			if (this->maxReconnectTries > this->currentReconnectTries && this->voiceConnectionData.sessionId != "" && !this->areWeTerminating) {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				if (this->webSocketConnectionAgent->didWeDisconnect) {
@@ -538,7 +539,7 @@ namespace DiscordCoreInternal {
 				string resumePayload = getResumeVoicePayload(this->voiceConnectInitData.guildId, this->voiceConnectionData.sessionId, this->voiceConnectionData.token);
 				this->sendMessage(resumePayload);
 			}
-			else if (this->maxReconnectTries > this->currentReconnectTries) {
+			else if (this->maxReconnectTries > this->currentReconnectTries && !this->areWeTerminating) {
 				this->areWeAuthenticated = false;
 				this->currentReconnectTries += 1;
 				if (this->webSocketConnectionAgent->didWeDisconnect){
@@ -656,6 +657,7 @@ namespace DiscordCoreInternal {
 					this->dataWriter = nullptr;
 				}
 				if (this->voiceSocket != nullptr) {
+					this->voiceSocket->CancelIOAsync().get();
 					this->voiceSocket->Close();
 					UpdateVoiceStateData dataPackage01;
 					dataPackage01.channelId = "";
@@ -675,12 +677,12 @@ namespace DiscordCoreInternal {
 					this->heartbeatTimer.Cancel();
 					this->heartbeatTimer = nullptr;
 				}
-
+				this->done();
 			}
 		}
 
 		void terminate() {
-			this->done();
+			this->areWeTerminating = true;
 			this->cleanup();
 		}
 

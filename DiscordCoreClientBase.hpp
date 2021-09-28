@@ -18,6 +18,7 @@
 #include "MessageEntities.hpp"
 #include "GuildMemberEntities.hpp"
 #include "WebSocketEntities.hpp"
+#include "DatabaseEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -53,6 +54,7 @@ namespace DiscordCoreAPI {
 		static map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap;
 		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
 		static map<string, shared_ptr<SongAPI>>* songAPIMap;
+		static map<string, DiscordGuild*>* discordGuildMap;
 
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent;
 	};
@@ -61,6 +63,7 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<SoundCloudAPI>>* DiscordCoreClientBase::soundCloudAPIMap{ new map<string, shared_ptr<SoundCloudAPI>>() };
 	map<string, shared_ptr<YouTubeAPI>>* DiscordCoreClientBase::youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 	map<string, shared_ptr<SongAPI>>* DiscordCoreClientBase::songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
+	map<string, DiscordGuild*>* DiscordCoreClientBase::discordGuildMap{ new map<string, DiscordGuild*>() };
 	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }

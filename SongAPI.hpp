@@ -42,21 +42,20 @@ namespace DiscordCoreAPI {
 		Playlist playlist{};
 
 		SongAPI(DiscordGuild* discordGuildNew) {
-			SongAPI::sendAudioDataBufferMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<unbounded_buffer<AudioFrameData>>());
 			this->sendAudioDataBuffer = SongAPI::sendAudioDataBufferMap->at(discordGuildNew->data.guildId);
 			this->voiceConnection = SongAPI::voiceConnectionMap->at(discordGuildNew->data.guildId);
 			this->guildId = discordGuildNew->data.guildId;
 			this->discordGuild = discordGuildNew;
 			this->loadPlaylist();
 		}
-		
+
 		static void initialize(map<string, DiscordGuild*>* discordGuildMapNew) {
 			SoundCloudAPI::initialize(DiscordCoreClientBase::soundCloudAPIMap, DiscordCoreClientBase::audioBuffersMap, discordGuildMapNew, DiscordCoreClientBase::voiceConnectionMap);
 			YouTubeAPI::initialize(DiscordCoreClientBase::youtubeAPIMap, DiscordCoreClientBase::audioBuffersMap, discordGuildMapNew, DiscordCoreClientBase::voiceConnectionMap);
 			SongAPI::sendAudioDataBufferMap = DiscordCoreClientBase::audioBuffersMap;
 			SongAPI::voiceConnectionMap = DiscordCoreClientBase::voiceConnectionMap;
-			SongAPI::discordGuildMap = discordGuildMapNew;
 			SongAPI::songAPIMap = DiscordCoreClientBase::songAPIMap;
+			SongAPI::discordGuildMap = discordGuildMapNew;
 		}
 
 		static void cleanup() {
@@ -69,7 +68,7 @@ namespace DiscordCoreAPI {
 			delete SongAPI::discordGuildMap;
 			SongAPI::discordGuildMap = nullptr;
 		}
-		
+
 		void refreshInterfaces() {
 			DiscordGuild* discordGuildNew = this->discordGuild;
 			auto songAPI = SongAPI::songAPIMap->at(discordGuildNew->data.guildId);
@@ -82,7 +81,7 @@ namespace DiscordCoreAPI {
 			soundCloudAPI.~shared_ptr();
 			SoundCloudAPI::soundCloudAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<SoundCloudAPI>(discordGuildNew->data.guildId));
 		}
-		
+
 		void savePlaylist() {
 			this->playlist.songQueue = cleanQueue(this->playlist.songQueue);
 			this->discordGuild->data.playlist = this->playlist;

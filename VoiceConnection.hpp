@@ -43,12 +43,8 @@ namespace DiscordCoreAPI {
 				this->receiveAudioBufferMap = sendAudioBufferMapNew;
 				VoiceConnection::voiceConnectionMap = voiceConnectionMapNew;
 				this->guildId = guildIdNew;
-				if (VoiceConnection::receiveAudioBufferMap->contains(guildIdNew)) {
-					this->audioDataBuffer = VoiceConnection::receiveAudioBufferMap->at(guildIdNew);
-				}
-				else {
-					this->audioDataBuffer = make_shared<unbounded_buffer<AudioFrameData>>();
-				}
+				this->receiveAudioBufferMap->at(this->guildId).reset(new unbounded_buffer<AudioFrameData>);
+				this->audioDataBuffer = this->receiveAudioBufferMap->at(this->guildId);
 				this->voiceChannelWebSocketAgent = make_shared<DiscordCoreInternal::VoiceChannelWebSocketAgent>(this->connectionReadyEvent, voiceConnectInitDataNew, websocketAgentNew, &this->doWeReconnect);
 				this->voiceChannelWebSocketAgent->start();
 				this->websocketAgent = websocketAgentNew;
@@ -60,7 +56,6 @@ namespace DiscordCoreAPI {
 				this->onSongCompletionEvent = new winrt::event<delegate<SongCompletionEventData>>();
 				this->voiceConnectInitData = this->voiceChannelWebSocketAgent->voiceConnectInitData;
 				this->voiceConnectionData = this->voiceChannelWebSocketAgent->voiceConnectionData;
-				this->receiveAudioBufferMap->insert_or_assign(this->voiceConnectInitData.guildId, this->audioDataBuffer);
 				this->areWeConnectedBool = true;
 			}
 			else {

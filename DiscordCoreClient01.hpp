@@ -15,7 +15,6 @@
 #include "InteractionEntities.hpp"
 #include "EventTypes.hpp"
 #include "InputEvents.hpp"
-#include "DatabaseEntities.hpp"
 #include "SongAPI.hpp"
 #include "StickerEntities.hpp"
 #include "WebSocketEntities.hpp"
@@ -33,6 +32,7 @@ namespace DiscordCoreAPI {
 
 		friend class PermissionsConverter;
 		friend class EventHandler;
+		friend class Guild;
 
 		static shared_ptr<DiscordCoreClient> thisPointer;
 
@@ -91,7 +91,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
-		map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
 		vector<RepeatedFunctionData>* functionsToExecute{};
 		string baseURL{ "https://discord.com/api/v9" };
 		bool doWeQuit{ false };
@@ -108,7 +107,7 @@ namespace DiscordCoreAPI {
 			SoundCloudSong::initialize();
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
 			this->webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
-			SongAPI::initialize(this->discordGuildMap);
+			SongAPI::initialize(DiscordCoreClient::discordGuildMap);
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize();
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize();

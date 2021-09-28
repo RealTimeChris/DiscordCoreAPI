@@ -311,7 +311,7 @@ namespace DiscordCoreAPI {
 						}
 					}
 					cout << "WERE NOT HERE 3333" << endl;
-					
+
 					counter += 1;
 				}
 
