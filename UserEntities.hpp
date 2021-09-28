@@ -97,6 +97,7 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClientBase;
 		friend class DiscordCoreClient;
+		friend BotUser getBotData();
 
 		BotUser(BotUser* dataPackage) {
 			if (dataPackage != nullptr) {
@@ -148,8 +149,6 @@ namespace DiscordCoreAPI {
 		void Initialize(shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgentNew) {
 			this->pConnectionWebSocketAgent = pConnectionWebSocketAgentNew;
 		}
-
-		~BotUser() {};
 
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> pConnectionWebSocketAgent{ nullptr };
 	};

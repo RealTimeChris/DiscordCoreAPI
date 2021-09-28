@@ -76,15 +76,17 @@ namespace DiscordCoreAPI {
 
             EmbedData messageEmbed;
             messageEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
-            messageEmbed.setImage(args->eventData.discordCoreClient->currentUser.avatar);
+            messageEmbed.setImage(getBotUser().avatar);
             messageEmbed.setColor("FEFEFE");
             messageEmbed.setTitle("__**Bot Info:**__");
             messageEmbed.setTimeStamp(getTimeAndDate());
-            messageEmbed.addField("__Bot Name:__", args->eventData.discordCoreClient->currentUser.userName, true);
-            messageEmbed.addField("__Bot ID:__", args->eventData.discordCoreClient->currentUser.id, true);
-            messageEmbed.addField("__Guild Count:__", to_string(args->eventData.discordCoreClient->discordUser->data.guildCount), true);
-            messageEmbed.addField("__Created At:__", args->eventData.discordCoreClient->currentUser.createdAt, true);
+            messageEmbed.addField("__Bot Name:__", getBotUser().userName + "#" + getBotUser().discriminator, true);
+            messageEmbed.addField("__Bot ID:__", getBotUser().id, true);
+            messageEmbed.addField("__Guild Count:__", to_string(getBotDiscordUserData().data.guildCount), true);
+            messageEmbed.addField("__Created At:__", getBotUser().createdAt, true);
             messageEmbed.addField("__Serving Users:__", to_string(userCount), true);
+            messageEmbed.addField("__Running On:__", "[DiscordCoreAPI Bot Library](https://github.com/RealTimeChris/DiscordCoreAPI)", true);
+            messageEmbed.addField("__Created By:__", "RealTime Chris#0001", true);
             if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
                 RespondToInputEventData dataPackage(args->eventData);
                 dataPackage.type = DesiredInputEventResponseType::RegularMessage;

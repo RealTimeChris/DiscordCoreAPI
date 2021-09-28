@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 				Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
-				string messageString = "------\nHello! How are you doing today?! I'm " + args->eventData.discordCoreClient->currentUser.userName + " and I'm here to help you out!\n" +
+				string messageString = "------\nHello! How are you doing today?! I'm " + getBotUser().userName + " and I'm here to help you out!\n" +
 					"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back to the previous menu)\n------";
 				InputEventData newEvent = args->eventData;
 				if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 					msgEmbed.setColor(discordGuild.data.borderColor);
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setDescription(messageNew);
-					msgEmbed.setTitle("__**" + newEvent.discordCoreClient->currentUser.userName + " Help: Front Page**__");
+					msgEmbed.setTitle("__**" + getBotUser().userName + " Help: Front Page**__");
 
 					vector<string> numberEmojiNames{ "✅", "🍬", "🅱", "❌", };
 					vector<string> numberEmojiId;
@@ -136,8 +136,8 @@ namespace DiscordCoreAPI {
 						responseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
 						newEvent = InputEvents::respondToEvent(responseData);
 					}
-					Button button(newEvent);
-					auto buttonData = button.collectButtonData(false, 120000, args->eventData.getAuthorId());
+					ButtonCollector button(newEvent);
+					auto buttonData = button.collectButtonData(false, 120000, 1, args->eventData.getAuthorId());
 					int counter03{ 0 };
 					vector<RespondToInputEventData> editMessageData00;
 					vector<RespondToInputEventData> editInteractionResponseData00;
@@ -147,7 +147,7 @@ namespace DiscordCoreAPI {
 						msgEmbed00.setColor(discordGuild.data.borderColor);
 						msgEmbed00.setTimeStamp(getTimeAndDate());
 						msgEmbed00.setDescription(messageString);
-						msgEmbed00.setTitle("__**" + newEvent.discordCoreClient->currentUser.userName + " Help: Page " + to_string(counter03 + 1) + " of " + to_string(selectOptions.size()) + "**__");
+						msgEmbed00.setTitle("__**" + getBotUser().userName + " Help: Page " + to_string(counter03 + 1) + " of " + to_string(selectOptions.size()) + "**__");
 						RespondToInputEventData responseData(newEvent);
 						responseData.type = DesiredInputEventResponseType::RegularMessageEdit;
 						responseData.addMessageEmbed(msgEmbed00);
@@ -206,8 +206,8 @@ namespace DiscordCoreAPI {
 							responseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Success);
 							newEvent = InputEvents::respondToEvent(responseData);
 						}
-						Button button02(newEvent);
-						auto buttonReturnData = button02.collectButtonData(false, 120000, args->eventData.getAuthorId());
+						ButtonCollector button02(newEvent);
+						auto buttonReturnData = button02.collectButtonData(false, 120000, 1, args->eventData.getAuthorId());
 						if (buttonReturnData.size() > 0) {
 							if (buttonReturnData.at(0).buttonId == "back") {
 								continue;

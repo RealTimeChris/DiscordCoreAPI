@@ -128,9 +128,9 @@ namespace DiscordCoreInternal{
         friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
         friend class DiscordCoreAPI::ApplicationCommands;
         friend class DiscordCoreAPI::DiscordCoreClient;
+        friend class DiscordCoreAPI::ButtonCollector;
         friend class DiscordCoreAPI::Interactions;
-        friend class DiscordCoreAPI::SelectMenu;
-        friend class DiscordCoreAPI::Button;
+        friend class DiscordCoreAPI::SelectMenu;        
 
         ApplicationCommandManager(ApplicationCommandManager* pointer)
             : ThreadContext(*ThreadManager::getThreadContext().get()) {

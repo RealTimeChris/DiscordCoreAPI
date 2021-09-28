@@ -595,7 +595,7 @@ namespace DiscordCoreAPI {
             return true;
         }
 
-        bool areWeACommander = checkForBotCommanderStatus(guildMember, *eventData.discordCoreClient->discordUser);
+        bool areWeACommander = checkForBotCommanderStatus(guildMember, getBotDiscordUserData());
 
         if (areWeACommander) {
             return true;
@@ -678,9 +678,9 @@ namespace DiscordCoreAPI {
             }
 
             while (doWeQuit == false) {
-                Button button(event01);
+                ButtonCollector button(event01);
 
-                vector<ButtonResponseData> buttonIntData = button.collectButtonData(false, waitForMaxMs);
+                vector<ButtonResponseData> buttonIntData = button.collectButtonData(false, waitForMaxMs, 1);
                 if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "exit" || buttonIntData.at(0).buttonId == "") {
                     if (deleteAfter == true) {
                         InputEvents::deleteInputEventResponseAsync(event01);

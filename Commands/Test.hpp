@@ -1,6 +1,4 @@
 // Test.hpp - Header for the "test" command.
-// May 20, 2021
-// Chris M.
 // https://github.com/RealTimeChris
 
 #pragma once
@@ -12,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-	class Test : public  BaseFunction {
+	class Test : public BaseFunction {
 	public:
 		Test() {
 			this->commandName = "test";
@@ -29,12 +27,22 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
+		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			InputEvents::deleteInputEventResponseAsync(args->eventData);
+			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
+
+			RespondToInputEventData dataPackage{ args->eventData };
+			dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
+			dataPackage.addButton(false, "test_button", "Test Button", "✅", ButtonStyle::Danger);
+			dataPackage.addContent("Test Response");
+			auto inputEventData = InputEvents::respondToEvent(dataPackage);
+
+			ButtonCollector buttonCollector(inputEventData);
+			buttonCollector.collectButtonData(false, 120000, 1, args->eventData.getAuthorId());
+
+			InputEvents::deleteInputEventResponseAsync(inputEventData).get();
 
 			co_return;
-
 		}
 	};
 }

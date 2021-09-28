@@ -132,8 +132,8 @@ namespace DiscordCoreAPI {
                     dataPackageNew.token = dataPackage.eventData.getInteractionToken();
                     dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
                     dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (Button::buttonInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        send(Button::buttonInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (ButtonCollector::buttonInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
+                        send(ButtonCollector::buttonInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::SELECT_MENU_INPUT) {

@@ -54,12 +54,12 @@ namespace DiscordCoreAPI {
 			}
 			else if (commandData.eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
 				DiscordCoreInternal::DataParser::parseObject(commandData.eventData.getInteractionData().dataRaw, &commandData);
-				string newCommandName = commandData.eventData.discordCoreClient->discordUser->data.prefix + commandData.commandName;
+				string newCommandName = getBotDiscordUserData().data.prefix + commandData.commandName;
 				functionPointer = CommandCenter::getCommand(convertToLowerCase(newCommandName), commandData);
 				messageOption = false;
 			}
 			else {
-				string newCommandName = commandData.eventData.discordCoreClient->discordUser->data.prefix + commandData.commandName;
+				string newCommandName = getBotDiscordUserData().data.prefix + commandData.commandName;
 				functionPointer = CommandCenter::getCommand(newCommandName, commandData);
 			}
 
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 				if (commandName.size() > 0) {
 					for (auto const& [key, value] : DiscordCoreAPI::CommandCenter::functions) {
 
-						if (commandName[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
+						if (commandName[0] == getBotDiscordUserData().data.prefix[0]) {
 							if (key.find(convertToLowerCase(commandName.substr(1, commandName.size() - 1))) != string::npos) {
 								isItFound = true;
 								lowestValue = value;
@@ -123,18 +123,18 @@ namespace DiscordCoreAPI {
 
 		static string parseCommandName(string messageContents, CommandData commandData) {
 			if (messageContents.size() > 0) {
-				if (messageContents[0] == commandData.eventData.discordCoreClient->discordUser->data.prefix[0]) {
+				if (messageContents[0] == getBotDiscordUserData().data.prefix[0]) {
 					for (auto [key, value] : CommandCenter::functions) {
 						if (messageContents.find(key) != string::npos) {
 							if (messageContents.find_first_of(" ") == string::npos) {
 								if (messageContents.substr(1, messageContents.find_first_of('\u0000') - 1) == key) {
-									string commandName = commandData.eventData.discordCoreClient->discordUser->data.prefix[0] + messageContents.substr(1, messageContents.find_first_of('\u0000') - 1);
+									string commandName = getBotDiscordUserData().data.prefix[0] + messageContents.substr(1, messageContents.find_first_of('\u0000') - 1);
 									return commandName;
 								}
 							}
 							else {
 								if (messageContents.substr(1, messageContents.find_first_of(' ') - 1) == key) {
-									string commandName = commandData.eventData.discordCoreClient->discordUser->data.prefix[0] + messageContents.substr(1, messageContents.find_first_of(' ') - 1);
+									string commandName = getBotDiscordUserData().data.prefix[0] + messageContents.substr(1, messageContents.find_first_of(' ') - 1);
 									return commandName;
 								}
 							}

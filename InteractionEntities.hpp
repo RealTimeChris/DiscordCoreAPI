@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
     struct ButtonInteractionData {
 
         friend class EventHandler;
-        friend class Button;
+        friend class ButtonCollector;
 
         string applicationId{ "" };
         GuildMemberData member{};
@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
         friend class SelectMenu;
-        friend class Button;
+        friend class ButtonCollector;
 
         CreateInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -1160,10 +1160,10 @@ namespace DiscordCoreInternal {
         template <class _Ty>
         friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
         friend class DiscordCoreAPI::DiscordCoreClient;
+        friend class DiscordCoreAPI::ButtonCollector;
         friend class DiscordCoreAPI::Interactions;
         friend class DiscordCoreAPI::InputEvents;
         friend class DiscordCoreAPI::SelectMenu;
-        friend class DiscordCoreAPI::Button;
 
         InteractionManager(InteractionManager* pointer):
         ThreadContext(*ThreadManager::getThreadContext().get()){
@@ -1495,47 +1495,48 @@ namespace DiscordCoreAPI {
         string userId{ "" };
     };
 
-    class Button : public agent {
+    class ButtonCollector : public agent {
     public:
         static map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> buttonInteractionBufferMap;
 
-        Button(DiscordCoreAPI::InputEventData dataPackage) : agent(*Button::threadContext->scheduler->scheduler) {
+        ButtonCollector(DiscordCoreAPI::InputEventData dataPackage) : agent(*ButtonCollector::threadContext->scheduler->scheduler) {
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
             this->userId = dataPackage.getRequesterId();
             this->buttonIncomingInteractionBuffer = new unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>;
-            Button::buttonInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer);
+            ButtonCollector::buttonInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer);
         }
 
         static void initialize(shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
-            Button::interactions = interactionsNew;
-            Button::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
+            ButtonCollector::interactions = interactionsNew;
+            ButtonCollector::threadContext = DiscordCoreInternal::ThreadManager::getThreadContext().get();
         }
 
         static void cleanup() {
-            if (Button::threadContext != nullptr) {
-                Button::threadContext->releaseContext();
+            if (ButtonCollector::threadContext != nullptr) {
+                ButtonCollector::threadContext->releaseContext();
             }
         }
         string getButtonId() {
             return this->buttonId;
         }
 
-        vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, string targetUser = "") {
+        vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, int maxNumberOfPressesNew, string targetUser = "") {
             if (targetUser != "") {
                 this->userId = targetUser;
             }
             this->maxTimeInMs = maxWaitTimeInMsNew;
             this->getButtonDataForAll = getButtonDataForAllNew;
+            this->maxNumberOfPresses = maxNumberOfPressesNew;
             start();
             agent::wait(this);
             exception error;
             return this->responseVector;
         }
 
-        ~Button() {
-            if (Button::buttonInteractionBufferMap.contains(this->channelId + this->messageId)) {
-                Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+        ~ButtonCollector() {
+            if (ButtonCollector::buttonInteractionBufferMap.contains(this->channelId + this->messageId)) {
+                ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
             }
             done();
         }
@@ -1548,6 +1549,7 @@ namespace DiscordCoreAPI {
         vector<ButtonResponseData> responseVector{};
         bool getButtonDataForAll{ false };
         unsigned int maxTimeInMs{ 0 };
+        int maxNumberOfPresses{ 0 };
         string channelId{ "" };
         string messageId{ "" };
         bool doWeQuit{ false };
@@ -1556,9 +1558,23 @@ namespace DiscordCoreAPI {
 
         void run() {
             try {
+                int currentNumberOfPresses{ 0 };
                 while (doWeQuit == false) {
                     if (this->getButtonDataForAll == false) {
-                        DiscordCoreAPI::ButtonInteractionData buttonInteractionData = receive(Button::buttonIncomingInteractionBuffer, this->maxTimeInMs);
+                        DiscordCoreAPI::ButtonInteractionData buttonInteractionData{};
+                        StopWatch stopWatch(this->maxTimeInMs);
+                        bool doWeBreak{ false };
+                        while (!try_receive(ButtonCollector::buttonIncomingInteractionBuffer, buttonInteractionData)) {
+                            concurrency::wait(10);
+                            if (stopWatch.hasTimePassed()) {
+                                doWeBreak = true;
+                                this->buttonId = "exit";
+                                break;
+                            }
+                        };
+                        if (doWeBreak) {
+                            break;
+                        }
                         if (buttonInteractionData.user.id != this->userId) {
                             DiscordCoreAPI::CreateInteractionResponseData createResponseData(buttonInteractionData);
                             DiscordCoreAPI::EmbedData embedData;
@@ -1568,25 +1584,42 @@ namespace DiscordCoreAPI {
                             embedData.setDescription("Sorry, but that button can only be pressed by <@!" + this->userId + ">!");
                             createResponseData.addMessageEmbed(embedData);
                             createResponseData.data.data.flags = 64;
-                            Button::interactions->createInteractionResponseAsync(createResponseData).get();
+                            ButtonCollector::interactions->createInteractionResponseAsync(createResponseData).get();
                         }
                         else {
                             this->interactionData = buttonInteractionData;
                             this->buttonId = buttonInteractionData.customId;
                             DiscordCoreAPI::CreateInteractionResponseData dataPackage(buttonInteractionData);
                             dataPackage.setResponseType(DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage);
-                            Button::interactions->createInteractionResponseAsync(dataPackage);
+                            ButtonCollector::interactions->createInteractionResponseAsync(dataPackage);
                             ButtonResponseData response;
                             response.buttonId = this->buttonId;
                             response.channelId = this->channelId;
                             response.messageId = this->messageId;
                             response.userId = buttonInteractionData.user.id;
                             this->responseVector.push_back(response);
-                            doWeQuit = true;
+                            currentNumberOfPresses += 1;
+                            if (currentNumberOfPresses >= this->maxNumberOfPresses) {
+                                doWeQuit = true;
+                            }
                         }
                     }
                     else {
-                        DiscordCoreAPI::ButtonInteractionData buttonInteractionData = receive(Button::buttonIncomingInteractionBuffer, this->maxTimeInMs);
+                        DiscordCoreAPI::ButtonInteractionData buttonInteractionData{};
+                        StopWatch stopWatch(this->maxTimeInMs);
+                        bool doWeBreak{ false };
+                        while (!try_receive(ButtonCollector::buttonIncomingInteractionBuffer, buttonInteractionData)) {
+                            concurrency::wait(10);
+                            if (stopWatch.hasTimePassed()) {
+                                cout << "TIME HAS PASSED" << endl;
+                                doWeBreak = true;
+                                this->buttonId = "exit";
+                                break;
+                            }
+                        };
+                        if (doWeBreak) {
+                            break;
+                        }
                         this->interactionData = buttonInteractionData;
                         this->buttonId = buttonInteractionData.customId;
                         ButtonResponseData response;
@@ -1595,28 +1628,32 @@ namespace DiscordCoreAPI {
                         response.messageId = this->messageId;
                         response.userId = buttonInteractionData.user.id;
                         this->responseVector.push_back(response);
+                        currentNumberOfPresses += 1;
                         DiscordCoreAPI::CreateInteractionResponseData dataPackage(buttonInteractionData);
                         dataPackage.setResponseType(DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage);
-                        Button::interactions->createInteractionResponseAsync(dataPackage);
+                        ButtonCollector::interactions->createInteractionResponseAsync(dataPackage);
+                        if (currentNumberOfPresses >= this->maxNumberOfPresses) {
+                            this->doWeQuit = true;
+                        }                        
                     }
                 }
-                Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
-                done();
             }
             catch (...) {
-                rethrowException("Button::run() Error: ");
-                this->buttonId = "exit";
+                rethrowException("ButtonCollector::run() Error: ");
                 done();
-                Button::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+                ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
             }
+            done();
+            ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+            return;
         }
     };
     map<string, unbounded_buffer<DiscordCoreAPI::SelectMenuInteractionData>*> SelectMenu::selectMenuInteractionBufferMap{};
-    map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> Button::buttonInteractionBufferMap{};
+    map<string, unbounded_buffer<DiscordCoreAPI::ButtonInteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
+    shared_ptr<DiscordCoreInternal::InteractionManager> ButtonCollector::interactions{ nullptr };
+    shared_ptr<DiscordCoreInternal::ThreadContext> ButtonCollector::threadContext{ nullptr };
     shared_ptr<DiscordCoreInternal::InteractionManager> SelectMenu::interactions{ nullptr };
-    shared_ptr<DiscordCoreInternal::InteractionManager> Button::interactions{ nullptr };
     shared_ptr<DiscordCoreInternal::ThreadContext> SelectMenu::threadContext{ nullptr };
-    shared_ptr<DiscordCoreInternal::ThreadContext> Button::threadContext{ nullptr };
 };
 #endif

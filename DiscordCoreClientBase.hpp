@@ -61,6 +61,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::VoiceChannelWebSocketAgent;
 		friend class DiscordCoreInternal::WebSocketConnectionAgent;
 		friend class VoiceConnection;
+		friend BotUser getBotData();
 		friend class SoundCloudAPI;
 		friend class InputEvents;
 		friend class YouTubeAPI;
@@ -68,7 +69,6 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		static DiscordCoreClientBase* thisPointer;
-		static BotUser currentUser;
 		
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
@@ -82,10 +82,13 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
+		static BotUser currentUser;
+
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
 		
 	};
-	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
+	BotUser DiscordCoreClientBase::currentUser{ nullptr };
+	
 }
 #endif

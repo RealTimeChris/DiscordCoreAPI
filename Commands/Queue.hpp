@@ -234,8 +234,8 @@ namespace DiscordCoreAPI {
                 newEvent = InputEvents::respondToEvent(dataPackage);
             }
             for (int y = 0; y < 1; y) {
-                Button button(newEvent);
-                auto buttonCollectedData = button.collectButtonData(false, 120000, args->eventData.getAuthorId());
+                ButtonCollector button(newEvent);
+                auto buttonCollectedData = button.collectButtonData(false, 120000, 1, args->eventData.getAuthorId());
                 string userID = args->eventData.getAuthorId();
                 if (buttonCollectedData.size() == 0 || buttonCollectedData.at(0).buttonId == "exit") {
                     if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {

@@ -32,8 +32,10 @@ namespace DiscordCoreAPI {
 		template <class _Ty>
 		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
+		friend DiscordUser getBotDiscordUserData();
 		friend class PermissionsConverter;
 		friend class ApplicationCommands;
+		friend BotUser getBotUser();		
 		friend class EventHandler;
 		friend class GuildMembers;
 		friend class Interactions;
@@ -48,14 +50,7 @@ namespace DiscordCoreAPI {
 
 		static DiscordCoreClient* thisPointer;
 
-		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
-		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
-		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
-		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
-		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
-		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		shared_ptr<EventManager> eventManager{ nullptr };
-		shared_ptr<DiscordUser> discordUser{ nullptr };
 
 		void finalSetup(string botTokenNew, string commandPrefix, vector<RepeatedFunctionData>* functionVector);
 
@@ -71,8 +66,15 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
+		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
+		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
+		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
+		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		vector<RepeatedFunctionData>* functionsToExecute{};
+		shared_ptr<DiscordUser> discordUser{ nullptr };
 		string baseURL{ "https://discord.com/api/v9" };
 		bool doWeQuit{ false };
 		string botToken;
@@ -86,8 +88,8 @@ namespace DiscordCoreAPI {
 			SetConsoleCtrlHandler(handlerRoutine, true);
 			_set_purecall_handler(myPurecallHandler);
 			apartment_context mainThread;
-			DiscordCoreClient::thisPointer = this;
 			co_await resume_foreground(*this->dispatcherQueue.get());
+			DiscordCoreClient::thisPointer = this;
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			DiscordCoreInternal::HttpRequestAgent::initialize(this->botToken, this->baseURL);
 			SoundCloudSong::initialize();
@@ -118,7 +120,7 @@ namespace DiscordCoreAPI {
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->discordUser->data.userId);
-			Button::initialize(this->interactions);
+			ButtonCollector::initialize(this->interactions);
 			SelectMenu::initialize(this->interactions);
 			InputEvents::initialize(this->messages, this->interactions);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
@@ -437,7 +439,6 @@ namespace DiscordCoreAPI {
 							if (workload.payLoad.at("data").at("type") == ApplicationCommandType::CHAT_INPUT) {
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-								eventData.discordCoreClient = this;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
@@ -459,7 +460,6 @@ namespace DiscordCoreAPI {
 								interactionData.name = dataPackage.name;
 								eventData.eventType = InputEventType::MESSAGE_COMMAND_INTERACTION;
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
-								eventData.discordCoreClient = this;
 								eventData.messageCommandInteractionData = dataPackage;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
@@ -480,7 +480,6 @@ namespace DiscordCoreAPI {
 								interactionData.name = dataPackage.name;
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.eventType = InputEventType::USER_COMMAND_INTERACTION;
-								eventData.discordCoreClient = this;
 								eventData.userCommandInteractionData = dataPackage;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
@@ -491,7 +490,6 @@ namespace DiscordCoreAPI {
 						else if (interactionData.type == InteractionType::MessageComponent) {
 							if (interactionData.componentType == ComponentType::Button) {
 								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-								eventData.discordCoreClient = this;
 								eventData.eventType = InputEventType::BUTTON_INTERACTION;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
@@ -501,7 +499,6 @@ namespace DiscordCoreAPI {
 							}
 							else if (interactionData.componentType == ComponentType::SelectMenu) {
 								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-								eventData.discordCoreClient = this;
 								eventData.eventType = InputEventType::SELECT_MENU_INPUT;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
@@ -550,7 +547,6 @@ namespace DiscordCoreAPI {
 						this->eventManager->onMessageCreationEvent(messageCreationData);
 						InputEventData eventData{};
 						eventData.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
-						eventData.discordCoreClient = this;
 						eventData.eventType = InputEventType::REGULAR_MESSAGE;
 						eventData.requesterId = messageData.author.id;
 						eventData.messageData = messageData;
@@ -713,7 +709,7 @@ namespace DiscordCoreAPI {
 		void terminate() {
 			this->doWeQuit = true;
 			SelectMenu::cleanup();
-			Button::cleanup();
+			ButtonCollector::cleanup();
 			DiscordCoreInternal::UserManagerAgent::cleanup();
 			DiscordCoreInternal::RoleManagerAgent::cleanup();
 			DiscordCoreInternal::GuildManagerAgent::cleanup();
@@ -739,6 +735,15 @@ namespace DiscordCoreAPI {
 
 	};
 	DiscordCoreClient* DiscordCoreClient::thisPointer{ nullptr };
+
+	BotUser getBotUser() {
+		return DiscordCoreClient::thisPointer->currentUser;
+	}
+
+	DiscordUser getBotDiscordUserData() {
+		DiscordCoreClient::thisPointer->discordUser->getDataFromDB();
+		return *DiscordCoreClient::thisPointer->discordUser;
+	}
 
 	class ApplicationCommands {
 	public:

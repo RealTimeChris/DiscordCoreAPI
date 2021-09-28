@@ -277,6 +277,19 @@ namespace DiscordCoreAPI {
 			playRNCommandData.options.push_back(playRNCommandDataOptionOne);
 			ApplicationCommands::createGlobalApplicationCommandAsync(playRNCommandData);
 			*/
+			CreateApplicationCommandData playQCommandData;
+			playQCommandData.type = ApplicationCommandType::CHAT_INPUT;
+			playQCommandData.defaultPermission = true;
+			playQCommandData.description = "Plays a song from the queue immediately.";
+			playQCommandData.name = "playq";
+			ApplicationCommandOptionData playQCommandDataOptionOne;
+			playQCommandDataOptionOne.name = "tracknumber";
+			playQCommandDataOptionOne.type = ApplicationCommandOptionType::INTEGER;
+			playQCommandDataOptionOne.description = "The number of the track in the current queue.";
+			playQCommandDataOptionOne.required = true;
+			playQCommandData.options.push_back(playQCommandDataOptionOne);
+			ApplicationCommands::createGlobalApplicationCommandAsync(playQCommandData);
+
 			Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
 			DiscordGuild discordGuild(guild);
 			EmbedData msgEmbed;

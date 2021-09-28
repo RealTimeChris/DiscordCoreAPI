@@ -131,7 +131,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.interactionData.channelId = dataPackage.channelId;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			return dataPackageNewer;
@@ -145,7 +144,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = messageData;
 			return dataPackageNewer;
@@ -163,7 +161,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = messageData;
 			return dataPackageNewer;
@@ -177,7 +174,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = messageData;
 			return dataPackageNewer;
@@ -192,7 +188,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.message.components = dataPackage.data.data.components;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = messageData;
 			return dataPackageNewer;
@@ -206,7 +201,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = messageData;
 			return dataPackageNewer;
@@ -228,7 +222,6 @@ namespace DiscordCoreAPI {
 			dataPackageNewer.interactionData.token = dataPackage.interactionPackage.interactionToken;
 			dataPackageNewer.interactionData.id = dataPackage.interactionPackage.interactionId;
 			dataPackageNewer.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			return dataPackageNewer;
 		}
@@ -237,7 +230,6 @@ namespace DiscordCoreAPI {
 			Message message = InputEvents::messages->replyAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = message;
@@ -248,7 +240,6 @@ namespace DiscordCoreAPI {
 			Message message = InputEvents::messages->createMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
 			dataPackageNewer.messageData = message;
 			return dataPackageNewer;
@@ -258,7 +249,6 @@ namespace DiscordCoreAPI {
 			Message message = InputEvents::messages->editMessageAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_EDIT;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
 			dataPackageNewer.requesterId = dataPackage.requesterId;
 			dataPackageNewer.messageData = message;
@@ -266,12 +256,11 @@ namespace DiscordCoreAPI {
 		}
 
 		static InputEventData respondToEvent(SendDMData dataPackage) {
-			Channel dmChannel = InputEvents::discordCoreClientBase->channels->fetchDMChannelAsync({ .userId = dataPackage.userId }).get();
+			Channel dmChannel = DiscordCoreClientBase::thisPointer->channels->fetchDMChannelAsync({ .userId = dataPackage.userId }).get();
 			dataPackage.channelId = dmChannel.id;
 			Message message = InputEvents::messages->sendDMAsync(dataPackage).get();
 			InputEventData dataPackageNewer;
 			dataPackageNewer.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
-			dataPackageNewer.discordCoreClient = InputEvents::discordCoreClient;
 			dataPackageNewer.eventType = InputEventType::REGULAR_MESSAGE;
 			dataPackageNewer.messageData = message;
 			return dataPackageNewer;
@@ -288,14 +277,10 @@ namespace DiscordCoreAPI {
 
 		static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
 		static shared_ptr<DiscordCoreInternal::MessageManager> messages;
-		static DiscordCoreClientBase* discordCoreClientBase;
-		static DiscordCoreClient* discordCoreClient;
 
 	};
 	shared_ptr<DiscordCoreInternal::InteractionManager> InputEvents::interactions{ nullptr };
 	shared_ptr<DiscordCoreInternal::MessageManager> InputEvents::messages{ nullptr };
-	DiscordCoreClientBase* InputEvents::discordCoreClientBase{ nullptr };
-	DiscordCoreClient* InputEvents::discordCoreClient{ nullptr };
 }
 
 #endif

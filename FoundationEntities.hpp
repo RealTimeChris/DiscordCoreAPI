@@ -19,6 +19,7 @@ namespace DiscordCoreAPI {
     class PermissionsConverter;
     class ApplicationCommands;
     class DiscordCoreClient;
+    class ButtonCollector;
     class VoiceConnection;
     class SoundCloudSong;
     class Interactions;
@@ -31,8 +32,7 @@ namespace DiscordCoreAPI {
     class Messages;
     class Channels;
     class BotUser;
-    class SongAPI;
-    class Button;
+    class SongAPI;    
     class Guilds;
     class Roles;
     class Users;

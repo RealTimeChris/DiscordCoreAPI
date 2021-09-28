@@ -18,6 +18,7 @@
 #include "LoopSong.hpp"
 #include "Np.hpp"
 #include "Play.hpp"
+#include "PlayQ.hpp"
 #include "PlayRN.hpp"
 #include "Pause.hpp"
 #include "Queue.hpp"
