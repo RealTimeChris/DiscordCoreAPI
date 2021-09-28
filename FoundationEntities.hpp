@@ -3185,11 +3185,11 @@ namespace DiscordCoreAPI {
         friend struct CommandData;
         friend class InputEvents;
 
-        shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClient{ nullptr };
+        DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
         InputEventResponseType inputEventResponseType{};
         InputEventType eventType{};
 
-        InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType, shared_ptr<DiscordCoreAPI::DiscordCoreClient> discordCoreClientNew) {
+        InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType, DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew) {
             this->discordCoreClient = discordCoreClientNew;
             this->interactionData = interactionData;
             this->messageData = messageData;
@@ -3895,7 +3895,7 @@ namespace DiscordCoreAPI {
     static string commandPrefix;
 
     struct RepeatedFunctionData {
-        function<void(shared_ptr<DiscordCoreClient>)> function{ nullptr };
+        function<void(DiscordCoreClient*)> function{ nullptr };
         bool repeated{ false };
         int intervalInMs{ 0 };
     };

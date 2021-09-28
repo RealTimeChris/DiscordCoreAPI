@@ -153,12 +153,12 @@ namespace DiscordCoreAPI {
 	};
 
 	struct OnInviteCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		InviteData invite{};
 	};
 
 	struct OnInviteDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		string channelId{ "" };
 		string guildId{ "" };
 		string code{ "" };

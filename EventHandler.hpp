@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
     class EventHandler {
     public:
 
-        static shared_ptr<DiscordCoreClient> discordCoreClient;
+        static DiscordCoreClient* discordCoreClient;
 
         static void onChannelCreation(OnChannelCreationData dataPackage) {
             Channels::insertChannelAsync(dataPackage.channel).get();
@@ -204,6 +204,6 @@ namespace DiscordCoreAPI {
         }
     };
 
-    shared_ptr<DiscordCoreClient> EventHandler::discordCoreClient{ nullptr };
+    DiscordCoreClient* EventHandler::discordCoreClient{ nullptr };
 }
 #endif

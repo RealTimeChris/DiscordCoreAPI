@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		static shared_ptr<DiscordCoreClientBase> thisPointer;
+		static DiscordCoreClientBase* thisPointer;
 		static BotUser currentUser;
 
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
 		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 
-		void initialize(shared_ptr<DiscordCoreClientBase> thisPtrNew) {
+		void initialize(DiscordCoreClientBase* thisPtrNew) {
 			DiscordCoreClientBase::thisPointer = thisPtrNew;
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(this->webSocketConnectionAgent);
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		map<string, shared_ptr<SongAPI>>* songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
 		map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
 	};
-	shared_ptr<DiscordCoreClientBase> DiscordCoreClientBase::thisPointer{ nullptr };
+	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
 }
 #endif
