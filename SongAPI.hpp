@@ -49,12 +49,12 @@ namespace DiscordCoreAPI {
 			this->loadPlaylist();
 		}
 
-		static void initialize(map<string, DiscordGuild*>* discordGuildMapNew, DiscordCoreClientBase* discordCoreClientBase) {
-			SoundCloudAPI::initialize(discordCoreClientBase->soundCloudAPIMap, discordCoreClientBase->audioBuffersMap, discordGuildMapNew, discordCoreClientBase->voiceConnectionMap);
-			YouTubeAPI::initialize(discordCoreClientBase->youtubeAPIMap, discordCoreClientBase->audioBuffersMap, discordGuildMapNew, discordCoreClientBase->voiceConnectionMap);
-			SongAPI::sendAudioDataBufferMap = discordCoreClientBase->audioBuffersMap;
-			SongAPI::voiceConnectionMap = discordCoreClientBase->voiceConnectionMap;
-			SongAPI::songAPIMap = discordCoreClientBase->songAPIMap;
+		static void initialize(map<string, DiscordGuild*>* discordGuildMapNew) {
+			SoundCloudAPI::initialize(getSoundCloudAPIMap(), getAudioBuffersMap(), discordGuildMapNew, getVoiceConnectionMap());
+			YouTubeAPI::initialize(getYouTubeAPIMap(), getAudioBuffersMap(), discordGuildMapNew, getVoiceConnectionMap());
+			SongAPI::sendAudioDataBufferMap = getAudioBuffersMap();
+			SongAPI::voiceConnectionMap = getVoiceConnectionMap();
+			SongAPI::songAPIMap = getSongAPIMap();
 			SongAPI::discordGuildMap = discordGuildMapNew;
 		}
 

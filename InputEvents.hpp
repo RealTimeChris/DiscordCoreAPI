@@ -18,9 +18,7 @@ namespace DiscordCoreAPI {
 	class InputEvents {
 	public:
 
-		static void initialize(DiscordCoreClientBase* discordCoreClientBaseNew, DiscordCoreClient* discordCoreClientNew, shared_ptr<DiscordCoreInternal::MessageManager> messagesNew, shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
-			InputEvents::discordCoreClientBase = discordCoreClientBaseNew;
-			InputEvents::discordCoreClient = discordCoreClientNew;
+		static void initialize(shared_ptr<DiscordCoreInternal::MessageManager> messagesNew, shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew) {
 			InputEvents::interactions = interactionsNew;
 			InputEvents::messages = messagesNew;
 		}

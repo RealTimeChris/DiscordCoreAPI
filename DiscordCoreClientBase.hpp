@@ -22,6 +22,39 @@
 
 namespace DiscordCoreAPI {
 
+	namespace {
+		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
+		map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
+		map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap{ new map<string, shared_ptr<SoundCloudAPI>>() };
+		map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
+		map<string, shared_ptr<SongAPI>>* songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
+		map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
+	}
+
+	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* getAudioBuffersMap() {
+		return audioBuffersMap;
+	}
+
+	map<string, shared_ptr<VoiceConnection>>* getVoiceConnectionMap() {
+		return voiceConnectionMap;
+	}
+
+	map<string, shared_ptr<SoundCloudAPI>>* getSoundCloudAPIMap() {
+		return soundCloudAPIMap;
+	}
+
+	map<string, shared_ptr<YouTubeAPI>>* getYouTubeAPIMap() {
+		return youtubeAPIMap;
+	}
+
+	map<string, shared_ptr<SongAPI>>* getSongAPIMap() {
+		return songAPIMap;
+	}
+
+	map<string, DiscordGuild*>* getDiscordGuildMap() {
+		return discordGuildMap;
+	}
+
 	class DiscordCoreClientBase {
 	public:		
 
@@ -36,28 +69,23 @@ namespace DiscordCoreAPI {
 
 		static DiscordCoreClientBase* thisPointer;
 		static BotUser currentUser;
-
+		
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
 		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
 		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 
-		void initialize(DiscordCoreClientBase* thisPtrNew) {
-			DiscordCoreClientBase::thisPointer = thisPtrNew;
+		void initialize() {
+			DiscordCoreClientBase::thisPointer = this;
 			DiscordCoreClientBase::currentUser = BotUser(this->users->fetchCurrentUserAsync().get());
 			DiscordCoreClientBase::currentUser.Initialize(this->webSocketConnectionAgent);
 		}
 
 	protected:
-		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
-		map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
-		map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap{ new map<string, shared_ptr<SoundCloudAPI>>() };
-		map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
 		shared_ptr<DiscordCoreInternal::WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
-		map<string, shared_ptr<SongAPI>>* songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
-		map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
+		
 	};
-	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
 	BotUser DiscordCoreClientBase::currentUser{ nullptr };
+	DiscordCoreClientBase* DiscordCoreClientBase::thisPointer{ nullptr };
 }
 #endif

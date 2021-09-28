@@ -18,9 +18,9 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::ThreadManager::intialize();
             DiscordCoreClient* pDiscordCoreClient = new DiscordCoreClient(botTokenNew);
             DiscordCoreClient::thisPointer = pDiscordCoreClient;
-            DiscordCoreClient::getInstance()->functionsToExecute = functionsToExecuteNew;
+            DiscordCoreClient::thisPointer->functionsToExecute = functionsToExecuteNew;
             EventHandler::discordCoreClient = pDiscordCoreClient;
-            DiscordCoreClient::getInstance()->initialize().get();
+            DiscordCoreClient::thisPointer->initialize().get();
             pDiscordCoreClient->eventManager->onChannelCreation(&EventHandler::onChannelCreation);
             pDiscordCoreClient->eventManager->onChannelUpdate(&EventHandler::onChannelUpdate);
             pDiscordCoreClient->eventManager->onChannelDeletion(&EventHandler::onChannelDeletion);

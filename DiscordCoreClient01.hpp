@@ -33,8 +33,20 @@ namespace DiscordCoreAPI {
 		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
 		friend class PermissionsConverter;
+		friend class ApplicationCommands;
 		friend class EventHandler;
+		friend class GuildMembers;
+		friend class Interactions;
+		friend class Reactions;
+		friend class Messages;
+		friend class Stickers;
+		friend class Channels;
+		friend class Guilds;
+		friend class Roles;
+		friend class Users;
 		friend class Guild;
+
+		static DiscordCoreClient* thisPointer;
 
 		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
@@ -45,25 +57,19 @@ namespace DiscordCoreAPI {
 		shared_ptr<EventManager> eventManager{ nullptr };
 		shared_ptr<DiscordUser> discordUser{ nullptr };
 
-		static DiscordCoreClient* getInstance() {
-			return DiscordCoreClient::thisPointer;
-		}
-
 		void finalSetup(string botTokenNew, string commandPrefix, vector<RepeatedFunctionData>* functionVector);
 
 		void runBot() {
-			DiscordCoreClient::getInstance()->start();
-			if (DiscordCoreClient::getInstance()->functionsToExecute != nullptr) {
-				for (auto value : *DiscordCoreClient::getInstance()->functionsToExecute) {
-					executeFunctionAfterTimePeriod(value.function, (unsigned int)value.intervalInMs, value.repeated, DiscordCoreClient::getInstance());
+			this->start();
+			if (this->functionsToExecute != nullptr) {
+				for (auto value : *this->functionsToExecute) {
+					executeFunctionAfterTimePeriod(value.function, (unsigned int)value.intervalInMs, value.repeated, this);
 				}
 			}
-			wait(DiscordCoreClient::getInstance());
+			wait(this);
 		}
 
 	protected:
-
-		static DiscordCoreClient* thisPointer;
 
 		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
 		vector<RepeatedFunctionData>* functionsToExecute{};
@@ -87,7 +93,7 @@ namespace DiscordCoreAPI {
 			SoundCloudSong::initialize();
 			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
 			this->webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
-			SongAPI::initialize(DiscordCoreClient::discordGuildMap, DiscordCoreClient::getInstance());
+			SongAPI::initialize(getDiscordGuildMap());
 			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize();
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize();
@@ -107,14 +113,14 @@ namespace DiscordCoreAPI {
 			this->guilds = make_shared<DiscordCoreInternal::GuildManager>(nullptr);
 			this->roles = make_shared<DiscordCoreInternal::RoleManager>(nullptr);
 			this->users = make_shared<DiscordCoreInternal::UserManager>(nullptr);
-			DiscordCoreClientBase::initialize(DiscordCoreClient::getInstance());
+			DiscordCoreClientBase::initialize();
 			DatabaseManagerAgent::initialize(this->currentUser.id, DiscordCoreInternal::ThreadManager::getThreadContext().get());
 			this->discordUser = make_shared<DiscordUser>(this->currentUser.userName, this->currentUser.id);
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->discordUser->data.userId);
 			Button::initialize(this->interactions);
 			SelectMenu::initialize(this->interactions);
-			InputEvents::initialize(DiscordCoreClientBase::thisPointer, DiscordCoreClient::getInstance(), this->messages, this->interactions);
+			InputEvents::initialize(this->messages, this->interactions);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
 			this->webSocketReceiverAgent->start();
@@ -164,7 +170,7 @@ namespace DiscordCoreAPI {
 				this->discordUser->data.guildCount -= 1;
 				this->discordUser->writeDataToDB();
 			}
-			this->audioBuffersMap->erase(guildData.id);
+			getAudioBuffersMap()->erase(guildData.id);
 		}
 
 		void run() {
@@ -431,7 +437,7 @@ namespace DiscordCoreAPI {
 							if (workload.payLoad.at("data").at("type") == ApplicationCommandType::CHAT_INPUT) {
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
-								eventData.discordCoreClient = DiscordCoreClient::getInstance();
+								eventData.discordCoreClient = this;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
@@ -453,7 +459,7 @@ namespace DiscordCoreAPI {
 								interactionData.name = dataPackage.name;
 								eventData.eventType = InputEventType::MESSAGE_COMMAND_INTERACTION;
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
-								eventData.discordCoreClient = DiscordCoreClient::getInstance();
+								eventData.discordCoreClient = this;
 								eventData.messageCommandInteractionData = dataPackage;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
@@ -474,7 +480,7 @@ namespace DiscordCoreAPI {
 								interactionData.name = dataPackage.name;
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.eventType = InputEventType::USER_COMMAND_INTERACTION;
-								eventData.discordCoreClient = DiscordCoreClient::getInstance();
+								eventData.discordCoreClient = this;
 								eventData.userCommandInteractionData = dataPackage;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
@@ -485,7 +491,7 @@ namespace DiscordCoreAPI {
 						else if (interactionData.type == InteractionType::MessageComponent) {
 							if (interactionData.componentType == ComponentType::Button) {
 								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-								eventData.discordCoreClient = DiscordCoreClient::getInstance();
+								eventData.discordCoreClient = this;
 								eventData.eventType = InputEventType::BUTTON_INTERACTION;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
@@ -495,7 +501,7 @@ namespace DiscordCoreAPI {
 							}
 							else if (interactionData.componentType == ComponentType::SelectMenu) {
 								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
-								eventData.discordCoreClient = DiscordCoreClient::getInstance();
+								eventData.discordCoreClient = this;
 								eventData.eventType = InputEventType::SELECT_MENU_INPUT;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
@@ -510,14 +516,14 @@ namespace DiscordCoreAPI {
 					{
 						OnInviteCreationData inviteCreationData{};
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &inviteCreationData.invite);
-						inviteCreationData.discordCoreClient = DiscordCoreClient::getInstance();
+						inviteCreationData.discordCoreClient = this;
 						this->eventManager->onInviteCreationEvent(inviteCreationData);
 						break;
 					}
 					case DiscordCoreInternal::WebSocketEventType::Invite_Delete:
 					{
 						OnInviteDeletionData inviteDeletionData{};
-						inviteDeletionData.discordCoreClient = DiscordCoreClient::getInstance();
+						inviteDeletionData.discordCoreClient = this;
 						inviteDeletionData.channelId = workload.payLoad.at("channel_id");
 						inviteDeletionData.guildId = workload.payLoad.at("guild_id");
 						inviteDeletionData.code = workload.payLoad.at("code");
@@ -544,7 +550,7 @@ namespace DiscordCoreAPI {
 						this->eventManager->onMessageCreationEvent(messageCreationData);
 						InputEventData eventData{};
 						eventData.inputEventResponseType = InputEventResponseType::REGULAR_MESSAGE_RESPONSE;
-						eventData.discordCoreClient = DiscordCoreClient::getInstance();
+						eventData.discordCoreClient = this;
 						eventData.eventType = InputEventType::REGULAR_MESSAGE;
 						eventData.requesterId = messageData.author.id;
 						eventData.messageData = messageData;
@@ -704,8 +710,8 @@ namespace DiscordCoreAPI {
 			done();
 		}
 
-		static void terminate() {
-			DiscordCoreClient::getInstance()->doWeQuit = true;
+		void terminate() {
+			this->doWeQuit = true;
 			SelectMenu::cleanup();
 			Button::cleanup();
 			DiscordCoreInternal::UserManagerAgent::cleanup();
@@ -721,10 +727,10 @@ namespace DiscordCoreAPI {
 			YouTubeAPI::cleanup();
 			SoundCloudAPI::cleanup();
 			SongAPI::cleanup();
-			DiscordCoreClient::getInstance()->webSocketConnectionAgent->terminate();
-			DiscordCoreClient::getInstance()->webSocketReceiverAgent->terminate();
-			wait(DiscordCoreClient::getInstance()->webSocketConnectionAgent.get());
-			wait(DiscordCoreClient::getInstance()->webSocketReceiverAgent.get());
+			this->webSocketConnectionAgent->terminate();
+			this->webSocketReceiverAgent->terminate();
+			wait(this->webSocketConnectionAgent.get());
+			wait(this->webSocketReceiverAgent.get());
 		}
 
 		~DiscordCoreClient() {
@@ -734,300 +740,300 @@ namespace DiscordCoreAPI {
 	};
 	DiscordCoreClient* DiscordCoreClient::thisPointer{ nullptr };
 
+	class ApplicationCommands {
+	public:
+		static task<vector<ApplicationCommand>> getGlobalApplicationCommandsAsync() {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGlobalApplicationCommandsAsync();
+		}
+
+		static task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->createGlobalApplicationCommandAsync(dataPackage);
+		}
+
+		static task<ApplicationCommand> getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGlobalApplicationCommandAsync(dataPackage);
+		}
+
+		static task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->editGlobalApplicationCommandAsync(dataPackage);
+		}
+
+		static void deleteGlobalApplicationCommand(DeleteApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->deleteGlobalApplicationCommand(dataPackage);
+		}
+
+		static task<vector<ApplicationCommand>>  bulkOverwriteApplicationCommandsAsync(BulkOverwriteApplicationCommandsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->bulkOverwriteApplicationCommandsAsync(dataPackage);
+		}
+
+		static task<vector<ApplicationCommand>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGuildApplicationCommandsAsync(dataPackage);
+		}
+
+		static task<ApplicationCommand> createGuildApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->createGuildApplicationCommandAsync(dataPackage);
+		}
+
+		static task<ApplicationCommand> getGuildApplicationCommandAsync(GetGuildApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGuildApplicationCommandAsync(dataPackage);
+		}
+
+		static task<ApplicationCommand> editGuildApplicationCommandAsync(EditGuildApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->editGuildApplicationCommandAsync(dataPackage);
+		}
+
+		static void deleteGuildApplicationCommand(DeleteGuildApplicationCommandData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->deleteGuildApplicationCommand(dataPackage);
+		}
+
+		static task<vector<ApplicationCommand>>  bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->bulkOverwriteGuildApplicationCommandsAsync(dataPackage);
+		};
+
+		static task<vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(GetGuildApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getGuildApplicationCommandPermissionsAsync(dataPackage);
+		}
+
+		static GuildApplicationCommandPermissionsData getApplicationCommandPermissions(GetApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->getApplicationCommandPermissions(dataPackage);
+		}
+
+		static GuildApplicationCommandPermissionsData editApplicationCommandPermissions(EditApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->editApplicationCommandPermissions(dataPackage);
+		}
+
+		static vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> batchEditApplicationCommandPermissions(BatchEditGuildApplicationCommandPermissionsData dataPackage) {
+			return DiscordCoreClient::thisPointer->applicationCommands->batchEditApplicationCommandPermissions(dataPackage);
+		}
+
+	};
+
 	class Guilds {
 	public:
 		static task<Guild> getGuildAsync(GetGuildData dataPackage) {
-			return DiscordCoreClient::getInstance()->guilds->getGuildAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guilds->getGuildAsync(dataPackage);
 		}
 
 		static task<Guild> fetchGuildAsync(FetchGuildData dataPackage) {
-			return DiscordCoreClient::getInstance()->guilds->fetchAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guilds->fetchAsync(dataPackage);
 		}
 
 		static task<AuditLogData> fetchAuditLogDataAsync(FetchAuditLogData dataPackage) {
-			return DiscordCoreClient::getInstance()->guilds->fetchAuditLogDataAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guilds->fetchAuditLogDataAsync(dataPackage);
 		}
 
 		static task<InviteData> fetchInviteAsync(FetchInviteData dataPackage) {
-			return DiscordCoreClient::getInstance()->guilds->fetchInviteAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guilds->fetchInviteAsync(dataPackage);
 		}
 
 		static task<vector<InviteData>> fetchInvitesAsync(FetchInvitesData dataPackage) {
-			return DiscordCoreClient::getInstance()->guilds->fetchInvitesAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guilds->fetchInvitesAsync(dataPackage);
 		}
 
 		static task<InviteData> fetchVanityInviteAsync(FetchVanityInviteData dataPackage) {
-			return DiscordCoreClient::getInstance()->guilds->fetchVanityInviteAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guilds->fetchVanityInviteAsync(dataPackage);
 		}
 
 		static task<BanData> createGuildBanAsync(CreateGuildBanData dataPackage) {
-			return DiscordCoreClient::getInstance()->guilds->createGuildBanAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guilds->createGuildBanAsync(dataPackage);
 		}
 
 		static task<vector<Guild>> getAllGuildsAsync() {
-			return DiscordCoreClient::getInstance()->guilds->getAllGuildsAsync();
+			return DiscordCoreClient::thisPointer->guilds->getAllGuildsAsync();
 		}
 
 		static task<void> insertGuildAsync(Guild guild) {
-			return DiscordCoreClient::getInstance()->guilds->insertGuildAsync(guild);
+			return DiscordCoreClient::thisPointer->guilds->insertGuildAsync(guild);
 		}
 
 		static task<void> removeGuildAsync(Guild guild) {
-			return DiscordCoreClient::getInstance()->guilds->removeGuildAsync(guild.id);
+			return DiscordCoreClient::thisPointer->guilds->removeGuildAsync(guild.id);
 		}
 	};
 
 	class Channels {
 	public:
 		static task<Channel> getChannelAsync(GetChannelData dataPackage) {
-			return DiscordCoreClient::getInstance()->channels->getChannelAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->channels->getChannelAsync(dataPackage);
 		}
 
 		static task<Channel> fetchChannelAsync(FetchChannelData dataPackage) {
-			return DiscordCoreClient::getInstance()->channels->fetchAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->channels->fetchAsync(dataPackage);
 		}
 
 		static task<void>editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage) {
-			return DiscordCoreClient::getInstance()->channels->editChannelPermissionOverwritesAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->channels->editChannelPermissionOverwritesAsync(dataPackage);
 		}
 
 		static task<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage) {
-			return DiscordCoreClient::getInstance()->channels->deleteChannelPermissionOverwritesAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->channels->deleteChannelPermissionOverwritesAsync(dataPackage);
 		}
 
 		static task<Channel> fetchDMChannelAsync(FetchDMChannelData dataPackage) {
-			return DiscordCoreClient::getInstance()->channels->fetchDMChannelAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->channels->fetchDMChannelAsync(dataPackage);
 		}
 
 		static task<void> insertChannelAsync(Channel dataPackage) {
-			return DiscordCoreClient::getInstance()->channels->insertChannelAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->channels->insertChannelAsync(dataPackage);
 		}
 
 		static task<void> removeChannelAsync(string channelId) {
-			return DiscordCoreClient::getInstance()->channels->removeChannelAsync(channelId);
+			return DiscordCoreClient::thisPointer->channels->removeChannelAsync(channelId);
 		}
 	};
 
 	class Messages {
 	public:
 		static task<Message> fetchMessageAsync(FetchMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->fetchAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->fetchAsync(dataPackage);
 		}
 
 		static task<Message> createMessageAsync(CreateMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->createMessageAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->createMessageAsync(dataPackage);
 		}
 
 		static task<void> deleteMessageAsync(DeleteMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->deleteMessageAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->deleteMessageAsync(dataPackage);
 		}
 
 		static task<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->deleteMessagesBulkAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->deleteMessagesBulkAsync(dataPackage);
 		}
 
 		static task<Message> editMessageAsync(EditMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->editMessageAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->editMessageAsync(dataPackage);
 		}
 
 		static task<std::optional<vector<Message>>> fetchMessagesAsync(FetchMessagesData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->fetchMessagesAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->fetchMessagesAsync(dataPackage);
 		}
 
 		static task<vector<Message>> fetchPinnedMessagesAsync(FetchPinnedMessagesData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->fetchPinnedMessagesAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->fetchPinnedMessagesAsync(dataPackage);
 		}
 
 		static task<void> pinMessageAsync(PinMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->pinMessageAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->pinMessageAsync(dataPackage);
 		}
 
 		static task<Message> pinMessageAsync(ReplyMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->replyAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->replyAsync(dataPackage);
 		}
 
 		static task<Message> pinMessageAsync(SendDMData dataPackage) {
-			return DiscordCoreClient::getInstance()->messages->sendDMAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->messages->sendDMAsync(dataPackage);
 		}
 	};
 
 	class GuildMembers {
 	public:
 		static task<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage) {
-			return DiscordCoreClient::getInstance()->guildMembers->getGuildMemberAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guildMembers->getGuildMemberAsync(dataPackage);
 		}
 
 		static task<GuildMember> fetchGuildMemberAsync(FetchGuildMemberData dataPackage) {
-			return DiscordCoreClient::getInstance()->guildMembers->fetchAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guildMembers->fetchAsync(dataPackage);
 		}
 
 		static task<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {
-			return DiscordCoreClient::getInstance()->guildMembers->modifyGuildMemberAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->guildMembers->modifyGuildMemberAsync(dataPackage);
 		}
 
 		static task<void> insertGuildMemberAsync(GuildMember dataPackage) {
-			return DiscordCoreClient::getInstance()->guildMembers->insertGuildMemberAsync(dataPackage, dataPackage.guildId);
+			return DiscordCoreClient::thisPointer->guildMembers->insertGuildMemberAsync(dataPackage, dataPackage.guildId);
 		}
 
 		static task<void> removeGuildMemberAsync(string guildId, string guildMemberId) {
-			return DiscordCoreClient::getInstance()->guildMembers->removeGuildMemberAsync(guildId, guildMemberId);
+			return DiscordCoreClient::thisPointer->guildMembers->removeGuildMemberAsync(guildId, guildMemberId);
 		}
 	};
 
 	class Users {
 	public:
 		static task<User> getUserAsync(GetUserData dataPackage) {
-			return DiscordCoreClient::getInstance()->users->getUserAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->users->getUserAsync(dataPackage);
 		}
 
 		static task<User> fetchUserAsync(FetchUserData dataPackage) {
-			return DiscordCoreClient::getInstance()->users->fetchAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->users->fetchAsync(dataPackage);
 		}
 
 		static task<void> insertUserAsync(User user) {
-			return DiscordCoreClient::getInstance()->users->insertUserAsync(user);
+			return DiscordCoreClient::thisPointer->users->insertUserAsync(user);
 		}
 	};
 
 	class Roles {
 	public:
 		static task<Role> getRoleAsync(GetRoleData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->getRoleAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->getRoleAsync(dataPackage);
 		}
 
 		static task<void> addRoleToGuildMemberAsync(AddRoleToGuildMemberData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->addRoleToGuildMemberAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->addRoleToGuildMemberAsync(dataPackage);
 		}
 
 		static task<Role> createRoleAsync(CreateRoleData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->createRoleAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->createRoleAsync(dataPackage);
 		}
 
 		static task<Role> fetchRoleAsync(FetchRoleData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->fetchAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->fetchAsync(dataPackage);
 		}
 
 		static vector<Role> getGuildMemberRoles(GetGuildMemberRolesData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->getGuildMemberRoles(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->getGuildMemberRoles(dataPackage);
 		}
 
 		static task<vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->getGuildRolesAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->getGuildRolesAsync(dataPackage);
 		}
 
 		static task<void> removeRoleFromGuildAsync(RemoveRoleFromGuildData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->removeRoleFromGuildAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->removeRoleFromGuildAsync(dataPackage);
 		}
 
 		static task<void> removeRoleFromGuildMemberAsync(RemoveRoleFromGuildMemberData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->removeRoleFromGuildMemberAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->removeRoleFromGuildMemberAsync(dataPackage);
 		}
 
 		static task<Role> updateRoleAsync(UpdateRoleData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->updateRoleAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->updateRoleAsync(dataPackage);
 		}
 
 		static vector<Role> updateRoleAsync(UpdateRolePositionData dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->updateRolePositions(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->updateRolePositions(dataPackage);
 		}
 
 		static task<void> insertRoleAsync(Role dataPackage) {
-			return DiscordCoreClient::getInstance()->roles->insertRoleAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->roles->insertRoleAsync(dataPackage);
 		}
 
 		static task<void> removeRoleAsync(string roleId) {
-			return DiscordCoreClient::getInstance()->roles->removeRoleAsync(roleId);
+			return DiscordCoreClient::thisPointer->roles->removeRoleAsync(roleId);
 		}
-	};
-
-	class ApplicationCommands {
-	public:
-		static task<vector<ApplicationCommand>> getGlobalApplicationCommandsAsync() {
-			return DiscordCoreClient::getInstance()->applicationCommands->getGlobalApplicationCommandsAsync();
-		}
-
-		static task<ApplicationCommand> createGlobalApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->createGlobalApplicationCommandAsync(dataPackage);
-		}
-
-		static task<ApplicationCommand> getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->getGlobalApplicationCommandAsync(dataPackage);
-		}
-
-		static task<ApplicationCommand> editGlobalApplicationCommandAsync(EditApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->editGlobalApplicationCommandAsync(dataPackage);
-		}
-
-		static void deleteGlobalApplicationCommand(DeleteApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->deleteGlobalApplicationCommand(dataPackage);
-		}
-
-		static task<vector<ApplicationCommand>>  bulkOverwriteApplicationCommandsAsync(BulkOverwriteApplicationCommandsData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->bulkOverwriteApplicationCommandsAsync(dataPackage);
-		}
-
-		static task<vector<ApplicationCommand>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->getGuildApplicationCommandsAsync(dataPackage);
-		}
-
-		static task<ApplicationCommand> createGuildApplicationCommandAsync(CreateApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->createGuildApplicationCommandAsync(dataPackage);
-		}
-
-		static task<ApplicationCommand> getGuildApplicationCommandAsync(GetGuildApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->getGuildApplicationCommandAsync(dataPackage);
-		}
-
-		static task<ApplicationCommand> editGuildApplicationCommandAsync(EditGuildApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->editGuildApplicationCommandAsync(dataPackage);
-		}
-
-		static void deleteGuildApplicationCommand(DeleteGuildApplicationCommandData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->deleteGuildApplicationCommand(dataPackage);
-		}
-
-		static task<vector<ApplicationCommand>>  bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->bulkOverwriteGuildApplicationCommandsAsync(dataPackage);
-		};
-
-		static task<vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(GetGuildApplicationCommandPermissionsData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->getGuildApplicationCommandPermissionsAsync(dataPackage);
-		}
-
-		static GuildApplicationCommandPermissionsData getApplicationCommandPermissions(GetApplicationCommandPermissionsData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->getApplicationCommandPermissions(dataPackage);
-		}
-
-		static GuildApplicationCommandPermissionsData editApplicationCommandPermissions(EditApplicationCommandPermissionsData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->editApplicationCommandPermissions(dataPackage);
-		}
-
-		static vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> batchEditApplicationCommandPermissions(BatchEditGuildApplicationCommandPermissionsData dataPackage) {
-			return DiscordCoreClient::getInstance()->applicationCommands->batchEditApplicationCommandPermissions(dataPackage);
-		}
-
 	};
 
 	class Reactions {
 	public:
 		static task<Reaction> createReactionAsync(CreateReactionData dataPackage) {
-			return DiscordCoreClient::getInstance()->reactions->createReactionAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->reactions->createReactionAsync(dataPackage);
 		}
 
 		static task<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage) {
-			return DiscordCoreClient::getInstance()->reactions->deleteAllReactionsAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->reactions->deleteAllReactionsAsync(dataPackage);
 		}
 
 		static task<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage) {
-			return DiscordCoreClient::getInstance()->reactions->deleteOwnReactionAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->reactions->deleteOwnReactionAsync(dataPackage);
 		}
 
 		static task<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage) {
-			return DiscordCoreClient::getInstance()->reactions->deleteReactionsByEmojiAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->reactions->deleteReactionsByEmojiAsync(dataPackage);
 		}
 
 		static task<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage) {
-			return DiscordCoreClient::getInstance()->reactions->deleteUserReactionAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->reactions->deleteUserReactionAsync(dataPackage);
 		}
 	};
 
@@ -1035,35 +1041,35 @@ namespace DiscordCoreAPI {
 	public:
 
 		static task<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->createInteractionResponseAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->createInteractionResponseAsync(dataPackage);
 		}
 
 		static task<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->createFollowUpMessageAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->createFollowUpMessageAsync(dataPackage);
 		}
 
 		static task<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->createDeferredInteractionResponseAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->createDeferredInteractionResponseAsync(dataPackage);
 		}
 
 		static task<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->deleteFollowUpMessageAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->deleteFollowUpMessageAsync(dataPackage);
 		}
 
 		static task<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->deleteInteractionResponseAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->deleteInteractionResponseAsync(dataPackage);
 		}
 
 		static task<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->editFollowUpMessageAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->editFollowUpMessageAsync(dataPackage);
 		}
 
 		static task<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->editInteractionResponseAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->editInteractionResponseAsync(dataPackage);
 		}
 
 		static task<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
-			return DiscordCoreClient::getInstance()->interactions->getInteractionResponseAsync(dataPackage);
+			return DiscordCoreClient::thisPointer->interactions->getInteractionResponseAsync(dataPackage);
 		}
 	};
 }
@@ -1072,7 +1078,7 @@ namespace DiscordCoreAPI {
 
 BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType) {
 	if (dwCtrlType == CTRL_C_EVENT || dwCtrlType == CTRL_CLOSE_EVENT) {
-		DiscordCoreAPI::DiscordCoreClient::terminate();
+		DiscordCoreAPI::DiscordCoreClient::thisPointer->terminate();
 	}
 	return true;
 };
