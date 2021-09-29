@@ -59,6 +59,7 @@
 - ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
 ## Button Stuff:
 - ### [Instantiating/Creating a Button](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Button.md)
+- ### [Collecting Button Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Button%20Input.md)
 ## Select-Menu Stuff:
 
 ## Voice Connection Stuff:
