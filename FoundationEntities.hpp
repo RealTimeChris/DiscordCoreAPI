@@ -11,7 +11,7 @@
 #include "../pch.h"
 
 namespace DiscordCoreAPI {
-    
+
     struct SongCompletionEventData;
     struct RespondToInputEventData;
     struct ButtonInteractionData;
@@ -26,14 +26,14 @@ namespace DiscordCoreAPI {
     class Interactions;
     class EventHandler;
     class GuildMembers;
-    class InputEvents;    
+    class InputEvents;
     class YouTubeSong;
     class SelectMenu;
     class Reactions;
     class Messages;
     class Channels;
     class BotUser;
-    class SongAPI;    
+    class SongAPI;
     class Guilds;
     class Roles;
     class Users;
@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
                 std::rethrow_exception(currentException);
             }
         }
-        catch (const operation_timed_out& e){
+        catch (const operation_timed_out& e) {
             exception newException(to_string(to_hstring(e.what())).c_str(), 0);
             if (sendBuffer != nullptr) {
                 send(sendBuffer, newException);
@@ -360,7 +360,7 @@ namespace DiscordCoreAPI {
 
 
 namespace  DiscordCoreInternal {
-    
+
     class ApplicationCommandManager;
     class WebSocketConnectionAgent;
     class InteractionManagerAgent;
@@ -899,7 +899,7 @@ namespace  DiscordCoreInternal {
                 this->scheduler->scheduler->Release();
                 this->scheduler = nullptr;
             }
-            
+
         };
 
         ~ThreadContext() {
@@ -928,7 +928,7 @@ namespace  DiscordCoreInternal {
     struct DeleteInteractionResponseData {
         unsigned int timeDelayInMs{ 0 };
         string interactionToken{ "" };
-        string applicationId{ "" };        
+        string applicationId{ "" };
     };
 
     struct DeleteFollowUpMessageData {
@@ -1390,7 +1390,7 @@ namespace  DiscordCoreInternal {
 
     struct CollectUserData {
         GetUserDataType userType{};
-        string userId{ "" };        
+        string userId{ "" };
     };
 
     struct LeaveGuildData {
@@ -1399,7 +1399,7 @@ namespace  DiscordCoreInternal {
 
     struct GetUserData {
         GetUserDataType userType{};
-        string userId{ "" };        
+        string userId{ "" };
     };
 
     struct GetPinnedMessagesData {
@@ -1873,7 +1873,7 @@ namespace DiscordCoreAPI {
         bool _default{ false };
         string label{ "" };
         string value{ "" };
-        EmojiData emoji{};        
+        EmojiData emoji{};
     };
 
     struct ComponentData {
@@ -1928,7 +1928,7 @@ namespace DiscordCoreAPI {
         string filename{ "" };
         string proxyUrl{ "" };
         string url{ "" };
-        string id{ "" };        
+        string id{ "" };
         int height{ 0 };
         int width{ 0 };
         int size{ 0 };
@@ -1956,12 +1956,12 @@ namespace DiscordCoreAPI {
             newData.proxyUrl = this->proxyUrl;
             newData.height = this->height;
             newData.width = this->width;
-            newData.url = this->url;            
+            newData.url = this->url;
             return newData;
         }
 
         string proxyUrl{ "" };
-        string url{ "" };        
+        string url{ "" };
         int height{ 0 };
         int width{ 0 };
     };
@@ -2218,7 +2218,7 @@ namespace DiscordCoreAPI {
             newData.failIfNotExists = this->failIfNotExists;
             newData.channelId = this->channelId;
             newData.messageId = this->messageId;
-            newData.guildId = this->guildId;            
+            newData.guildId = this->guildId;
             return newData;
         }
 
@@ -2443,7 +2443,7 @@ namespace DiscordCoreAPI {
         bool valueBool{ false };
         string name{ "" };
         int valueInt{ 0 };
-        
+
     };
 
     vector<DiscordCoreInternal::ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions) {
@@ -2471,7 +2471,7 @@ namespace DiscordCoreAPI {
         string name{ "" };
         string id{ "" };
         int type{ 0 };
-        
+
     };
 
     struct ReactionData {
@@ -2544,7 +2544,7 @@ namespace DiscordCoreAPI {
             newData.type = (DiscordCoreInternal::InteractionType)this->type;
             newData.name = this->name;
             newData.user = this->user;
-            newData.id = this->id;            
+            newData.id = this->id;
             return newData;
         }
 
@@ -2568,7 +2568,7 @@ namespace DiscordCoreAPI {
             newData.name = this->name;
             newData.tags = this->tags;
             newData.user = this->user;
-            newData.id = this->id;            
+            newData.id = this->id;
             return newData;
         }
 
@@ -2608,7 +2608,7 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::TeamObjectData newData;
             newData.ownerUserId = this->ownerUserId;
             newData.icon = this->icon;
-            newData.id = this->id;            
+            newData.id = this->id;
             return newData;
         }
 
@@ -2675,7 +2675,7 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::MessageStickerItemData newData;
             newData.formatType = (DiscordCoreInternal::MessageStickerItemType)this->formatType;
             newData.name = this->name;
-            newData.id = this->id;            
+            newData.id = this->id;
             return newData;
         }
 
@@ -2720,7 +2720,7 @@ namespace DiscordCoreAPI {
 
     struct MessageData :public MessageDataOld {
         MessageDataOld referencedMessage{};
-        string requesterId{ "" };        
+        string requesterId{ "" };
     };
 
     struct ResolvedData {
@@ -2767,7 +2767,7 @@ namespace DiscordCoreAPI {
     };
 
     struct InteractionData {
-        
+
         InteractionDataData data{};
         string applicationId{ "" };
         GuildMemberData member{};
@@ -3140,7 +3140,7 @@ namespace DiscordCoreAPI {
         bool defaultPermission{ false };
         ApplicationCommandType type{};
         string applicationId{ "" };
-        string description{ "" };        
+        string description{ "" };
         string guildId{ "" };
         string name{ "" };
         string id{ "" };
@@ -3285,7 +3285,7 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.id != "") {
                 return this->interactionData.id;
             }
-            else if (this->interactionData.message.interaction.id !=""){
+            else if (this->interactionData.message.interaction.id != "") {
                 return this->interactionData.message.interaction.id;
             }
             else {
@@ -3311,6 +3311,9 @@ namespace DiscordCoreAPI {
             }
             else if (this->interactionData.channelId != "") {
                 return this->interactionData.channelId;
+            }
+            else {
+                return string();
             }
         }
 
@@ -3616,7 +3619,7 @@ namespace DiscordCoreAPI {
         string songTitle{ "" };
         string duration{ "" };
         string viewURL{ "" };
-        
+
         Song() {}
 
     protected:
@@ -3631,7 +3634,7 @@ namespace DiscordCoreAPI {
         string firstDownloadURL{ "" };
         int contentLength{ 0 };
         string songId{ "" };
-        
+
     };
 
     class SoundCloudSong : public Song {
@@ -4039,7 +4042,7 @@ namespace DiscordCoreAPI {
         vector<StickerData> stickers{};
         string guildId{ "" };
     };
-    
+
     struct GuildMembersChunkEventData {
         vector<PresenceUpdateData> presences{};
         vector<GuildMemberData> members{};
@@ -4049,7 +4052,7 @@ namespace DiscordCoreAPI {
         int chunkCount{ 0 };
         string nonce{ "" };
     };
-    
+
     const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
     const string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
     const string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };

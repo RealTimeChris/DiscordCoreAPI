@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 				messageOption = true;
 			}
 			else if (commandData.eventData.eventType == InputEventType::SLASH_COMMAND_INTERACTION) {
-				DiscordCoreInternal::DataParser::parseObject(commandData.eventData.getInteractionData().dataRaw, &commandData);
+				DiscordCoreInternal::DataParser::parseObject(commandData.eventData.getInteractionData().rawData, &commandData);
 				string newCommandName = getBotDiscordUserData().data.prefix + commandData.commandName;
 				functionPointer = CommandCenter::getCommand(convertToLowerCase(newCommandName), commandData);
 				messageOption = false;
