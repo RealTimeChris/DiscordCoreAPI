@@ -183,8 +183,8 @@ namespace DiscordCoreAPI {
 						InputEvents::deleteInputEventResponseAsync(newEvent).get();
 						break;
 					}
-					SelectMenu selectMenu(newEvent);
-					auto selectMenuReturnData = selectMenu.collectSelectMenuData(false, 120000, args->eventData.getAuthorId());
+					SelectMenuCollector selectMenu(newEvent);
+					auto selectMenuReturnData = selectMenu.collectSelectMenuData(false, 120000, 1, args->eventData.getAuthorId());
 					if (selectMenuReturnData.size() > 0) {
 						if (selectMenuReturnData.at(0).values.at(0).value == "go back") {
 							continue;

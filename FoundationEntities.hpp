@@ -18,6 +18,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreClientBase;
     class DatabaseManagerAgent;
     class PermissionsConverter;
+    class SelectMenuCollector;
     class ApplicationCommands;
     class DiscordCoreClient;
     class ButtonCollector;
@@ -3910,7 +3911,14 @@ namespace DiscordCoreAPI {
             this->type = DesiredInputEventResponseType::RegularMessage;
         }
 
-        RespondToInputEventData(InteractionData dataPackage);
+        RespondToInputEventData(InteractionData dataPackage) {
+            this->type = DesiredInputEventResponseType::DeferredResponse;
+            this->applicationId = dataPackage.applicationId;
+            this->interactionToken = dataPackage.token;
+            this->messageId = dataPackage.message.id;
+            this->channelId = dataPackage.channelId;
+            this->interactionId = dataPackage.id;
+        };
 
         RespondToInputEventData(InputEventData dataPackage) {
             this->interactionToken = dataPackage.getInteractionToken();

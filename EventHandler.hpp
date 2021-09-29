@@ -126,8 +126,8 @@ namespace DiscordCoreAPI {
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::SELECT_MENU_INPUT) {
-                    if (SelectMenu::selectMenuInteractionBufferMap.contains(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId())) {
-                        send(SelectMenu::selectMenuInteractionBufferMap.at(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId()), dataPackage.eventData.getInteractionData());
+                    if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId())) {
+                        send(SelectMenuCollector::selectMenuInteractionBufferMap.at(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId()), dataPackage.eventData.getInteractionData());
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::MESSAGE_COMMAND_INTERACTION) {

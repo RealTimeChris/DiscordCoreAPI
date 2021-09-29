@@ -1376,6 +1376,9 @@ namespace DiscordCoreInternal {
 					fields.push_back(field);
 				}
 
+				if (value.hexColorValue == "") {
+					value.hexColorValue = "fefefe";
+				}
 				unsigned int colorValInt = stol(value.hexColorValue, 0, 16);
 				stringstream stream;
 				stream << setbase(10) << colorValInt;

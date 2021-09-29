@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 			this->applicationCommands = make_shared<DiscordCoreInternal::ApplicationCommandManager>(nullptr);
 			this->applicationCommands->initialize(this->discordUser->data.userId);
 			ButtonCollector::initialize(this->interactions);
-			SelectMenu::initialize(this->interactions);
+			SelectMenuCollector::initialize(this->interactions);
 			InputEvents::initialize(this->messages, this->interactions);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
@@ -508,6 +508,8 @@ namespace DiscordCoreAPI {
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &messageData);
 						if (messageData.interaction.id != "") {
 							if (DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.contains(messageData.interaction.id)) {
+								MessageData messageData01{};
+								while (try_receive(*DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData01)) {};
 								send(*DiscordCoreInternal::InteractionManagerAgent::collectMessageDataBuffers.at(messageData.interaction.id), messageData);
 							}
 						}
@@ -683,7 +685,7 @@ namespace DiscordCoreAPI {
 
 		void terminate() {
 			this->doWeQuit = true;
-			SelectMenu::cleanup();
+			SelectMenuCollector::cleanup();
 			ButtonCollector::cleanup();
 			DiscordCoreInternal::UserManagerAgent::cleanup();
 			DiscordCoreInternal::RoleManagerAgent::cleanup();
