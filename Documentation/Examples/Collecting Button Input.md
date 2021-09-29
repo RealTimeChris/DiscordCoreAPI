@@ -46,8 +46,10 @@ namespace DiscordCoreAPI {
 			auto inputEventData = InputEvents::respondToEvent(dataPackage);
 
 			ButtonCollector buttonCollector(inputEventData);
-			auto results = buttonCollector.collectButtonData(false, 120000, 3, getBotUser().id);
-
+			auto results = buttonCollector.collectButtonData(true, 120000, 3, getBotUser().id);
+			for (auto value : results) {
+				cout << value.userId << endl;
+			}
 			InputEvents::deleteInputEventResponseAsync(inputEventData).get();
 
 			co_return;
