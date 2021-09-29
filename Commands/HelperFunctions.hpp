@@ -680,7 +680,7 @@ namespace DiscordCoreAPI {
             while (doWeQuit == false) {
                 ButtonCollector button(event01);
 
-                vector<ButtonResponseData> buttonIntData = button.collectButtonData(false, waitForMaxMs, 1);
+                vector<ButtonResponseData> buttonIntData = button.collectButtonData(false, waitForMaxMs, 1, event01.getRequesterId());
                 if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "exit" || buttonIntData.at(0).buttonId == "") {
                     if (deleteAfter == true) {
                         InputEvents::deleteInputEventResponseAsync(event01);
