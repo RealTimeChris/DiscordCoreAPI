@@ -435,71 +435,46 @@ namespace DiscordCoreAPI {
 						}
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &interactionData);
 						InputEventData eventData{};
-						if (interactionData.type == InteractionType::ApplicationCommand) {
-							if (workload.payLoad.at("data").at("type") == ApplicationCommandType::CHAT_INPUT) {
-								eventData.inputEventResponseType = InputEventResponseType::UNSET;
+						if (interactionData.type == InteractionType::APPLICATION_COMMAND) {
+							if (interactionData.data.applicationCommanddata.type == ApplicationCommandType::CHAT_INPUT) {
 								eventData.eventType = InputEventType::SLASH_COMMAND_INTERACTION;
+								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
 								eventCreationData.eventData = eventData;
 								this->eventManager->onInteractionCreationEvent(eventCreationData);
 							}
-							else if (workload.payLoad.at("data").at("type") == ApplicationCommandType::MESSAGE) {
-								MessageCommandInteractionData dataPackage;
-								DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &dataPackage);
-								interactionData.applicationId = dataPackage.applicationId;
-								interactionData.user = dataPackage.messages.member.user;
-								interactionData.member = dataPackage.messages.member;
-								interactionData.channelId = dataPackage.channelId;
-								interactionData.message = dataPackage.messages;
-								interactionData.id = dataPackage.interactionId;
-								interactionData.guildId = dataPackage.guildId;
-								interactionData.version = dataPackage.version;
-								interactionData.token = dataPackage.token;
-								interactionData.name = dataPackage.name;
+							else if (interactionData.data.applicationCommanddata.type == ApplicationCommandType::MESSAGE) {
 								eventData.eventType = InputEventType::MESSAGE_COMMAND_INTERACTION;
 								eventData.inputEventResponseType = InputEventResponseType::UNSET;
-								eventData.messageCommandInteractionData = dataPackage;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
 								eventCreationData.eventData = eventData;
 								this->eventManager->onInteractionCreationEvent(eventCreationData);
 							}
-							else if (workload.payLoad.at("data").at("type") == ApplicationCommandType::USER) {
-								UserCommandInteractionData dataPackage;
-								DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &dataPackage);
-								interactionData.applicationId = dataPackage.applicationId;
-								interactionData.channelId = dataPackage.channelId;
-								interactionData.id = dataPackage.interactionId;
-								interactionData.version = dataPackage.version;
-								interactionData.guildId = dataPackage.guildId;
-								interactionData.member = dataPackage.member;
-								interactionData.token = dataPackage.token;
-								interactionData.user = dataPackage.users;
-								interactionData.name = dataPackage.name;
-								eventData.inputEventResponseType = InputEventResponseType::UNSET;
+							else if (interactionData.data.applicationCommanddata.type == ApplicationCommandType::USER) {
 								eventData.eventType = InputEventType::USER_COMMAND_INTERACTION;
-								eventData.userCommandInteractionData = dataPackage;
+								eventData.inputEventResponseType = InputEventResponseType::UNSET;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
 								eventCreationData.eventData = eventData;
 								this->eventManager->onInteractionCreationEvent(eventCreationData);
 							}
 						}
-						else if (interactionData.type == InteractionType::MessageComponent) {
-							if (interactionData.componentType == ComponentType::Button) {
-								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+						else if (interactionData.type == InteractionType::MESSAGE_COMPONENT) {
+							if (interactionData.data.componentData.componentType == ComponentType::Button) {
 								eventData.eventType = InputEventType::BUTTON_INTERACTION;
+								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};
 								eventCreationData.eventData = eventData;
 								this->eventManager->onInteractionCreationEvent(eventCreationData);
 							}
-							else if (interactionData.componentType == ComponentType::SelectMenu) {
-								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
+							else if (interactionData.data.componentData.componentType == ComponentType::SelectMenu) {
 								eventData.eventType = InputEventType::SELECT_MENU_INPUT;
+								eventData.inputEventResponseType = InputEventResponseType::DEFER_COMPONENT_RESPONSE;
 								eventData.requesterId = interactionData.requesterId;
 								eventData.interactionData = interactionData;
 								OnInteractionCreationData eventCreationData{};

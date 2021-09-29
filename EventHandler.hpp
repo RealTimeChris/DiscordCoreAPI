@@ -121,36 +121,13 @@ namespace DiscordCoreAPI {
                     CommandCenter::checkForAndRunCommand(commandData);
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::BUTTON_INTERACTION) {
-                    ButtonInteractionData dataPackageNew;
-                    dataPackageNew.applicationId = dataPackage.eventData.getApplicationId();
-                    dataPackageNew.channelId = dataPackage.eventData.getChannelId();
-                    dataPackageNew.customId = dataPackage.eventData.getInteractionData().customId;
-                    dataPackageNew.guildId = dataPackage.eventData.getGuildId();
-                    dataPackageNew.id = dataPackage.eventData.getInteractionId();
-                    dataPackageNew.member = dataPackage.eventData.getInteractionData().member;
-                    dataPackageNew.message = dataPackage.eventData.getInteractionData().message;
-                    dataPackageNew.token = dataPackage.eventData.getInteractionToken();
-                    dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
-                    dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (ButtonCollector::buttonInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        send(ButtonCollector::buttonInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (ButtonCollector::buttonInteractionBufferMap.contains(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId())) {
+                        send(ButtonCollector::buttonInteractionBufferMap.at(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId()), dataPackage.eventData.getInteractionData());
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::SELECT_MENU_INPUT) {
-                    SelectMenuInteractionData dataPackageNew;
-                    dataPackageNew.applicationId = dataPackage.eventData.getApplicationId();
-                    dataPackageNew.channelId = dataPackage.eventData.getChannelId();
-                    dataPackageNew.customId = dataPackage.eventData.getInteractionData().customId;
-                    dataPackageNew.guildId = dataPackage.eventData.getGuildId();
-                    dataPackageNew.id = dataPackage.eventData.getInteractionId();
-                    dataPackageNew.member = dataPackage.eventData.getInteractionData().member;
-                    dataPackageNew.message = dataPackage.eventData.getInteractionData().message;
-                    dataPackageNew.token = dataPackage.eventData.getInteractionToken();
-                    dataPackageNew.values = dataPackage.eventData.getInteractionData().values;
-                    dataPackageNew.type = dataPackage.eventData.getInteractionData().type;
-                    dataPackageNew.user = dataPackage.eventData.getInteractionData().user;
-                    if (SelectMenu::selectMenuInteractionBufferMap.contains(dataPackageNew.channelId + dataPackageNew.message.id)) {
-                        send(SelectMenu::selectMenuInteractionBufferMap.at(dataPackageNew.channelId + dataPackageNew.message.id), dataPackageNew);
+                    if (SelectMenu::selectMenuInteractionBufferMap.contains(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId())) {
+                        send(SelectMenu::selectMenuInteractionBufferMap.at(dataPackage.eventData.getChannelId() + dataPackage.eventData.getMessageId()), dataPackage.eventData.getInteractionData());
                     }
                 }
                 else if (dataPackage.eventData.eventType == InputEventType::MESSAGE_COMMAND_INTERACTION) {

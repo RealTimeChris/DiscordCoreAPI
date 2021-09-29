@@ -11,9 +11,10 @@
 #include "../pch.h"
 
 namespace DiscordCoreAPI {
-
+    
     struct SongCompletionEventData;
     struct RespondToInputEventData;
+    struct ButtonInteractionData;
     class DiscordCoreClientBase;
     class DatabaseManagerAgent;
     class PermissionsConverter;
@@ -1220,22 +1221,6 @@ namespace  DiscordCoreInternal {
         string id{ "" };
     };
 
-    struct UserCommandInteractionData {
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string interactionId{ "" };
-        GuildMemberData members{};
-        GuildMemberData member{};
-        string channelId{ "" };
-        string targetId{ "" };
-        string guildId{ "" };
-        string menuId{ "" };
-        string token{ "" };
-        string name{ "" };
-        UserData users{};
-        int version{ 0 };
-    };
-
     struct InteractionResponseData {
         InteractionApplicationCommandCallbackData data{};
         InteractionCallbackType type{};
@@ -2161,16 +2146,17 @@ namespace DiscordCoreAPI {
 
     enum class InputEventResponseType {
         UNSET = 0,
-        REGULAR_MESSAGE_RESPONSE = 1,
-        REGULAR_MESSAGE_EDIT = 2,
-        INTERACTION_RESPONSE = 3,
-        INTERACTION_RESPONSE_DEFERRED = 4,
-        INTERACTION_RESPONSE_EPHEMERAL = 5,
-        INTERACTION_RESPONSE_EDIT = 6,
-        INTERACTION_FOLLOW_UP_MESSAGE = 7,
-        INTERACTION_FOLLOW_UP_MESSAGE_EPHEMERAL = 8,
-        INTERACTION_FOLLOW_UP_MESSAGE_EDIT = 9,
-        DEFER_COMPONENT_RESPONSE = 10
+        REGULAR_MESSAGE_CREATE = 1,
+        REGULAR_MESSAGE_RESPONSE = 2,
+        REGULAR_MESSAGE_EDIT = 3,
+        INTERACTION_RESPONSE = 4,
+        INTERACTION_RESPONSE_DEFERRED = 5,
+        INTERACTION_RESPONSE_EPHEMERAL = 6,
+        INTERACTION_RESPONSE_EDIT = 7,
+        INTERACTION_FOLLOW_UP_MESSAGE = 8,
+        INTERACTION_FOLLOW_UP_MESSAGE_EPHEMERAL = 9,
+        INTERACTION_FOLLOW_UP_MESSAGE_EDIT = 10,
+        DEFER_COMPONENT_RESPONSE = 11
     };
 
     struct AllowedMentionsData {
@@ -2243,9 +2229,9 @@ namespace DiscordCoreAPI {
     };
 
     enum class InteractionType {
-        Ping = 1,
-        ApplicationCommand = 2,
-        MessageComponent = 3
+        PING = 1,
+        APPLICATION_COMMAND = 2,
+        MESSAGE_COMPONENT = 3
     };
 
     enum class EditChannelPermissionOverwritesType {
@@ -2396,14 +2382,6 @@ namespace DiscordCoreAPI {
         UserData user{};
     };
 
-    struct ApplicationCommandInteractionDataResolved {
-
-        map<string, GuildMemberData> members{};
-        map<string, ChannelData> channels{};
-        map<string, UserData> users{};
-        map<string, RoleData> roles{};
-    };
-
     enum class ApplicationCommandOptionType {
         SUB_COMMAND = 1,
         SUB_COMMAND_GROUP = 2,
@@ -2477,16 +2455,6 @@ namespace DiscordCoreAPI {
         }
         return newVector;
     }
-
-    struct ApplicationCommandInteractionData {
-
-        vector<ApplicationCommandInteractionDataOption> options{};
-        ApplicationCommandInteractionDataResolved resolved{};
-        int componentType{ 0 };
-        string customId{ "" };
-        string name{ "" };
-        string id{ "" };
-    };
 
     struct ChannelMentionData {
 
@@ -2755,24 +2723,64 @@ namespace DiscordCoreAPI {
         string requesterId{ "" };        
     };
 
-    struct InteractionData {
-        ApplicationCommandInteractionData data{};
+    struct ResolvedData {
+        map<string, GuildMemberData> members{};
+        map<string, MessageData> messages{};
+        map<string, ChannelData> channels{};
+        map<string, UserData> users{};
+        map<string, RoleData> roles{};
+    };
+
+    enum class ApplicationCommandType {
+        CHAT_INPUT = 1,
+        USER = 2,
+        MESSAGE = 3
+    };
+
+    struct ApplicationCommandInteractionData {
+        vector<ApplicationCommandInteractionDataOption> options{};
+        ApplicationCommandType type{};
+        ResolvedData resolved{};
+        string name{ "" };
+        string id{ "" };
+    };
+
+    struct ComponentInteractionData {
+        vector<SelectOptionData> values{};
         ComponentType componentType{};
+        string customId{ "" };
+    };
+
+    struct UserCommandInteractionData {
+        string targetId{ "" };
+    };
+
+    struct MessageCommandInteractionData {
+        string targetId{ "" };
+    };
+
+    struct InteractionDataData {
+        ApplicationCommandInteractionData applicationCommanddata{};
+        MessageCommandInteractionData messageInteractionData{};
+        UserCommandInteractionData userInteractionData{};
+        ComponentInteractionData componentData{};
+    };
+
+    struct InteractionData {
+        
+        InteractionDataData data{};
         string applicationId{ "" };
         GuildMemberData member{};
         string requesterId{ "" };
-        vector<string> values{};
-        string channelId{ "" };
         InteractionType type{};
+        string channelId{ "" };
         MessageData message{};
-        string customId{ "" };
         string guildId{ "" };
         string token{ "" };
-        string name{ "" };
         int version{ 0 };
         UserData user{};
         string id{ "" };
-        json dataRaw{};
+        json rawData{};
 
         InteractionData() {};
 
@@ -3089,12 +3097,6 @@ namespace DiscordCoreAPI {
         USER_COMMAND_INTERACTION = 6
     };
 
-    enum class ApplicationCommandType {
-        CHAT_INPUT = 1,
-        USER = 2,
-        MESSAGE = 3
-    };
-
     struct ApplicationCommandOptionChoiceData {
         operator DiscordCoreInternal::ApplicationCommandOptionChoiceData() {
             DiscordCoreInternal::ApplicationCommandOptionChoiceData newData;
@@ -3144,36 +3146,6 @@ namespace DiscordCoreAPI {
         string id{ "" };
     };
 
-    struct UserCommandInteractionData {
-        ApplicationCommandType type{};
-        string interactionId{ "" };
-        string applicationId{ "" };
-        GuildMemberData members{};
-        GuildMemberData member{};
-        string channelId{ "" };
-        string targetId{ "" };
-        string guildId{ "" };
-        string menuId{ "" };
-        string token{ "" };
-        string name{ "" };
-        UserData users{};
-        int version{ 0 };
-    };
-
-    struct MessageCommandInteractionData {
-        ApplicationCommandType type{};
-        string interactionId{ "" };
-        string applicationId{ "" };
-        GuildMemberData member{};
-        MessageData messages{};
-        string channelId{ "" };
-        string targetId{ "" };
-        string guildId{ "" };
-        string menuId{ "" };
-        string token{ "" };
-        string name{ "" };
-        int version{ 0 };
-    };
 
     struct InputEventData {
 
@@ -3185,7 +3157,7 @@ namespace DiscordCoreAPI {
         friend struct CommandData;
         friend class InputEvents;
 
-        DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+        DiscordCoreClient* discordCoreClient{ nullptr };
         InputEventResponseType inputEventResponseType{};
         InputEventType eventType{};
 
@@ -3245,11 +3217,8 @@ namespace DiscordCoreAPI {
             else if (this->messageData.author.userName != "") {
                 return this->messageData.author.userName;
             }
-            else if (this->messageCommandInteractionData.member.user.userName != "") {
-                return this->messageCommandInteractionData.member.user.userName;
-            }
             else {
-                return this->userCommandInteractionData.member.user.userName;
+                return string();
             }
         }
 
@@ -3263,11 +3232,8 @@ namespace DiscordCoreAPI {
             else if (this->messageData.author.avatar != "") {
                 return this->messageData.author.avatar;
             }
-            else if (this->messageCommandInteractionData.member.user.avatar != "") {
-                return this->messageCommandInteractionData.member.user.avatar;
-            }
             else {
-                return this->userCommandInteractionData.member.user.avatar;
+                return string();
             }
         }
 
@@ -3307,11 +3273,8 @@ namespace DiscordCoreAPI {
             else if (this->messageData.author.id != "") {
                 return this->messageData.author.id;
             }
-            else if (this->messageCommandInteractionData.member.user.id != "") {
-                return this->messageCommandInteractionData.member.user.id;
-            }
             else {
-                return this->userCommandInteractionData.member.user.id;
+                return string();
             }
         }
 
@@ -3322,11 +3285,11 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.id != "") {
                 return this->interactionData.id;
             }
-            else if (this->messageCommandInteractionData.interactionId != "") {
-                return this->messageCommandInteractionData.interactionId;
+            else if (this->interactionData.message.interaction.id !=""){
+                return this->interactionData.message.interaction.id;
             }
             else {
-                return this->userCommandInteractionData.interactionId;
+                return string();
             }
         }
 
@@ -3337,11 +3300,8 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.applicationId != "") {
                 return this->interactionData.applicationId;
             }
-            else if (this->messageCommandInteractionData.applicationId != "") {
-                return this->messageCommandInteractionData.applicationId;
-            }
             else {
-                return this->userCommandInteractionData.applicationId;
+                return string();
             }
         }
 
@@ -3352,23 +3312,14 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.channelId != "") {
                 return this->interactionData.channelId;
             }
-            else if (this->messageCommandInteractionData.channelId != "") {
-                return this->messageCommandInteractionData.channelId;
-            }
-            else {
-                return this->userCommandInteractionData.channelId;
-            }
         }
 
         string getInteractionToken() {
             if (this->interactionData.token != "") {
                 return this->interactionData.token;
             }
-            else if (this->messageCommandInteractionData.token != "") {
-                return this->messageCommandInteractionData.token;
-            }
             else {
-                return this->userCommandInteractionData.token;
+                return string();
             }
         }
 
@@ -3379,11 +3330,8 @@ namespace DiscordCoreAPI {
             else if (this->messageData.guildId != "") {
                 return this->messageData.guildId;
             }
-            else if (this->userCommandInteractionData.guildId != "") {
-                return this->userCommandInteractionData.guildId;
-            }
             else {
-                return this->messageCommandInteractionData.guildId;
+                return string();
             }
         }
 
@@ -3404,8 +3352,8 @@ namespace DiscordCoreAPI {
             else if (this->interactionData.message.id != "") {
                 return this->interactionData.message.id;
             }
-            else  {
-                return this->messageCommandInteractionData.messages.id;
+            else {
+                return string();
             }
         }
 
@@ -3428,8 +3376,6 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        MessageCommandInteractionData messageCommandInteractionData{};
-        UserCommandInteractionData userCommandInteractionData{};
         InteractionData interactionData{};
         MessageData messageData{};
         string requesterId{ "" };
@@ -3908,18 +3854,8 @@ namespace DiscordCoreAPI {
 
         CommandData(InputEventData inputEventData) {
             this->eventData = inputEventData;
-            if (inputEventData.userCommandInteractionData.name != "") {
-                this->commandName = inputEventData.userCommandInteractionData.name;
-                if (inputEventData.userCommandInteractionData.users.id != "") {
-                    this->optionsArgs.push_back(inputEventData.userCommandInteractionData.users.id);
-                }
-                else {
-                    this->optionsArgs.push_back(inputEventData.userCommandInteractionData.members.user.id);
-                }
-            }
-            else if (inputEventData.messageCommandInteractionData.name != "") {
-                this->commandName = inputEventData.messageCommandInteractionData.name;
-                this->optionsArgs.push_back(inputEventData.messageCommandInteractionData.messages.id);
+            if (inputEventData.interactionData.data.applicationCommanddata.name != "") {
+                this->commandName = inputEventData.interactionData.data.applicationCommanddata.name;
             }
         }
     };
@@ -3970,6 +3906,8 @@ namespace DiscordCoreAPI {
             this->channelId = channelIdNew;
             this->type = DesiredInputEventResponseType::RegularMessage;
         }
+
+        RespondToInputEventData(InteractionData dataPackage);
 
         RespondToInputEventData(InputEventData dataPackage) {
             this->interactionToken = dataPackage.getInteractionToken();
