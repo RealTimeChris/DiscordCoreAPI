@@ -57,9 +57,9 @@
 - ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
 - ### [Editing an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20an%20Interaction%20Response.md)
 - ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
-## Button Manager:
+## Button Stuff:
 - ### [Instantiating/Creating a Button](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Button.md)
-## Select-Menu Manager:
+## Select-Menu Stuff:
 
-## Voice:
+## Voice Connection Stuff:
 - ### [Connecting To/Disconnecting From a Voice Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Conneting%20To-Disconnnecting%20From%20a%20Voice%20Channel.md)
