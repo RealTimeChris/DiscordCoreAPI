@@ -1355,6 +1355,7 @@ namespace DiscordCoreAPI {
                             response.channelId = this->channelId;
                             response.messageId = this->messageId;
                             response.userId = buttonInteractionData.user.id;
+                            response.values = this->interactionData.data.componentData.values;
                             response.interactionData = buttonInteractionData;
                             this->responseVector.push_back(response);
                             currentNumberOfPresses += 1;
@@ -1370,13 +1371,14 @@ namespace DiscordCoreAPI {
                             break;
                         }
                         this->interactionData = buttonInteractionData;
-                        this->selectMenuId= buttonInteractionData.data.componentData.customId;
+                        this->selectMenuId = buttonInteractionData.data.componentData.customId;
                         SelectMenuResponseData response;
                         response.selectionId = this->selectMenuId;
                         response.channelId = this->channelId;
                         response.messageId = this->messageId;
                         response.userId = buttonInteractionData.user.id;
                         response.interactionData = buttonInteractionData;
+                        response.values = this->interactionData.data.componentData.values;
                         this->responseVector.push_back(response);
                         DiscordCoreAPI::CreateInteractionResponseData dataPackage(buttonInteractionData);
                         dataPackage.setResponseType(DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage);
