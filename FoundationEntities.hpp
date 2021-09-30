@@ -1320,10 +1320,6 @@ namespace  DiscordCoreInternal {
         int totalGets{ 0 };
     };
 
-    struct CollectGuildData {
-        string guildId{ "" };
-    };
-
     struct GetGuildData {
         string guildId{ "" };
     };
@@ -1354,10 +1350,6 @@ namespace  DiscordCoreInternal {
         string messageId{ "" };
         string emojiName{ "" };
         string userId{ "" };
-    };
-
-    struct CollectChannelData {
-        string channelId{ "" };
     };
 
     struct GetChannelData {
@@ -1402,11 +1394,6 @@ namespace  DiscordCoreInternal {
     enum class GetUserDataType {
         SELF = 0,
         USER = 1
-    };
-
-    struct CollectUserData {
-        GetUserDataType userType{};
-        string userId{ "" };
     };
 
     struct LeaveGuildData {
@@ -1458,11 +1445,6 @@ namespace  DiscordCoreInternal {
         string userId{ "" };
         bool tts{ false };
         int nonce{ 0 };
-    };
-
-    struct CollectGuildMemberData {
-        string guildMemberId{ "" };
-        string guildId{ "" };
     };
 
     struct GetGuildMemberData {
@@ -1520,11 +1502,6 @@ namespace  DiscordCoreInternal {
     struct PatchRolePositionData {
         vector<RolePositionData> rolePositions{};
         string guildId{ "" };
-    };
-
-    struct CollectRoleData {
-        string guildId{ "" };
-        string roleId{ "" };
     };
 
     struct PostRoleData {

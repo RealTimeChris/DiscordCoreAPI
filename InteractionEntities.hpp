@@ -1069,7 +1069,7 @@ namespace DiscordCoreInternal {
     protected:
 
         task<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PostDeferredInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
@@ -1085,7 +1085,7 @@ namespace DiscordCoreInternal {
         }
 
         task<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PostInteractionResponseData dataPackageNew;
             dataPackageNew.interactionId = dataPackage.interactionPackage.interactionId;
@@ -1115,7 +1115,7 @@ namespace DiscordCoreInternal {
         }
 
         task<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::GetInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.applicationId;
@@ -1131,7 +1131,7 @@ namespace DiscordCoreInternal {
         }
 
         task<DiscordCoreAPI::MessageData> editInteractionResponseAsync(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PatchInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1158,7 +1158,7 @@ namespace DiscordCoreInternal {
         }
 
         task<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::DeleteInteractionResponseData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;;
@@ -1173,7 +1173,7 @@ namespace DiscordCoreInternal {
         }
 
         task<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PostFollowUpMessageData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1200,7 +1200,7 @@ namespace DiscordCoreInternal {
         }
 
         task<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::PatchFollowUpMessageData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1229,7 +1229,7 @@ namespace DiscordCoreInternal {
         }
 
         task<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage) {
-            apartment_context mainThread;
+            apartment_context mainThread{};
             co_await resume_foreground(*this->dispatcherQueue.get());
             DiscordCoreInternal::DeleteFollowUpMessageData dataPackageNew;
             dataPackageNew.applicationId = dataPackage.interactionPackage.applicationId;
@@ -1280,10 +1280,6 @@ namespace DiscordCoreAPI {
             if (SelectMenuCollector::threadContext != nullptr) {
                 SelectMenuCollector::threadContext->releaseContext();
             }
-        }
-
-        string getSelectMenuId() {
-            return this->selectMenuId;
         }
 
         vector<SelectMenuResponseData> collectSelectMenuData(bool getSelectMenuDataForAllNew, unsigned int maxWaitTimeInMsNew, int maxCollectedSelectMenuCountNew, string targetUser = "") {
@@ -1432,10 +1428,6 @@ namespace DiscordCoreAPI {
             if (ButtonCollector::threadContext != nullptr) {
                 ButtonCollector::threadContext->releaseContext();
             }
-        }
-
-        string getButtonId() {
-            return this->buttonId;
         }
 
         vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, unsigned int maxWaitTimeInMsNew, int maxNumberOfPressesNew, string targetUser = "") {

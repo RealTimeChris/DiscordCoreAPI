@@ -78,15 +78,12 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildMemberManager;
 
-		static overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> cache;
 		static shared_ptr<ThreadContext> threadContext;
 
-		unbounded_buffer<CollectGuildMemberData> requestCollectGuildMemberBuffer{ nullptr };
 		unbounded_buffer<PatchGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::GuildMember> outGuildMemberBuffer{ nullptr };
 		unbounded_buffer<GetGuildMemberData> requestGetGuildMemberBuffer{ nullptr };
 		unbounded_buffer<GetGuildMemberRolesData> requestGetRolesBuffer{ nullptr };
-		concurrent_queue<DiscordCoreAPI::GuildMember> guildMembersToInsert{};
 
 		GuildMemberManagerAgent()
 			:agent(*GuildMemberManagerAgent::threadContext->scheduler->scheduler) {
@@ -142,53 +139,15 @@ namespace DiscordCoreInternal {
 
 		void run() {
 			try {
-				CollectGuildMemberData dataPackage01;
-				if (try_receive(this->requestCollectGuildMemberBuffer, dataPackage01)) {
-					map<string, DiscordCoreAPI::GuildMember> cacheTemp;
-					if (try_receive(GuildMemberManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage01.guildId + " + " + dataPackage01.guildMemberId)) {
-							DiscordCoreAPI::GuildMember GuildMember = cacheTemp.at(dataPackage01.guildId + " + " + dataPackage01.guildMemberId);
-							send(this->outGuildMemberBuffer, GuildMember);
-						}
-					}
-					send(GuildMemberManagerAgent::cache, cacheTemp);
-				}
 				GetGuildMemberData dataPackage02;
 				if (try_receive(this->requestGetGuildMemberBuffer, dataPackage02)) {
-					map<string, DiscordCoreAPI::GuildMember> cacheTemp;
-					if (try_receive(GuildMemberManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage02.guildId + " + " + dataPackage02.guildMemberId)) {
-							cacheTemp.erase(dataPackage02.guildId + " + " + dataPackage02.guildMemberId);
-						}
-					}
 					DiscordCoreAPI::GuildMember GuildMember = getObjectData(dataPackage02);
-					cacheTemp.insert(make_pair(dataPackage02.guildId + " + " + dataPackage02.guildMemberId, GuildMember));
 					send(this->outGuildMemberBuffer, GuildMember);
-					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 				PatchGuildMemberData dataPackage03;
 				if (try_receive(this->requestPatchGuildMemberBuffer, dataPackage03)) {
-					map<string, DiscordCoreAPI::GuildMember> cacheTemp;
-					if (try_receive(GuildMemberManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage03.guildId + " + " + dataPackage03.guildMemberId)) {
-							cacheTemp.erase(dataPackage03.guildId + " + " + dataPackage03.guildMemberId);
-						}
-					}
 					DiscordCoreAPI::GuildMember GuildMember = patchObjectData(dataPackage03);
-					cacheTemp.insert(make_pair(dataPackage03.guildId + " + " + dataPackage03.guildMemberId, GuildMember));
 					send(this->outGuildMemberBuffer, GuildMember);
-					send(GuildMemberManagerAgent::cache, cacheTemp);
-				}
-				DiscordCoreAPI::GuildMember guildMember;
-				while (this->guildMembersToInsert.try_pop(guildMember)) {
-					map<string, DiscordCoreAPI::GuildMember> cacheTemp;
-					if (try_receive(GuildMemberManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(guildMember.guildId + " + " + guildMember.user.id)) {
-							cacheTemp.erase(guildMember.guildId + " + " + guildMember.user.id);
-						}
-						cacheTemp.insert(make_pair(guildMember.guildId + " + " + guildMember.user.id, guildMember));
-					};
-					send(GuildMemberManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (...) {
@@ -210,6 +169,7 @@ namespace DiscordCoreInternal {
 
 		GuildMemberManager(GuildMemberManager* pointer) 
 			: ThreadContext(*ThreadManager::getThreadContext().get()) {
+			this->cache = new overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>();
 			if (pointer != nullptr) {
 				*this = *pointer;
 			}
@@ -217,8 +177,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>* cache{};
+
 		task<DiscordCoreAPI::GuildMember> fetchAsync(DiscordCoreAPI::FetchGuildMemberData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetGuildMemberData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -236,7 +198,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PatchGuildMemberData dataPackageNew;
 			dataPackageNew.deaf = dataPackage.deaf;
@@ -260,49 +222,41 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			CollectGuildMemberData dataPackageNew;
-			dataPackageNew.guildId = dataPackage.guildId;
-			dataPackageNew.guildMemberId = dataPackage.guildMemberId;
-			GuildMemberManagerAgent requestAgent{};
-			send(requestAgent.requestCollectGuildMemberBuffer, dataPackageNew);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			DiscordCoreAPI::GuildMemberData guildMemberData;
-			DiscordCoreAPI::GuildMember guildMember(guildMemberData, dataPackage.guildId);
-			try_receive(requestAgent.outGuildMemberBuffer, guildMember);
-			guildMember.guildId = dataPackage.guildId;
+			DiscordCoreAPI::GuildMember guildMember{};
+			map<string, DiscordCoreAPI::GuildMember> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			if (cacheTemp.contains(dataPackage.guildId + " + " + dataPackage.guildMemberId)) {
+				guildMember = cacheTemp.at(dataPackage.guildId + " + " + dataPackage.guildMemberId);
+			};
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return guildMember;
 		}
 
 		task<void> insertGuildMemberAsync(DiscordCoreAPI::GuildMember guildMember, string guildId) {
-			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			GuildMemberManagerAgent requestAgent{};
-			requestAgent.guildMembersToInsert.push(guildMember);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			co_await mainThread;
+			map<string, DiscordCoreAPI::GuildMember> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			cacheTemp.insert_or_assign(guildId + " + " + guildMember.user.id, guildMember);
+			send(this->cache, cacheTemp);
 			co_return;
 		}
 
 		task<void> removeGuildMemberAsync(string guildId, string guildMemberId) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			map<string, DiscordCoreAPI::GuildMember> cache;
-			try_receive(GuildMemberManagerAgent::cache, cache);
-			if (cache.contains(guildId + guildMemberId)) {
-				DiscordCoreAPI::GuildMember guildMember = cache.at(guildId + guildMemberId);
-				cache.erase(guildId + guildMemberId);
-			}
-			send(GuildMemberManagerAgent::cache, cache);
+			map<string, DiscordCoreAPI::GuildMember> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			if (cacheTemp.contains(guildId + " + " + guildMemberId)) {
+				cacheTemp.erase(guildId + " + " + guildMemberId);
+			};
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return;
 		}
 	};
-	overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> GuildMemberManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> GuildMemberManagerAgent::threadContext{ nullptr };
 };
 #endif

@@ -250,15 +250,13 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildManager;
-		
-		static overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* cache;
+
 		static shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<vector<DiscordCoreAPI::InviteData>> outInvitesBuffer{ nullptr };
 		unbounded_buffer<GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::AuditLogData> outAuditLogBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::InviteData> outInviteBuffer{ nullptr };
-		unbounded_buffer<CollectGuildData> requestCollectGuildBuffer{ nullptr };
 		unbounded_buffer<PutGuildBanData> requestPutGuildBanBuffer{ nullptr };
 		unbounded_buffer<GetAuditLogData> requestGetAuditLogBuffer{ nullptr };
 		unbounded_buffer<GetInvitesData> requestGetInvitesBuffer{ nullptr };
@@ -266,26 +264,16 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<DiscordCoreAPI::Guild> outGuildBuffer{ nullptr };
 		unbounded_buffer<GetInviteData> requestGetInviteBuffer{ nullptr };
 		unbounded_buffer<GetGuildData> requestGetGuildBuffer{ nullptr };
-		concurrent_queue<DiscordCoreAPI::Guild> guildsToInsert{};
 
 		GuildManagerAgent()
 			: agent(*GuildManagerAgent::threadContext->scheduler->scheduler) {}
 
 		static void initialize() {
-			GuildManagerAgent::cache = new overwrite_buffer<map<string, DiscordCoreAPI::Guild>>();
 			GuildManagerAgent::threadContext = ThreadManager::getThreadContext().get();
 		}
 
 		static void cleanup() {
-			if (GuildManagerAgent::cache != nullptr) {
-				auto cacheNew = receive(GuildManagerAgent::cache);
-				for (auto [key, value] : cacheNew) {
-					value.disconnect();
-				}
-				GuildManagerAgent::threadContext->releaseContext();
-				delete GuildManagerAgent::cache;
-				GuildManagerAgent::cache = nullptr;
-			}
+			GuildManagerAgent::threadContext->releaseContext();
 		}
 
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage) {
@@ -423,28 +411,10 @@ namespace DiscordCoreInternal {
 
 		void run() {
 			try {
-				CollectGuildData dataPackage01;
-				if (try_receive(this->requestCollectGuildBuffer, dataPackage01)) {
-					map<string, DiscordCoreAPI::Guild> cacheTemp;
-					if (try_receive(GuildManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage01.guildId)) {
-							DiscordCoreAPI::Guild guild = cacheTemp.at(dataPackage01.guildId);
-							send(this->outGuildBuffer, guild);
-						}
-					}
-				}
 				GetGuildData dataPackage02;
 				if (try_receive(this->requestGetGuildBuffer, dataPackage02)) {
-					map<string, DiscordCoreAPI::Guild> cacheTemp;
-					if (try_receive(GuildManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage02.guildId)) {
-							cacheTemp.erase(dataPackage02.guildId);
-						}
-					}
 					DiscordCoreAPI::Guild guild = getObjectData(dataPackage02);
-					cacheTemp.insert(make_pair(dataPackage02.guildId, guild));
 					send(this->outGuildBuffer, guild);
-					send(GuildManagerAgent::cache, cacheTemp);
 				}
 				GetAuditLogData dataPackage03;
 				if (try_receive(this->requestGetAuditLogBuffer, dataPackage03)) {
@@ -471,19 +441,6 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::BanData inviteData = putObjectData(dataPackage07);
 					send(this->outBanBuffer, inviteData);
 				}
-				DiscordCoreAPI::Guild guildNew;
-				while (this->guildsToInsert.try_pop(guildNew)) {
-					map<string, DiscordCoreAPI::Guild> cacheTemp;
-					try_receive(GuildManagerAgent::cache, cacheTemp);
-					if (cacheTemp.contains(guildNew.id)) {
-						cacheTemp.erase(guildNew.id);
-					}
-					else {
-						guildNew.initialize();
-					}					
-					cacheTemp.insert(make_pair(guildNew.id, guildNew));
-					send(GuildManagerAgent::cache, cacheTemp);
-				}
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException("GuildManagerAgent::run() Error: ");
@@ -504,15 +461,29 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Guilds;
 
 		GuildManager(GuildManager* pointer) : ThreadContext(*ThreadManager::getThreadContext().get()) {
+			this->cache = new overwrite_buffer<map<string, DiscordCoreAPI::Guild>>();
 			if (pointer != nullptr) {
 				*this = *pointer;
 			}
 		}
 
+		~GuildManager() {
+			if (this->cache != nullptr) {
+				auto cacheNew = receive(this->cache);
+				for (auto [key, value] : cacheNew) {
+					value.disconnect();
+				}
+				delete this->cache;
+				this->cache = nullptr;
+			}
+		}
+
 	protected:
+		
+		overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* cache{};
 
 		task<DiscordCoreAPI::Guild> fetchAsync(DiscordCoreAPI::FetchGuildData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetGuildData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -523,12 +494,16 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::GuildData guildData;
 			DiscordCoreAPI::Guild guildNew(guildData);
 			try_receive(requestAgent.outGuildBuffer, guildNew);
+			map<string, DiscordCoreAPI::Guild> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			cacheTemp.insert_or_assign(dataPackage.guildId, guildNew);
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return guildNew;
 		}
 
 		task<vector<DiscordCoreAPI::InviteData>> fetchInvitesAsync(DiscordCoreAPI::FetchInvitesData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetInvitesData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -543,7 +518,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::BanData> createGuildBanAsync(DiscordCoreAPI::CreateGuildBanData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutGuildBanData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -561,7 +536,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::InviteData> fetchVanityInviteAsync(DiscordCoreAPI::FetchVanityInviteData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetVanityInviteData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -576,7 +551,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::InviteData> fetchInviteAsync(DiscordCoreAPI::FetchInviteData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetInviteData dataPackageNew;
 			dataPackageNew.inviteId = dataPackage.inviteId;
@@ -591,7 +566,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::AuditLogData> fetchAuditLogDataAsync(DiscordCoreAPI::FetchAuditLogData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetAuditLogData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -609,60 +584,59 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::Guild> getGuildAsync(DiscordCoreAPI::GetGuildData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			CollectGuildData dataPackageNew;
-			dataPackageNew.guildId = dataPackage.guildId;
-			GuildManagerAgent requestAgent{};
-			send(requestAgent.requestCollectGuildBuffer, dataPackageNew);
-			requestAgent.start();
-			agent::wait(&requestAgent);
 			DiscordCoreAPI::GuildData guildData;
 			DiscordCoreAPI::Guild guildNew(guildData);
-			try_receive(requestAgent.outGuildBuffer, guildNew);
+			map<string, DiscordCoreAPI::Guild> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			if (cacheTemp.contains(dataPackage.guildId)) {
+				guildNew = cacheTemp.at(dataPackage.guildId);
+			}
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return guildNew;
 		}
 
 		task<vector<DiscordCoreAPI::Guild>> getAllGuildsAsync() {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			map<string, DiscordCoreAPI::Guild>cache;
-			try_receive(GuildManagerAgent::cache, cache);
+			map<string, DiscordCoreAPI::Guild> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
 			vector<DiscordCoreAPI::Guild> guildVector;
-			for (auto [key, value] : cache) {
+			for (auto [key, value] : cacheTemp) {
 				guildVector.push_back(value);
 			}
-			send(GuildManagerAgent::cache, cache);
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return guildVector;
 		}
 
 		task<void> insertGuildAsync(DiscordCoreAPI::Guild guild) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			GuildManagerAgent requestAgent{};
-			requestAgent.guildsToInsert.push(guild);
-			requestAgent.start();
-			agent::wait(&requestAgent);
+			guild.initialize();
+			map<string, DiscordCoreAPI::Guild> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			cacheTemp.insert_or_assign(guild.id, guild);
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return;
 		}
 
 		task<void> removeGuildAsync(string guildId) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			map<string, DiscordCoreAPI::Guild> cache;
-			try_receive(GuildManagerAgent::cache, cache);
-			if (cache.contains(guildId)) {
-				cache.erase(guildId);
+			map<string, DiscordCoreAPI::Guild> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			if (cacheTemp.contains(guildId)) {
+				cacheTemp.erase(guildId);
 			}
-			send(GuildManagerAgent::cache, cache);
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return;
 		}
 	};
-	overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* GuildManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> GuildManagerAgent::threadContext{ nullptr };
 }
 #endif

@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		task<DiscordCoreAPI::Reaction> createReactionAsync(DiscordCoreAPI::CreateReactionData dataPackage){
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutReactionData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -208,7 +208,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> deleteUserReactionAsync(DiscordCoreAPI::DeleteUserReactionData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -238,7 +238,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> deleteOwnReactionAsync(DiscordCoreAPI::DeleteOwnReactionData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -266,7 +266,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> deleteReactionsByEmojiAsync(DiscordCoreAPI::DeleteReactionsByEmojiData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -294,7 +294,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> deleteAllReactionsAsync(DiscordCoreAPI::DeleteAllReactionsData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteReactionDataAll dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;

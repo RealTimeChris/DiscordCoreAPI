@@ -411,7 +411,7 @@ namespace DiscordCoreAPI {
 		}
 
 		task<MessageCollectorReturnData> collectMessages() {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_background();
 			this->start();
 			wait(this);
@@ -779,7 +779,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		task<DiscordCoreAPI::Message> replyAsync(DiscordCoreAPI::ReplyMessageData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostMessageData dataPackageNew;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
@@ -806,7 +806,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::Message> sendDMAsync(DiscordCoreAPI::SendDMData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostDMData dataPackageNew;
 			dataPackageNew.userId = dataPackage.userId;
@@ -836,7 +836,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::Message> createMessageAsync(DiscordCoreAPI::CreateMessageData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostMessageData dataPackageNew;
 			dataPackageNew.allowedMentions = dataPackage.allowedMentions;
@@ -862,7 +862,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::Message> editMessageAsync(DiscordCoreAPI::EditMessageData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PatchMessageData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -893,7 +893,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> deleteMessageAsync(DiscordCoreAPI::DeleteMessageData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteMessageData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.messageData.channelId;
@@ -909,7 +909,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> deleteMessagesBulkAsync(DiscordCoreAPI::DeleteMessagesBulkData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteMessagesBulkData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -924,7 +924,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<vector<DiscordCoreAPI::Message>> fetchPinnedMessagesAsync(DiscordCoreAPI::FetchPinnedMessagesData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetPinnedMessagesData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -939,7 +939,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<std::optional<vector<DiscordCoreAPI::Message>>> fetchMessagesAsync(DiscordCoreAPI::FetchMessagesData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetMessagesData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -962,7 +962,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> pinMessageAsync(DiscordCoreAPI::PinMessageData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutPinMessageData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;
@@ -977,7 +977,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::Message> fetchAsync(DiscordCoreAPI::FetchMessageData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			GetMessageData dataPackageNew;
 			dataPackageNew.channelId = dataPackage.channelId;

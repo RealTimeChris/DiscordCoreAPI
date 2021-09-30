@@ -379,7 +379,7 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::Guild_Role_Update:
 					{
 						DiscordCoreAPI::OnRoleUpdateData roleUpdateData{};
-						roleUpdateData.roleOld = this->roles->getRoleAsync({ .guildId = workload.payLoad.at("guild_id"), .roleId = workload.payLoad.at("role").at("id") }).get();
+						roleUpdateData.roleOld = this->roles->getRoleAsync({ .roleId = workload.payLoad.at("role").at("id") }).get();
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad.at("role"), &roleUpdateData.roleNew);
 						roleUpdateData.guildId = workload.payLoad.at("guild_id");
 						this->eventManager->onRoleUpdateEvent(roleUpdateData);
@@ -389,7 +389,7 @@ namespace DiscordCoreAPI {
 					{
 						DiscordCoreAPI::OnRoleDeletionData roleDeletionData{};
 						roleDeletionData.guildId = workload.payLoad.at("guild_id");
-						roleDeletionData.roleOld = this->roles->getRoleAsync({ .guildId = roleDeletionData.guildId, .roleId = workload.payLoad.at("role_id") }).get();
+						roleDeletionData.roleOld = this->roles->getRoleAsync({ .roleId = workload.payLoad.at("role_id") }).get();
 						this->eventManager->onRoleDeletionEvent(roleDeletionData);
 						break;
 					}

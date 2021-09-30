@@ -151,32 +151,27 @@ namespace DiscordCoreAPI {
         }
 
         static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
-            map<string, GuildMember> guildMemberMap;
-            if (try_receive(DiscordCoreInternal::GuildMemberManagerAgent::cache, guildMemberMap)) {
-                if (guildMemberMap.contains(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId)) {
-                    GuildMember guildMember = guildMemberMap.at(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId);
-                    guildMemberMap.erase(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId);
-                    guildMember.voiceData = dataPackage.voiceStateData;
-                    guildMemberMap.insert(std::make_pair(dataPackage.voiceStateData.guildId + " + " + dataPackage.voiceStateData.userId, guildMember));
+            GuildMember guildMember = GuildMembers::getGuildMemberAsync({ .guildMemberId = dataPackage.voiceStateData.userId,.guildId = dataPackage.voiceStateData.guildId }).get();
+            guildMember.voiceData = dataPackage.voiceStateData;
+            GuildMembers::insertGuildMemberAsync(guildMember).get();
+            Guild guild = Guilds::getGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
+            for (int x = 0; x < guild.voiceStates.size(); x += 1) {
+                if (guild.voiceStates[x].userId == dataPackage.voiceStateData.userId) {
+                    guild.voiceStates.erase(guild.voiceStates.begin() + x);
+                    break;
                 }
-                send(DiscordCoreInternal::GuildMemberManagerAgent::cache, guildMemberMap);
             }
-            map<string, Guild> guildMap;
-            if (try_receive(DiscordCoreInternal::GuildManagerAgent::cache, guildMap)) {
-                if (dataPackage.voiceStateData.userId == EventHandler::discordCoreClient->currentUser.id) {
-                    if (dataPackage.voiceStateData.channelId == "") {
-                        Guild guild = guildMap.at(dataPackage.voiceStateData.guildId);
-                        auto voiceConnection = guild.connectToVoice(dataPackage.voiceStateData.channelId);
-                        if (voiceConnection != nullptr) {
-                            if (guild.areWeConnected()) {
-                                guild.disconnect();
-                            }
+            guild.voiceStates.push_back(dataPackage.voiceStateData);
+            Guilds::insertGuildAsync(guild).get();
+            if (dataPackage.voiceStateData.userId == EventHandler::discordCoreClient->currentUser.id) {
+                if (dataPackage.voiceStateData.channelId == "") {
+                    auto voiceConnection = guild.connectToVoice(dataPackage.voiceStateData.channelId);
+                    if (voiceConnection != nullptr) {
+                        if (guild.areWeConnected()) {
+                            guild.disconnect();
                         }
-                        guildMap.erase(dataPackage.voiceStateData.guildId);
-                        guildMap.insert(make_pair(dataPackage.voiceStateData.guildId, guild));
                     }
                 }
-                send(DiscordCoreInternal::GuildManagerAgent::cache, guildMap);
             }
         }
     };

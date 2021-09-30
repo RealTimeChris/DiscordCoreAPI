@@ -47,7 +47,6 @@ namespace DiscordCoreAPI {
 	};
 
 	struct GetRoleData {
-		string guildId{ "" };
 		string roleId{ "" };
 	};
 
@@ -112,22 +111,19 @@ namespace DiscordCoreInternal {
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class RoleManager;
-		
-		static overwrite_buffer<map<string, DiscordCoreAPI::Role>> cache;
+
 		static shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<PatchRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
 		unbounded_buffer<DeleteGuildMemberRoleData> requestDeleteRoleBuffer{ nullptr };
 		unbounded_buffer<DeleteGuildRoleData> requestDeleteGuildRoleBuffer{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::Role>> outRolesBuffer{ nullptr };
-		unbounded_buffer<CollectRoleData> requestCollectRoleBuffer{ nullptr };
 		unbounded_buffer<PatchRoleData> requestPatchRoleBuffer{ nullptr };
 		unbounded_buffer<PostRoleData> requestPostRoleBuffer{ nullptr };
 		unbounded_buffer<GetRolesData> requestGetRolesBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Role> outRoleBuffer{ nullptr };
 		unbounded_buffer<GetRoleData> requestGetRoleBuffer{ nullptr };
 		unbounded_buffer<PutRoleData> requestPutRoleBuffer{ nullptr };
-		concurrent_queue<DiscordCoreAPI::Role> rolesToInsert{};
 		
 		RoleManagerAgent()
 			:agent(*RoleManagerAgent::threadContext->scheduler->scheduler) {}
@@ -176,21 +172,16 @@ namespace DiscordCoreInternal {
 			else {
 				cout << "RoleManagerAgent::getObjectData_01 Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 			}
-			map<string, DiscordCoreAPI::Role> cacheTemp = receive(RoleManagerAgent::cache, 1U);
+			DiscordCoreAPI::Role role{};
 			for (unsigned int x = 0; x < returnData.data.size(); x += 1) {
-				DiscordCoreAPI::RoleData roleData;
-				DataParser::parseObject(returnData.data.at(x), &roleData);
-				DiscordCoreAPI::Role newRole(roleData);
-				cacheTemp.insert(make_pair(newRole.id, newRole));
+				DiscordCoreAPI::Role newRole{};
+				DataParser::parseObject(returnData.data.at(x), &newRole);
+				if (newRole.id == dataPackage.roleId){
+					role = newRole;
+					break;
+				}
 			}
-			send(RoleManagerAgent::cache, cacheTemp);
-			DiscordCoreAPI::RoleData roleData;
-			if (cacheTemp.contains(dataPackage.roleId)) {
-				roleData = cacheTemp.at(dataPackage.roleId);
-				cacheTemp.erase(dataPackage.roleId);
-			}
-			DiscordCoreAPI::Role newRole(roleData);
-			return newRole;
+			return role;
 		}
 
 		DiscordCoreAPI::Role patchObjectData(PatchRoleData dataPackage) {
@@ -304,42 +295,15 @@ namespace DiscordCoreInternal {
 
 		void run() {
 			try {
-				CollectRoleData dataPackage01;
-				if (try_receive(this->requestCollectRoleBuffer, dataPackage01)) {
-					map<string, DiscordCoreAPI::Role> cacheTemp;
-					if (try_receive(RoleManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage01.roleId)) {
-							DiscordCoreAPI::Role role = cacheTemp.at(dataPackage01.roleId);
-							send(this->outRoleBuffer, role);
-						}
-					}
-					send(RoleManagerAgent::cache, cacheTemp);
-				}
 				GetRoleData dataPackage02;
 				if (try_receive(this->requestGetRoleBuffer, dataPackage02)) {
 					DiscordCoreAPI::Role role = getObjectData(dataPackage02);
-					map<string, DiscordCoreAPI::Role> cacheTemp;
-					if (try_receive(RoleManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage02.roleId)) {
-							cacheTemp.erase(dataPackage02.roleId);
-						}
-					}
-					cacheTemp.insert(make_pair(dataPackage02.roleId, role));
 					send(this->outRoleBuffer, role);
-					send(RoleManagerAgent::cache, cacheTemp);
 				}
 				PatchRoleData dataPackage03;
 				if (try_receive(this->requestPatchRoleBuffer, dataPackage03)) {
 					DiscordCoreAPI::Role role = patchObjectData(dataPackage03);
-					map<string, DiscordCoreAPI::Role> cacheTemp;
-					if (try_receive(RoleManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(dataPackage03.roleId)) {
-							cacheTemp.erase(dataPackage03.roleId);
-						}
-					}
-					cacheTemp.insert(make_pair(dataPackage03.roleId, role));
 					send(this->outRoleBuffer, role);
-					send(RoleManagerAgent::cache, cacheTemp);
 				}
 				PutRoleData dataPackage04;
 				if (try_receive(this->requestPutRoleBuffer, dataPackage04)) {
@@ -366,27 +330,7 @@ namespace DiscordCoreInternal {
 				PostRoleData dataPackage09;
 				if (try_receive(this->requestPostRoleBuffer, dataPackage09)) {
 					DiscordCoreAPI::Role role = postObjectData(dataPackage09);
-					map<string, DiscordCoreAPI::Role> cacheTemp;
-					if (try_receive(RoleManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(role.id)) {
-							cacheTemp.erase(role.id);
-						}
-					}
-					cacheTemp.insert(make_pair(dataPackage09.roleId, role));
 					send(this->outRoleBuffer, role);
-					send(RoleManagerAgent::cache, cacheTemp);
-				}
-				DiscordCoreAPI::RoleData dataPackage10;
-				DiscordCoreAPI::Role roleNew(dataPackage10);
-				while (this->rolesToInsert.try_pop(roleNew)) {
-					map<string, DiscordCoreAPI::Role> cacheTemp;
-					if (try_receive(RoleManagerAgent::cache, cacheTemp)) {
-						if (cacheTemp.contains(roleNew.id)) {
-							cacheTemp.erase(roleNew.id);
-						}
-					}
-					cacheTemp.insert(make_pair(roleNew.id, roleNew));
-					send(RoleManagerAgent::cache, cacheTemp);
 				}
 			}
 			catch (...) {
@@ -410,15 +354,23 @@ namespace DiscordCoreInternal {
 
 		RoleManager(RoleManager* pointer)
 			: ThreadContext(*ThreadManager::getThreadContext().get()) {
+			this->cache = new overwrite_buffer<map<string, DiscordCoreAPI::Role>>();
 			if (pointer != nullptr) {
 				*this = *pointer;
 			}
 		}
 
+		~RoleManager(){
+			delete this->cache;
+			this->cache = nullptr;
+		}
+
 	protected:
 
+		overwrite_buffer<map<string, DiscordCoreAPI::Role>>* cache{};
+
 		task<DiscordCoreAPI::Role> fetchAsync(DiscordCoreAPI::FetchRoleData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			if (dataPackage.guildId == "") {
 				exception failError("RoleManager::fetchAsync() Error: Sorry, but you forgot to set the guildId!");
@@ -439,26 +391,21 @@ namespace DiscordCoreInternal {
 		}
 
 		task<DiscordCoreAPI::Role> getRoleAsync(DiscordCoreAPI::GetRoleData dataPackage) {
+			apartment_context mainThread{};
 			co_await resume_background();
-			if (dataPackage.guildId == "") {
-				exception failError("RoleManager::getRoleAsync() Error: Sorry, but you forgot to set the guildId!");
-				throw failError;
+			map<string, DiscordCoreAPI::Role> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			DiscordCoreAPI::Role newRole{};
+			if (cacheTemp.contains(dataPackage.roleId)) {
+				newRole = cacheTemp.at(dataPackage.roleId);
 			}
-			CollectRoleData dataPackageNew;
-			dataPackageNew.guildId = dataPackage.guildId;
-			dataPackageNew.roleId = dataPackage.roleId;
-			RoleManagerAgent requestAgent{};
-			send(requestAgent.requestCollectRoleBuffer, dataPackageNew);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			DiscordCoreAPI::RoleData roleData;
-			DiscordCoreAPI::Role newRole(roleData);
-			try_receive(requestAgent.outRoleBuffer, newRole);
+			send(this->cache, cacheTemp);
+			co_await mainThread;
 			co_return newRole;
 		}
 
 		task<DiscordCoreAPI::Role> updateRoleAsync(DiscordCoreAPI::UpdateRoleData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PatchRoleData dataPackageNew;
 			dataPackageNew.hexColorValue = dataPackage.hexColorValue;
@@ -481,7 +428,7 @@ namespace DiscordCoreInternal {
 
 		vector<DiscordCoreAPI::Role> updateRolePositions(DiscordCoreAPI::UpdateRolePositionData dataPackage) {
 			vector<DiscordCoreAPI::Role> currentRoles = this->getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-			DiscordCoreAPI::Role newRole = this->getRoleAsync({ .guildId = dataPackage.guildId, .roleId = dataPackage.roleId }).get();
+			DiscordCoreAPI::Role newRole = this->getRoleAsync({ .roleId = dataPackage.roleId }).get();
 			PatchRolePositionData dataPackageNew;
 			int positionBeforeMoving = newRole.position;
 			for (auto value : currentRoles) {
@@ -525,6 +472,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage) {
+			apartment_context mainThread{};
 			co_await resume_background();
 			if (dataPackage.guildId == "") {
 				exception failError("RoleManager::getRoleAsync() Error: Sorry, but you forgot to set the guildId!");
@@ -538,11 +486,12 @@ namespace DiscordCoreInternal {
 			agent::wait(&requestAgent);
 			vector<DiscordCoreAPI::Role> newRoles;
 			try_receive(requestAgent.outRolesBuffer, newRoles);
+			co_await mainThread;
 			co_return newRoles;
 		}
 
 		task<DiscordCoreAPI::Role>createRoleAsync(DiscordCoreAPI::CreateRoleData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PostRoleData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -564,7 +513,7 @@ namespace DiscordCoreInternal {
 		}
 		
 		task<void> addRoleToGuildMemberAsync(DiscordCoreAPI::AddRoleToGuildMemberData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			PutRoleData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -579,7 +528,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> removeRoleFromGuildMemberAsync(DiscordCoreAPI::RemoveRoleFromGuildMemberData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteGuildMemberRoleData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -594,7 +543,7 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> removeRoleFromGuildAsync(DiscordCoreAPI::RemoveRoleFromGuildData dataPackage) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
 			DeleteGuildRoleData dataPackageNew;
 			dataPackageNew.guildId = dataPackage.guildId;
@@ -608,31 +557,27 @@ namespace DiscordCoreInternal {
 		}
 
 		task<void> insertRoleAsync(DiscordCoreAPI::Role role) {
-			apartment_context mainThread;
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			RoleManagerAgent requestAgent{};
-			requestAgent.rolesToInsert.push(role);
-			requestAgent.start();
-			agent::wait(&requestAgent);
-			co_await mainThread;
+			map<string, DiscordCoreAPI::Role> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			cacheTemp.insert_or_assign(role.id, role);
+			send(this->cache, cacheTemp);
 			co_return;
 		}
 
 		task<void> removeRoleAsync(string roleId) {
-			apartment_context mainThread;
+			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			map<string, DiscordCoreAPI::Role> cache;
-			try_receive(RoleManagerAgent::cache, cache);
-			if (cache.contains(roleId)) {
-				DiscordCoreAPI::Role role = cache.at(roleId);
-				cache.erase(roleId);
+			map<string, DiscordCoreAPI::Role> cacheTemp{};
+			try_receive(this->cache, cacheTemp);
+			if (cacheTemp.contains(roleId)) {
+				cacheTemp.erase(roleId);
 			}
-			send(RoleManagerAgent::cache, cache);
+			send(this->cache, cacheTemp);
 			co_await mainThread;
 			co_return;
 		}
 	};
-	overwrite_buffer<map<string, DiscordCoreAPI::Role>> RoleManagerAgent::cache{ nullptr };
 	shared_ptr<ThreadContext> RoleManagerAgent::threadContext{ nullptr };
 }
 #endif

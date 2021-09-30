@@ -509,12 +509,12 @@ namespace DiscordCoreAPI {
                 return getAllPermissions();
             }
 
-            Role everyone = Roles::getRoleAsync({ .guildId = guild.id, .roleId = guild.id }).get();
+            Role everyone = Roles::getRoleAsync({ .roleId = guild.id }).get();
             string permissionsString = everyone.permissions;
             __int64 permissionsInt = stoll(permissionsString);
 
             for (auto& role : guildMember.roles) {
-                Role currentRole = Roles::getRoleAsync({ .guildId = guild.id, .roleId = role }).get();
+                Role currentRole = Roles::getRoleAsync({ .roleId = role }).get();
                 permissionsInt |= stoll(currentRole.permissions);
             }
 
@@ -548,7 +548,7 @@ namespace DiscordCoreAPI {
             __int64 allow = 0;
             __int64 deny = 0;
             for (auto& role : guildMember.roles) {
-                Role currentRole = Roles::getRoleAsync({ .guildId = guildMember.guildId, .roleId = role }).get();
+                Role currentRole = Roles::getRoleAsync({ .roleId = role }).get();
                 if (overWrites.contains(currentRole.id)) {
                     allow |= stoll(overWrites.at(currentRole.id).allow);
                     deny |= stoll(overWrites.at(currentRole.id).deny);
