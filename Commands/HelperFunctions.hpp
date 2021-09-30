@@ -692,7 +692,7 @@ namespace DiscordCoreAPI {
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
-                            InputEvents::respondToEvent(dataPackage);
+                            event01 = InputEvents::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_DEFERRED || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE
                             || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EDIT || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_RESPONSE_EPHEMERAL) {
@@ -701,7 +701,7 @@ namespace DiscordCoreAPI {
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
-                            InputEvents::respondToEvent(dataPackage);
+                            event01 = InputEvents::respondToEvent(dataPackage);
                         }
                         else if (originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE || originalEvent.inputEventResponseType == InputEventResponseType::INTERACTION_FOLLOW_UP_MESSAGE_EDIT) {
                             RespondToInputEventData dataPackage(event01);
@@ -709,11 +709,12 @@ namespace DiscordCoreAPI {
                             for (auto value : event01.getEmbeds()) {
                                 dataPackage.addMessageEmbed(value);
                             }
-                            InputEvents::respondToEvent(dataPackage);
+                            event01 = InputEvents::respondToEvent(dataPackage);
                         }
                     }
                     doWeQuit = true;
                     RecurseThroughMessagePagesData dataPackage;
+                    dataPackage.inputEventData = event01;
                     dataPackage.buttonId = "exit";
                     return dataPackage;
                 }
