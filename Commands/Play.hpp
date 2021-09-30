@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 
-				returnData = recurseThroughMessagePages(args->eventData.getAuthorId(), newEvent, currentPageIndex, embedsFromSearch, false, 120000, true);
+				returnData = recurseThroughMessagePages(args->eventData.getAuthorId(), newEvent, currentPageIndex, embedsFromSearch, false, 120000);
 
 				if (returnData.buttonId == "exit") {
 					co_return;
