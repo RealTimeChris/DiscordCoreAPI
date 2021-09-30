@@ -51,13 +51,6 @@ namespace DiscordCoreAPI {
 			dataPackage.addMessageEmbed(EmbedData{ .description = "TESTING!",.title = "Test Title" });
 			auto inputEventData = InputEvents::respondToEvent(dataPackage);
 
-			SelectMenuCollector buttonCollector(inputEventData);
-			auto results = buttonCollector.collectSelectMenuData(true, 120000, 3, getBotUser().id);
-			for (auto value : results) {
-				cout << value.userId << endl;
-			}
-			InputEvents::deleteInputEventResponseAsync(inputEventData).get();
-
 			co_return;
 		}
 	};
