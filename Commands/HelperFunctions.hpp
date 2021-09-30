@@ -633,7 +633,7 @@ namespace DiscordCoreAPI {
     };
 
     // Recurses through a succession of messages.
-    RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned int waitForMaxMs, bool returnFinalEmbed) {
+    RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned int waitForMaxMs) {
         unsigned int newCurrentPageIndex = currentPageIndex;
         try {
             InputEventData event01 = originalEvent;
@@ -642,9 +642,7 @@ namespace DiscordCoreAPI {
                 RespondToInputEventData responseDataRegularMessage(event01);
                 responseDataRegularMessage.type = DesiredInputEventResponseType::RegularMessageEdit;
                 responseDataRegularMessage.addMessageEmbed(messageEmbeds[currentPageIndex]);
-                if (returnFinalEmbed) {
-                    responseDataRegularMessage.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
-                }
+                responseDataRegularMessage.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
                 responseDataRegularMessage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 responseDataRegularMessage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
 
@@ -656,9 +654,7 @@ namespace DiscordCoreAPI {
                 RespondToInputEventData editResponseData(event01);
                 editResponseData.type = DesiredInputEventResponseType::InteractionResponseEdit;
                 editResponseData.addMessageEmbed(messageEmbeds[currentPageIndex]);
-                if (returnFinalEmbed) {
-                    editResponseData.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
-                }
+                editResponseData.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
                 editResponseData.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 editResponseData.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
                 editResponseData.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
@@ -668,9 +664,7 @@ namespace DiscordCoreAPI {
                 RespondToInputEventData dataPackage(event01);
                 dataPackage.type = DesiredInputEventResponseType::FollowUpMessageEdit;
                 dataPackage.addMessageEmbed(messageEmbeds[currentPageIndex]);
-                if (returnFinalEmbed) {
-                    dataPackage.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
-                }
+                dataPackage.addButton(false, "select", "Select", "✅", ButtonStyle::Success);
                 dataPackage.addButton(false, "backwards", "Prev Page", "◀️", ButtonStyle::Primary);
                 dataPackage.addButton(false, "forwards", "Next Page", "▶️", ButtonStyle::Primary);
                 dataPackage.addButton(false, "exit", "Exit", "❌", ButtonStyle::Danger);
