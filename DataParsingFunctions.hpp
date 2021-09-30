@@ -2651,7 +2651,7 @@ namespace DiscordCoreInternal {
         static void parseObject(json jsonObjectData, DiscordCoreAPI::MessageCommandInteractionData* pDataStructure) {
             DiscordCoreAPI::MessageCommandInteractionData data = *pDataStructure;
 
-            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+            if (jsonObjectData.contains("target_id") && !jsonObjectData.at("target_id").is_null()) {
                 data.targetId = jsonObjectData.at("target_id").get<string>();
             }
 
@@ -2661,7 +2661,7 @@ namespace DiscordCoreInternal {
         static void parseObject(json jsonObjectData, DiscordCoreAPI::UserCommandInteractionData* pDataStructure) {
             DiscordCoreAPI::UserCommandInteractionData data = *pDataStructure;
 
-            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+            if (jsonObjectData.contains("target_id") && !jsonObjectData.at("target_id").is_null()) {
                 data.targetId = jsonObjectData.at("target_id").get<string>();
             }
 

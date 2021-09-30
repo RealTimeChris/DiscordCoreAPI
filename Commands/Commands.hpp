@@ -34,6 +34,28 @@ namespace DiscordCoreAPI {
 
 	};
 
+	CommandData::CommandData(InputEventData inputEventData) {
+		this->eventData = inputEventData;
+		if (inputEventData.interactionData.data.applicationCommanddata.name != "") {
+			this->commandName = inputEventData.interactionData.data.applicationCommanddata.name;
+		}
+		if (inputEventData.interactionData.data.messageInteractionData.targetId != "") {
+			this->optionsArgs.push_back(inputEventData.interactionData.data.messageInteractionData.targetId);
+		}
+		else if (inputEventData.interactionData.data.userInteractionData.targetId != "") {
+			this->optionsArgs.push_back(inputEventData.interactionData.data.userInteractionData.targetId);
+		}
+		DiscordCoreInternal::DataParser::parseObject(inputEventData.interactionData.rawData, this);
+	}
+
+	string constructStringContent(CommandData commandData) {
+		string finalCommandString = commandData.commandName + " = ";
+		for (auto& value : commandData.optionsArgs) {
+			finalCommandString += value + ", ";
+		}
+		return finalCommandString;
+	}
+
 	class CommandCenter {
 	public:
 		static map<string, BaseFunction*> functions;

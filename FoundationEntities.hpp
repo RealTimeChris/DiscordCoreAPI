@@ -24,6 +24,7 @@ namespace DiscordCoreAPI {
     class ButtonCollector;
     class VoiceConnection;
     class SoundCloudSong;
+    struct CommandData;
     class Interactions;
     class EventHandler;
     class GuildMembers;
@@ -32,7 +33,7 @@ namespace DiscordCoreAPI {
     class SelectMenu;
     class Reactions;
     class Messages;
-    class Channels;
+    class Channels;    
     class BotUser;
     class SongAPI;
     class Guilds;
@@ -3161,7 +3162,6 @@ namespace DiscordCoreAPI {
         string id{ "" };
     };
 
-
     struct InputEventData {
 
         friend struct RecurseThroughMessagePagesData;
@@ -3864,28 +3864,6 @@ namespace DiscordCoreAPI {
         int intervalInMs{ 0 };
     };
 
-    struct CommandData {
-
-        vector<string> optionsArgs{};
-        InputEventData eventData{};
-        string commandName{ "" };
-
-        CommandData(InputEventData inputEventData) {
-            this->eventData = inputEventData;
-            if (inputEventData.interactionData.data.applicationCommanddata.name != "") {
-                this->commandName = inputEventData.interactionData.data.applicationCommanddata.name;
-            }
-        }
-    };
-
-    string constructStringContent(CommandData commandData) {
-        string finalCommandString = commandData.commandName + " = ";
-        for (auto& value : commandData.optionsArgs) {
-            finalCommandString += value + ", ";
-        }
-        return finalCommandString;
-    }
-
     struct ChannelPinsUpdateEventData {
         string lastPinTimestamp{ "" };
         string channelId{ "" };
@@ -4073,6 +4051,15 @@ namespace DiscordCoreAPI {
         int chunkIndex{ 0 };
         int chunkCount{ 0 };
         string nonce{ "" };
+    };
+
+    struct CommandData {
+
+        vector<string> optionsArgs{};
+        InputEventData eventData{};
+        string commandName{ "" };
+
+        CommandData(InputEventData inputEventData);
     };
 
     const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
