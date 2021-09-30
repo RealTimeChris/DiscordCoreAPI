@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
             DatabaseManagerAgent::threadContext->releaseContext();
         }
 
-        static bsoncxx::builder::basic::document convertUserDataToDBDoc(DiscordUserData discordUserData) {
+        bsoncxx::builder::basic::document convertUserDataToDBDoc(DiscordUserData discordUserData) {
             bsoncxx::builder::basic::document buildDoc;
             try {
                 using bsoncxx::builder::basic::kvp;
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 
         }
 
-        static DiscordUserData parseUserData(bsoncxx::document::value docValue) {
+        DiscordUserData parseUserData(bsoncxx::document::value docValue) {
             DiscordUserData userData;
             try {
                 userData.userName = docValue.view()["userName"].get_utf8().value.to_string();
@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
             }
         }
 
-        static bsoncxx::builder::basic::document convertGuildDataToDBDoc(DiscordGuildData discordGuildData) {
+        bsoncxx::builder::basic::document convertGuildDataToDBDoc(DiscordGuildData discordGuildData) {
             bsoncxx::builder::basic::document buildDoc;
             try {
                 using bsoncxx::builder::basic::kvp;
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
             }
         };
 
-        static DiscordGuildData parseGuildData(bsoncxx::document::value docValue) {
+        DiscordGuildData parseGuildData(bsoncxx::document::value docValue) {
             DiscordGuildData guildData;
             try {
 
@@ -299,7 +299,7 @@ namespace DiscordCoreAPI {
             }
         };
 
-        static bsoncxx::builder::basic::document convertGuildMemberDataToDBDoc(DiscordGuildMemberData discordGuildMemberData) {
+        bsoncxx::builder::basic::document convertGuildMemberDataToDBDoc(DiscordGuildMemberData discordGuildMemberData) {
             bsoncxx::builder::basic::document buildDoc;
             try {
                 using bsoncxx::builder::basic::kvp;
@@ -318,7 +318,7 @@ namespace DiscordCoreAPI {
             }
         };
 
-        static DiscordGuildMemberData parseGuildMemberData(bsoncxx::document::value docValue) {
+        DiscordGuildMemberData parseGuildMemberData(bsoncxx::document::value docValue) {
             DiscordGuildMemberData guildMemberData;
             try {
                 guildMemberData.guildMemberMention = docValue.view()["guildMemberMention"].get_utf8().value.to_string();
@@ -341,7 +341,7 @@ namespace DiscordCoreAPI {
                 if (try_receive(this->requestBuffer, workload)) {
                     switch (workload.workloadType) {
                     case(DatabaseWorkloadType::DISCORD_USER_WRITE): {
-                        bsoncxx::builder::basic::document doc = DatabaseManagerAgent::convertUserDataToDBDoc(workload.userData);
+                        bsoncxx::builder::basic::document doc = this->convertUserDataToDBDoc(workload.userData);
                         mongocxx::v_noabi::options::find_one_and_update options;
                         options.return_document(mongocxx::v_noabi::options::return_document::k_after);
                         auto result = DatabaseManagerAgent::collection.find_one_and_update(bsoncxx::builder::stream::document{} << "_id" << workload.userData.userId << finalize, doc.view(), options);
@@ -353,7 +353,7 @@ namespace DiscordCoreAPI {
                     case(DatabaseWorkloadType::DISCORD_USER_READ): {
                         auto result = DatabaseManagerAgent::collection.find_one(bsoncxx::builder::stream::document{} << "_id" << workload.userData.userId << finalize);
                         if (result.get_ptr() != NULL) {
-                            DiscordUserData userData = DatabaseManagerAgent::parseUserData(result.get());
+                            DiscordUserData userData = this->parseUserData(result.get());
                             send(this->discordUserOutputBuffer, userData);
                         }
                         else {
@@ -363,7 +363,7 @@ namespace DiscordCoreAPI {
                         break;
                     }
                     case(DatabaseWorkloadType::DISCORD_GUILD_WRITE): {
-                        bsoncxx::builder::basic::document doc = DatabaseManagerAgent::convertGuildDataToDBDoc(workload.guildData);
+                        bsoncxx::builder::basic::document doc = this->convertGuildDataToDBDoc(workload.guildData);
                         mongocxx::v_noabi::options::find_one_and_update options;
                         options.return_document(mongocxx::v_noabi::options::return_document::k_after);
                         auto result = DatabaseManagerAgent::collection.find_one_and_update(bsoncxx::builder::stream::document{} << "_id" << workload.guildData.guildId << finalize, doc.view(), options);
@@ -375,7 +375,7 @@ namespace DiscordCoreAPI {
                     case(DatabaseWorkloadType::DISCORD_GUILD_READ): {
                         auto result = DatabaseManagerAgent::collection.find_one(bsoncxx::builder::stream::document{} << "_id" << workload.guildData.guildId << finalize);
                         if (result.get_ptr() != NULL) {
-                            DiscordGuildData guildData = DatabaseManagerAgent::parseGuildData(result.get());
+                            DiscordGuildData guildData = this->parseGuildData(result.get());
                             send(this->discordGuildOutputBuffer, guildData);
                         }
                         else {
@@ -385,7 +385,7 @@ namespace DiscordCoreAPI {
                         break;
                     }
                     case(DatabaseWorkloadType::DISCORD_GUILD_MEMBER_WRITE): {
-                        bsoncxx::builder::basic::document doc = DatabaseManagerAgent::convertGuildMemberDataToDBDoc(workload.guildMemberData);
+                        bsoncxx::builder::basic::document doc = this->convertGuildMemberDataToDBDoc(workload.guildMemberData);
                         mongocxx::v_noabi::options::find_one_and_update options;
                         options.return_document(mongocxx::v_noabi::options::return_document::k_after);
                         auto result = DatabaseManagerAgent::collection.find_one_and_update(bsoncxx::builder::stream::document{} << "_id" << workload.guildMemberData.globalId << finalize, doc.view(), options);
@@ -397,7 +397,7 @@ namespace DiscordCoreAPI {
                     case(DatabaseWorkloadType::DISCORD_GUILD_MEMBER_READ): {
                         auto result = DatabaseManagerAgent::collection.find_one(bsoncxx::builder::stream::document{} << "_id" << workload.guildMemberData.globalId << finalize);
                         if (result.get_ptr() != NULL) {
-                            DiscordGuildMemberData guildMemberData = DatabaseManagerAgent::parseGuildMemberData(result.get());
+                            DiscordGuildMemberData guildMemberData = this->parseGuildMemberData(result.get());
                             send(this->discordGuildMemberOutputBuffer, guildMemberData);
                         }
                         else {
