@@ -87,6 +87,14 @@ namespace DiscordCoreAPI {
 			onSongCompletionEvent->remove(token);
 		}
 
+		void sendSingleFrame(AudioFrameData frameData) {
+			send(this->audioDataBuffer.get(), frameData);
+		}
+
+		unbounded_buffer<AudioFrameData>* getSendAudioBuffer() {
+			return this->audioDataBuffer.get();
+		}
+
 		bool areWeConnected() {
 			if (this == nullptr) {
 				return false;
