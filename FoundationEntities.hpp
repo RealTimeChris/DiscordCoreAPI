@@ -93,6 +93,20 @@ namespace DiscordCoreAPI {
         unsigned long long startTime{ 0 };
     };
 
+    template<typename T>
+    bool waitForTimeToPass(unbounded_buffer<T>* outBuffer, T* argOne, int timeInMsNew) {
+        StopWatch stopWatch(timeInMsNew);
+        bool doWeBreak{ false };
+        while (!try_receive(outBuffer, *argOne)) {
+            concurrency::wait(10);
+            if (stopWatch.hasTimePassed()) {
+                doWeBreak = true;
+                break;
+            }
+        };
+        return doWeBreak;
+    }
+
     template <typename... T>
     void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, unsigned int timeDelayInMs, bool isRepeating, T... args) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
@@ -2747,8 +2761,8 @@ namespace DiscordCoreAPI {
     };
 
     struct ComponentInteractionData {
-        vector<SelectOptionData> values{};
         ComponentType componentType{};
+        vector<string> values{};
         string customId{ "" };
     };
 

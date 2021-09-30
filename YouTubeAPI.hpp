@@ -686,7 +686,7 @@ namespace DiscordCoreAPI {
 				catch (...) {
 					rethrowException("YouTubeAPI::sendNextSong() Error: ", nullptr, true);
 				}
-				});
+				}).get();
 			return;
 		}
 

@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 				catch (...) {
 					rethrowException("SoundCloudAPI::sendNextSong() Error: ", nullptr, true);
 				}
-				});
+				}).get();
 			return;
 		}
 

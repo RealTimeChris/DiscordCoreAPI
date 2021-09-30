@@ -186,10 +186,10 @@ namespace DiscordCoreAPI {
 					SelectMenuCollector selectMenu(newEvent);
 					auto selectMenuReturnData = selectMenu.collectSelectMenuData(false, 120000, 1, args->eventData.getAuthorId());
 					if (selectMenuReturnData.size() > 0) {
-						if (selectMenuReturnData.at(0).values.at(0).value == "go back") {
+						if (selectMenuReturnData.at(0).values.at(0)== "go back") {
 							continue;
 						}
-						EmbedData newEmbed = CommandCenter::functions.at(selectMenuReturnData.at(0).values.at(0).value)->helpEmbed;
+						EmbedData newEmbed = CommandCenter::functions.at(selectMenuReturnData.at(0).values.at(0))->helpEmbed;
 						if (newEvent.eventType == InputEventType::REGULAR_MESSAGE) {
 							RespondToInputEventData responseData(newEvent);
 							responseData.type = DesiredInputEventResponseType::RegularMessageEdit;

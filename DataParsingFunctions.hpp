@@ -2672,12 +2672,11 @@ namespace DiscordCoreInternal {
             DiscordCoreAPI::ComponentInteractionData data = *pDataStructure;
 
             if (jsonObjectData.contains("values") && !jsonObjectData.at("values").is_null()) {
-                vector<DiscordCoreAPI::SelectOptionData> newVector{};
+                vector<string> newVector02;
                 for (auto value : jsonObjectData.at("values")) {
-                    DiscordCoreAPI::SelectOptionData newData{};
-                    parseObject(value, &newData);
+                    newVector02.push_back(value);
                 }
-                data.customId = jsonObjectData.at("custom_id").get<string>();
+                data.values = newVector02;
             }
 
             if (jsonObjectData.contains("custom_id") && !jsonObjectData.at("custom_id").is_null()) {
@@ -3359,9 +3358,108 @@ namespace DiscordCoreInternal {
             *pDataStructure = newData;
         }
 
-        static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure);
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure) {
+            DiscordCoreAPI::YouTubeSong newData = *pDataStructure;
 
-        static void parseObject(json jsonObjectData, DiscordCoreAPI::SoundCloudSong* pDataStructure);
+            if (jsonObjectData.contains("lengthText") && !jsonObjectData.at("lengthText").is_null()) {
+                newData.duration = jsonObjectData.at("lengthText").at("accessibility").at("accessibilityData").at("label").get<string>();
+            }
+
+            if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData.at("detailedMetadataSnippets").is_null()) {
+                for (auto value : jsonObjectData.at("detailedMetadataSnippets").at(0).at("snippetText").at("runs")) {
+                    newData.description += value.at("text").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("thumbnail") && !jsonObjectData.at("thumbnail").is_null()) {
+                newData.thumbnailURL = jsonObjectData.at("thumbnail").at("thumbnails").at(0).at("url").get<string>();
+            }
+
+            if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
+                newData.songId = "https://www.youtube.com/watch?v=" + jsonObjectData.at("videoId").get<string>();
+            }
+
+            if (jsonObjectData.contains("title") && !jsonObjectData.at("title").is_null()) {
+                if (jsonObjectData.at("title").contains("runs")) {
+                    newData.songTitle = jsonObjectData.at("title").at("runs").at(0).at("text").get<string>();
+                }
+                else if (jsonObjectData.at("title").contains("simpleText")) {
+                    newData.songTitle = jsonObjectData.at("title").at("simpleText").get<string>();
+                }
+            }
+
+            if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
+                newData.songId = jsonObjectData.at("videoId").get<string>();
+            }
+
+            *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::SoundCloudSong* pDataStructure) {
+            DiscordCoreAPI::SoundCloudSong newData = *pDataStructure;
+
+            if (jsonObjectData.contains("track_authorization") && !jsonObjectData.at("track_authorization").is_null()) {
+                newData.trackAuthorization = jsonObjectData.at("track_authorization").get<string>();
+            }
+
+            if (jsonObjectData.contains("media") && !jsonObjectData.at("media").is_null()) {
+                bool isItFound{ false };
+                for (auto value : jsonObjectData.at("media").at("transcodings")) {
+                    if (value.at("preset") == "opus_0_0") {
+                        isItFound = true;
+                        newData.firstDownloadURL = to_string(to_hstring(value.at("url").get<string>()));
+                        newData.songId = to_string(to_hstring(value.at("url").get<string>()));
+                    }
+                }
+                bool isItFound2{ false };
+                if (!isItFound) {
+                    for (auto value : jsonObjectData.at("media").at("transcodings")) {
+                        if (value.at("preset") == "mp3_0_0") {
+                            newData.firstDownloadURL = to_string(to_hstring(value.at("url").get<string>()));
+                            newData.songId = to_string(to_hstring(value.at("url").get<string>()));
+                            isItFound2 = true;
+                        }
+                    }
+                }
+                if (!isItFound2) {
+                    for (auto value : jsonObjectData.at("media").at("transcodings")) {
+                        newData.firstDownloadURL = to_string(to_hstring(value.at("url").get<string>()));
+                        newData.songId = to_string(to_hstring(value.at("url").get<string>()));
+                    }
+                }
+            }
+
+            if (jsonObjectData.contains("title") && !jsonObjectData.at("title").is_null() && !jsonObjectData.at("title").is_object()) {
+                newData.songTitle = to_string(to_hstring(jsonObjectData.at("title").get<string>()));
+            }
+            if (jsonObjectData.contains("description") && !jsonObjectData.at("description").is_null()) {
+                string newString = to_string(to_hstring(jsonObjectData.at("description").get<string>()));
+                if (newString.size() > 100) {
+                    newString = newString.substr(0, 100);
+                }
+                char* newString01 = g_utf8_make_valid(newString.c_str(), newString.size());
+                char* newString02 = g_utf8_normalize(newString01, newString.size(), GNormalizeMode::G_NORMALIZE_ALL);
+                for (int x = 0; x < newString.size(); x += 1) {
+                    newData.description.push_back(newString02[x]);
+                }
+                newData.description += "...";
+            }
+
+            if (jsonObjectData.contains("artwork_url") && !jsonObjectData.at("artwork_url").is_null()) {
+                newData.thumbnailURL = to_string(to_hstring(jsonObjectData.at("artwork_url").get<string>()));
+            }
+
+            if (jsonObjectData.contains("duration") && !jsonObjectData.at("duration").is_null()) {
+                int durationNew = jsonObjectData.at("duration").get<int>();
+                newData.duration = DiscordCoreAPI::convertMsToDurationString(durationNew);
+            }
+
+            if (jsonObjectData.contains("permalink_url") && !jsonObjectData.at("permalink_url").is_null()) {
+                newData.viewURL = to_string(to_hstring(jsonObjectData.at("permalink_url").get<string>()));
+            }
+
+            *pDataStructure = newData;
+        }
 
     };
 };

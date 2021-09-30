@@ -67,7 +67,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
-		shared_ptr<DiscordCoreInternal::WebSocketReceiverAgent> webSocketReceiverAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
@@ -93,10 +92,8 @@ namespace DiscordCoreAPI {
 			this->eventManager = make_shared<DiscordCoreAPI::EventManager>();
 			DiscordCoreInternal::HttpRequestAgent::initialize(this->botToken, this->baseURL);
 			SoundCloudSong::initialize();
-			this->webSocketReceiverAgent = make_unique<DiscordCoreInternal::WebSocketReceiverAgent>();
-			this->webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(&this->webSocketReceiverAgent->webSocketWorkloadSource, this->botToken);
+			this->webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->botToken, this->getGateWayUrl());
 			SongAPI::initialize(getDiscordGuildMap());
-			this->webSocketConnectionAgent->setSocketPath(this->getGateWayUrl());
 			DiscordCoreInternal::InteractionManagerAgent::initialize();
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize();
 			DiscordCoreInternal::ReactionManagerAgent::initialize();
@@ -125,7 +122,6 @@ namespace DiscordCoreAPI {
 			InputEvents::initialize(this->messages, this->interactions);
 			DiscordCoreAPI::commandPrefix = this->discordUser->data.prefix;
 			this->discordUser->writeDataToDB();
-			this->webSocketReceiverAgent->start();
 			this->webSocketConnectionAgent->start();
 			co_await mainThread;
 			co_return;
@@ -180,7 +176,7 @@ namespace DiscordCoreAPI {
 			while (!this->doWeQuit) {
 				try {
 					DiscordCoreInternal::WebSocketWorkload workload{};
-					while (!try_receive(this->webSocketReceiverAgent->webSocketWorkloadTarget, workload)) {
+					while (!try_receive(this->webSocketConnectionAgent->webSocketWorkloadTarget, workload)) {
 						concurrency::wait(50);
 						if (this->doWeQuit) {
 							goto startingPoint;
@@ -701,9 +697,7 @@ namespace DiscordCoreAPI {
 			SoundCloudAPI::cleanup();
 			SongAPI::cleanup();
 			this->webSocketConnectionAgent->terminate();
-			this->webSocketReceiverAgent->terminate();
 			wait(this->webSocketConnectionAgent.get());
-			wait(this->webSocketReceiverAgent.get());
 		}
 
 		~DiscordCoreClient() {

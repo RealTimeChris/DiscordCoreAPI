@@ -1252,8 +1252,8 @@ namespace DiscordCoreAPI {
 
     struct SelectMenuResponseData {
         InteractionData interactionData{};
-        vector<SelectOptionData> values{};
         string selectionId{ "" };
+        vector<string> values{};
         string channelId{ "" };
         string messageId{ "" };
         string userId{ "" };
@@ -1316,9 +1316,9 @@ namespace DiscordCoreAPI {
         int currentCollectedSelectMenuCount{ 0 };
         int maxCollectedSelectMenuCount{ 0 };
         bool getButtonDataForAll{ false };
-        vector<SelectOptionData> values{};
         unsigned int maxTimeInMs{ 0 };
         string selectMenuId{ "" };
+        vector<string> values{};
         bool doWeQuit{ false };
         string channelId{ "" };
         string messageId{ "" };
@@ -1467,17 +1467,8 @@ namespace DiscordCoreAPI {
                 while (doWeQuit == false) {
                     if (this->getButtonDataForAll == false) {
                         DiscordCoreAPI::InteractionData buttonInteractionData{};
-                        StopWatch stopWatch(this->maxTimeInMs);
-                        bool doWeBreak{ false };
-                        while (!try_receive(ButtonCollector::buttonIncomingInteractionBuffer, buttonInteractionData)) {
-                            concurrency::wait(10);
-                            if (stopWatch.hasTimePassed()) {
-                                doWeBreak = true;
-                                this->buttonId = "exit";
-                                break;
-                            }
-                        };
-                        if (doWeBreak) {
+                        if (waitForTimeToPass(ButtonCollector::buttonIncomingInteractionBuffer, &buttonInteractionData, this->maxTimeInMs)) {
+                            this->buttonId = "exit";
                             break;
                         }
                         if (buttonInteractionData.user.id != this->userId) {
@@ -1512,17 +1503,8 @@ namespace DiscordCoreAPI {
                     }
                     else {
                         DiscordCoreAPI::InteractionData buttonInteractionData{};
-                        StopWatch stopWatch(this->maxTimeInMs);
-                        bool doWeBreak{ false };
-                        while (!try_receive(ButtonCollector::buttonIncomingInteractionBuffer, buttonInteractionData)) {
-                            concurrency::wait(10);
-                            if (stopWatch.hasTimePassed()) {
-                                doWeBreak = true;
-                                this->buttonId = "exit";
-                                break;
-                            }
-                        };
-                        if (doWeBreak) {
+                        if (waitForTimeToPass(ButtonCollector::buttonIncomingInteractionBuffer, &buttonInteractionData, this->maxTimeInMs)) {
+                            this->buttonId = "exit";
                             break;
                         }
                         this->interactionData = buttonInteractionData;
