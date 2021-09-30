@@ -340,6 +340,7 @@ namespace DiscordCoreAPI {
 					{
 						DiscordCoreAPI::OnGuildMemberAddData guildMemberAddData{};
 						DiscordCoreInternal::DataParser::parseObject(workload.payLoad, &guildMemberAddData.guildMember);
+						DiscordGuildMember guildMember(guildMemberAddData.guildMember);
 						guildMemberAddData.guildMember.guildId = workload.payLoad.at("guild_id");
 						this->eventManager->onGuildMemberAddEvent(guildMemberAddData);
 						break;
