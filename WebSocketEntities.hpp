@@ -155,13 +155,8 @@ namespace DiscordCoreInternal {
 		}
 
 		void run() {
-			try {
-				this->connect();
-			}
-			catch (...) {
-				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::run() Error: ");
-				this->done();
-			}
+			this->connect();
+			this->done();
 		}
 
 		void sendMessage(string& text) {
@@ -718,7 +713,6 @@ namespace DiscordCoreInternal {
 
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<WebSocketConnectionAgent> webSocketConnectionAgent{ nullptr };
-		unbounded_buffer<WebSocketWorkload> webSocketWorkloadTarget{ nullptr };
 		shared_ptr<DatagramSocket> voiceSocket{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
@@ -792,13 +786,8 @@ namespace DiscordCoreInternal {
 		}
 
 		void run() {
-			try {
-				this->connect();
-			}
-			catch (...) {
-				DiscordCoreAPI::rethrowException("VoiceChannelWebSocketAgent::run() Error: ");
-				this->done();
-			}
+			this->connect();
+			this->done();
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {

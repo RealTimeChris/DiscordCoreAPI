@@ -1295,7 +1295,6 @@ namespace DiscordCoreAPI {
             this->maxTimeInMs = maxWaitTimeInMsNew;
             this->start();
             agent::wait(this);
-            exception error;
             return this->responseVector;
         }
 
@@ -1326,65 +1325,78 @@ namespace DiscordCoreAPI {
 
         void run() {
             try {
+                int currentNumberOfPresses{ 0 };
                 while (doWeQuit == false) {
                     if (this->getButtonDataForAll == false) {
-                        InteractionData selectMenuInteractionData = receive(SelectMenuCollector::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
-                        if (selectMenuInteractionData.user.id != this->userId) {
-                            DiscordCoreAPI::CreateInteractionResponseData createResponseData(selectMenuInteractionData);
+                        DiscordCoreAPI::InteractionData buttonInteractionData{};
+                        if (waitForTimeToPass(SelectMenuCollector::selectMenuIncomingInteractionBuffer, &buttonInteractionData, this->maxTimeInMs)) {
+                            this->selectMenuId = "exit";
+                            break;
+                        }
+                        if (buttonInteractionData.user.id != this->userId) {
+                            DiscordCoreAPI::CreateInteractionResponseData createResponseData(buttonInteractionData);
                             DiscordCoreAPI::EmbedData embedData;
                             embedData.setColor("FEFEFE");
                             embedData.setTitle("__**Permission Issue:**__");
                             embedData.setTimeStamp(DiscordCoreAPI::getTimeAndDate());
-                            embedData.setDescription("Sorry, but that menu can only be selected by <@!" + this->userId + ">!");
+                            embedData.setDescription("Sorry, but that button can only be pressed by <@!" + this->userId + ">!");
                             createResponseData.addMessageEmbed(embedData);
                             createResponseData.data.data.flags = 64;
                             SelectMenuCollector::interactions->createInteractionResponseAsync(createResponseData).get();
                         }
                         else {
-                            DiscordCoreAPI::CreateInteractionResponseData dataPackage(selectMenuInteractionData);
+                            this->interactionData = buttonInteractionData;
+                            this->selectMenuId = buttonInteractionData.data.componentData.customId;
+                            DiscordCoreAPI::CreateInteractionResponseData dataPackage(buttonInteractionData);
                             dataPackage.setResponseType(DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage);
                             SelectMenuCollector::interactions->createInteractionResponseAsync(dataPackage);
-                            this->interactionData = selectMenuInteractionData;
-                            this->values = selectMenuInteractionData.data.componentData.values;
-                            this->selectMenuId = selectMenuInteractionData.data.componentData.customId;                            
                             SelectMenuResponseData response;
                             response.selectionId = this->selectMenuId;
                             response.channelId = this->channelId;
                             response.messageId = this->messageId;
-                            response.userId = selectMenuInteractionData.user.id;
-                            response.values = this->values;
-                            response.interactionData = selectMenuInteractionData;
+                            response.userId = buttonInteractionData.user.id;
+                            response.interactionData = buttonInteractionData;
                             this->responseVector.push_back(response);
-                            doWeQuit = true;
+                            currentNumberOfPresses += 1;
+                            if (currentNumberOfPresses >= this->maxCollectedSelectMenuCount) {
+                                doWeQuit = true;
+                            }
                         }
                     }
                     else {
-                        InteractionData selectMenuInteractionData = receive(SelectMenuCollector::selectMenuIncomingInteractionBuffer, this->maxTimeInMs);
-                        DiscordCoreAPI::CreateInteractionResponseData dataPackage(selectMenuInteractionData);
-                        dataPackage.setResponseType(DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage);
-                        SelectMenuCollector::interactions->createInteractionResponseAsync(dataPackage);
-                        this->selectMenuId = selectMenuInteractionData.data.componentData.customId;
-                        this->values = selectMenuInteractionData.data.componentData.values;
-                        this->interactionData = selectMenuInteractionData;                        
+                        DiscordCoreAPI::InteractionData buttonInteractionData{};
+                        if (waitForTimeToPass(SelectMenuCollector::selectMenuIncomingInteractionBuffer, &buttonInteractionData, this->maxTimeInMs)) {
+                            this->selectMenuId = "exit";
+                            break;
+                        }
+                        this->interactionData = buttonInteractionData;
+                        this->selectMenuId= buttonInteractionData.data.componentData.customId;
                         SelectMenuResponseData response;
-                        response.interactionData = selectMenuInteractionData;
-                        response.userId = selectMenuInteractionData.user.id;
                         response.selectionId = this->selectMenuId;
                         response.channelId = this->channelId;
                         response.messageId = this->messageId;
-                        response.values = this->values;
+                        response.userId = buttonInteractionData.user.id;
+                        response.interactionData = buttonInteractionData;
                         this->responseVector.push_back(response);
+                        DiscordCoreAPI::CreateInteractionResponseData dataPackage(buttonInteractionData);
+                        dataPackage.setResponseType(DiscordCoreAPI::InteractionCallbackType::DeferredUpdateMessage);
+                        SelectMenuCollector::interactions->createInteractionResponseAsync(dataPackage);
+                        currentNumberOfPresses += 1;
+                        if (currentNumberOfPresses >= this->maxCollectedSelectMenuCount) {
+                            this->doWeQuit = true;
+                        }
                     }
                 }
-                SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
             }
             catch (...) {
                 rethrowException("SelectMenuCollector::run() Error: ");
-                this->selectMenuId = "exit";
+                done();
                 SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
                 return;
             }
-            this->done();
+            done();
+            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
+            return;
         }
     };
 
@@ -1433,7 +1445,6 @@ namespace DiscordCoreAPI {
             this->maxTimeInMs = maxWaitTimeInMsNew;
             this->start();
             agent::wait(this);
-            exception error;
             return this->responseVector;
         }
 
