@@ -61,13 +61,53 @@ namespace DiscordCoreAPI {
         string guildId;
     };
 
-    class DatabaseManagerAgent : agent {
-    protected:
+    struct DatabaseReturnValue {
+        DiscordGuildMemberData discordGuildMember{};
+        DiscordGuildData discordGuild{};
+        DiscordUserData discordUser{};
+    };
 
-        friend class DiscordGuildMember;
+    class DatabaseManagerAgent : agent {
+    public:
+
         friend class DiscordCoreClient;
-        friend class DiscordUser;
-        friend class DiscordGuild;
+
+        DatabaseManagerAgent()
+            : agent(*DatabaseManagerAgent::threadContext->scheduler->scheduler) {
+            this->botUserId = DatabaseManagerAgent::botUserId;
+        }
+
+        DatabaseReturnValue submitWorkloadAndGetResults(DatabaseWorkload workload) {
+            send(this->requestBuffer, workload);
+            this->start();
+            wait(this);
+            if (workload.workloadType == DatabaseWorkloadType::DISCORD_GUILD_MEMBER_READ) {
+                DatabaseReturnValue newData{};
+                DiscordGuildMemberData newData02{};
+                try_receive(this->discordGuildMemberOutputBuffer, newData02);
+                newData.discordGuildMember = newData02;
+                return newData;
+            }
+            else if (workload.workloadType == DatabaseWorkloadType::DISCORD_GUILD_READ) {
+                DatabaseReturnValue newData{};
+                DiscordGuildData newData02{};
+                try_receive(this->discordGuildOutputBuffer, newData02);
+                newData.discordGuild = newData02;
+                return newData;
+            }
+            else if (workload.workloadType == DatabaseWorkloadType::DISCORD_USER_READ) {
+                DatabaseReturnValue newData{};
+                DiscordUserData newData02{};
+                try_receive(this->discordUserOutputBuffer, newData02);
+                newData.discordUser = newData02;
+                return newData;
+            }
+            else {
+                return DatabaseReturnValue();
+            }
+        }
+
+    protected:
 
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
         static mongocxx::collection collection;
@@ -76,19 +116,14 @@ namespace DiscordCoreAPI {
         static mongocxx::client* client;
         static string botUserId;
 
-        unbounded_buffer<DiscordGuildMemberData> discordGuildMemberOutputBuffer{ nullptr };
-        unbounded_buffer<DiscordGuildData> discordGuildOutputBuffer{ nullptr };
+        unbounded_buffer<DiscordGuildMemberData>discordGuildMemberOutputBuffer{ nullptr };
+        unbounded_buffer<DiscordGuildData>discordGuildOutputBuffer{ nullptr };
         unbounded_buffer<DiscordUserData>discordUserOutputBuffer{ nullptr };
         unbounded_buffer<DatabaseWorkload> requestBuffer{ nullptr };
 
-        DatabaseManagerAgent()
-            : agent(*DatabaseManagerAgent::threadContext->scheduler->scheduler) {
-            this->botUserId = DatabaseManagerAgent::botUserId;
-        }
-
         static void initialize(string botUserIdNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
-            DatabaseManagerAgent::botUserId = botUserIdNew;
             DatabaseManagerAgent::threadContext = threadContextNew;
+            DatabaseManagerAgent::botUserId = botUserIdNew;
             DatabaseManagerAgent::instance = new mongocxx::instance();
             DatabaseManagerAgent::client = new mongocxx::client{ mongocxx::uri{} };
             DatabaseManagerAgent::dataBase = (*DatabaseManagerAgent::client)[DatabaseManagerAgent::botUserId];
@@ -176,7 +211,7 @@ namespace DiscordCoreAPI {
                             kvp("duration", discordGuildData.playlist.currentSong.duration), kvp("songTitle", discordGuildData.playlist.currentSong.songTitle),
                             kvp("firstDownloadURL", discordGuildData.playlist.currentSong.firstDownloadURL), kvp("thumbnailURL", discordGuildData.playlist.currentSong.thumbnailURL),
                             kvp("type", bsoncxx::types::b_int32((int)discordGuildData.playlist.currentSong.type)), kvp("songId", discordGuildData.playlist.currentSong.songId), kvp("viewURL", discordGuildData.playlist.currentSong.viewURL)); }));
-                    
+
                     subDocument01.append(kvp("songList", [discordGuildData](bsoncxx::builder::basic::sub_array subArray01) {
                         for (auto value : discordGuildData.playlist.songList) {
                             subArray01.append([&](bsoncxx::builder::basic::sub_document subDocument02) {
@@ -219,7 +254,7 @@ namespace DiscordCoreAPI {
                 guildData.playlist.currentSong.viewURL = docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["viewURL"].get_utf8().value.to_string();
                 guildData.playlist.isLoopSongEnabled = docValue.view()["playlist"].get_document().value["isLoopSongEnabled"].get_bool().value;
                 guildData.playlist.isLoopAllEnabled = docValue.view()["playlist"].get_document().value["isLoopAllEnabled"].get_bool().value;
-                
+
                 for (auto value02 : docValue.view()["playlist"].get_document().value["currentSong"].get_document().value["downloadURLs"].get_array().value) {
                     DownloadURL downloadURL;
                     downloadURL.contentSize = value02["contentSize"].get_int32().value;
@@ -387,13 +422,9 @@ namespace DiscordCoreAPI {
     class DiscordUser {
     public:
 
-        DiscordUserData data{};
+        friend struct DatabaseReturnValue;
 
-        DiscordUser& operator=(DiscordUser&) {
-            this->getDataFromDB();
-            this->writeDataToDB();
-            return *this;
-        }
+        DiscordUserData data{};
 
         DiscordUser(string userNameNew, string userIdNew) {
             this->data.userId = userIdNew;
@@ -404,13 +435,10 @@ namespace DiscordCoreAPI {
 
         void writeDataToDB() {
             DatabaseManagerAgent requestAgent{};
-            DatabaseWorkload workload{};
+            DiscordCoreAPI::DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_USER_WRITE;
             workload.userData = this->data;
-            send(requestAgent.requestBuffer, workload);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            return;
+            auto result = requestAgent.submitWorkloadAndGetResults(workload);
         }
 
         void getDataFromDB() {
@@ -418,36 +446,29 @@ namespace DiscordCoreAPI {
             DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_USER_READ;
             workload.userData = this->data;
-            send(requestAgent.requestBuffer, workload);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            DiscordUserData userData;
-            try_receive(requestAgent.discordUserOutputBuffer, userData);
-            if (userData.userId != "") {
-                this->data = userData;
+            auto result = requestAgent.submitWorkloadAndGetResults(workload);
+            if (result.discordUser.userId != "") {
+                this->data = result.discordUser;
             }
-            return;
         }
+
+    protected:
+
+        DiscordUser() {};
 
     };
 
     class DiscordGuild {
     public:
 
-        friend class SoundCloudAPICore;
-        friend class YouTubeAPICore;
+        friend struct DatabaseReturnValue;
         friend class SoundCloudAPI;
         friend class SongAPICore;
+        friend class YouTubeAPI;
         friend class YouTubeAPI;
         friend class SongAPI;
 
         DiscordGuildData data{};
-
-        DiscordGuild operator=(DiscordGuild newGuild){
-            this->getDataFromDB();
-            this->writeDataToDB();
-            return *this;
-        }
 
         DiscordGuild(GuildData guildData) {
             this->data.guildId = guildData.id;
@@ -461,10 +482,7 @@ namespace DiscordCoreAPI {
             DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_WRITE;
             workload.guildData = this->data;
-            send(requestAgent.requestBuffer, workload);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            return;
+            requestAgent.submitWorkloadAndGetResults(workload);
         }
 
         void getDataFromDB() {
@@ -472,15 +490,10 @@ namespace DiscordCoreAPI {
             DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_READ;
             workload.guildData = this->data;
-            send(requestAgent.requestBuffer, workload);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            DiscordGuildData guildData;
-            try_receive(requestAgent.discordGuildOutputBuffer, guildData);
-            if (guildData.guildId != "") {
-                this->data = guildData;
+            auto result = requestAgent.submitWorkloadAndGetResults(workload);
+            if (result.discordGuild.guildId != "") {
+                this->data = result.discordGuild;
             }
-            return;
         }
 
     protected:
@@ -491,14 +504,9 @@ namespace DiscordCoreAPI {
 
     class DiscordGuildMember {
     public:
+        friend struct DatabaseReturnValue;
 
         DiscordGuildMemberData data{};
-
-        DiscordGuildMember operator=(DiscordGuildMember newGuildMember) {
-            this->getDataFromDB();
-            this->writeDataToDB();
-            return *this;
-        }
 
         DiscordGuildMember(DiscordCoreInternal::GuildMemberData guildMemberData) {
             this->data.guildMemberId = guildMemberData.user.id;
@@ -520,10 +528,7 @@ namespace DiscordCoreAPI {
             DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_MEMBER_WRITE;
             workload.guildMemberData = this->data;
-            send(requestAgent.requestBuffer, workload);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            return;
+            requestAgent.submitWorkloadAndGetResults(workload);
         }
 
         void getDataFromDB() {
@@ -531,16 +536,16 @@ namespace DiscordCoreAPI {
             DatabaseWorkload workload{};
             workload.workloadType = DatabaseWorkloadType::DISCORD_GUILD_MEMBER_READ;
             workload.guildMemberData = this->data;
-            send(requestAgent.requestBuffer, workload);
-            requestAgent.start();
-            agent::wait(&requestAgent);
-            DiscordGuildMemberData guildMemberData;
-            try_receive(requestAgent.discordGuildMemberOutputBuffer, guildMemberData);
-            if (guildMemberData.globalId != "") {
-                this->data = guildMemberData;
+            auto result = requestAgent.submitWorkloadAndGetResults(workload);
+            if (result.discordGuildMember.globalId != "") {
+                this->data = result.discordGuildMember;
             }
-            return;
         }
+
+    protected:
+
+        DiscordGuildMember() {}
+
     };
     shared_ptr<DiscordCoreInternal::ThreadContext> DatabaseManagerAgent::threadContext{ nullptr };
     mongocxx::instance* DatabaseManagerAgent::instance{ nullptr };
@@ -550,4 +555,3 @@ namespace DiscordCoreAPI {
     string DatabaseManagerAgent::botUserId{ "" };
 };
 #endif
-
