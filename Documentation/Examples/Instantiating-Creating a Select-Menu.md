@@ -45,8 +45,8 @@ namespace DiscordCoreAPI {
 			selectOption.label = "Select Menu"; 
 			selectOption.value = "select_menu";
 			selectOption._default = true;
-			vector<SelectOptionData> selectMenu{ selectOption };
-			dataPackage.addSelectMenu(false, "test_button", selectMenu, "Select-Menu", 1, 1);
+			vector<SelectOptionData> selectMenuOptions{ selectOption };
+			dataPackage.addSelectMenu(false, "test_button", selectMenuOptions, "Select-Menu", 1, 1);
 			dataPackage.addContent("Test Response");
 			dataPackage.addMessageEmbed(EmbedData{ .description = "TESTING!",.title = "Test Title" });
 			auto inputEventData = InputEvents::respondToEvent(dataPackage);
