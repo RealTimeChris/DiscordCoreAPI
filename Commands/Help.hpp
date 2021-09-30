@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 					SelectMenuCollector selectMenu(newEvent);
 					auto selectMenuReturnData = selectMenu.collectSelectMenuData(false, 120000, 1, args->eventData.getAuthorId());
 					if (selectMenuReturnData.size() > 0) {
-						if (selectMenuReturnData.at(0).values.at(0)== "go back") {
+						if (selectMenuReturnData.at(0).values.at(0) == "go back") {
 							continue;
 						}
 						EmbedData newEmbed = CommandCenter::functions.at(selectMenuReturnData.at(0).values.at(0))->helpEmbed;

@@ -17,13 +17,13 @@
 namespace DiscordCoreAPI {
 
 	void SoundCloudSong::initialize() {
-		SoundCloudSong::clientId = SoundCloudSong::collectClientId("testvalue");
+		SoundCloudSong::clientId = SoundCloudSong().collectClientId("testvalue");
 	}
 
 	vector<SoundCloudSong> SoundCloudSong::searchForSong(string songQuery) {
 		vector<SoundCloudSong> results{};
 		DiscordCoreInternal::HttpAgentResources agentResources{};
-		agentResources.baseURL = SoundCloudSong::baseSearchURL02;
+		agentResources.baseURL = this->baseSearchURL02;
 		DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
 		DiscordCoreInternal::HttpWorkloadData workload{};
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 
 	string SoundCloudSong::collectClientId(string searchQuery) {
 		DiscordCoreInternal::HttpAgentResources agentResources{};
-		agentResources.baseURL = SoundCloudSong::baseSearchURL;
+		agentResources.baseURL = this->baseSearchURL;
 		DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
 		DiscordCoreInternal::HttpWorkloadData workload{};
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
@@ -188,8 +188,6 @@ namespace DiscordCoreAPI {
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
 		static map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap;
 		static map<string, DiscordGuild*>* discordGuildMap;
-		static string baseSearchURL02;
-		static string baseSearchURL;
 		static string clientId;
 
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
@@ -197,7 +195,6 @@ namespace DiscordCoreAPI {
 		cancellation_token cancelToken{ this->cancelTokenSource.get_token() };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		DiscordGuild* discordGuild{ new DiscordGuild };
-		string appVersion{ "1631696495" };
 		bool areWeStopping{ false };
 		task<void>* currentTask{};
 		SoundCloudSong theSong{};
@@ -381,8 +378,6 @@ namespace DiscordCoreAPI {
 	map<string, shared_ptr<VoiceConnection>>* SoundCloudAPI::voiceConnectionMap{ nullptr };
 	map<string, shared_ptr<SoundCloudAPI>>* SoundCloudAPI::soundCloudAPIMap{ nullptr };
 	map<string, DiscordGuild*>* SoundCloudAPI::discordGuildMap{ nullptr };
-	string SoundCloudAPI::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
-	string SoundCloudAPI::baseSearchURL{ "https://soundcloud.com/search?q=" };
 	string SoundCloudAPI::clientId{ "" };
 
 };

@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
 
 	vector<YouTubeSong> YouTubeSong::searchForSong(string searchQuery) {
 		DiscordCoreInternal::HttpAgentResources agentResources;
-		agentResources.baseURL = YouTubeSong::baseSearchURL;
+		agentResources.baseURL = this->baseSearchURL;
 		DiscordCoreInternal::HttpRequestAgent requestAgent(agentResources);
 		DiscordCoreInternal::HttpWorkloadData workload;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::GET;
@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
 			if (value.contains("videoRenderer")) {
 				DiscordCoreInternal::DataParser::parseObject(value.at("videoRenderer"), &searchResult);
 				searchResult.type = SongType::YouTube;
-				searchResult.firstDownloadURL = YouTubeSong::baseWatchURL + searchResult.songId + "&hl=en";
+				searchResult.firstDownloadURL = this->baseWatchURL + searchResult.songId + "&hl=en";
 				searchResult.viewURL = searchResult.firstDownloadURL;
 				searchResults.push_back(searchResult);
 			}
@@ -366,9 +366,6 @@ namespace DiscordCoreAPI {
 		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
 		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
 		static map<string, DiscordGuild*>* discordGuildMap;
-		static string baseSearchURL;
-		static string baseWatchURL;
-		static string clientId;
 
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		cancellation_token_source cancelTokenSource{ cancellation_token_source() };
@@ -703,11 +700,8 @@ namespace DiscordCoreAPI {
 		}		
 	};
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* YouTubeAPI::sendAudioDataBufferMap{ nullptr };
-	string YouTubeAPI::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
 	map<string, shared_ptr<VoiceConnection>>* YouTubeAPI::voiceConnectionMap{ nullptr };
 	map<string, shared_ptr<YouTubeAPI>>* YouTubeAPI::youtubeAPIMap{ nullptr };
-	string YouTubeAPI::baseWatchURL{ "https://www.youtube.com/watch?v=" };
 	map<string, DiscordGuild*>* YouTubeAPI::discordGuildMap{ nullptr };
-	string YouTubeAPI::clientId{ "" };
 };
 #endif

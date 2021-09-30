@@ -22,41 +22,43 @@
 
 namespace DiscordCoreAPI {
 
-	namespace {
-		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
-		map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
-		map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap{ new map<string, shared_ptr<SoundCloudAPI>>() };
-		map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
-		map<string, shared_ptr<SongAPI>>* songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
-		map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
+	namespace Statics{
+		namespace {
+			map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
+			map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap{ new map<string, shared_ptr<VoiceConnection>>() };
+			map<string, shared_ptr<SoundCloudAPI>>* soundCloudAPIMap{ new map<string, shared_ptr<SoundCloudAPI>>() };
+			map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap{ new map<string, shared_ptr<YouTubeAPI>>() };
+			map<string, shared_ptr<SongAPI>>* songAPIMap{ new map<string, shared_ptr<SongAPI>>() };
+			map<string, DiscordGuild*>* discordGuildMap{ new map<string, DiscordGuild*>() };
+		}		
 	}
 
 	map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* getAudioBuffersMap() {
-		return audioBuffersMap;
+		return Statics::audioBuffersMap;
 	}
 
 	map<string, shared_ptr<VoiceConnection>>* getVoiceConnectionMap() {
-		return voiceConnectionMap;
+		return Statics::voiceConnectionMap;
 	}
 
 	map<string, shared_ptr<SoundCloudAPI>>* getSoundCloudAPIMap() {
-		return soundCloudAPIMap;
+		return Statics::soundCloudAPIMap;
 	}
 
 	map<string, shared_ptr<YouTubeAPI>>* getYouTubeAPIMap() {
-		return youtubeAPIMap;
+		return Statics::youtubeAPIMap;
 	}
 
 	map<string, shared_ptr<SongAPI>>* getSongAPIMap() {
-		return songAPIMap;
+		return Statics::songAPIMap;
 	}
 
 	map<string, DiscordGuild*>* getDiscordGuildMap() {
-		return discordGuildMap;
+		return Statics::discordGuildMap;
 	}
 
 	class DiscordCoreClientBase {
-	public:		
+	public:
 
 		friend class DiscordCoreInternal::VoiceChannelWebSocketAgent;
 		friend class DiscordCoreInternal::WebSocketConnectionAgent;
@@ -69,7 +71,6 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		static DiscordCoreClientBase* thisPointer;
-		
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
 		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };

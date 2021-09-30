@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpRequestAgent::initialize(this->botToken, this->baseURL);
 			SoundCloudSong::initialize();
 			this->webSocketConnectionAgent = make_shared<DiscordCoreInternal::WebSocketConnectionAgent>(this->botToken, this->getGateWayUrl());
-			SongAPI::initialize(getDiscordGuildMap());
+			SongAPI::initialize();
 			DiscordCoreInternal::InteractionManagerAgent::initialize();
 			DiscordCoreInternal::GuildMemberManagerAgent::intialize();
 			DiscordCoreInternal::ReactionManagerAgent::initialize();
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 					discordGuild.getDataFromDB();
 					discordGuild.writeDataToDB();
 					guild = value;
-					SongAPI::discordGuildMap->insert(make_pair(discordGuild.data.guildId, &discordGuild));
+					getDiscordGuildMap()->insert(make_pair(discordGuild.data.guildId, &discordGuild));
 				}
 			}
 			if (!isItFound) {
@@ -695,7 +695,6 @@ namespace DiscordCoreAPI {
 			DatabaseManagerAgent::cleanup();
 			YouTubeAPI::cleanup();
 			SoundCloudAPI::cleanup();
-			SongAPI::cleanup();
 			this->webSocketConnectionAgent->terminate();
 			wait(this->webSocketConnectionAgent.get());
 		}

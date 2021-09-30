@@ -3697,13 +3697,13 @@ namespace DiscordCoreAPI {
 
         SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 
-        static vector<SoundCloudSong> searchForSong(string songQuery);
+        vector<SoundCloudSong> searchForSong(string songQuery);
 
     protected:
 
-        static const string baseSearchURL02;
-        static const string baseSearchURL;
-        static const string appVersion;
+        string baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
+        string baseSearchURL{ "https://soundcloud.com/search?q=" };
+        string appVersion{ "1631696495" };
         static string clientId;
 
         HttpClient httpClientForGettingSecondURL{ HttpClient() };
@@ -3714,7 +3714,7 @@ namespace DiscordCoreAPI {
 
         SoundCloudSong();
 
-        static string collectClientId(string searchQuery);
+        string collectClientId(string searchQuery);
 
         SoundCloudSong findSecondDownloadURL(SoundCloudSong newSong);
 
@@ -3782,13 +3782,13 @@ namespace DiscordCoreAPI {
 
         YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
-        static vector<YouTubeSong> searchForSong(string songQuery);
+        vector<YouTubeSong> searchForSong(string songQuery);
 
     protected:
 
-        static const string baseSearchURL;
-        static const string baseWatchURL;
-        static const string baseURL;
+        string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
+        string baseWatchURL{ "https://www.youtube.com/watch?v=" };
+        string baseURL{ "https://www.youtube.com" };
 
         HttpRequestHeaderCollection headerCollectionForFinalURLs{ nullptr };
         HttpClient httpClientForGettingFinalURLs{};
@@ -4073,12 +4073,6 @@ namespace DiscordCoreAPI {
         }
     };
 
-    const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
-    const string SoundCloudSong::baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
-    const string SoundCloudSong::baseSearchURL{ "https://soundcloud.com/search?q=" };
-    const string YouTubeSong::baseWatchURL{ "https://www.youtube.com/watch?v=" };
-    const string YouTubeSong::baseURL{ "https://www.youtube.com" };
-    const string SoundCloudSong::appVersion{ "1631696495" };
     string SoundCloudSong::clientId{ "" };
 };
 
