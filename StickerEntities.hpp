@@ -19,10 +19,6 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Sticker>;
 		friend class DiscordCoreInternal::StickerManagerAgent;
 		friend class DiscordCoreInternal::StickerManager;
-		friend struct GetGuildMemberRolesData;
-		friend struct OnGuildMemberUpdateData;
-		friend struct OnGuildMemberAddData;
-		friend class DiscordCoreClient;
 		friend class Guild;
 
 		Sticker() {};

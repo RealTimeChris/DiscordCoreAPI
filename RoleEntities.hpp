@@ -84,8 +84,8 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::RoleManager;
 		friend struct OnRoleDeletionData;
 		friend struct OnRoleCreationData;
-		friend class DiscordCoreClient;
 		friend struct OnRoleUpdateData;
+		friend class DiscordCoreClient;
 		friend class Guild;
 
 		Role() {};
