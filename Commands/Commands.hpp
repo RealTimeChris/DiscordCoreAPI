@@ -34,19 +34,6 @@ namespace DiscordCoreAPI {
 
 	};
 
-	CommandData::CommandData(InputEventData inputEventData) {
-		this->eventData = inputEventData;
-		if (inputEventData.interactionData.data.applicationCommanddata.name != "") {
-			this->commandName = inputEventData.interactionData.data.applicationCommanddata.name;
-		}
-		if (inputEventData.interactionData.data.messageInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData.data.messageInteractionData.targetId);
-		}
-		else if (inputEventData.interactionData.data.userInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData.data.userInteractionData.targetId);
-		}
-	}
-
 	string constructStringContent(CommandData commandData) {
 		string finalCommandString = commandData.commandName + " = ";
 		for (auto& value : commandData.optionsArgs) {

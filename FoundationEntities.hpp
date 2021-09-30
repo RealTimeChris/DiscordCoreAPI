@@ -4059,7 +4059,18 @@ namespace DiscordCoreAPI {
         InputEventData eventData{};
         string commandName{ "" };
 
-        CommandData(InputEventData inputEventData);
+        CommandData(InputEventData inputEventData) {
+            this->eventData = inputEventData;
+            if (inputEventData.interactionData.data.applicationCommanddata.name != "") {
+                this->commandName = inputEventData.interactionData.data.applicationCommanddata.name;
+            }
+            if (inputEventData.interactionData.data.messageInteractionData.targetId != "") {
+                this->optionsArgs.push_back(inputEventData.interactionData.data.messageInteractionData.targetId);
+            }
+            else if (inputEventData.interactionData.data.userInteractionData.targetId != "") {
+                this->optionsArgs.push_back(inputEventData.interactionData.data.userInteractionData.targetId);
+            }
+        }
     };
 
     const string YouTubeSong::baseSearchURL{ "https://www.youtube.com/results?search_query=" };
