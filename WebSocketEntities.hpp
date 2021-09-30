@@ -189,15 +189,27 @@ namespace DiscordCoreInternal {
 		}
 
 		void connect() {
-			this->webSocket = make_shared<MessageWebSocket>();
-			this->messageWriter = DataWriter(this->webSocket->OutputStream());
-			this->webSocket->Control().MessageType(SocketMessageType::Utf8);
-			this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
-			this->closedToken = this->webSocket->Closed({ this, &WebSocketConnectionAgent::onClosed });
-			this->messageReceivedToken = this->webSocket->MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
-			this->webSocket->ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->socketPath))).get();
-			send(this->reconnectionBuffer, true);
-			this->didWeDisconnect = false;
+			try {
+				this->webSocket = make_shared<MessageWebSocket>();
+				this->messageWriter = DataWriter(this->webSocket->OutputStream());
+				this->webSocket->Control().MessageType(SocketMessageType::Utf8);
+				this->messageWriter.UnicodeEncoding(UnicodeEncoding::Utf8);
+				this->closedToken = this->webSocket->Closed({ this, &WebSocketConnectionAgent::onClosed });
+				this->messageReceivedToken = this->webSocket->MessageReceived({ this, &WebSocketConnectionAgent::onMessageReceived });
+				this->webSocket->ConnectAsync(winrt::Windows::Foundation::Uri(to_hstring(this->socketPath))).get();
+				send(this->reconnectionBuffer, true);
+				this->didWeDisconnect = false;
+			}
+			catch (...) {
+				DiscordCoreAPI::rethrowException("WebSocketConnectionAgent::connect() Error: ");
+				if (this->maxReconnectTries > this->currentReconnectTries) {
+					this->currentReconnectTries += 1;
+					this->connect();
+				}
+				else {
+					this->terminate();
+				}
+			}
 		}
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args) {
