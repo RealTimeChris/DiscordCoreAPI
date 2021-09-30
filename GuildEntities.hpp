@@ -615,9 +615,11 @@ namespace DiscordCoreInternal {
 		task<void> insertGuildAsync(DiscordCoreAPI::Guild guild) {
 			apartment_context mainThread{};
 			co_await resume_foreground(*this->dispatcherQueue.get());
-			guild.initialize();
 			map<string, DiscordCoreAPI::Guild> cacheTemp{};
 			try_receive(this->cache, cacheTemp);
+			if (!cacheTemp.contains(guild.id)) {
+				guild.initialize();
+			}
 			cacheTemp.insert_or_assign(guild.id, guild);
 			send(this->cache, cacheTemp);
 			co_await mainThread;
