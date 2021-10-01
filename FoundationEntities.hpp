@@ -249,8 +249,75 @@ namespace DiscordCoreAPI {
 
     IBuffer loadFile(hstring filePath, hstring fileName) {
         auto folder = winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath).get();
-        winrt::Windows::Storage::StorageFile storageFile = folder.GetFileAsync(fileName).get();
-        return winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile).get();
+        winrt::Windows::Storage::IStorageItem storageFile = folder.TryGetItemAsync(fileName).get();
+        return winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile.as<winrt::Windows::Storage::StorageFile>()).get();
+    }
+
+    void rethrowException(string stackTrace, unbounded_buffer<exception>* sendBuffer = nullptr, bool rethrow = false) {
+        try {
+            auto currentException = current_exception();
+            if (currentException) {
+                std::rethrow_exception(currentException);
+            }
+        }
+        catch (const operation_timed_out& e) {
+            exception newException(to_string(to_hstring(e.what())).c_str(), 0);
+            if (sendBuffer != nullptr) {
+                send(sendBuffer, newException);
+            }
+            else {
+                cout << stackTrace << e.what() << "\n\n";
+            }
+            if (rethrow) {
+                rethrow_exception(current_exception());
+            }
+        }
+        catch (const exception& e) {
+            if (sendBuffer != nullptr) {
+                send(sendBuffer, e);
+            }
+            else {
+                cout << stackTrace << e.what() << "\n\n";
+            }
+            if (rethrow) {
+                rethrow_exception(current_exception());
+            }
+        }
+        catch (const hresult_error& e) {
+            exception newException(to_string(e.message()).c_str(), e.code());
+            if (sendBuffer != nullptr) {
+                send(sendBuffer, newException);
+            }
+            else {
+                cout << stackTrace << newException.what() << "\n\n";
+            }
+            if (rethrow) {
+                rethrow_exception(current_exception());
+            }
+        }
+    }
+
+    string getBotToken() {
+        winrt::Windows::Storage::StorageFolder folderPath = winrt::Windows::Storage::KnownFolders::DocumentsLibrary();
+        winrt::Windows::Storage::IStorageItem storageFile = folderPath.TryGetItemAsync(L"config.json").get();
+        if (storageFile != nullptr) {
+            winrt::Windows::Storage::StorageFile storageFile02{ storageFile.as<winrt::Windows::Storage::StorageFile>() };
+            auto resultFile = winrt::Windows::Storage::FileIO::ReadBufferAsync(storageFile02).get();
+            string newString{};
+            for (uint32_t x = 0; x < resultFile.Length(); x += 1) {
+                newString.push_back(resultFile.data()[x]);
+            }
+            try {
+                auto parsedJson = json::parse(newString);
+                if (parsedJson.contains("botToken")) {
+                    return parsedJson.at("botToken");
+                }
+            }
+            catch (...) {
+                rethrowException("getBotToken() Error: ");
+            }
+        }
+        return string();
     }
 
     string convertToLowerCase(string stringToConvert) {
@@ -304,50 +371,6 @@ namespace DiscordCoreAPI {
         }
         else {
             return false;
-        }
-    }
-
-    void rethrowException(string stackTrace, unbounded_buffer<exception>* sendBuffer = nullptr, bool rethrow = false) {
-        try {
-            auto currentException = current_exception();
-            if (currentException) {
-                std::rethrow_exception(currentException);
-            }
-        }
-        catch (const operation_timed_out& e) {
-            exception newException(to_string(to_hstring(e.what())).c_str(), 0);
-            if (sendBuffer != nullptr) {
-                send(sendBuffer, newException);
-            }
-            else {
-                cout << stackTrace << e.what() << "\n\n";
-            }
-            if (rethrow) {
-                rethrow_exception(current_exception());
-            }
-        }
-        catch (const exception& e) {
-            if (sendBuffer != nullptr) {
-                send(sendBuffer, e);
-            }
-            else {
-                cout << stackTrace << e.what() << "\n\n";
-            }
-            if (rethrow) {
-                rethrow_exception(current_exception());
-            }
-        }
-        catch (const hresult_error& e) {
-            exception newException(to_string(e.message()).c_str(), e.code());
-            if (sendBuffer != nullptr) {
-                send(sendBuffer, newException);
-            }
-            else {
-                cout << stackTrace << newException.what() << "\n\n";
-            }
-            if (rethrow) {
-                rethrow_exception(current_exception());
-            }
         }
     }
 
