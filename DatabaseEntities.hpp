@@ -429,6 +429,7 @@ namespace DiscordCoreAPI {
             this->getDataFromDB();
             this->data.guildCount = 0;
             this->data.userName = userNameNew;
+            this->writeDataToDB();
         }
 
         void writeDataToDB() {
@@ -473,6 +474,7 @@ namespace DiscordCoreAPI {
             this->getDataFromDB();
             this->data.guildName = guildData.name;
             this->data.memberCount = guildData.memberCount;
+            this->writeDataToDB();
         }
 
         void writeDataToDB() {
@@ -519,6 +521,7 @@ namespace DiscordCoreAPI {
             }
             this->data.userName = guildMemberData.user.userName;
             this->data.guildMemberMention = guildMemberData.userMention;
+            this->writeDataToDB();
         }
 
         void writeDataToDB() {

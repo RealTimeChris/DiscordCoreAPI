@@ -52,8 +52,8 @@ namespace DiscordCoreAPI {
 		void refreshInterfaces() {
 			DiscordGuild* discordGuildNew = this->discordGuild;
 			getSongAPIMap()->insert_or_assign(discordGuildNew->data.guildId, make_shared<SongAPI>(discordGuildNew));
-			YouTubeAPI::youtubeAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<YouTubeAPI>(discordGuildNew->data.guildId));
-			SoundCloudAPI::soundCloudAPIMap->insert_or_assign(discordGuildNew->data.guildId, make_shared<SoundCloudAPI>(discordGuildNew->data.guildId));
+			getYouTubeAPIMap()->insert_or_assign(discordGuildNew->data.guildId, make_shared<YouTubeAPI>(discordGuildNew->data.guildId));
+			getSoundCloudAPIMap()->insert_or_assign(discordGuildNew->data.guildId, make_shared<SoundCloudAPI>(discordGuildNew->data.guildId));
 		}
 
 		void savePlaylist() {
