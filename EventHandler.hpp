@@ -22,7 +22,7 @@ namespace DiscordCoreAPI {
             Channels::insertChannelAsync(dataPackage.channel).get();
             Guild guild = Guilds::getGuildAsync({ dataPackage.channel.guildId }).get();
             guild.channels.push_back(dataPackage.channel);
-            Guilds::insertGuildAsync(guild).get();            
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static void onChannelUpdate(OnChannelUpdateData dataPackage) {
@@ -63,6 +63,7 @@ namespace DiscordCoreAPI {
         static void onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
             GuildMembers::insertGuildMemberAsync(dataPackage.guildMember).get();
             Guild guild = Guilds::getGuildAsync({ dataPackage.guildMember.guildId }).get();
+            guild.members.push_back(dataPackage.guildMember);
             guild.memberCount += 1;
             Guilds::insertGuildAsync(guild).get();
         }
@@ -70,12 +71,25 @@ namespace DiscordCoreAPI {
         static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
             GuildMembers::removeGuildMemberAsync(dataPackage.guildId, dataPackage.user.id).get();
             Guild guild = Guilds::getGuildAsync({ dataPackage.guildId }).get();
+            for (int x = 0; x < guild.members.size(); x += 1) {
+                if (guild.members[x].user.id == dataPackage.user.id) {
+                    guild.members.erase(guild.members.begin() + x);
+                }
+            }
             guild.memberCount -= 1;
             Guilds::insertGuildAsync(guild).get();
         }
 
         static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
             GuildMembers::insertGuildMemberAsync(dataPackage.guildMemberNew).get();
+            Guild guild = Guilds::getGuildAsync({ dataPackage.guildMemberNew.guildId }).get();
+            for (int x = 0; x < guild.members.size(); x += 1) {
+                if (guild.members[x].user.id == dataPackage.guildMemberNew.user.id) {
+                    guild.members.erase(guild.members.begin() + x);
+                }
+            }
+            guild.members.push_back(dataPackage.guildMemberNew);
+            Guilds::insertGuildAsync(guild).get();
         }
 
         static void onRoleCreation(OnRoleCreationData dataPackage) {
