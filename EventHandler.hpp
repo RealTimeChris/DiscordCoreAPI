@@ -57,6 +57,15 @@ namespace DiscordCoreAPI {
         }
 
         static void onGuildDeletion(OnGuildDeletionData dataPackage) {
+            for (auto value : dataPackage.guild.members) {
+                GuildMembers::removeGuildMemberAsync(value.guildId, value.user.id);
+            }
+            for (auto value : dataPackage.guild.channels) {
+                Channels::removeChannelAsync(value.id);
+            }
+            for (auto value : dataPackage.guild.roles) {
+                Roles::removeRoleAsync(value.id);
+            }
             Guilds::removeGuildAsync(dataPackage.guild).get();
         }
 

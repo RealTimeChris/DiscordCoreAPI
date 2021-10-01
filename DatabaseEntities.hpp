@@ -70,11 +70,18 @@ namespace DiscordCoreAPI {
     class DatabaseManagerAgent : agent {
     public:
 
-        friend class DiscordCoreClient;
-
         DatabaseManagerAgent()
             : agent(*DatabaseManagerAgent::threadContext->scheduler->scheduler) {
             this->botUserId = DatabaseManagerAgent::botUserId;
+        }
+
+        static void initialize(string botUserIdNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
+            DatabaseManagerAgent::threadContext = threadContextNew;
+            DatabaseManagerAgent::botUserId = botUserIdNew;
+            DatabaseManagerAgent::instance = new mongocxx::instance();
+            DatabaseManagerAgent::client = new mongocxx::client{ mongocxx::uri{} };
+            DatabaseManagerAgent::dataBase = (*DatabaseManagerAgent::client)[DatabaseManagerAgent::botUserId];
+            DatabaseManagerAgent::collection = DatabaseManagerAgent::dataBase[DatabaseManagerAgent::botUserId];
         }
 
         DatabaseReturnValue submitWorkloadAndGetResults(DatabaseWorkload workload) {
@@ -107,6 +114,10 @@ namespace DiscordCoreAPI {
             }
         }
 
+        static void cleanup() {
+            DatabaseManagerAgent::threadContext->releaseContext();
+        }
+
     protected:
 
         static shared_ptr<DiscordCoreInternal::ThreadContext> threadContext;
@@ -120,19 +131,6 @@ namespace DiscordCoreAPI {
         unbounded_buffer<DiscordGuildData>discordGuildOutputBuffer{ nullptr };
         unbounded_buffer<DiscordUserData>discordUserOutputBuffer{ nullptr };
         unbounded_buffer<DatabaseWorkload> requestBuffer{ nullptr };
-
-        static void initialize(string botUserIdNew, shared_ptr<DiscordCoreInternal::ThreadContext> threadContextNew) {
-            DatabaseManagerAgent::threadContext = threadContextNew;
-            DatabaseManagerAgent::botUserId = botUserIdNew;
-            DatabaseManagerAgent::instance = new mongocxx::instance();
-            DatabaseManagerAgent::client = new mongocxx::client{ mongocxx::uri{} };
-            DatabaseManagerAgent::dataBase = (*DatabaseManagerAgent::client)[DatabaseManagerAgent::botUserId];
-            DatabaseManagerAgent::collection = DatabaseManagerAgent::dataBase[DatabaseManagerAgent::botUserId];
-        }
-
-        static void cleanup() {
-            DatabaseManagerAgent::threadContext->releaseContext();
-        }
 
         bsoncxx::builder::basic::document convertUserDataToDBDoc(DiscordUserData discordUserData) {
             bsoncxx::builder::basic::document buildDoc;

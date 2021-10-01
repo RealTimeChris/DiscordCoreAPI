@@ -892,11 +892,11 @@ namespace DiscordCoreAPI {
 			return DiscordCoreClient::thisPointer->messages->pinMessageAsync(dataPackage);
 		}
 
-		static task<Message> pinMessageAsync(ReplyMessageData dataPackage) {
+		static task<Message> replyAsync(ReplyMessageData dataPackage) {
 			return DiscordCoreClient::thisPointer->messages->replyAsync(dataPackage);
 		}
 
-		static task<Message> pinMessageAsync(SendDMData dataPackage) {
+		static task<Message> sendDMAsync(SendDMData dataPackage) {
 			return DiscordCoreClient::thisPointer->messages->sendDMAsync(dataPackage);
 		}
 	};
