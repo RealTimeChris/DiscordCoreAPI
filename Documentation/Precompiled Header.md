@@ -7,10 +7,6 @@
 #ifndef _PCH_
 #define _PCH_
 
-#ifndef __cplusplus
-#define __cplusplus
-#endif
-
 #ifndef WINRT_LEAN_AND_MEAN
 #define WINRT_LEAN_AND_MEAN
 #endif
@@ -46,7 +42,6 @@
 #include <winrt/Windows.Devices.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
-#include <experimental/generator>
 #include <winrt/Windows.Media.h>
 #include <winrt/Windows.Web.h>
 #include <concurrent_vector.h>
@@ -105,7 +100,6 @@ extern "C"
 #include <xiosbase>
 #include <stdio.h>
 #include <fstream>
-#include <winnt.h>
 #include <bitset>
 #include <ppl.h>
 #include <regex>
@@ -123,7 +117,6 @@ using namespace winrt::Windows::System;
 using namespace concurrency::details;
 using namespace Concurrency::details;
 using namespace winrt::Windows::Web;
-using namespace std::experimental;
 using namespace concurrency;
 using namespace nlohmann;
 using namespace winrt;
