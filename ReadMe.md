@@ -10,7 +10,7 @@
 
 ## [The Dynamic-Link-Library Distro](https://github.com/RealTimeChris/DiscordCoreAPI-DLL)
 
-## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/W8RemUnqMm)
+## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/4JNNXzbH9r)
 
 ## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
 
