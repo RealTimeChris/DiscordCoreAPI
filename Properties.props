@@ -4,6 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <ExternalIncludePath>C:\src\vcpkg\vcpkg\installed\x64-windows\lib\glib-2.0\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <OutDir>$(SolutionDir)DiscordCoreAPI\Library Files\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
