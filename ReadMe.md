@@ -6,7 +6,7 @@
  
 ## A bot library for Discord, written in C++ using WinRT and a few other useful libraries.
 
-## [Doxygen-generated Documentation](https://realtimechris.github.io/DiscordCoreAPI-Docs/)
+## [Doxygen-Generated Documentation](https://realtimechris.github.io/DiscordCoreAPI-Docs/)
 
 ## [The Dynamic-Link-Library Distro](https://github.com/RealTimeChris/DiscordCoreAPI-DLL)
 
