@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <ExternalIncludePath>C:\src\vcpkg\vcpkg\installed\x64-windows\lib\glib-2.0\include;$(ExternalIncludePath)</ExternalIncludePath>
-    <OutDir>$(SolutionDir)DiscordCoreAPI\Library Files\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)x64\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -20,6 +20,9 @@
       <Command>
       </Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)Library Files\$(Configuration)" "$(SolutionDir)$(Platform)\$(Configuration)\" /y /e</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
