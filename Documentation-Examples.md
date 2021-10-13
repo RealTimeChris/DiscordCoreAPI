@@ -1,6 +1,5 @@
 # Documentation / Examples
 ## Installation/Setup:
-- ### [Build Instructions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Build%20Instructions.md)
 - ### [Beginner's Notes](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Beginner's%20Notes.md)
 - ### [Login](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Login.md)
 - ### [Adding a Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Command.md)
