@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the ApplicationCommand related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the ApplicationCommand related Discord endpoints.
+	/// An interface class for the ApplicationCommand related Discord endpoints. \brief An interface class for the ApplicationCommand related Discord endpoints.
 	class DiscordCoreAPI_Dll ApplicationCommands {
 	public:
 		/// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Channel related endpoints. \brief An interface class DiscordCoreAPI_Dll for the Channel-related endpoints.
+	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	public:
 
@@ -147,7 +147,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints.
+	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	public:
 		friend class EventHandler;
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints.
+	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 		friend class EventHandler;
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints.
+	/// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Interactions {
 	public:
 
@@ -283,7 +283,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints;
+	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	public:
 
@@ -343,7 +343,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Reaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Reaction related Discord endpoints.
+	/// An interface class for the Reaction related Discord endpoints. \brief An interface class for the Reaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Reactions {
 	public:
 
@@ -378,7 +378,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Role related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Role related Discord endpoints.
+	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	public:
 		friend class EventHandler;
@@ -444,7 +444,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the User related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the User related Discord endpoints.
+	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	public:
 		friend class EventHandler;
