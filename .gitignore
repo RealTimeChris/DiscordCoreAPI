@@ -2759,3 +2759,4 @@ Library Files/Release/DiscordCoreAPI.exe
 Library Files/Debug/DiscordCoreAPI.exe
 
 x64/Debug/DiscordCoreAPI.Build.CppClean.log
+x64/Release/DiscordCoreAPI.tlog/unsuccessfulbuild
