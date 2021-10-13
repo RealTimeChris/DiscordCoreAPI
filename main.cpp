@@ -25,6 +25,7 @@ int main()
     functionVector.push_back(function01);
     DiscordCoreAPI::DiscordCoreClient::thisPointer->setup(botToken, "!", &functionVector);
     DiscordCoreAPI::CommandController::registerFunction(vector<string>{"test"}, new DiscordCoreAPI::Test);
+
     DiscordCoreAPI::DiscordCoreClient::thisPointer->runBot();
     return 0;
 };
