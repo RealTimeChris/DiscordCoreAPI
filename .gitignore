@@ -1,6 +1,5 @@
 
 x64/Release/vcpkg.applocal.log
-x64/Release/vc142.pdb
 x64/Release/pch.pch
 x64/Release/pch.obj
 x64/Release/main.obj
@@ -1373,15 +1372,8 @@ x64/Release/DiscordCoreAPI.log
 x64/Release/DiscordCoreAPI.ipdb
 x64/Release/DiscordCoreAPI.iobj
 x64/Release/DiscordCoreAPI.exe.recipe
-Library Files/Debug/DiscordCoreAPI-Dll-Build.dll
-Library Files/Debug/DiscordCoreAPI-Dll-Build.pdb
-Library Files/Release/DiscordCoreAPI-Dll-Build.dll
-Library Files/Release/DiscordCoreAPI-Dll-Build.pdb
 DiscordCoreAPI_TemporaryKey.pfx
 DiscordCoreAPI.vcxproj.user
 DiscordCoreAPI.vcxproj.filters
 DiscordCoreAPI.vcxproj
-Library Files/Debug/DiscordCoreAPI-Dll-Build.dll
-Library Files/Debug/DiscordCoreAPI-Dll-Build.pdb
-Library Files/Release/DiscordCoreAPI-Dll-Build.dll
-Library Files/Release/DiscordCoreAPI-Dll-Build.pdb
+x64/Release/vc142.pdb
