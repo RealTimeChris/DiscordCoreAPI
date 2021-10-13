@@ -44,6 +44,8 @@ namespace DiscordCoreAPI {
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
+		SongDecoder* songDecoder{ nullptr };
+		SongEncoder* songEncoder{ nullptr };
 		std::jthread* threadOfExecution{};
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
