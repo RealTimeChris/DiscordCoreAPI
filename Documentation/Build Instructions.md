@@ -5,5 +5,5 @@
 - ### Unzip the contents of this repo into the project folder of the solution.
 - ### Install the Properties.props file into the project/solution.
 - ### Disable "Using Precompiled Headers".
-- ### Set up a main.cpp like [this one](https://github.com/RealTimeChris/DiscordCoreAPI-DLL/blob/main/main.cpp).
+- ### Set up a main.cpp like [this one](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Main.cpp).
 - ### BUILD!
