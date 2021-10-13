@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <ExternalIncludePath>C:\src\vcpkg\vcpkg\installed\x64-windows\lib\glib-2.0\include;$(ExternalIncludePath)</ExternalIncludePath>
-    <OutDir>$(SolutionDir)x64\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -17,11 +17,27 @@
       <StackReserveSize>8388608</StackReserveSize>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Library Files\$(Configuration)" "$(SolutionDir)$(Platform)\$(Configuration)\" /y /e</Command>
+      <Command>
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.pdb" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\libsodium.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\opus.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\avcodec-58.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\swresample-3.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\avformat-58.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\avutil-56.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.exp" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.lib" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\glib-2.0-0.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\libcurl.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\libcurl-d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\zlibd1.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\pcred.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\intl-8.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+		  xcopy "$(ProjectDir)Library Files\$(Configuration)\iconv-2.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
+	  </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
