@@ -8,36 +8,21 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\DiscordCoreAPI\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\DiscordCoreAPI-Dll-Build.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>8388608</StackReserveSize>
     </Link>
     <PreBuildEvent>
+      <Command>del "$(SolutionDir)$(Platform)\$(Configuration)\*.*" /q
+		  xcopy "..\..\DiscordCoreAPI\Library Files\$(Configuration)" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.pdb" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\libsodium.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\opus.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\avcodec-58.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\swresample-3.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\avformat-58.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\avutil-56.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.exp" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.lib" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\glib-2.0-0.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\libcurl.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\libcurl-d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\zlibd1.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\pcred.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\intl-8.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-		  xcopy "$(ProjectDir)Library Files\$(Configuration)\iconv-2.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /y /e
-	  </Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
