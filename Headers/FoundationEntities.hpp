@@ -3975,7 +3975,7 @@ namespace DiscordCoreAPI {
     /// \param originalEvent The original InputEventData structure.
     /// \param currentPageIndex The current page within the stack of pages to recurse through.
     /// \param messageEmbeds A vector full of EmbedData to recurse through.
-    /// \param deleteAfter A bool determing whether or not the message will be deleted upon timeout/exiting.
+    /// \param deleteAfter A bool determining whether or not the message will be deleted upon timeout/exiting.
     /// \param waitForMaxMs Maximum number of milliseconds to wait for a button response.
     /// \returns A RecurseThroughMessagePageData structure.
     DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned int waitForMaxMs);
