@@ -169,7 +169,7 @@ namespace DiscordCoreInternal {
 
 		vector<DiscordCoreAPI::Role> getGuildMemberRoles(DiscordCoreAPI::GetGuildMemberRolesData dataPackage);
 
-		DiscordCoreAPI::Role getRole(DiscordCoreAPI::GetRoleData dataPackage);
+		task<DiscordCoreAPI::Role> getRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
 
 		task<DiscordCoreAPI::Role> getCachedRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
 

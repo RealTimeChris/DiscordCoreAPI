@@ -401,7 +401,7 @@ namespace DiscordCoreAPI {
 		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
 		/// \returns A Role.
-		static Role getRole(GetRoleData dataPackage);
+		static task<Role> getRoleAsync(GetRoleData dataPackage);
 
 		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
 		/// \param dataPackage A GetGuildMemberRolesData structure.
