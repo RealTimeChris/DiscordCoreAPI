@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ApplicationCommands {
 	public:
 		/// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.
-		/// \returns A task containing a vector of ApplicationCommand.
+		/// \returns A task containing a vector of ApplicationCommands.
 		static task<vector<ApplicationCommand>> getGlobalApplicationCommandsAsync();
 
 		/// Create a global ApplicationCommand for this bot. \brief Create a global ApplicationCommand for this bot.
