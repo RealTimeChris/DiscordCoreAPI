@@ -121,12 +121,12 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a Channel.
 		static task<Channel> getChannelAsync(GetChannelData dataPackage);
 
-		/// Edit the given permission overwrites for a given User or Role. \brief Edit the given permission overwrites for a given User or Role.
+		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A EditChannelPermissionOverwritesData structure.
 		/// \returns A task containing void.
 		static task<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
-		/// Delete the given permission overwrites for a given User or Role. \brief Delete the given permission overwrites for a given User or Role.
+		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure.
 		/// \returns A task containing void.
 		static task<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);

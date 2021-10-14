@@ -8,8 +8,9 @@
 #ifndef _INDEX_INITIAL_
 #define _INDEX_INITIAL_
 
-#ifdef DISCORDCOREAPIDLLBUILD_EXPORTS
+#ifdef DISCORDCOREAPIDLL2_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
+#pragma comment(lib, "libcurl")
 #else
 #define DiscordCoreAPI_Dll __declspec(dllimport)
 #endif
@@ -20,6 +21,10 @@
 
 #ifndef _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING 
 #define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING 
+#endif
+
+#ifndef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
+#define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #endif
 
 #ifdef _DEBUG
@@ -93,19 +98,17 @@ extern "C"
 #include <pplinterface.h>
 #include <ogg/os_types.h>
 #include <winrt/base.h>
-#include <curl/curl.h>
 #include <opus/opus.h>
 #include <inttypes.h>
 #include <pplawait.h>
 #include <concrtrm.h>
 #include <ppltasks.h>
 #include <coroutine>
-#include <atltime.h>
 #include <iostream>
 #include <sodium.h>
 #include <intrin.h>
-#include <concrt.h>
 #include <agents.h>
+#include <concrt.h>
 #include <unknwn.h>
 #include <xiosbase>
 #include <stdio.h>
@@ -114,6 +117,10 @@ extern "C"
 #include <ppl.h>
 #include <regex>
 #include <ios>
+#define CURL_STATICLIB
+#include <curl\curl.h>
+#include <string>
+#include <atltime.h>
 
 using namespace winrt::Windows::Networking::Sockets;
 using namespace winrt::Windows::Web::Http::Headers;

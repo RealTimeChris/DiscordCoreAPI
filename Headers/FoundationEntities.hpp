@@ -1546,7 +1546,7 @@ namespace DiscordCoreAPI {
         }
 
         bool mentionable{ false }; ///< Is ths Role mentionable?
-        string permissions{ "" }; ///< The Role's base Guild permissions.
+        string permissions{ "" }; ///< The Role's base Guild Permissions.
         __int32 position{ 0 }; ///< Its position amongst the rest of the Guild's roles.
         bool managed{ false }; ///< is it a managed Role?
         RoleTagsData tags{}; ///< Role tags for the Role.
@@ -1880,13 +1880,13 @@ namespace DiscordCoreAPI {
         string guildId{ "" };///< Id of the Guild that the referenced Message was sent in.
     };
     
-    /// Edit Channel permission overwrites type. \brief Edit Channel permission overwrites type.
+    /// Edit Channel Permission overwrites type. \brief Edit Channel Permission overwrites type.
     enum class EditChannelPermissionOverwritesType {
         Role = 0,///<Role
         User = 1///<User
     };
 
-    /// A permission overwrite, for a given Channel. \brief A permission overwrite, for a given Channel.
+    /// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
     struct DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
 
         operator DiscordCoreInternal::OverWriteData() {
@@ -1901,8 +1901,8 @@ namespace DiscordCoreAPI {
 
         EditChannelPermissionOverwritesType type{};   ///< Role or User type.
         string channelId{ "" };///< Channel id for which Channel this overwrite be__int64s to.
-        string allow{ "" };///< Collection of permissions to allow.
-        string deny{ "" };///< Collection of permissions to deny.
+        string allow{ "" };///< Collection of Permissions to allow.
+        string deny{ "" };///< Collection of Permissions to deny.
     };
 
     /// A type of Channel. \brief A type of Channel.
@@ -2021,13 +2021,13 @@ namespace DiscordCoreAPI {
 
         VoiceStateData voiceData{};///< The voice state data for the GuildMember.
         string premiumSince{ "" };///< If applicable, when they first boosted the server.
-        string permissions{ "" };///< Their base-level permissions in the Guild.
+        string permissions{ "" };///< Their base-level Permissions in the Guild.
         string userMention{ "" };///< What to enter to get them mentioned in a Message.
         vector<string> roles{}; ///< The Guild roles that they have.
         string joinedAt{ "" };///< When they joined the Guild.
         bool pending{ false };///< Are they waiting at the entry screen?
         string guildId{ "" };///< The current Guild's id.
-        bool deaf{ false };///< Are they server deafned?
+        bool deaf{ false };///< Are they server deafened?
         bool mute{ false };///< Are they server muted?
         string nick{ "" };///< Their nick/display name.
         UserData user{};///< User data for the current GuildMember.
@@ -2047,7 +2047,7 @@ namespace DiscordCoreAPI {
         NUMBER = 10///< Number
     };
 
-    /// ApplicationCommand permission type. \brief ApplicationCommand permission type.
+    /// ApplicationCommand Permission type. \brief ApplicationCommand Permission type.
     enum class ApplicationCommandPermissionType {
         Role = 1,///< Role type.
         User = 2///< User type.
@@ -2062,13 +2062,13 @@ namespace DiscordCoreAPI {
             newData.type = (DiscordCoreInternal::ApplicationCommandPermissionType)this->type;
             return newData;
         }
-        ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role }; ///< The type of permission.
-        bool permission{ false }; ///< Whether the permission is active or not.
+        ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role }; ///< The type of Permission.
+        bool permission{ false }; ///< Whether the Permission is active or not.
     };
 
-    /// Represents the permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the permissions for accessing an ApplicationCommand from within a Guild.
+    /// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
     struct DiscordCoreAPI_Dll GuildApplicationCommandPermissionsData : public DiscordEntity {
-        vector<ApplicationCommandPermissionData> permissions{};///< The permissions.
+        vector<ApplicationCommandPermissionData> permissions{};///< The Permissions.
         string applicationId{ "" };///< The application's id.
         string guildId{ "" };///< The Guild's id.
     };
@@ -2578,7 +2578,7 @@ namespace DiscordCoreAPI {
         vector<string> features{};  ///< List of Guild features.
         bool unavailable{ false };  ///< Is the Guild currently available to the bot?
         PremiumTier premiumTier{};  ///< What is the premium tier?
-        string permissions{ "" };   ///< Current permissions for the bot in the Guild.
+        string permissions{ "" };   ///< Current Permissions for the bot in the Guild.
         vector<RoleData> roles{};   ///< Array of Guild roles.
         string description{ "" };   ///< Description of the Guild.
         __int32 memberCount{ 0 };   ///< Member count.
@@ -2926,7 +2926,7 @@ namespace DiscordCoreAPI {
     /// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
     struct DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
         vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
-        bool defaultPermission{ false };///< Whether or not the default permission in the Guild is to have access to this command or not.
+        bool defaultPermission{ false };///< Whether or not the default Permission in the Guild is to have access to this command or not.
         ApplicationCommandType type{};///< The type of ApplicationCommand.
         string applicationId{ "" };///< The current application id.
         string description{ "" };///< A description of the current ApplicationCommand.
@@ -3911,48 +3911,48 @@ namespace DiscordCoreAPI {
     * \addtogroup utilities
     * @{
     */
-    /// PermissionsConverter class, for manipulating permission values. \brief PermissionsConverter class, for manipulating permission values.
+    /// PermissionsConverter class, for manipulating Permission values. \brief PermissionsConverter class, for manipulating Permission values.
     class DiscordCoreAPI_Dll PermissionsConverter {
     public:
 
-        /// Checks a given string for a particular permission's presence. \brief Checks a given string for a particular permission's presence.
-        /// \param permission Which permission to check for.
-        /// \param permissionString The string within which to check for the permission.
-        /// \returns A bool answering about whether the permission is present.
+        /// Checks a given string for a particular Permission's presence. \brief Checks a given string for a particular Permission's presence.
+        /// \param permission Which Permission to check for.
+        /// \param permissionString The string within which to check for the Permission.
+        /// \returns A bool answering about whether the Permission is present.
         static bool checkForPresence(Permissions permission, string permissionString);
 
-        /// Adds one or more permissions to a string value. \brief Adds one or more permissions to a string value.
-        /// \param originalPermissionString The original permission string to modify.
-        /// \param permissionsToAdd A vector containing the permissions you wish to add.
-        /// \returns A string containing the new permissions value.
+        /// Adds one or more Permissions to a string value. \brief Adds one or more Permissions to a string value.
+        /// \param originalPermissionString The original Permission string to modify.
+        /// \param permissionsToAdd A vector containing the Permissions you wish to add.
+        /// \returns A string containing the new Permissions value.
         static string addPermissionsToString(string originalPermissionString, vector<Permissions> permissionsToAdd);
 
-        /// Removes one or more permissions from a string value. \brief Removes one or more permissions from a string value.
-        /// \param originalPermissionString The original permission string to modify.
-        /// \param permissionsToRemove A vector containing the permissions you wish to remove.
-        /// \returns A string containing the new permissions value.
+        /// Removes one or more Permissions from a string value. \brief Removes one or more Permissions from a string value.
+        /// \param originalPermissionString The original Permission string to modify.
+        /// \param permissionsToRemove A vector containing the Permissions you wish to remove.
+        /// \returns A string containing the new Permissions value.
         static string removePermissionsFromString(string originalPermissionString, vector<Permissions> permissionsToRemove);
 
-        /// Displays the currently present permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present permissions in a string, and returns a vector with each of them stored in string format.
-        /// \param permissionString The string to check for permissions.
-        /// \returns A vector full of strings of the permissions that are in the input string's value.
+        /// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
+        /// \param permissionString The string to check for Permissions.
+        /// \returns A vector full of strings of the Permissions that are in the input string's value.
         static vector<string> displayPermissions(string permissionString);
 
-        /// Returns a string containing ALL of the possible permissions. \brief Returns a string containing ALL of the possible permissions.
-        /// \returns A string containing all of the possible permissions.
+        /// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
+        /// \returns A string containing all of the possible Permissions.
         static string getAllPermissions();
 
-        /// Returns a string containing all of a given user's permissions for a given channel. \brief Returns a string containing all of a given user's permissions for a given channel.
-        /// \param guildMember The GuildMember who's permissions to analyze.
-        /// \param channel The channel withint which to check for permissions.
-        /// \returns A string containing the final permission's value for a given channel.
+        /// Returns a string containing all of a given user's Permissions for a given channel. \brief Returns a string containing all of a given user's Permissions for a given channel.
+        /// \param guildMember The GuildMember who's Permissions to analyze.
+        /// \param channel The channel withint which to check for Permissions.
+        /// \returns A string containing the final Permission's value for a given channel.
         static string getAllOfMyPerrmissions(GuildMemberData guildMember, ChannelData channel);
 
-        /// Checks for a given permission in a chosen channel, for a specific user. \brief Checks for a given permission in a chosen channel, for a specific user.
-        /// \param guildMember The GuildMember who to check the permissions of.
-        /// \param channel The Channel within which to check for the permission's presence.
+        /// Checks for a given Permission in a chosen channel, for a specific user. \brief Checks for a given Permission in a chosen channel, for a specific user.
+        /// \param guildMember The GuildMember who to check the Permissions of.
+        /// \param channel The Channel within which to check for the Permission's presence.
         /// \param permission A Permission to check the current Channel for.
-        /// \returns A bool suggesting the presence of the chosen permission.
+        /// \returns A bool suggesting the presence of the chosen Permission.
         static bool checkForPermission(GuildMemberData guildMember, ChannelData channel, Permissions permission);
 
     protected:

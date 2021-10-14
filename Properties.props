@@ -14,16 +14,43 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\DiscordCoreAPI-Dll-Build.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>8388608</StackReserveSize>
+      <StackReserveSize>2097152</StackReserveSize>
     </Link>
     <PreBuildEvent>
-      <Command>del "$(SolutionDir)$(Platform)\$(Configuration)\*.*" /q
-		  xcopy "..\..\DiscordCoreAPI\Library Files\$(Configuration)" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y</Command>
+      <Command>
+		  del "$(SolutionDir)$(Platform)\$(Configuration)\*.*" /q
+		  xcopy "..\..\DiscordCoreAPI\Library Files\$(Configuration)" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+	  </Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>
-      </Command>
+		  if $(ConfigurationName) == Release (
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\concrt140.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  cd $(SolutionDir)$(Platform)\$(Configuration)
+		  Ren "concrt140.dll" "concrt140_app.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\msvcp140.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "msvcp140.dll" "msvcp140_app.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\msvcp140_atomic_wait.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "msvcp140_atomic_wait.dll" "msvcp140_atomic_wait_app.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\vcruntime140.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "vcruntime140.dll" "vcruntime140_app.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\vcruntime140_1.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "vcruntime140_1.dll" "vcruntime140_1_app.dll"
+		  )
+		  if $(ConfigurationName) == Debug (
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\debug_nonredist\x64\Microsoft.VC142.DebugCRT\concrt140d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  cd $(SolutionDir)$(Platform)\$(Configuration)
+		  Ren "concrt140d.dll" "concrt140_appd.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\debug_nonredist\x64\Microsoft.VC142.DebugCRT\msvcp140d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "msvcp140d.dll" "msvcp140_appd.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\debug_nonredist\x64\Microsoft.VC142.DebugCRT\msvcp140_atomic_waitd.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "msvcp140_atomic_waitd.dll" "msvcp140_atomic_wait_appd.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\debug_nonredist\x64\Microsoft.VC142.DebugCRT\vcruntime140d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "vcruntime140d.dll" "vcruntime140_appd.dll"
+		  xcopy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\debug_nonredist\x64\Microsoft.VC142.DebugCRT\vcruntime140_1d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  Ren "vcruntime140_1d.dll" "vcruntime140_1_appd.dll"
+		  )</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup /> 
+  <ItemGroup />
 </Project>

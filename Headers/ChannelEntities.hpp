@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
-	/// For editing the permission overwrites of a given Channel, for a given role or User. \brief For editing the permission overwrites of a given Channel, for a given role or User.
+	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
 		EditChannelPermissionOverwritesType type{}; ///< The type of overwrite.
 		string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
@@ -32,9 +32,9 @@ namespace DiscordCoreAPI {
 		string channelId{ "" }; ///< The id of the Channel to acquire.
 	};
 
-	/// For deleting the permission overwrites of a given Channel for a given role or User. \brief For deleting the permission overwrites of a given Channel for a given role or User.
+	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		string roleOrUserId{ "" }; ///< The role or User id for whom to delete the permission overwrites.
+		string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
 		string channelId{ "" }; ///< The id of the Channel to modify permissions for..
 	};
 
