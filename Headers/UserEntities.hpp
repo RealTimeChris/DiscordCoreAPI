@@ -64,6 +64,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
 	};
 
+	/// A type of User, to represent the Bot and a few of its associated endpoints. \brief A type of User, to represent the Bot and a few of its associated endpoints.
 	class DiscordCoreAPI_Dll BotUser : public UserData {
 	public:
 
@@ -71,8 +72,12 @@ namespace DiscordCoreAPI {
 
 		BotUser(UserData dataPackage, shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> pBaseWebSocketAgentNew);
 
+		/// Updates the bot's current voice-status. Joins/leaves a channel, and/or self deanens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a channel, and/or self deanens/mutes.
+		/// \returns void.
 		void updateVoiceStatus(UpdateVoiceStateData datdataPackageaPackage);
 
+		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
+		/// \returns void.
 		void updatePresence(UpdatePresenceData dataPackage);
 
 	protected:

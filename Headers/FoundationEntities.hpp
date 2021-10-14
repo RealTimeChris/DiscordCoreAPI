@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
     class Users;
     class Guild;
 
-    DiscordCoreAPI_Dll bool nanoSleep(LONGLONG ns);
+    DiscordCoreAPI_Dll bool nanoSleep(__int64 ns);
 
     DiscordCoreAPI_Dll void spinLock(__int64 timeInNsToSpinLockFor);
 
@@ -168,13 +168,13 @@ namespace DiscordCoreAPI {
                 dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
             }
             struct DiscordCoreAPI_Dll tm newtime;
-            __time64_t long_time;
+            __time64_t __int64_time;
             errno_t err;
 
             // Get time as 64-bit integer.
-            _time64(&long_time);
+            _time64(&__int64_time);
             // Convert to local time.
-            err = _localtime64_s(&newtime, &long_time);
+            err = _localtime64_s(&newtime, &__int64_time);
             if (err)
             {
                 printf("Invalid argument to _localtime64_s.");
@@ -1900,7 +1900,7 @@ namespace DiscordCoreAPI {
         }
 
         EditChannelPermissionOverwritesType type{};   ///< Role or User type.
-        string channelId{ "" };///< Channel id for which Channel this overwrite belongs to.
+        string channelId{ "" };///< Channel id for which Channel this overwrite be__int64s to.
         string allow{ "" };///< Collection of permissions to allow.
         string deny{ "" };///< Collection of permissions to deny.
     };
@@ -1933,7 +1933,7 @@ namespace DiscordCoreAPI {
             return newData;
         };
 
-        __int32 autoArchiveDuration{ 0 }; ///< How long before archiving this thread.
+        __int32 autoArchiveDuration{ 0 }; ///< How __int64 before archiving this thread.
         string archiveTimestamp{ "" }; ///< (Where applicable) the time at which this thread was archived.
         string archiverId{ "" }; ///< The id of the individual who archived this thread.
         bool archived{ false }; ///< Whether or not this thread is currently archived.
@@ -2234,7 +2234,7 @@ namespace DiscordCoreAPI {
 
     /// Integration data. \brief Integration data.
     struct DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
-         __int32 expireGracePeriod{ 0 };///< How long before the integration expires.
+         __int32 expireGracePeriod{ 0 };///< How __int64 before the integration expires.
          __int32 subscriberCount{ 0 };///< Number of current subscribers.
         ApplicationData application{};///<Application data.
         bool enableEmoticons{ true };///<Emoticons enabled?

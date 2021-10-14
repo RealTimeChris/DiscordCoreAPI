@@ -67,9 +67,9 @@ namespace DiscordCoreAPI {
 		static DiscordCoreClient* thisPointer;
 		static BotUser currentUser;
 		static string commandPrefix;
+
 		shared_ptr<EventManager> eventManager{ nullptr };
 
-			
 		/// Sets up some resources for the library. \brief Sets up some resources for the library.
 		/// \param botTokenNew Your bot token. 
 		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
@@ -116,6 +116,14 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient();
 	};
 	/**@}*/
+	/**
+	* \addtogroup utilities
+	* @{
+	*/
+
+	/// Returns the bot's User data. \brief Returns the bot's User data.
+	/// \returns A BotUser which is a type of User.
 	DiscordCoreAPI_Dll BotUser getBotUser();
+	/**@}*/
 }
 #endif
