@@ -72,6 +72,8 @@ else {
 ## Dependencies
 - [WinRT](https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/intro-to-using-cpp-with-winrt)
 
+- [Visual C++ Redistributable](https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-160)
+
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
  
 - [Nlohmann Json](https://github.com/nlohmann/json)
