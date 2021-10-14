@@ -15,7 +15,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-Dll-Build.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>4194304</StackReserveSize>
     </Link>
     <PreBuildEvent>
