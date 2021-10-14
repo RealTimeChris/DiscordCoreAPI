@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a Channel.
 		static task<Channel> getCachedChannelAsync(GetChannelData dataPackage);
 
-		/// Collects a Channel from the Discord server. \brief Collects a Channel from the Discord server.
+		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A task containing a Channel.
 		static task<Channel> getChannelAsync(GetChannelData dataPackage);
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a GuildMember.
 		static task<GuildMember> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
 
-		/// Collects a GuildMember from the Discord server. \brief Collects a GuildMember from the Discord's server.
+		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
 		/// \returns A task containing a GuildMember.
 		static task<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage);
@@ -287,7 +287,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Messages {
 	public:
 
-		/// Collects a Message from the Discord server. \brief Collects a Message from the Discord server.
+		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
 		/// \param dataPackage A GetMessageData structure.
 		/// \returns A task containing a Message.
 		static task<Message> getMessageAsync(GetMessageData dataPackage);
@@ -312,12 +312,12 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a Message.
 		static task<Message> editMessageAsync(EditMessageData dataPackage);
 
-		/// Collects a collection of Message from the Discord server. \brief Collects a collection of Message from the Discord server.
+		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
 		/// \param dataPackage A GetMessagesData structure.
 		/// \returns A task containing an optional vector of Message.
 		static task<std::optional<vector<Message>>> getMessagesAsync(GetMessagesData dataPackage);
 
-		/// Collects a collection of pinned Messages from the Discord server. \brief Collects a collection of pinned Messages from the Discord server.
+		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
 		/// \returns A task containing a vector of Message.
 		static task<vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
@@ -398,7 +398,7 @@ namespace DiscordCoreAPI {
 		/// \returns A Role.
 		static Role createRole(CreateRoleData dataPackage);
 
-		/// Collects a Role from the Discord server. \brief Collects a Role from the Discord server.
+		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
 		/// \returns A Role.
 		static Role getRole(GetRoleData dataPackage);
@@ -454,7 +454,7 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a User.
 		 static task<User> getCachedUserAsync(GetUserData dataPackage);
 
-		 /// Collects a given User from the Discord server. \brief Collects a given User from the Discord server
+		 /// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A task containing a User.
 		 static task<User> getUserAsync(GetUserData dataPackage);

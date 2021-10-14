@@ -3764,6 +3764,10 @@ namespace DiscordCoreAPI {
 
     /**@}*/
 
+    /**
+    * \addtogroup foundation_entities
+    * @{
+    */
     /// Permissions. \brief Permissions.
     enum class Permissions :__int64 {
         CREATE_INSTANT_INVITE = (1 << 0),///< Create Instant Invite
@@ -3804,6 +3808,7 @@ namespace DiscordCoreAPI {
         USE_PRIVATE_THREADS = (1ull << 35),///< Use Private Threads
         USE_EXTERNAL_STICKERS = (1ull << 37)///< Use External Stickers
     };
+    /**@}*/
 
     class DiscordCoreAPI_Dll YouTubeSong : public Song {
     public:
