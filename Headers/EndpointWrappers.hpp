@@ -454,7 +454,7 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a User.
 		 static task<User> getCachedUserAsync(GetUserData dataPackage);
 
-		 /// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
+		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A task containing a User.
 		 static task<User> getUserAsync(GetUserData dataPackage);

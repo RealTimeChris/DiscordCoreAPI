@@ -3757,7 +3757,7 @@ namespace DiscordCoreAPI {
 
     /// Song completion event data. \brief Song completion event data.
     struct DiscordCoreAPI_Dll SongCompletionEventData {
-        VoiceConnection* voiceConnection; ///< A pointer to the current VoiceConnection.
+        VoiceConnection* voiceConnection{}; ///< A pointer to the current VoiceConnection.
         bool isThisAReplay{ false };///< Is this a replay? (Did a track recently fail to play?)
         Song previousSong{};///< The previously played Song.
     };
@@ -3965,9 +3965,9 @@ namespace DiscordCoreAPI {
 
     /// Returns from an execution of recurseThroughMessagePages(). \brief Returns from an execution of recurseThroughMessagePages().
     struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData {
-        InputEventData inputEventData;///< The latest InputEventData that was returned by updating the message.
-        unsigned int currentPageIndex;//< The current page index, within the number of submitted pages to turn through.
-        string buttonId;///< The id of the last button that was pressed.
+        InputEventData inputEventData{};///< The latest InputEventData that was returned by updating the message.
+        unsigned int currentPageIndex{};//< The current page index, within the number of submitted pages to turn through.
+        string buttonId{};///< The id of the last button that was pressed.
     };
 
     /// Recurses through a succession of messages. \brief Recurses through a succession of messages.
