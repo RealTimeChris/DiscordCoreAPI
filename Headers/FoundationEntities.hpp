@@ -2645,6 +2645,7 @@ namespace DiscordCoreAPI {
                     return value;
                 }
             }
+            return AuditLogEntryData();
         }
         auto getAuditLogData(AuditLogEvent auditLogType, string userIdOfTarget) {
             for (auto value : this->auditLogEntries) {
@@ -2652,6 +2653,7 @@ namespace DiscordCoreAPI {
                     return value;
                 }
             }
+            return AuditLogEntryData();
         }
         vector<AuditLogEntryData> auditLogEntries{};///< Array of audit log entries.
         vector<IntegrationData> integrations{};///< Integration data.

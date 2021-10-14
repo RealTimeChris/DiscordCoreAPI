@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };
 		Playlist playlist{};
 
-		void refreshInterfaces(string guildId);
+		static void refreshInterfaces(string guildId);
 
 		bool sendNextSong();
 
