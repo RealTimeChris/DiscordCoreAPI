@@ -104,6 +104,7 @@ extern "C"
 #include <concrtrm.h>
 #include <ppltasks.h>
 #include <coroutine>
+#include <winbase.h>
 #include <iostream>
 #include <sodium.h>
 #include <intrin.h>
