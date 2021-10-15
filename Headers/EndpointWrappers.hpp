@@ -396,7 +396,7 @@ namespace DiscordCoreAPI {
 		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
 		/// \param dataPackage A CreateRoleData structure.
 		/// \returns A Role.
-		static Role createRole(CreateRoleData dataPackage);
+		static task<Role> createRoleAsync(CreateRoleData dataPackage);
 
 		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
@@ -406,7 +406,7 @@ namespace DiscordCoreAPI {
 		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
 		/// \param dataPackage A GetGuildMemberRolesData structure.
 		/// \returns A vector of Roles.
-		static vector<Role> getGuildMemberRoles(GetGuildMemberRolesData dataPackage);
+		static task<vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// Collects the Roles that a Guild has. \brief Collects the Roles that a Guild has.
 		/// \param dataPackage A GetGuildRolesData structure.
@@ -431,7 +431,7 @@ namespace DiscordCoreAPI {
 		/// Updates a Role's positions. \brief Updates a Role's positions.
 		/// \param dataPackage A UpdateRolePositionData structure.
 		/// \returns A vector containing Roles.
-		static vector<Role> updateRolePositions(UpdateRolePositionData dataPackage);
+		static task<vector<Role>> updateRolePositionsAsync(UpdateRolePositionData dataPackage);
 
 	protected:
 		static task<void> insertRoleAsync(Role dataPackage);

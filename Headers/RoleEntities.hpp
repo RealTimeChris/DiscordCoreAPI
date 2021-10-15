@@ -167,15 +167,15 @@ namespace DiscordCoreInternal {
 
 		task<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 
-		vector<DiscordCoreAPI::Role> getGuildMemberRoles(DiscordCoreAPI::GetGuildMemberRolesData dataPackage);
+		task<vector<DiscordCoreAPI::Role>> getGuildMemberRolesAsync(DiscordCoreAPI::GetGuildMemberRolesData dataPackage);
 
 		task<DiscordCoreAPI::Role> getRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
 
 		task<DiscordCoreAPI::Role> getCachedRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
 
-		DiscordCoreAPI::Role createRole(DiscordCoreAPI::CreateRoleData dataPackage);
+		task<DiscordCoreAPI::Role> createRoleAsync(DiscordCoreAPI::CreateRoleData dataPackage);
 
-		vector<DiscordCoreAPI::Role> updateRolePositions(DiscordCoreAPI::UpdateRolePositionData dataPackage);
+		task<vector<DiscordCoreAPI::Role>> updateRolePositionsAsync(DiscordCoreAPI::UpdateRolePositionData dataPackage);
 		
 		task<DiscordCoreAPI::Role> updateRoleAsync(DiscordCoreAPI::UpdateRoleData dataPackage);
 
