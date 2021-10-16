@@ -152,6 +152,11 @@ namespace DiscordCoreAPI {
 	public:
 		friend class EventHandler;
 
+		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
+		/// \param dataPackage A GetAuditLogData structure.
+		/// \returns A task containing AuditLogData.
+		static task<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
+
 		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A task containing a Guild.
@@ -161,11 +166,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A task containing a Guild.
 		static task<Guild> getGuildAsync(GetGuildData dataPackage);
-
-		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
-		/// \param dataPackage A GetAuditLogData structure.
-		/// \returns A task containing AuditLogData.
-		static task<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
 
 		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.

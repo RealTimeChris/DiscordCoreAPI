@@ -132,6 +132,8 @@ namespace DiscordCoreInternal {
 
 		static void cleanup();
 
+		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage);
+		
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage);
 
 		DiscordCoreAPI::InviteData getObjectData(GetInviteData dataPackage);
@@ -139,8 +141,6 @@ namespace DiscordCoreInternal {
 		vector<DiscordCoreAPI::InviteData> getObjectData(GetInvitesData dataPackage);
 
 		DiscordCoreAPI::InviteData getObjectData(GetVanityInviteData dataPackage);
-
-		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage);
 
 		DiscordCoreAPI::BanData putObjectData(PutGuildBanData dataPackage);
 
@@ -164,6 +164,8 @@ namespace DiscordCoreInternal {
 
 		overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* cache{};
 
+		task<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
+
 		task<vector<DiscordCoreAPI::Guild>> getAllGuildsAsync();
 
 		task<DiscordCoreAPI::Guild> getGuildAsync(DiscordCoreAPI::GetGuildData dataPackage);
@@ -177,8 +179,6 @@ namespace DiscordCoreInternal {
 		task<DiscordCoreAPI::InviteData> getInviteAsync(DiscordCoreAPI::GetInviteData dataPackage);
 
 		task<DiscordCoreAPI::InviteData> getVanityInviteAsync(DiscordCoreAPI::GetVanityInviteData dataPackage);
-
-		task<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 
 		task<void> insertGuildAsync(DiscordCoreAPI::Guild Guild);
 
