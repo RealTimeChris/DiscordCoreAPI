@@ -20,8 +20,6 @@
     </Link>
     <PreBuildEvent>
       <Command>
-		  del "$(SolutionDir)$(Platform)\$(Configuration)\*.*" /q
-		  xcopy "..\..\DiscordCoreAPI\Library Files\$(Configuration)" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 	  </Command>
     </PreBuildEvent>
     <PostBuildEvent>
