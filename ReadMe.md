@@ -63,11 +63,6 @@ else {
 	newEvent = InputEvents::respondToEvent(dataPackage);
 }
 ```
-## Important Settings
-- Under Solution Properties -> General -> C++ Language Standard, is set to "Preview – Features from the Latest C++ Working Draft (/std:c++latest)".
-- Under Solution Properties -> Linker -> System -> Stack Reserved Size is set to 4194304.
-- Under Solution Properties -> VC++ Directories -> External Include Directories, add 'C:\PATH_TO_VCPKG_INSTALLED\installed\x64-windows\lib\glib-2.0\include'.
-
 ## Dependencies
 - [WinRT](https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/intro-to-using-cpp-with-winrt)
 
