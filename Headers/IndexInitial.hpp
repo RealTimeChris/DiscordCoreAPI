@@ -8,7 +8,7 @@
 #ifndef _INDEX_INITIAL_
 #define _INDEX_INITIAL_
 
-#ifdef DISCORDCOREAPIDLL2_EXPORTS
+#ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #pragma comment(lib, "libcurl")
 #else
