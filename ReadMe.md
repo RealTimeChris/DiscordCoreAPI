@@ -80,6 +80,8 @@ else {
 
 - [FFMPEG](http://ffmpeg.org/)
 
+- [Glib](https://github.com/GNOME/glib)
+
 ## Roadmap
 I am currently working on getting this thing to be "useful", and here are some of the things I plan on implementing:
 
