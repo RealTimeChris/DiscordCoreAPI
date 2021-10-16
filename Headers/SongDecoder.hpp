@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll SongDecoder : DiscordCoreInternal::ThreadContext, public agent {
     public:
 
-        SongDecoder(BuildSongDecoderData dataPackage);
+        SongDecoder(BuildSongDecoderData dataPackage, Scheduler* scheduler);
 
         void startMe();
 

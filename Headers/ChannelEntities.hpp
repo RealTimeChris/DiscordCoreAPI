@@ -32,6 +32,12 @@ namespace DiscordCoreAPI {
 		string channelId{ "" }; ///< The id of the Channel to acquire.
 	};
 
+	/// For modifying a channel's properties. \brief For modifying a channel's properties.
+	struct DiscordCoreAPI_Dll ModifyChannelData {
+		ChannelData channelData{ "" };///< The data of the channel to be updated.
+		string channelId{ "" }; ///< The id of the Channel to acquire.
+	};
+
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
 		string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
@@ -78,6 +84,7 @@ namespace DiscordCoreInternal {
 
 		unbounded_buffer<DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
 		unbounded_buffer<PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
+		unbounded_buffer<PatchChannelData> requestPatchChannelBuffer{ nullptr };
 		unbounded_buffer<GetDMChannelData>requestGetDMChannelBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Channel> outChannelBuffer{ nullptr };
 		unbounded_buffer<GetChannelData> requestGetChannelBuffer{ nullptr };
@@ -91,6 +98,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage);
 
 		DiscordCoreAPI::Channel postObjectData(GetDMChannelData dataPackage);
+
+		DiscordCoreAPI::Channel patchObjectData(PatchChannelData dataPackage);
 
 		void putObjectData(PutPermissionOverwritesData dataPackage);
 
@@ -119,6 +128,8 @@ namespace DiscordCoreInternal {
 		task<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 
 		task<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
+
+		task<DiscordCoreAPI::Channel> modifyChannelAsync(DiscordCoreAPI::ModifyChannelData dataPackage);
 
 		task<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
 

@@ -19,6 +19,8 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string getIsSpeakingPayload(bool isSpeaking, __int32 ssrc, __int32 delay = 0);
 
+	DiscordCoreAPI_Dll string getPatchChannelPayload(ChannelData channelData);
+
 	DiscordCoreAPI_Dll string getHeartbeatPayload(__int32 lastReceivedNumber);
 
 	DiscordCoreAPI_Dll string getVoiceHeartbeatPayload(__int64 nonce);

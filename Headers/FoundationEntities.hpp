@@ -979,7 +979,34 @@ namespace  DiscordCoreInternal {
         GET_GUILD_APPLICATION_COMMAND_PERMISSIONS = 64,
         GET_APPLICATION_COMMAND_PERMISSIONS = 65,
         PUT_EDIT_APPLICATION_COMMAND_PERMISSIONS = 66,
-        PUT_BATCH_EDIT_APPLICATION_COMMAND_PERMISSIONS = 67
+        PUT_BATCH_EDIT_APPLICATION_COMMAND_PERMISSIONS = 67,
+        PATCH_CHANNEL = 68
+    };
+
+    struct DiscordCoreAPI_Dll ChannelData : public DiscordCoreAPI::DiscordEntity {
+        map<string, OverWriteData> permissionOverwrites{};
+        ThreadMetadataData threadMetadata{};
+        ChannelType type{ ChannelType::DM };
+        __int32 videoQualityMode{ 0 };
+        __int32 rateLimitPerUser{ 0 };
+        vector<UserData> recipients{};
+        string lastPinTimestamp{ "" };
+        string lastMessageId{ "" };
+        string applicationId{ "" };
+        ThreadMemberData member{};
+        __int32 messageCount{ 0 };
+        __int32 memberCount{ 0 };
+        string rtcRegion{ "" };
+        __int32 userLimit{ 0 };
+        __int32 position{ 0 };
+        string parentId{ "" };
+        string guildId{ "" };
+        string ownerId{ "" };
+        __int32 bitrate{ 0 };
+        string topic{ "" };
+        bool nsfw{ false };
+        string name{ "" };
+        string icon{ "" };
     };
 
     enum class StickerItemType {
@@ -1191,6 +1218,11 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll GetDMChannelData {
         string userId{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll PatchChannelData {
+        ChannelData channelData{};
+        string channelId{ "" };
     };
 
     struct DiscordCoreAPI_Dll GetMessageData {
@@ -1958,6 +1990,42 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single Channel. \brief Data structure representing a single Channel.
     struct DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
+        operator DiscordCoreInternal::ChannelData() {
+            DiscordCoreInternal::ChannelData newData;
+            newData.type = (DiscordCoreInternal::ChannelType)this->type;
+            for (auto [key, value] : this->permissionOverwrites) {
+                newData.permissionOverwrites.insert(make_pair(key, value));
+            }
+            
+            newData.threadMetadata = this->threadMetadata;
+            newData.videoQualityMode = this->videoQualityMode;
+            newData.rateLimitPerUser = this->rateLimitPerUser;
+            newData.applicationId = this->applicationId;
+            newData.bitrate = this->bitrate;
+            newData.guildId = this->guildId;
+            newData.icon = this->icon;
+            newData.id = this->id;
+            newData.lastMessageId = this->lastMessageId;
+            newData.lastPinTimestamp = this->lastPinTimestamp;
+            newData.member = this->member;
+            newData.memberCount = this->memberCount;
+            newData.messageCount = this->messageCount;
+            newData.name = this->name;
+            newData.nsfw = this->nsfw;
+            newData.ownerId = this->ownerId;
+            newData.parentId = this->parentId;
+            newData.position = this->position;
+            for (auto value : this->recipients) {
+                newData.recipients.push_back(value);
+            }
+            newData.rtcRegion = this->rtcRegion;
+
+            newData.topic = this->topic;
+            newData.userLimit = this->userLimit;
+            newData.videoQualityMode = this->videoQualityMode;
+
+            return newData;
+        }
         map<string, OverWriteData> permissionOverwrites{}; ///< Permission overwrites for the given Channel.
         ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a thread.
         ChannelType type{ ChannelType::DM };    ///< The type of the Channel.
