@@ -90,13 +90,10 @@ extern "C"
 #include <libavutil/lzo.h>
 #include <libavutil/opt.h>
 }
-#include <ogg/config_types.h>
 #include <nlohmann/json.hpp>
 #include <dispatcherqueue.h>
-#include <opus/opusfile.h>
 #include <glib-2.0/glib.h>
 #include <pplinterface.h>
-#include <ogg/os_types.h>
 #include <winrt/base.h>
 #include <opus/opus.h>
 #include <inttypes.h>
