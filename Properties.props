@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <VcPkgFolder>C:\src\vcpkg\vcpkg\installed\x64-windows\</VcPkgFolder>
+    <VcPkgFolder>C:\vcpkg\installed\x64-windows\</VcPkgFolder>
   </PropertyGroup>
   <PropertyGroup>
     <ExternalIncludePath>$(VcPkgFolder)\lib\glib-2.0\include;$(ExternalIncludePath)</ExternalIncludePath>
@@ -20,6 +20,8 @@
     </Link>
     <PreBuildEvent>
       <Command>
+		  del "$(SolutionDir)$(Platform)\$(Configuration)\*.*" /q
+		  xcopy "..\..\DiscordCoreAPI\Library Files\$(Configuration)" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 	  </Command>
     </PreBuildEvent>
     <PostBuildEvent>
