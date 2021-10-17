@@ -40,6 +40,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeAPI  {
 	public:
 
+		friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, YouTubeAPI* youtubeAPI);
 		template <class _Ty>
 		friend 	_CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreClient;
@@ -78,8 +79,6 @@ namespace DiscordCoreAPI {
 		void sendNextSong(Song newSong);
 
 		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>* sendAudioDataBufferNew);
-
-		static void downloadAndStreamAudio(stop_token stopToken, Song newSong, YouTubeAPI* youtubeAPI);
 
 		static bool stop(string guildId);
 

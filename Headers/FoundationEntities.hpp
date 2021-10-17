@@ -3809,6 +3809,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll Song {
     public:
 
+        friend void downloadAndStreamAudio(std::stop_token stopToken, Song newSong, SoundCloudAPI* soundCloudAPI);
+        friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, YouTubeAPI* youtubeAPI);
         friend vector<Song> cleanQueue(vector<Song> originalQueue);
         friend class DiscordCoreInternal::DataParser;
         friend class DatabaseManagerAgent;

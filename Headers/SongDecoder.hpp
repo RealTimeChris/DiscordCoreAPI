@@ -20,9 +20,11 @@ namespace DiscordCoreAPI {
         __int32 bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder : DiscordCoreInternal::ThreadContext, public agent {
+    class DiscordCoreAPI_Dll SongDecoder : public agent {
     public:
 
+        SongDecoder();
+        
         SongDecoder(BuildSongDecoderData dataPackage, Scheduler* scheduler);
 
         void startMe();
@@ -30,6 +32,8 @@ namespace DiscordCoreAPI {
         void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
 
         void updateBufferRefreshTime(__int32 newRefreshTime);
+
+        static task<SongDecoder*> generateSongDecoder(BuildSongDecoderData dataPackage);
 
         bool getFrame(RawFrameData* dataPackage);
 

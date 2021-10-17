@@ -96,6 +96,7 @@ extern "C"
 #include <pplinterface.h>
 #include <winrt/base.h>
 #include <opus/opus.h>
+#include <stop_token>
 #include <inttypes.h>
 #include <pplawait.h>
 #include <concrtrm.h>
