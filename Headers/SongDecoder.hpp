@@ -29,15 +29,15 @@ namespace DiscordCoreAPI {
 
         SongDecoder();
         
-        SongDecoder(BuildSongDecoderData dataPackage);
+        SongDecoder(BuildSongDecoderData dataPackage, Scheduler* scheduler);
 
         void startMe();
+
+        static task<SongDecoder*> generateSongDecoder(BuildSongDecoderData dataPackage);
 
         void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
 
         void updateBufferRefreshTime(__int32 newRefreshTime);
-
-        static task<SongDecoder*> generateSongDecoder(BuildSongDecoderData dataPackage);
 
         bool getFrame(RawFrameData* dataPackage);
 

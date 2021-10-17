@@ -630,7 +630,7 @@ namespace DiscordCoreAPI {
 		 
 		 MessageCollector() :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
-			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
+			agent(*(Scheduler*)DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
 			
 		}
 
