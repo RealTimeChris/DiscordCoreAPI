@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a channel's properties. \brief For modifying a channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		ChannelData channelData{ "" };///< The data of the channel to be updated.
-		string channelId{ "" }; ///< The id of the Channel to modify.
+		string channelId{ "" }; ///< The id of the Channel to acquire.
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
