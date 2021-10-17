@@ -22,14 +22,14 @@ namespace DiscordCoreAPI {
         __int32 bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder : public agent {
+    class DiscordCoreAPI_Dll SongDecoder : DiscordCoreInternal::ThreadContext, public agent {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
         SongDecoder();
         
-        SongDecoder(BuildSongDecoderData dataPackage, Scheduler* scheduler);
+        SongDecoder(BuildSongDecoderData dataPackage);
 
         void startMe();
 
