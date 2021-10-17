@@ -35,13 +35,14 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<User>;
+		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::UserManagerAgent;
 		friend class DiscordCoreInternal::UserManager;
 		friend struct OnGuildMemberRemoveData;
 		friend struct OnGuildBanRemoveData;
 		friend struct OnGuildBanAddData;
 		friend struct OnUserUpdateData;
-		friend class DiscordCoreClient;
+		friend class DiscordCoreClient;		
 		friend class Guild;
 
 		DiscordCoreAPI::User();

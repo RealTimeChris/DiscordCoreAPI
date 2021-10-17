@@ -367,6 +367,11 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a Reaction.
 		static task<Reaction> createReactionAsync(CreateReactionData dataPackage);
 
+		/// Get a list of users that reacted with this emoji. Returns an array of user objects on success. \brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
+		/// \param dataPackage A GetReactionsData structure.
+		/// \returns A task containing a vector of Users.
+		static task<vector<User>> getReactionsAsync(GetReactionsData dataPackage);
+
 		/// Deletes all of the Reactions from a given Message. \brief Deletes all of the Reactions from a given Message.
 		/// \param dataPackage A DeleteAllReactionsData structure.
 		/// \returns A task containing void.

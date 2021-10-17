@@ -238,10 +238,10 @@ namespace  DiscordCoreInternal {
     * @{
     */
     class ApplicationCommandManager;
-    class BaseWebSocketAgent;
     class InteractionManagerAgent;
     class GuildMemberManagerAgent;
     class ReactionManagerAgent;
+    class BaseWebSocketAgent;
     class MessageManagerAgent;
     class StickerManagerAgent;
     class ChannelManagerAgent;
@@ -982,7 +982,8 @@ namespace  DiscordCoreInternal {
         PUT_BATCH_EDIT_APPLICATION_COMMAND_PERMISSIONS = 67,
         PATCH_CHANNEL = 68,
         DELETE_CHANNEL = 69,
-        CROSSPOST_MESSAGE = 70
+        CROSSPOST_MESSAGE = 70,
+        GET_REACTIONS = 71
     };
 
     struct DiscordCoreAPI_Dll ChannelData : public DiscordCoreAPI::DiscordEntity {
@@ -1177,6 +1178,14 @@ namespace  DiscordCoreInternal {
         string channelId{ "" };
         string messageId{ "" };
         string emoji{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll GetReactionsData {
+        string channelId{ "" };
+        string messageId{ "" };
+        string afterId{ "" };
+        string emoji{ "" };
+        __int32 limit{ 0 };
     };
 
     enum class ReactionDeletionType {
