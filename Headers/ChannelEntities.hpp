@@ -35,7 +35,12 @@ namespace DiscordCoreAPI {
 	/// For modifying a channel's properties. \brief For modifying a channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		ChannelData channelData{ "" };///< The data of the channel to be updated.
-		string channelId{ "" }; ///< The id of the Channel to acquire.
+		string channelId{ "" }; ///< The id of the Channel to modify.
+	};
+
+	/// For a channel's properties. \brief For modifying a channel's properties
+	struct DiscordCoreAPI_Dll DeleteChannelData {
+		string channelId{ "" };///< The id of the Channel to delete.
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
@@ -84,6 +89,7 @@ namespace DiscordCoreInternal {
 
 		unbounded_buffer<DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
 		unbounded_buffer<PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
+		unbounded_buffer<DeleteChannelData> requestDeleteChannelBuffer{ nullptr };
 		unbounded_buffer<PatchChannelData> requestPatchChannelBuffer{ nullptr };
 		unbounded_buffer<GetDMChannelData>requestGetDMChannelBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::Channel> outChannelBuffer{ nullptr };
@@ -104,6 +110,8 @@ namespace DiscordCoreInternal {
 		void putObjectData(PutPermissionOverwritesData dataPackage);
 
 		void deleteObjectData(DeleteChannelPermissionOverwritesData dataPackage);
+
+		void deleteObjectData(DeleteChannelData dataPackage);
 
 		void run();
 
@@ -130,6 +138,8 @@ namespace DiscordCoreInternal {
 		task<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 
 		task<DiscordCoreAPI::Channel> modifyChannelAsync(DiscordCoreAPI::ModifyChannelData dataPackage);
+
+		task<void> deleteChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
 
 		task<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
 

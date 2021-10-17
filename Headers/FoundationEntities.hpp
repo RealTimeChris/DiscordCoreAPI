@@ -980,7 +980,8 @@ namespace  DiscordCoreInternal {
         GET_APPLICATION_COMMAND_PERMISSIONS = 65,
         PUT_EDIT_APPLICATION_COMMAND_PERMISSIONS = 66,
         PUT_BATCH_EDIT_APPLICATION_COMMAND_PERMISSIONS = 67,
-        PATCH_CHANNEL = 68
+        PATCH_CHANNEL = 68,
+        DELETE_CHANNEL = 69
     };
 
     struct DiscordCoreAPI_Dll ChannelData : public DiscordCoreAPI::DiscordEntity {
@@ -1200,6 +1201,10 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll GetChannelData {
+        string channelId{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll DeleteChannelData {
         string channelId{ "" };
     };
 
