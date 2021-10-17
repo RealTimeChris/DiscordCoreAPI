@@ -441,6 +441,12 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };///< Channel within which to delete the Messages.
 	};
 
+	/// Crosspost Message Data. \brief Crosspost Message Data.
+	struct DiscordCoreAPI_Dll CrosspostMessageData{
+		string messageId{ "" };///< Id of the message to be crossposted.
+		string channelId{ "" };///< Channel within which to crosspost the Message from.
+	};
+
 	/// Get pinned Messages data. \brief Get pinned Messages data.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
 		string channelId{ "" };///< The Channel from which to collect pinned Messages.
@@ -700,6 +706,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<DeleteMessagesBulkData> requestDeleteMultMessagesBuffer{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::Message>> outMultMessagesBuffer{ nullptr };
 		unbounded_buffer<GetPinnedMessagesData> requestGetPinnedMessagesBuffer{ nullptr };
+		unbounded_buffer<CrosspostMessageData> requestCrosspostMessageBuffer{ nullptr };
 		unbounded_buffer<DeleteMessageData> requestDeleteMessageBuffer{ nullptr };
 		unbounded_buffer<PutPinMessageData> requestPutPinMessageBuffer{ nullptr };
 		unbounded_buffer<PatchMessageData> requestPatchMessageBuffer{ nullptr };
@@ -726,6 +733,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Message postObjectData(PostMessageData dataPackage);
 
 		DiscordCoreAPI::Message postObjectData(PostDMData dataPackage);
+
+		DiscordCoreAPI::Message postObjectData(CrosspostMessageData dataPackage);
 
 		void postObjectData(DeleteMessagesBulkData dataPackage);
 
@@ -764,6 +773,8 @@ namespace DiscordCoreInternal {
 		task<void> deleteMessageAsync(DiscordCoreAPI::DeleteMessageData dataPackage);
 
 		task<void> deleteMessagesBulkAsync(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
+
+		task<DiscordCoreAPI::Message> crosspostMessageAsync(DiscordCoreAPI::CrosspostMessageData dataPackage);
 
 		task<vector<DiscordCoreAPI::Message>> getPinnedMessagesAsync(DiscordCoreAPI::GetPinnedMessagesData dataPackage);
 

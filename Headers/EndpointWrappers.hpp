@@ -317,6 +317,11 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing void.
 		static task<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
 
+		/// Crossposts a message from a News Channel to the following Channels. \brief Crossposts a message from a News Channel to the following Channels.
+		/// \param dataPackage A CrosspostMessageData structure.
+		/// \returns A task containing void.
+		static task<Message> crosspostMessageAsync(CrosspostMessageData dataPackage);
+
 		/// Edit a Message. \brief Edit a Message.
 		/// \param dataPackage A EditMessageData structure.
 		/// \returns A task containing a Message.
