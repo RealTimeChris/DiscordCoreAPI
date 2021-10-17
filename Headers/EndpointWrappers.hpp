@@ -111,6 +111,11 @@ namespace DiscordCoreAPI {
 
 		friend class EventHandler;
 
+		/// Modifies a Channel's properties. \brief Modifies a Channel's properties.
+		/// \param dataPackage A ModifyChannelData structure.
+		/// \returns A task containing a Channel.
+		static task<Channel> modifyChannelAsync(ModifyChannelData dataPackage);
+
 		/// Collects a Channel from the library's cache. \brief Collects a Channel from the library's cache.		
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A task containing a Channel.

@@ -108,6 +108,7 @@ namespace DiscordCoreInternal {
 		event_token messageReceivedToken{};
 		const int maxReconnectTries{ 10 };
 		bool areWeCollectingData{ false };
+		bool areWeAuthenticated{ false };
 		int currentReconnectTries{ 0 };
 		bool didWeDisconnect{ false };
 		int lastNumberReceived{ 0 };
