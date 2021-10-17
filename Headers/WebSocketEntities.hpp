@@ -99,6 +99,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<bool> reconnectionBuffer{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		GetVoiceConnectionData voiceConnectInitData{};
+		map<string, bool*> areWeReadyToConnectPtrs{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		DataWriter messageWriter{ nullptr };
@@ -167,6 +168,7 @@ namespace DiscordCoreInternal {
 		event_token messageReceivedToken{};
 		const int maxReconnectTries{ 10 };
 		bool areWeAuthenticated{ false };
+		bool areWeReadyToConnect{ true };
 		DataWriter dataWriter{ nullptr };
 		bool areWeTerminating{ false };
 		int currentReconnectTries{ 0 };
