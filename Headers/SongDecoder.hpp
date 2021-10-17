@@ -13,6 +13,8 @@
 
 namespace DiscordCoreAPI {
 
+    DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
+
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
         unbounded_buffer<vector<unsigned __int8>>* sendEncodedAudioDataBuffer{};
@@ -22,6 +24,8 @@ namespace DiscordCoreAPI {
 
     class DiscordCoreAPI_Dll SongDecoder : public agent {
     public:
+
+        friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
         SongDecoder();
         
@@ -58,8 +62,6 @@ namespace DiscordCoreAPI {
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
-
-        static __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
         void run();
 
