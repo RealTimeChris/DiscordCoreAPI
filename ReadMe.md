@@ -70,17 +70,17 @@ else {
 
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
  
-- [Nlohmann Json](https://github.com/nlohmann/json)
+- [Nlohmann Json](https://github.com/nlohmann/json) (.\vcpkg install nlohmann-json:x64-windows)
 
-- [MongoDB](https://docs.mongodb.com/manual/installation/)
+- [MongoDB](https://docs.mongodb.com/manual/installation/) (.\vcpkg install mongo-cxx-driver:x64-windows)
 
-- [LibCurl](https://github.com/curl/curl)
+- [LibCurl](https://github.com/curl/curl) (.\vcpkg install curl:x64-windows)
 
-- [LibSodium](https://github.com/jedisct1/libsodium)
+- [LibSodium](https://github.com/jedisct1/libsodium) (.\vcpkg install libsodium:x64-windows)
 
-- [FFMPEG](http://ffmpeg.org/)
+- [FFMPEG](http://ffmpeg.org/) (.\vcpkg install ffmpeg:x64-windows)
 
-- [Glib](https://github.com/GNOME/glib)
+- [Glib](https://github.com/GNOME/glib) (.\vcpkg install glib:x64-windows)
 
 ## Roadmap
 I am currently working on getting this thing to be "useful", and here are some of the things I plan on implementing:
