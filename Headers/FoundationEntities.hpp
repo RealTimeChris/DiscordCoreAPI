@@ -2071,7 +2071,6 @@ namespace DiscordCoreAPI {
         string icon{ "" };  ///< Icon for the Channel, if applicable.
     };
     
-
     /// Voice state data. \brief Voice state data.
     struct DiscordCoreAPI_Dll VoiceStateData {
         string requestToSpeakTimestamp{ "" }; ///< When they last requested to speak.

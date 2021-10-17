@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 
         SongDecoder();
         
-        SongDecoder(BuildSongDecoderData dataPackage, Scheduler* scheduler);
+        SongDecoder(BuildSongDecoderData dataPackage);
 
         void startMe();
 
