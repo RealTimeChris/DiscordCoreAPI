@@ -52,16 +52,15 @@ namespace DiscordCoreAPI {
 				oldBuffer.push_back(inputFrame.data[x]);
 			}
 
-			unsigned __int8* newBuffer{ new unsigned __int8[this->maxBufferSize] };
+			vector<unsigned __int8> newBuffer{};
+			newBuffer.resize(this->maxBufferSize);
 
-			__int32 count = opus_encode_float(this->encoder, (float*)oldBuffer.data(), inputFrame.sampleCount, newBuffer, this->maxBufferSize);
+			__int32 count = opus_encode_float(this->encoder, (float*)oldBuffer.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
 			EncodedFrameData encodedFrame{};
 			for (__int32 x = 0; x < count; x += 1) {
 				encodedFrame.data.push_back(newBuffer[x]);
 			}
 			encodedFrame.sampleCount = inputFrame.sampleCount;
-			delete[] newBuffer;
-			newBuffer = nullptr;
 			return encodedFrame;
 		}
 
