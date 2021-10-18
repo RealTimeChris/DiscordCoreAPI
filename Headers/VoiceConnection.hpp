@@ -23,6 +23,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll VoiceConnection: DiscordCoreInternal::ThreadContext, agent{
 	public:
 
+		friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, SoundCloudAPI* soundCloudAPI);
+		friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, YouTubeAPI* youtubeAPI);
 		friend class DiscordCoreClient;
 		friend class SoundCloudAPI;
 		friend class YouTubeAPI;
@@ -63,6 +65,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		concurrency::event* connectionReadyEvent {new concurrency::event()};
 		concurrency::event* disconnectionEvent {new concurrency::event()};
+		concurrency::event* reconnectionEvent {new concurrency::event()};
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		concurrency::event* playWaitEvent {new concurrency::event()};

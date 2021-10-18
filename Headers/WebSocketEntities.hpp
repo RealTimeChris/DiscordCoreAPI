@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> BaseWebSocketAgentNew, bool* doWeReconnectNew);
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew, bool* doWeReconnectNew, concurrency::event* reconnectionEvent);
 
 		void sendVoiceData(vector<uint8_t> data);
 
@@ -160,6 +160,7 @@ namespace DiscordCoreInternal {
 		shared_ptr<BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		shared_ptr<DatagramSocket> voiceSocket{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
+		concurrency::event* reconnectionEvent {nullptr};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
