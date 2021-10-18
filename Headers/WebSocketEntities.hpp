@@ -96,12 +96,12 @@ namespace DiscordCoreInternal {
 		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<WebSocketWorkload> webSocketWorkloadTarget{ nullptr };
+		unbounded_buffer<bool> reconnectionBuffer{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
 		GetVoiceConnectionData voiceConnectInitData{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
-		ThreadPoolTimer heartbeatTimer{ nullptr };
+		ThreadPoolTimer heartbeatTimer{ nullptr };		
 		VoiceConnectionData voiceConnectionData{};
-		concurrency::event disconnectionEvent {};
 		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
@@ -110,6 +110,7 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		int currentReconnectTries{ 0 };
+		bool didWeDisconnect{ false };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
 		event_token closedToken{};
@@ -117,22 +118,21 @@ namespace DiscordCoreInternal {
 		string sessionId{ "" };
 		string botToken{ "" };
 
-
-		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args);
-
-		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
+		void setSocketPath(string socketPathBase);
 
 		void getVoiceConnectionData(GetVoiceConnectionData doWeCollect);
 
-		void setSocketPath(string socketPathBase);
+		void run();
 
 		void sendMessage(string& text);
 
-		void sendHeartBeat();
-
 		void connect();
 
-		void run();
+		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
+
+		void sendHeartBeat();
+
+		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args);
 
 		void cleanup();
 
