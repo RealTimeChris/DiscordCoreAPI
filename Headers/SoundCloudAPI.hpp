@@ -45,6 +45,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
+		const __int32 maxBufferSize{ 16384 };
 		SongDecoder* songDecoder{ nullptr };
 		SongEncoder* songEncoder{ nullptr };
 		std::jthread* threadOfExecution{};

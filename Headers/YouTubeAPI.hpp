@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 		SongDecoder* songDecoder{ nullptr };
 		SongEncoder* songEncoder{ nullptr };
 		std::jthread* threadOfExecution{};
-		const __int32 maxBufSize{ 8192 };
+		const __int32 maxBufSize{ 16384 };
 		const string newLine{ "\n\r" };
 		YouTubeSong theSong{};
 		string guildId{ "" };

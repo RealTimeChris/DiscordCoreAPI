@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
         
         SongDecoder(BuildSongDecoderData dataPackage);
 
-        void startMe();
+        bool startMe();
 
         static task<SongDecoder*> generateSongDecoder(BuildSongDecoderData dataPackage);
 
