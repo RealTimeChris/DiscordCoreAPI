@@ -35,7 +35,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
-		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
 		const __int32 maxBufferSize{ 16384 };
