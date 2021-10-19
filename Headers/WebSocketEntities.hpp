@@ -109,6 +109,7 @@ namespace DiscordCoreInternal {
 		const int maxReconnectTries{ 10 };
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
+		bool areWeReconnecting{ false };
 		int currentReconnectTries{ 0 };
 		int lastNumberReceived{ 0 };
 		int heartbeatInterval{ 0 };
