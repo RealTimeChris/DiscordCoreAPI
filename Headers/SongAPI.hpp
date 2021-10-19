@@ -135,7 +135,6 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		string guildId{ "" };
 		Playlist playlist{};
 

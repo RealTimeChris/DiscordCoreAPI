@@ -56,12 +56,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
-
+		winrt::event<delegate<SongCompletionEventData>>* onSongCompletionEvent { new winrt::event<delegate<SongCompletionEventData>>() };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* receiveAudioBufferMap{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebsocketAgent{ nullptr };
-		winrt::event<delegate<SongCompletionEventData>>* onSongCompletionEvent {};
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		concurrency::event* connectionReadyEvent {new concurrency::event()};
 		concurrency::event* disconnectionEvent {new concurrency::event()};
