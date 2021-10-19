@@ -30,11 +30,10 @@ namespace DiscordCoreAPI {
 		friend Playlist loadPlaylist(DiscordGuild guild);
 		friend void savePlaylist(DiscordGuild guild);
 		friend class DiscordCoreClient;
+		friend class VoiceConnection;
 		friend class Guild;
 
 		SongAPI(string guildId);
-
-		static void initialize();
 
 		/// Search for a Song to play. \brief Search for a Song to play.
 		/// \param searchQuery The Song to search for.
@@ -141,11 +140,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };
 		Playlist playlist{};
 
-		static void refreshInterfaces(string guildId);
-
 		bool sendNextSong();
-
-		static void cleanup();
 	};
 	/**@}*/
 };

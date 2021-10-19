@@ -44,23 +44,16 @@ namespace DiscordCoreAPI {
 		template <class _Ty>
 		friend 	_CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreClient;
+		friend class VoiceConnection;
 		friend class YouTubeSong;
 		friend class SongAPI;
 		friend class Guild;
 
 		YouTubeAPI(string guildIdNew);
 
-		static void initialize(map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMapNew, map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMapNew, map<string, shared_ptr<VoiceConnection>>* voiceConnectionMapNew);
-
-		static void cleanup();
-
 		~YouTubeAPI();
 
 	protected:
-
-		static map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* sendAudioDataBufferMap;
-		static map<string, shared_ptr<VoiceConnection>>* voiceConnectionMap;
-		static map<string, shared_ptr<YouTubeAPI>>* youtubeAPIMap;
 
 		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		shared_ptr<VoiceConnection> voiceConnection{ nullptr };
