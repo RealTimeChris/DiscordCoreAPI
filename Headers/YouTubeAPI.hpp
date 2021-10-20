@@ -57,11 +57,10 @@ namespace DiscordCoreAPI {
 
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
+		const __int32 maxBufferSize{ 16384 };
 		SongDecoder* songDecoder{ nullptr };
 		SongEncoder* songEncoder{ nullptr };
 		std::jthread* threadOfExecution{};
-		const __int32 maxBufSize{ 16384 };
-		const string newLine{ "\n\r" };
 		YouTubeSong theSong{};
 		string guildId{ "" };
 
