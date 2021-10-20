@@ -49,13 +49,12 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		YouTubeAPI(string guildIdNew);
+		YouTubeAPI(string guildId);
 
 		~YouTubeAPI();
 
 	protected:
 
-		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
 		SongDecoder* songDecoder{ nullptr };

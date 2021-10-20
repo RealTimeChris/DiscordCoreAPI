@@ -28,13 +28,12 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		SoundCloudAPI(string guildIdNew);
+		SoundCloudAPI(string guildId);
 
 		~SoundCloudAPI();
 
 	protected:
 
-		shared_ptr<unbounded_buffer<AudioFrameData>> sendAudioDataBuffer{ nullptr };
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
 		const __int32 maxBufferSize{ 16384 };
