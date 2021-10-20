@@ -241,10 +241,10 @@ namespace  DiscordCoreInternal {
     class InteractionManagerAgent;
     class GuildMemberManagerAgent;
     class ReactionManagerAgent;
-    class BaseWebSocketAgent;
     class MessageManagerAgent;
     class StickerManagerAgent;
     class ChannelManagerAgent;
+    class BaseWebSocketAgent;
     class GuildMemberManager;
     class InteractionManager;
     class GuildManagerAgent;
