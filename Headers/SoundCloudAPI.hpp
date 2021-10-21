@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
-		const __int32 maxBufferSize{ 16384 };
+		const __int32 maxBufferSize{ 4096 };
 		SongDecoder* songDecoder{ nullptr };
 		SongEncoder* songEncoder{ nullptr };
 		std::jthread* threadOfExecution{};
