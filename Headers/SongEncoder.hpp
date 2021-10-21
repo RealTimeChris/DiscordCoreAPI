@@ -9,6 +9,7 @@
 #define _SONG_ENCODER_
 
 #include "IndexInitial.hpp"
+#include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
 
