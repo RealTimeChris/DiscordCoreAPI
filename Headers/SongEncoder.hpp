@@ -15,29 +15,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SongEncoder {
 	public:
 
-		SongEncoder() {
-			__int32 error;
-			this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
-			if (error != OPUS_OK) {
-				cout << "Failed to create Opus encoder!";
-			}
-		}
+		SongEncoder();
 
-		vector<AudioFrameData> encodeFrames(vector<RawFrameData> rawFrames) {
-			vector<AudioFrameData> newData;
-			for (__int32 x = 0; x < rawFrames.size(); x += 1) {
-				AudioFrameData frameData;
-				frameData.type = AudioFrameType::Encoded;
-				frameData.encodedFrameData = encodeSingleAudioFrame(rawFrames[x]);
-				newData.push_back(frameData);
-			}
-			rawFrames.clear();
-			return newData;
-		}
+		vector<AudioFrameData> encodeFrames(vector<RawFrameData> rawFrames);
 
-		~SongEncoder() {
-			opus_encoder_destroy(this->encoder);
-		}
+		~SongEncoder();
 
 	protected:
 		OpusEncoder* encoder{ nullptr };
@@ -45,24 +27,7 @@ namespace DiscordCoreAPI {
 		const __int32 sampleRate{ 48000 };
 		const __int32 nChannels{ 2 };
 
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame) {
-			vector<unsigned __int8> oldBuffer{};
-
-			for (__int32 x = 0; x < inputFrame.data.size(); x += 1) {
-				oldBuffer.push_back(inputFrame.data[x]);
-			}
-
-			vector<unsigned __int8> newBuffer{};
-			newBuffer.resize(this->maxBufferSize);
-
-			__int32 count = opus_encode_float(this->encoder, (float*)oldBuffer.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
-			EncodedFrameData encodedFrame{};
-			for (__int32 x = 0; x < count; x += 1) {
-				encodedFrame.data.push_back(newBuffer[x]);
-			}
-			encodedFrame.sampleCount = inputFrame.sampleCount;
-			return encodedFrame;
-		}
+		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
 
 	};
 
