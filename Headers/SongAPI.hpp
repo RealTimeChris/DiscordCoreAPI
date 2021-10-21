@@ -15,8 +15,6 @@
 
 namespace DiscordCoreAPI {
 
-	vector<Song> cleanQueue(vector<Song> originalQueue);
-
 	class DiscordGuild;
 
 	/**
