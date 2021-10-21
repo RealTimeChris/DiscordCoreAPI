@@ -92,11 +92,13 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll UserManagerAgent : ThreadContext, agent {
+	class DiscordCoreAPI_Dll UserManagerAgent : agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class UserManager;
+
+		static shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<DiscordCoreAPI::ApplicationData> outApplicationBuffer{ nullptr };
 		unbounded_buffer<LeaveGuildData> requestLeaveGuildBuffer{ nullptr };
@@ -106,6 +108,8 @@ namespace DiscordCoreInternal {
 
 		UserManagerAgent();
 
+		static void intialize();
+
 		DiscordCoreAPI::User getObjectData(GetUserData dataPackage);
 
 		DiscordCoreAPI::ApplicationData getObjectData();
@@ -113,6 +117,8 @@ namespace DiscordCoreInternal {
 		void deleteObjectData(LeaveGuildData dataPackage);
 
 		void run();
+
+		static void cleanup();
 
 	};
 

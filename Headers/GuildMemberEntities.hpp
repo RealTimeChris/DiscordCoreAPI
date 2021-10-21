@@ -57,12 +57,14 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll GuildMemberManagerAgent : ThreadContext, agent {
+	class DiscordCoreAPI_Dll GuildMemberManagerAgent : agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildMemberManager;
+
+		static shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<PatchGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::GuildMember> outGuildMemberBuffer{ nullptr };
@@ -70,6 +72,10 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<GetGuildMemberRolesData> requestGetRolesBuffer{ nullptr };
 
 		GuildMemberManagerAgent();
+
+		static void intialize();
+
+		static void cleanup();
 
 		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage);
 

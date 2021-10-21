@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll StickerManagerAgent : ThreadContext, agent {
+	class DiscordCoreAPI_Dll StickerManagerAgent : agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -37,8 +37,13 @@ namespace DiscordCoreInternal {
 		friend class StickerManager;
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> cache;
+		static shared_ptr<ThreadContext> threadContext;
 
 		StickerManagerAgent();
+
+		static void intialize();
+
+		static void cleanup();
 
 		void run();
 	};
