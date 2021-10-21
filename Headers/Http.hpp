@@ -13,10 +13,8 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll HttpRequestAgent : public agent {
+	class DiscordCoreAPI_Dll HttpRequestAgent : ThreadContext, agent {
 	public:
-
-		static shared_ptr<ThreadContext> threadContext;
 
 		HttpRequestAgent();
 
