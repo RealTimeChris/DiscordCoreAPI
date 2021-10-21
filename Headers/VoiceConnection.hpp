@@ -87,8 +87,6 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };
 		string guildId{ "" };
 
-		unbounded_buffer<AudioFrameData>* getSendAudioBuffer();
-
 		bool areWeConnected();
 
 		bool areWeCurrentlyPlaying();

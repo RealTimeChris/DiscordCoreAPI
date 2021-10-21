@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
-		const __int32 maxBufferSize{ 4096 };
+		const __int32 maxBufferSize{ 8192 };
 		SongDecoder* songDecoder{ nullptr };
 		SongEncoder* songEncoder{ nullptr };
 		std::jthread* threadOfExecution{};
@@ -69,10 +69,6 @@ namespace DiscordCoreAPI {
 		void sendNextSong(Song newSong);
 
 		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>* sendAudioDataBufferNew);
-
-		static bool stop(string guildId);
-
-		static void sendNextSong(Song newSong, string guildId);
 
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 
