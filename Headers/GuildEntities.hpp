@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildCreationData;
 		friend struct OnGuildDeletionData;
 		friend struct OnGuildUpdateData;
-		friend class DiscordCoreClient;		
+		friend class DiscordCoreClient;
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
