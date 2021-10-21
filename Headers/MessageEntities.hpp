@@ -628,11 +628,9 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClient;
 		 
-		 MessageCollector() :
+		MessageCollector() :
 			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
-			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
-			
-		}
+			agent(*this->scheduler->scheduler) {}
 
 		/// Begin waiting for Messages. \brief Begin waiting for Messages.
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
@@ -695,13 +693,11 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll MessageManagerAgent : agent {
+	class DiscordCoreAPI_Dll MessageManagerAgent : ThreadContext, agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class MessageManager;
-
-		static shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<DeleteMessagesBulkData> requestDeleteMultMessagesBuffer{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::Message>> outMultMessagesBuffer{ nullptr };
@@ -717,10 +713,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<PostDMData> requestPostDMMessageBuffer{ nullptr };
 
 		MessageManagerAgent();
-
-		static void initialize();
-
-		static void cleanup();
 
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage);
 

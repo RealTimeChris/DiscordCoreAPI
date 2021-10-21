@@ -1044,7 +1044,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-    class DiscordCoreAPI_Dll InteractionManagerAgent : agent {
+    class DiscordCoreAPI_Dll InteractionManagerAgent : ThreadContext, agent {
     protected:
 
         friend class DiscordCoreAPI::DiscordCoreClient;
@@ -1052,7 +1052,6 @@ namespace DiscordCoreInternal {
         friend class InteractionManager;
 
         static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
-        static shared_ptr<ThreadContext> threadContext;
 
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer{ nullptr };
@@ -1065,11 +1064,7 @@ namespace DiscordCoreInternal {
         unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
 
-         InteractionManagerAgent();
-
-        static void initialize();
-
-        static void cleanup();
+        InteractionManagerAgent();
 
         DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage);
 

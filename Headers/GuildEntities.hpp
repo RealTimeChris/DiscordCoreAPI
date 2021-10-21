@@ -105,14 +105,12 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll GuildManagerAgent : agent {
+	class DiscordCoreAPI_Dll GuildManagerAgent : ThreadContext, agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildManager;
-
-		static shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<vector<DiscordCoreAPI::InviteData>> outInvitesBuffer{ nullptr };
 		unbounded_buffer<GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
@@ -127,10 +125,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<GetGuildData> requestGetGuildBuffer{ nullptr };
 
 		GuildManagerAgent();
-
-		static void initialize();
-
-		static void cleanup();
 
 		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage);
 		

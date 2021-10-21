@@ -79,13 +79,11 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll ChannelManagerAgent : agent {
+	class DiscordCoreAPI_Dll ChannelManagerAgent : ThreadContext, agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class ChannelManager;
-
-		static shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
 		unbounded_buffer<PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
@@ -96,10 +94,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<GetChannelData> requestGetChannelBuffer{ nullptr };
 
 		ChannelManagerAgent();
-
-		static void initialize();
-
-		static void cleanup();
 
 		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage);
 
