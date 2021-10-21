@@ -1020,6 +1020,13 @@ namespace DiscordCoreAPI {
         string applicationId{ "" }; ///< application id.
     };
 
+    /// Get FollowUp Message data. \brief Get FollowUp Message data.
+    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
+        string messageId{ "" };///< Message id.
+        string interactionToken{ "" }; ///< Interaction token.
+        string applicationId{ "" }; ///< application id.
+    };
+
     /// A single Interaction.
     class DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
@@ -1062,6 +1069,7 @@ namespace DiscordCoreInternal {
         unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::PatchFollowUpMessageData> requestPatchFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreInternal::GetFollowUpMessageData> requestGetFollowUpMessageBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
         unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
 
@@ -1072,6 +1080,8 @@ namespace DiscordCoreInternal {
         static void cleanup();
 
         DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage);
+
+        DiscordCoreAPI::MessageData getObjectData(DiscordCoreInternal::GetFollowUpMessageData dataPackage);
 
         DiscordCoreAPI::MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage);
 
@@ -1121,6 +1131,8 @@ namespace DiscordCoreInternal {
         task<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
 
         task<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
+
+        task<DiscordCoreAPI::MessageData> getFollowUpMessageAsync(DiscordCoreAPI::GetFollowUpMessageData dataPackage);
 
         task<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
 

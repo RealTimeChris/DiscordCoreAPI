@@ -983,7 +983,8 @@ namespace  DiscordCoreInternal {
         PATCH_CHANNEL = 68,
         DELETE_CHANNEL = 69,
         CROSSPOST_MESSAGE = 70,
-        GET_REACTIONS = 71
+        GET_REACTIONS = 71,
+        GET_FOLLOW_UP_MESSAGE = 71
     };
 
     struct DiscordCoreAPI_Dll ChannelData : public DiscordCoreAPI::DiscordEntity {
@@ -1120,6 +1121,12 @@ namespace  DiscordCoreInternal {
         string applicationId{ "" };
     };
 
+    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
+        string interactionToken{ "" };
+        string applicationId{ "" };
+        string messageId{ "" };
+    };
+
     struct DiscordCoreAPI_Dll PostDeferredInteractionResponseData {
         InteractionCallbackType type{};
         string interactionToken{ "" };
@@ -1226,6 +1233,22 @@ namespace  DiscordCoreInternal {
         string deny{ "" };
     };
 
+    struct DiscordCoreAPI_Dll UpdateChannelData {
+        vector<OverWriteData> permissionOverwrites{};
+        __int32 defaultAutoArchiveDuration{ 0 };
+        __int32 videoQualityMode{ 0 };
+        __int32 rateLimitPerUser{ 0 };
+        __int32 userLimit{ 0 };
+        string parentId{ "" };
+        string rtcRgion{ "" };
+        __int32 position{ 0 };
+        __int32 bitrate{ 0 };
+        ChannelType type{};
+        string topic{ "" };
+        bool nsfw{ false };
+        string name{ "" };
+    };
+
     struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
         string roleOrUserId{ "" };
         string channelId{ "" };
@@ -1236,7 +1259,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll PatchChannelData {
-        ChannelData channelData{};
+        UpdateChannelData channelData{};
         string channelId{ "" };
     };
 
@@ -2190,6 +2213,42 @@ namespace DiscordCoreAPI {
         UserData user{};///< User that created this emoji.
     };
     
+    /// For updating/modifying a given Channel's properties.
+    struct DiscordCoreAPI_Dll UpdateChannelData {
+        operator DiscordCoreInternal::UpdateChannelData() {
+            DiscordCoreInternal::UpdateChannelData newData{};
+            newData.defaultAutoArchiveDuration = this->defaultAutoArchiveDuration;
+            newData.type = (DiscordCoreInternal::ChannelType)this->type;
+            newData.rateLimitPerUser = this->rateLimitPerUser;
+            newData.videoQualityMode = this->videoQualityMode;
+            for (auto value : this->permissionOverwrites) {
+                newData.permissionOverwrites.push_back(value);
+            }
+            newData.userLimit = this->userLimit;
+            newData.parentId = this->parentId;
+            newData.position = this->position;
+            newData.rtcRgion = this->rtcRgion;
+            newData.bitrate = this->bitrate;
+            newData.topic = this->topic;
+            newData.name = this->name;
+            newData.nsfw = this->nsfw;
+            return newData;
+        }
+        vector<OverWriteData> permissionOverwrites{};
+        __int32 defaultAutoArchiveDuration{ 0 };
+        __int32 videoQualityMode{ 0 };
+        __int32 rateLimitPerUser{ 0 };
+        __int32 userLimit{ 0 };
+        string parentId{ "" };
+        string rtcRgion{ "" };
+        __int32 position{ 0 };
+        __int32 bitrate{ 0 };
+        ChannelType type{};
+        string topic{ "" };
+        bool nsfw{ false };
+        string name{ "" };
+    };
+
     /// Data structure representing a single reaction.
     struct DiscordCoreAPI_Dll ReactionData : public DiscordEntity{
 

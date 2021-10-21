@@ -277,6 +277,11 @@ namespace DiscordCoreAPI {
 		/// \returns A task containing a MessageData.
 		static task<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
 		
+		/// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
+		/// \param dataPackage A CreateFollowUpMessageData structure.
+		/// \returns A task containing a MessageData.
+		static task<MessageData> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
+
 		/// Edits a follow up Message. \brief Edits a follow up Message.
 		/// \param dataPackage A EditFollowUpMessageData structure.
 		/// \returns A task containing a MessageData.
