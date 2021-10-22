@@ -145,9 +145,9 @@ namespace DiscordCoreInternal {
 
 		task<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
 
-		task<void> insertChannelAsync(DiscordCoreAPI::Channel channel);
+		void insertChannel(DiscordCoreAPI::Channel channel);
 
-		task<void> removeChannelAsync(string channelId);
+		void removeChannel(string channelId);
 	};
 }
 #endif

@@ -178,9 +178,9 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::InviteData> getVanityInviteAsync(DiscordCoreAPI::GetVanityInviteData dataPackage);
 
-		task<void> insertGuildAsync(DiscordCoreAPI::Guild Guild);
+		void insertGuild(DiscordCoreAPI::Guild Guild);
 
-		task<void> removeGuildAsync(string guildId);
+		void removeGuild(string guildId);
 	};
 }
 #endif

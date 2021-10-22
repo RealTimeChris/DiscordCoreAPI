@@ -183,9 +183,9 @@ namespace DiscordCoreInternal {
 
 		task<void> removeRoleFromGuildMemberAsync(DiscordCoreAPI::RemoveRoleFromGuildMemberData dataPackage);
 
-		task<void> insertRoleAsync(DiscordCoreAPI::Role role);
+		void insertRole(DiscordCoreAPI::Role role);
 
-		task<void> removeRoleAsync(string roleId);
+		void removeRole(string roleId);
 	};
 }
 #endif

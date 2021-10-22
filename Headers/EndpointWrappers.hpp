@@ -147,9 +147,9 @@ namespace DiscordCoreAPI {
 		static task<Channel> getDMChannelAsync(GetDMChannelData dataPackage);
 
 	protected:
-		static task<void> insertChannelAsync(Channel dataPackage);
+		static void insertChannel(Channel dataPackage);
 
-		static task<void> removeChannelAsync(string channelId);
+		static void removeChannel(string channelId);
 	};
 	/**@}*/
 
@@ -202,9 +202,9 @@ namespace DiscordCoreAPI {
 		static task<vector<Guild>> getAllGuildsAsync();
 
 	protected:
-		static task<void> insertGuildAsync(Guild Guild);
+		static void insertGuild(Guild Guild);
 
-		static task<void> removeGuildAsync(Guild Guild);
+		static void removeGuild(Guild Guild);
 	};
 	/**@}*/
 
@@ -233,9 +233,9 @@ namespace DiscordCoreAPI {
 		static task<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
 
 	protected:
-		static task<void> insertGuildMemberAsync(GuildMember dataPackage);
+		static void insertGuildMember(GuildMember dataPackage);
 
-		static task<void> removeGuildMemberAsync(string guildId, string guildMemberId);
+		static void removeGuildMember(string guildId, string guildMemberId);
 	};
 	/**@}*/
 
@@ -459,9 +459,9 @@ namespace DiscordCoreAPI {
 		static task<vector<Role>> updateRolePositionsAsync(UpdateRolePositionData dataPackage);
 
 	protected:
-		static task<void> insertRoleAsync(Role dataPackage);
+		static void insertRole(Role dataPackage);
 
-		static task<void> removeRoleAsync(string roleId);
+		static void removeRole(string roleId);
 	};
 	/**@}*/
 
@@ -485,7 +485,7 @@ namespace DiscordCoreAPI {
 		 static task<User> getUserAsync(GetUserData dataPackage);
 
 	protected:
-		 static task<void> insertUserAsync(User useruser);
+		 static void insertUser(User useruser);
 	};
 	/**@}*/
 

@@ -103,9 +103,9 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
 
-		task<void> insertGuildMemberAsync(DiscordCoreAPI::GuildMember guildMember, string guildId);
+		void insertGuildMember(DiscordCoreAPI::GuildMember guildMember, string guildId);
 
-		task<void> removeGuildMemberAsync(string guildId, string guildMemberId);
+		void removeGuildMember(string guildId, string guildMemberId);
 	};
 };
 #endif

@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::ApplicationData> getApplicationDataAsync();
 
-		task<void> insertUserAsync(DiscordCoreAPI::User useruser);
+		void insertUser(DiscordCoreAPI::User useruser);
 	};
 }
 #endif
