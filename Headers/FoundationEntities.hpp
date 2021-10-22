@@ -3873,7 +3873,7 @@ namespace DiscordCoreAPI {
         friend class YouTubeAPI;
         friend class SongAPI;
 
-        SongType type{ SongType::SoundCloud };///< The type of song.
+        SongType type{ SongType::SoundCloud };///< The type of song.B
         string addedByUserName{ "" };///< The user name of the individual who added this Song to the playlist.
         string addedByUserId{ "" };///< The user id of the individual who added this Song to the playlist.
         string thumbnailURL{ "" };///< The Url of the thumbnail image of this Song.
