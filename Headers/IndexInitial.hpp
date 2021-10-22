@@ -112,6 +112,7 @@ extern "C"
 #include <stdio.h>
 #include <fstream>
 #include <bitset>
+#include <future>
 #include <ppl.h>
 #include <regex>
 #include <ios>
