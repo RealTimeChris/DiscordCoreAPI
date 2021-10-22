@@ -11,7 +11,6 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "UserEntities.hpp"
-#include "ThreadManager.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -87,7 +86,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll ReactionManagerAgent : agent {
+	class DiscordCoreAPI_Dll ReactionManagerAgent :  agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -105,8 +104,6 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		static void cleanup();
-
 		DiscordCoreAPI::Reaction putObjectData(PutReactionData dataPackage);
 
 		vector<DiscordCoreAPI::User> getObjectData(GetReactionsData dataPackage);
@@ -116,15 +113,13 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll ReactionManager : ThreadContext {
+	class DiscordCoreAPI_Dll ReactionManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Reactions;
 
 		ReactionManager(ReactionManager* pointer);
-
-		~ReactionManager();
 
 	protected:
 

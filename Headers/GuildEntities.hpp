@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll GuildManagerAgent : agent {
+	class DiscordCoreAPI_Dll GuildManagerAgent :  agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -130,8 +130,6 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		static void cleanup();
-
 		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage);
 		
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage);
@@ -148,7 +146,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class DiscordCoreAPI_Dll GuildManager : ThreadContext {
+	class DiscordCoreAPI_Dll GuildManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::PermissionsConverter;

@@ -108,7 +108,7 @@ namespace DiscordCoreInternal {
 
 		UserManagerAgent();
 
-		static void intialize();
+		static void initialize();
 
 		DiscordCoreAPI::User getObjectData(GetUserData dataPackage);
 
@@ -118,11 +118,9 @@ namespace DiscordCoreInternal {
 
 		void run();
 
-		static void cleanup();
-
 	};
 
-	class DiscordCoreAPI_Dll UserManager : ThreadContext {
+	class DiscordCoreAPI_Dll UserManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;

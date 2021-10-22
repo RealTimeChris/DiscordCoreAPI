@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-    class DiscordCoreAPI_Dll ApplicationCommandManager : ThreadContext {
+    class DiscordCoreAPI_Dll ApplicationCommandManager {
     public:
 
         template <class _Ty>
@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
         void displayOptions(vector<DiscordCoreAPI::ApplicationCommandOptionData> applicationCommandOptionData);
 
         void copyOptionsData(vector<ApplicationCommandOptionData>* appCommandOptionData, vector<DiscordCoreAPI::ApplicationCommandOptionData> appCommandOptionDataSource);
-        
+
     };
 }
 

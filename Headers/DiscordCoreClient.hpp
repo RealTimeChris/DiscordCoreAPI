@@ -9,7 +9,6 @@
 #define _DISCORD_CORE_CLIENT_
 
 #include "IndexInitial.hpp"
-#include "ThreadManager.hpp"
 #include "Http.hpp"
 #include "GuildEntities.hpp"
 #include "InteractionEntities.hpp"
@@ -42,7 +41,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient : DiscordCoreInternal::ThreadContext, agent {
+	class DiscordCoreAPI_Dll DiscordCoreClient :shared_ptr<DiscordCoreInternal::ThreadContext>, agent {
 	public:
 
 		template <class _Ty>

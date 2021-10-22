@@ -57,14 +57,14 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll GuildMemberManagerAgent : agent {
+	class DiscordCoreAPI_Dll GuildMemberManagerAgent :  agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildMemberManager;
 
-		static shared_ptr<ThreadContext> threadContext;
+		static  shared_ptr<ThreadContext> threadContext;
 
 		unbounded_buffer<PatchGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::GuildMember> outGuildMemberBuffer{ nullptr };
@@ -73,9 +73,7 @@ namespace DiscordCoreInternal {
 
 		GuildMemberManagerAgent();
 
-		static void intialize();
-
-		static void cleanup();
+		static void initialize();
 
 		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage);
 
@@ -84,7 +82,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll GuildMemberManager : ThreadContext {
+	class DiscordCoreAPI_Dll GuildMemberManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -103,7 +101,7 @@ namespace DiscordCoreInternal {
 
 		task<DiscordCoreAPI::GuildMember> getCachedGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 
-		task<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage);		
+		task<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
 
 		task<void> insertGuildMemberAsync(DiscordCoreAPI::GuildMember guildMember, string guildId);
 

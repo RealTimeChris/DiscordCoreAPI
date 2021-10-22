@@ -735,6 +735,11 @@ namespace  DiscordCoreInternal {
         string tags{ "" };
         UserData user{};
     };
+    
+    enum class ThreadType {
+        Regular = 0,
+        Music = 1
+    };
 
     class DiscordCoreAPI_Dll SchedulerWrapper {
     public:
@@ -745,39 +750,28 @@ namespace  DiscordCoreInternal {
         Scheduler* scheduler{ nullptr };
     };
 
-    class DiscordCoreAPI_Dll DispatcherQueueControllerWrapper {
+    class DiscordCoreAPI_Dll ThreadContext {
     public:
-
-        DispatcherQueueControllerWrapper(shared_ptr<DispatcherQueueController> dataPackage) {
-            this->dispatcherQueueController = dataPackage;
-        }
-        shared_ptr<DispatcherQueueController> dispatcherQueueController{ nullptr };
-    };
-
-    class DiscordCoreAPI_Dll DispatcherQueueWrapper {
-    public:
-
-        DispatcherQueueWrapper(shared_ptr<DispatcherQueue> dataPackage) {
-            this->dispatcherQueue = dataPackage;
-        }
-        shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
-    };
-
-    class DiscordCoreAPI_Dll ThreadContext{
-    public:
-
-        shared_ptr<DispatcherQueueControllerWrapper> queueController{ nullptr };
-        shared_ptr<DispatcherQueueWrapper> dispatcherQueue{ nullptr };
         shared_ptr<SchedulerWrapper> scheduler{ nullptr };
+        thread threadOfExecution{};
 
-        ThreadContext();
-
-        ThreadContext(ThreadContext* threadContext);
+        ThreadContext(ThreadType threadType = ThreadType::Regular);
 
         void releaseContext();
 
         ~ThreadContext();
     };
+
+    class DiscordCoreAPI_Dll DispatcherQueueThread {
+    public:
+        shared_ptr<DispatcherQueueController> dispatcherQueueController{ nullptr };
+        shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
+
+        DispatcherQueueThread();
+
+        ~DispatcherQueueThread();
+    };
+
 
     enum class HeaderTypes {
         Bot_Auth = 0

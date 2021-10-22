@@ -10,7 +10,6 @@
 
 #include "IndexInitial.hpp"
 #include "JSONifier.hpp"
-#include "ThreadManager.hpp"
 #include "Http.hpp"
 
 namespace DiscordCoreAPI {
@@ -623,14 +622,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
-	class DiscordCoreAPI_Dll MessageCollector : DiscordCoreInternal::ThreadContext, agent {
+	class DiscordCoreAPI_Dll MessageCollector : shared_ptr<DiscordCoreInternal::ThreadContext>, agent {
 	public:
 
 		friend class DiscordCoreClient;
 		 
 		 MessageCollector() :
-			ThreadContext(*DiscordCoreInternal::ThreadManager::getThreadContext().get()),
-			agent(*DiscordCoreInternal::ThreadManager::getThreadContext().get()->scheduler->scheduler) {
+			 shared_ptr<DiscordCoreInternal::ThreadContext>(new DiscordCoreInternal::ThreadContext()),
+			 agent(*this->get()->scheduler->scheduler) {
 			
 		}
 
@@ -720,8 +719,6 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		static void cleanup();
-
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage);
 
 		vector<DiscordCoreAPI::Message> getObjectData(GetMessagesData dataPackage);
@@ -747,7 +744,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll MessageManager : ThreadContext {
+	class DiscordCoreAPI_Dll MessageManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -755,8 +752,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Messages;
 
 		MessageManager(MessageManager* pointer);
-
-		~MessageManager();
 
 	protected:
 

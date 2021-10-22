@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll ChannelManagerAgent : agent {
+	class DiscordCoreAPI_Dll ChannelManagerAgent :  agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -99,8 +99,6 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		static void cleanup();
-
 		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage);
 
 		DiscordCoreAPI::Channel postObjectData(GetDMChannelData dataPackage);
@@ -117,7 +115,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class DiscordCoreAPI_Dll ChannelManager : ThreadContext {
+	class DiscordCoreAPI_Dll ChannelManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;

@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
-	class DiscordCoreAPI_Dll VoiceConnection: DiscordCoreInternal::ThreadContext, agent{
+	class DiscordCoreAPI_Dll VoiceConnection: shared_ptr<DiscordCoreInternal::ThreadContext>, agent{
 	public:
 
 		friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, SoundCloudAPI* soundCloudAPI);

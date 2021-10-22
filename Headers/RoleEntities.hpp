@@ -129,8 +129,6 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		static void cleanup();
-
 		vector<DiscordCoreAPI::Role> getObjectData(GetRolesData  dataPackage);
 
 		DiscordCoreAPI::Role patchObjectData(PatchRoleData dataPackage);
@@ -148,7 +146,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll RoleManager : ThreadContext {
+	class DiscordCoreAPI_Dll RoleManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::PermissionsConverter;
@@ -176,7 +174,7 @@ namespace DiscordCoreInternal {
 		task<DiscordCoreAPI::Role> createRoleAsync(DiscordCoreAPI::CreateRoleData dataPackage);
 
 		task<vector<DiscordCoreAPI::Role>> updateRolePositionsAsync(DiscordCoreAPI::UpdateRolePositionData dataPackage);
-		
+
 		task<DiscordCoreAPI::Role> updateRoleAsync(DiscordCoreAPI::UpdateRoleData dataPackage);
 
 		task<void> removeRoleFromGuildAsync(DiscordCoreAPI::RemoveRoleFromGuildData dataPackage);

@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll StickerManagerAgent : agent {
+	class DiscordCoreAPI_Dll StickerManagerAgent :agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -41,14 +41,12 @@ namespace DiscordCoreInternal {
 
 		StickerManagerAgent();
 
-		static void intialize();
-
-		static void cleanup();
+		static void initialize();
 
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll StickerManager : ThreadContext {
+	class DiscordCoreAPI_Dll StickerManager : shared_ptr<ThreadContext> {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -56,8 +54,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Guild;
 
 		StickerManager(StickerManager* pointer);
-
-		~StickerManager();
 	};
 };
 #endif
