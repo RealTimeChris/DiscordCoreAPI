@@ -10,6 +10,7 @@
 
 #include "IndexInitial.hpp"
 #include "DiscordCoreClient.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -114,37 +115,37 @@ namespace DiscordCoreAPI {
 		/// Collects a Channel from the library's cache. \brief Collects a Channel from the library's cache.		
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A task containing a Channel.
-		static task<Channel> getCachedChannelAsync(GetChannelData dataPackage);
+		static CoRoutine<Channel> getCachedChannelAsync(GetChannelData dataPackage);
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A task containing a Channel.
-		static task<Channel> getChannelAsync(GetChannelData dataPackage);
+		static CoRoutine<Channel> getChannelAsync(GetChannelData dataPackage);
 
 		/// Modifies a Channel's properties. \brief Modifies a Channel's properties.
 		/// \param dataPackage A ModifyChannelData structure.
 		/// \returns A task containing a Channel.
-		static task<Channel> modifyChannelAsync(ModifyChannelData dataPackage);
+		static CoRoutine<Channel> modifyChannelAsync(ModifyChannelData dataPackage);
 
 		/// Delete a channel, or close a private message. \brief Delete a channel, or close a private message.
 		/// \param dataPackage A DeleteChannelData structure.
 		/// \returns A task containing a Channel.
-		static task<void> deleteChannelAsync(DeleteChannelData dataPackage);
+		static CoRoutine<void> deleteChannelAsync(DeleteChannelData dataPackage);
 
 		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A EditChannelPermissionOverwritesData structure.
 		/// \returns A task containing void.
-		static task<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
+		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
 		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure.
 		/// \returns A task containing void.
-		static task<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
+		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
 
 		/// Collect a direct-Message Channel between the bot and the User. \brief Collect a direct-Message Channel between the bot and the User.
 		/// \param dataPackage A GetDMChannelData structure.
 		/// \returns A task containing a Channel.
-		static task<Channel> getDMChannelAsync(GetDMChannelData dataPackage);
+		static CoRoutine<Channel> getDMChannelAsync(GetDMChannelData dataPackage);
 
 	protected:
 		static void insertChannel(Channel dataPackage);
@@ -165,41 +166,41 @@ namespace DiscordCoreAPI {
 		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
 		/// \param dataPackage A GetAuditLogData structure.
 		/// \returns A task containing AuditLogData.
-		static task<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
+		static CoRoutine<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
 
 		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A task containing a Guild.
-		static task<Guild> getCachedGuildAsync(GetGuildData dataPackage);
+		static CoRoutine<Guild> getCachedGuildAsync(GetGuildData dataPackage);
 
 		/// Collects a Guild from the Discord servers. \brief Collects a Guild from the Discord servers.
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A task containing a Guild.
-		static task<Guild> getGuildAsync(GetGuildData dataPackage);
+		static CoRoutine<Guild> getGuildAsync(GetGuildData dataPackage);
 
 		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.
 		/// \returns A task containing InviteData.
-		static task<InviteData> getInviteAsync(GetInviteData dataPackage);
+		static CoRoutine<InviteData> getInviteAsync(GetInviteData dataPackage);
 
 		/// Getes multiple invites from the Discord servers. \brief Getes multiple invites from the Discord servers.
 		/// \param dataPackage A GetInvitesData structure.
 		/// \returns A task containing a vector of InviteData.
-		static task<vector<InviteData>> getInvitesAsync(GetInvitesData dataPackage);
+		static CoRoutine<vector<InviteData>> getInvitesAsync(GetInvitesData dataPackage);
 
 		/// Getes the vanity invite data from a particular server. \brief Getes the vanity invite data from a particular server.
 		/// \param dataPackage A GetVanityInviteData structure.
 		/// \returns A task containing InviteData.
-		static task<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage);
+		static CoRoutine<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage);
 
 		/// Bans a GuildMember. \brief Bans a GuildMember.
 		/// \param dataPackage A CreateGuildBanData structure.
 		/// \returns A task containing BanData.
-		static task<BanData> createGuildBanAsync(CreateGuildBanData dataPackage);
+		static CoRoutine<BanData> createGuildBanAsync(CreateGuildBanData dataPackage);
 
 		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
 		/// \returns A task containing a vector of Guild.
-		static task<vector<Guild>> getAllGuildsAsync();
+		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 
 	protected:
 		static void insertGuild(Guild Guild);

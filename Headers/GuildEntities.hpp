@@ -17,6 +17,7 @@
 #include "GuildMemberEntities.hpp"
 #include "UserEntities.hpp"
 #include "RoleEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -68,15 +69,16 @@ namespace DiscordCoreAPI {
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
-
+		
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::GuildManagerAgent;
 		friend class DiscordCoreInternal::GuildManager;
+		template<typename returnValueType>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend struct OnGuildCreationData;
 		friend struct OnGuildDeletionData;
 		friend struct OnGuildUpdateData;
 		friend class DiscordCoreClient;
-
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
 		/// \returns A shared_ptr containing the voice connection.
@@ -89,7 +91,7 @@ namespace DiscordCoreAPI {
 		/// Checks if we are currently connected to a voice Channel. \brief Checks if we are currently connected to a voice Channel.
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
-		
+
 	protected:
 
 		bool areWeConnectedBool{ false };
@@ -162,21 +164,21 @@ namespace DiscordCoreInternal {
 
 		overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* cache{};
 
-		task<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 
-		task<vector<DiscordCoreAPI::Guild>> getAllGuildsAsync();
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Guild>> getAllGuildsAsync();
 
-		task<DiscordCoreAPI::Guild> getGuildAsync(DiscordCoreAPI::GetGuildData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Guild> getGuildAsync(DiscordCoreAPI::GetGuildData dataPackage);
 
-		task<DiscordCoreAPI::Guild> getCachedGuildAsync(DiscordCoreAPI::GetGuildData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Guild> getCachedGuildAsync(DiscordCoreAPI::GetGuildData dataPackage);
 
-		task<DiscordCoreAPI::BanData> createGuildBanAsync(DiscordCoreAPI::CreateGuildBanData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::BanData> createGuildBanAsync(DiscordCoreAPI::CreateGuildBanData dataPackage);
 
-		task<vector<DiscordCoreAPI::InviteData>> getInvitesAsync(DiscordCoreAPI::GetInvitesData dataPackage);
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::InviteData>> getInvitesAsync(DiscordCoreAPI::GetInvitesData dataPackage);
 
-		task<DiscordCoreAPI::InviteData> getInviteAsync(DiscordCoreAPI::GetInviteData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InviteData> getInviteAsync(DiscordCoreAPI::GetInviteData dataPackage);
 
-		task<DiscordCoreAPI::InviteData> getVanityInviteAsync(DiscordCoreAPI::GetVanityInviteData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InviteData> getVanityInviteAsync(DiscordCoreAPI::GetVanityInviteData dataPackage);
 
 		void insertGuild(DiscordCoreAPI::Guild Guild);
 

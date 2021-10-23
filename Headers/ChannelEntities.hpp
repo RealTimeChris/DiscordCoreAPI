@@ -61,6 +61,8 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::ChannelManagerAgent;
 		friend class DiscordCoreInternal::ChannelManager;
+		template<typename returnValueType>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend struct OnChannelDeletionData;
 		friend struct OnChannelCreationData;
 		friend struct OnChannelUpdateData;
@@ -131,19 +133,21 @@ namespace DiscordCoreInternal {
 
 		overwrite_buffer<map<string, DiscordCoreAPI::Channel>>* cache{};
 
-		task<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 
-		task<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 
-		task<DiscordCoreAPI::Channel> modifyChannelAsync(DiscordCoreAPI::ModifyChannelData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> modifyChannelAsync(DiscordCoreAPI::ModifyChannelData dataPackage);
 
-		task<void> deleteChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
 
-		task<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
+		
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel>  getCachedChannelAsyncToBeWrapped(DiscordCoreAPI::GetChannelData dataPackage);
 
-		task<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
 
-		task<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 
