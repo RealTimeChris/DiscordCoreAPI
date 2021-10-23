@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
         bool startMe();
 
-        static task<SongDecoder*> generateSongDecoder(BuildSongDecoderData dataPackage);
+        static CoRoutine<SongDecoder*> generateSongDecoder(BuildSongDecoderData dataPackage);
 
         void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
 

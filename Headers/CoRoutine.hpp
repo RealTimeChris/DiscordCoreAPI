@@ -10,55 +10,66 @@
 
 namespace DiscordCoreAPI {
 
+    auto NewThreadAwaitable(jthread& out) {
+        struct awaitable {
+            jthread* p_out;
+            bool await_ready() { return false; };
+            void await_suspend(coroutine_handle<>handle) {
+                std::jthread& out = *p_out;
+                if (out.joinable()) {
+                    throw std::runtime_error("Output jthread parameter not empty");
+                }                    
+                out = std::jthread([handle] { handle.resume(); });
+                std::cout << "New thread ID: " << out.get_id() << '\n';
+            }
+            void await_resume() {};
+        };
+        return awaitable{ &out };
+    }
 
     template<typename returnType>
     struct CoRoutine {
         struct promise_type;
 
-        std::coroutine_handle<promise_type> coroutineHandle;
-        bool haveWeReturned{ false };
+        coroutine_handle<promise_type> coroutineHandle;
 
-        CoRoutine(std::coroutine_handle<promise_type> h) : coroutineHandle(h) {};
+        CoRoutine(coroutine_handle<promise_type> h) : coroutineHandle(h) {};
         ~CoRoutine() {
-            if (coroutineHandle) coroutineHandle.destroy();
+            if (coroutineHandle && coroutineHandle.done()) {
+                coroutineHandle.destroy();
+            };
         }
 
         returnType get() {
-            if (this->haveWeReturned) {
-                return returnType();
-            }
-            this->haveWeReturned = true;
-            std::cout << "Thread in get() " << std::this_thread::get_id() << "\n";
-            std::thread t([this] { coroutineHandle.resume(); });
-            t.join();
-            return *coroutineHandle.promise().result.get();
+            return coroutineHandle.promise().result;
         }
     protected:
         struct promise_type {
-            shared_ptr<returnType> result = shared_ptr<returnType>(new returnType());
+            returnType result = returnType();
 
             promise_type() {}
             ~promise_type() {}
 
             auto get_return_object() {
-                return CoRoutine{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
             }
             void return_value(returnType v) {
-                std::cout << "        promise_type::return_value:  "
-                    << "std::this_thread::get_id(): "
-                    << std::this_thread::get_id() << '\n';
+                cout << "        promise_type::return_value:  "
+                    << "this_thread::get_id(): "
+                    << this_thread::get_id() << '\n';
+                this->result = v;
             }
-            std::suspend_always initial_suspend() {
+            suspend_always initial_suspend() {
                 return{};
             }
-            std::suspend_always final_suspend() noexcept {
-                std::cout << "        promise_type::final_suspend:  "
-                    << "std::this_thread::get_id(): "
-                    << std::this_thread::get_id() << '\n';
+            suspend_always final_suspend() noexcept {
+                cout << "        promise_type::final_suspend:  "
+                    << "this_thread::get_id(): "
+                    << this_thread::get_id() << '\n';
                 return{};
             }
             void unhandled_exception() {
-                std::exit(1);
+                exit(1);
             }
         };
     };
@@ -68,10 +79,10 @@ namespace DiscordCoreAPI {
     public:
         struct promise_type;
 
-        std::coroutine_handle<promise_type> coroutineHandle;
+        coroutine_handle<promise_type> coroutineHandle;
         bool haveWeReturned{ false };
 
-        CoRoutine(std::coroutine_handle<promise_type> h) : coroutineHandle(h) {};
+        CoRoutine(coroutine_handle<promise_type> h) : coroutineHandle(h) {};
         ~CoRoutine() {
             if (coroutineHandle) coroutineHandle.destroy();
         }
@@ -81,33 +92,33 @@ namespace DiscordCoreAPI {
                 return;
             }
             this->haveWeReturned = true;
-            std::cout << "Thread in get() " << std::this_thread::get_id() << "\n";
-            std::thread t([this] { coroutineHandle.resume(); });
+            cout << "Thread in get() " << this_thread::get_id() << "\n";
+            thread t([this] { coroutineHandle.resume(); });
             t.join();
             return;
         }
 
         struct promise_type {
-            void* result;
+            void* result{ nullptr };
 
             promise_type() {};
             ~promise_type() {};
 
             auto get_return_object() {
-                return CoRoutine{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
             }
             void return_void() {}
-            std::suspend_always initial_suspend() {
+            suspend_always initial_suspend() {
                 return{};
             }
-            std::suspend_always final_suspend() noexcept {
-                std::cout << "        promise_type::final_suspend:  "
-                    << "std::this_thread::get_id(): "
-                    << std::this_thread::get_id() << '\n';
+            suspend_always final_suspend() noexcept {
+                cout << "        promise_type::final_suspend:  "
+                    << "this_thread::get_id(): "
+                    << this_thread::get_id() << '\n';
                 return{};
             }
             void unhandled_exception() {
-                std::exit(1);
+                exit(1);
             }
         };
         promise_type promise{};

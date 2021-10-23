@@ -42,6 +42,8 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
 		friend class DiscordCoreInternal::GuildMemberManagerAgent;
 		friend class DiscordCoreInternal::GuildMemberManager;
+		template <typename returnVal>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend struct GetGuildMemberRolesData;
 		friend struct OnGuildMemberUpdateData;
 		friend struct OnGuildMemberAddData;
@@ -82,7 +84,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll GuildMemberManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll GuildMemberManager {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -97,11 +99,11 @@ namespace DiscordCoreInternal {
 
 		overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>* cache{};
 
-		task<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 
-		task<DiscordCoreAPI::GuildMember> getCachedGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getCachedGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 
-		task<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
 
 		void insertGuildMember(DiscordCoreAPI::GuildMember guildMember, string guildId);
 

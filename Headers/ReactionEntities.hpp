@@ -74,6 +74,8 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Reaction>;
 		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::ReactionManager;
+		template<typename returnValueType>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend struct OnReactionAddData;
 		friend class DiscordCoreClient;
 
@@ -113,7 +115,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll ReactionManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll ReactionManager {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -123,17 +125,17 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		task<DiscordCoreAPI::Reaction> createReactionAsync(DiscordCoreAPI::CreateReactionData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Reaction> createReactionAsync(DiscordCoreAPI::CreateReactionData dataPackage);
 
-		task<vector<DiscordCoreAPI::User>> getReactionsAsync(DiscordCoreAPI::GetReactionsData dataPackage);
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::User>> getReactionsAsync(DiscordCoreAPI::GetReactionsData dataPackage);
 
-		task<void> deleteOwnReactionAsync(DiscordCoreAPI::DeleteOwnReactionData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteOwnReactionAsync(DiscordCoreAPI::DeleteOwnReactionData dataPackage);
 
-		task<void> deleteUserReactionAsync(DiscordCoreAPI::DeleteUserReactionData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteUserReactionAsync(DiscordCoreAPI::DeleteUserReactionData dataPackage);
 
-		task<void> deleteAllReactionsAsync(DiscordCoreAPI::DeleteAllReactionsData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteAllReactionsAsync(DiscordCoreAPI::DeleteAllReactionsData dataPackage);
 
-		task<void> deleteReactionsByEmojiAsync(DiscordCoreAPI::DeleteReactionsByEmojiData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteReactionsByEmojiAsync(DiscordCoreAPI::DeleteReactionsByEmojiData dataPackage);
 	};
 }
 #endif

@@ -602,6 +602,8 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Message>;
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
+		template<typename returnValueType>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend struct OnMessageCreationData;
 		friend struct OnMessageUpdateData;
 		friend class DiscordCoreClient;
@@ -638,19 +640,16 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of milliseconds to wait for Messages before returning the results.
 		/// \param userIdNew User id to set for possible comparison.
 		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
-		/// \returns A task containing MessageCollectorReturnData.
-		task<MessageCollectorReturnData>  collectMessages(__int32 quantityToCollect, __int32 msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) {
+		/// \returns A DiscordCoreAPI::CoRoutine containing MessageCollectorReturnData.
+		DiscordCoreAPI::CoRoutine<MessageCollectorReturnData>  collectMessages(__int32 quantityToCollect, __int32 msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) {
 			this->quantityOfMessageToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
 			this->userId = userIdNew;
 			this->messagesBuffer = new unbounded_buffer<Message>();
 			MessageCollector::messagesBufferMap.insert_or_assign(this->userId, this->messagesBuffer);
-			apartment_context mainThread{};
-			co_await resume_background();
 			this->start();
 			wait(this);
-			co_await mainThread;
 			co_return this->messageReturnData;
 		}
 
@@ -744,7 +743,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll MessageManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll MessageManager {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -755,27 +754,27 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		task<std::optional<vector<DiscordCoreAPI::Message>>> getMessagesAsync(DiscordCoreAPI::GetMessagesData dataPackage);
+		DiscordCoreAPI::CoRoutine<std::optional<vector<DiscordCoreAPI::Message>>> getMessagesAsync(DiscordCoreAPI::GetMessagesData dataPackage);
 
-		task<DiscordCoreAPI::Message> getMessageAsync(DiscordCoreAPI::GetMessageData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> getMessageAsync(DiscordCoreAPI::GetMessageData dataPackage);
 
-		task<DiscordCoreAPI::Message> createMessageAsync(DiscordCoreAPI::CreateMessageData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> createMessageAsync(DiscordCoreAPI::CreateMessageData dataPackage);
 
-		task<DiscordCoreAPI::Message> replyAsync(DiscordCoreAPI::ReplyMessageData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> replyAsync(DiscordCoreAPI::ReplyMessageData dataPackage);
 
-		task<DiscordCoreAPI::Message> editMessageAsync(DiscordCoreAPI::EditMessageData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> editMessageAsync(DiscordCoreAPI::EditMessageData dataPackage);
 
-		task<void> deleteMessageAsync(DiscordCoreAPI::DeleteMessageData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteMessageAsync(DiscordCoreAPI::DeleteMessageData dataPackage);
 
-		task<void> deleteMessagesBulkAsync(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> deleteMessagesBulkAsync(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
 
-		task<DiscordCoreAPI::Message> crosspostMessageAsync(DiscordCoreAPI::CrosspostMessageData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> crosspostMessageAsync(DiscordCoreAPI::CrosspostMessageData dataPackage);
 
-		task<vector<DiscordCoreAPI::Message>> getPinnedMessagesAsync(DiscordCoreAPI::GetPinnedMessagesData dataPackage);
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Message>> getPinnedMessagesAsync(DiscordCoreAPI::GetPinnedMessagesData dataPackage);
 
-		task<void> pinMessageAsync(DiscordCoreAPI::PinMessageData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> pinMessageAsync(DiscordCoreAPI::PinMessageData dataPackage);
 
-		task<DiscordCoreAPI::Message> sendDMAsync(DiscordCoreAPI::SendDMData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> sendDMAsync(DiscordCoreAPI::SendDMData dataPackage);
 	};
 }
 #endif

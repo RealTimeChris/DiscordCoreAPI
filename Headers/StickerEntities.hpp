@@ -19,6 +19,8 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Sticker>;
 		friend class DiscordCoreInternal::StickerManagerAgent;
 		friend class DiscordCoreInternal::StickerManager;
+		template<typename returnValueType>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend class Guild;
 
 		Sticker();
@@ -46,7 +48,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll StickerManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll StickerManager {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;

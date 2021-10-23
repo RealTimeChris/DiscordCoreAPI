@@ -38,6 +38,8 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::UserManagerAgent;
 		friend class DiscordCoreInternal::UserManager;
+		template<typename returnValueType>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend struct OnGuildMemberRemoveData;
 		friend struct OnGuildBanRemoveData;
 		friend struct OnGuildBanAddData;
@@ -120,7 +122,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class DiscordCoreAPI_Dll UserManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll UserManager {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -135,15 +137,15 @@ namespace DiscordCoreInternal {
 
 		overwrite_buffer<map<string, DiscordCoreAPI::User>>* cache{};
 
-		task<DiscordCoreAPI::User> getCurrentUserAsync();
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getCurrentUserAsync();
 
-		task<DiscordCoreAPI::User> getCachedUserAsync(DiscordCoreAPI::GetUserData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getCachedUserAsync(DiscordCoreAPI::GetUserData dataPackage);
 
-		task<DiscordCoreAPI::User> getUserAsync(DiscordCoreAPI::GetUserData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getUserAsync(DiscordCoreAPI::GetUserData dataPackage);
 
-		task<void> leaveGuildAsync(DiscordCoreAPI::LeaveGuildData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> leaveGuildAsync(DiscordCoreAPI::LeaveGuildData dataPackage);
 
-		task<DiscordCoreAPI::ApplicationData> getApplicationDataAsync();
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationData> getApplicationDataAsync();
 
 		void insertUser(DiscordCoreAPI::User useruser);
 	};

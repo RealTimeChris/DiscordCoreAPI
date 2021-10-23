@@ -125,6 +125,8 @@ namespace DiscordCoreAPI {
         friend struct OnApplicationCommandDeletionData;
         friend struct OnApplicationCommandCreationData;
         friend struct OnApplicationCommandUpdateData;
+        template<typename returnValueType>
+        friend struct DiscordCoreAPI::CoRoutine;
         friend class DiscordCoreClient;
 
     protected:
@@ -155,39 +157,39 @@ namespace DiscordCoreInternal {
 
         string applicationId{ "" };
 
-        task<vector<DiscordCoreAPI::ApplicationCommand>> getGlobalApplicationCommandsAsync();
+        DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::ApplicationCommand>> getGlobalApplicationCommandsAsync();
 
-        task<DiscordCoreAPI::ApplicationCommand> createGlobalApplicationCommandAsync(DiscordCoreAPI::CreateGlobalApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationCommand> createGlobalApplicationCommandAsync(DiscordCoreAPI::CreateGlobalApplicationCommandData dataPackage);
 
-        task<DiscordCoreAPI::ApplicationCommand> getGlobalApplicationCommandAsync(DiscordCoreAPI::GetGlobalApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationCommand> getGlobalApplicationCommandAsync(DiscordCoreAPI::GetGlobalApplicationCommandData dataPackage);
 
-        task<DiscordCoreAPI::ApplicationCommand> editGlobalApplicationCommandAsync(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationCommand> editGlobalApplicationCommandAsync(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage);
 
-        void deleteGlobalApplicationCommand(DiscordCoreAPI::DeleteGlobalApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<void> deleteGlobalApplicationCommandAsync(DiscordCoreAPI::DeleteGlobalApplicationCommandData dataPackage);
 
-        task<vector<DiscordCoreAPI::ApplicationCommand>> bulkOverwriteGlobalApplicationCommandsAsync(DiscordCoreAPI::BulkOverwriteGlobalApplicationCommandsData dataPackage);
+        DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::ApplicationCommand>> bulkOverwriteGlobalApplicationCommandsAsync(DiscordCoreAPI::BulkOverwriteGlobalApplicationCommandsData dataPackage);
 
-        task<vector<DiscordCoreAPI::ApplicationCommand>> getGuildApplicationCommandsAsync(DiscordCoreAPI::GetGuildApplicationCommandsData dataPackage);
+        DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::ApplicationCommand>> getGuildApplicationCommandsAsync(DiscordCoreAPI::GetGuildApplicationCommandsData dataPackage);
 
-        task<DiscordCoreAPI::ApplicationCommand> createGuildApplicationCommandAsync(DiscordCoreAPI::CreateGuildApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationCommand> createGuildApplicationCommandAsync(DiscordCoreAPI::CreateGuildApplicationCommandData dataPackage);
 
-        task<DiscordCoreAPI::ApplicationCommand> getGuildApplicationCommandAsync(DiscordCoreAPI::GetGuildApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationCommand> getGuildApplicationCommandAsync(DiscordCoreAPI::GetGuildApplicationCommandData dataPackage);
 
-        task<DiscordCoreAPI::ApplicationCommand> editGuildApplicationCommandAsync(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationCommand> editGuildApplicationCommandAsync(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage);
 
-        void deleteGuildApplicationCommand(DiscordCoreAPI::DeleteGuildApplicationCommandData dataPackage);
+        DiscordCoreAPI::CoRoutine<void> deleteGuildApplicationCommandAsync(DiscordCoreAPI::DeleteGuildApplicationCommandData dataPackage);
 
-        task<vector<DiscordCoreAPI::ApplicationCommand>> bulkOverwriteGuildApplicationCommandsAsync(DiscordCoreAPI::BulkOverwriteGuildApplicationCommandsData dataPackage);
+        DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::ApplicationCommand>> bulkOverwriteGuildApplicationCommandsAsync(DiscordCoreAPI::BulkOverwriteGuildApplicationCommandsData dataPackage);
 
-        task<vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(DiscordCoreAPI::GetGuildApplicationCommandPermissionsData dataPackage);
+        DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(DiscordCoreAPI::GetGuildApplicationCommandPermissionsData dataPackage);
 
-        DiscordCoreAPI::GuildApplicationCommandPermissionsData getApplicationCommandPermissions(DiscordCoreAPI::GetApplicationCommandPermissionsData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildApplicationCommandPermissionsData> getApplicationCommandPermissionsAsync(DiscordCoreAPI::GetApplicationCommandPermissionsData dataPackage);
 
-        DiscordCoreAPI::GuildApplicationCommandPermissionsData editGuildApplicationCommandPermissions(DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage);
 
-        vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> batchEditGuildApplicationCommandPermissions(DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage);
+        DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>> batchEditGuildApplicationCommandPermissionsAsync(DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage);
 
-        task<void> displayGlobalApplicationCommandsAsync();
+        DiscordCoreAPI::CoRoutine<void> displayGlobalApplicationCommandsAsync();
 
         void displayOptions(vector<DiscordCoreAPI::ApplicationCommandOptionData> applicationCommandOptionData);
 

@@ -40,8 +40,8 @@ namespace DiscordCoreAPI {
 
 		/// The base function for the command's execute function.
 		/// \param args A shared_ptr containing a copy of BaseFunctionArguments.
-		/// \returns A task containing void.
-		virtual task<void> execute(shared_ptr<BaseFunctionArguments>args) = 0;
+		/// \returns A CoRoutine containing void.
+		virtual CoRoutine<void> execute(shared_ptr<BaseFunctionArguments>args) = 0;
 		virtual BaseFunction* create() = 0;
 		virtual ~BaseFunction() {};
 	};

@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreClient(string botTokenNew);
 
-		task<void> initialize();
+		CoRoutine<void> initialize();
 
 		string getGateWayUrl();
 

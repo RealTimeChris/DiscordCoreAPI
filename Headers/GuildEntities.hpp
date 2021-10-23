@@ -148,7 +148,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class DiscordCoreAPI_Dll GuildManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll GuildManager { 
 	public:
 
 		friend class DiscordCoreAPI::PermissionsConverter;

@@ -11,8 +11,11 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
+#include "EventManager.hpp"
 
 namespace DiscordCoreAPI {
+
+    CoRoutine<void> onInputEventCreationToBeWrapped(OnInputEventCreationData dataPackage);
 
     /**
     * \addtogroup foundation_entities
@@ -1029,6 +1032,10 @@ namespace DiscordCoreAPI {
     /// A single Interaction.
     class DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
+
+        template<typename returnValueType>
+        friend struct DiscordCoreAPI::CoRoutine;
+
         Interaction(InteractionData dataPackage) {
             this->applicationId = dataPackage.applicationId;
             this->requesterId = dataPackage.requesterId;
@@ -1053,6 +1060,7 @@ namespace DiscordCoreInternal {
     class DiscordCoreAPI_Dll InteractionManagerAgent :  agent {
     protected:
 
+        friend DiscordCoreAPI::CoRoutine<void> DiscordCoreAPI::onInputEventCreationToBeWrapped(DiscordCoreAPI::OnInputEventCreationData dataPackage);
         friend class DiscordCoreAPI::DiscordCoreClient;
         friend class DiscordCoreAPI::EventHandler;
         friend class InteractionManager;
@@ -1102,7 +1110,7 @@ namespace DiscordCoreInternal {
 
     };
 
-    class DiscordCoreAPI_Dll InteractionManager : shared_ptr<ThreadContext> {
+    class DiscordCoreAPI_Dll InteractionManager {
     public:
 
         friend class DiscordCoreAPI::SelectMenuCollector;
@@ -1115,23 +1123,23 @@ namespace DiscordCoreInternal {
 
     protected:
 
-        task<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
 
-        task<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
+        DiscordCoreAPI::CoRoutine<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
 
-        task<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage);
 
-        task<DiscordCoreAPI::MessageData> editInteractionResponseAsync(DiscordCoreAPI::EditInteractionResponseData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> editInteractionResponseAsync(DiscordCoreAPI::EditInteractionResponseData dataPackage);
 
-        task<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
+        DiscordCoreAPI::CoRoutine<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
 
-        task<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
 
-        task<DiscordCoreAPI::MessageData> getFollowUpMessageAsync(DiscordCoreAPI::GetFollowUpMessageData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> getFollowUpMessageAsync(DiscordCoreAPI::GetFollowUpMessageData dataPackage);
 
-        task<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
+        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
 
-        task<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
+        DiscordCoreAPI::CoRoutine<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
     };
 };
 

@@ -920,7 +920,7 @@ namespace DiscordCoreAPI {
 
 		static void onRoleDeletion(OnRoleDeletionData dataPackage);
 
-		static task<void> onInputEventCreation(OnInputEventCreationData dataPackage);
+		static void onInputEventCreation(OnInputEventCreationData dataPackage);
 
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
 	};

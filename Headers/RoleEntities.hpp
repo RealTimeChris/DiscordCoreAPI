@@ -92,6 +92,8 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Role>;
 		friend class DiscordCoreInternal::RoleManagerAgent;
 		friend class DiscordCoreInternal::RoleManager;
+		template<typename returnValueType>
+		friend struct DiscordCoreAPI::CoRoutine;
 		friend struct OnRoleDeletionData;
 		friend struct OnRoleCreationData;
 		friend struct OnRoleUpdateData;
@@ -146,7 +148,7 @@ namespace DiscordCoreInternal {
 		void run();
 	};
 
-	class DiscordCoreAPI_Dll RoleManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll RoleManager {
 	public:
 
 		friend class DiscordCoreAPI::PermissionsConverter;
@@ -163,25 +165,25 @@ namespace DiscordCoreInternal {
 
 		overwrite_buffer<map<string, DiscordCoreAPI::Role>>* cache{};
 
-		task<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 
-		task<vector<DiscordCoreAPI::Role>> getGuildMemberRolesAsync(DiscordCoreAPI::GetGuildMemberRolesData dataPackage);
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildMemberRolesAsync(DiscordCoreAPI::GetGuildMemberRolesData dataPackage);
 
-		task<DiscordCoreAPI::Role> getRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> getRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
 
-		task<DiscordCoreAPI::Role> getCachedRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> getCachedRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
 
-		task<DiscordCoreAPI::Role> createRoleAsync(DiscordCoreAPI::CreateRoleData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> createRoleAsync(DiscordCoreAPI::CreateRoleData dataPackage);
 
-		task<vector<DiscordCoreAPI::Role>> updateRolePositionsAsync(DiscordCoreAPI::UpdateRolePositionData dataPackage);
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> updateRolePositionsAsync(DiscordCoreAPI::UpdateRolePositionData dataPackage);
 
-		task<DiscordCoreAPI::Role> updateRoleAsync(DiscordCoreAPI::UpdateRoleData dataPackage);
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> updateRoleAsync(DiscordCoreAPI::UpdateRoleData dataPackage);
 
-		task<void> removeRoleFromGuildAsync(DiscordCoreAPI::RemoveRoleFromGuildData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> removeRoleFromGuildAsync(DiscordCoreAPI::RemoveRoleFromGuildData dataPackage);
 
-		task<void> addRoleToGuildMemberAsync(DiscordCoreAPI::AddRoleToGuildMemberData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> addRoleToGuildMemberAsync(DiscordCoreAPI::AddRoleToGuildMemberData dataPackage);
 
-		task<void> removeRoleFromGuildMemberAsync(DiscordCoreAPI::RemoveRoleFromGuildMemberData dataPackage);
+		DiscordCoreAPI::CoRoutine<void> removeRoleFromGuildMemberAsync(DiscordCoreAPI::RemoveRoleFromGuildMemberData dataPackage);
 
 		void insertRole(DiscordCoreAPI::Role role);
 

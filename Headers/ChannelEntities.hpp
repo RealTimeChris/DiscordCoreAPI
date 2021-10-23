@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class DiscordCoreAPI_Dll ChannelManager : shared_ptr<ThreadContext> {
+	class DiscordCoreAPI_Dll ChannelManager {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
