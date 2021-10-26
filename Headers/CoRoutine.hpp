@@ -11,9 +11,16 @@
 namespace DiscordCoreAPI {
     /**
     * \addtogroup utilities
-    * @{ 
+    * @{
     */
-    
+
+    class InvalidState : public exception {
+    public:
+
+        explicit  InvalidState(const string& _Message) : exception(_Message.c_str()) {}
+
+    };
+
     /// The current status of the CoRoutine. \brief The current status of the CoRoutine.
     enum class CoRoutineStatus {
         Idle = 0,
@@ -55,6 +62,9 @@ namespace DiscordCoreAPI {
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns returnType The return value of the CoRoutine.
         returnType get() {
+            if (!coroutineHandle) {
+                throw InvalidState("CoRoutine is not initialized with a proper task.");
+            }
             if (coroutineHandle.promise().newThread != nullptr) {
                 if (coroutineHandle.promise().newThread->joinable()) {
                     coroutineHandle.promise().newThread->join();
@@ -67,6 +77,9 @@ namespace DiscordCoreAPI {
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         /// \returns returnType The return value of the CoRoutine.
         returnType cancel() {
+            if (!coroutineHandle) {
+                throw InvalidState("CoRoutine is not initialized with a proper task.");
+            }
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
                 if (coroutineHandle.promise().newThread->joinable()) {
@@ -84,7 +97,7 @@ namespace DiscordCoreAPI {
             jthread* newThread{ nullptr };
 
             returnType result{};
-            
+
 
             promise_type() {}
 
@@ -145,6 +158,9 @@ namespace DiscordCoreAPI {
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns void.
         void get() {
+            if (!coroutineHandle) {
+                throw InvalidState("CoRoutine is not initialized with a proper task.");
+            }
             if (coroutineHandle.promise().newThread != nullptr) {
                 if (coroutineHandle.promise().newThread->joinable()) {
                     coroutineHandle.promise().newThread->join();
@@ -157,6 +173,9 @@ namespace DiscordCoreAPI {
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         /// \returns void.
         void cancel() {
+            if (!coroutineHandle) {
+                throw InvalidState("CoRoutine is not initialized with a proper task.");
+            }
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
                 if (coroutineHandle.promise().newThread->joinable()) {
@@ -200,8 +219,7 @@ namespace DiscordCoreAPI {
 
     /// Used to acquire the CoRoutine handle from within the CoRoutine, as it is executing. \brief Used to acquire the CoRoutine handle from within the CoRoutine, as it is executing.
     /// \param returnType The type returned by the containing CoRoutined.
-    /// \returns GetCoRoutineHandleAwaitable The awaitable type.
-    template<typename returnType>
+    template<class returnType>
     auto GetCoRoutineHandleAwaitable() {
         class GetCoRoutineHandleAwaitable {
         public:
@@ -227,10 +245,8 @@ namespace DiscordCoreAPI {
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller.
     /// \param returnType The type returned by the containing CoRoutined.
-    /// \returns NewThreadAwaitable The awaitable type.
-    template<typename returnType>
+    template<class returnType>
     auto NewThreadAwaitable() {
-
         class NewThreadAwaitable {
         public:
 
@@ -247,6 +263,8 @@ namespace DiscordCoreAPI {
         };
         return NewThreadAwaitable();
     }
+    
+
     /**@}*/
 
 };
