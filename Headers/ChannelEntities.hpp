@@ -128,11 +128,9 @@ namespace DiscordCoreInternal {
 
 		ChannelManager(ChannelManager* pointer);
 
-		~ChannelManager();
-
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::Channel>>* cache{};
+		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Channel>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 

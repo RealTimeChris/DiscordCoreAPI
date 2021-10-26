@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
     public:
         struct promise_type;
 
-        CoRoutine(coroutine_handle<promise_type> h) : coroutineHandle(h) {};
+        CoRoutine(coroutine_handle<promise_type> h) : coroutineHandle(h) {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
@@ -33,20 +33,20 @@ namespace DiscordCoreAPI {
         }
 
         struct promise_type {
-            returnType result = returnType();
-
             jthread* newThread{ nullptr };
 
-            promise_type() {};
+            returnType result{};
 
-            ~promise_type() {};
+            promise_type() {}
+
+            ~promise_type() {}
+
+            void return_value(returnType returnValue) {
+                this->result = returnValue;
+            }
 
             auto get_return_object() {
                 return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
-            }
-
-            void return_value(returnType v) {
-                this->result = v;
             }
 
             suspend_never initial_suspend() {
@@ -70,6 +70,7 @@ namespace DiscordCoreAPI {
     struct CoRoutine<void> {
     public:
         struct promise_type;
+
         CoRoutine(coroutine_handle<promise_type> h) : coroutineHandle(h) {};
 
         ~CoRoutine() {
@@ -92,15 +93,15 @@ namespace DiscordCoreAPI {
 
             jthread* newThread{ nullptr };
 
-            promise_type() {};
+            promise_type() {}
 
-            ~promise_type() {};
+            ~promise_type() {}
+
+            void return_void() {}
 
             auto get_return_object() {
                 return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
             }
-
-            void return_void() {};
 
             suspend_never initial_suspend() {
                 return{};
@@ -121,13 +122,19 @@ namespace DiscordCoreAPI {
 
     template<typename returnType>
     auto NewThreadAwaitableFunction() {
+
         struct NewThreadAwaitable {
-            bool await_ready() { return false; };
+
+            bool await_ready() { 
+                return false; 
+            }
+
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
                 return true;
             }
-            void await_resume() {};
+
+            void await_resume() {}
         };
         return NewThreadAwaitable();
     }

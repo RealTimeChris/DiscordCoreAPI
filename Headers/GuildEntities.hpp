@@ -162,7 +162,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::Guild>>* cache{};
+		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Guild>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 

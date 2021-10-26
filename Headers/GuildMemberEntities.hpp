@@ -94,11 +94,9 @@ namespace DiscordCoreInternal {
 
 		GuildMemberManager(GuildMemberManager* pointer);
 
-		~GuildMemberManager();
-
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>* cache{};
+		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 

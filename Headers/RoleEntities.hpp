@@ -159,11 +159,9 @@ namespace DiscordCoreInternal {
 
 		RoleManager(RoleManager* pointer);
 
-		~RoleManager();
-
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::Role>>* cache{};
+		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Role>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 
