@@ -11,6 +11,7 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "Http.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 

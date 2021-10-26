@@ -82,13 +82,14 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
-		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
+		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };		
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
@@ -100,7 +101,7 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreClient(string botTokenNew);
 
-		void initialize();
+		CoRoutine<void> initialize();
 
 		string getGateWayUrl();
 

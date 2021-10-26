@@ -9,7 +9,6 @@
 #define _FOUNDATION_ENTITIES_
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
