@@ -1034,7 +1034,7 @@ namespace DiscordCoreAPI {
     public:
 
         template<typename returnValueType>
-        friend struct DiscordCoreAPI::CoRoutine;
+        friend class DiscordCoreAPI::CoRoutine;
 
         Interaction(InteractionData dataPackage) {
             this->applicationId = dataPackage.applicationId;

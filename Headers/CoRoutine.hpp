@@ -11,9 +11,9 @@
 namespace DiscordCoreAPI {
 
     template<typename returnType>
-    struct CoRoutine {
+    class CoRoutine {
     public:
-        struct promise_type;
+        class promise_type;
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
@@ -32,7 +32,8 @@ namespace DiscordCoreAPI {
             return coroutineHandle.promise().result;
         }
 
-        struct promise_type {
+        class promise_type {
+        public:
             jthread* newThread{ nullptr };
 
             returnType result{};
@@ -67,9 +68,9 @@ namespace DiscordCoreAPI {
     };
 
     template<>
-    struct CoRoutine<void> {
+    class CoRoutine<void> {
     public:
-        struct promise_type;
+        class promise_type;
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
@@ -89,7 +90,8 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        struct promise_type {
+        class promise_type {
+        public:
             jthread* newThread{ nullptr };
 
             promise_type() {}
@@ -122,7 +124,8 @@ namespace DiscordCoreAPI {
     template<typename returnType>
     auto NewThreadAwaitableFunction() {
 
-        struct NewThreadAwaitable {
+        class NewThreadAwaitable {
+        public:
 
             bool await_ready() { 
                 return false; 

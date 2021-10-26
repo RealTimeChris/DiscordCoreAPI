@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::RoleManagerAgent;
 		friend class DiscordCoreInternal::RoleManager;
 		template<typename returnValueType>
-		friend struct DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnRoleDeletionData;
 		friend struct OnRoleCreationData;
 		friend struct OnRoleUpdateData;

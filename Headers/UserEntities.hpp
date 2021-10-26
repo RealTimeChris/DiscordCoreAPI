@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::UserManagerAgent;
 		friend class DiscordCoreInternal::UserManager;
 		template<typename returnValueType>
-		friend struct DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnGuildMemberRemoveData;
 		friend struct OnGuildBanRemoveData;
 		friend struct OnGuildBanAddData;

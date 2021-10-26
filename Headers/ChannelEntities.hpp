@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::ChannelManagerAgent;
 		friend class DiscordCoreInternal::ChannelManager;
 		template<typename returnValueType>
-		friend struct DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnChannelDeletionData;
 		friend struct OnChannelCreationData;
 		friend struct OnChannelUpdateData;

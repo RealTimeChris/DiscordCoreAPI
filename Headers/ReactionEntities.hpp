@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::ReactionManager;
 		template<typename returnValueType>
-		friend struct DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnReactionAddData;
 		friend class DiscordCoreClient;
 

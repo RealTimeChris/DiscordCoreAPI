@@ -604,7 +604,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		template<typename returnValueType>
-		friend struct DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnMessageCreationData;
 		friend struct OnMessageUpdateData;
 		friend class DiscordCoreClient;

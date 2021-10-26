@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::StickerManagerAgent;
 		friend class DiscordCoreInternal::StickerManager;
 		template<typename returnValueType>
-		friend struct DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreAPI::CoRoutine;
 		friend class Guild;
 
 		Sticker();

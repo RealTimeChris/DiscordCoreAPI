@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::GuildManagerAgent;
 		friend class DiscordCoreInternal::GuildManager;
 		template<typename returnValueType>
-		friend struct DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnGuildCreationData;
 		friend struct OnGuildDeletionData;
 		friend struct OnGuildUpdateData;

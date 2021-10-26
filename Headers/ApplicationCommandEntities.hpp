@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
         friend struct OnApplicationCommandCreationData;
         friend struct OnApplicationCommandUpdateData;
         template<typename returnValueType>
-        friend struct DiscordCoreAPI::CoRoutine;
+        friend class DiscordCoreAPI::CoRoutine;
         friend class DiscordCoreClient;
 
     protected:

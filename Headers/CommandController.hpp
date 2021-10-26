@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
 	};
 
-	/// Base class DiscordCoreAPI_Dll for the command classes. \brief Base class DiscordCoreAPI_Dll for the command classes.
+	/// Base class for the command classes. \brief Base class for the command classes.
 	class DiscordCoreAPI_Dll BaseFunction {
 	public:
 		string helpDescription{ "" };///< Description of the command for the Help command.
@@ -55,8 +55,6 @@ namespace DiscordCoreAPI {
 		static void registerFunction(vector<string> functionNames, BaseFunction* baseFunction);
 
 		static void checkForAndRunCommand(CommandData commandData);
-
-		static void cleanup();
 
 	protected:
 
