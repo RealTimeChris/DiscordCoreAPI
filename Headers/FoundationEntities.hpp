@@ -765,17 +765,6 @@ namespace  DiscordCoreInternal {
         ~ThreadContext();
     };
 
-    class DiscordCoreAPI_Dll DispatcherQueueThread {
-    public:
-        shared_ptr<DispatcherQueueController> dispatcherQueueController{ nullptr };
-        shared_ptr<DispatcherQueue> dispatcherQueue{ nullptr };
-
-        DispatcherQueueThread();
-
-        ~DispatcherQueueThread();
-    };
-
-
     enum class HeaderTypes {
         Bot_Auth = 0
     };

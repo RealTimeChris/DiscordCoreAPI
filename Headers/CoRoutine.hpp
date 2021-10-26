@@ -20,9 +20,6 @@ namespace DiscordCoreAPI {
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
                 coroutineHandle.destroy();
-                if (coroutineHandle.promise().newThread->joinable()) {
-                    coroutineHandle.promise().newThread->join();
-                }
             };
         }
 
@@ -46,18 +43,12 @@ namespace DiscordCoreAPI {
                 return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
             }
             void return_value(returnType v) {
-                cout << "        promise_type::return_value:  "
-                    << "this_thread::get_id(): "
-                    << this_thread::get_id() << '\n';
                 this->result = v;
             }
             suspend_never initial_suspend() {
                 return{};
             }
             suspend_always final_suspend() noexcept {
-                cout << "        promise_type::final_suspend:  "
-                    << "this_thread::get_id(): "
-                    << this_thread::get_id() << '\n';
                 return{};
             }
             void unhandled_exception() {
@@ -78,9 +69,6 @@ namespace DiscordCoreAPI {
 
             if (coroutineHandle && coroutineHandle.done()) {
                 coroutineHandle.destroy();
-                if (coroutineHandle.promise().newThread->joinable()) {
-                    coroutineHandle.promise().newThread->join();
-                }
             };
         }
 
@@ -100,16 +88,11 @@ namespace DiscordCoreAPI {
             auto get_return_object() {
                 return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
             }
-            void return_void() {
-                cout << "        promise_type::return_value:  "
-                    << "this_thread::get_id(): "
-                    << this_thread::get_id() << '\n';
-            };
+            void return_void() {};
             suspend_never initial_suspend() {
                 return{};
             }
             suspend_always final_suspend() noexcept {
-                cout << "        promise_type::final_suspend:  " << "this_thread::get_id(): " << this_thread::get_id() << '\n';
                 return{};
             }
             void unhandled_exception() {
@@ -120,12 +103,11 @@ namespace DiscordCoreAPI {
     };
 
     template<typename R>
-    auto NewThreadAwaitableFunction() {
+    auto NewThreadAwaitable() {
         struct NewThreadAwaitable {
             bool await_ready() { return false; };
             bool await_suspend(coroutine_handle<CoRoutine<R>::promise_type>handle) {
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
-                std::cout << "New jthread ID: " << handle.promise().newThread->get_id() << '\n';
                 return true;
             }
             void await_resume() {};
