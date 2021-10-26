@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 		/// Deletes a previously sent "input-event-response". \brief Deletes a previously sent "input-event-response".
 		/// \param dataPackage A InputEventData structure.
 		/// \param timeDelayNew An int representing the desired delay until the message is deleted, in milliseconds.
-		/// \returns A task containing void.
+		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteInputEventResponseAsync(InputEventData dataPackage, __int32 timeDelayNew = 0);
 		
 	protected:
