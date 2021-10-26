@@ -10,10 +10,8 @@
 
 namespace DiscordCoreAPI {
 
-    struct NewThreadAwaitable;
-
     template<typename returnType>
-    struct CoRoutine {        
+    struct CoRoutine {
     public:
         struct promise_type;
 
@@ -67,7 +65,6 @@ namespace DiscordCoreAPI {
     protected:
         coroutine_handle<promise_type> coroutineHandle{};
     };
-
 
     template<>
     struct CoRoutine<void> {
