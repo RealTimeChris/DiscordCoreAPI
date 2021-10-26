@@ -27,11 +27,10 @@ namespace DiscordCoreAPI {
         }
 
         returnType get() {
-            if (coroutineHandle.promise().newThread == nullptr) {
-                coroutineHandle.promise().newThread = new jthread([&] {});
-            }
-            if (coroutineHandle.promise().newThread->joinable()) {
-                coroutineHandle.promise().newThread->join();
+            if (coroutineHandle.promise().newThread != nullptr) {
+                if (coroutineHandle.promise().newThread->joinable()) {
+                    coroutineHandle.promise().newThread->join();
+                }
             }
             return coroutineHandle.promise().result;
         }
@@ -86,11 +85,10 @@ namespace DiscordCoreAPI {
         }
 
         void get() {
-            if (coroutineHandle.promise().newThread == nullptr) {
-                coroutineHandle.promise().newThread = new jthread([&] {});
-            }
-            if (coroutineHandle.promise().newThread->joinable()) {
-                coroutineHandle.promise().newThread->join();
+            if (coroutineHandle.promise().newThread != nullptr) {
+                if (coroutineHandle.promise().newThread->joinable()) {
+                    coroutineHandle.promise().newThread->join();
+                }
             }
             return;
         }
