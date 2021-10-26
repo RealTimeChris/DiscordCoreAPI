@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
     public:
         struct promise_type;
 
-        CoRoutine(coroutine_handle<promise_type> h) : coroutineHandle(h) {}
+        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
     public:
         struct promise_type;
 
-        CoRoutine(coroutine_handle<promise_type> h) : coroutineHandle(h) {};
+        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
         ~CoRoutine() {
 
@@ -90,7 +90,6 @@ namespace DiscordCoreAPI {
         }
 
         struct promise_type {
-
             jthread* newThread{ nullptr };
 
             promise_type() {}
