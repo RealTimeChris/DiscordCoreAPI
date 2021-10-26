@@ -9,6 +9,7 @@
 #define _FOUNDATION_ENTITIES_
 
 #include "IndexInitial.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -38,9 +39,12 @@ namespace DiscordCoreAPI {
     class BotUser;
     class SongAPI;
     class Guilds;
+    struct Song;
     class Roles;
     class Users;
     class Guild;
+    
+    DiscordCoreAPI_Dll CoRoutine<void> voidFunction();
 
     DiscordCoreAPI_Dll bool nanoSleep(__int64 ns);
 
@@ -3854,8 +3858,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll Song {
     public:
 
-        friend void downloadAndStreamAudio(std::stop_token stopToken, Song newSong, SoundCloudAPI* soundCloudAPI);
-        friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, YouTubeAPI* youtubeAPI);
+        friend CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
+        friend CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
         friend vector<Song> cleanQueue(vector<Song> originalQueue);
         friend class DiscordCoreInternal::DataParser;
         friend class DatabaseManagerAgent;

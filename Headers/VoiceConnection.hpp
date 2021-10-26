@@ -23,8 +23,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll VoiceConnection: shared_ptr<DiscordCoreInternal::ThreadContext>, agent{
 	public:
 
-		friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, SoundCloudAPI* soundCloudAPI);
-		friend void downloadAndStreamAudio(stop_token stopToken, Song newSong, YouTubeAPI* youtubeAPI);
+		friend CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
+		friend CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 		friend class DiscordCoreClient;
 		friend class SoundCloudAPI;
 		friend class YouTubeAPI;

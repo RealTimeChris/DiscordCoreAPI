@@ -10,12 +10,23 @@
 
 namespace DiscordCoreAPI {
 
+    enum class CoRoutineStatus {
+        Idle = 0,
+        Running = 1,
+        Complete = 2,
+        Cancelled = 3
+    };
+
     template<typename returnType>
     class CoRoutine {
     public:
         class promise_type;
 
+        coroutine_handle<promise_type> coroutineHandle{};
+
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+
+        CoRoutine() {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
@@ -23,20 +34,39 @@ namespace DiscordCoreAPI {
             };
         }
 
-        returnType Get() {
+        CoRoutineStatus getStatus() {
+            return coroutineHandle.promise().currentStatus;
+        }
+
+        returnType get() {
             if (coroutineHandle.promise().newThread != nullptr) {
                 if (coroutineHandle.promise().newThread->joinable()) {
                     coroutineHandle.promise().newThread->join();
                 }
             }
+            coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+            return coroutineHandle.promise().result;
+        }
+
+        returnType cancel() {
+            if (coroutineHandle.promise().newThread != nullptr) {
+                coroutineHandle.promise().newThread->get_stop_source().request_stop();
+                if (coroutineHandle.promise().newThread->joinable()) {
+                    coroutineHandle.promise().newThread->join();
+                }
+            }
+            coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
             return coroutineHandle.promise().result;
         }
 
         class promise_type {
         public:
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+
             jthread* newThread{ nullptr };
 
             returnType result{};
+            
 
             promise_type() {}
 
@@ -51,6 +81,7 @@ namespace DiscordCoreAPI {
             }
 
             suspend_never initial_suspend() {
+                this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
@@ -62,9 +93,6 @@ namespace DiscordCoreAPI {
                 exit(1);
             }
         };
-
-    protected:
-        coroutine_handle<promise_type> coroutineHandle{};
     };
 
     template<>
@@ -72,26 +100,47 @@ namespace DiscordCoreAPI {
     public:
         class promise_type;
 
+        coroutine_handle<promise_type> coroutineHandle{};
+
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
-        ~CoRoutine() {
+        CoRoutine() {}
 
+        ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
                 coroutineHandle.destroy();
             };
         }
 
-        void Get() {
+        CoRoutineStatus getStatus() {
+            return coroutineHandle.promise().currentStatus;
+        }
+
+        void get() {
             if (coroutineHandle.promise().newThread != nullptr) {
                 if (coroutineHandle.promise().newThread->joinable()) {
                     coroutineHandle.promise().newThread->join();
                 }
             }
+            coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+            return;
+        }
+
+        void cancel() {
+            if (coroutineHandle.promise().newThread != nullptr) {
+                coroutineHandle.promise().newThread->get_stop_source().request_stop();
+                if (coroutineHandle.promise().newThread->joinable()) {
+                    coroutineHandle.promise().newThread->join();
+                }
+            }
+            coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
             return;
         }
 
         class promise_type {
         public:
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+
             jthread* newThread{ nullptr };
 
             promise_type() {}
@@ -105,6 +154,7 @@ namespace DiscordCoreAPI {
             }
 
             suspend_never initial_suspend() {
+                this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
@@ -116,19 +166,40 @@ namespace DiscordCoreAPI {
                 exit(1);
             }
         };
-
-    protected:
-        coroutine_handle<promise_type> coroutineHandle{};
     };
 
     template<typename returnType>
-    auto NewThreadAwaitableFunction() {
+    auto GetCoRoutineHandleAwaitable() {
+        class GetCoRoutineHandleAwaitable {
+        public:
+            coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
+
+            GetCoRoutineHandleAwaitable() : handleWaiter(nullptr) {}
+
+            bool await_ready() const noexcept {
+                return false;
+            }
+
+            bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+                this->handleWaiter = handle;
+                return false;
+            }
+
+            auto await_resume() {
+                return this->handleWaiter;
+            }
+        };
+        return GetCoRoutineHandleAwaitable();
+    }
+
+    template<typename returnType>
+    auto NewThreadAwaitable() {
 
         class NewThreadAwaitable {
         public:
 
-            bool await_ready() { 
-                return false; 
+            bool await_ready() {
+                return false;
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {

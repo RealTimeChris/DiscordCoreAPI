@@ -12,13 +12,14 @@
 #include "Http.hpp"
 #include "DataParsingFunctions.hpp"
 #include "VoiceConnection.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll SoundCloudAPI  {
 	public:
 
-		friend void downloadAndStreamAudio(std::stop_token stopToken, Song newSong, SoundCloudAPI* soundCloudAPI);
+		friend CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 		template <class _Ty>
 		friend 	_CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreClient;
@@ -36,10 +37,10 @@ namespace DiscordCoreAPI {
 
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
+		CoRoutine<void> currentlyRunningSong{};
 		const __int32 maxBufferSize{ 8192 };
 		SongDecoder* songDecoder{ nullptr };
 		SongEncoder* songEncoder{ nullptr };
-		std::jthread* threadOfExecution{};
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
 
