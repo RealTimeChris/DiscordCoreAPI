@@ -1060,7 +1060,6 @@ namespace DiscordCoreInternal {
     class DiscordCoreAPI_Dll InteractionManagerAgent :  agent {
     protected:
 
-        friend DiscordCoreAPI::CoRoutine<void> DiscordCoreAPI::onInputEventCreationToBeWrapped(DiscordCoreAPI::OnInputEventCreationData dataPackage);
         friend class DiscordCoreAPI::DiscordCoreClient;
         friend class DiscordCoreAPI::EventHandler;
         friend class InteractionManager;
