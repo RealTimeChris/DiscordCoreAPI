@@ -9,7 +9,12 @@
 #define _COROUTINES_
 
 namespace DiscordCoreAPI {
-
+    /**
+    * \addtogroup utilities
+    * @{ 
+    */
+    
+    /// The current status of the CoRoutine. \brief The current status of the CoRoutine.
     enum class CoRoutineStatus {
         Idle = 0,
         Running = 1,
@@ -17,10 +22,14 @@ namespace DiscordCoreAPI {
         Cancelled = 3
     };
 
+    /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
+    /// \param returnType The type of parameter that is returned by the CoRoutine.
     template<typename returnType>
     class CoRoutine {
     public:
         class promise_type;
+
+        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
         coroutine_handle<promise_type> coroutineHandle{};
 
@@ -34,10 +43,17 @@ namespace DiscordCoreAPI {
             };
         }
 
+        /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
+        /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
-            return coroutineHandle.promise().currentStatus;
+            if (coroutineHandle) {
+                this->currentStatus = coroutineHandle.promise().currentStatus;
+            }
+            return this->currentStatus;
         }
 
+        /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+        /// \returns returnType The return value of the CoRoutine.
         returnType get() {
             if (coroutineHandle.promise().newThread != nullptr) {
                 if (coroutineHandle.promise().newThread->joinable()) {
@@ -48,6 +64,8 @@ namespace DiscordCoreAPI {
             return coroutineHandle.promise().result;
         }
 
+        /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
+        /// \returns returnType The return value of the CoRoutine.
         returnType cancel() {
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
@@ -95,10 +113,13 @@ namespace DiscordCoreAPI {
         };
     };
 
+    /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     template<>
     class CoRoutine<void> {
     public:
         class promise_type;
+
+        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
         coroutine_handle<promise_type> coroutineHandle{};
 
@@ -112,10 +133,17 @@ namespace DiscordCoreAPI {
             };
         }
 
+        /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
+        /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
-            return coroutineHandle.promise().currentStatus;
+            if (coroutineHandle) {
+                this->currentStatus = coroutineHandle.promise().currentStatus;
+            }
+            return this->currentStatus;
         }
 
+        /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+        /// \returns void.
         void get() {
             if (coroutineHandle.promise().newThread != nullptr) {
                 if (coroutineHandle.promise().newThread->joinable()) {
@@ -126,6 +154,8 @@ namespace DiscordCoreAPI {
             return;
         }
 
+        /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
+        /// \returns void.
         void cancel() {
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
@@ -168,6 +198,9 @@ namespace DiscordCoreAPI {
         };
     };
 
+    /// Used to acquire the CoRoutine handle from within the CoRoutine, as it is executing. \brief Used to acquire the CoRoutine handle from within the CoRoutine, as it is executing.
+    /// \param returnType The type returned by the containing CoRoutined.
+    /// \returns GetCoRoutineHandleAwaitable The awaitable type.
     template<typename returnType>
     auto GetCoRoutineHandleAwaitable() {
         class GetCoRoutineHandleAwaitable {
@@ -192,6 +225,9 @@ namespace DiscordCoreAPI {
         return GetCoRoutineHandleAwaitable();
     }
 
+    /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller.
+    /// \param returnType The type returned by the containing CoRoutined.
+    /// \returns NewThreadAwaitable The awaitable type.
     template<typename returnType>
     auto NewThreadAwaitable() {
 
@@ -211,6 +247,7 @@ namespace DiscordCoreAPI {
         };
         return NewThreadAwaitable();
     }
+    /**@}*/
 
 };
 #endif 
