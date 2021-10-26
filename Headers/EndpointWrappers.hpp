@@ -336,7 +336,7 @@ namespace DiscordCoreAPI {
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
 		/// \param dataPackage A GetMessagesData structure.
 		/// \returns A CoRoutine containing an optional vector of Message.
-		static CoRoutine<std::optional<vector<Message>>> getMessagesAsync(GetMessagesData dataPackage);
+		static CoRoutine<vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.

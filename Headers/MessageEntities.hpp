@@ -755,7 +755,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		DiscordCoreAPI::CoRoutine<std::optional<vector<DiscordCoreAPI::Message>>> getMessagesAsync(DiscordCoreAPI::GetMessagesData dataPackage);
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Message>> getMessagesAsync(DiscordCoreAPI::GetMessagesData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> getMessageAsync(DiscordCoreAPI::GetMessageData dataPackage);
 
