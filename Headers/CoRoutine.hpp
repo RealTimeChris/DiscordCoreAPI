@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
         };
     };
 
-    /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
+    /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization)
     template<>
     class CoRoutine<void> {
     public:
