@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 		friend class StickerManager;
 
 		static overwrite_buffer<map<string, DiscordCoreAPI::Sticker>> cache;
-		static shared_ptr<ThreadContext> threadContext;
+		static ThreadContext threadContext;
 
 		StickerManagerAgent();
 

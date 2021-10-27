@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildMemberManager;
 
-		static  shared_ptr<ThreadContext> threadContext;
+		static  ThreadContext threadContext;
 
 		unbounded_buffer<PatchGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
 		unbounded_buffer<DiscordCoreAPI::GuildMember> outGuildMemberBuffer{ nullptr };

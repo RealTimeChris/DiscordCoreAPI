@@ -1065,7 +1065,7 @@ namespace DiscordCoreInternal {
         friend class InteractionManager;
 
         static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
-        static shared_ptr<ThreadContext> threadContext;
+        static ThreadContext threadContext;
 
         unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
         unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer{ nullptr };
@@ -1159,7 +1159,7 @@ namespace DiscordCoreAPI {
     };
 
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
-    class DiscordCoreAPI_Dll SelectMenuCollector : shared_ptr<DiscordCoreInternal::ThreadContext>, public agent {
+    class DiscordCoreAPI_Dll SelectMenuCollector : DiscordCoreInternal::ThreadContext, public agent {
     public:
         friend class DiscordCoreClient;
 
@@ -1211,7 +1211,7 @@ namespace DiscordCoreAPI {
     };
 
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
-    class DiscordCoreAPI_Dll ButtonCollector : shared_ptr<DiscordCoreInternal::ThreadContext>, public agent {
+    class DiscordCoreAPI_Dll ButtonCollector : DiscordCoreInternal::ThreadContext, public agent {
     public:
         friend class DiscordCoreClient;
 

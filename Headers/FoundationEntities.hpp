@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
     class Roles;
     class Users;
     class Guild;
-    
+
     DiscordCoreAPI_Dll CoRoutine<void> voidFunction();
 
     DiscordCoreAPI_Dll bool nanoSleep(__int64 ns);
@@ -53,14 +53,14 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll StopWatch {
     public:
 
-        StopWatch( __int64 maxNumberOfMsNew) {
+        StopWatch(__int64 maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew;
             this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
         }
 
         bool hasTimePassed() {
-             __int64 currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
-             __int64 elapsedTime = currentTime - this->startTime;
+            __int64 currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            __int64 elapsedTime = currentTime - this->startTime;
             if (elapsedTime >= this->maxNumberOfMs) {
                 return true;
             }
@@ -75,15 +75,15 @@ namespace DiscordCoreAPI {
 
     protected:
 
-         __int64 maxNumberOfMs{ 0 };
-         __int64 startTime{ 0 };
+        __int64 maxNumberOfMs{ 0 };
+        __int64 startTime{ 0 };
     };
 
     template <typename T>
     bool waitForTimeToPass(unbounded_buffer<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
-    StopWatch stopWatch(timeInMsNew);
-    bool doWeBreak{ false };
-    while (!try_receive(outBuffer, *argOne)) {
+        StopWatch stopWatch(timeInMsNew);
+        bool doWeBreak{ false };
+        while (!try_receive(outBuffer, *argOne)) {
             concurrency::wait(10);
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
     }
 
     template <typename ...T>
-    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction,  __int32 timeDelayInMs, bool isRepeating, T... args) {
+    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0) {
             TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
@@ -215,7 +215,7 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll string getTimeAndDate();
     /**@}*/
 
-    /** 
+    /**
     * \addtogroup foundation_entities
     * @{
     */
@@ -737,12 +737,12 @@ namespace  DiscordCoreInternal {
         string guildId{ "" };
         string packId{ "" };
         string asset{ "" };
-        StickerType type{};        
+        StickerType type{};
         string name{ "" };
         string tags{ "" };
         UserData user{};
     };
-    
+
     enum class ThreadType {
         Regular = 0,
         Music = 1
@@ -757,18 +757,38 @@ namespace  DiscordCoreInternal {
         Scheduler* scheduler{ nullptr };
     };
 
+    class ThreadContext;
+
+    DiscordCoreAPI_Dll shared_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
+
     class DiscordCoreAPI_Dll ThreadContext {
     public:
         shared_ptr<SchedulerWrapper> scheduler{ nullptr };
-        thread threadOfExecution{};
 
-        ThreadContext(ThreadType threadType = ThreadType::Regular);
-        
         Scheduler* operator*();
 
-        void releaseContext();
+        ThreadContext(string);
 
         ~ThreadContext();
+    protected:
+
+        friend DiscordCoreAPI_Dll shared_ptr<ThreadContext> getThreadContext(ThreadType threadType);
+        friend class DiscordCoreAPI::DiscordCoreClient;
+
+        static vector<shared_ptr<SchedulerWrapper>> schedulers;
+        static vector<shared_ptr<thread>> threads;
+        
+        shared_ptr<thread> threadOfExecution{ nullptr };
+
+        ThreadContext(ThreadType threadType);
+
+        ThreadContext(ThreadContext& newThread);
+
+        ThreadContext();
+        
+        void releaseContext();
+
+        static void cleanup();
     };
 
     enum class HeaderTypes {
@@ -787,13 +807,13 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
-         __int32 timeDelayInMs{ 0 };
+        __int32 timeDelayInMs{ 0 };
         string interactionToken{ "" };
         string applicationId{ "" };
     };
 
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
-         __int32 timeDelayInMs{ 0 };
+        __int32 timeDelayInMs{ 0 };
         string interactionToken{ "" };
         string applicationId{ "" };
         string messageId{ "" };
@@ -802,7 +822,7 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll ChannelMentionData : public DiscordCoreAPI::DiscordEntity {
         ChannelType type{ -1 };
         string guildId{ "" };
-        string name{ "" };        
+        string name{ "" };
     };
 
     struct DiscordCoreAPI_Dll TeamMembersObjectData {
@@ -869,7 +889,7 @@ namespace  DiscordCoreInternal {
         string customId{ "" };
         ComponentType type{};
         ButtonStyle style{};
-        string label{ "" };        
+        string label{ "" };
         EmojiData emoji{};
         string url{ "" };
     };
@@ -884,7 +904,7 @@ namespace  DiscordCoreInternal {
         vector<EmbedData> embeds{};
         string content{ "" };
         __int32 flags{ 0 };
-        bool tts{ false };       
+        bool tts{ false };
     };
 
     struct DiscordCoreAPI_Dll ReactionAddEventData {
@@ -1046,7 +1066,7 @@ namespace  DiscordCoreInternal {
         ApplicationCommandOptionType type{};
         __int32 valueInt{ false };
         string valueString{ "" };
-        bool valueBool{ false };        
+        bool valueBool{ false };
         string name{ "" };
     };
 
@@ -1105,7 +1125,7 @@ namespace  DiscordCoreInternal {
         vector<EmbedData> embeds{};
         string content{ "" };
         __int32 flags{ 0 };
-        bool tts{ false };        
+        bool tts{ false };
     };
 
     struct DiscordCoreAPI_Dll GetInteractionResponseData {
@@ -1129,7 +1149,7 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll HttpData {
         vector<string> responseHeaderValues{};
         string returnMessage{ "" };
-         __int32 returnCode{ 0 };
+        __int32 returnCode{ 0 };
         json data{};
     };
 
@@ -1138,7 +1158,7 @@ namespace  DiscordCoreInternal {
         string aroundThisId{ "" };
         string afterThisId{ "" };
         string channelId{ "" };
-         __int32 limit{ 0 };
+        __int32 limit{ 0 };
     };
 
     struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
@@ -1165,7 +1185,7 @@ namespace  DiscordCoreInternal {
         __int32 getsRemaining{ 1 };
         bool isItMarked{ false };
         __int32 totalGets{ 0 };
-        float msRemain{ 0.0f };        
+        float msRemain{ 0.0f };
         string bucket{ "" };
     };
 
@@ -1382,7 +1402,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RolePositionData {
-         __int32 rolePosition{ 0 };
+        __int32 rolePosition{ 0 };
         string roleId{ "" };
     };
 
@@ -1422,7 +1442,7 @@ namespace  DiscordCoreInternal {
         float valueFloat{ 0.0f };
         string valueString{ "" };
         __int32	valueInt{ 0 };
-        string name{ "" };        
+        string name{ "" };
     };
 
     struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
@@ -1526,7 +1546,7 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll GetAuditLogData {
         AuditLogEvent actionType{};
-         __int32 limit{ 0 };
+        __int32 limit{ 0 };
         string guildId{ "" };
         string userId{ "" };
     };
@@ -1571,7 +1591,7 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll PutGuildBanData {
         __int32 deleteMessageDays{ 0 };
-        string guildMemberId{ "" };        
+        string guildMemberId{ "" };
         string guildId{ "" };
         string reason{ "" };
     };
@@ -1946,7 +1966,7 @@ namespace DiscordCoreAPI {
         string channelId{ "" };///< Id of the Channel that the referenced Message was sent in.
         string guildId{ "" };///< Id of the Guild that the referenced Message was sent in.
     };
-    
+
     /// Edit Channel Permission overwrites type. \brief Edit Channel Permission overwrites type.
     enum class EditChannelPermissionOverwritesType {
         Role = 0,///<Role
@@ -2031,7 +2051,7 @@ namespace DiscordCoreAPI {
             for (auto [key, value] : this->permissionOverwrites) {
                 newData.permissionOverwrites.insert(make_pair(key, value));
             }
-            
+
             newData.threadMetadata = this->threadMetadata;
             newData.videoQualityMode = this->videoQualityMode;
             newData.rateLimitPerUser = this->rateLimitPerUser;
@@ -2085,7 +2105,7 @@ namespace DiscordCoreAPI {
         string name{ "" };  ///< Name of the Channel.
         string icon{ "" };  ///< Icon for the Channel, if applicable.
     };
-    
+
 
     /// Voice state data. \brief Voice state data.
     struct DiscordCoreAPI_Dll VoiceStateData {
@@ -2204,7 +2224,7 @@ namespace DiscordCoreAPI {
         string name{ "" };///< What is its name?
         UserData user{};///< User that created this emoji.
     };
-    
+
     /// For updating/modifying a given Channel's properties.
     struct DiscordCoreAPI_Dll UpdateChannelData {
         operator DiscordCoreInternal::UpdateChannelData() {
@@ -2242,7 +2262,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single reaction.
-    struct DiscordCoreAPI_Dll ReactionData : public DiscordEntity{
+    struct DiscordCoreAPI_Dll ReactionData : public DiscordEntity {
 
         operator DiscordCoreInternal::ReactionData() {
             DiscordCoreInternal::ReactionData newData;
@@ -2373,8 +2393,8 @@ namespace DiscordCoreAPI {
 
     /// Integration data. \brief Integration data.
     struct DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
-         __int32 expireGracePeriod{ 0 };///< How __int64 before the integration expires.
-         __int32 subscriberCount{ 0 };///< Number of current subscribers.
+        __int32 expireGracePeriod{ 0 };///< How __int64 before the integration expires.
+        __int32 subscriberCount{ 0 };///< Number of current subscribers.
         ApplicationData application{};///<Application data.
         bool enableEmoticons{ true };///<Emoticons enabled?
         __int32 expireBehavior{ 0 };///< What to do upon expiry.
@@ -2459,7 +2479,7 @@ namespace DiscordCoreAPI {
         string targetId{ "" };///< Id of the target User.
         string userId{ "" };///< Id of the executing User.
         string reason{ "" };///< The reason that was entered for the given change.
-    };   
+    };
 
     /// Party data. \brief Party data.
     struct DiscordCoreAPI_Dll PartyData : public DiscordEntity {
@@ -2586,7 +2606,7 @@ namespace DiscordCoreAPI {
         string name{ "" };  ///< Name of the activity.
         string url{ "" };   ///< Url associated with the activity.        
     };
-    
+
     /// Client status data. \brief Client status data.
     struct DiscordCoreAPI_Dll ClientStatusData {
         string desktop{ "" }; ///< Desktop name.
@@ -3061,7 +3081,7 @@ namespace DiscordCoreAPI {
         InteractionApplicationCommandCallbackData data{}; ///< Interaction ApplicationCommand callback data.
         InteractionCallbackType type{};///< Interaction callback type.
     };
-    
+
     /// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
     struct DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
         vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
@@ -3120,7 +3140,7 @@ namespace DiscordCoreAPI {
         string guildId{ "" };   ///< Guild id of the thread.
         __int32 memberCount{ 0 };///< Number of Guild-members in the thread.
     };
-    
+
     /// Message interaction data.
     struct DiscordCoreAPI_Dll MessageInteractionData : public DiscordEntity {
 
@@ -3139,7 +3159,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Message type. \brief Message type.
-    enum class MessageType { 
+    enum class MessageType {
         DEFAULT = 0,///< Default
         RECIPIENT_ADD = 1,///< Recipient Add
         RECIPIENT_REMOVE = 2,///< Recipient Remove
@@ -3343,7 +3363,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll DownloadURL {
         __int32 contentSize{ 0 };
-        string urlPath{ "" };        
+        string urlPath{ "" };
     };
 
     /**
@@ -3851,7 +3871,7 @@ namespace DiscordCoreAPI {
         }
     };
     /**@}*/
-    
+
     /**
     * \addtogroup voice_connection
     * @{
@@ -4125,4 +4145,3 @@ namespace DiscordCoreAPI {
     /**@}*/
 };
 #endif
- 

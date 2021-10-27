@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class ReactionManager;
 
-		static shared_ptr<ThreadContext> threadContext;
+		static ThreadContext threadContext;
 
 		unbounded_buffer<DeleteReactionDataAll> requestDeleteReactionBuffer{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::User>> outUsersBuffer{ nullptr };

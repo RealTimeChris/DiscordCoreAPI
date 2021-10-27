@@ -114,7 +114,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildManager;
 
-		static shared_ptr<ThreadContext> threadContext;
+		static ThreadContext threadContext;
 
 		unbounded_buffer<vector<DiscordCoreAPI::InviteData>> outInvitesBuffer{ nullptr };
 		unbounded_buffer<GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };

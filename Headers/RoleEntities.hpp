@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class RoleManager;
 
-		static shared_ptr<ThreadContext> threadContext;
+		static ThreadContext threadContext;
 
 		unbounded_buffer<PatchRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
 		unbounded_buffer<DeleteGuildMemberRoleData> requestDeleteRoleBuffer{ nullptr };

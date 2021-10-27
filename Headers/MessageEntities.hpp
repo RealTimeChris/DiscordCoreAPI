@@ -625,16 +625,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
-	class DiscordCoreAPI_Dll MessageCollector : shared_ptr<DiscordCoreInternal::ThreadContext>, agent {
+	class DiscordCoreAPI_Dll MessageCollector : DiscordCoreInternal::ThreadContext, agent {
 	public:
 
 		friend class DiscordCoreClient;
 		 
-		 MessageCollector() :
-			 shared_ptr<DiscordCoreInternal::ThreadContext>(new DiscordCoreInternal::ThreadContext()),
-			 agent(***this->get()) {
-			
-		}
+		MessageCollector() :
+			DiscordCoreInternal::ThreadContext(*DiscordCoreInternal::getThreadContext()), agent(***this) {}
 
 		/// Begin waiting for Messages. \brief Begin waiting for Messages.
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
@@ -700,7 +697,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class MessageManager;
 
-		static shared_ptr<ThreadContext> threadContext;
+		static ThreadContext threadContext;
 
 		unbounded_buffer<DeleteMessagesBulkData> requestDeleteMultMessagesBuffer{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::Message>> outMultMessagesBuffer{ nullptr };

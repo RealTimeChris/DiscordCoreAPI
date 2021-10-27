@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient :shared_ptr<DiscordCoreInternal::ThreadContext>, agent {
+	class DiscordCoreAPI_Dll DiscordCoreClient :DiscordCoreInternal::ThreadContext, agent {
 	public:
 
 		template <class _Ty>
