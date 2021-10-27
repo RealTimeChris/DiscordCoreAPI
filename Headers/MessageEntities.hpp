@@ -712,8 +712,6 @@ namespace DiscordCoreInternal {
 
 		MessageManagerAgent();
 
-		static void initialize();
-
 		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage);
 
 		vector<DiscordCoreAPI::Message> getObjectData(GetMessagesData dataPackage);

@@ -102,8 +102,6 @@ namespace DiscordCoreInternal {
 
 		ReactionManagerAgent();
 
-		static void initialize();
-
 		DiscordCoreAPI::Reaction putObjectData(PutReactionData dataPackage);
 
 		vector<DiscordCoreAPI::User> getObjectData(GetReactionsData dataPackage);

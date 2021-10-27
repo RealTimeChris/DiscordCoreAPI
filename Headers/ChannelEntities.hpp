@@ -98,8 +98,6 @@ namespace DiscordCoreInternal {
 
 		ChannelManagerAgent();
 
-		static void initialize();
-
 		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage);
 
 		DiscordCoreAPI::Channel postObjectData(GetDMChannelData dataPackage);

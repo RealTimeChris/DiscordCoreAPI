@@ -128,8 +128,6 @@ namespace DiscordCoreInternal {
 
 		GuildManagerAgent();
 
-		static void initialize();
-
 		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage);
 		
 		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage);

@@ -1080,8 +1080,6 @@ namespace DiscordCoreInternal {
 
         InteractionManagerAgent();
 
-        static void initialize();
-
         DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage);
 
         DiscordCoreAPI::MessageData getObjectData(DiscordCoreInternal::GetFollowUpMessageData dataPackage);

@@ -115,8 +115,6 @@ namespace DiscordCoreInternal {
 		void deleteObjectData(LeaveGuildData dataPackage);
 
 		void run();
-
-		~UserManagerAgent();
 	};
 
 	class DiscordCoreAPI_Dll UserManager {

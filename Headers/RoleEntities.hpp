@@ -127,8 +127,6 @@ namespace DiscordCoreInternal {
 
 		RoleManagerAgent();
 
-		static void initialize();
-
 		vector<DiscordCoreAPI::Role> getObjectData(GetRolesData  dataPackage);
 
 		DiscordCoreAPI::Role patchObjectData(PatchRoleData dataPackage);

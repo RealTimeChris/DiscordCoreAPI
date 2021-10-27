@@ -74,8 +74,6 @@ namespace DiscordCoreInternal {
 
 		GuildMemberManagerAgent();
 
-		static void initialize();
-
 		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage);
 
 		DiscordCoreAPI::GuildMember patchObjectData(PatchGuildMemberData dataPackage);

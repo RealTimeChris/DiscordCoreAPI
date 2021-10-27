@@ -43,8 +43,6 @@ namespace DiscordCoreInternal {
 
 		StickerManagerAgent();
 
-		static void initialize();
-
 		void run();
 	};
 
