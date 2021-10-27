@@ -632,7 +632,7 @@ namespace DiscordCoreAPI {
 		 
 		 MessageCollector() :
 			 shared_ptr<DiscordCoreInternal::ThreadContext>(new DiscordCoreInternal::ThreadContext()),
-			 agent(*this->get()->scheduler->scheduler) {
+			 agent(***this->get()) {
 			
 		}
 

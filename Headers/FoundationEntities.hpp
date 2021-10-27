@@ -763,6 +763,8 @@ namespace  DiscordCoreInternal {
         thread threadOfExecution{};
 
         ThreadContext(ThreadType threadType = ThreadType::Regular);
+        
+        Scheduler* operator*();
 
         void releaseContext();
 

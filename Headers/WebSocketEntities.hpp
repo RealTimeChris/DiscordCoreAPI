@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew, bool* doWeReconnectNew, concurrency::event* reconnectionEvent);
+		VoiceChannelWebSocketAgent(shared_ptr<concurrency::event> readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew, bool* doWeReconnectNew, shared_ptr<concurrency::event> reconnectionEvent);
 
 		void sendVoiceData(vector<uint8_t> data);
 
@@ -159,13 +159,13 @@ namespace DiscordCoreInternal {
 
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
+		shared_ptr<concurrency::event> reconnectionEvent{ nullptr };
+		shared_ptr<concurrency::event> readyEvent{ nullptr };
 		shared_ptr<DatagramSocket> voiceSocket{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
-		concurrency::event* reconnectionEvent {nullptr};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		concurrency::event* readyEvent {nullptr};
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
 		const int maxReconnectTries{ 10 };
