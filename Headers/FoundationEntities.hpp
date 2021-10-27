@@ -783,8 +783,6 @@ namespace  DiscordCoreInternal {
         ThreadContext(ThreadType threadType);
 
         ThreadContext(ThreadContext& newThread);
-
-        ThreadContext();
         
         void releaseContext();
 

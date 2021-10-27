@@ -107,14 +107,12 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll GuildManagerAgent :  agent {
+	class DiscordCoreAPI_Dll GuildManagerAgent : public ThreadContext, public agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::EventHandler;
 		friend class GuildManager;
-
-		static ThreadContext threadContext;
 
 		unbounded_buffer<vector<DiscordCoreAPI::InviteData>> outInvitesBuffer{ nullptr };
 		unbounded_buffer<GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };

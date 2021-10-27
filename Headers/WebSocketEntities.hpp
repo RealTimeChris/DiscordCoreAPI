@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 		string userId{ "" };
 	};
 
-	class DiscordCoreAPI_Dll BaseWebSocketAgent : shared_ptr<ThreadContext>, agent {
+	class DiscordCoreAPI_Dll BaseWebSocketAgent :public ThreadContext, public agent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -140,7 +140,7 @@ namespace DiscordCoreInternal {
 		void terminate();
 	};
 
-	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent : shared_ptr<ThreadContext>, agent {
+	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent :public ThreadContext, public agent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;

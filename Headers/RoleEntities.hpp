@@ -109,13 +109,11 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll RoleManagerAgent : agent {
+	class DiscordCoreAPI_Dll RoleManagerAgent : public ThreadContext, public agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class RoleManager;
-
-		static ThreadContext threadContext;
 
 		unbounded_buffer<PatchRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
 		unbounded_buffer<DeleteGuildMemberRoleData> requestDeleteRoleBuffer{ nullptr };

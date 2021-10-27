@@ -625,7 +625,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
-	class DiscordCoreAPI_Dll MessageCollector : DiscordCoreInternal::ThreadContext, agent {
+	class DiscordCoreAPI_Dll MessageCollector : public DiscordCoreInternal::ThreadContext, public agent {
 	public:
 
 		friend class DiscordCoreClient;
@@ -691,13 +691,11 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll MessageManagerAgent : agent {
+	class DiscordCoreAPI_Dll MessageManagerAgent : public ThreadContext, public agent {
 	protected:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class MessageManager;
-
-		static ThreadContext threadContext;
 
 		unbounded_buffer<DeleteMessagesBulkData> requestDeleteMultMessagesBuffer{ nullptr };
 		unbounded_buffer<vector<DiscordCoreAPI::Message>> outMultMessagesBuffer{ nullptr };
