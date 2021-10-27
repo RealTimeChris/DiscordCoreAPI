@@ -14,6 +14,7 @@ namespace DiscordCoreAPI {
     * @{
     */
 
+    /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
     class InvalidState : public exception {
     public:
 
