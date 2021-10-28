@@ -217,22 +217,21 @@ namespace DiscordCoreAPI {
         };
     };
 
-    /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
-    /// \param returnType The type returned by the containing CoRoutined.
+    /// Used to acquire the CoRoutine handle from within the CoRoutine, as it is executing. \brief Used to acquire the CoRoutine handle from within the CoRoutine, as it is executing.
+   /// \param returnType The type returned by the containing CoRoutined.
     template<class returnType>
-    auto NewThreadAwaitable() {
-        class NewThreadAwaitable {
+    auto GetCoRoutineHandleAwaitable() {
+        class GetCoRoutineHandleAwaitable {
         public:
             coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
 
-            NewThreadAwaitable() : handleWaiter(nullptr) {}
+            GetCoRoutineHandleAwaitable() : handleWaiter(nullptr) {}
 
             bool await_ready() const noexcept {
                 return false;
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
-                handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
                 this->handleWaiter = handle;
                 return false;
             }
@@ -240,6 +239,27 @@ namespace DiscordCoreAPI {
             auto await_resume() {
                 return this->handleWaiter;
             }
+        };
+        return GetCoRoutineHandleAwaitable();
+    }
+
+    /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller.
+    /// \param returnType The type returned by the containing CoRoutined.
+    template<class returnType>
+    auto NewThreadAwaitable() {
+        class NewThreadAwaitable {
+        public:
+
+            bool await_ready() {
+                return false;
+            }
+
+            bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+                handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
+                return true;
+            }
+
+            void await_resume() {}
         };
         return NewThreadAwaitable();
     }
