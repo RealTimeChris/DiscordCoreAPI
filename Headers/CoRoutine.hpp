@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
                 this->handleWaiter = handle;
-                return true;
+                return false;
             }
 
             auto await_resume() {
@@ -243,7 +243,6 @@ namespace DiscordCoreAPI {
         };
         return NewThreadAwaitable();
     }
-    
 
     /**@}*/
 
