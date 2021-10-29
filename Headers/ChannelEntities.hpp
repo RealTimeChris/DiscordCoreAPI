@@ -66,9 +66,9 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnChannelDeletionData;
 		friend struct OnChannelCreationData;
-		friend struct OnChannelUpdateData;
 		friend struct OnThreadCreationData;
 		friend struct OnThreadDeletionData;
+		friend struct OnChannelUpdateData;
 		friend struct OnThreadUpdateData;
 		friend class DiscordCoreClient;
 		friend class Guild;
