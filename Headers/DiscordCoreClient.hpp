@@ -75,13 +75,15 @@ namespace DiscordCoreAPI {
 		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
 		/// \param functionVector A pointer to a vector of function pointers to be run on timers.
 		/// \returns void
-		void setup(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionVector);
+		static void setup(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionVector);
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		/// \returns void
-		void runBot();
+		static void runBot();
 
 	protected:
+
+		static vector<RepeatedFunctionData>* functionsToExecute;
 
 		shared_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
 		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
@@ -96,7 +98,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
 		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 		shared_ptr<InputEventHandler> inputEvents{ nullptr };
-		vector<RepeatedFunctionData>* functionsToExecute{};		
 		string baseURL{ "https://discord.com/api/v9" };
 		bool doWeQuit{ false };
 		string botToken{ "" };

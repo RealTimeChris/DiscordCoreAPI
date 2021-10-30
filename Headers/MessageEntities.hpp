@@ -40,6 +40,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CreateMessageData {
 
 		friend string DiscordCoreInternal::getCreateMessagePayload(DiscordCoreAPI::CreateMessageData dataPackage);
+		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEventHandler;
 
@@ -48,12 +49,16 @@ namespace DiscordCoreAPI {
 		}
 
 		CreateMessageData(RespondToInputEventData dataPackage) {
-			this->requesterId = dataPackage.requesterId;
 			this->channelId = dataPackage.channelId;
-			this->embeds = dataPackage.embeds;
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->content = dataPackage.content;
-			this->components = dataPackage.components;
+			this->addAllowedMentions(dataPackage.allowedMentions);
+			this->requesterId = dataPackage.requesterId;
+			for (auto value : dataPackage.components) {
+				this->components.push_back(value);
+			}
+			this->addContent(dataPackage.content);
+			for (auto value : dataPackage.embeds) {
+				this->embeds.push_back(value);
+			}
 			this->tts = dataPackage.tts;
 		}
 
@@ -176,6 +181,7 @@ namespace DiscordCoreAPI {
 		string content{ "" };
 		bool tts{ false };
 
+		CreateMessageData() {};
 	};
 
 	/// Edit Message data. \brief Edit Message data.
@@ -487,6 +493,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Message>;
+		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;

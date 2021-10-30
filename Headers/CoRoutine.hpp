@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization)
     template<>
-    class DiscordCoreAPI_Dll CoRoutine<void> {
+    class CoRoutine<void> {
     public:
         class promise_type;
 
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        class DiscordCoreAPI_Dll promise_type {
+        class promise_type {
         public:
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
@@ -228,7 +228,7 @@ namespace DiscordCoreAPI {
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
     /// \param returnType The type returned by the containing CoRoutined.
     template<class returnType>
-    auto NewThreadAwaitable() {
+    inline DiscordCoreAPI_Dll auto NewThreadAwaitable() {
         class NewThreadAwaitable {
         public:
             coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
