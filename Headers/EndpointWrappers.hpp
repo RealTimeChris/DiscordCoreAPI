@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 	protected:
 		static void insertGuildMember(GuildMember dataPackage);
 
-		static void removeGuildMember(string guildId, string guildMemberId);
+		static void removeGuildMember(GuildMember dataPackage);
 	};
 	/**@}*/
 
@@ -347,11 +347,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A PinMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
-
-		/// Reply to a given Message. \brief Reply to a given Message.
-		/// \param dataPackage A ReplyMessageData structure.
-		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> replyAsync(ReplyMessageData dataPackage);
 
 		/// Send a direct Message to a given User. \brief Send a direct Message to a given User.
 		/// \param dataPackage A SendDMData structure.

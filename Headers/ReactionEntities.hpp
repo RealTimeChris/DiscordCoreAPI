@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Reactions;
 
-		ReactionManager(ReactionManager* pointer);
+		ReactionManager();
 
 	protected:
 

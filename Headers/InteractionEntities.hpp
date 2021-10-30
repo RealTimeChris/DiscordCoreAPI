@@ -12,10 +12,9 @@
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
 #include "EventManager.hpp"
+#include "JSONIFIer.hpp"
 
 namespace DiscordCoreAPI {
-
-    CoRoutine<void> onInputEventCreationToBeWrapped(OnInputEventCreationData dataPackage);
 
     /**
     * \addtogroup foundation_entities
@@ -51,6 +50,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll CreateInteractionResponseData {
     public:
 
+        friend string DiscordCoreInternal::getCreateInteractionResponsePayload(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
@@ -211,6 +211,7 @@ namespace DiscordCoreAPI {
     /// Create deferred Interaction response data. \brief Create deferred Interaction response data.
     struct DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
 
+        friend string DiscordCoreInternal::getCreateDeferredInteractionResponsePayload(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
@@ -399,6 +400,7 @@ namespace DiscordCoreAPI {
     /// Edit Interaction response data. \brief Edit Interaction response data.
     struct DiscordCoreAPI_Dll EditInteractionResponseData {
 
+        friend string DiscordCoreInternal::getEditInteractionResponsePayload(DiscordCoreAPI::EditInteractionResponseData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
@@ -560,6 +562,7 @@ namespace DiscordCoreAPI {
     /// Create follow up Message data. \brief Create follow up Message data.
     struct DiscordCoreAPI_Dll CreateFollowUpMessageData {
 
+        friend string DiscordCoreInternal::getPostFollowUpMessagePayload(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
@@ -851,7 +854,7 @@ namespace DiscordCoreAPI {
     /// Edit follow up Message data. \brief Edit follow up Message data.
     struct DiscordCoreAPI_Dll EditFollowUpMessageData {
 
-        friend class DiscordCoreInternal::InteractionManagerAgent;
+        friend string DiscordCoreInternal::getEditFollowUpMessagePayload(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEvents;
 
@@ -1057,55 +1060,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-    class DiscordCoreAPI_Dll InteractionManagerAgent : public ThreadContext, public agent {
-    protected:
-
-        friend class DiscordCoreAPI::DiscordCoreClient;
-        friend class DiscordCoreAPI::EventHandler;
-        friend class InteractionManager;
-
-        static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
-
-        unbounded_buffer<DiscordCoreInternal::PostDeferredInteractionResponseData> requestPostDeferredInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::DeleteInteractionResponseData> requestDeleteInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::PatchInteractionResponseData> requestPatchInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::PostInteractionResponseData> requestPostInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::GetInteractionResponseData> requestGetInteractionResponseBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::DeleteFollowUpMessageData> requestDeleteFollowUpMessageBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::PatchFollowUpMessageData> requestPatchFollowUpMessageBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::PostFollowUpMessageData> requestPostFollowUpMessageBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreInternal::GetFollowUpMessageData> requestGetFollowUpMessageBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreAPI::InteractionResponseData> outInteractionresponseDataBuffer{ nullptr };
-        unbounded_buffer<DiscordCoreAPI::MessageData> outInteractionResponseBuffer{ nullptr };
-
-        InteractionManagerAgent();
-
-        DiscordCoreAPI::InteractionResponseData getObjectData(DiscordCoreInternal::GetInteractionResponseData dataPackage);
-
-        DiscordCoreAPI::MessageData getObjectData(DiscordCoreInternal::GetFollowUpMessageData dataPackage);
-
-        DiscordCoreAPI::MessageData patchObjectData(DiscordCoreInternal::PatchFollowUpMessageData dataPackage);
-
-        DiscordCoreAPI::MessageData patchObjectData(DiscordCoreInternal::PatchInteractionResponseData dataPackage);
-
-        void postObjectData(DiscordCoreInternal::PostInteractionResponseData dataPackage);
-
-        void postObjectData(DiscordCoreInternal::PostDeferredInteractionResponseData dataPackage);
-
-        DiscordCoreAPI::MessageData postObjectData(DiscordCoreInternal::PostFollowUpMessageData dataPackage);
-
-        void deleteObjectData(DiscordCoreInternal::DeleteInteractionResponseData dataPackage);
-
-        void deleteObjectDataTimer(DiscordCoreInternal::DeleteInteractionResponseData dataPackage);
-
-        void deleteObjectData(DiscordCoreInternal::DeleteFollowUpMessageData dataPackage);
-
-        void deleteObjectDataTimer(DiscordCoreInternal::DeleteFollowUpMessageData dataPackage);
-
-        void run();
-
-    };
-
     class DiscordCoreAPI_Dll InteractionManager {
     public:
 
@@ -1113,11 +1067,14 @@ namespace DiscordCoreInternal {
         friend class DiscordCoreAPI::DiscordCoreClient;
         friend class DiscordCoreAPI::ButtonCollector;
         friend class DiscordCoreAPI::Interactions;
+        friend class DiscordCoreAPI::EventHandler;
         friend class DiscordCoreAPI::InputEvents;
 
-        InteractionManager(InteractionManager* pointer);
+        InteractionManager();
 
     protected:
+
+        static map<string, shared_ptr<unbounded_buffer<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
 
         DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
 
@@ -1129,6 +1086,8 @@ namespace DiscordCoreInternal {
 
         DiscordCoreAPI::CoRoutine<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
 
+        void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
+
         DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
 
         DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> getFollowUpMessageAsync(DiscordCoreAPI::GetFollowUpMessageData dataPackage);
@@ -1136,6 +1095,8 @@ namespace DiscordCoreInternal {
         DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
 
         DiscordCoreAPI::CoRoutine<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
+
+        void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
     };
 };
 

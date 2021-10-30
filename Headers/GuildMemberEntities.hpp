@@ -38,6 +38,9 @@ namespace DiscordCoreAPI {
 
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
+	public:
+		GuildMember(GuildMemberData dataNew, string guildIdNew);
+
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
@@ -49,37 +52,15 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildMemberUpdateData;
 		friend struct OnGuildMemberAddData;
 		friend class DiscordCoreClient;
+		friend class EventHandler;
 		friend class Guild;
 
 		GuildMember();
-
-		GuildMember(GuildMemberData dataNew, string guildIdNew);
 	};
 	/**@}*/
 };
 
 namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll GuildMemberManagerAgent : public ThreadContext, public agent {
-	protected:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::EventHandler;
-		friend class GuildMemberManager;
-
-		unbounded_buffer<PatchGuildMemberData> requestPatchGuildMemberBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::GuildMember> outGuildMemberBuffer{ nullptr };
-		unbounded_buffer<GetGuildMemberData> requestGetGuildMemberBuffer{ nullptr };
-		unbounded_buffer<GetGuildMemberRolesData> requestGetRolesBuffer{ nullptr };
-
-		GuildMemberManagerAgent();
-
-		DiscordCoreAPI::GuildMember getObjectData(GetGuildMemberData dataPackage);
-
-		DiscordCoreAPI::GuildMember patchObjectData(PatchGuildMemberData dataPackage);
-
-		void run();
-	};
 
 	class DiscordCoreAPI_Dll GuildMemberManager {
 	public:
@@ -88,7 +69,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::GuildMembers;
 		friend class DiscordCoreAPI::Guild;
 
-		GuildMemberManager(GuildMemberManager* pointer);
+		GuildMemberManager();
 
 	protected:
 
@@ -100,9 +81,9 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
 
-		void insertGuildMember(DiscordCoreAPI::GuildMember guildMember, string guildId);
+		void insertGuildMember(DiscordCoreAPI::GuildMember guildMember);
 
-		void removeGuildMember(string guildId, string guildMemberId);
+		void removeGuildMember(DiscordCoreAPI::GuildMember guildMember);
 	};
 };
 #endif

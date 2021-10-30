@@ -82,38 +82,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll ChannelManagerAgent : public ThreadContext, public agent {
-	protected:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class ChannelManager;
-
-		unbounded_buffer<DeleteChannelPermissionOverwritesData> requestDeleteChannelPermOWsBuffer{ nullptr };
-		unbounded_buffer<PutPermissionOverwritesData> requestPutChannelPermOWsBuffer{ nullptr };
-		unbounded_buffer<DeleteChannelData> requestDeleteChannelBuffer{ nullptr };
-		unbounded_buffer<PatchChannelData> requestPatchChannelBuffer{ nullptr };
-		unbounded_buffer<GetDMChannelData>requestGetDMChannelBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::Channel> outChannelBuffer{ nullptr };
-		unbounded_buffer<GetChannelData> requestGetChannelBuffer{ nullptr };
-
-		ChannelManagerAgent();
-
-		DiscordCoreAPI::Channel getObjectData(GetChannelData dataPackage);
-
-		DiscordCoreAPI::Channel postObjectData(GetDMChannelData dataPackage);
-
-		DiscordCoreAPI::Channel patchObjectData(PatchChannelData dataPackage);
-
-		void putObjectData(PutPermissionOverwritesData dataPackage);
-
-		void deleteObjectData(DeleteChannelPermissionOverwritesData dataPackage);
-
-		void deleteObjectData(DeleteChannelData dataPackage);
-
-		void run();
-
-	};
-
 	class DiscordCoreAPI_Dll ChannelManager {
 	public:
 
@@ -122,7 +90,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Channels;
 		friend class DiscordCoreAPI::Guild;
 
-		ChannelManager(ChannelManager* pointer);
+		ChannelManager();
 
 	protected:
 

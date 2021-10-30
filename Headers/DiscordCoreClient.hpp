@@ -63,8 +63,12 @@ namespace DiscordCoreAPI {
 		friend class Users;
 		friend class Guild;
 
+		DiscordCoreClient operator=(DiscordCoreClient&);
+
+		DiscordCoreClient(DiscordCoreClient&);
+
+		static shared_ptr<BotUser> currentUser;
 		static DiscordCoreClient* thisPointer;
-		static BotUser currentUser;
 		static string commandPrefix;
 
 		shared_ptr<EventManager> eventManager{ nullptr };
@@ -82,7 +86,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
+		shared_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
 		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
@@ -99,7 +103,7 @@ namespace DiscordCoreAPI {
 		bool doWeQuit{ false };
 		string botToken{ "" };
 
-		DiscordCoreClient(string botTokenNew);
+		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecuteNew);
 
 		CoRoutine<void> initialize();
 

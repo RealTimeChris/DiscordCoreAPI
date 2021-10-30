@@ -107,43 +107,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll GuildManagerAgent : public ThreadContext, public agent {
-	protected:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::EventHandler;
-		friend class GuildManager;
-
-		unbounded_buffer<vector<DiscordCoreAPI::InviteData>> outInvitesBuffer{ nullptr };
-		unbounded_buffer<GetVanityInviteData> requestGetVanityInviteBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::AuditLogData> outAuditLogBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::InviteData> outInviteBuffer{ nullptr };
-		unbounded_buffer<PutGuildBanData> requestPutGuildBanBuffer{ nullptr };
-		unbounded_buffer<GetAuditLogData> requestGetAuditLogBuffer{ nullptr };
-		unbounded_buffer<GetInvitesData> requestGetInvitesBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::BanData> outBanBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::Guild> outGuildBuffer{ nullptr };
-		unbounded_buffer<GetInviteData> requestGetInviteBuffer{ nullptr };
-		unbounded_buffer<GetGuildData> requestGetGuildBuffer{ nullptr };
-
-		GuildManagerAgent();
-
-		DiscordCoreAPI::AuditLogData getObjectData(GetAuditLogData dataPackage);
-		
-		DiscordCoreAPI::Guild getObjectData(GetGuildData dataPackage);
-
-		DiscordCoreAPI::InviteData getObjectData(GetInviteData dataPackage);
-
-		vector<DiscordCoreAPI::InviteData> getObjectData(GetInvitesData dataPackage);
-
-		DiscordCoreAPI::InviteData getObjectData(GetVanityInviteData dataPackage);
-
-		DiscordCoreAPI::BanData putObjectData(PutGuildBanData dataPackage);
-
-		void run();
-
-	};
-
 	class DiscordCoreAPI_Dll GuildManager { 
 	public:
 
@@ -152,7 +115,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::YouTubeAPI;
 		friend class DiscordCoreAPI::Guilds;
 
-		GuildManager(GuildManager* pointer);
+		GuildManager();
 
 		~GuildManager();
 

@@ -10,16 +10,33 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "ChannelEntities.hpp"
+
+namespace DiscordCoreAPI {
+
+	struct CreateDeferredInteractionResponseData;
+	struct CreateInteractionResponseData;
+	struct EditInteractionResponseData;
+	struct CreateFollowUpMessageData;
+	struct EditFollowUpMessageData;
+	struct DeleteMessagesBulkData;
+	struct ModifyGuildMemberData;
+	struct CreateGuildBanData;
+	struct CreateMessageData;
+	struct EditMessageData;
+	struct SendDMData;
+
+};
 
 namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string getIdentifyPayload(string botToken, __int32 intents);
 
-	DiscordCoreAPI_Dll string getAddBanPayload(PutGuildBanData dataPackage);
+	DiscordCoreAPI_Dll string getAddBanPayload(DiscordCoreAPI::CreateGuildBanData dataPackage);
 
 	DiscordCoreAPI_Dll string getIsSpeakingPayload(bool isSpeaking, __int32 ssrc, __int32 delay = 0);
 
-	DiscordCoreAPI_Dll string getPatchChannelPayload(UpdateChannelData channelData);
+	DiscordCoreAPI_Dll string getPatchChannelPayload(DiscordCoreAPI::ModifyChannelData channelData);
 
 	DiscordCoreAPI_Dll string getHeartbeatPayload(__int32 lastReceivedNumber);
 
@@ -35,7 +52,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string getSelectProtocolPayload(string localPort, string localIp, string encryptionMode);
 
-	DiscordCoreAPI_Dll string getModifyGuildMemberPayload(PatchGuildMemberData dataPackage);
+	DiscordCoreAPI_Dll string getModifyGuildMemberPayload(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
 
 	DiscordCoreAPI_Dll string getResumePayload(string botToken, string sessionID, __int32 lastReceivedNumber);
 
@@ -45,11 +62,11 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll __int32 getHeartBeatInterval(hstring initialPayload);
 
-	DiscordCoreAPI_Dll string getCreateMessagePayload(PostMessageData dataPackage);
+	DiscordCoreAPI_Dll string getCreateMessagePayload(DiscordCoreAPI::CreateMessageData dataPackage);
 
-	DiscordCoreAPI_Dll string getCreateMessagePayload(PostDMData dataPackage);
+	DiscordCoreAPI_Dll string getCreateMessagePayload(DiscordCoreAPI::SendDMData dataPackage);
 
-	DiscordCoreAPI_Dll string getEditMessagePayload(PatchMessageData dataPackage);
+	DiscordCoreAPI_Dll string getEditMessagePayload(DiscordCoreAPI::EditMessageData dataPackage);
 
 	DiscordCoreAPI_Dll void addOptionsData(ApplicationCommandOptionData dataPackage, json* pJSONData);
 
@@ -61,22 +78,22 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string getEditApplicationCommandPayload(PatchApplicationCommandData dataPackage);
 
-	DiscordCoreAPI_Dll string getEditFollowUpMessagePayload(PatchFollowUpMessageData dataPackage);
+	DiscordCoreAPI_Dll string getEditFollowUpMessagePayload(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
 
-	DiscordCoreAPI_Dll string getEditInteractionResponsePayload(PatchInteractionResponseData dataPackage);
+	DiscordCoreAPI_Dll string getEditInteractionResponsePayload(DiscordCoreAPI::EditInteractionResponseData dataPackage);
 
-	DiscordCoreAPI_Dll string getCreateDeferredInteractionResponsePayload(PostDeferredInteractionResponseData dataPackage);
+	DiscordCoreAPI_Dll string getCreateDeferredInteractionResponsePayload(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
 
-	DiscordCoreAPI_Dll string getCreateInteractionResponsePayload(PostInteractionResponseData dataPackage);
+	DiscordCoreAPI_Dll string getCreateInteractionResponsePayload(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
 
 	DiscordCoreAPI_Dll string getCreateRolePayload(PostRoleData dataPackage);
 
 	DiscordCoreAPI_Dll string getUpdateRolePositionsPayload(PatchRolePositionData dataPackage);
 
-	DiscordCoreAPI_Dll string getEditChannelPermissionOverwritesPayload(PutPermissionOverwritesData dataPackage);
+	DiscordCoreAPI_Dll string getEditChannelPermissionOverwritesPayload(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
 
-	DiscordCoreAPI_Dll string getPostFollowUpMessagePayload(PostFollowUpMessageData dataPackage);
+	DiscordCoreAPI_Dll string getPostFollowUpMessagePayload(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
 
-	DiscordCoreAPI_Dll string getDeleteMessagesBulkPayload(DeleteMessagesBulkData dataPackage);
+	DiscordCoreAPI_Dll string getDeleteMessagesBulkPayload(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
 }
 #endif

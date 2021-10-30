@@ -38,8 +38,8 @@
 #include <mongocxx/client.hpp>
 
 #include <memorybuffer.h>
-#include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Media.MediaProperties.h>
 #include <winrt/Windows.Devices.Enumeration.h>
 #include <winrt/Windows.Networking.Sockets.h>

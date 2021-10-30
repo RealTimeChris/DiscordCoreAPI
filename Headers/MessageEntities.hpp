@@ -9,9 +9,9 @@
 #define _MESSAGE_ENTITIES_
 
 #include "IndexInitial.hpp"
-#include "JSONifier.hpp"
 #include "CoRoutine.hpp"
 #include "Http.hpp"
+#include "JSONIFier.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -38,10 +38,22 @@ namespace DiscordCoreAPI {
 	/// Create Message data. \brief Create Message data.
 	struct DiscordCoreAPI_Dll CreateMessageData {
 
+		friend string DiscordCoreInternal::getCreateMessagePayload(DiscordCoreAPI::CreateMessageData dataPackage);
 		friend class DiscordCoreInternal::MessageManager;
+		friend class InputEvents;
 
 		CreateMessageData(string channelIdNew) {
 			this->channelId = channelIdNew;
+		}
+
+		CreateMessageData(RespondToInputEventData dataPackage) {
+			this->requesterId = dataPackage.requesterId;
+			this->channelId = dataPackage.channelId;
+			this->embeds = dataPackage.embeds;
+			this->allowedMentions = dataPackage.allowedMentions;
+			this->content = dataPackage.content;
+			this->components = dataPackage.components;
+			this->tts = dataPackage.tts;
 		}
 
 		CreateMessageData(InputEventData dataPackage) {
@@ -165,140 +177,10 @@ namespace DiscordCoreAPI {
 
 	};
 
-	/// Reply Message data. \brief Reply Message data.
-	struct DiscordCoreAPI_Dll ReplyMessageData {
-
-		friend class DiscordCoreInternal::MessageManagerAgent;
-		friend class DiscordCoreInternal::MessageManager;
-		friend class InputEvents;
-
-		ReplyMessageData(InputEventData dataPackage) {
-			this->messageReference.messageId = dataPackage.getMessageId();
-			this->messageReference.channelId = dataPackage.getChannelId();
-			this->messageReference.guildId = dataPackage.getGuildId();
-			this->requesterId = dataPackage.getRequesterId();
-			this->messageReference.failIfNotExists = false;
-		}
-
-		/// Adds a button to the response Message. \brief Adds a button to the response Message.
-		/// \param disabled Whether the button is active or not.
-		/// \param customId A custom id to give for identifying the button.
-		/// \param buttonLabel A visible label for the button.
-		/// \param buttonStyle The style of the button.
-		/// \param emojiName An emoji name, if desired.        
-		/// \param emojiId An emoji id, if desired.
-		/// \param url A url, if applicable.
-		/// \returns void
-		void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = buttonStyle;
-					component.customId = customId;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->components.at(this->components.size() - 1).components.push_back(component);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-		}
-
-		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
-		/// \param disabled Whether the select-menu is active or not.
-		/// \param customId A custom id to give for identifying the select-menu.
-		/// \param options A vector of select-menu-options to offer.
-		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-		/// \param maxValues Maximum number of selections that are possible.
-		/// \param minValues Minimum required number of selections that are required.
-		/// \returns void
-		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customId;
-					componentData.options = options;
-					this->components.at(this->components.size() - 1).components.push_back(componentData);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-
-			}
-		}
-
-		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
-		/// \param dataPackage An AllowedMentionsData structure.
-		/// \returns void
-		void addAllowedMentions(AllowedMentionsData dataPackage) {
-			this->allowedMentions = dataPackage;
-		}
-
-		/// For setting the components in a response. \brief For setting the components in a response. 
-		/// \param dataPackage An ActionRowData structure.
-		/// \returns void
-		void addComponentRow(ActionRowData dataPackage) {
-			this->components.push_back(dataPackage);
-		}
-
-		/// For setting the embeds in a response. \brief For setting the embeds in a response.
-		/// \param dataPackage An EmbedData structure.
-		/// \returns void
-		void addMessageEmbed(EmbedData dataPackage) {
-			this->embeds.push_back(dataPackage);
-		}
-
-		/// For setting the Message content in a response. \brief For setting the Message content in a response.
-		/// \param dataPackage A string, containing the content.
-		/// \returns void
-		void addContent(string dataPackage) {
-			this->content = dataPackage;
-		}
-
-		/// For setting the tts status of a response. \brief For setting the tts status of a response.
-		/// \param enabledTTs A bool.
-		/// \returns void
-		void setTTSStatus(bool enabledTTs) {
-			this->tts = enabledTTs;
-		}
-
-	protected:
-		MessageReferenceData messageReference{};
-		AllowedMentionsData allowedMentions{};
-		vector<ActionRowData> components{};
-		vector<EmbedData> embeds{};
-		string requesterId{ "" };
-		string content{ "" };
-		__int32 nonce{ 0 };
-		bool tts{ false };
-
-		ReplyMessageData() {};
-
-	};
-
 	/// Edit Message data. \brief Edit Message data.
 	struct DiscordCoreAPI_Dll EditMessageData {
 
+		friend string DiscordCoreInternal::getEditMessagePayload(DiscordCoreAPI::EditMessageData dataPackage);
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
@@ -461,6 +343,7 @@ namespace DiscordCoreAPI {
 	/// Send DM data. \brief Send DM data.
 	struct DiscordCoreAPI_Dll SendDMData {
 
+		friend string DiscordCoreInternal::getCreateMessagePayload(DiscordCoreAPI::SendDMData dataPackage);
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEvents;
 
@@ -584,9 +467,11 @@ namespace DiscordCoreAPI {
 		}
 
 	protected:
+
 		MessageReferenceData messageReference{};
 		AllowedMentionsData allowedMentions{};
 		vector<ActionRowData> components{};
+		vector<string> stickerIds{};
 		vector<EmbedData> embeds{};
 		string requesterId{ "" };
 		string channelId{ "" };
@@ -691,52 +576,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll MessageManagerAgent : public ThreadContext, public agent {
-	protected:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class MessageManager;
-
-		unbounded_buffer<DeleteMessagesBulkData> requestDeleteMultMessagesBuffer{ nullptr };
-		unbounded_buffer<vector<DiscordCoreAPI::Message>> outMultMessagesBuffer{ nullptr };
-		unbounded_buffer<GetPinnedMessagesData> requestGetPinnedMessagesBuffer{ nullptr };
-		unbounded_buffer<CrosspostMessageData> requestCrosspostMessageBuffer{ nullptr };
-		unbounded_buffer<DeleteMessageData> requestDeleteMessageBuffer{ nullptr };
-		unbounded_buffer<PutPinMessageData> requestPutPinMessageBuffer{ nullptr };
-		unbounded_buffer<PatchMessageData> requestPatchMessageBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::Message> outMessageBuffer{ nullptr };
-		unbounded_buffer<PostMessageData> requestPostMessageBuffer{ nullptr };
-		unbounded_buffer<GetMessagesData> requestGetMessagesBuffer{ nullptr };
-		unbounded_buffer<GetMessageData> requestGetMessageBuffer{ nullptr };
-		unbounded_buffer<PostDMData> requestPostDMMessageBuffer{ nullptr };
-
-		MessageManagerAgent();
-
-		DiscordCoreAPI::Message getObjectData(GetMessageData dataPackage);
-
-		vector<DiscordCoreAPI::Message> getObjectData(GetMessagesData dataPackage);
-
-		vector<DiscordCoreAPI::Message> getObjectData(GetPinnedMessagesData dataPackage);
-
-		DiscordCoreAPI::Message patchObjectData(PatchMessageData dataPackage);
-
-		DiscordCoreAPI::Message postObjectData(PostMessageData dataPackage);
-
-		DiscordCoreAPI::Message postObjectData(PostDMData dataPackage);
-
-		DiscordCoreAPI::Message postObjectData(CrosspostMessageData dataPackage);
-
-		void postObjectData(DeleteMessagesBulkData dataPackage);
-
-		void putObjectData(PutPinMessageData dataPackage);
-
-		void onDeleteData(DeleteMessageData dataPackage);
-
-		void deleteObjectData(DeleteMessageData dataPackage);
-
-		void run();
-	};
-
 	class DiscordCoreAPI_Dll MessageManager {
 	public:
 
@@ -744,7 +583,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::InputEvents;
 		friend class DiscordCoreAPI::Messages;
 
-		MessageManager(MessageManager* pointer);
+		MessageManager();
 
 	protected:
 
@@ -754,11 +593,11 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> createMessageAsync(DiscordCoreAPI::CreateMessageData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> replyAsync(DiscordCoreAPI::ReplyMessageData dataPackage);
-
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> editMessageAsync(DiscordCoreAPI::EditMessageData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> deleteMessageAsync(DiscordCoreAPI::DeleteMessageData dataPackage);
+
+		void deleteMessageToBeWrapped(DiscordCoreAPI::DeleteMessageData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> deleteMessagesBulkAsync(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
 

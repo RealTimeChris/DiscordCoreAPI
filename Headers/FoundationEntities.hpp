@@ -804,19 +804,6 @@ namespace  DiscordCoreInternal {
         string baseURL{ "" };
     };
 
-    struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
-        __int32 timeDelayInMs{ 0 };
-        string interactionToken{ "" };
-        string applicationId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
-        __int32 timeDelayInMs{ 0 };
-        string interactionToken{ "" };
-        string applicationId{ "" };
-        string messageId{ "" };
-    };
-
     struct DiscordCoreAPI_Dll ChannelMentionData : public DiscordCoreAPI::DiscordEntity {
         ChannelType type{ -1 };
         string guildId{ "" };
@@ -1072,7 +1059,7 @@ namespace  DiscordCoreInternal {
         SLASH_COMMAND_INTERACTION = 1,
         BUTTON_INTERACTION = 2,
         REGULAR_MESSAGE = 3,
-        SELECT_MENU_INPUT = 4
+        SELECT_MENU_INTERACTION = 4
     };
 
     enum class ApplicationCommandType {
@@ -1097,72 +1084,11 @@ namespace  DiscordCoreInternal {
         string guildId{ "" };
     };
 
-    struct DiscordCoreAPI_Dll InteractionResponseData {
-        InteractionApplicationCommandCallbackData data{};
-        InteractionCallbackType type{};
-    };
-
-    struct DiscordCoreAPI_Dll PatchInteractionResponseData {
-        InteractionResponseData data{};
-        string interactionToken{ "" };
-        string applicationId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PostInteractionResponseData {
-        InteractionApplicationCommandCallbackData data{};
-        InteractionCallbackType type{};
-        string interactionToken{ "" };
-        string interactionId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PostFollowUpMessageData {
-        AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
-        string interactionToken{ "" };
-        string applicationId{ "" };
-        vector<EmbedData> embeds{};
-        string content{ "" };
-        __int32 flags{ 0 };
-        bool tts{ false };
-    };
-
-    struct DiscordCoreAPI_Dll GetInteractionResponseData {
-        string interactionToken{ "" };
-        string applicationId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
-        string interactionToken{ "" };
-        string applicationId{ "" };
-        string messageId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PostDeferredInteractionResponseData {
-        InteractionCallbackType type{};
-        string interactionToken{ "" };
-        string interactionId{ "" };
-        __int32 flags{ 0 };
-    };
-
     struct DiscordCoreAPI_Dll HttpData {
         vector<string> responseHeaderValues{};
         string returnMessage{ "" };
         __int32 returnCode{ 0 };
         json data{};
-    };
-
-    struct DiscordCoreAPI_Dll GetMessagesData {
-        string beforeThisId{ "" };
-        string aroundThisId{ "" };
-        string afterThisId{ "" };
-        string channelId{ "" };
-        __int32 limit{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
-        vector<string> messageIds{};
-        string channelId{ "" };
-        string content{ "" };
     };
 
     struct DiscordCoreAPI_Dll HttpWorkloadData {
@@ -1227,75 +1153,6 @@ namespace  DiscordCoreInternal {
         string userId{ "" };
     };
 
-    struct DiscordCoreAPI_Dll GetChannelData {
-        string channelId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll DeleteChannelData {
-        string channelId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutPermissionOverwritesData {
-        EditChannelPermissionOverwritesType type{};
-        string roleOrUserId{ "" };
-        string channelId{ "" };
-        string allow{ "" };
-        string deny{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll UpdateChannelData {
-        vector<OverWriteData> permissionOverwrites{};
-        __int32 defaultAutoArchiveDuration{ 0 };
-        __int32 videoQualityMode{ 0 };
-        __int32 rateLimitPerUser{ 0 };
-        __int32 userLimit{ 0 };
-        string parentId{ "" };
-        string rtcRgion{ "" };
-        __int32 position{ 0 };
-        __int32 bitrate{ 0 };
-        ChannelType type{};
-        string topic{ "" };
-        bool nsfw{ false };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-        string roleOrUserId{ "" };
-        string channelId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetDMChannelData {
-        string userId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PatchChannelData {
-        UpdateChannelData channelData{};
-        string channelId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetMessageData {
-        string requesterId{ "" };
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll CrosspostMessageData {
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutPinMessageData {
-        string channelId{ "" };
-        string messageId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll DeleteMessageData {
-        string messageTimeStamp{ "" };
-        string channelId{ "" };
-        string messageId{ "" };
-        __int32 timeDelay{ 0 };
-    };
-
     enum class GetUserDataType {
         SELF = 0,
         USER = 1
@@ -1308,68 +1165,6 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll GetUserData {
         GetUserDataType userType{};
         string userId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetPinnedMessagesData {
-        string channelId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PostMessageData {
-        MessageReferenceData messageReference{};
-        AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
-        vector<string> stickerIds{};
-        vector<EmbedData> embeds{};
-        string requesterId{ "" };
-        string channelId{ "" };
-        string content{ "" };
-        bool tts{ false };
-    };
-
-    struct DiscordCoreAPI_Dll PatchMessageData {
-        AllowedMentionsData allowedMentions{};
-        vector<AttachmentData> attachments{};
-        vector<ActionRowData> components{};
-        vector<EmbedData> embeds{};
-        string requesterId{ "" };
-        string messageId{ "" };
-        string channelId{ "" };
-        string content{ "" };
-        __int32 flags{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll PostDMData {
-        MessageReferenceData messageReference{};
-        AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
-        vector<string> stickerIds{};
-        vector<EmbedData> embeds{};
-        string requesterId{ "" };
-        string channelId{ "" };
-        string content{ "" };
-        string userId{ "" };
-        __int32 nonce{ 0 };
-        bool tts{ false };
-    };
-
-    struct DiscordCoreAPI_Dll GetGuildMemberData {
-        string guildMemberId{ "" };
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
-        vector<string> roleIds{};
-    };
-
-    struct DiscordCoreAPI_Dll PatchGuildMemberData {
-        string newVoiceChannelId{ "" };
-        string currentChannelId{ "" };
-        string guildMemberId{ "" };
-        vector<string> roleIds{};
-        string guildId{ "" };
-        bool mute{ false };
-        bool deaf{ false };
-        string nick{ "" };
     };
 
     struct DiscordCoreAPI_Dll UpdateVoiceStateData {
@@ -1491,19 +1286,6 @@ namespace  DiscordCoreInternal {
         string guildId{ "" };
     };
 
-    struct DiscordCoreAPI_Dll PatchFollowUpMessageData {
-        DiscordCoreInternal::AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
-        string interactionToken{ "" };
-        string applicationId{ "" };
-        vector<EmbedData> embeds{};
-        string requesterId{ "" };
-        string messageId{ "" };
-        string content{ "" };
-        __int32 flags{ 0 };
-        bool tts{ false };
-    };
-
     enum class AuditLogEvent {
         GUILD_UPDATE = 1,
         CHANNEL_CREATE = 10,
@@ -1542,25 +1324,6 @@ namespace  DiscordCoreInternal {
         INTEGRATION_DELETE = 82
     };
 
-    struct DiscordCoreAPI_Dll GetAuditLogData {
-        AuditLogEvent actionType{};
-        __int32 limit{ 0 };
-        string guildId{ "" };
-        string userId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetInviteData {
-        string inviteId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetVanityInviteData {
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetInvitesData {
-        string guildId{ "" };
-    };
-
     struct DiscordCoreAPI_Dll VoiceConnectInitData {
         string channelId{ "" };
         string guildId{ "" };
@@ -1585,13 +1348,6 @@ namespace  DiscordCoreInternal {
         vector<string> modes{};
         __int32 port{ 0 };
         string ip{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutGuildBanData {
-        __int32 deleteMessageDays{ 0 };
-        string guildMemberId{ "" };
-        string guildId{ "" };
-        string reason{ "" };
     };
 
 };
@@ -2225,25 +1981,6 @@ namespace DiscordCoreAPI {
 
     /// For updating/modifying a given Channel's properties.
     struct DiscordCoreAPI_Dll UpdateChannelData {
-        operator DiscordCoreInternal::UpdateChannelData() {
-            DiscordCoreInternal::UpdateChannelData newData{};
-            newData.defaultAutoArchiveDuration = this->defaultAutoArchiveDuration;
-            newData.type = (DiscordCoreInternal::ChannelType)this->type;
-            newData.rateLimitPerUser = this->rateLimitPerUser;
-            newData.videoQualityMode = this->videoQualityMode;
-            for (auto value : this->permissionOverwrites) {
-                newData.permissionOverwrites.push_back(value);
-            }
-            newData.userLimit = this->userLimit;
-            newData.parentId = this->parentId;
-            newData.position = this->position;
-            newData.rtcRgion = this->rtcRgion;
-            newData.bitrate = this->bitrate;
-            newData.topic = this->topic;
-            newData.name = this->name;
-            newData.nsfw = this->nsfw;
-            return newData;
-        }
         vector<OverWriteData> permissionOverwrites{};
         __int32 defaultAutoArchiveDuration{ 0 };
         __int32 videoQualityMode{ 0 };
@@ -3388,7 +3125,7 @@ namespace DiscordCoreAPI {
         SLASH_COMMAND_INTERACTION = 1, ///< A chat-ApplicationCommand
         BUTTON_INTERACTION = 2, ///< A button interaction
         REGULAR_MESSAGE = 3, ///< A regular Message
-        SELECT_MENU_INPUT = 4, ///< Select-menu input
+        SELECT_MENU_INTERACTION = 4, ///< Select-menu input
         MESSAGE_COMMAND_INTERACTION = 5, ///<Message-command-interaction
         USER_COMMAND_INTERACTION = 6 ///<User-command-interaction.
     };
@@ -3694,6 +3431,7 @@ namespace DiscordCoreAPI {
         friend struct DeferComponentResponseData;
         friend struct CreateFollowUpMessageData;
         friend struct EditFollowUpMessageData;
+        friend struct CreateMessageData;
         friend struct SendDMData;
         friend class InputEvents;
 

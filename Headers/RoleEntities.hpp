@@ -9,7 +9,6 @@
 #define _ROLE_ENTITIES_
 
 #include "IndexInitial.hpp"
-#include "JSONifier.hpp"
 #include "GuildMemberEntities.hpp"
 #include "FoundationEntities.hpp"
 
@@ -153,7 +152,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Guild;
 		friend class DiscordCoreAPI::Roles;
 
-		RoleManager(RoleManager* pointer);
+		RoleManager();
 
 	protected:
 

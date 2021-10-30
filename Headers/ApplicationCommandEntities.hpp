@@ -10,6 +10,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "JSONIFier.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -151,7 +152,7 @@ namespace DiscordCoreInternal {
         friend class DiscordCoreAPI::Interactions;
         friend class DiscordCoreAPI::SelectMenu;
 
-        ApplicationCommandManager(ApplicationCommandManager* pointer);
+        ApplicationCommandManager();
 
     protected:
 

@@ -124,7 +124,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Users;
 		friend class DiscordCoreAPI::Guild;
 
-		UserManager(UserManager* pointer);
+		UserManager();
 
 		~UserManager();
 
