@@ -50,6 +50,7 @@ namespace DiscordCoreAPI {
 		friend class PermissionsConverter;
 		friend class ApplicationCommands;
 		friend void ::terminateWrapper();
+		friend class InputEventHandler;
 		friend class EventHandler;
 		friend class GuildMembers;
 		friend class Interactions;
@@ -62,10 +63,6 @@ namespace DiscordCoreAPI {
 		friend class Roles;
 		friend class Users;
 		friend class Guild;
-
-		DiscordCoreClient operator=(DiscordCoreClient&);
-
-		DiscordCoreClient(DiscordCoreClient&);
 
 		static shared_ptr<BotUser> currentUser;
 		static DiscordCoreClient* thisPointer;
@@ -93,19 +90,20 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
 		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
-		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };		
+		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
 		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
 		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
 		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
-		vector<RepeatedFunctionData>* functionsToExecute{};
+		shared_ptr<InputEventHandler> inputEvents{ nullptr };
+		vector<RepeatedFunctionData>* functionsToExecute{};		
 		string baseURL{ "https://discord.com/api/v9" };
 		bool doWeQuit{ false };
 		string botToken{ "" };
 
 		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecuteNew);
 
-		CoRoutine<void> initialize();
+		void initialize();
 
 		string getGateWayUrl();
 

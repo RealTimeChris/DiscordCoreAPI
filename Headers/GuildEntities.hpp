@@ -17,7 +17,6 @@
 #include "GuildMemberEntities.hpp"
 #include "UserEntities.hpp"
 #include "RoleEntities.hpp"
-#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -51,14 +50,6 @@ namespace DiscordCoreAPI {
 	/// For geting the vanity invite data of a Guild. \brief For geting the vanity invite data of a Guild.
 	struct DiscordCoreAPI_Dll GetVanityInviteData {
 		string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
-	};
-
-	/// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
-	struct DiscordCoreAPI_Dll GetAuditLogData {
-		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
-		string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
-		string userId{ "" };///< The User for whom to look for the actions of.
-		__int32 limit{ 0 };///< The maximum number of actions to acquire from the log.
 	};
 	/**@}*/
 

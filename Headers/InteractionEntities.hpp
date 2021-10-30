@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     /// Defer component response data. \brief Defer component response data.
     struct DiscordCoreAPI_Dll DeferComponentResponseData {
 
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
         friend string DiscordCoreInternal::getCreateInteractionResponsePayload(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
         friend class SelectMenuCollector;
         friend class ButtonCollector;
 
@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
         friend string DiscordCoreInternal::getCreateDeferredInteractionResponsePayload(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
             this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -403,7 +403,7 @@ namespace DiscordCoreAPI {
         friend string DiscordCoreInternal::getEditInteractionResponsePayload(DiscordCoreAPI::EditInteractionResponseData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         EditInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -546,7 +546,7 @@ namespace DiscordCoreAPI {
 
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         DeleteInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -565,7 +565,7 @@ namespace DiscordCoreAPI {
         friend string DiscordCoreInternal::getPostFollowUpMessagePayload(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -711,7 +711,7 @@ namespace DiscordCoreAPI {
 
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -856,7 +856,7 @@ namespace DiscordCoreAPI {
 
         friend string DiscordCoreInternal::getEditFollowUpMessagePayload(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         EditFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -1004,7 +1004,7 @@ namespace DiscordCoreAPI {
 
         friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         DeleteFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -1068,7 +1068,7 @@ namespace DiscordCoreInternal {
         friend class DiscordCoreAPI::ButtonCollector;
         friend class DiscordCoreAPI::Interactions;
         friend class DiscordCoreAPI::EventHandler;
-        friend class DiscordCoreAPI::InputEvents;
+        friend class DiscordCoreAPI::InputEventHandler;
 
         InteractionManager();
 

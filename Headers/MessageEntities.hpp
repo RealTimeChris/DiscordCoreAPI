@@ -9,9 +9,10 @@
 #define _MESSAGE_ENTITIES_
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 #include "Http.hpp"
 #include "JSONIFier.hpp"
+#include "FoundationEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -40,7 +41,7 @@ namespace DiscordCoreAPI {
 
 		friend string DiscordCoreInternal::getCreateMessagePayload(DiscordCoreAPI::CreateMessageData dataPackage);
 		friend class DiscordCoreInternal::MessageManager;
-		friend class InputEvents;
+		friend class InputEventHandler;
 
 		CreateMessageData(string channelIdNew) {
 			this->channelId = channelIdNew;
@@ -183,7 +184,7 @@ namespace DiscordCoreAPI {
 		friend string DiscordCoreInternal::getEditMessagePayload(DiscordCoreAPI::EditMessageData dataPackage);
 		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
-		friend class InputEvents;
+		friend class InputEventHandler;
 
 		EditMessageData(InputEventData dataPackage) {
 			this->requesterId = dataPackage.getRequesterId();
@@ -345,7 +346,7 @@ namespace DiscordCoreAPI {
 
 		friend string DiscordCoreInternal::getCreateMessagePayload(DiscordCoreAPI::SendDMData dataPackage);
 		friend class DiscordCoreInternal::MessageManager;
-		friend class InputEvents;
+		friend class InputEventHandler;
 
 		SendDMData(RespondToInputEventData dataPackage) {
 			this->requesterId = dataPackage.requesterId;
@@ -486,12 +487,12 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Message>;
-		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnMessageCreationData;
 		friend struct OnMessageUpdateData;
+		friend class InputEventHandler;
 		friend class DiscordCoreClient;
 
 		Message();
@@ -504,10 +505,6 @@ namespace DiscordCoreAPI {
 	* \addtogroup utilities
 	* @{
 	*/
-	/// MessageCollectorReturn data. \brief MessageCollectorReturn data.
-	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
-		vector<Message> messages; ///< A vector of collected Messages.
-	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
 	class DiscordCoreAPI_Dll MessageCollector : public DiscordCoreInternal::ThreadContext, public agent {
@@ -524,7 +521,7 @@ namespace DiscordCoreAPI {
 		/// \param userIdNew User id to set for possible comparison.
 		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
 		/// \returns A DiscordCoreAPI::CoRoutine containing MessageCollectorReturnData.
-		DiscordCoreAPI::CoRoutine<MessageCollectorReturnData>  collectMessages(__int32 quantityToCollect, __int32 msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) {
+		MessageCollectorReturnData  collectMessages(__int32 quantityToCollect, __int32 msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) {
 			this->quantityOfMessageToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
@@ -533,7 +530,7 @@ namespace DiscordCoreAPI {
 			MessageCollector::messagesBufferMap.insert_or_assign(this->userId, this->messagesBuffer);
 			this->start();
 			wait(this);
-			co_return this->messageReturnData;
+			return this->messageReturnData;
 		}
 
 		 ~MessageCollector() {
@@ -580,7 +577,7 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::InputEvents;
+		friend class DiscordCoreAPI::InputEventHandler;
 		friend class DiscordCoreAPI::Messages;
 
 		MessageManager();

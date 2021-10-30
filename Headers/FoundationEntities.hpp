@@ -9,13 +9,14 @@
 #define _FOUNDATION_ENTITIES_
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
+    template<typename returnType>
+    class CoRoutine;
     struct SongCompletionEventData;
     class RespondToInputEventData;
-    struct ButtonInteractionData;
+    struct ButtonInteractionData;    
     class DatabaseManagerAgent;
     class PermissionsConverter;
     class SelectMenuCollector;
@@ -29,7 +30,7 @@ namespace DiscordCoreAPI {
     class EventHandler;
     class GuildMembers;
     struct CommandData;
-    class InputEvents;
+    class InputEventHandler;
     class YouTubeSong;
     class SelectMenu;
     class YouTubeAPI;
@@ -38,13 +39,12 @@ namespace DiscordCoreAPI {
     class Channels;
     class BotUser;
     class SongAPI;
+    class Message;
     class Guilds;
     struct Song;
     class Roles;
     class Users;
     class Guild;
-
-    DiscordCoreAPI_Dll CoRoutine<void> voidFunction();
 
     DiscordCoreAPI_Dll bool nanoSleep(__int64 ns);
 
@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    DiscordCoreAPI_Dll TimeStamp convertTimeInMsToDateTimeString(__int64 timeInMs);
+    DiscordCoreAPI_Dll string convertTimeInMsToDateTimeString(__int64 timeInMs);
 
     DiscordCoreAPI_Dll __int64 convertTimestampToInteger(string timeStamp);
 
@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// Snowflake, which is a time-based identifier for any/all of the Discord entities. \brief Snowflake, which is a time-based identifier for any/all of the Discord entities.
-    typedef DiscordCoreAPI_Dll string Snowflake;
+    typedef string Snowflake;
 
     /// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
@@ -2991,6 +2991,11 @@ namespace DiscordCoreAPI {
         map<string, RoleData> roles{};///< Map full of RoleData.
     };
 
+    /// MessageCollectorReturn data. \brief MessageCollectorReturn data.
+    struct MessageCollectorReturnData {
+        vector<Message> messages; ///< A vector of collected Messages.
+    };
+
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption;
 
     DiscordCoreAPI_Dll vector<DiscordCoreInternal::ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions);
@@ -3055,6 +3060,14 @@ namespace DiscordCoreAPI {
         InteractionData(string requesterId) {
             this->requesterId = requesterId;
         }
+    };
+
+    /// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
+    struct DiscordCoreAPI_Dll GetAuditLogData {
+        AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
+        string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
+        string userId{ "" };///< The User for whom to look for the actions of.
+        __int32 limit{ 0 };///< The maximum number of actions to acquire from the log.
     };
 
     /**@}*/
@@ -3161,7 +3174,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreClient;
         friend class EventHandler;
         friend struct CommandData;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         InputEventResponseType inputEventResponseType{}; ///< The type of event response that is represented by this structure.
         InputEventType eventType{}; ///< The type of input-event that is represented by this structure.
@@ -3433,7 +3446,7 @@ namespace DiscordCoreAPI {
         friend struct EditFollowUpMessageData;
         friend struct CreateMessageData;
         friend struct SendDMData;
-        friend class InputEvents;
+        friend class InputEventHandler;
 
         InputEventResponseType type{}; ///< The type of response to make.
 

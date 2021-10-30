@@ -11,7 +11,6 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "Http.hpp"
-#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -86,7 +85,7 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::InputEvents;
+		friend class DiscordCoreAPI::InputEventHandler;
 		friend class DiscordCoreAPI::Channels;
 		friend class DiscordCoreAPI::Guild;
 

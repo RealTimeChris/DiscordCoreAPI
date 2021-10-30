@@ -13,6 +13,7 @@
 #include "DataParsingFunctions.hpp"
 #include "ChannelEntities.hpp"
 #include "WebSocketEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 

@@ -244,6 +244,18 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
+	class DiscordCoreAPI_Dll InputEvents {
+	public:
+		static InputEventData respondToEvent(RespondToInputEventData dataPackage);
+
+		static CoRoutine<void> deleteInputEventResponseAsync(InputEventData dataPackage, __int32 timeDelayNew = 0);
+	};
+	/**@}*/
+
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
 	/// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Interactions {
 	public:

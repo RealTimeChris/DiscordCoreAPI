@@ -8,14 +8,20 @@
 #ifndef _COROUTINES_
 #define _COROUTINES_
 
+#include "IndexInitial.hpp"
+#include "FoundationEntities.hpp"
+#include "ApplicationCommandEntities.hpp"
+#include "GuildEntities.hpp"
+#include "RoleEntities.hpp"
+
 namespace DiscordCoreAPI {
+
     /**
     * \addtogroup utilities
     * @{
-    */
-
+    */    
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    class InvalidState : public exception {
+    class DiscordCoreAPI_Dll InvalidState : public exception {
     public:
 
         explicit  InvalidState(const string& _Message) : exception(_Message.c_str()) {}
@@ -33,7 +39,7 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     /// \param returnType The type of parameter that is returned by the CoRoutine.
     template<typename returnType>
-    class CoRoutine {
+    class DiscordCoreAPI_Dll CoRoutine {
     public:
         class promise_type;
 
@@ -58,7 +64,7 @@ namespace DiscordCoreAPI {
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns returnType The return value of the CoRoutine.
-        returnType get() {
+        returnType get(void) {
             if (!coroutineHandle) {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
@@ -87,7 +93,7 @@ namespace DiscordCoreAPI {
             return coroutineHandle.promise().result;
         }
 
-        class promise_type {
+        class DiscordCoreAPI_Dll promise_type{
         public:
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
@@ -129,7 +135,7 @@ namespace DiscordCoreAPI {
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization)
     template<>
-    class CoRoutine<void> {
+    class DiscordCoreAPI_Dll CoRoutine<void> {
     public:
         class promise_type;
 
@@ -154,7 +160,7 @@ namespace DiscordCoreAPI {
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns void.
-        void get() {
+        void get(void) {
             if (!coroutineHandle) {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
@@ -183,7 +189,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        class promise_type {
+        class DiscordCoreAPI_Dll promise_type {
         public:
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
