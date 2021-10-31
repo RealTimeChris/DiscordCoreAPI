@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 		/// Delete a channel, or close a private message. \brief Delete a channel, or close a private message.
 		/// \param dataPackage A DeleteChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<void> deleteChannelAsync(DeleteChannelData dataPackage);
+		static CoRoutine<void> deleteOrCloseChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
 
 		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A EditChannelPermissionOverwritesData structure.

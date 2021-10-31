@@ -788,7 +788,8 @@ namespace  DiscordCoreInternal {
     };
 
     enum class HeaderTypes {
-        Bot_Auth = 0
+        Bot_Auth = 0,
+        X_Audit_Log_Reason = 1
     };
 
     struct DiscordCoreAPI_Dll Headers {
@@ -979,11 +980,13 @@ namespace  DiscordCoreInternal {
         DELETE_CHANNEL = 69,
         CROSSPOST_MESSAGE = 70,
         GET_REACTIONS = 71,
-        GET_FOLLOW_UP_MESSAGE = 71
+        GET_FOLLOW_UP_MESSAGE = 71,
+        DELETE_OR_CLOSE_CHANNEL = 72
     };
 
     struct DiscordCoreAPI_Dll ChannelData : public DiscordCoreAPI::DiscordEntity {
         map<string, OverWriteData> permissionOverwrites{};
+        __int32 defaultAutoArchiveDuration{ 0 };
         ThreadMetadataData threadMetadata{};
         ChannelType type{ ChannelType::DM };
         __int32 videoQualityMode{ 0 };
@@ -1688,41 +1691,40 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
         operator DiscordCoreInternal::ChannelData() {
             DiscordCoreInternal::ChannelData newData;
+            newData.defaultAutoArchiveDuration = this->defaultAutoArchiveDuration;
             newData.type = (DiscordCoreInternal::ChannelType)this->type;
             for (auto [key, value] : this->permissionOverwrites) {
                 newData.permissionOverwrites.insert(make_pair(key, value));
             }
-
-            newData.threadMetadata = this->threadMetadata;
+            newData.lastPinTimestamp = this->lastPinTimestamp;
+            newData.videoQualityMode = this->videoQualityMode;
             newData.videoQualityMode = this->videoQualityMode;
             newData.rateLimitPerUser = this->rateLimitPerUser;
-            newData.applicationId = this->applicationId;
-            newData.bitrate = this->bitrate;
-            newData.guildId = this->guildId;
-            newData.icon = this->icon;
-            newData.id = this->id;
+            newData.threadMetadata = this->threadMetadata;
             newData.lastMessageId = this->lastMessageId;
-            newData.lastPinTimestamp = this->lastPinTimestamp;
-            newData.member = this->member;
-            newData.memberCount = this->memberCount;
+            newData.applicationId = this->applicationId;
             newData.messageCount = this->messageCount;
-            newData.name = this->name;
-            newData.nsfw = this->nsfw;
-            newData.ownerId = this->ownerId;
-            newData.parentId = this->parentId;
-            newData.position = this->position;
+            newData.memberCount = this->memberCount;
             for (auto value : this->recipients) {
                 newData.recipients.push_back(value);
             }
             newData.rtcRegion = this->rtcRegion;
-
-            newData.topic = this->topic;
             newData.userLimit = this->userLimit;
-            newData.videoQualityMode = this->videoQualityMode;
-
+            newData.parentId = this->parentId;
+            newData.position = this->position;
+            newData.bitrate = this->bitrate;
+            newData.guildId = this->guildId;
+            newData.ownerId = this->ownerId;
+            newData.member = this->member;
+            newData.topic = this->topic;
+            newData.icon = this->icon;
+            newData.name = this->name;
+            newData.nsfw = this->nsfw;
+            newData.id = this->id;
             return newData;
         }
         map<string, OverWriteData> permissionOverwrites{}; ///< Permission overwrites for the given Channel.
+        __int32 defaultAutoArchiveDuration{ 0 };
         ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a thread.
         ChannelType type{ ChannelType::DM };    ///< The type of the Channel.
         __int32 videoQualityMode{ 0 };  ///< Video quality mode.
@@ -1868,15 +1870,15 @@ namespace DiscordCoreAPI {
 
     /// For updating/modifying a given Channel's properties.
     struct DiscordCoreAPI_Dll UpdateChannelData {
-        vector<OverWriteData> permissionOverwrites{};
-        __int32 defaultAutoArchiveDuration{ 0 };
-        __int32 videoQualityMode{ 0 };
+        map<string, OverWriteData> permissionOverwrites{};
+        __int32 defaultAutoArchiveDuration{ 10080 };
+        __int32 videoQualityMode{ 1 };
         __int32 rateLimitPerUser{ 0 };
+        __int32 bitrate{ 48000 };
         __int32 userLimit{ 0 };
         string parentId{ "" };
         string rtcRgion{ "" };
         __int32 position{ 0 };
-        __int32 bitrate{ 0 };
         ChannelType type{};
         string topic{ "" };
         bool nsfw{ false };

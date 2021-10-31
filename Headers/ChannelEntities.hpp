@@ -32,15 +32,28 @@ namespace DiscordCoreAPI {
 		string channelId{ "" }; ///< The id of the Channel to acquire.
 	};
 
-	/// For modifying a channel's properties. \brief For modifying a channel's properties.
-	struct DiscordCoreAPI_Dll ModifyChannelData {
-		UpdateChannelData channelData{  };///< The data of the channel to be updated.
-		string channelId{ "" }; ///< The id of the Channel to modify.
+	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
+	struct DiscordCoreAPI_Dll DeleteChannelData {
+		string channelId{ "" };
+		string reason{ "" };
 	};
 
-	/// For a channel's properties. \brief For modifying a channel's properties
-	struct DiscordCoreAPI_Dll DeleteChannelData {
-		string channelId{ "" };///< The id of the Channel to delete.
+	/// For modifying a channel's properties. \brief For modifying a channel's properties.
+	struct DiscordCoreAPI_Dll ModifyChannelData {
+		ModifyChannelData(ChannelData newData) {
+			this->channelData.permissionOverwrites = newData.permissionOverwrites;
+			this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
+			this->channelData.userLimit = newData.userLimit;
+			this->channelData.rtcRgion = newData.rtcRegion;
+			this->channelData.parentId = newData.parentId;
+			this->channelData.position = newData.position;
+			this->channelData.topic = newData.topic;
+			this->channelData.name = newData.name;
+			this->channelData.nsfw = newData.nsfw;
+			this->channelData.type = newData.type;
+		};
+		UpdateChannelData channelData{};///< The data of the channel to be updated.
+		string channelId{ "" };///< The id of the Channel to modify.
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
@@ -101,11 +114,9 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> modifyChannelAsync(DiscordCoreAPI::ModifyChannelData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void> deleteChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
+		DiscordCoreAPI::CoRoutine<void>  deleteOrCloseChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
-		
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel>  getCachedChannelAsyncToBeWrapped(DiscordCoreAPI::GetChannelData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
 
