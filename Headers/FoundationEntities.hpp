@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
     class CoRoutine;
     struct SongCompletionEventData;
     class RespondToInputEventData;
-    struct ButtonInteractionData;    
+    struct ButtonInteractionData;
     class DatabaseManagerAgent;
     class PermissionsConverter;
     class SelectMenuCollector;
@@ -109,6 +109,25 @@ namespace DiscordCoreAPI {
         }
         else {
             theFunction(args...);
+        }
+    }
+
+    template <typename ...T>
+    void executeFunctionAfterTimePeriod(function<CoRoutine<void>(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
+        ThreadPoolTimer threadPoolTimer{ nullptr };
+        if (timeDelayInMs > 0) {
+            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                theFunction(args...).get();
+            };
+            if (isRepeating) {
+                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            }
+            else {
+                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            }
+        }
+        else {
+            theFunction(args...).get();
         }
     }
 
@@ -775,13 +794,13 @@ namespace  DiscordCoreInternal {
 
         static vector<shared_ptr<SchedulerWrapper>> schedulers;
         static vector<shared_ptr<thread>> threads;
-        
+
         shared_ptr<thread> threadOfExecution{ nullptr };
 
         ThreadContext(ThreadType threadType);
 
         ThreadContext(ThreadContext& newThread);
-        
+
         void releaseContext();
 
         static void cleanup();
