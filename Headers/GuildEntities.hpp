@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
-		
+
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::GuildManagerAgent;
 		friend class DiscordCoreInternal::GuildManager;
@@ -70,11 +70,12 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildDeletionData;
 		friend struct OnGuildUpdateData;
 		friend class DiscordCoreClient;
+
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
 		/// \returns A shared_ptr containing the voice connection.
 		shared_ptr<VoiceConnection> connectToVoice(string channelId);
-		
+
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		/// \returns void
 		void disconnect();
@@ -98,7 +99,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll GuildManager { 
+	class DiscordCoreAPI_Dll GuildManager {
 	public:
 
 		friend class DiscordCoreAPI::PermissionsConverter;

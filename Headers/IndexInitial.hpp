@@ -53,7 +53,6 @@
 #include <winrt/Windows.Media.Audio.h>
 #include <winrt/Windows.Networking.h>
 #include <winrt/Windows.Foundation.h>
-#include <concurrent_unordered_map.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Devices.h>
 #include <winrt/Windows.Storage.h>
@@ -113,6 +112,7 @@ extern "C"
 #include <fstream>
 #include <bitset>
 #include <future>
+#include <atomic>
 #include <ppl.h>
 #include <regex>
 #include <ios>

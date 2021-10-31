@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 
 	/// Update Role position data.
 	struct DiscordCoreAPI_Dll UpdateRolePositionData {
-		friend string DiscordCoreInternal::getUpdateRolePositionsPayload(UpdateRolePositionData dataPackage);
+		friend string DiscordCoreInternal::JSONIFY(UpdateRolePositionData dataPackage);
 		friend class DiscordCoreInternal::RoleManager;
 		__int32 newPosition{ 0 };///< The new position of the Role.
 		string guildId{ "" };///< The Guild within which to move the Role.

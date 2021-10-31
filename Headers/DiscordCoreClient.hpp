@@ -64,8 +64,8 @@ namespace DiscordCoreAPI {
 		friend class Users;
 		friend class Guild;
 
+		static shared_ptr<DiscordCoreClient> thisPointer;
 		static shared_ptr<BotUser> currentUser;
-		static DiscordCoreClient* thisPointer;
 		static string commandPrefix;
 
 		shared_ptr<EventManager> eventManager{ nullptr };
@@ -80,6 +80,8 @@ namespace DiscordCoreAPI {
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		/// \returns void
 		static void runBot();
+
+		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecuteNew);
 
 	protected:
 
@@ -101,8 +103,6 @@ namespace DiscordCoreAPI {
 		string baseURL{ "https://discord.com/api/v9" };
 		bool doWeQuit{ false };
 		string botToken{ "" };
-
-		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecuteNew);
 
 		void initialize();
 
