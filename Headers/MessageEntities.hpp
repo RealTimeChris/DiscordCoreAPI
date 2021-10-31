@@ -520,7 +520,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		 
 		MessageCollector() :
-			DiscordCoreInternal::ThreadContext(*DiscordCoreInternal::getThreadContext()), agent(***this) {}
+			DiscordCoreInternal::ThreadContext(*DiscordCoreInternal::ThreadContext::getThreadContext()), agent(***this) {}
 
 		/// Begin waiting for Messages. \brief Begin waiting for Messages.
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.

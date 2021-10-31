@@ -757,13 +757,11 @@ namespace  DiscordCoreInternal {
         Scheduler* scheduler{ nullptr };
     };
 
-    class ThreadContext;
-
-    DiscordCoreAPI_Dll shared_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
-
     class DiscordCoreAPI_Dll ThreadContext {
     public:
         shared_ptr<SchedulerWrapper> scheduler{ nullptr };
+
+        static shared_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
 
         Scheduler* operator*();
 
