@@ -51,9 +51,9 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02);
 
-	DiscordCoreAPI_Dll string JSONIFY(string serverId, string sessionId, string token);
+	DiscordCoreAPI_Dll string JSONIFY(string serverId, string sessionId, string token, string testString);
 
-	DiscordCoreAPI_Dll string JSONIFY(string localPort, string localIp, string encryptionMode);
+	DiscordCoreAPI_Dll string JSONIFY(string localPort, string localIp, string encryptionMode, __int32 testValue);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
 

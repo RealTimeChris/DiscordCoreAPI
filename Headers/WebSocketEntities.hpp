@@ -117,7 +117,6 @@ namespace DiscordCoreInternal {
 		string sessionId{ "" };
 		string botToken{ "" };
 
-
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args);
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
@@ -135,8 +134,6 @@ namespace DiscordCoreInternal {
 		void run();
 
 		void cleanup();
-
-		void terminate();
 	};
 
 	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent :public ThreadContext, public agent {
@@ -196,8 +193,6 @@ namespace DiscordCoreInternal {
 		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
 
 		void cleanup();
-
-		void terminate();
 	};
 }
 #endif

@@ -94,41 +94,26 @@ namespace DiscordCoreAPI {
     }
 
     template <typename ...T>
-    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
+    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
+        co_await NewThreadAwaitable<void>();
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0) {
-            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+            auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                concurrency::wait(timeDelayInMs);
                 theFunction(args...);
+                return;
             };
-            if (isRepeating) {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            if (!isRepeating) {
+                timeElapsedHandler(threadPoolTimer);
             }
             else {
-                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             }
         }
         else {
             theFunction(args...);
         }
-    }
-
-    template <typename ...T>
-    void executeFunctionAfterTimePeriod(function<CoRoutine<void>(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
-        ThreadPoolTimer threadPoolTimer{ nullptr };
-        if (timeDelayInMs > 0) {
-            TimerElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
-                theFunction(args...).get();
-            };
-            if (isRepeating) {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-            else {
-                threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
-        }
-        else {
-            theFunction(args...).get();
-        }
+        co_return;
     }
 
     class DiscordCoreAPI_Dll TimeStamp : public string {
