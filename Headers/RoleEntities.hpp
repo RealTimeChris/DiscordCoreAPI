@@ -29,6 +29,12 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< Which Guild to collect their roles from.
 	};
 
+	/// For updating the positions of the roles. \brief For updating the positions of the roles.
+	struct DiscordCoreAPI_Dll RolePositionData {
+		__int32 rolePosition{ 0 };
+		string roleId{ "" };
+	};
+
 	/// Get a Role from the library's cache, or the Discord server. \brief Get a Role from the library's cache, or the Discord server.
 	struct DiscordCoreAPI_Dll GetRoleData {
 		string guildId{ "" };///<Which Guild to collect the Role from.
@@ -48,9 +54,13 @@ namespace DiscordCoreAPI {
 
 	/// Update Role position data.
 	struct DiscordCoreAPI_Dll UpdateRolePositionData {
+		friend string DiscordCoreInternal::getUpdateRolePositionsPayload(UpdateRolePositionData dataPackage);
+		friend class DiscordCoreInternal::RoleManager;
 		__int32 newPosition{ 0 };///< The new position of the Role.
 		string guildId{ "" };///< The Guild within which to move the Role.
 		string roleId{ "" };///< The id of the Role to move/
+	protected:
+		vector<RolePositionData> rolePositions;
 	};
 
 	/// Update Role data.
@@ -107,41 +117,6 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll RoleManagerAgent : public ThreadContext, public agent {
-	protected:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class RoleManager;
-
-		unbounded_buffer<PatchRolePositionData> requestPatchGuildRolesBuffer{ nullptr };
-		unbounded_buffer<DeleteGuildMemberRoleData> requestDeleteRoleBuffer{ nullptr };
-		unbounded_buffer<DeleteGuildRoleData> requestDeleteGuildRoleBuffer{ nullptr };
-		unbounded_buffer<vector<DiscordCoreAPI::Role>> outRolesBuffer{ nullptr };
-		unbounded_buffer<PatchRoleData> requestPatchRoleBuffer{ nullptr };
-		unbounded_buffer<PostRoleData> requestPostRoleBuffer{ nullptr };
-		unbounded_buffer<GetRolesData> requestGetRolesBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::Role> outRoleBuffer{ nullptr };
-		unbounded_buffer<PutRoleData> requestPutRoleBuffer{ nullptr };
-
-		RoleManagerAgent();
-
-		vector<DiscordCoreAPI::Role> getObjectData(GetRolesData  dataPackage);
-
-		DiscordCoreAPI::Role patchObjectData(PatchRoleData dataPackage);
-
-		vector<DiscordCoreAPI::Role> patchObjectData(PatchRolePositionData dataPackage);
-
-		DiscordCoreAPI::Role postObjectData(PostRoleData dataPackage);
-
-		void putObjectData(PutRoleData dataPackage);
-
-		void deleteObjectData(DeleteGuildMemberRoleData dataPackage);
-
-		void deleteObjectData(DeleteGuildRoleData dataPackage);
-
-		void run();
-	};
 
 	class DiscordCoreAPI_Dll RoleManager {
 	public:

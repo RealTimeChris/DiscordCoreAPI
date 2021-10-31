@@ -757,7 +757,7 @@ namespace  DiscordCoreInternal {
         Scheduler* scheduler{ nullptr };
     };
 
-    class DiscordCoreAPI_Dll ThreadContext;
+    class ThreadContext;
 
     DiscordCoreAPI_Dll shared_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
 
@@ -1113,122 +1113,11 @@ namespace  DiscordCoreInternal {
         string bucket{ "" };
     };
 
-    struct DiscordCoreAPI_Dll GetGuildData {
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutReactionData {
-        string channelId{ "" };
-        string messageId{ "" };
-        string emoji{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetReactionsData {
-        string channelId{ "" };
-        string messageId{ "" };
-        string afterId{ "" };
-        string emoji{ "" };
-        __int32 limit{ 0 };
-    };
-
-    enum class ReactionDeletionType {
-        SELF_DELETE = 0,
-        USER_DELETE = 1,
-        EMOJI_DELETE = 2,
-        ALL_DELETE = 3
-    };
-
-    struct DiscordCoreAPI_Dll DeleteReactionDataAll {
-        ReactionDeletionType deletionType{};
-        string encodedEmoji{ "" };
-        string channelId{ "" };
-        string messageId{ "" };
-        string userId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetReactionData {
-        string channelId{ "" };
-        string messageId{ "" };
-        string emojiName{ "" };
-        string userId{ "" };
-    };
-
-    enum class GetUserDataType {
-        SELF = 0,
-        USER = 1
-    };
-
-    struct DiscordCoreAPI_Dll LeaveGuildData {
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetUserData {
-        GetUserDataType userType{};
-        string userId{ "" };
-    };
-
     struct DiscordCoreAPI_Dll UpdateVoiceStateData {
         string channelId{ "" };
         bool selfMute{ false };
         bool selfDeaf{ false };
         string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetRolesData {
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll GetRoleData {
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll DeleteGuildMemberRoleData {
-        string guildId{ "" };
-        string userId{ "" };
-        string roleId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll DeleteGuildRoleData {
-        string guildId{ "" };
-        string roleId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll RolePositionData {
-        __int32 rolePosition{ 0 };
-        string roleId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PatchRolePositionData {
-        vector<RolePositionData> rolePositions{};
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PostRoleData {
-        string hexColorValue{ "" };
-        bool mentionable{ false };
-        __int64 permissions{ 0 };
-        string guildId{ "" };
-        string roleId{ "" };
-        bool hoist{ false };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutRoleData {
-        string guildId{ "" };
-        string userId{ "" };
-        string roleId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PatchRoleData {
-        string hexColorValue{ "" };
-        bool mentionable{ false };
-        string permissions{ "" };
-        string content{ "" };
-        string guildId{ "" };
-        string roleId{ "" };
-        bool hoist{ false };
-        string name{ "" };
     };
 
     struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
@@ -3172,9 +3061,9 @@ namespace DiscordCoreAPI {
         friend class RespondToInputEventData;
         friend class BaseFunctionArguments;
         friend class DiscordCoreClient;
+        friend class InputEventHandler;
         friend class EventHandler;
         friend struct CommandData;
-        friend class InputEventHandler;
 
         InputEventResponseType inputEventResponseType{}; ///< The type of event response that is represented by this structure.
         InputEventType eventType{}; ///< The type of input-event that is represented by this structure.

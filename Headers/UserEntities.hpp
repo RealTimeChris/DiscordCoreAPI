@@ -36,8 +36,8 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<User>;
-		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::UserManagerAgent;
+		friend class DiscordCoreInternal::ReactionManager;
 		friend class DiscordCoreInternal::UserManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -94,29 +94,6 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll UserManagerAgent : public ThreadContext, public agent {
-	protected:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class UserManager;
-
-		unbounded_buffer<DiscordCoreAPI::ApplicationData> outApplicationBuffer{ nullptr };
-		unbounded_buffer<LeaveGuildData> requestLeaveGuildBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::User> outUserBuffer{ nullptr };
-		unbounded_buffer<bool> requestGetApplicationBuffer{ nullptr };
-		unbounded_buffer<GetUserData> requestGetUserBuffer{ nullptr };
-
-		UserManagerAgent();
-
-		DiscordCoreAPI::User getObjectData(GetUserData dataPackage);
-
-		DiscordCoreAPI::ApplicationData getObjectData();
-
-		void deleteObjectData(LeaveGuildData dataPackage);
-
-		void run();
-	};
 
 	class DiscordCoreAPI_Dll UserManager {
 	public:

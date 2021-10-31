@@ -20,11 +20,14 @@ namespace DiscordCoreAPI {
 	struct CreateFollowUpMessageData;
 	struct EditFollowUpMessageData;
 	struct DeleteMessagesBulkData;
+	struct UpdateRolePositionData;
 	struct ModifyGuildMemberData;
 	struct CreateGuildBanData;
-	struct CreateMessageData;
+	struct CreateMessageData;	
 	struct EditMessageData;
-	struct SendDMData;
+	struct UpdateRoleData;
+	struct CreateRoleData;
+	struct SendDMData;	
 
 };
 
@@ -56,7 +59,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string getResumePayload(string botToken, string sessionID, __int32 lastReceivedNumber);
 
-	DiscordCoreAPI_Dll string getModifyRolePayload(PatchRoleData dataPackage);
+	DiscordCoreAPI_Dll string getModifyRolePayload(DiscordCoreAPI::UpdateRoleData dataPackage);
 
 	DiscordCoreAPI_Dll string getSocketPath(string initialPayload);
 
@@ -86,9 +89,9 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string getCreateInteractionResponsePayload(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
 
-	DiscordCoreAPI_Dll string getCreateRolePayload(PostRoleData dataPackage);
+	DiscordCoreAPI_Dll string getCreateRolePayload(DiscordCoreAPI::CreateRoleData dataPackage);
 
-	DiscordCoreAPI_Dll string getUpdateRolePositionsPayload(PatchRolePositionData dataPackage);
+	DiscordCoreAPI_Dll string getUpdateRolePositionsPayload(DiscordCoreAPI::UpdateRolePositionData dataPackage);
 
 	DiscordCoreAPI_Dll string getEditChannelPermissionOverwritesPayload(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
 

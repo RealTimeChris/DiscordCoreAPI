@@ -88,29 +88,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll ReactionManagerAgent : public ThreadContext, public agent {
-	protected:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class ReactionManager;
-
-		unbounded_buffer<DeleteReactionDataAll> requestDeleteReactionBuffer{ nullptr };
-		unbounded_buffer<vector<DiscordCoreAPI::User>> outUsersBuffer{ nullptr };
-		unbounded_buffer<GetReactionsData> requestGetReactionsBuffer{ nullptr };
-		unbounded_buffer<DiscordCoreAPI::Reaction> outReactionBuffer{ nullptr };
-		unbounded_buffer<PutReactionData> requestPutReactionBuffer{ nullptr };
-
-		ReactionManagerAgent();
-
-		DiscordCoreAPI::Reaction putObjectData(PutReactionData dataPackage);
-
-		vector<DiscordCoreAPI::User> getObjectData(GetReactionsData dataPackage);
-
-		void deleteObjectData(DeleteReactionDataAll dataPackage);
-
-		void run();
-	};
-
 	class DiscordCoreAPI_Dll ReactionManager {
 	public:
 
