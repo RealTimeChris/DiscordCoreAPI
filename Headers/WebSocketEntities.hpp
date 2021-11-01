@@ -92,7 +92,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		int intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		__int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
@@ -105,13 +105,13 @@ namespace DiscordCoreInternal {
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		event_token messageReceivedToken{};
-		const int maxReconnectTries{ 10 };
+		const __int32 maxReconnectTries{ 10 };
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		bool areWeReconnecting{ false };
-		int currentReconnectTries{ 0 };
-		int lastNumberReceived{ 0 };
-		int heartbeatInterval{ 0 };
+		__int32 currentReconnectTries{ 0 };
+		__int32 lastNumberReceived{ 0 };
+		__int32 heartbeatInterval{ 0 };
 		event_token closedToken{};
 		string socketPath{ "" };
 		string sessionId{ "" };
@@ -167,16 +167,16 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
-		const int maxReconnectTries{ 10 };
+		const __int32 maxReconnectTries{ 10 };
 		bool areWeReadyToConnect{ true };
 		bool areWeAuthenticated{ false };
 		DataWriter dataWriter{ nullptr };
 		bool areWeTerminating{ false };
-		int currentReconnectTries{ 0 };
+		__int32 currentReconnectTries{ 0 };
 		bool areWeWaitingForIp{ true };
 		bool* doWeReconnect{ nullptr };
-		int lastNumberReceived{ 0 };
-		int heartbeatInterval{ 0 };
+		__int32 lastNumberReceived{ 0 };
+		__int32 heartbeatInterval{ 0 };
 		event_token closedToken{};
 
 		void connect();

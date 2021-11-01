@@ -103,7 +103,15 @@ namespace DiscordCoreAPI {
 
             promise_type() {}
 
-            ~promise_type() {}
+            ~promise_type() {
+                if (this->newThread != nullptr) {
+                    if (this->newThread->joinable()) {
+                        this->newThread->join();
+                    }
+                    delete this->newThread;
+                    this->newThread = nullptr;
+                }
+            }
 
             void return_value(returnType returnValue) {
                 this->result = returnValue;
@@ -198,7 +206,15 @@ namespace DiscordCoreAPI {
 
             promise_type() {}
 
-            ~promise_type() {}
+            ~promise_type() {
+                if (this->newThread != nullptr) {
+                    if (this->newThread->joinable()) {
+                        this->newThread->join();
+                    }
+                    delete this->newThread;
+                    this->newThread = nullptr;
+                }
+            }
 
             void return_void() {}
 

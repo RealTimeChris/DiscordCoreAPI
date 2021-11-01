@@ -54,6 +54,7 @@
 #include <winrt/Windows.Networking.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.h>
+#include <concurrent_unordered_map.h>
 #include <winrt/Windows.Devices.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>

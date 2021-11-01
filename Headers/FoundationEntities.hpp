@@ -3771,7 +3771,7 @@ namespace DiscordCoreAPI {
     /// Returns from an execution of recurseThroughMessagePages(). \brief Returns from an execution of recurseThroughMessagePages().
     struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData {
         InputEventData inputEventData{};///< The latest InputEventData that was returned by updating the message.
-        unsigned int currentPageIndex{};//< The current page index, within the number of submitted pages to turn through.
+        unsigned __int32 currentPageIndex{};//< The current page index, within the number of submitted pages to turn through.
         string buttonId{};///< The id of the last button that was pressed.
     };
 
@@ -3783,7 +3783,7 @@ namespace DiscordCoreAPI {
     /// \param deleteAfter A bool determining whether or not the message will be deleted upon timeout/exiting.
     /// \param waitForMaxMs Maximum number of milliseconds to wait for a button response.
     /// \returns A RecurseThroughMessagePageData structure.
-    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned int currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned int waitForMaxMs);
+    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned __int32 currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned __int32 waitForMaxMs);
     /**@}*/
 };
 #endif

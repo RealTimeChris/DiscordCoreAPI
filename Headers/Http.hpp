@@ -13,7 +13,7 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll HttpRequestAgent : public ThreadContext, public agent {
+	class DiscordCoreAPI_Dll HttpRequestAgent  {
 	public:
 
 		HttpRequestAgent();
@@ -28,13 +28,11 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static map<string, RateLimitData> rateLimitData;
+		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
+		static concurrent_unordered_map<string, RateLimitData> rateLimitData;
 		static string botToken;
 		static string baseURL;
 
-		unbounded_buffer<HttpWorkloadData> workSubmissionBuffer{ nullptr };
-		unbounded_buffer<HttpData> workReturnBuffer{ nullptr };
 		HttpRequestHeaderCollection deleteHeaders{ nullptr };
 		HttpRequestHeaderCollection patchHeaders{ nullptr };
 		HttpRequestHeaderCollection postHeaders{ nullptr };
@@ -47,9 +45,7 @@ namespace DiscordCoreInternal {
 		HttpClient getHttpClient{ nullptr };
 		string baseURLInd{ "" };
 
-		static bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew);
-
-		void run();
+		bool executeByRateLimitData(DiscordCoreInternal::RateLimitData* rateLimitDataNew);
 
 		HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
