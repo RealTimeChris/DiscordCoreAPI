@@ -67,6 +67,11 @@ namespace DiscordCoreInternal {
 		Webhooks_Update = 50
 	};
 
+	enum class ConnectionWebSocketType {
+		Receive = 0,
+		Send = 1
+	};
+
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
 		WebSocketEventType eventType{};
 		json payLoad{};
@@ -92,7 +97,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		__int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
@@ -101,15 +106,15 @@ namespace DiscordCoreInternal {
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
+		const __int32 maxReconnectTries{ 10 };
 		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		event_token messageReceivedToken{};
-		const __int32 maxReconnectTries{ 10 };
+		__int32 currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		bool areWeReconnecting{ false };
-		__int32 currentReconnectTries{ 0 };
 		__int32 lastNumberReceived{ 0 };
 		__int32 heartbeatInterval{ 0 };
 		event_token closedToken{};
@@ -117,14 +122,11 @@ namespace DiscordCoreInternal {
 		string sessionId{ "" };
 		string botToken{ "" };
 
-
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args);
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
 
 		void getVoiceConnectionData(GetVoiceConnectionData doWeCollect);
-
-		void setSocketPath(string socketPathBase);
 
 		void sendMessage(string& text);
 
@@ -165,18 +167,18 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		const __int32 maxReconnectTries{ 10 };		
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
-		const __int32 maxReconnectTries{ 10 };
+		__int32 currentReconnectTries{ 0 };		
 		bool areWeReadyToConnect{ true };
 		bool areWeAuthenticated{ false };
 		DataWriter dataWriter{ nullptr };
-		bool areWeTerminating{ false };
-		__int32 currentReconnectTries{ 0 };
-		bool areWeWaitingForIp{ true };
-		bool* doWeReconnect{ nullptr };
 		__int32 lastNumberReceived{ 0 };
 		__int32 heartbeatInterval{ 0 };
+		bool areWeTerminating{ false };		
+		bool areWeWaitingForIp{ true };
+		bool* doWeReconnect{ nullptr };		
 		event_token closedToken{};
 
 		void connect();
@@ -199,5 +201,30 @@ namespace DiscordCoreInternal {
 
 		void terminate();
 	};
+
+	class DiscordCoreAPI_Dll ConnectionWebSocketAgent : public ThreadContext, public agent {
+	public:
+		ConnectionWebSocketAgent(string endpoint, ConnectionWebSocketType type, string port, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew);
+
+		void sendData(vector<uint8_t> data);
+
+		~ConnectionWebSocketAgent();
+
+	protected:
+		shared_ptr<VoiceChannelWebSocketAgent> voiceConnectionAgent{ nullptr };
+		shared_ptr<DatagramSocket> datagramSocket{ nullptr };
+		event_token onDataReceivedToken{};
+		DataWriter dataWriter{ nullptr };
+		ConnectionWebSocketType type{};
+		string endpoint{ "" };
+		string port{ "" };
+
+		void connect(string endpoint, ConnectionWebSocketType type, string port);
+
+		void onDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
+
+		void run();
+	};
+
 }
 #endif
