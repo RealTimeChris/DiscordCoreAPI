@@ -72,7 +72,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Channel>;
-		friend class DiscordCoreInternal::ChannelManagerAgent;
 		friend class DiscordCoreInternal::ChannelManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -98,7 +97,6 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::InputEventHandler;
 		friend class DiscordCoreAPI::Channels;
 		friend class DiscordCoreAPI::Guild;
 
@@ -106,7 +104,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Channel>>> cache{};
+		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Channel>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 

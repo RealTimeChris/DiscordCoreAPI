@@ -144,13 +144,7 @@ namespace DiscordCoreInternal {
     class DiscordCoreAPI_Dll ApplicationCommandManager {
     public:
 
-        template <class _Ty>
-        friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
         friend class DiscordCoreAPI::ApplicationCommands;
-        friend class DiscordCoreAPI::DiscordCoreClient;
-        friend class DiscordCoreAPI::ButtonCollector;
-        friend class DiscordCoreAPI::Interactions;
-        friend class DiscordCoreAPI::SelectMenu;
 
         ApplicationCommandManager();
 

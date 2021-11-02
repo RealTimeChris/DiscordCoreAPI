@@ -246,18 +246,9 @@ namespace  DiscordCoreInternal {
     * @{
     */
     class ApplicationCommandManager;
-    class InteractionManagerAgent;
-    class GuildMemberManagerAgent;
-    class ReactionManagerAgent;
-    class MessageManagerAgent;
-    class StickerManagerAgent;
-    class ChannelManagerAgent;
     class BaseWebSocketAgent;
     class GuildMemberManager;
     class InteractionManager;
-    class GuildManagerAgent;
-    class RoleManagerAgent;
-    class UserManagerAgent;
     class ReactionManager;
     class ChannelManager;
     class StickerManager;
@@ -3522,8 +3513,6 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll Song {
     public:
 
-        friend CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
-        friend CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
         friend vector<Song> cleanQueue(vector<Song> originalQueue);
         friend class DiscordCoreInternal::DataParser;
         friend class DatabaseManagerAgent;

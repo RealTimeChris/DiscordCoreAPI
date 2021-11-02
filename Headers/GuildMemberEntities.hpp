@@ -43,7 +43,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
-		friend class DiscordCoreInternal::GuildMemberManagerAgent;
 		friend class DiscordCoreInternal::GuildMemberManager;
 		template <typename returnVal>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -72,7 +71,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>> cache{};
+		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 

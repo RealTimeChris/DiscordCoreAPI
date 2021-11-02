@@ -36,7 +36,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<User>;
-		friend class DiscordCoreInternal::UserManagerAgent;
 		friend class DiscordCoreInternal::ReactionManager;
 		friend class DiscordCoreInternal::UserManager;
 		template<typename returnValueType>
@@ -104,11 +103,9 @@ namespace DiscordCoreInternal {
 
 		UserManager();
 
-		~UserManager();
-
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::User>>* cache{};
+		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::User>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getCurrentUserAsync();
 

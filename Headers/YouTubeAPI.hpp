@@ -41,9 +41,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeAPI  {
 	public:
 
-		friend CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
-		template <class _Ty>
-		friend 	_CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreClient;
 		friend class VoiceConnection;
 		friend class YouTubeSong;
@@ -68,6 +65,8 @@ namespace DiscordCoreAPI {
 		bool stop();
 
 		void sendNextSong(Song newSong);
+
+		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
 		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>* sendAudioDataBufferNew);
 

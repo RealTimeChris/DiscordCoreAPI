@@ -29,13 +29,13 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* getAudioBuffersMap();
 
-	DiscordCoreAPI_Dll map<string, shared_ptr<VoiceConnection>>* getVoiceConnectionMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 
-	DiscordCoreAPI_Dll map<string, shared_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
 
-	DiscordCoreAPI_Dll map<string, shared_ptr<YouTubeAPI>>* getYouTubeAPIMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
 
-	DiscordCoreAPI_Dll map<string, shared_ptr<SongAPI>>* getSongAPIMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<SongAPI>>* getSongAPIMap();
 
 	/**
 	* \addtogroup discord_core_client
@@ -44,14 +44,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll DiscordCoreClient :public DiscordCoreInternal::ThreadContext, public agent {
 	public:
 
-		template <class _Ty>
-		friend _CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
-		friend class PermissionsConverter;
 		friend class ApplicationCommands;
 		friend void ::terminateWrapper();
-		friend class InputEventHandler;
-		friend class EventHandler;
 		friend class GuildMembers;
 		friend class Interactions;
 		friend class InputEvents;
@@ -64,42 +59,44 @@ namespace DiscordCoreAPI {
 		friend class Users;
 		friend class Guild;
 
-		static shared_ptr<DiscordCoreClient> thisPointer;
-		static shared_ptr<BotUser> currentUser;
+		static unique_ptr<DiscordCoreClient> thisPointer;
+		static unique_ptr<BotUser> currentUser;
 		static string commandPrefix;
 
-		shared_ptr<EventManager> eventManager{ nullptr };
+		unique_ptr<EventManager> eventManager{ nullptr };
 
 		/// Sets up some resources for the library. \brief Sets up some resources for the library.
 		/// \param botTokenNew Your bot token. 
 		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
 		/// \param functionVector A pointer to a vector of function pointers to be run on timers.
 		/// \returns void
-		static void setup(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionVector);
+		static void setup(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionVector = vector<RepeatedFunctionData>());
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		/// \returns void
 		static void runBot();
 
-		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData>* functionsToExecuteNew);
+		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew);
+
+		~DiscordCoreClient();
 
 	protected:
 
-		static vector<RepeatedFunctionData>* functionsToExecute;
+		static vector<RepeatedFunctionData> functionsToExecute;
 
-		shared_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
-		shared_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
+		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
+		unique_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
-		shared_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
-		shared_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
-		shared_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
-		shared_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
-		shared_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
-		shared_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
-		shared_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
-		shared_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
-		shared_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
-		shared_ptr<InputEventHandler> inputEvents{ nullptr };
+		unique_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
+		unique_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
+		unique_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
+		unique_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
+		unique_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
+		unique_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
+		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
+		unique_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
+		unique_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
+		unique_ptr<InputEventHandler> inputEvents{ nullptr };
 		string baseURL{ "https://discord.com/api/v9" };
 		bool doWeQuit{ false };
 		string botToken{ "" };
@@ -115,8 +112,6 @@ namespace DiscordCoreAPI {
 		void run();
 
 		void terminate();
-
-		~DiscordCoreClient();
 	};
 	/**@}*/
 	/**

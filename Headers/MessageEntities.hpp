@@ -40,7 +40,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CreateMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage);
-		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEventHandler;
 
@@ -188,7 +187,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll EditMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditMessageData dataPackage);
-		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		friend class InputEventHandler;
 
@@ -493,7 +491,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Message>;
-		friend class DiscordCoreInternal::MessageManagerAgent;
 		friend class DiscordCoreInternal::MessageManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -583,11 +580,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MessageManager {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::InputEventHandler;
 		friend class DiscordCoreAPI::Messages;
-
-		MessageManager();
 
 	protected:
 

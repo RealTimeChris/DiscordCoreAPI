@@ -56,8 +56,6 @@ namespace DiscordCoreAPI {
 
 		static void checkForAndRunCommand(CommandData commandData);
 
-		static void cleanup();
-
 	protected:
 
 		static shared_ptr<BaseFunction> createFunction(string functionName);

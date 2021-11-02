@@ -72,7 +72,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Reaction>;
-		friend class DiscordCoreInternal::ReactionManagerAgent;
 		friend class DiscordCoreInternal::ReactionManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -91,10 +90,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll ReactionManager {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Reactions;
-
-		ReactionManager();
 
 	protected:
 

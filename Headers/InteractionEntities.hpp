@@ -51,7 +51,6 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
         friend class SelectMenuCollector;
@@ -212,7 +211,6 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
@@ -254,7 +252,6 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
     public:
 
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
@@ -401,7 +398,6 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll EditInteractionResponseData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
@@ -544,7 +540,6 @@ namespace DiscordCoreAPI {
     /// Delete Interaction response data. \brief Delete Interaction response data.
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
@@ -563,7 +558,6 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll CreateFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
@@ -709,7 +703,6 @@ namespace DiscordCoreAPI {
     /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
     struct DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
 
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
@@ -1002,7 +995,6 @@ namespace DiscordCoreAPI {
     /// Delete follow up Message data. \brief Delete follow up Message data;
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
-        friend class DiscordCoreInternal::InteractionManagerAgent;
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
@@ -1069,8 +1061,6 @@ namespace DiscordCoreInternal {
         friend class DiscordCoreAPI::Interactions;
         friend class DiscordCoreAPI::EventHandler;
         friend class DiscordCoreAPI::InputEventHandler;
-
-        InteractionManager();
 
     protected:
 
@@ -1153,8 +1143,6 @@ namespace DiscordCoreAPI {
         string messageId{ "" };
         string userId{ "" };
 
-        static void initialize(shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew);
-
         void run();
     };
 
@@ -1203,8 +1191,6 @@ namespace DiscordCoreAPI {
         bool doWeQuit{ false };
         string buttonId{ "" };
         string userId{ "" };
-
-        static void initialize(shared_ptr<DiscordCoreInternal::InteractionManager> interactionsNew);
 
         void run();
     };

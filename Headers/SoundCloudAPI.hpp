@@ -19,9 +19,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudAPI  {
 	public:
 
-		friend CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
-		template <class _Ty>
-		friend 	_CONSTEXPR20_DYNALLOC void std::_Destroy_in_place(_Ty& _Obj) noexcept;
 		friend class DiscordCoreClient;
 		friend class VoiceConnection;
 		friend class SoundCloudAPI;
@@ -47,6 +44,8 @@ namespace DiscordCoreAPI {
 		bool stop();
 
 		void sendNextSong(Song newSong);
+
+		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
 		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>* sendAudioDataBufferNew);
 

@@ -99,7 +99,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Role>;
-		friend class DiscordCoreInternal::RoleManagerAgent;
 		friend class DiscordCoreInternal::RoleManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -121,17 +120,15 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll RoleManager {
 	public:
 
-		friend class DiscordCoreAPI::PermissionsConverter;
 		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::GuildMembers;
-		friend class DiscordCoreAPI::Guild;
 		friend class DiscordCoreAPI::Roles;
+		friend class DiscordCoreAPI::Guild;
 
 		RoleManager();
 
 	protected:
 
-		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Role>>> cache{};
+		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Role>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 

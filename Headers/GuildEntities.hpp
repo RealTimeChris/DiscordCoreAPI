@@ -62,7 +62,6 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend struct Concurrency::details::_ResultHolder<Guild>;
-		friend class DiscordCoreInternal::GuildManagerAgent;
 		friend class DiscordCoreInternal::GuildManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -74,7 +73,7 @@ namespace DiscordCoreAPI {
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
 		/// \returns A shared_ptr containing the voice connection.
-		shared_ptr<VoiceConnection> connectToVoice(string channelId);
+		VoiceConnection* connectToVoice(string channelId);
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		/// \returns void
@@ -102,9 +101,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll GuildManager {
 	public:
 
-		friend class DiscordCoreAPI::PermissionsConverter;
 		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::YouTubeAPI;
 		friend class DiscordCoreAPI::Guilds;
 
 		GuildManager();
@@ -113,7 +110,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Guild>>> cache{};
+		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Guild>>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 

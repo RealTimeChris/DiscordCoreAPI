@@ -18,7 +18,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Sticker>;
-		friend class DiscordCoreInternal::StickerManagerAgent;
 		friend class DiscordCoreInternal::StickerManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -35,11 +34,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll StickerManager {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::GuildMembers;
-		friend class DiscordCoreAPI::Guild;
-
-		StickerManager();
 	};
 };
 #endif
