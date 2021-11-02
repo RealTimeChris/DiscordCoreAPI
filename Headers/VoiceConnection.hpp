@@ -68,6 +68,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<concurrency::event> pauseEvent{ new concurrency::event() };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		
 		const __int32 maxBufferSize{ 1276 };
 		unsigned __int16 sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };
