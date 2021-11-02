@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient :public DiscordCoreInternal::ThreadContext, public agent {
+	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
@@ -58,6 +58,7 @@ namespace DiscordCoreAPI {
 		friend class Roles;
 		friend class Users;
 		friend class Guild;
+		friend class Test;
 
 		static unique_ptr<DiscordCoreClient> thisPointer;
 		static unique_ptr<BotUser> currentUser;
@@ -107,11 +108,11 @@ namespace DiscordCoreAPI {
 
 		Guild createGuild(GuildData guildData);
 
+		void terminate();
+
 		void removeGuild(GuildData guildData);
 
 		void run();
-
-		void terminate();
 	};
 	/**@}*/
 	/**

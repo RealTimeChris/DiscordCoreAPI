@@ -100,11 +100,9 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Channels;
 		friend class DiscordCoreAPI::Guild;
 
-		ChannelManager();
-
 	protected:
 
-		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Channel>>> cache{};
+		overwrite_buffer<map<string, DiscordCoreAPI::Channel>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 

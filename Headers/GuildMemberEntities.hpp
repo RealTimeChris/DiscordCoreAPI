@@ -67,11 +67,9 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::GuildMembers;
 		friend class DiscordCoreAPI::Guild;
 
-		GuildMemberManager();
-
 	protected:
 
-		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>>> cache{};
+		overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 

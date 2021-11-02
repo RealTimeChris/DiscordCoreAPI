@@ -101,11 +101,9 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Users;
 		friend class DiscordCoreAPI::Guild;
 
-		UserManager();
-
 	protected:
 
-		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::User>>> cache{};
+		overwrite_buffer<map<string, DiscordCoreAPI::User>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getCurrentUserAsync();
 

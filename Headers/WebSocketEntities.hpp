@@ -83,7 +83,7 @@ namespace DiscordCoreInternal {
 		string userId{ "" };
 	};
 
-	class DiscordCoreAPI_Dll BaseWebSocketAgent :public ThreadContext, public agent {
+	class DiscordCoreAPI_Dll BaseWebSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -134,14 +134,10 @@ namespace DiscordCoreInternal {
 
 		void connect();
 
-		void run();
-
 		void cleanup();
-
-		void terminate();
 	};
 
-	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent :public ThreadContext, public agent {
+	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -187,8 +183,6 @@ namespace DiscordCoreInternal {
 
 		void voiceConnect();
 
-		void run();
-
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
 
 		void sendHeartBeat();
@@ -202,7 +196,7 @@ namespace DiscordCoreInternal {
 		void terminate();
 	};
 
-	class DiscordCoreAPI_Dll ConnectionWebSocketAgent : public ThreadContext, public agent {
+	class DiscordCoreAPI_Dll ConnectionWebSocketAgent {
 	public:
 		ConnectionWebSocketAgent(string endpoint, ConnectionWebSocketType type, string port, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew);
 

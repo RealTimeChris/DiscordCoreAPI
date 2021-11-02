@@ -104,13 +104,11 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Guilds;
 
-		GuildManager();
-
 		~GuildManager();
 
 	protected:
 
-		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Guild>>> cache{};
+		overwrite_buffer<map<string, DiscordCoreAPI::Guild>> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 

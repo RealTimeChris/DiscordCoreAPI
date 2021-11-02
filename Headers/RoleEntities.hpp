@@ -124,11 +124,9 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Roles;
 		friend class DiscordCoreAPI::Guild;
 
-		RoleManager();
-
 	protected:
 
-		unique_ptr<overwrite_buffer<map<string, DiscordCoreAPI::Role>>> cache{};
+		overwrite_buffer<map<string, DiscordCoreAPI::Role>> cache{};
 
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 

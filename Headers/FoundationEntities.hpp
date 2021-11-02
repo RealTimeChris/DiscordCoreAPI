@@ -756,7 +756,7 @@ namespace  DiscordCoreInternal {
     public:
         shared_ptr<SchedulerWrapper> scheduler{ nullptr };
 
-        static shared_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
+        static unique_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
 
         Scheduler* operator*();
 
@@ -765,13 +765,12 @@ namespace  DiscordCoreInternal {
         ~ThreadContext();
     protected:
 
-        friend shared_ptr<ThreadContext> getThreadContext(ThreadType threadType);
         friend class DiscordCoreAPI::DiscordCoreClient;
 
         static vector<shared_ptr<SchedulerWrapper>> schedulers;
-        static vector<shared_ptr<thread>> threads;
+        static vector<unique_ptr<thread>> threads;
 
-        shared_ptr<thread> threadOfExecution{ nullptr };
+        unique_ptr<thread> threadOfExecution{ nullptr };
 
         ThreadContext(ThreadType threadType);
 
