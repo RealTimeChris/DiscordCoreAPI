@@ -19,12 +19,12 @@ namespace DiscordCoreAPI {
     /**
     * \addtogroup utilities
     * @{
-    */    
+    */
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    class DiscordCoreAPI_Dll InvalidState : public exception {
+    class InvalidState : public std::exception {
     public:
 
-        explicit  InvalidState(const string& _Message) : exception(_Message.c_str()) {}
+        explicit  InvalidState(const std::string& _Message) : std::exception(_Message.c_str()) {}
 
     };
 
@@ -43,12 +43,17 @@ namespace DiscordCoreAPI {
     public:
         class promise_type;
 
-        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
         CoRoutine() {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
+                if (this->coroutineHandle.promise().newThread != nullptr) {
+                    if (this->coroutineHandle.promise().newThread->joinable()) {
+                        this->coroutineHandle.promise().newThread->join();
+                    }
+                }
                 coroutineHandle.destroy();
             };
         }
@@ -93,13 +98,15 @@ namespace DiscordCoreAPI {
             return coroutineHandle.promise().result;
         }
 
-        class DiscordCoreAPI_Dll promise_type{
+        class DiscordCoreAPI_Dll promise_type {
         public:
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+            template<typename R>
+            friend class CoRoutine;
 
-            jthread* newThread{ nullptr };
+            template<typename R>
+            DiscordCoreAPI_Dll friend inline auto NewThreadAwaitable();
 
-            returnType result{};
+            stop_token cancelToken{};
 
             promise_type() {}
 
@@ -118,27 +125,34 @@ namespace DiscordCoreAPI {
             }
 
             auto get_return_object() {
-                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine{ std::coroutine_handle<promise_type>::from_promise(*this) };
             }
 
-            suspend_never initial_suspend() {
+            std::suspend_never initial_suspend() {
                 this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
-            suspend_always final_suspend() noexcept {
+            std::suspend_always final_suspend() noexcept {
                 return{};
             }
 
             void unhandled_exception() {
                 exit(1);
             }
+
+        protected:
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+
+            std::jthread* newThread{ nullptr };
+
+            returnType result{};
         };
 
     protected:
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        coroutine_handle<promise_type> coroutineHandle{};
+        std::coroutine_handle<promise_type> coroutineHandle{};
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
@@ -148,12 +162,17 @@ namespace DiscordCoreAPI {
     public:
         class promise_type;
 
-        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine() {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
+                if (this->coroutineHandle.promise().newThread != nullptr) {
+                    if (this->coroutineHandle.promise().newThread->joinable()) {
+                        this->coroutineHandle.promise().newThread->join();
+                    }
+                }
                 coroutineHandle.destroy();
             };
         }
@@ -200,9 +219,13 @@ namespace DiscordCoreAPI {
 
         class promise_type {
         public:
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+            template<typename R>
+            friend class CoRoutine;
 
-            jthread* newThread{ nullptr };
+            template<typename R>
+            DiscordCoreAPI_Dll friend inline auto NewThreadAwaitable();
+
+            stop_token cancelToken{};
 
             promise_type() {}
 
@@ -219,27 +242,31 @@ namespace DiscordCoreAPI {
             void return_void() {}
 
             auto get_return_object() {
-                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine{ std::coroutine_handle<promise_type>::from_promise(*this) };
             }
 
-            suspend_never initial_suspend() {
+            std::suspend_never initial_suspend() {
                 this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
-            suspend_always final_suspend() noexcept {
+            std::suspend_always final_suspend() noexcept {
                 return{};
             }
 
             void unhandled_exception() {
                 exit(1);
             }
+        protected:
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+
+            std::jthread* newThread{ nullptr };
         };
 
     protected:
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        coroutine_handle<promise_type> coroutineHandle{};
+        std::coroutine_handle<promise_type> coroutineHandle{};
     };
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
@@ -248,7 +275,7 @@ namespace DiscordCoreAPI {
     inline DiscordCoreAPI_Dll auto NewThreadAwaitable() {
         class NewThreadAwaitable {
         public:
-            coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
+            std::coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
 
             NewThreadAwaitable() : handleWaiter(nullptr) {}
 
@@ -256,8 +283,9 @@ namespace DiscordCoreAPI {
                 return false;
             }
 
-            bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+            bool await_suspend(std::coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
+                handle.promise().cancelToken = handle.promise().newThread->get_stop_token();
                 this->handleWaiter = handle;
                 return true;
             }
