@@ -6,8 +6,8 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "WebSocketEntities.hpp"
 #include "SongDecoder.hpp"
+#include "WebSocketEntities.hpp"
 #include "SongEncoder.hpp"
 
 namespace DiscordCoreAPI {

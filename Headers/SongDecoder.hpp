@@ -6,8 +6,8 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
+#include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
         __int32 bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder : public DiscordCoreInternal::ThreadContext, public agent {
+    class DiscordCoreAPI_Dll SongDecoder {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
@@ -56,10 +56,11 @@ namespace DiscordCoreAPI {
         AVStream* audioStream{ nullptr };
         AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
+        CoRoutine<void>* theTask{};
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
 
-        void run();
+        CoRoutine<void> run();
 
     };
 }

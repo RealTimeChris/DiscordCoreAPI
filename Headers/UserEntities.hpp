@@ -6,11 +6,11 @@
 #pragma once
 
 #include "IndexInitial.hpp"
+#include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
 #include "ChannelEntities.hpp"
 #include "WebSocketEntities.hpp"
-#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -80,13 +80,11 @@ namespace DiscordCoreAPI {
 		/// \returns void.
 		void updatePresence(UpdatePresenceData dataPackage);
 
-		~BotUser();
-
 	protected:
 
 		BotUser();
 
-		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> pBaseWebSocketAgent{ nullptr };		
+		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> pBaseWebSocketAgent{ nullptr };
 	};
 	/**@}*/
 };
