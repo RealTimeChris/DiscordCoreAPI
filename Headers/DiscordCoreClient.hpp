@@ -45,6 +45,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
+		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend class ApplicationCommands;
 		friend void ::terminateWrapper();
 		friend class GuildMembers;
@@ -61,7 +62,6 @@ namespace DiscordCoreAPI {
 		friend class Test;
 
 		static unique_ptr<DiscordCoreClient> thisPointer;
-		static unique_ptr<BotUser> currentUser;
 		static string commandPrefix;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
@@ -99,6 +99,7 @@ namespace DiscordCoreAPI {
 		unique_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 		unique_ptr<InputEventHandler> inputEvents{ nullptr };
 		string baseURL{ "https://discord.com/api/v9" };
+		unique_ptr<BotUser> currentUser;
 		bool doWeQuit{ false };
 		string botToken{ "" };
 
