@@ -85,6 +85,7 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
+		shared_ptr<BotUser> currentUser{ nullptr };
 		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
 		unique_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
@@ -94,14 +95,13 @@ namespace DiscordCoreAPI {
 		unique_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
 		unique_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
 		unique_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
-		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		unique_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
 		unique_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 		unique_ptr<InputEventHandler> inputEvents{ nullptr };
 		string baseURL{ "https://discord.com/api/v9" };
-		unique_ptr<BotUser> currentUser;
 		bool doWeQuit{ false };
 		string botToken{ "" };
+		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 
 		void initialize();
 

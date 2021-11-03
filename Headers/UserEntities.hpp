@@ -83,11 +83,13 @@ namespace DiscordCoreAPI {
 		/// \returns void.
 		void updatePresence(UpdatePresenceData dataPackage);
 
+		~BotUser();
+
 	protected:
 
 		BotUser();
 
-		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> pBaseWebSocketAgent{ nullptr };
+		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> pBaseWebSocketAgent{ nullptr };		
 	};
 	/**@}*/
 };

@@ -9,10 +9,6 @@
 #define _COROUTINES_
 
 #include "IndexInitial.hpp"
-#include "FoundationEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "GuildEntities.hpp"
-#include "RoleEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -21,11 +17,9 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    class InvalidState : public std::exception {
+    class DiscordCoreAPI_Dll InvalidState : public exception {
     public:
-
-        explicit  InvalidState(const std::string& _Message) : std::exception(_Message.c_str()) {}
-
+        explicit  InvalidState(const string& _Message) : exception(_Message.c_str()) {}
     };
 
     /// The current status of the CoRoutine. \brief The current status of the CoRoutine.
@@ -41,19 +35,15 @@ namespace DiscordCoreAPI {
     template<typename returnType>
     class DiscordCoreAPI_Dll CoRoutine {
     public:
+
         class promise_type;
 
-        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
         CoRoutine() {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
-                if (this->coroutineHandle.promise().newThread != nullptr) {
-                    if (this->coroutineHandle.promise().newThread->joinable()) {
-                        this->coroutineHandle.promise().newThread->join();
-                    }
-                }
                 coroutineHandle.destroy();
             };
         }
@@ -100,59 +90,44 @@ namespace DiscordCoreAPI {
 
         class DiscordCoreAPI_Dll promise_type {
         public:
-            template<typename R>
-            friend class CoRoutine;
 
-            template<typename R>
-            DiscordCoreAPI_Dll friend inline auto NewThreadAwaitable();
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-            stop_token cancelToken{};
+            jthread* newThread{ nullptr };
+
+            returnType result{};
 
             promise_type() {}
 
-            ~promise_type() {
-                if (this->newThread != nullptr) {
-                    if (this->newThread->joinable()) {
-                        this->newThread->join();
-                    }
-                    delete this->newThread;
-                    this->newThread = nullptr;
-                }
-            }
+            ~promise_type() {}
 
             void return_value(returnType returnValue) {
                 this->result = returnValue;
             }
 
             auto get_return_object() {
-                return CoRoutine{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
             }
 
-            std::suspend_never initial_suspend() {
+            suspend_never initial_suspend() {
                 this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
-            std::suspend_always final_suspend() noexcept {
+            suspend_always final_suspend() noexcept {
                 return{};
             }
 
             void unhandled_exception() {
                 exit(1);
             }
-
-        protected:
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-
-            std::jthread* newThread{ nullptr };
-
-            returnType result{};
         };
 
     protected:
+
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        std::coroutine_handle<promise_type> coroutineHandle{};
+        coroutine_handle<promise_type> coroutineHandle{};
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
@@ -160,19 +135,15 @@ namespace DiscordCoreAPI {
     template<>
     class CoRoutine<void> {
     public:
+
         class promise_type;
 
-        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
         CoRoutine() {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
-                if (this->coroutineHandle.promise().newThread != nullptr) {
-                    if (this->coroutineHandle.promise().newThread->joinable()) {
-                        this->coroutineHandle.promise().newThread->join();
-                    }
-                }
                 coroutineHandle.destroy();
             };
         }
@@ -219,54 +190,40 @@ namespace DiscordCoreAPI {
 
         class promise_type {
         public:
-            template<typename R>
-            friend class CoRoutine;
 
-            template<typename R>
-            DiscordCoreAPI_Dll friend inline auto NewThreadAwaitable();
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-            stop_token cancelToken{};
+            jthread* newThread{ nullptr };
 
             promise_type() {}
 
-            ~promise_type() {
-                if (this->newThread != nullptr) {
-                    if (this->newThread->joinable()) {
-                        this->newThread->join();
-                    }
-                    delete this->newThread;
-                    this->newThread = nullptr;
-                }
-            }
+            ~promise_type() {}
 
             void return_void() {}
 
             auto get_return_object() {
-                return CoRoutine{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
             }
 
-            std::suspend_never initial_suspend() {
+            suspend_never initial_suspend() {
                 this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
-            std::suspend_always final_suspend() noexcept {
+            suspend_always final_suspend() noexcept {
                 return{};
             }
 
             void unhandled_exception() {
                 exit(1);
             }
-        protected:
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-
-            std::jthread* newThread{ nullptr };
         };
 
     protected:
+
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        std::coroutine_handle<promise_type> coroutineHandle{};
+        coroutine_handle<promise_type> coroutineHandle{};
     };
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
@@ -275,7 +232,8 @@ namespace DiscordCoreAPI {
     inline DiscordCoreAPI_Dll auto NewThreadAwaitable() {
         class NewThreadAwaitable {
         public:
-            std::coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
+
+            coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
 
             NewThreadAwaitable() : handleWaiter(nullptr) {}
 
@@ -283,9 +241,8 @@ namespace DiscordCoreAPI {
                 return false;
             }
 
-            bool await_suspend(std::coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+            bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
-                handle.promise().cancelToken = handle.promise().newThread->get_stop_token();
                 this->handleWaiter = handle;
                 return true;
             }
@@ -296,8 +253,6 @@ namespace DiscordCoreAPI {
         };
         return NewThreadAwaitable();
     }
-
     /**@}*/
-
 };
 #endif 

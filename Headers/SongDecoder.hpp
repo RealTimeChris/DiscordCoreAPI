@@ -9,8 +9,8 @@
 #define _SONG_DECODER_
 
 #include "IndexInitial.hpp"
-#include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
+#include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -23,14 +23,16 @@ namespace DiscordCoreAPI {
         __int32 bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder : public DiscordCoreInternal::ThreadContext, public agent {
+    class DiscordCoreAPI_Dll SongDecoder {
     public:
 
-        friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
+        DiscordCoreAPI_Dll friend __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
         SongDecoder();
         
         SongDecoder(BuildSongDecoderData dataPackage);
+
+        void getResult();
 
         bool startMe();
 
@@ -61,8 +63,9 @@ namespace DiscordCoreAPI {
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
+        CoRoutine<void> theTask{};
 
-        void run();
+        CoRoutine<void> run();
 
     };
 }

@@ -1107,7 +1107,7 @@ namespace DiscordCoreAPI {
     };
 
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
-    class DiscordCoreAPI_Dll SelectMenuCollector :  public DiscordCoreInternal::ThreadContext, public agent {
+    class DiscordCoreAPI_Dll SelectMenuCollector {
     public:
         friend class DiscordCoreClient;
 
@@ -1141,9 +1141,9 @@ namespace DiscordCoreAPI {
         bool doWeQuit{ false };
         string channelId{ "" };
         string messageId{ "" };
-        string userId{ "" };
+        string userId{ "" };        
 
-        void run();
+        CoRoutine<void> run();
     };
 
     /// Button response data. \brief Button response data.
@@ -1157,7 +1157,7 @@ namespace DiscordCoreAPI {
     };
 
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
-    class DiscordCoreAPI_Dll ButtonCollector : public DiscordCoreInternal::ThreadContext, public agent {
+    class DiscordCoreAPI_Dll ButtonCollector {
     public:
         friend class DiscordCoreClient;
 
@@ -1192,7 +1192,7 @@ namespace DiscordCoreAPI {
         string buttonId{ "" };
         string userId{ "" };
 
-        void run();
+        CoRoutine<void> run();
     };
     /**@}*/
 };
