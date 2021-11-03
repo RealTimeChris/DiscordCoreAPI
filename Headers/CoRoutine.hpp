@@ -6,9 +6,6 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "GuildEntities.hpp"
-#include "MessageEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -38,7 +35,7 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
-        CoRoutine<returnType>(coroutine_handle<CoRoutine<returnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine<returnType>() {}
 
@@ -106,7 +103,7 @@ namespace DiscordCoreAPI {
             }
 
             auto get_return_object() {
-                return CoRoutine<returnType>{ coroutine_handle<CoRoutine<returnType>::promise_type>::from_promise(*this) };
+                return CoRoutine<returnType>{ coroutine_handle<promise_type>::from_promise(*this) };
             }
 
             suspend_never initial_suspend() {
@@ -127,7 +124,7 @@ namespace DiscordCoreAPI {
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        coroutine_handle<CoRoutine<returnType>::promise_type> coroutineHandle{};
+        coroutine_handle<promise_type> coroutineHandle;
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
@@ -138,7 +135,7 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
-        CoRoutine(coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine() {}
 
@@ -202,7 +199,7 @@ namespace DiscordCoreAPI {
             void return_void() {}
 
             auto get_return_object() {
-                return CoRoutine<void>{ coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
+                return CoRoutine<void>{ coroutine_handle<promise_type>::from_promise(*this) };
             }
 
             suspend_never initial_suspend() {
@@ -223,7 +220,7 @@ namespace DiscordCoreAPI {
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        coroutine_handle<CoRoutine<void>::promise_type> coroutineHandle{};
+        coroutine_handle<promise_type> coroutineHandle{};
     };
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.

@@ -6,10 +6,10 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "Http.hpp"
-#include "DataParsingFunctions.hpp"
-#include "VoiceConnection.hpp"
+#include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
+#include "SongEncoder.hpp"
+#include "SongDecoder.hpp"
 
 namespace DiscordCoreAPI {
 

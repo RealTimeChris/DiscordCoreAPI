@@ -6,10 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "Http.hpp"
-#include "JSONIFier.hpp"
-#include "FoundationEntities.hpp"
-#include "CoRoutine.hpp"
+#include "JSONIfier.hpp"
 
 namespace DiscordCoreAPI {
 

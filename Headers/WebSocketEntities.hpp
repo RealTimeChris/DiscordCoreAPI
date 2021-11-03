@@ -6,7 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "DataParsingFunctions.hpp"
+#include "FoundationEntities.hpp"
 
 namespace DiscordCoreInternal {
 

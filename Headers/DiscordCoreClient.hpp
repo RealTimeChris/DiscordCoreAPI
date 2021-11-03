@@ -6,15 +6,9 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "Http.hpp"
-#include "GuildEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "InputEvents.hpp"
-#include "SongAPI.hpp"
-#include "StickerEntities.hpp"
-#include "WebSocketEntities.hpp"
+#include "FoundationEntities.hpp"
 #include "EventManager.hpp"
+#include "WebSocketEntities.hpp"
 
 DiscordCoreAPI_Dll void myPurecallHandler(void);
 

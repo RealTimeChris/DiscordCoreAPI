@@ -6,9 +6,8 @@
 #pragma once
 
 #include "IndexInitial.hpp"
+#include "FoundationEntities.hpp"
 #include "MessageEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "GuildEntities.hpp"
 
 namespace DiscordCoreAPI {
 

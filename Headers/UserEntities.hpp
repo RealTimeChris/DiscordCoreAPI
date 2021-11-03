@@ -6,11 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
-#include "DataParsingFunctions.hpp"
-#include "ChannelEntities.hpp"
-#include "WebSocketEntities.hpp"
 
 namespace DiscordCoreAPI {
 

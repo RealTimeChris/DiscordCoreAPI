@@ -6,9 +6,8 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "SongDecoder.hpp"
+#include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"
-#include "SongEncoder.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -17,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::ThreadContext, public agent {
+	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
 
 		friend class DiscordCoreClient;
@@ -66,6 +65,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		const __int32 maxBufferSize{ 1276 };
 		unsigned __int16 sequenceIndex{ 0 };
+		CoRoutine<void>* theTask{ nullptr };
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };
@@ -84,19 +84,28 @@ namespace DiscordCoreAPI {
 		bool areWeConnected();
 
 		bool areWeCurrentlyPlaying();
+
 		bool stop();
+
 		bool skip();
+
 		bool play();
+
 		void pauseToggle();
+
 		static void reconnect(string guildId);
+
 		void clearAudioData();
+
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
+
 		vector<unsigned __int8> encryptSingleAudioFrame(EncodedFrameData bufferToSend);
+
 		void sendSingleAudioFrame(vector<unsigned __int8> audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 
-		void run();
+		CoRoutine<void> run();
 	};
 	/**@}*/
 };

@@ -6,7 +6,6 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "FoundationEntities.hpp"
 #include "ChannelEntities.hpp"
 
 namespace DiscordCoreAPI {

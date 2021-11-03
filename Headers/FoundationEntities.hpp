@@ -19,6 +19,7 @@ namespace DiscordCoreAPI {
     class SelectMenuCollector;
     class ApplicationCommands;
     class DiscordCoreClient;
+    class InputEventHandler;
     class ButtonCollector;
     class VoiceConnection;
     class SoundCloudSong;
@@ -27,7 +28,6 @@ namespace DiscordCoreAPI {
     class EventHandler;
     class GuildMembers;
     struct CommandData;
-    class InputEventHandler;
     class YouTubeSong;
     class SelectMenu;
     class YouTubeAPI;

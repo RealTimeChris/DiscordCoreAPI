@@ -6,9 +6,8 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "YouTubeAPI.hpp"
-#include "SoundCloudAPI.hpp"
-#include "GuildEntities.hpp"
+#include "FoundationEntities.hpp"
+#include "GuildMemberEntities.hpp"
 
 namespace DiscordCoreAPI {
 

@@ -7,9 +7,8 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-#include "DataParsingFunctions.hpp"
-#include "EventManager.hpp"
-#include "JSONIFIer.hpp"
+#include "JSONIfier.hpp"
+#include "InputEvents.hpp"
 
 namespace DiscordCoreAPI {
 

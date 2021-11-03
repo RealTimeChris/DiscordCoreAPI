@@ -6,8 +6,8 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -56,8 +56,8 @@ namespace DiscordCoreAPI {
         AVStream* audioStream{ nullptr };
         AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
-        CoRoutine<void>* theTask{};
         bool haveWeBooted{ false };
+        CoRoutine<void> theTask{};
         AVCodec* codec{ nullptr };
 
         CoRoutine<void> run();

@@ -6,8 +6,18 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "DiscordCoreClient.hpp"
+#include "ApplicationCommandEntities.hpp"
+#include "ChannelEntities.hpp"
+#include "GuildEntities.hpp"
+#include "GuildMemberEntities.hpp"
+#include "InteractionEntities.hpp"
+#include "MessageEntities.hpp"
+#include "ReactionEntities.hpp"
+#include "RoleEntities.hpp"
 #include "CoRoutine.hpp"
+#include "SongAPI.hpp"
+#include "VoiceConnection.hpp"
+#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -286,7 +296,7 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateFollowUpMessageData structure.
 		/// \returns A CoRoutine containing a MessageData.
 		static CoRoutine<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
-		
+
 		/// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
 		/// \param dataPackage A CreateFollowUpMessageData structure.
 		/// \returns A CoRoutine containing a MessageData.
@@ -482,15 +492,15 @@ namespace DiscordCoreAPI {
 		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
-		 static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
+		static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
 
 		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
-		 static CoRoutine<User> getUserAsync(GetUserData dataPackage);
+		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
 
 	protected:
-		 static void insertUser(User useruser);
+		static void insertUser(User useruser);
 	};
 	/**@}*/
 
