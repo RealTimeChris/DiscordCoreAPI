@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _ENDPOINT_WRAPPERS_
-#define _ENDPOINT_WRAPPERS_
-
 #include "IndexInitial.hpp"
 #include "DiscordCoreClient.hpp"
 #include "CoRoutine.hpp"
@@ -498,5 +495,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };
-
-#endif

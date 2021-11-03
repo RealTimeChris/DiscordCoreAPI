@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _GUILD_MEMBER_ENTITIES
-#define _GUILD_MEMBER_ENTITIES
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 
@@ -82,4 +79,3 @@ namespace DiscordCoreInternal {
 		void removeGuildMember(DiscordCoreAPI::GuildMember guildMember);
 	};
 };
-#endif

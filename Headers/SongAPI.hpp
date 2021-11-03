@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _SONG_API_
-#define _SONG_API_
-
 #include "IndexInitial.hpp"
 #include "YouTubeAPI.hpp"
 #include "SoundCloudAPI.hpp"
@@ -140,4 +137,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };
-#endif

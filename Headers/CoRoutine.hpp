@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _COROUTINES_
-#define _COROUTINES_
-
 #include "IndexInitial.hpp"
 #include "ApplicationCommandEntities.hpp"
 #include "GuildEntities.hpp"
@@ -67,9 +64,7 @@ namespace DiscordCoreAPI {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
             if (coroutineHandle.promise().newThread != nullptr) {
-                cout << "WERE HERE WERE HERE(ITEM0101)" << endl;
                 if (coroutineHandle.promise().newThread->joinable()) {
-                    cout << "WERE HERE WERE HERE(ITEM020202)" << endl;
                     coroutineHandle.promise().newThread->join();
                 }
             }
@@ -150,7 +145,7 @@ namespace DiscordCoreAPI {
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
                 coroutineHandle.destroy();
-            };
+            }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
@@ -169,9 +164,7 @@ namespace DiscordCoreAPI {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
             if (coroutineHandle.promise().newThread != nullptr) {
-                cout << "WERE HERE WERE HERE(VOID0101)" << endl;
                 if (coroutineHandle.promise().newThread->joinable()) {
-                    cout << "WERE HERE WERE HERE(VOID0202)" << endl;
                     coroutineHandle.promise().newThread->join();
                 }
             }
@@ -275,11 +268,8 @@ namespace DiscordCoreAPI {
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
-                cout << "WERE HERE THIS IS IS 3333" << endl;
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
-                cout << "WERE HERE THIS IS IS 4444" << endl;
                 this->handleWaiter = handle;
-                cout << "WERE HERE THIS IS IS 5555" << endl;
                 return true;
             }
 
@@ -291,4 +281,3 @@ namespace DiscordCoreAPI {
     }
     /**@}*/
 };
-#endif 

@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _COMMANDS_
-#define _COMMANDS_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -69,4 +66,3 @@ namespace DiscordCoreAPI {
 	};
 
 };
-#endif

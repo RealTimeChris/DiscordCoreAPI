@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _REACTION_ENTITIES_
-#define _REACTION_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "UserEntities.hpp"
@@ -107,4 +104,3 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> deleteReactionsByEmojiAsync(DiscordCoreAPI::DeleteReactionsByEmojiData dataPackage);
 	};
 }
-#endif

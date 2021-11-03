@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _HTTP_STUFF_
-#define _HTTP_STUFF_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 
@@ -59,4 +56,3 @@ namespace DiscordCoreInternal {
 
 	};
 }
-#endif

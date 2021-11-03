@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _SOUNDCLOUD_API_
-#define _SOUNDCLOUD_API_
-
 #include "IndexInitial.hpp"
 #include "Http.hpp"
 #include "DataParsingFunctions.hpp"
@@ -54,4 +51,3 @@ namespace DiscordCoreAPI {
 	};
 
 };
-#endif

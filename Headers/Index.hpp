@@ -5,10 +5,5 @@
 
 #pragma once
 
-#ifndef _INDEX_
-#define _INDEX_
-
 #include "CommandController.hpp"
 #include "EndpointWrappers.hpp"
-
-#endif

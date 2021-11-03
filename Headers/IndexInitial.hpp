@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _INDEX_INITIAL_
-#define _INDEX_INITIAL_
-
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #pragma comment(lib, "libcurl")
@@ -169,4 +166,3 @@ using namespace std;
 * \brief For all of the building blocks of the main endpoints.
 */
 
-#endif

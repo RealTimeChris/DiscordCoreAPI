@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _EVENT_MANAGER_
-#define _EVENT_MANAGER_
-
 #include "IndexInitial.hpp"
 #include "GuildMemberEntities.hpp"
 #include "ChannelEntities.hpp"
@@ -926,4 +923,3 @@ namespace DiscordCoreAPI {
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
 	};
 }
-#endif

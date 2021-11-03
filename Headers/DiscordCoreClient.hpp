@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _DISCORD_CORE_CLIENT_
-#define _DISCORD_CORE_CLIENT_
-
 #include "IndexInitial.hpp"
 #include "Http.hpp"
 #include "GuildEntities.hpp"
@@ -126,4 +123,3 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll BotUser getBotUser();
 	/**@}*/
 }
-#endif

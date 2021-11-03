@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _MESSAGE_ENTITIES_
-#define _MESSAGE_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "Http.hpp"
 #include "JSONIFier.hpp"
@@ -577,4 +574,3 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> sendDMAsync(DiscordCoreAPI::SendDMData dataPackage);
 	};
 }
-#endif

@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _GUILD_ENTITIES_
-#define _GUILD_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "VoiceConnection.hpp"
 #include "DataParsingFunctions.hpp"
@@ -76,7 +73,7 @@ namespace DiscordCoreAPI {
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		/// \returns void
-		CoRoutine<Guild> disconnect();
+		void disconnect();
 
 		/// Checks if we are currently connected to a voice Channel. \brief Checks if we are currently connected to a voice Channel.
 		/// \returns A bool telling us if we are connected.
@@ -103,8 +100,6 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Guilds;
 
-		~GuildManager();
-
 	protected:
 
 		overwrite_buffer<map<string, DiscordCoreAPI::Guild>> cache{};
@@ -128,6 +123,7 @@ namespace DiscordCoreInternal {
 		void insertGuild(DiscordCoreAPI::Guild Guild);
 
 		void removeGuild(string guildId);
+
+		void clearGuilds();
 	};
 }
-#endif

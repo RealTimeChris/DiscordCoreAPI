@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _USER_ENTITIES_
-#define _USER_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
@@ -120,4 +117,3 @@ namespace DiscordCoreInternal {
 		void insertUser(DiscordCoreAPI::User useruser);
 	};
 }
-#endif

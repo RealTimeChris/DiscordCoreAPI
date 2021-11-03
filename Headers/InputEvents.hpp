@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _INPUT_EVENTS_
-#define _INPUT_EVENTS_
-
 #include "IndexInitial.hpp"
 #include "MessageEntities.hpp"
 #include "InteractionEntities.hpp"
@@ -59,5 +56,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }
-
-#endif

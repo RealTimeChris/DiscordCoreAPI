@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _VOICE_CONNECTION_
-#define _VOICE_CONNECTION_
-
 #include "IndexInitial.hpp"
 #include "WebSocketEntities.hpp"
 #include "SongDecoder.hpp"
@@ -103,4 +100,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };
-#endif

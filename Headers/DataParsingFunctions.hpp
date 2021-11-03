@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _DATA_PARSING_FUNCTIONS_
-#define _DATA_PARSING_FUNCTIONS_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 
@@ -3393,4 +3390,3 @@ namespace DiscordCoreInternal {
 
     };
 };
-#endif

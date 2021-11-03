@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _STICKER_ENTITIES_
-#define _STICKER_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 
@@ -33,4 +30,3 @@ namespace DiscordCoreInternal {
 
 	};
 };
-#endif

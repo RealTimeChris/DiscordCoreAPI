@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _YOUTUBE_API_
-#define _YOUTUBE_API_
-
 #include "IndexInitial.hpp"
 #include "Http.hpp"
 #include "DataParsingFunctions.hpp"
@@ -74,4 +71,3 @@ namespace DiscordCoreAPI {
 
 	};
 };
-#endif

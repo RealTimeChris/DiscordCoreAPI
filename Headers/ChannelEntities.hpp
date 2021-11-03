@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _CHANNEL_ENTITIES_
-#define _CHANNEL_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "Http.hpp"
@@ -123,4 +120,3 @@ namespace DiscordCoreInternal {
 		void removeChannel(string channelId);
 	};
 }
-#endif

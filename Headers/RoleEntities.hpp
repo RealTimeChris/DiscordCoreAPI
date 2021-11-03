@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _ROLE_ENTITIES_
-#define _ROLE_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "JSONIFier.hpp"
 #include "GuildMemberEntities.hpp"
@@ -154,4 +151,3 @@ namespace DiscordCoreInternal {
 		void removeRole(string roleId);
 	};
 }
-#endif

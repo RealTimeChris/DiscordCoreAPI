@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _INTERACTION_ENTITIES_
-#define _INTERACTION_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
@@ -1196,4 +1193,3 @@ namespace DiscordCoreAPI {
     };
     /**@}*/
 };
-#endif

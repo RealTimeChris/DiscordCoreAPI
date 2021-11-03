@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _SONG_ENCODER_
-#define _SONG_ENCODER_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 
@@ -33,5 +30,3 @@ namespace DiscordCoreAPI {
 	};
 
 }
-
-#endif

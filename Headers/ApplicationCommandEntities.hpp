@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _APPLICATION_COMMAND_ENTITIES_
-#define _APPLICATION_COMMAND_ENTITIES_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "JSONIFier.hpp"
@@ -192,5 +189,3 @@ namespace DiscordCoreInternal {
 
     };
 }
-
-#endif

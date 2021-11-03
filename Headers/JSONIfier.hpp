@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _JSONIFIER_
-#define _JSONIFIER_
-
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "ChannelEntities.hpp"
@@ -99,4 +96,3 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
 }
-#endif

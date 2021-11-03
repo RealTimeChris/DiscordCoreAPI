@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef _FOUNDATION_ENTITIES_
-#define _FOUNDATION_ENTITIES_
-
 #include "IndexInitial.hpp"
 
 namespace DiscordCoreAPI {
@@ -3774,4 +3771,3 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned __int32 currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned __int32 waitForMaxMs);
     /**@}*/
 };
-#endif
