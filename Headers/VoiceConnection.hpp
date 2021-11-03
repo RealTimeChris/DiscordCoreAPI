@@ -9,10 +9,9 @@
 #define _VOICE_CONNECTION_
 
 #include "IndexInitial.hpp"
-#include "SongDecoder.hpp"
 #include "WebSocketEntities.hpp"
+#include "SongDecoder.hpp"
 #include "SongEncoder.hpp"
-#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -21,7 +20,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
-	class DiscordCoreAPI_Dll VoiceConnection {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::ThreadContext, public agent {
 	public:
 
 		friend class DiscordCoreClient;
@@ -54,7 +53,6 @@ namespace DiscordCoreAPI {
 		~VoiceConnection();
 
 	protected:
-
 		shared_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ new winrt::event<delegate<SongCompletionEventData>>() };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebsocketAgent{ nullptr };
@@ -84,33 +82,24 @@ namespace DiscordCoreAPI {
 		bool areWePaused{ false };
 		bool doWeQuit{ false };
 		string channelId{ "" };
-		string guildId{ "" };		
+		string guildId{ "" };
 
 		bool areWeConnected();
 
 		bool areWeCurrentlyPlaying();
-
 		bool stop();
-
 		bool skip();
-
 		bool play();
-
 		void pauseToggle();
-
 		static void reconnect(string guildId);
-
 		void clearAudioData();
-
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
-
 		vector<unsigned __int8> encryptSingleAudioFrame(EncodedFrameData bufferToSend);
-
 		void sendSingleAudioFrame(vector<unsigned __int8> audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 
-		CoRoutine<void> run();
+		void run();
 	};
 	/**@}*/
 };

@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
-        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine(coroutine_handle<CoRoutine<returnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
         CoRoutine() {}
 
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        coroutine_handle<promise_type> coroutineHandle{};
+        coroutine_handle<CoRoutine<returnType>::promise_type> coroutineHandle{};
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
-        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine(coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
         CoRoutine() {}
 
@@ -168,6 +168,7 @@ namespace DiscordCoreAPI {
             }
             if (coroutineHandle.promise().newThread != nullptr) {
                 if (coroutineHandle.promise().newThread->joinable()) {
+                    cout << "WERE HERE WERE HERE" << endl;
                     coroutineHandle.promise().newThread->join();
                 }
             }
@@ -226,13 +227,13 @@ namespace DiscordCoreAPI {
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-        coroutine_handle<promise_type> coroutineHandle{};
+        coroutine_handle<CoRoutine<void>::promise_type> coroutineHandle{};
     };
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
     /// \param returnType The type returned by the containing CoRoutined.
     template<class returnType>
-    inline DiscordCoreAPI_Dll auto NewThreadAwaitable() {
+    DiscordCoreAPI_Dll inline auto NewThreadAwaitable() {
         class NewThreadAwaitable {
         public:
 
@@ -245,6 +246,32 @@ namespace DiscordCoreAPI {
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+                handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
+                this->handleWaiter = handle;
+                return true;
+            }
+
+            auto await_resume() {
+                return this->handleWaiter;
+            }
+        };
+        return NewThreadAwaitable();
+    }
+
+    template<>
+    DiscordCoreAPI_Dll inline auto NewThreadAwaitable<void>() {
+        class NewThreadAwaitable {
+        public:
+
+            coroutine_handle<CoRoutine<void>::promise_type> handleWaiter;
+
+            NewThreadAwaitable() : handleWaiter(nullptr) {}
+
+            bool await_ready() const noexcept {
+                return false;
+            }
+
+            bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
                 this->handleWaiter = handle;
                 return true;

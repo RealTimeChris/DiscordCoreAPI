@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		/// \returns void
-		CoRoutine<int> disconnect();
+		CoRoutine<void> disconnect();
 
 		/// Checks if we are currently connected to a voice Channel. \brief Checks if we are currently connected to a voice Channel.
 		/// \returns A bool telling us if we are connected.

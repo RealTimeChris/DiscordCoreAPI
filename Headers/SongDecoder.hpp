@@ -23,16 +23,14 @@ namespace DiscordCoreAPI {
         __int32 bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder {
+    class DiscordCoreAPI_Dll SongDecoder : public DiscordCoreInternal::ThreadContext, public agent {
     public:
 
-        DiscordCoreAPI_Dll friend __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
+        friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
         SongDecoder();
-        
-        SongDecoder(BuildSongDecoderData dataPackage);
 
-        void getResult();
+        SongDecoder(BuildSongDecoderData dataPackage);
 
         bool startMe();
 
@@ -64,9 +62,8 @@ namespace DiscordCoreAPI {
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
 
-        CoRoutine<void> run();
+        void run();
 
     };
 }
-
 #endif
