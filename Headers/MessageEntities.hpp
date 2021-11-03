@@ -9,10 +9,10 @@
 #define _MESSAGE_ENTITIES_
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 #include "Http.hpp"
 #include "JSONIFier.hpp"
 #include "FoundationEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -516,7 +516,7 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClient;
 
-		MessageCollector() {};
+		MessageCollector();
 
 		/// Begin waiting for Messages. \brief Begin waiting for Messages.
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
@@ -524,20 +524,9 @@ namespace DiscordCoreAPI {
 		/// \param userIdNew User id to set for possible comparison.
 		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
 		/// \returns A DiscordCoreAPI::CoRoutine containing MessageCollectorReturnData.
-		MessageCollectorReturnData  collectMessages(__int32 quantityToCollect, __int32 msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew) {
-			this->quantityOfMessageToCollect = quantityToCollect;
-			this->filteringFunction = filteringFunctionNew;
-			this->msToCollectFor = msToCollectForNew;
-			this->userId = userIdNew;
-			this->messagesBuffer = new unbounded_buffer<Message>();
-			MessageCollector::messagesBufferMap.insert_or_assign(this->userId, this->messagesBuffer);
-			this->run().get();
-			return this->messageReturnData;
-		}
+		MessageCollectorReturnData  collectMessages(__int32 quantityToCollect, __int32 msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew);
 
-		~MessageCollector() {
-			MessageCollector::messagesBufferMap.erase(this->userId);
-		}	
+		~MessageCollector();
 
 	protected:
 		static map<string, unbounded_buffer<Message>*> messagesBufferMap;
@@ -550,25 +539,7 @@ namespace DiscordCoreAPI {
 		__int32 elapsedTime{ 0 };
 		string userId{ "" };
 
-		CoRoutine<void>  run() {
-			co_await NewThreadAwaitable<void>();
-			this->startingTime = (__int32)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
-			while (this->elapsedTime < this->msToCollectFor) {
-				try {
-					Message message = receive(this->messagesBuffer, this->msToCollectFor - this->elapsedTime);
-					if (this->filteringFunction(message)) {
-						this->messageReturnData.messages.push_back(message);
-					}
-					if (this->messageReturnData.messages.size() >= this->quantityOfMessageToCollect) {
-						break;
-					}
-				}
-				catch (operation_timed_out&) {};
-
-				this->elapsedTime = (__int32)chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() - this->startingTime;
-			}
-			co_return;
-		}
+		CoRoutine<void>  run();
 
 	};
 	/**@}*/

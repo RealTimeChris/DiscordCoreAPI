@@ -9,6 +9,9 @@
 #define _COROUTINES_
 
 #include "IndexInitial.hpp"
+#include "ApplicationCommandEntities.hpp"
+#include "GuildEntities.hpp"
+#include "MessageEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -19,7 +22,7 @@ namespace DiscordCoreAPI {
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
     class DiscordCoreAPI_Dll InvalidState : public exception {
     public:
-        explicit  InvalidState(const string& _Message) : exception(_Message.c_str()) {}
+        explicit InvalidState(const string& _Message) : exception(_Message.c_str()) {}
     };
 
     /// The current status of the CoRoutine. \brief The current status of the CoRoutine.
@@ -45,7 +48,7 @@ namespace DiscordCoreAPI {
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
                 coroutineHandle.destroy();
-            };
+            }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.

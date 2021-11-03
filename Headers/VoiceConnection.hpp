@@ -9,9 +9,10 @@
 #define _VOICE_CONNECTION_
 
 #include "IndexInitial.hpp"
-#include "WebSocketEntities.hpp"
 #include "SongDecoder.hpp"
+#include "WebSocketEntities.hpp"
 #include "SongEncoder.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -20,7 +21,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::ThreadContext, public agent {
+	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
 
 		friend class DiscordCoreClient;
@@ -68,7 +69,6 @@ namespace DiscordCoreAPI {
 		shared_ptr<concurrency::event> pauseEvent{ new concurrency::event() };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		
 		const __int32 maxBufferSize{ 1276 };
 		unsigned __int16 sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };
@@ -77,14 +77,14 @@ namespace DiscordCoreAPI {
 		unsigned __int32 timestamp{ 0 };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
-		bool doWeReconnect{ false };		
+		bool doWeReconnect{ false };
 		bool areWeWaiting{ false };
 		bool areWePlaying{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
 		bool doWeQuit{ false };
 		string channelId{ "" };
-		string guildId{ "" };
+		string guildId{ "" };		
 
 		bool areWeConnected();
 
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 
 		void sendSpeakingMessage(bool isSpeaking);
 
-		void run();
+		CoRoutine<void> run();
 	};
 	/**@}*/
 };

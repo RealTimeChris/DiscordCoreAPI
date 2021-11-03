@@ -9,8 +9,8 @@
 #define _SONG_DECODER_
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -63,7 +63,6 @@ namespace DiscordCoreAPI {
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
-        CoRoutine<void> theTask{};
 
         CoRoutine<void> run();
 

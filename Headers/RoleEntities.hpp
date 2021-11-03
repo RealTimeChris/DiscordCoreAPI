@@ -9,6 +9,7 @@
 #define _ROLE_ENTITIES_
 
 #include "IndexInitial.hpp"
+#include "JSONIFier.hpp"
 #include "GuildMemberEntities.hpp"
 #include "FoundationEntities.hpp"
 

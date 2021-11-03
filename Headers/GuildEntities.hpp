@@ -13,7 +13,6 @@
 #include "DataParsingFunctions.hpp"
 #include "Http.hpp"
 #include "ChannelEntities.hpp"
-#include "MessageEntities.hpp"
 #include "GuildMemberEntities.hpp"
 #include "UserEntities.hpp"
 #include "RoleEntities.hpp"

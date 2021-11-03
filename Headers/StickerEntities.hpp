@@ -10,7 +10,6 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -19,8 +18,6 @@ namespace DiscordCoreAPI {
 
 		friend struct Concurrency::details::_ResultHolder<Sticker>;
 		friend class DiscordCoreInternal::StickerManager;
-		template<typename returnValueType>
-		friend class DiscordCoreAPI::CoRoutine;
 		friend class Guild;
 
 		Sticker();

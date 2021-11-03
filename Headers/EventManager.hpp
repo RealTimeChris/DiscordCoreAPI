@@ -14,6 +14,7 @@
 #include "GuildEntities.hpp"
 #include "RoleEntities.hpp"
 #include "UserEntities.hpp"
+#include "MessageEntities.hpp"
 #include "ApplicationCommandEntities.hpp"
 #include "ReactionEntities.hpp"
 
