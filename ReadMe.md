@@ -12,7 +12,7 @@
 
 ## [Raw DLL Source](https://github.com/RealTimeChris/DiscordCoreAPI-DLL)
 
-## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/xrXds85vX4)
+## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/qbuBKsumAG)
 
 ## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
 
