@@ -41,9 +41,9 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
-        CoRoutine(coroutine_handle<CoRoutine<returnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine<returnType>(coroutine_handle<CoRoutine<returnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
 
-        CoRoutine() {}
+        CoRoutine<returnType>() {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
@@ -67,7 +67,9 @@ namespace DiscordCoreAPI {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
             if (coroutineHandle.promise().newThread != nullptr) {
+                cout << "WERE HERE WERE HERE(ITEM0101)" << endl;
                 if (coroutineHandle.promise().newThread->joinable()) {
+                    cout << "WERE HERE WERE HERE(ITEM020202)" << endl;
                     coroutineHandle.promise().newThread->join();
                 }
             }
@@ -109,7 +111,7 @@ namespace DiscordCoreAPI {
             }
 
             auto get_return_object() {
-                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine<returnType>{ coroutine_handle<CoRoutine<returnType>::promise_type>::from_promise(*this) };
             }
 
             suspend_never initial_suspend() {
@@ -141,7 +143,7 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
-        CoRoutine(coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {}
+        CoRoutine(coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine() {}
 
@@ -167,8 +169,9 @@ namespace DiscordCoreAPI {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
             if (coroutineHandle.promise().newThread != nullptr) {
+                cout << "WERE HERE WERE HERE(VOID0101)" << endl;
                 if (coroutineHandle.promise().newThread->joinable()) {
-                    cout << "WERE HERE WERE HERE" << endl;
+                    cout << "WERE HERE WERE HERE(VOID0202)" << endl;
                     coroutineHandle.promise().newThread->join();
                 }
             }
@@ -206,7 +209,7 @@ namespace DiscordCoreAPI {
             void return_void() {}
 
             auto get_return_object() {
-                return CoRoutine{ coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine<void>{ coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
             }
 
             suspend_never initial_suspend() {
@@ -265,15 +268,18 @@ namespace DiscordCoreAPI {
 
             coroutine_handle<CoRoutine<void>::promise_type> handleWaiter;
 
-            NewThreadAwaitable() : handleWaiter(nullptr) {}
+            NewThreadAwaitable() : handleWaiter(nullptr) {};
 
             bool await_ready() const noexcept {
                 return false;
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
+                cout << "WERE HERE THIS IS IS 3333" << endl;
                 handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
+                cout << "WERE HERE THIS IS IS 4444" << endl;
                 this->handleWaiter = handle;
+                cout << "WERE HERE THIS IS IS 5555" << endl;
                 return true;
             }
 
