@@ -18,7 +18,7 @@ DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
 
-	DiscordCoreAPI_Dll map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* getAudioBuffersMap();
+	DiscordCoreAPI_Dll map<string, shared_ptr<concurrent_queue<AudioFrameData>>>* getAudioBuffersMap();
 
 	DiscordCoreAPI_Dll map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 

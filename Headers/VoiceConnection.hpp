@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<concurrency::event> reconnectionEvent{ new concurrency::event() };
 		shared_ptr<concurrency::event> playWaitEvent{ new concurrency::event() };
 		shared_ptr<concurrency::event> stopWaitEvent{ new concurrency::event() };
-		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
+		shared_ptr<concurrent_queue<AudioFrameData>> audioDataBuffer{ nullptr };
 		shared_ptr<concurrency::event> playSetEvent{ new concurrency::event() };
 		shared_ptr<concurrency::event> stopSetEvent{ new concurrency::event() };
 		shared_ptr<concurrency::event> pauseEvent{ new concurrency::event() };
