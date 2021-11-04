@@ -13,40 +13,45 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
+    struct DiscordCoreAPI_Dll BuildSongDecoderData {
+    public:
+        __int32 totalFileSize{ 0 };
+        __int32 bufferMaxSize{ 0 };
+    };
+
     class DiscordCoreAPI_Dll SongDecoder {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
+        concurrent_queue<vector<unsigned __int8>>* getInputBuffer();
+
         SongDecoder();
 
-        SongDecoder(__int32 totalFileSize);
+        SongDecoder(BuildSongDecoderData dataPackage);
 
         bool startMe();
 
-        void submitDataForDecoding(vector<unsigned __int8> dataToDecode);
-
-        unbounded_buffer<vector<unsigned __int8>>* getInputBuffer();
+        void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
 
         void updateBufferRefreshTime(__int32 newRefreshTime);
 
         bool getFrame(RawFrameData* dataPackage);
-        
+
         ~SongDecoder();
 
     protected:
 
-        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        unbounded_buffer<vector<unsigned __int8>> inputDataBuffer{};
+        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        concurrent_queue<vector<unsigned __int8>> inputDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
-        unbounded_buffer<RawFrameData> outDataBuffer{};
+        concurrent_queue<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };
         vector<unsigned __int8> currentBuffer{};
         concurrency::event readyToStartEvent {};
         __int32 refreshTimeForBuffer{ 10000 };
         unbounded_buffer<bool> readyBuffer{};
-        const __int32 bufferMaxSize{ 8192 };
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };
         AVStream* audioStream{ nullptr };

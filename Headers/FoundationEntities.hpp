@@ -2972,13 +2972,13 @@ namespace DiscordCoreAPI {
     */
     /// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
     struct DiscordCoreAPI_Dll RawFrameData {
-        shared_ptr<concurrent_vector<atomic<unsigned __int8>>> data{ new concurrent_vector<atomic<unsigned __int8>>() };///< The audio data.
+        shared_ptr<concurrent_vector<shared_ptr<atomic<unsigned __int8>>>> data{ new concurrent_vector<shared_ptr<atomic<unsigned __int8>>>() };///< The audio data.
         __int32 sampleCount{ -1 };///< The number of samples per this frame.
     };
 
     /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
     struct DiscordCoreAPI_Dll EncodedFrameData {
-        shared_ptr<concurrent_vector<atomic<unsigned __int8>>> data{ new concurrent_vector<atomic<unsigned __int8>>() };///< The audio data.
+        shared_ptr<concurrent_vector<shared_ptr<atomic<unsigned __int8>>>> data{ new concurrent_vector<shared_ptr<atomic<unsigned __int8>>>() };///< The audio data.
         __int32 sampleCount{ -1 };///< The number of samples per this frame.
     };
 
@@ -3330,17 +3330,19 @@ namespace DiscordCoreAPI {
     /// \brief Data for responding to an input-event.
     class DiscordCoreAPI_Dll RespondToInputEventData {
     public:
+
         friend struct CreateEphemeralInteractionResponseData;
         friend struct CreateDeferredInteractionResponseData;
         friend struct CreateEphemeralFollowUpMessageData;
         friend struct CreateInteractionResponseData;
-        friend struct EditInteractionResponseData;
+        friend struct EditInteractionResponseData;        
         friend struct DeferComponentResponseData;
         friend struct CreateFollowUpMessageData;
         friend struct EditFollowUpMessageData;
         friend struct CreateMessageData;
-        friend struct SendDMData;
         friend class InputEventHandler;
+        friend struct SendDMData;
+        
 
         InputEventResponseType type{}; ///< The type of response to make.
 
