@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
         friend class SelectMenuCollector;
         friend class ButtonCollector;
 
-        CreateInteractionResponseData(RespondToInputEventData dataPackage) {
+        CreateInteractionResponseData(RespondToInputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
         }
 
-        CreateInteractionResponseData(InputEventData dataPackage) {
+        CreateInteractionResponseData(InputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
             this->requesterId = dataPackage.getRequesterId();
         }
 
-        CreateInteractionResponseData(InteractionData dataPackage) {
+        CreateInteractionResponseData(InteractionData dataPackage) : InteractionResponseBase() {
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->interactionPackage.interactionToken = dataPackage.token;
             this->interactionPackage.interactionId = dataPackage.id;
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
-        CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
+        CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = 64;
         }
 
-        CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
+        CreateEphemeralInteractionResponseData(InputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
-        EditInteractionResponseData(RespondToInputEventData dataPackage) {
+        EditInteractionResponseData(RespondToInputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
         }
 
-        EditInteractionResponseData(InputEventData dataPackage) {
+        EditInteractionResponseData(InputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
@@ -337,7 +337,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
-        CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
+        CreateFollowUpMessageData(RespondToInputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -351,7 +351,7 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
         }
 
-        CreateFollowUpMessageData(InputEventData dataPackage) {
+        CreateFollowUpMessageData(InputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
@@ -369,7 +369,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
-        CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
+        CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -383,7 +383,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = 64;
         }
 
-        CreateEphemeralFollowUpMessageData(InputEventData dataPackage) {
+        CreateEphemeralFollowUpMessageData(InputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
@@ -400,7 +400,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::InteractionManager;
         friend class InputEventHandler;
 
-        EditFollowUpMessageData(RespondToInputEventData dataPackage) {
+        EditFollowUpMessageData(RespondToInputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
@@ -416,7 +416,7 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
         }
 
-        EditFollowUpMessageData(InputEventData dataPackage) {
+        EditFollowUpMessageData(InputEventData dataPackage) : InteractionResponseBase() {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
