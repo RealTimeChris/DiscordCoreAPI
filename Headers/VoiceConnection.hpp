@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -65,7 +66,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		const __int32 maxBufferSize{ 1276 };
 		unsigned __int16 sequenceIndex{ 0 };
-		CoRoutine<void>* theTask{ nullptr };
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };
@@ -77,6 +77,7 @@ namespace DiscordCoreAPI {
 		bool areWePlaying{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
+		CoRoutine<void> theTask{};
 		bool doWeQuit{ false };
 		string channelId{ "" };
 		string guildId{ "" };
