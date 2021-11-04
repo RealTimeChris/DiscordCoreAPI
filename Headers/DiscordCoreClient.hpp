@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 		static vector<RepeatedFunctionData> functionsToExecute;
 
 		shared_ptr<BotUser> currentUser{ nullptr };
-		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
+		unique_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
 		unique_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		unique_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };

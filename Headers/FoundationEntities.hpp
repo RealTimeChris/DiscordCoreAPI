@@ -90,6 +90,20 @@ namespace DiscordCoreAPI {
         return doWeBreak;
     }
 
+    template <typename T>
+    bool waitForTimeToPass(concurrent_queue<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
+        StopWatch stopWatch(timeInMsNew);
+        bool doWeBreak{ false };
+        while (!outBuffer->try_pop(*argOne)) {
+            concurrency::wait(10);
+            if (stopWatch.hasTimePassed()) {
+                doWeBreak = true;
+                break;
+            }
+        };
+        return doWeBreak;
+    }
+
     template <typename ...T>
     CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
         co_await NewThreadAwaitable<void>();
