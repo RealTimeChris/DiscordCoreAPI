@@ -2,17 +2,17 @@
 // Aug 25, 2021
 // Chris M.
 // https://github.com/RealTimeChris
-
 #pragma once
 
 #include "IndexInitial.hpp"
+#include "Http.hpp"
+#include "DataParsingFunctions.hpp"
+#include "VoiceConnection.hpp"
 #include "CoRoutine.hpp"
-#include "SongEncoder.hpp"
-#include "SongDecoder.hpp"
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll SoundCloudAPI  {
+	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
 		friend class DiscordCoreClient;
@@ -43,8 +43,9 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
+		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>* sendAudioDataBufferNew);
+
 		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
 
 	};
-
 };

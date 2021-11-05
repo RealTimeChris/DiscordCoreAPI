@@ -2,56 +2,47 @@
 // Jul 29, 2021
 // Chris M.
 // https://github.com/RealTimeChris
-
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
+#include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
-
-    enum class SendOrReceive {
-        Send = 0,
-        Receive = 1
-    };
 
     DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
+
+        unbounded_buffer<vector<unsigned __int8>>* sendEncodedAudioDataBuffer{};
         __int32 totalFileSize{ 0 };
         __int32 bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder :public DiscordCoreInternal::ThreadContext, public agent {
+    class DiscordCoreAPI_Dll SongDecoder {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
-        unbounded_buffer<vector<unsigned __int8>>* getInputBuffer();
-
         SongDecoder();
 
         SongDecoder(BuildSongDecoderData dataPackage);
-        
-        bool startMe();
 
-        void stopMe();
+        bool startMe();
 
         void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
 
         void updateBufferRefreshTime(__int32 newRefreshTime);
 
-        bool sendOrReceiveData(RawFrameData* dataPackage, SendOrReceive sendOrReceive);
+        bool getFrame(RawFrameData* dataPackage);
 
         ~SongDecoder();
 
     protected:
 
         __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        coroutine_handle<CoRoutine<void>::promise_type> coroHandle{};
-        unbounded_buffer<vector<unsigned __int8>> inputDataBuffer{};
+        unbounded_buffer<vector<unsigned __int8>>* inputDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
@@ -65,10 +56,9 @@ namespace DiscordCoreAPI {
         AVStream* audioStream{ nullptr };
         AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
+        CoRoutine<void>* theTask{};
         bool haveWeBooted{ false };
         AVCodec* codec{ nullptr };
-
-        void run();
-
+        CoRoutine<void> run();
     };
 }

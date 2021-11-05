@@ -2,14 +2,13 @@
 // Jun 30, 2021
 // Chris M.
 // https://github.com/RealTimeChris
-
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "FoundationEntities.hpp"
+#include "Http.hpp"
+#include "DataParsingFunctions.hpp"
+#include "VoiceConnection.hpp"
 #include "CoRoutine.hpp"
-#include "SongEncoder.hpp"
-#include "SongDecoder.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -17,7 +16,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll vector<char> splitString(string stringToSplit);
 
-	DiscordCoreAPI_Dll vector<char> sliceVector(vector<char> vectorToSlice,  __int32 firstElement,  __int32 lastElement = 0);
+	DiscordCoreAPI_Dll vector<char> sliceVector(vector<char> vectorToSlice, __int32 firstElement, __int32 lastElement = 0);
 
 	DiscordCoreAPI_Dll vector<char> reverseString(vector<char> stringToReverse);
 
@@ -35,7 +34,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
 
-	class DiscordCoreAPI_Dll YouTubeAPI  {
+	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
 		friend class DiscordCoreClient;
@@ -65,6 +64,8 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
+		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>* sendAudioDataBufferNew);
+		
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 
 	};
