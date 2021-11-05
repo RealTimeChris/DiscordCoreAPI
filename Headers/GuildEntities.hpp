@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		concurrent_unordered_map<string, DiscordCoreAPI::Guild> cache{};
+		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Guild>> cache{ new concurrent_unordered_map<string, DiscordCoreAPI::Guild>() };
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 
@@ -117,7 +117,5 @@ namespace DiscordCoreInternal {
 		void insertGuild(DiscordCoreAPI::Guild Guild);
 
 		void removeGuild(string guildId);
-
-		void clearGuilds();
 	};
 }

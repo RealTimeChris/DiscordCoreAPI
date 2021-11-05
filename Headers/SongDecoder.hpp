@@ -24,18 +24,20 @@ namespace DiscordCoreAPI {
         __int32 bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder {
+    class DiscordCoreAPI_Dll SongDecoder :public DiscordCoreInternal::ThreadContext, public agent {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
-        concurrent_queue<vector<unsigned __int8>>* getInputBuffer();
+        unbounded_buffer<vector<unsigned __int8>>* getInputBuffer();
 
         SongDecoder();
 
         SongDecoder(BuildSongDecoderData dataPackage);
-
+        
         bool startMe();
+
+        void stopMe();
 
         void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
 
@@ -48,9 +50,10 @@ namespace DiscordCoreAPI {
     protected:
 
         __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        concurrent_queue<vector<unsigned __int8>> inputDataBuffer{};
+        coroutine_handle<CoRoutine<void>::promise_type> coroHandle{};
+        unbounded_buffer<vector<unsigned __int8>> inputDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
-        concurrent_queue<RawFrameData> outDataBuffer{};
+        unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };
         vector<unsigned __int8> currentBuffer{};
@@ -63,10 +66,9 @@ namespace DiscordCoreAPI {
         AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
-        CoRoutine<void> theTask{};
         AVCodec* codec{ nullptr };
 
-        CoRoutine<void> run();
+        void run();
 
     };
 }

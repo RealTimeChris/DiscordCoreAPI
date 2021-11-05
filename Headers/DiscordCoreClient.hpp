@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient {
+	class DiscordCoreAPI_Dll DiscordCoreClient : public DiscordCoreInternal::ThreadContext, public agent {
 	public:
 
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		static vector<RepeatedFunctionData> functionsToExecute;
 
 		shared_ptr<BotUser> currentUser{ nullptr };
-		unique_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
+		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
 		unique_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		unique_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
@@ -90,7 +90,6 @@ namespace DiscordCoreAPI {
 		unique_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
 		unique_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 		unique_ptr<InputEventHandler> inputEvents{ nullptr };
-		string baseURL{ "https://discord.com/api/v9" };
 		bool doWeQuit{ false };
 		string botToken{ "" };
 		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
@@ -105,7 +104,7 @@ namespace DiscordCoreAPI {
 
 		void removeGuild(GuildData guildData);
 
-		CoRoutine<void> run();
+		void run();
 	};
 	/**@}*/
 	/**

@@ -18,7 +18,7 @@ namespace DiscordCoreInternal {
 
 		HttpRequestAgent(HttpAgentResources agentResources);
 
-		static void initialize(string botTokenNew, string baseURLNew);
+		static void initialize(string botTokenNew);
 
 		HttpData submitWorkloadAndGetResult(HttpWorkloadData workload);
 

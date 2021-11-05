@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, concurrent_queue<WebSocketWorkload>* workloadTarget);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<WebSocketWorkload>* workloadTarget);
 
 		void connect();
 
@@ -98,15 +98,15 @@ namespace DiscordCoreInternal {
 
 		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
-		concurrent_queue<WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
-		ThreadPoolTimer heartbeatTimer{ nullptr };
+		unbounded_buffer<WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
-		DataWriter messageWriter{ nullptr };
 		GetVoiceConnectionData voiceConnectInitData{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
+		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
 		const __int32 maxReconnectTries{ 10 };
+		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		event_token messageReceivedToken{};
