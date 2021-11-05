@@ -2963,22 +2963,22 @@ namespace DiscordCoreAPI {
         string userId{ "" };///< The User for whom to look for the actions of.
         __int32 limit{ 0 };///< The maximum number of actions to acquire from the log.
     };
-
     /**@}*/
+
 
     /**
     * \addtogroup voice_connection
     * @{
     */
     /// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
-    struct DiscordCoreAPI_Dll RawFrameData {
-        shared_ptr<concurrent_vector<shared_ptr<atomic<unsigned __int8>>>> data{ new concurrent_vector<shared_ptr<atomic<unsigned __int8>>>() };///< The audio data.
+    struct DiscordCoreAPI_Dll alignas(64) RawFrameData {
+        shared_ptr<concurrent_vector<atomic<unsigned __int8>>> data{ new concurrent_vector<atomic<unsigned __int8>>() };///< The audio data;
         __int32 sampleCount{ -1 };///< The number of samples per this frame.
     };
 
     /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
-    struct DiscordCoreAPI_Dll EncodedFrameData {
-        shared_ptr<concurrent_vector<shared_ptr<atomic<unsigned __int8>>>> data{ new concurrent_vector<shared_ptr<atomic<unsigned __int8>>>() };///< The audio data.
+    struct DiscordCoreAPI_Dll alignas(64) EncodedFrameData {
+        shared_ptr<concurrent_vector<atomic<unsigned __int8>>> data{ new concurrent_vector<atomic<unsigned __int8>>() };///< The audio data;
         __int32 sampleCount{ -1 };///< The number of samples per this frame.
     };
 
@@ -2991,7 +2991,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Represents a single frame of audio data. \brief Represents a single frame of audio data.
-    struct DiscordCoreAPI_Dll AudioFrameData {
+    struct DiscordCoreAPI_Dll alignas(64) AudioFrameData {
         AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
         EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
         RawFrameData rawFrameData{};///< To be filled if it's raw audio data.

@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::Channel>> cache{};
+		map<string, DiscordCoreAPI::Channel> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 

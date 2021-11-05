@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::Role>> cache{};
+		map<string, DiscordCoreAPI::Role> cache{};
 
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 

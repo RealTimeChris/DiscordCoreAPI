@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::User>> cache{};
+		concurrent_unordered_map<string, DiscordCoreAPI::User> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getCurrentUserAsync();
 

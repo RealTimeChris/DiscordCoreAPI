@@ -45,6 +45,15 @@ namespace DiscordCoreAPI {
             }
         }
 
+        /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
+        /// \returns void.
+        void detachThread() {
+            if (coroutineHandle.promise().newThread != nullptr) {
+                coroutineHandle.promise().newThread->detach();
+            }
+            return;
+        }
+
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
         /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
@@ -145,6 +154,15 @@ namespace DiscordCoreAPI {
             }
         }
 
+        /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
+        /// \returns void.
+        void detachThread() {
+            if (coroutineHandle.promise().newThread != nullptr) {
+                coroutineHandle.promise().newThread->detach();
+            }
+            return;
+        }
+
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
         /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
@@ -166,7 +184,6 @@ namespace DiscordCoreAPI {
                 }
             }
             coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
-            return;
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.

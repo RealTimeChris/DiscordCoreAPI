@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		overwrite_buffer<map<string, DiscordCoreAPI::GuildMember>> cache{};
+		map<string, DiscordCoreAPI::GuildMember> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 

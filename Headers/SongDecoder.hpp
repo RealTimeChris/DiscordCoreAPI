@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 }, currentFrame{ 0 };
         concurrent_queue<vector<unsigned __int8>> inputDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         concurrent_queue<RawFrameData> outDataBuffer{};

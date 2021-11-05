@@ -112,6 +112,7 @@ extern "C"
 #include <future>
 #include <atomic>
 #include <ppl.h>
+#include <queue>
 #include <regex>
 #include <ios>
 #define CURL_STATICLIB
