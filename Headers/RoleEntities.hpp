@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		map<string, DiscordCoreAPI::Role> cache{};
+		concurrent_unordered_map<string, DiscordCoreAPI::Role> cache{};
 
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 

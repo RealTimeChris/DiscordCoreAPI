@@ -6,8 +6,9 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "FoundationEntities.hpp"
+#include "SongDecoder.hpp"
 #include "WebSocketEntities.hpp"
+#include "SongEncoder.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -16,7 +17,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
-	class DiscordCoreAPI_Dll VoiceConnection {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::ThreadContext, public agent {
 	public:
 
 		friend class DiscordCoreClient;
@@ -29,26 +30,27 @@ namespace DiscordCoreAPI {
 
 		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
 		/// \param frameData A single frame worth of audio data.
-		/// \returns void
+		/// \returns void. 
 		void sendSingleFrame(AudioFrameData frameData);
 
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song.
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
+		/// \returns An event_token for later de-registering the event. 
 		event_token onSongCompletion(delegate<SongCompletionEventData> const& handler);
 
 		/// For de-registering the event-handler function that was previously registered. \brief For de-registering the event-handler function that was previously registered.
 		/// \param token The event_token that was returned from the registration function.
-		/// \returns void
+		/// \returns void.
 		void onSongCompletion(event_token const& token);
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
-		/// \returns A string containing the Channel's id.
+		/// \returns A string containing the Channel's id. 
 		string getChannelId();
 
 		~VoiceConnection();
 
 	protected:
+
 		shared_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ new winrt::event<delegate<SongCompletionEventData>>() };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebsocketAgent{ nullptr };
@@ -65,7 +67,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		const __int32 maxBufferSize{ 1276 };
 		unsigned __int16 sequenceIndex{ 0 };
-		CoRoutine<void>* theTask{ nullptr };
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };
@@ -80,32 +81,22 @@ namespace DiscordCoreAPI {
 		bool doWeQuit{ false };
 		string channelId{ "" };
 		string guildId{ "" };
-
 		bool areWeConnected();
 
 		bool areWeCurrentlyPlaying();
-
 		bool stop();
-
 		bool skip();
-
 		bool play();
-
 		void pauseToggle();
-
 		static void reconnect(string guildId);
-
 		void clearAudioData();
-
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
-
 		vector<unsigned __int8> encryptSingleAudioFrame(EncodedFrameData bufferToSend);
-
 		void sendSingleAudioFrame(vector<unsigned __int8> audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 
-		CoRoutine<void> run();
+		void run();
 	};
 	/**@}*/
 };

@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		map<string, DiscordCoreAPI::Guild> cache{};
+		concurrent_unordered_map<string, DiscordCoreAPI::Guild> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 

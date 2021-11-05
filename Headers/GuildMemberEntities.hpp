@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		map<string, DiscordCoreAPI::GuildMember> cache{};
+		concurrent_unordered_map<string, DiscordCoreAPI::GuildMember> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
 

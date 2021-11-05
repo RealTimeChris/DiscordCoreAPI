@@ -9,6 +9,7 @@
 #include "FoundationEntities.hpp"
 #include "EventManager.hpp"
 #include "WebSocketEntities.hpp"
+#include "CoRoutine.hpp"
 
 DiscordCoreAPI_Dll void myPurecallHandler(void);
 

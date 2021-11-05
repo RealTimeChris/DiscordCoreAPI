@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		map<string, DiscordCoreAPI::Channel> cache{};
+		concurrent_unordered_map<string, DiscordCoreAPI::Channel> cache{};
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 

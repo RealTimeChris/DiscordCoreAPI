@@ -90,6 +90,8 @@ namespace DiscordCoreInternal {
 
 		BaseWebSocketAgent(string botTokenNew, string socketPathBase, concurrent_queue<WebSocketWorkload>* workloadTarget);
 
+		void connect();
+
 		~BaseWebSocketAgent();
 
 	protected:
@@ -128,8 +130,6 @@ namespace DiscordCoreInternal {
 		void sendMessage(string& text);
 
 		void sendHeartBeat();
-
-		DiscordCoreAPI::CoRoutine<void> connect();
 
 		void cleanup();
 	};

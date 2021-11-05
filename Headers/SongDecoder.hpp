@@ -11,6 +11,11 @@
 
 namespace DiscordCoreAPI {
 
+    enum class SendOrReceive {
+        Send = 0,
+        Receive = 1
+    };
+
     DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
 
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
@@ -36,13 +41,13 @@ namespace DiscordCoreAPI {
 
         void updateBufferRefreshTime(__int32 newRefreshTime);
 
-        bool getFrame(RawFrameData* dataPackage);
+        bool sendOrReceiveData(RawFrameData* dataPackage, SendOrReceive sendOrReceive);
 
         ~SongDecoder();
 
     protected:
 
-        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 }, currentFrame{ 0 };
+        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
         concurrent_queue<vector<unsigned __int8>> inputDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         concurrent_queue<RawFrameData> outDataBuffer{};
