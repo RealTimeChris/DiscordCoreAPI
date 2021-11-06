@@ -69,6 +69,7 @@ namespace DiscordCoreAPI {
         __int64 maxNumberOfMs{ 0 };
         __int64 startTime{ 0 };
     };
+
     template <typename T>
     bool waitForTimeToPass(unbounded_buffer<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
         StopWatch stopWatch(timeInMsNew);
@@ -82,11 +83,12 @@ namespace DiscordCoreAPI {
         };
         return doWeBreak;
     }
+
     template <typename T>
     bool waitForTimeToPass(concurrent_queue<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
         StopWatch stopWatch(timeInMsNew);
         bool doWeBreak{ false };
-        while (!outBuffer.try_pop(*argOne)) {
+        while (!outBuffer->try_pop(*argOne)) {
             concurrency::wait(10);
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
@@ -95,6 +97,7 @@ namespace DiscordCoreAPI {
         };
         return doWeBreak;
     }
+
     template <typename ...T>
     CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
         co_await NewThreadAwaitable<void>();
