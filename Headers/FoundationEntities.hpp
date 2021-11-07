@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 
 namespace DiscordCoreAPI {
+
     template<typename returnType>
     class CoRoutine;
     struct SongCompletionEventData;

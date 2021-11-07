@@ -47,13 +47,13 @@ namespace DiscordCoreInternal {
 
 		HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpPUTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData);
+		HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpPOSTObjectData(string relativeURL, string content, RateLimitData* pRateLimitData);
+		HttpData httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpPATCHObjectData(string relativeURL, string content, RateLimitData* pRateLimitData);
+		HttpData httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpDELETEObjectData(string relativeURL, HttpWorkloadType workloadType, RateLimitData* pRateLimitData);
+		HttpData httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
 	};
 }

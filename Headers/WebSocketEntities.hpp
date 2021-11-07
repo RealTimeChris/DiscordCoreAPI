@@ -143,7 +143,7 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(shared_ptr<concurrency::event> readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew, bool* doWeReconnectNew, shared_ptr<concurrency::event> reconnectionEvent);
 
-		void sendVoiceData(vector<uint8_t> data);
+		void sendVoiceData(vector<unsigned __int8> data);
 
 		void sendMessage(string text);
 
@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 	public:
 		ConnectionWebSocketAgent(string endpoint, ConnectionWebSocketType type, string port, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew);
 
-		void sendData(vector<uint8_t> data);
+		void sendData(vector<unsigned __int8> data);
 
 		~ConnectionWebSocketAgent();
 
