@@ -1,5 +1,5 @@
 
-### **Getting an Interaction Response:**
+### **Getting a Follow-Up Message:**
 ---
 - Access the `Interactions` class of the `DiscordCoreAPI` namespace.
 - Select, from the `Interactions` class, the `getFollowUpMessageAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::GetFollowUpMessageData`.
