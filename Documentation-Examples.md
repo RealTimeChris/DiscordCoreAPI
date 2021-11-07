@@ -58,6 +58,7 @@
 - ### [Editing an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20an%20Interaction%20Response.md)
 - ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
 - ### [Creating a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Follow-Up%20Message.md)
+- ### [Getting a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Follow-Up%20Message.md)
 ## Button Stuff:
 - ### [Instantiating/Creating a Button](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Button.md)
 - ### [Collecting Button Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Button%20Input.md)
