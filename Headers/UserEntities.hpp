@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClient;
 
-		BotUser(UserData dataPackage, shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> pBaseWebSocketAgentNew);
+		BotUser(UserData dataPackage, DiscordCoreInternal::BaseWebSocketAgent* pBaseWebSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes.
 		/// \returns void.
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 
 		BotUser();
 
-		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> pBaseWebSocketAgent{ nullptr };
+		DiscordCoreInternal::BaseWebSocketAgent* pBaseWebSocketAgent{ nullptr };
 	};
 	/**@}*/
 };

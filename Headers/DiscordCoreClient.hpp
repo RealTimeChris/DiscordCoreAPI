@@ -69,6 +69,8 @@ namespace DiscordCoreAPI {
 		/// \returns void
 		static void runBot();
 
+		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew);
+
 		~DiscordCoreClient();
 
 	protected:
@@ -91,8 +93,6 @@ namespace DiscordCoreAPI {
 		bool doWeQuit{ false };
 		string botToken{ "" };
 		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
-
-		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew);
 
 		CoRoutine<void> initialize();
 
