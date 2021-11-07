@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient : public DiscordCoreInternal::ThreadContext, public agent {
+	class DiscordCoreAPI_Dll DiscordCoreClient : public DiscordCoreInternal::ThreadContext, public agent, public enable_shared_from_this<DiscordCoreClient> {
 	public:
 
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class Test;
 
-		static unique_ptr<DiscordCoreClient> thisPointer;
+		static shared_ptr<DiscordCoreClient> thisPointer;
 		static string commandPrefix;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
@@ -68,8 +68,6 @@ namespace DiscordCoreAPI {
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		/// \returns void
 		static void runBot();
-
-		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew);
 
 		~DiscordCoreClient();
 
@@ -93,6 +91,8 @@ namespace DiscordCoreAPI {
 		bool doWeQuit{ false };
 		string botToken{ "" };
 		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
+
+		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew);
 
 		CoRoutine<void> initialize();
 

@@ -26,6 +26,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		static concurrent_unordered_map<string, concurrent_queue<HttpWorkloadData>> workloadMap;
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static concurrent_unordered_map<string, RateLimitData> rateLimitData;
 		static string botToken;
