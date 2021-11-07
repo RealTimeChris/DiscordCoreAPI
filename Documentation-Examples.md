@@ -54,6 +54,7 @@
 - ### [Batch Editing Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Batch%20Editing%20Guild%20Application%20Command's%20Permissions.md)
 ## Interaction Stuff:
 - ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
+- ### [Getting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20an%20Interaction%20Response.md)
 - ### [Editing an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20an%20Interaction%20Response.md)
 - ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
 ## Button Stuff:
