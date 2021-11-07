@@ -162,10 +162,9 @@ namespace DiscordCoreInternal {
 		const __int32 maxReconnectTries{ 10 };		
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
-		__int32 currentReconnectTries{ 0 };		
+		__int32 currentReconnectTries{ 0 };
 		bool areWeReadyToConnect{ true };
 		bool areWeAuthenticated{ false };
-		DataWriter dataWriter{ nullptr };
 		__int32 lastNumberReceived{ 0 };
 		__int32 heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };		
