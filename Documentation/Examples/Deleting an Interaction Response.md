@@ -1,8 +1,8 @@
 
-### **Editing an Interaction Response:**
+### **Deleting an Interaction Response:**
 ---
 - Access the `InputEvents` class of the `DiscordCoreAPI` namespace.
-- Select, from the `InputEvents` class, the `deleteInputEventResponseAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::InputEventData` with a type set to `InteractionResponseEdit`, with a return value of type `void`.
+- Select, from the `InputEvents` class, the `deleteInputEventResponseAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::InputEventData` with a type set to `InteractionResponse`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
