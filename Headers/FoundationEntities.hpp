@@ -3349,7 +3349,7 @@ namespace DiscordCoreAPI {
 
         SoundCloudSong();
 
-        string collectClientId(string searchQuery);
+        string collectClientId();
 
         SoundCloudSong findSecondDownloadURL(SoundCloudSong newSong);
 
