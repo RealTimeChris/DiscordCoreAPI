@@ -100,13 +100,13 @@ namespace DiscordCoreInternal {
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
+		shared_ptr<DataWriter> messageWriter{ nullptr };
 		GetVoiceConnectionData voiceConnectInitData{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
 		const __int32 maxReconnectTries{ 10 };
-		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		event_token messageReceivedToken{};
