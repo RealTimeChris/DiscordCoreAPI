@@ -1,7 +1,7 @@
 ### **Getting a Channel:**
 ---
 - Access the `Channels` class of the `DiscordCoreAPI` namespace.
-- Select, from the `Channels` class, the `getChannelAsync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::GetChannelData`, or `DiscordCoreAPI::FetchChannelData`), or simply `{.channelId = CHANNELIDHERE}`.
+- Select, from the `Channels` class, the `getCachedChannelAsync()` (which collects it from the cache), or `getChannelAsync()` (which collects it from the Discord servers) function, while passing to it a completed data structure `DiscordCoreAPI::GetChannelData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			Channel channel = Channels::fetchChannelAsync({ args->eventData.getChannelId() }).get();
+			Channel channel = Channels::getCachedChannelAsync({ args->eventData.getChannelId() }).get();
 
 			Channel channel = Channels::getChannelAsync({ args->eventData.getChannelId() }).get();
 
