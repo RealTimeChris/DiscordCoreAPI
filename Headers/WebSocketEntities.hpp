@@ -106,7 +106,6 @@ namespace DiscordCoreInternal {
 		concurrency::event disconnectionEvent {};
 		const __int32 maxReconnectTries{ 10 };
 		MessageWebSocket webSocket{ nullptr };
-		DataWriter messageWriter{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		event_token messageReceivedToken{};
