@@ -478,25 +478,7 @@ namespace DiscordCoreAPI {
 		string userId{ "" };
 		__int32 nonce{ 0 };
 		bool tts{ false };		
-	};
-
-	/// A single Message. \brief A single Message.
-	class DiscordCoreAPI_Dll Message : public MessageData {
-	protected:
-
-		friend struct Concurrency::details::_ResultHolder<Message>;
-		friend class DiscordCoreInternal::MessageManager;
-		template<typename returnValueType>
-		friend class DiscordCoreAPI::CoRoutine;
-		friend struct OnMessageCreationData;
-		friend struct OnMessageUpdateData;
-		friend class InputEventHandler;
-		friend class DiscordCoreClient;
-
-		Message();
-
-		Message(MessageData dataNew);
-	};
+	};;
 	/**@}*/
 
 	/**

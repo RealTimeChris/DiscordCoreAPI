@@ -90,25 +90,6 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The id of the User from whom to remove the Role.
 		string roleId{ "" };///< The id of the Role to be removed.
 	};
-
-	/// A single Role.
-	class DiscordCoreAPI_Dll Role : public RoleData {
-	protected:
-
-		friend struct Concurrency::details::_ResultHolder<Role>;
-		friend class DiscordCoreInternal::RoleManager;
-		template<typename returnValueType>
-		friend class DiscordCoreAPI::CoRoutine;
-		friend struct OnRoleDeletionData;
-		friend struct OnRoleCreationData;
-		friend struct OnRoleUpdateData;
-		friend class DiscordCoreClient;
-		friend class Guild;
-
-		Role();
-
-		Role(RoleData dataNew);
-	};
 	/**@}*/
 };
 

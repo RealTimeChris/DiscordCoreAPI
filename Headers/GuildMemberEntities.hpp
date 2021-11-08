@@ -41,6 +41,7 @@ namespace DiscordCoreAPI {
 
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
 		friend class DiscordCoreInternal::GuildMemberManager;
+		friend class DiscordCoreInternal::HttpRequestAgent;
 		template <typename returnVal>
 		friend class DiscordCoreAPI::CoRoutine;
 		friend struct GetGuildMemberRolesData;

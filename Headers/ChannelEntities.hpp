@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -68,6 +69,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Channel>;
+		friend class DiscordCoreInternal::HttpRequestAgent;
 		friend class DiscordCoreInternal::ChannelManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;

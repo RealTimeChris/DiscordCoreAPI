@@ -14,8 +14,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
 
-        unbounded_buffer<vector<unsigned __int8>>* sendEncodedAudioDataBuffer{};
-        __int32 totalFileSize{ 0 };
+        unsigned __int64 totalFileSize{ 0 };
         __int32 bufferMaxSize{ 0 };
     };
 
@@ -24,6 +23,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
+        friend class SoundCloudAPI;
+        friend class YouTubeAPI;
 
         SongDecoder();
 
@@ -41,7 +42,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, totalFileSize{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
         unbounded_buffer<vector<unsigned __int8>>* inputDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         unbounded_buffer<RawFrameData> outDataBuffer{};
@@ -51,6 +52,7 @@ namespace DiscordCoreAPI {
         concurrency::event readyToStartEvent {};
         __int32 refreshTimeForBuffer{ 10000 };
         unbounded_buffer<bool> readyBuffer{};
+        unsigned __int64 totalFileSize{ 0 };
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };
         AVStream* audioStream{ nullptr };

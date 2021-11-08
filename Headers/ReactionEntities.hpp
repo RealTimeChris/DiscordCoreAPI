@@ -62,22 +62,6 @@ namespace DiscordCoreAPI {
 		string emojiName{ "" };///< The name of which emoji to remove.
 		string emojiId{ "" };///< The id of which emoji to remove.
 	};
-
-	/// A single Reaction. \brief A single Reaction.
-	class DiscordCoreAPI_Dll Reaction : public ReactionData {
-	protected:
-
-		friend struct Concurrency::details::_ResultHolder<Reaction>;
-		friend class DiscordCoreInternal::ReactionManager;
-		template<typename returnValueType>
-		friend class DiscordCoreAPI::CoRoutine;
-		friend struct OnReactionAddData;
-		friend class DiscordCoreClient;
-
-		Reaction();
-
-		Reaction(ReactionData dataNew);
-	};
 	/**@}*/
 };
 

@@ -24,27 +24,6 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild you would like the bot to leave.
 	};
 
-	/// A single User. \brief A single User.
-	class DiscordCoreAPI_Dll User : public UserData {
-	protected:
-
-		friend struct Concurrency::details::_ResultHolder<User>;
-		friend class DiscordCoreInternal::ReactionManager;
-		friend class DiscordCoreInternal::UserManager;
-		template<typename returnValueType>
-		friend class DiscordCoreAPI::CoRoutine;
-		friend struct OnGuildMemberRemoveData;
-		friend struct OnGuildBanRemoveData;
-		friend struct OnGuildBanAddData;
-		friend struct OnUserUpdateData;
-		friend class DiscordCoreClient;		
-		friend class Guild;
-
-		DiscordCoreAPI::User();
-
-		User(UserData dataNew);
-	};
-
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		vector<ActivityData> activities{};///< A vector of activities.
@@ -108,6 +87,6 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationData> getApplicationDataAsync();
 
-		void insertUser(DiscordCoreAPI::User useruser);
+		void insertUser(DiscordCoreAPI::User user);
 	};
 }

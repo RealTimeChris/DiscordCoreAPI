@@ -52,6 +52,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend struct Concurrency::details::_ResultHolder<Guild>;
+		friend class DiscordCoreInternal::HttpRequestAgent;
 		friend class DiscordCoreInternal::GuildManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -62,8 +63,9 @@ namespace DiscordCoreAPI {
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
+		/// \param connectionData A ConnectionWebSocketDatam structure.
 		/// \returns A shared_ptr containing the voice connection.
-		VoiceConnection* connectToVoice(string channelId);
+		VoiceConnection* connectToVoice(string channelId, DiscordCoreInternal::ConnectionWebSocketData* connectionData = nullptr);
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		/// \returns void

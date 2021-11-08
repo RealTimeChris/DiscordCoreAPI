@@ -93,6 +93,16 @@ namespace DiscordCoreInternal {
             *pDataStructure = userData;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::User>* pDataStructure) {
+            vector<DiscordCoreAPI::User> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::User newData{};
+                parseObject(value, &newData);
+                newVector.push_back(newData);
+            }
+            *pDataStructure = newVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ThreadMetadataData* pDataStructure) {
             DiscordCoreAPI::ThreadMetadataData threadMetadata = *pDataStructure;
 
@@ -313,6 +323,16 @@ namespace DiscordCoreInternal {
             }
 
             *pDataStructure = roleData;
+        }
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Role>* pDataStructure) {
+            vector<DiscordCoreAPI::Role> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::Role newData{};
+                parseObject(value, &newData);
+                newVector.push_back(newData);
+            }
+            *pDataStructure = newVector;
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildMemberData* pDataStructure) {
@@ -1379,6 +1399,16 @@ namespace DiscordCoreInternal {
             *pDataStructure = reactionData;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Reaction>* pDataStructure) {
+            vector<DiscordCoreAPI::Reaction> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::Reaction newInvite;
+                parseObject(value, &newInvite);
+                newVector.push_back(newInvite);
+            }
+            *pDataStructure = newVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::MessageActivityData* pDataStructure) {
             DiscordCoreAPI::MessageActivityData messageActivityData = *pDataStructure;
 
@@ -1609,6 +1639,16 @@ namespace DiscordCoreInternal {
 
             *pDataStructure = inviteData;
         };
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::InviteData>* pDataStructure) {
+            vector<DiscordCoreAPI::InviteData> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::InviteData newInvite{};
+                parseObject(value, &newInvite);
+                newVector.push_back(newInvite);
+            }
+            *pDataStructure = newVector;
+        }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::MessageReferenceData* pDataStructure) {
             DiscordCoreAPI::MessageReferenceData messageReferenceData = *pDataStructure;
@@ -2191,6 +2231,16 @@ namespace DiscordCoreInternal {
             *pDataStructure = messageData;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Message>* pDataStructure) {
+            vector<DiscordCoreAPI::Message> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::Message newMessage{};
+                parseObject(value, &newMessage);
+                newVector.push_back(newMessage);
+            }
+            *pDataStructure = newVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandOptionChoiceData* pDataStructure) {
             DiscordCoreAPI::ApplicationCommandOptionChoiceData appCommandOptionChoiceData = *pDataStructure;
 
@@ -2300,6 +2350,16 @@ namespace DiscordCoreInternal {
             }
 
             *pDataStructure = appCommandData;
+        }
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ApplicationCommand>* pDataStructure) {
+            vector<DiscordCoreAPI::ApplicationCommand> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::ApplicationCommand newInvite{};
+                parseObject(value, &newInvite);
+                newVector.push_back(newInvite);
+            }
+            *pDataStructure = newVector;
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandInteractionDataOption* pDataStructure) {
@@ -3282,6 +3342,16 @@ namespace DiscordCoreInternal {
             }
 
             *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>* pDataStructure) {
+            vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::GuildApplicationCommandPermissionsData newInvite{};
+                parseObject(value, &newInvite);
+                newVector.push_back(newInvite);
+            }
+            *pDataStructure = newVector;
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure) {
