@@ -7,14 +7,9 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
 #include "ChannelEntities.hpp"
 #include "GuildEntities.hpp"
-#include "UserEntities.hpp"
 #include "GuildMemberEntities.hpp"
-#include "RoleEntities.hpp"
-#include "MessageEntities.hpp"
-#include "ReactionEntities.hpp"
 
 namespace DiscordCoreAPI {
 

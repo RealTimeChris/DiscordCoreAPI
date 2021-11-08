@@ -6,18 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "ChannelEntities.hpp"
-#include "GuildEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "MessageEntities.hpp"
-#include "ReactionEntities.hpp"
-#include "RoleEntities.hpp"
 #include "CoRoutine.hpp"
-#include "SongAPI.hpp"
-#include "VoiceConnection.hpp"
-#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 

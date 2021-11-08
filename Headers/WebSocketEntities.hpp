@@ -7,7 +7,6 @@
 
 #include "IndexInitial.hpp"
 #include "SongDecoder.hpp"
-#include "FoundationEntities.hpp"
 
 namespace DiscordCoreInternal {
 

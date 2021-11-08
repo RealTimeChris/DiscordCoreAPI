@@ -6,7 +6,6 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
 
@@ -269,12 +268,6 @@ namespace DiscordCoreInternal {
 				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew.bucket);
 				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew.bucket));
 				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew.bucket, rateLimitDataNew));
-				if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
-					cout << workload.callStack + " Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
-				}
-				else {
-					cout << workload.callStack + " Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
-				}
 				workloadMutex.unlock();
 				return returnData;
 			}

@@ -6,8 +6,8 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "JSONIfier.hpp"
 #include "GuildMemberEntities.hpp"
+#include "JSONIfier.hpp"
 
 namespace DiscordCoreAPI {
 

@@ -7,7 +7,6 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 
