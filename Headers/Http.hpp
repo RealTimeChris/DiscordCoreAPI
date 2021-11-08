@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
+#include "DataParsingFunctions.hpp"
 
 namespace DiscordCoreInternal {
 
