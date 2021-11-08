@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "SongDecoder.hpp"
+#include "ErlPacker.hpp"
 
 namespace DiscordCoreInternal {
 
@@ -69,12 +70,6 @@ namespace DiscordCoreInternal {
 		json payLoad{};
 	};
 
-	struct DiscordCoreAPI_Dll GetVoiceConnectionData {
-		string channelId{ "" };
-		string guildId{ "" };
-		string userId{ "" };
-	};
-
 	class DiscordCoreAPI_Dll BaseWebSocketAgent {
 	public:
 
@@ -94,8 +89,8 @@ namespace DiscordCoreInternal {
 		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		unbounded_buffer<WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
-		GetVoiceConnectionData voiceConnectInitData{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
+		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
@@ -119,9 +114,9 @@ namespace DiscordCoreInternal {
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
 
-		void getVoiceConnectionData(GetVoiceConnectionData doWeCollect);
+		void getVoiceConnectionData(VoiceConnectInitData doWeCollect);
 
-		void sendMessage(string& text);
+		void sendMessage(json const& text);
 
 		void sendHeartBeat();
 
@@ -137,13 +132,13 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(shared_ptr<concurrency::event> readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew, bool* doWeReconnectNew, shared_ptr<concurrency::event> reconnectionEvent);
 
-		void sendVoiceData(vector<unsigned __int8> data);
+		void sendMessage(string const& text);
 
-		void sendMessage(string text);
+		void sendVoiceData(vector<unsigned __int8>const& data);
 		
-		void sendConnectionData(string message);
+		void sendConnectionData(string const& message);
 
-		void connectToOtherAgent(ConnectionWebSocketData* connectionData);
+		void otherAgentConnect(ConnectionWebSocketData* connectionData);
 
 		~VoiceChannelWebSocketAgent();
 
@@ -177,23 +172,21 @@ namespace DiscordCoreInternal {
 
 		void connect();
 
-		void collectExternalIP();
-
 		void voiceConnect();
+
+		void collectExternalIP();
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
 
 		void sendHeartBeat();
 
-		void onConnectionDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
-
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args);
 
 		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
 
-		void cleanup();
+		void onConnectionDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
 
-		void terminate();
+		void cleanup();
 	};
 
 }

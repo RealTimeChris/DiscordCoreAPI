@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
-                handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
+                handle.promise().newThread = new jthread([handle] { handle.resume(); });
                 this->handleWaiter = handle;
                 return true;
             }
@@ -291,7 +291,7 @@ namespace DiscordCoreAPI {
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
-                handle.promise().newThread = new std::jthread([handle] { handle.resume(); });
+                handle.promise().newThread = new jthread([handle] { handle.resume(); });
                 this->handleWaiter = handle;
                 return true;
             }

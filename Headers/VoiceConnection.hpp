@@ -80,17 +80,27 @@ namespace DiscordCoreAPI {
 		bool doWeQuit{ false };
 		string channelId{ "" };
 		string guildId{ "" };
+
 		bool areWeConnected();
 
 		bool areWeCurrentlyPlaying();
+
 		bool stop();
+
 		bool skip();
+
 		bool play();
+
 		void pauseToggle();
+
 		static void reconnect(string guildId);
+
 		void clearAudioData();
+
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
+
 		vector<unsigned __int8> encryptSingleAudioFrame(EncodedFrameData bufferToSend);
+
 		void sendSingleAudioFrame(vector<unsigned __int8> audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);

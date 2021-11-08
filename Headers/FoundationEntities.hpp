@@ -187,12 +187,12 @@ namespace DiscordCoreAPI {
                 dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
             }
             struct DiscordCoreAPI_Dll tm newtime;
-            __time64_t __int64_time;
+            __time64_t ____int64ime;
             errno_t err;
             // Get time as 64-bit integer.
-            _time64(&__int64_time);
+            _time64(&____int64ime);
             // Convert to local time.
-            err = _localtime64_s(&newtime, &__int64_time);
+            err = _localtime64_s(&newtime, &____int64ime);
             if (err)
             {
                 printf("Invalid argument to _localtime64_s.");

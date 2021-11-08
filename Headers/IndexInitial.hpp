@@ -119,6 +119,7 @@ extern "C"
 #include <curl\curl.h>
 #include <string>
 #include <atltime.h>
+#include <limits>
 
 using namespace winrt::Windows::Networking::Sockets;
 using namespace winrt::Windows::Web::Http::Headers;

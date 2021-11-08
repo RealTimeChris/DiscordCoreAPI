@@ -37,6 +37,8 @@ namespace DiscordCoreAPI {
 	public:
 		GuildMember(GuildMemberData dataNew, string guildIdNew);
 
+		GuildMember(GuildMemberData dataNew);
+
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
