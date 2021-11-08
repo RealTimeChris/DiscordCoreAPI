@@ -29,31 +29,31 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	DiscordCoreAPI_Dll string JSONIFY(string botToken, __int32 intents);
+	DiscordCoreAPI_Dll json JSONIFY(string botToken, __int32 intents);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage);
+	DiscordCoreAPI_Dll json JSONIFY(__int32 lastReceivedNumber);
 
-	DiscordCoreAPI_Dll string JSONIFY(bool isSpeaking, __int32 ssrc, __int32 delay = 0);
+	DiscordCoreAPI_Dll json JSONIFY(UpdatePresenceData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyChannelData channelData);
+	DiscordCoreAPI_Dll json JSONIFY(UpdateVoiceStateData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(__int32 lastReceivedNumber);
+	DiscordCoreAPI_Dll json JSONIFY(string serverId, string sessionId, string token, string testString);
+
+	DiscordCoreAPI_Dll json JSONIFY(string botToken, string sessionID, __int32 lastReceivedNumber);
 
 	DiscordCoreAPI_Dll string JSONIFY(__int64 nonce);
 
-	DiscordCoreAPI_Dll string JSONIFY(UpdatePresenceData dataPackage);
-
-	DiscordCoreAPI_Dll string JSONIFY(UpdateVoiceStateData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(string localPort, string localIp, string encryptionMode, __int32 testValue);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02);
 
-	DiscordCoreAPI_Dll string JSONIFY(string serverId, string sessionId, string token, string testString);
+	DiscordCoreAPI_Dll string JSONIFY(bool isSpeaking, __int32 ssrc, __int32 delay = 0);
 
-	DiscordCoreAPI_Dll string JSONIFY(string localPort, string localIp, string encryptionMode, __int32 testValue);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyChannelData channelData);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
-
-	DiscordCoreAPI_Dll string JSONIFY(string botToken, string sessionID, __int32 lastReceivedNumber);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::UpdateRoleData dataPackage);
 

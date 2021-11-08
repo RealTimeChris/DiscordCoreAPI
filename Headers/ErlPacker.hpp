@@ -14,38 +14,11 @@
 #undef min
 #endif
 
-#include <stdlib.h>
-#include <stddef.h>
-#if defined(_MSC_VER) && _MSC_VER < 1600
-#elif defined(_MSC_VER)  // && _MSC_VER >= 1600
-#include <stdint.h>
-#else
-#endif
+#define etfByteOrder16(x) ((unsigned __int16)_byteswap_ushort((unsigned short)x))
 
-#if !defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-#define __LITTLE_ENDIAN__
-#endif
-#endif
+#define etfByteOrder32(x) ((unsigned __int32)_byteswap_ulong((unsigned long)x))
 
-#ifdef __LITTLE_ENDIAN__
-
-#ifdef _WIN32
-#  if defined(_byteswap_ushort) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-#    define etfByteOrder16(x) ((unsigned __int16)_byteswap_ushort((unsigned short)x))
-#  endif
-#endif
-
-#ifdef _WIN32
-#  if defined(_byteswap_ulong) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-#    define etfByteOrder32(x) ((unsigned __int32)_byteswap_ulong((unsigned long)x))
-#  endif
-#endif
-
-#if defined(_byteswap_uint64) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-#  define etfByteOrder64(x) (_byteswap_uint64(x))
-#endif
-#endif
+#define etfByteOrder64(x) (_byteswap_uint64(x))
 
 #define store16Bits(to, num) \
     do { unsigned __int16 val = etfByteOrder16(num); memcpy(to, &val, 2); } while(0)
@@ -57,146 +30,139 @@
 constexpr unsigned char FORMAT_VERSION{ 131 };
 
 enum class ETFTokenType :unsigned __int8 {
-	NEW_FLOAT = 'F',
-	BIT_BINARY = 'M',
-	COMPRESSED = 'P',
-	SMALL_INTEGER = 'a',
-	INTEGER = 'b',
-	FLOAT = 'c',
-	ATOM = 'd',
-	REFERENCE = 'e',
-	PORT = 'f',
-	PID = 'g',
-	SMALL_TUPLE = 'h',
-	LARGE_TUPLE = 'i',
-	NIL = 'j',
-	STRING = 'k',
-	LIST = 'l',
-	BINARY = 'm',
-	SMALL_BIGINT = 'n',
-	LARGE_BIGINT = 'o',
-	NEW_FUNCTION = 'p',
-	EXPORT = 'q',
-	NEW_REFERENCE = 'r',
-	SMALL_ATOM = 's',
-	MAP = 't',
-	FUNCTION = 'u',
-	UTF8_ATOM = 'v',
-	SMALL_UTF8_ATOM = 'w'
+	NEW_FLOAT = 70,
+	BIT_BINARY = 77,
+	COMPRESSED = 80,
+	SMALL_INTEGER = 97,
+	INTEGER = 98,
+	FLOAT = 99,
+	ATOM = 100,
+	REFERENCE = 101,
+	PORT = 102,
+	PID = 103,
+	SMALL_TUPLE = 104,
+	LARGE_TUPLE = 105,
+	NIL = 106,
+	STRING = 107,
+	LIST = 108,
+	BINARY = 109,
+	SMALL_BIGINT = 110,
+	LARGE_BIGINT = 111,
+	NEW_FUNCTION = 112,
+	EXPORT = 113,
+	NEW_REFERENCE = 114,
+	SMALL_ATOM = 115,
+	MAP = 116,
+	FUNCTION = 117,
+	UTF8_ATOM = 118,
+	SMALL_UTF8_ATOM = 119
 };
 
 namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll ErlpackBuffer {
 
-		vector<unsigned char> buffer{};
-		
-		size_t length{};
+		vector<unsigned __int8> buffer{};
 
-		ErlpackBuffer();
+		size_t offSet{};
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
 	public:
-		unsigned __int8* data{ nullptr };
-		size_t offset{};
-		size_t size{};
+		static vector<unsigned __int8> parseJsonToEtf(json dataToParse);
 
-		json parseEtfToJson(const vector<unsigned __int8>& dataToParse);
-
-		vector<unsigned __int8> parseJsonToEtf(json dataToParse);
+		static json parseEtfToJson(const vector<unsigned __int8>& dataToParse);
 
 	protected:
+		static void singleValueJsonToETF(const json* jsonData, ErlpackBuffer* buffer);
 
-		void singleValueJsonToETF(const json* jsonData, ErlpackBuffer* buffer);
+		static void writeToBuffer(ErlpackBuffer* buffer, const char* bytes, size_t length);
 
-		void bufferWrite(ErlpackBuffer* buffer, const char* bytes, size_t length);
+		static void appendVersion(ErlpackBuffer* buffer);
 
-		void appendVersion(ErlpackBuffer* buffer);
+		static void appendNil(ErlpackBuffer* buffer);
 
-		void appendNil(ErlpackBuffer* buffer);
+		static void appendFalse(ErlpackBuffer* buffer);
 
-		void appendFalse(ErlpackBuffer* buffer);
+		static void appendTrue(ErlpackBuffer* buffer);
 
-		void appendTrue(ErlpackBuffer* buffer);
+		static void appendSmallInteger(ErlpackBuffer* buffer, char value);
 
-		void appendSmallInteger(ErlpackBuffer* buffer, char value);
+		static void appendInteger(ErlpackBuffer* buffer, __int32 value);
 
-		void appendInteger(ErlpackBuffer* buffer, __int32 value);
+		static void appendUnsignedLongLong(ErlpackBuffer* buffer, unsigned long long value);
 
-		void appendUnsignedLongLong(ErlpackBuffer* buffer, unsigned long long value);
+		static void appendLongLong(ErlpackBuffer* buffer, long long value);
 
-		void appendLongLong(ErlpackBuffer* buffer, long long value);
+		static void appendDouble(ErlpackBuffer* buffer, double value);
 
-		void appendDouble(ErlpackBuffer* buffer, double value);
+		static void appendAtom(ErlpackBuffer* buffer, const char* bytes, size_t size);
 
-		void appendAtom(ErlpackBuffer* buffer, const char* bytes, size_t size);
+		static void appendAtomUf8(ErlpackBuffer* buffer, const char* bytes, size_t size);
 
-		void appendAtomUf8(ErlpackBuffer* buffer, const char* bytes, size_t size);
+		static void appendBinary(ErlpackBuffer* buffer, const char* bytes, size_t size);
 
-		void appendBinary(ErlpackBuffer* buffer, const char* bytes, size_t size);
+		static void appendString(ErlpackBuffer* buffer, const char* bytes, size_t size);
 
-		void appendString(ErlpackBuffer* buffer, const char* bytes, size_t size);
+		static void appendTupleHeader(ErlpackBuffer* buffer, size_t size);
 
-		void appendTupleHeader(ErlpackBuffer* buffer, size_t size);
+		static void appendNilExt(ErlpackBuffer* buffer);
 
-		void appendNilExt(ErlpackBuffer* buffer);
+		static void appendListHeader(ErlpackBuffer* buffer, size_t size);
 
-		void appendListHeader(ErlpackBuffer* buffer, size_t size);
+		static void appendMapHeader(ErlpackBuffer* buffer, size_t size);
 
-		void appendMapHeader(ErlpackBuffer* buffer, size_t size);
-
-		unsigned __int8 read8Bits();
+		static unsigned __int8 read8Bits(ErlpackBuffer* buffer);
 		
-		unsigned __int16 read16Bits();
+		static unsigned __int16 read16Bits(ErlpackBuffer* buffer);
 
-		unsigned __int32 read32Bits();
+		static unsigned __int32 read32Bits(ErlpackBuffer* buffer);
 
-		unsigned __int64 read64Bits();
+		static unsigned __int64 read64Bits(ErlpackBuffer* buffer);
 
-		const char* readString(unsigned __int32 length);
+		static const char* readString(ErlpackBuffer* buffer, unsigned __int32 length);
 
-		json singleValueETFToJson();
+		static json singleValueETFToJson(ErlpackBuffer* buffer);
 
-		json processAtom(const char* atom, unsigned __int16 length);
+		static json processAtom(ErlpackBuffer* buffer, const char* atom, unsigned __int16 length);
 
-		json decodeAtom();
+		static json decodeAtom(ErlpackBuffer* buffer);
 
-		json decodeSmallAtom();
+		static json decodeSmallAtom(ErlpackBuffer* buffer);
 
-		json decodeSmallInteger();
+		static json decodeSmallInteger(ErlpackBuffer* buffer);
 
-		json decodeInteger();
+		static json decodeInteger(ErlpackBuffer* buffer);
 
-		json decodeArray(unsigned __int32 length);
+		static json decodeArray(ErlpackBuffer* buffer, unsigned __int32 length);
 
-		json decodeList();
+		static json decodeList(ErlpackBuffer* buffer);
 
-		json decodeTuple(unsigned __int32 length);
+		static json decodeTuple(ErlpackBuffer* buffer, unsigned __int32 length);
 
-		json decodeNil();
+		static json decodeNil(ErlpackBuffer* buffer);
 
-		json decodeMap();
+		static json decodeMap(ErlpackBuffer* buffer);
 
-		json decodeFloat();
+		static json decodeFloat(ErlpackBuffer* buffer);
 
-		json decodeNewFloat();
+		static json decodeNewFloat(ErlpackBuffer* buffer);
 
-		json decodeBigint(unsigned __int32 digits);
+		static json decodeBigint(ErlpackBuffer* buffer, unsigned __int32 digits);
 
-		json decodeSmallBigint();
+		static json decodeSmallBigint(ErlpackBuffer* buffer);
 
-		json decodeLargeBigint();
+		static json decodeLargeBigint(ErlpackBuffer* buffer);
 
-		json decodeBinary();
+		static json decodeBinary(ErlpackBuffer* buffer);
 
-		json decodeString();
+		static json decodeString(ErlpackBuffer* buffer);
 
-		json decodeStringAsList();
+		static json decodeStringAsList(ErlpackBuffer* buffer);
 
-		json decodeSmallTuple();
+		static json decodeSmallTuple(ErlpackBuffer* buffer);
 
-		json decodeLargeTuple();
+		static json decodeLargeTuple(ErlpackBuffer* buffer);
 
 	};
 
