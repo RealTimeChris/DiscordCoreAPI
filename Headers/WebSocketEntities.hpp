@@ -145,18 +145,18 @@ namespace DiscordCoreInternal {
 	protected:
 
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
-		shared_ptr<DatagramSocket> connectionDatagramSocket{ nullptr };
 		shared_ptr<BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		shared_ptr<concurrency::event> reconnectionEvent{ nullptr };
 		shared_ptr<concurrency::event> readyEvent{ nullptr };
 		DiscordCoreAPI::SongDecoder* songDecoder{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
-		shared_ptr<DatagramSocket> voiceSocket{ nullptr };
-		shared_ptr<MessageWebSocket> webSocket{ nullptr };
+		DatagramSocket connectionDatagramSocket{ nullptr };
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		DatagramSocket voiceSocket{ nullptr };
+		MessageWebSocket webSocket{ nullptr };
 		const __int32 maxReconnectTries{ 10 };
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};

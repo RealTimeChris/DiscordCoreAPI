@@ -14,14 +14,10 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpRequestAgent  {
 	public:
 
-		HttpRequestAgent();
-
-		HttpRequestAgent(HttpAgentResources agentResources);
-
 		static void initialize(string botTokenNew);
 
 		template<typename returnType>
-		returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
+		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			mutex workloadMutex{};
 			try {
 				workloadMutex.lock();
@@ -111,7 +107,7 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
+		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
 			mutex workloadMutex{};
 			try {
 				workloadMutex.lock();
@@ -198,7 +194,7 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
+		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
 			mutex workloadMutex{};
 			try {
 				workloadMutex.lock();
@@ -278,8 +274,6 @@ namespace DiscordCoreInternal {
 			return HttpData();
 		}
 
-		~HttpRequestAgent();
-
 	protected:
 
 		static concurrent_unordered_map<string, concurrent_queue<HttpWorkloadData>> workloadMap;
@@ -288,29 +282,29 @@ namespace DiscordCoreInternal {
 		static string botToken;
 		static string baseURL;
 
-		HttpRequestHeaderCollection deleteHeaders{ nullptr };
-		HttpRequestHeaderCollection patchHeaders{ nullptr };
-		HttpRequestHeaderCollection postHeaders{ nullptr };
-		HttpRequestHeaderCollection putHeaders{ nullptr };
-		HttpRequestHeaderCollection getHeaders{ nullptr };
-		HttpClient deleteHttpClient{ nullptr };
-		HttpClient patchHttpClient{ nullptr };
-		HttpClient postHttpClient{ nullptr };
-		HttpClient putHttpClient{ nullptr };
-		HttpClient getHttpClient{ nullptr };
+		static HttpRequestHeaderCollection deleteHeaders;
+		static HttpRequestHeaderCollection patchHeaders;
+		static HttpRequestHeaderCollection postHeaders;
+		static HttpRequestHeaderCollection putHeaders;
+		static HttpRequestHeaderCollection getHeaders;
+		static HttpClient deleteHttpClient;
+		static HttpClient patchHttpClient;
+		static HttpClient postHttpClient;
+		static HttpClient putHttpClient;
+		static HttpClient getHttpClient;
 		string baseURLInd{ "" };
 
-		bool executeByRateLimitData(RateLimitData* rateLimitDataNew);
+		static bool executeByRateLimitData(RateLimitData* rateLimitDataNew);
 
-		HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static HttpData httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static HttpData httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		HttpData httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static HttpData httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
 	};
 }

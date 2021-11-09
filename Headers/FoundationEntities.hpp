@@ -1097,6 +1097,7 @@ namespace  DiscordCoreInternal {
         string relativePath{ "" };
         string callStack{ "" };
         string content{ "" };
+        string baseURL{ "" };
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
