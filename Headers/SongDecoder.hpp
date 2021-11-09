@@ -26,8 +26,6 @@ namespace DiscordCoreAPI {
         friend class SoundCloudAPI;
         friend class YouTubeAPI;
 
-        SongDecoder();
-
         SongDecoder(BuildSongDecoderData dataPackage);
 
         bool startMe();
