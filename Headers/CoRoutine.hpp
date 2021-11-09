@@ -43,8 +43,6 @@ namespace DiscordCoreAPI {
     public:
 
         class promise_type;
-        
-        coroutine_handle<promise_type> coroutineHandle;
 
         CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -143,6 +141,8 @@ namespace DiscordCoreAPI {
     protected:
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+
+        coroutine_handle<promise_type> coroutineHandle{};
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
@@ -152,8 +152,6 @@ namespace DiscordCoreAPI {
     public:
 
         class promise_type;
-
-        coroutine_handle<promise_type> coroutineHandle{};
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -247,6 +245,8 @@ namespace DiscordCoreAPI {
     protected:
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+
+        coroutine_handle<promise_type> coroutineHandle{};
     };
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.

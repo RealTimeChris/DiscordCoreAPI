@@ -6,6 +6,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -18,7 +19,7 @@ namespace DiscordCoreAPI {
     };
 
 
-    class DiscordCoreAPI_Dll SongDecoder : public DiscordCoreInternal::ThreadContext, public agent {
+    class DiscordCoreAPI_Dll SongDecoder {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
@@ -58,9 +59,10 @@ namespace DiscordCoreAPI {
         AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
-        AVCodec* codec{ nullptr };
+        CoRoutine<void> theTask{};
+        AVCodec* codec{ nullptr };        
 
-        void run();
+        CoRoutine<void> run();
 
     };
 }
