@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -15,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::ThreadContext, public agent {
+	class DiscordCoreAPI_Dll VoiceConnection { 
 	public:
 
 		friend class DiscordCoreClient;
@@ -77,6 +78,7 @@ namespace DiscordCoreAPI {
 		bool areWePlaying{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
+		CoRoutine<void> theTask{};
 		bool doWeQuit{ false };
 		string channelId{ "" };
 		string guildId{ "" };
@@ -105,7 +107,7 @@ namespace DiscordCoreAPI {
 
 		void sendSpeakingMessage(bool isSpeaking);
 
-		void run();
+		CoRoutine<void> run();
 	};
 	/**@}*/
 };
