@@ -13,18 +13,21 @@
 
 namespace DiscordCoreAPI {
 
+    struct SongCompletionEventData;
+    struct ButtonInteractionData;
+    struct AudioFrameData;
+    struct CommandData;
+    struct Song;
+
     template<typename returnType>
     class CoRoutine;
-    struct SongCompletionEventData;
     class RespondToInputEventData;
-    struct ButtonInteractionData;
     class DatabaseManagerAgent;
     class PermissionsConverter;
     class SelectMenuCollector;
     class ApplicationCommands;
     class DiscordCoreClient;
     class InputEventHandler;
-    struct AudioFrameData;
     class ButtonCollector;
     class VoiceConnection;
     class SoundCloudSong;
@@ -32,7 +35,6 @@ namespace DiscordCoreAPI {
     class Interactions;
     class EventHandler;
     class GuildMembers;
-    struct CommandData;    
     class YouTubeSong;
     class SelectMenu;
     class YouTubeAPI;
@@ -43,7 +45,6 @@ namespace DiscordCoreAPI {
     class SongAPI;
     class Message;
     class Guilds;
-    struct Song;
     class Roles;
     class Users;
     class Guild;
@@ -933,18 +934,22 @@ namespace  DiscordCoreInternal {
         GET_CHANNEL = 26,
         PATCH_CHANNEL = 27,
         DELETE_CHANNEL = 28,
+        GET_MESSAGES = 29,
+        GET_MESSAGE = 30,
+        POST_MESSAGE = 31,
+        CROSSPOST_MESSAGE = 32,
+        PUT_REACTION = 33,
+        DELETE_OWN_REACTION = 34,
+        DELETE_USER_REACTION=35,
+        GET_REACTIONS=36,
+        DELETE_ALL_REACTIONS=37,
+        DELETE_REACTIONS_BY_EMOJI=38,
 
-        GET_MESSAGE,
-        POST_MESSAGE,
         DELETE_MESSAGE,
         GET_USER,
         GET_USER_SELF,
         GET_GUILD,
-        GET_REACTION,
-        PUT_REACTION,
-        DELETE_REACTION,
         PATCH_MESSAGE,
-        DELETE_ALL_REACTION,
         GET_GUILD_MEMBER,
         GET_GUILD_MEMBERS,
         GET_ROLES,
@@ -959,7 +964,6 @@ namespace  DiscordCoreInternal {
         DELETE_GUILD_MEMBER_ROLE,
         PUT_CHANNEL_PERMISSION_OVERWRITES,
         DELETE_CHANNEL_PERMISSION_OVERWRITES,
-        GET_MESSAGES,
         DELETE_MESSAGES_BULK,
         DELETE_GUILD_ROLE,
         PATCH_GUILD_ROLES,
@@ -977,8 +981,6 @@ namespace  DiscordCoreInternal {
         DELETE_MESSAGE_OLD,
         SOUNDCLOUD_AUTH,
         SOUNDCLOUD_SONG_GET,
-        CROSSPOST_MESSAGE,
-        GET_REACTIONS,
         DELETE_OR_CLOSE_CHANNEL,
     };
 
@@ -3802,7 +3804,8 @@ namespace DiscordCoreAPI {
     /// \param messageEmbeds A vector full of EmbedData to recurse through.
     /// \param deleteAfter A bool determining whether or not the message will be deleted upon timeout/exiting.
     /// \param waitForMaxMs Maximum number of milliseconds to wait for a button response.
+    /// \param returnResult Whether or not to accept a request to return the result.
     /// \returns A RecurseThroughMessagePageData structure.
-    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned __int32 currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned __int32 waitForMaxMs);
+    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned __int32 currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned __int32 waitForMaxMs, bool returnResult = false);
     /**@}*/
 };

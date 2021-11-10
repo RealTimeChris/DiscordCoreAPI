@@ -14,19 +14,6 @@
 #undef min
 #endif
 
-#define etfByteOrder16(x) ((unsigned __int16)_byteswap_ushort((unsigned short)x))
-
-#define etfByteOrder32(x) ((unsigned __int32)_byteswap_ulong((unsigned long)x))
-
-#define etfByteOrder64(x) (_byteswap_uint64(x))
-
-#define store16Bits(to, num) \
-    do { unsigned __int16 val = etfByteOrder16(num); memcpy(to, &val, 2); } while(0)
-#define store32Bits(to, num) \
-    do { unsigned __int32 val = etfByteOrder32(num); memcpy(to, &val, 4); } while(0)
-#define store64Bits(to, num) \
-    do { unsigned __int64 val = etfByteOrder64(num); memcpy(to, &val, 8); } while(0)
-
 constexpr unsigned char FORMAT_VERSION{ 131 };
 
 enum class ETFTokenType :unsigned __int8 {
@@ -74,6 +61,18 @@ namespace DiscordCoreInternal {
 		static json parseEtfToJson(const vector<unsigned __int8>& dataToParse);
 
 	protected:
+		static unsigned __int16 etfByteOrder16(unsigned __int16 x);
+
+		static unsigned __int32 etfByteOrder32(unsigned __int32 x);
+
+		static unsigned __int64 etfByteOrder64(unsigned __int64 x);
+
+		static void store16Bits(void* to, unsigned __int16 num);
+
+		static void store32Bits(void* to, unsigned __int32 num);
+
+		static void store64Bits(void* to, unsigned __int64 num);
+
 		static void singleValueJsonToETF(const json* jsonData, ErlpackBuffer* buffer);
 
 		static void writeToBuffer(ErlpackBuffer* buffer, const char* bytes, size_t length);
