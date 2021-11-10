@@ -14,9 +14,9 @@
 #undef min
 #endif
 
-constexpr unsigned char FORMAT_VERSION{ 131 };
+constexpr unsigned __int8 FORMAT_VERSION{ 131 };
 
-enum class ETFTokenType :unsigned __int8 {
+enum class ETFTokenType : unsigned __int8 {
 	NEW_FLOAT = 70,
 	BIT_BINARY = 77,
 	COMPRESSED = 80,
