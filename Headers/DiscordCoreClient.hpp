@@ -9,6 +9,7 @@
 #include "FoundationEntities.hpp"
 #include "EventManager.hpp"
 #include "WebSocketEntities.hpp"
+#include "CoRoutine.hpp"
 
 DiscordCoreAPI_Dll void myPurecallHandler(void);
 
@@ -32,7 +33,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient : public DiscordCoreInternal::ThreadContext, public agent, public enable_shared_from_this<DiscordCoreClient> {
+	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
@@ -89,9 +90,9 @@ namespace DiscordCoreAPI {
 		unique_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
 		unique_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
 		unique_ptr<InputEventHandler> inputEvents{ nullptr };
+		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		bool doWeQuit{ false };
 		string botToken{ "" };
-		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 
 		CoRoutine<void> initialize();
 
@@ -103,7 +104,7 @@ namespace DiscordCoreAPI {
 
 		void removeGuild(GuildData guildData);
 
-		void run();
+		CoRoutine<void> run();
 	};
 	/**@}*/
 	/**
