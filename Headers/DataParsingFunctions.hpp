@@ -3415,9 +3415,11 @@ namespace DiscordCoreInternal {
                             newData.songId = to_string(to_hstring(value.at("url").get<string>()));
                             isItFound2 = true;
                         }
+
                     }
                 }
-                if (!isItFound2) {
+                
+                if (!isItFound2 && !isItFound) {
                     for (auto value : jsonObjectData.at("media").at("transcodings")) {
                         newData.firstDownloadURL = to_string(to_hstring(value.at("url").get<string>()));
                         newData.songId = to_string(to_hstring(value.at("url").get<string>()));
@@ -3443,6 +3445,11 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("artwork_url") && !jsonObjectData.at("artwork_url").is_null()) {
                 newData.thumbnailURL = to_string(to_hstring(jsonObjectData.at("artwork_url").get<string>()));
+            }
+            else if (jsonObjectData.contains("user")&& !jsonObjectData.at("user").is_null()) {
+                if (jsonObjectData.at("user").contains("avatar_url") && !jsonObjectData.at("user").at("avatar_url").is_null()) {
+                    newData.thumbnailURL = jsonObjectData.at("user").at("avatar_url").get<string>();
+                }
             }
 
             if (jsonObjectData.contains("duration") && !jsonObjectData.at("duration").is_null()) {

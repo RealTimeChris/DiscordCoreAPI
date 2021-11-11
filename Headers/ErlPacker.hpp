@@ -6,6 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
+#include "FoundationEntities.hpp"
 
 #ifdef max
 #undef max

@@ -1053,10 +1053,12 @@ namespace DiscordCoreInternal {
     };
 };
 namespace DiscordCoreAPI {
+
     /**
     * \addtogroup utilities
     * @{
     */
+
     /// Select menu response data. \brief Select menu response data.
     struct DiscordCoreAPI_Dll SelectMenuResponseData {
         InteractionData interactionData{};///< Interaction data.
@@ -1066,32 +1068,40 @@ namespace DiscordCoreAPI {
         string messageId{ "" };///< The Message id where it took place.
         string userId{ "" };///< The User id who selected the menu options.
     };
+
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
     class DiscordCoreAPI_Dll SelectMenuCollector {
     public:
         friend class DiscordCoreClient;
 
         static map<string, shared_ptr<concurrent_queue<InteractionData>>>selectMenuInteractionBufferMap;
+
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
         /// \returns void
         SelectMenuCollector(InputEventData dataPackage);
+
         /// Used to collect the select-menu inputs from one or more users. \brief Used to collect the select-menu inputs from one or more users.
         /// \param getSelectMenuDataForAllNew Whether or not to collect select-menu input from a single target User or all potential users.
         /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
         /// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping
         /// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
+        /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the selection.
         /// \returns A vector of SelectMenuResponseData.
-        vector<SelectMenuResponseData>  collectSelectMenuData(bool getSelectMenuDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxCollectedSelectMenuCountNew, string targetUserId = "");
+        vector<SelectMenuResponseData>  collectSelectMenuData(bool getSelectMenuDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+
         ~SelectMenuCollector();
+
     protected:
 
         static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
+
         shared_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
         DiscordCoreAPI::InteractionData interactionData{};
         vector<SelectMenuResponseData> responseVector{};
         __int32 currentCollectedSelectMenuCount{ 0 };
         __int32 maxCollectedSelectMenuCount{ 0 };
+        bool doWeSendInitialResponse{ false };
         bool getButtonDataForAll{ false };
         unsigned __int32 maxTimeInMs{ 0 };
         string selectMenuId{ "" };
@@ -1099,9 +1109,10 @@ namespace DiscordCoreAPI {
         bool doWeQuit{ false };
         string channelId{ "" };
         string messageId{ "" };
-        string userId{ "" };
         CoRoutine<void> run();
+        string userId{ "" };
     };
+
     /// Button response data. \brief Button response data.
     struct DiscordCoreAPI_Dll ButtonResponseData {
         InteractionData interactionData{};///< Interaction data.
@@ -1111,30 +1122,37 @@ namespace DiscordCoreAPI {
         string buttonId{ "" };///< The id of the button, for identification.
         string userId{ "" };///< The User id who selected the menu options.
     };
+
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
     class DiscordCoreAPI_Dll ButtonCollector {
     public:
         friend class DiscordCoreClient;
 
         static map<string, shared_ptr<concurrent_queue<InteractionData>>> buttonInteractionBufferMap;
+
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
         /// \returns void
         ButtonCollector(InputEventData dataPackage);
+
         /// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
         /// \param getButtonDataForAllNew Whether or not to collect input from a single target User or all potential users.
         /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
         /// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
         /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
+        /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the button press.
         /// \returns A vector of ButtonResponseData.
-        vector<ButtonResponseData>  collectButtonData(bool getButtonDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxNumberOfPressesNew, string targetUserId = "");
+        vector<ButtonResponseData>  collectButtonData(bool getButtonDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+
         ~ButtonCollector();
+
     protected:
 
         static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
 
         shared_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};
+        bool doWeSendInitialResponse{ false };
         InteractionData interactionData{};
         bool getButtonDataForAll{ false };
         unsigned __int32 maxTimeInMs{ 0 };
@@ -1142,9 +1160,9 @@ namespace DiscordCoreAPI {
         string channelId{ "" };
         string messageId{ "" };
         bool doWeQuit{ false };
+        CoRoutine<void> run();
         string buttonId{ "" };
         string userId{ "" };
-        CoRoutine<void> run();
     };
     /**@}*/
 };
