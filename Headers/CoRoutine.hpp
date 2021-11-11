@@ -276,22 +276,22 @@ namespace DiscordCoreAPI {
         class NewThreadAwaitable {
         public:
 
-            coroutine_handle<CoRoutine<returnType>::promise_type> handleWaiter;
+            coroutine_handle<CoRoutine<returnType>::promise_type> waiterHandle{ nullptr };
 
-            NewThreadAwaitable() : handleWaiter(nullptr) {}
+            NewThreadAwaitable() {}
 
             bool await_ready() const noexcept {
                 return false;
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
-                handle.promise().newThread = new jthread([handle] { handle.resume(); });
-                this->handleWaiter = handle;
+                this->waiterHandle = handle;
+                this->waiterHandle.promise().newThread = new jthread([=] { this->waiterHandle.resume(); });
                 return true;
             }
 
             auto await_resume() {
-                return this->handleWaiter;
+                return this->waiterHandle;
             }
         };
         return NewThreadAwaitable();
