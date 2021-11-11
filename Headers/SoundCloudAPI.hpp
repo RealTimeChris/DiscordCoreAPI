@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		SoundCloudAPI(string guildId);
+		SoundCloudAPI(string guildId) noexcept;
 
 		~SoundCloudAPI();
 

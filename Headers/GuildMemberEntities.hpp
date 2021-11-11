@@ -35,9 +35,9 @@ namespace DiscordCoreAPI {
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
-		GuildMember(GuildMemberData dataNew, string guildIdNew);
+		GuildMember(GuildMemberData dataNew, string guildIdNew) noexcept;
 
-		GuildMember(GuildMemberData dataNew);
+		GuildMember(GuildMemberData dataNew) noexcept;
 
 	protected:
 
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
-		GuildMember();
+		GuildMember() noexcept;
 	};
 	/**@}*/
 };

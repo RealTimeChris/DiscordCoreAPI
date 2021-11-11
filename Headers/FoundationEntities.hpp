@@ -3594,7 +3594,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// Permissions. \brief Permissions.
-    enum class Permissions :__int64 {
+    enum class Permissions : __int64 {
         CREATE_INSTANT_INVITE = 0x0000000001,
         KICK_MEMBERS = 0x0000000002,
         BAN_MEMBERS = 0x0000000004,
@@ -3679,7 +3679,7 @@ namespace DiscordCoreAPI {
 
         operator Song();
 
-        static void initialize();
+        static void initialize() noexcept;
 
         SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 
@@ -3699,7 +3699,7 @@ namespace DiscordCoreAPI {
         HttpRequestHeaderCollection headerCollectionForFinalURLs{ httpClientForGettingSecondURL.DefaultRequestHeaders() };
         string trackAuthorization{ "" };
 
-        SoundCloudSong();
+        SoundCloudSong() noexcept;
 
         string collectClientId();
 
