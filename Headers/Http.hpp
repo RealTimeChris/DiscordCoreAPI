@@ -18,8 +18,7 @@ namespace DiscordCoreInternal {
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
-			mutex workloadMutex{};
-			scoped_lock<mutex> workloadLock{ workloadMutex };
+			lock_guard<mutex> workloadLock{ HttpRequestAgent::workloadMutex };
 			shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
 			try {
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
@@ -100,8 +99,7 @@ namespace DiscordCoreInternal {
 
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
-			mutex workloadMutex{};
-			scoped_lock<mutex> workloadLock{ workloadMutex };
+			lock_guard<mutex> workloadLock{ HttpRequestAgent::workloadMutex };
 			shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
 			try {
 				rateLimitDataNew->workloadType = workload.workloadType;
@@ -180,8 +178,7 @@ namespace DiscordCoreInternal {
 
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
-			mutex workloadMutex{};
-			scoped_lock<mutex> workloadLock{ workloadMutex };
+			lock_guard<mutex> workloadLock{ HttpRequestAgent::workloadMutex };
 			shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
 			try {
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
@@ -255,6 +252,7 @@ namespace DiscordCoreInternal {
 
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static concurrent_unordered_map<string, shared_ptr<RateLimitData>> rateLimitData;
+		static mutex workloadMutex;
 		static string botToken;
 		static string baseURL;
 

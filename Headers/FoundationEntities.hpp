@@ -1119,6 +1119,7 @@ namespace  DiscordCoreInternal {
         binary_semaphore* theSemaphore{ new binary_semaphore(0) };
         HttpWorkloadType workloadType{};
         float nextExecutionTime{ 0.0f };
+        mutex* theMutex{ new mutex() };
         float timeResettingAt{ 0.0f };
         float msRemainTotal{ 0.0f };
         float timeStartedAt{ 0.0f };
