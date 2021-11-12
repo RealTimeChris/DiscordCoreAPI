@@ -99,6 +99,7 @@ extern "C"
 #include <ppltasks.h>
 #include <coroutine>
 #include <winbase.h>
+#include <semaphore>
 #include <iostream>
 #include <sodium.h>
 #include <intrin.h>
