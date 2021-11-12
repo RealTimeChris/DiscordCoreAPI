@@ -48,11 +48,20 @@ enum class ETFTokenType : unsigned __int8 {
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlPackBuffer {
+	class DiscordCoreAPI_Dll ErlPackBuffer {
+	public:
 
-		vector<unsigned __int8> buffer{};
+		unsigned __int8* buffer{ nullptr };
 
+		unsigned __int32 currentSize{};
+
+		bool builtFromBuffer{ false };
+		
 		unsigned __int64 offSet{};
+
+		void growBuffer();
+
+		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
