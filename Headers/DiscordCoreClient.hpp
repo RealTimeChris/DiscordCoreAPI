@@ -10,6 +10,10 @@
 #include "EventManager.hpp"
 #include "WebSocketEntities.hpp"
 #include "CoRoutine.hpp"
+#include "VoiceConnection.hpp"
+#include "SoundCloudAPI.hpp"
+#include "YouTubeAPI.hpp"
+#include "SongAPI.hpp"
 
 DiscordCoreAPI_Dll void myPurecallHandler(void);
 
@@ -18,6 +22,16 @@ DiscordCoreAPI_Dll BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
 DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
+
+	namespace Statics {
+		namespace {
+			unique_ptr<map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>> audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
+			unique_ptr<map<string, unique_ptr<VoiceConnection>>> voiceConnectionMap{ new map<string, unique_ptr<VoiceConnection>>() };
+			unique_ptr<map<string, unique_ptr<SoundCloudAPI>>> soundCloudAPIMap{ new map<string, unique_ptr<SoundCloudAPI>>() };
+			unique_ptr<map<string, unique_ptr<YouTubeAPI>>> youtubeAPIMap{ new map<string, unique_ptr<YouTubeAPI>>() };
+			unique_ptr<map<string, unique_ptr<SongAPI>>> songAPIMap{ new map<string, unique_ptr<SongAPI>>() };
+		}
+	}
 
 	DiscordCoreAPI_Dll map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>* getAudioBuffersMap();
 
