@@ -768,19 +768,32 @@ namespace  DiscordCoreInternal {
     class DiscordCoreAPI_Dll ThreadContext {
     public:
         shared_ptr<SchedulerWrapper> scheduler{ nullptr };
+
         static unique_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
+
         Scheduler* operator*();
+
+        ThreadContext(ThreadType threadType);
+
         ThreadContext(string);
+
         ~ThreadContext();
+
     protected:
         friend class DiscordCoreAPI::DiscordCoreClient;
+
         static vector<shared_ptr<SchedulerWrapper>> schedulers;
+
         static vector<unique_ptr<thread>> threads;
+
         unique_ptr<thread> threadOfExecution{ nullptr };
-        ThreadContext(ThreadType threadType);
+
         ThreadContext(ThreadContext& newThread);
+
         void releaseContext();
+
         static void cleanup();
+
     };
 
     enum class HeaderTypes {
