@@ -1116,7 +1116,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
-        binary_semaphore theSemaphore{ 0 };
+        binary_semaphore* theSemaphore{ new binary_semaphore(0) };
         HttpWorkloadType workloadType{};
         float nextExecutionTime{ 0.0f };
         float timeResettingAt{ 0.0f };
