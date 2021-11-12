@@ -1116,6 +1116,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
+        condition_variable* condVar{ new condition_variable() };
+        mutex* condMutex{ new mutex() };
         HttpWorkloadType workloadType{};
         float nextExecutionTime{ 0.0f };
         float timeResettingAt{ 0.0f };

@@ -18,65 +18,60 @@ namespace DiscordCoreInternal {
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
-			mutex workloadMutex{};
 			try {
-				workloadMutex.lock();
-				RateLimitData rateLimitDataNew{};
-				rateLimitDataNew.workloadType = workload.workloadType;
+				atomic<shared_ptr<RateLimitData>> rateLimitDataNew{ shared_ptr<RateLimitData>(new RateLimitData()) };
+				rateLimitDataNew.load()->workloadType = workload.workloadType;
 				auto bucketIterator = HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType);
 				if (bucketIterator != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
-					if (HttpRequestAgent::workloadMap.find(bucket) == end(HttpRequestAgent::workloadMap)) {
-						HttpRequestAgent::workloadMap.insert(make_pair(bucket, concurrent_queue<HttpWorkloadData>()));
-					}
-					HttpRequestAgent::workloadMap.at(bucket).push(workload);
+					rateLimitDataNew.store(HttpRequestAgent::rateLimitData.at(bucket));
 				}
-				if (rateLimitDataNew.getsRemaining <= 0) {
-					float loopStartTime = rateLimitDataNew.timeStartedAt;
-					float targetTime = loopStartTime + rateLimitDataNew.msRemain;
+				if (!rateLimitDataNew.load()->condMutex->try_lock()) {
+					unique_lock<mutex> workloadLock{ *rateLimitDataNew.load()->condMutex };
+					rateLimitDataNew.load()->condVar->wait(workloadLock);
+				}
+				if (rateLimitDataNew.load()->getsRemaining <= 0) {
+					float loopStartTime = rateLimitDataNew.load()->timeStartedAt;
+					float targetTime = loopStartTime + rateLimitDataNew.load()->msRemain;
 					float currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
 					float timeRemaining = targetTime - currentTime;
 					if (timeRemaining > 0.0f) {
-						if (rateLimitDataNew.nextExecutionTime == 0) {
-							rateLimitDataNew.nextExecutionTime = currentTime;
+						if (rateLimitDataNew.load()->nextExecutionTime == 0) {
+							rateLimitDataNew.load()->nextExecutionTime = currentTime;
 						}
-						rateLimitDataNew.nextExecutionTime += timeRemaining;
-						timeRemaining = (float)rateLimitDataNew.nextExecutionTime - currentTime;
+						rateLimitDataNew.load()->nextExecutionTime += timeRemaining;
+						timeRemaining = (float)rateLimitDataNew.load()->nextExecutionTime - currentTime;
 						cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining << "ms." << endl << endl;
 						while (timeRemaining > 0.0f) {
 							currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-							timeRemaining = rateLimitDataNew.nextExecutionTime - currentTime;
+							timeRemaining = rateLimitDataNew.load()->nextExecutionTime - currentTime;
 						}
-						rateLimitDataNew.nextExecutionTime = 0;
-						rateLimitDataNew.msRemain = 0.0f;
-						rateLimitDataNew.timeStartedAt = 0.0f;
+						rateLimitDataNew.load()->nextExecutionTime = 0;
+						rateLimitDataNew.load()->msRemain = 0.0f;
+						rateLimitDataNew.load()->timeStartedAt = 0.0f;
 					}
 				}
-				rateLimitDataNew.getsRemaining -= 1;
-				if (rateLimitDataNew.bucket != "") {
-					HttpRequestAgent::workloadMap.at(rateLimitDataNew.bucket).try_pop(workload);
-				}
+				rateLimitDataNew.load()->getsRemaining -= 1;
 				HttpData returnData{};
 				switch (workload.workloadClass) {
 				case HttpWorkloadClass::GET: {
-					returnData = httpGETObjectData(workload, &rateLimitDataNew);
+					returnData = httpGETObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::POST: {
-					returnData = httpPOSTObjectData(workload, &rateLimitDataNew);
+					returnData = httpPOSTObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::PUT: {
-					returnData = httpPUTObjectData(workload, &rateLimitDataNew);
+					returnData = httpPUTObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::PATCH: {
-					returnData = httpPATCHObjectData(workload, &rateLimitDataNew);
+					returnData = httpPATCHObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::DELETE: {
-					returnData = httpDELETEObjectData(workload, &rateLimitDataNew);
+					returnData = httpDELETEObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				default: {
@@ -84,89 +79,83 @@ namespace DiscordCoreInternal {
 				}
 				}
 				HttpRequestAgent::rateLimitDataBucketValues.unsafe_erase(workload.workloadType);
-				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew.bucket);
-				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew.bucket));
-				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew.bucket, rateLimitDataNew));
+				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew.load()->bucket);
+				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew.load()->bucket));
+				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew.load()->bucket, rateLimitDataNew.load()));
 				if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 					cout << workload.callStack + " Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 				}
 				else {
 					cout << workload.callStack + " Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 				}
-				workloadMutex.unlock();
 				returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
+				rateLimitDataNew.load()->condVar->notify_one();
 				return returnObject;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
-			workloadMutex.unlock();
 			returnType returnObject{};
 			return returnObject;
 		}
 
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
-			mutex workloadMutex{};
 			try {
-				workloadMutex.lock();
-				RateLimitData rateLimitDataNew{};
-				rateLimitDataNew.workloadType = workload.workloadType;
+				atomic<shared_ptr<RateLimitData>> rateLimitDataNew{ shared_ptr<RateLimitData>(new RateLimitData()) };
+				rateLimitDataNew.load()->workloadType = workload.workloadType;
 				auto bucketIterator = HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType);
 				if (bucketIterator != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
-					if (HttpRequestAgent::workloadMap.find(bucket) == end(HttpRequestAgent::workloadMap)) {
-						HttpRequestAgent::workloadMap.insert(make_pair(bucket, concurrent_queue<HttpWorkloadData>()));
-					}
-					HttpRequestAgent::workloadMap.at(bucket).push(workload);
+					rateLimitDataNew.store(HttpRequestAgent::rateLimitData.at(bucket));
 				}
-				if (rateLimitDataNew.getsRemaining <= 0) {
-					float loopStartTime = rateLimitDataNew.timeStartedAt;
-					float targetTime = loopStartTime + rateLimitDataNew.msRemain;
+				if (!rateLimitDataNew.load()->condMutex->try_lock()) {
+					unique_lock<mutex> workloadLock{ *rateLimitDataNew.load()->condMutex };
+					rateLimitDataNew.load()->condVar->wait(workloadLock);
+				}
+				if (rateLimitDataNew.load()->getsRemaining <= 0) {
+					float loopStartTime = rateLimitDataNew.load()->timeStartedAt;
+					float targetTime = loopStartTime + rateLimitDataNew.load()->msRemain;
 					float currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
 					float timeRemaining = targetTime - currentTime;
 					if (timeRemaining > 0.0f) {
-						if (rateLimitDataNew.nextExecutionTime == 0) {
-							rateLimitDataNew.nextExecutionTime = currentTime;
+						if (rateLimitDataNew.load()->nextExecutionTime == 0) {
+							rateLimitDataNew.load()->nextExecutionTime = currentTime;
 						}
-						rateLimitDataNew.nextExecutionTime += timeRemaining;
-						timeRemaining = (float)rateLimitDataNew.nextExecutionTime - currentTime;
+						rateLimitDataNew.load()->nextExecutionTime += timeRemaining;
+						timeRemaining = (float)rateLimitDataNew.load()->nextExecutionTime - currentTime;
 						cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining << "ms." << endl << endl;
 						while (timeRemaining > 0.0f) {
 							currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-							timeRemaining = rateLimitDataNew.nextExecutionTime - currentTime;
+							timeRemaining = rateLimitDataNew.load()->nextExecutionTime - currentTime;
 						}
-						rateLimitDataNew.nextExecutionTime = 0;
-						rateLimitDataNew.msRemain = 0.0f;
-						rateLimitDataNew.timeStartedAt = 0.0f;
+						rateLimitDataNew.load()->nextExecutionTime = 0;
+						rateLimitDataNew.load()->msRemain = 0.0f;
+						rateLimitDataNew.load()->timeStartedAt = 0.0f;
 					}
 				}
-				rateLimitDataNew.getsRemaining -= 1;
-				if (rateLimitDataNew.bucket != "") {
-					HttpRequestAgent::workloadMap.at(rateLimitDataNew.bucket).try_pop(workload);
-				}
+				rateLimitDataNew.load()->getsRemaining -= 1;
 				HttpData returnData{};
 				switch (workload.workloadClass) {
 				case HttpWorkloadClass::GET: {
-					returnData = httpGETObjectData(workload, &rateLimitDataNew);
+					returnData = httpGETObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::POST: {
-					returnData = httpPOSTObjectData(workload, &rateLimitDataNew);
+					returnData = httpPOSTObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::PUT: {
-					returnData = httpPUTObjectData(workload, &rateLimitDataNew);
+					returnData = httpPUTObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::PATCH: {
-					returnData = httpPATCHObjectData(workload, &rateLimitDataNew);
+					returnData = httpPATCHObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::DELETE: {
-					returnData = httpDELETEObjectData(workload, &rateLimitDataNew);
+					returnData = httpDELETEObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				default: {
@@ -174,86 +163,80 @@ namespace DiscordCoreInternal {
 				}
 				}
 				HttpRequestAgent::rateLimitDataBucketValues.unsafe_erase(workload.workloadType);
-				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew.bucket);
-				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew.bucket));
-				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew.bucket, rateLimitDataNew));
+				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew.load()->bucket);
+				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew.load()->bucket));
+				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew.load()->bucket, rateLimitDataNew.load()));
 				if (returnData.returnCode != 204 && returnData.returnCode != 201 && returnData.returnCode != 200) {
 					cout << workload.callStack + " Error: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 				}
 				else {
 					cout << workload.callStack + " Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 				}
-				workloadMutex.unlock();
+				rateLimitDataNew.load()->condVar->notify_one();
 				return;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
-			workloadMutex.unlock();
 			return;
 		}
 
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
-			mutex workloadMutex{};
 			try {
-				workloadMutex.lock();
-				RateLimitData rateLimitDataNew{};
-				rateLimitDataNew.workloadType = workload.workloadType;
+				atomic<shared_ptr<RateLimitData>> rateLimitDataNew{ shared_ptr<RateLimitData>(new RateLimitData()) };
+				rateLimitDataNew.load()->workloadType = workload.workloadType;
 				auto bucketIterator = HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType);
 				if (bucketIterator != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
-					if (HttpRequestAgent::workloadMap.find(bucket) == end(HttpRequestAgent::workloadMap)) {
-						HttpRequestAgent::workloadMap.insert(make_pair(bucket, concurrent_queue<HttpWorkloadData>()));
-					}
-					HttpRequestAgent::workloadMap.at(bucket).push(workload);
+					rateLimitDataNew.store(HttpRequestAgent::rateLimitData.at(bucket));
 				}
-				if (rateLimitDataNew.getsRemaining <= 0) {
-					float loopStartTime = rateLimitDataNew.timeStartedAt;
-					float targetTime = loopStartTime + rateLimitDataNew.msRemain;
+				if (!rateLimitDataNew.load()->condMutex->try_lock()) {
+					unique_lock<mutex> workloadLock{ *rateLimitDataNew.load()->condMutex };
+					rateLimitDataNew.load()->condVar->wait(workloadLock);
+				}
+				if (rateLimitDataNew.load()->getsRemaining <= 0) {
+					float loopStartTime = rateLimitDataNew.load()->timeStartedAt;
+					float targetTime = loopStartTime + rateLimitDataNew.load()->msRemain;
 					float currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
 					float timeRemaining = targetTime - currentTime;
 					if (timeRemaining > 0.0f) {
-						if (rateLimitDataNew.nextExecutionTime == 0) {
-							rateLimitDataNew.nextExecutionTime = currentTime;
+						if (rateLimitDataNew.load()->nextExecutionTime == 0) {
+							rateLimitDataNew.load()->nextExecutionTime = currentTime;
 						}
-						rateLimitDataNew.nextExecutionTime += timeRemaining;
-						timeRemaining = (float)rateLimitDataNew.nextExecutionTime - currentTime;
+						rateLimitDataNew.load()->nextExecutionTime += timeRemaining;
+						timeRemaining = (float)rateLimitDataNew.load()->nextExecutionTime - currentTime;
 						cout << "Waiting on rate-limit, Time Remainiing: " << timeRemaining << "ms." << endl << endl;
 						while (timeRemaining > 0.0f) {
 							currentTime = static_cast<float>(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-							timeRemaining = rateLimitDataNew.nextExecutionTime - currentTime;
+							timeRemaining = rateLimitDataNew.load()->nextExecutionTime - currentTime;
 						}
-						rateLimitDataNew.nextExecutionTime = 0;
-						rateLimitDataNew.msRemain = 0.0f;
-						rateLimitDataNew.timeStartedAt = 0.0f;
+						rateLimitDataNew.load()->nextExecutionTime = 0;
+						rateLimitDataNew.load()->msRemain = 0.0f;
+						rateLimitDataNew.load()->timeStartedAt = 0.0f;
 					}
 				}
-				rateLimitDataNew.getsRemaining -= 1;
-				if (rateLimitDataNew.bucket != "") {
-					HttpRequestAgent::workloadMap.at(rateLimitDataNew.bucket).try_pop(workload);
-				}
+				rateLimitDataNew.load()->getsRemaining -= 1;
 				HttpData returnData{};
 				switch (workload.workloadClass) {
 				case HttpWorkloadClass::GET: {
-					returnData = httpGETObjectData(workload, &rateLimitDataNew);
+					returnData = httpGETObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::POST: {
-					returnData = httpPOSTObjectData(workload, &rateLimitDataNew);
+					returnData = httpPOSTObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::PUT: {
-					returnData = httpPUTObjectData(workload, &rateLimitDataNew);
+					returnData = httpPUTObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::PATCH: {
-					returnData = httpPATCHObjectData(workload, &rateLimitDataNew);
+					returnData = httpPATCHObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				case HttpWorkloadClass::DELETE: {
-					returnData = httpDELETEObjectData(workload, &rateLimitDataNew);
+					returnData = httpDELETEObjectData(workload, rateLimitDataNew.load().get());
 					break;
 				}
 				default: {
@@ -261,24 +244,22 @@ namespace DiscordCoreInternal {
 				}
 				}
 				HttpRequestAgent::rateLimitDataBucketValues.unsafe_erase(workload.workloadType);
-				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew.bucket);
-				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew.bucket));
-				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew.bucket, rateLimitDataNew));
-				workloadMutex.unlock();
+				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew.load()->bucket);
+				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew.load()->bucket));
+				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew.load()->bucket, rateLimitDataNew.load()));
+				rateLimitDataNew.load()->condVar->notify_one();
 				return returnData;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
-			workloadMutex.unlock();
 			return HttpData();
 		}
 
 	protected:
 
-		static concurrent_unordered_map<string, concurrent_queue<HttpWorkloadData>> workloadMap;
+		static concurrent_unordered_map<string, atomic<shared_ptr<RateLimitData>>> rateLimitData;
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static concurrent_unordered_map<string, RateLimitData> rateLimitData;
 		static string botToken;
 		static string baseURL;
 
