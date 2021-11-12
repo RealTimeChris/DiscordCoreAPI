@@ -297,5 +297,24 @@ namespace DiscordCoreAPI {
         return NewThreadAwaitable();
     }
 
+    struct DiscordCoreAPI_Dll RateLimitData {
+        condition_variable* condVar{ new condition_variable() };
+        DiscordCoreAPI::CoRoutine<void> theTask{};
+        map<string, DiscordCoreInternal::HttpWorkloadData> inputBuffer{};
+        map<string, DiscordCoreInternal::HttpData> returnBuffer{};
+        DiscordCoreInternal::HttpWorkloadType workloadType{};
+        mutex* condMutex{ new mutex() };
+        float nextExecutionTime{ 0.0f };
+        float timeResettingAt{ 0.0f };
+        float msRemainTotal{ 0.0f };
+        float timeStartedAt{ 0.0f };
+        __int32 getsRemaining{ 1 };
+        bool isItUnlocked{ false };
+        bool isItMarked{ false };
+        __int32 totalGets{ 0 };
+        float msRemain{ 0.0f };
+        string bucket{ "" };
+    };
+
     /**@}*/
 };

@@ -1115,21 +1115,6 @@ namespace  DiscordCoreInternal {
         string baseURL{ "" };
     };
 
-    struct DiscordCoreAPI_Dll RateLimitData {
-        condition_variable* condVar{ new condition_variable() };
-        mutex* condMutex{ new mutex() };
-        HttpWorkloadType workloadType{};
-        float nextExecutionTime{ 0.0f };
-        float timeResettingAt{ 0.0f };
-        float msRemainTotal{ 0.0f };
-        float timeStartedAt{ 0.0f };
-        __int32 getsRemaining{ 1 };
-        bool isItMarked{ false };
-        __int32 totalGets{ 0 };
-        float msRemain{ 0.0f };
-        string bucket{ "" };
-    };
-
     struct DiscordCoreAPI_Dll UpdateVoiceStateData {
         string channelId{ "" };
         bool selfMute{ false };
