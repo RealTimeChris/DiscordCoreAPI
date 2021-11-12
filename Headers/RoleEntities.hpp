@@ -102,9 +102,11 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Roles;
 		friend class DiscordCoreAPI::Guild;
 
+		RoleManager();
+
 	protected:
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Role>> cache{ new concurrent_unordered_map<string, DiscordCoreAPI::Role>() };
+		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Role>> cache{ nullptr };
 
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
 

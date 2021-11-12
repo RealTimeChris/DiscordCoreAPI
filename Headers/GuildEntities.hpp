@@ -96,9 +96,11 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::Guilds;
 
+		GuildManager();
+
 	protected:
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Guild>> cache{ new concurrent_unordered_map<string, DiscordCoreAPI::Guild>() };
+		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Guild>> cache{ nullptr };
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
 

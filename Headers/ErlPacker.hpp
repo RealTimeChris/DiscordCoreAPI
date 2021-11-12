@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 
 		unsigned __int32 currentSize{};
 
-		bool builtFromBuffer{ false };
+		bool builtFromExternalBuffer{ false };
 		
 		unsigned __int64 offSet{};
 
@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 
 		static void singleValueJsonToETF(const json* jsonData, ErlPackBuffer* buffer);
 
-		static void writeToBuffer(ErlPackBuffer* buffer, const char* bytes, unsigned __int64 length);
+		static void writeToBuffer(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 length);
 
 		static void appendVersion(ErlPackBuffer* buffer);
 
@@ -95,7 +95,7 @@ namespace DiscordCoreInternal {
 
 		static void appendTrue(ErlPackBuffer* buffer);
 
-		static void appendSmallInteger(ErlPackBuffer* buffer, char value);
+		static void appendSmallInteger(ErlPackBuffer* buffer, unsigned __int8 value);
 
 		static void appendInteger(ErlPackBuffer* buffer, __int32 value);
 
@@ -105,13 +105,13 @@ namespace DiscordCoreInternal {
 
 		static void appendDouble(ErlPackBuffer* buffer, double value);
 
-		static void appendAtom(ErlPackBuffer* buffer, const char* bytes, unsigned __int64 size);
+		static void appendAtom(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 size);
 
-		static void appendAtomUf8(ErlPackBuffer* buffer, const char* bytes, unsigned __int64 size);
+		static void appendAtomUf8(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 size);
 
 		static void appendBinary(ErlPackBuffer* buffer, const char* bytes, unsigned __int64 size);
 
-		static void appendString(ErlPackBuffer* buffer, const char* bytes, unsigned __int64 size);
+		static void appendString(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 size);
 
 		static void appendTupleHeader(ErlPackBuffer* buffer, unsigned __int64 size);
 

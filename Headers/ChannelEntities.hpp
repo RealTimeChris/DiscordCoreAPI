@@ -97,9 +97,11 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::Channels;
 		friend class DiscordCoreAPI::Guild;
 
+		ChannelManager();
+
 	protected:
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Channel>> cache{ new concurrent_unordered_map<string, DiscordCoreAPI::Channel>() };
+		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Channel>> cache{ nullptr };
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
 
