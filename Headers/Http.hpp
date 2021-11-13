@@ -23,7 +23,7 @@ namespace DiscordCoreInternal {
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
+ 					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
 				}
 				else {
 					string tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());

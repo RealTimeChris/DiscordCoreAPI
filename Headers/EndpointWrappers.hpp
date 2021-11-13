@@ -148,6 +148,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a vector of InviteData.
 		static CoRoutine<vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
+		/// Creates an invite to a selected Channel. \brief Creates an invite to a selected Channel.
+		/// \param dataPackage A CreateChannelInviteData structure.
+		/// \returns A CoRoutine containing an InviteData structure.
+		static CoRoutine<InviteData> createChannelInviteAsync(CreateChannelInviteData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 

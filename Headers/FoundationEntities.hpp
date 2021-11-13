@@ -963,6 +963,7 @@ namespace  DiscordCoreInternal {
         BULK_DELETE_MESSAGES = 42,
         PUT_CHANNEL_PERMISSION_OVERWRITES = 43,
         GET_CHANNEL_INVITES = 44,
+        POST_CHANNEL_INVITE = 45,
 
         GET_USER,
         GET_USER_SELF,
@@ -2434,6 +2435,12 @@ namespace DiscordCoreAPI {
         GuildData Guild{};///< Guild data of the Channel that the invite is for.
         string code{ "" };///< Unique invite code.
         __int32 uses{ 0 };///< Maximum nunmber of uses.
+    };
+
+    /// Represents the type of a given invite target. \brief Represents the type of a given invite target.
+    enum class InviteTargetTypes {
+        STREAM = 1,
+        EMBEDDED_APPLICATION = 2
     };
 
     /// Webhook data. \brief Webhook data.

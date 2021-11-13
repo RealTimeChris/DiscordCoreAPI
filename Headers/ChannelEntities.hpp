@@ -23,6 +23,18 @@ namespace DiscordCoreAPI {
 		string deny{ "" };	///< The permissions to list as "deny".
 	};
 
+	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
+	struct CreateChannelInviteData {
+		string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
+		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
+		string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
+		bool temporary{ false };///< Whether this invite only grants temporary membership	false.
+		string channelId{ "" };///< The id of the Channel to create the invite for.
+		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
+		__int32 maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
+		__int32 maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
+	};
+
 	/// For collecting a Channel from Discord's servers. \brief For collecting a Channel from Discord's servers.
 	struct DiscordCoreAPI_Dll GetChannelData {
 		string channelId{ "" }; ///< The id of the Channel to acquire.
@@ -121,6 +133,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::InviteData>> getChannelInvitesAsync(DiscordCoreAPI::GetChannelInvitesData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InviteData> createChannelInviteAsync(DiscordCoreAPI::CreateChannelInviteData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
 
