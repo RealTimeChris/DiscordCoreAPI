@@ -34,7 +34,7 @@
 - ### [Crossposting a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Crossposting%20a%20Message.md)
 - ### [Editing a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Message.md)
 - ### [Deleting a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Message.md)
-- ### [Bulkd Deleting Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Deleting%20Messages.md)
+- ### [Bulk Deleting Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Deleting%20Messages.md)
 ## User Stuff:
 
 ## Sticker Stuff:
