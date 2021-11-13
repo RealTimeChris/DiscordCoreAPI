@@ -143,6 +143,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> getDMChannelAsync(GetDMChannelData dataPackage);
 
+		/// Collects a vector of the invites to a given Channel. \brief Collects a vector of the invites to a given Channel.
+		/// \param dataPackage A GetChannelInvitesData structure.
+		/// \returns A CoRoutine containing a vector of InviteData.
+		static CoRoutine<vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 

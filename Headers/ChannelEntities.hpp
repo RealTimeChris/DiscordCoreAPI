@@ -63,6 +63,11 @@ namespace DiscordCoreAPI {
 		string userId{ "" }; ///< The User for whom to collect the direct-messaging Channel to.
 	};
 
+	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
+	struct GetChannelInvitesData {
+		string channelId{ "" };
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -114,6 +119,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::InviteData>> getChannelInvitesAsync(DiscordCoreAPI::GetChannelInvitesData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
 
