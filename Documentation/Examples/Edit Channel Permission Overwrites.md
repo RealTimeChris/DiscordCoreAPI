@@ -1,4 +1,4 @@
-### **Edit Permission Overwrites:**
+### **Edit Channel Permission Overwrites:**
 ---
 - Create and populate a data structure by the name of `DiscordCoreAPI::EditPermissionOverwritesData`.
 - Access the `Channels` class of the `DiscordCoreAPI` namespace, and execute `editPermissionOverWritesAsync` from it, after modifying the allow/deny permission strings using members from the `DiscordCoreAPI::PermissionsConverter` class, while having passed in the data structure.
