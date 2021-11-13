@@ -17,6 +17,7 @@
 - ### [Getting a Direct-Message Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Direct-Message%20Channel.md)
 - ### [Editing Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Edit%20Channel%20Permission%20Overwrites.md)
 - ### [Getting Channel Invites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Invites.md)
+- ### [Creating a Channel Invite](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Channel%20Invite.md)
 - ### [Deleting Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20Permission%20Overwrites.md)
 
 ## GuildMember Stuff:
