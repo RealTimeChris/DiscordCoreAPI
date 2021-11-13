@@ -23,7 +23,14 @@ namespace DiscordCoreInternal {
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
- 					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
+					if (HttpRequestAgent::rateLimitData.find(bucket) != end(HttpRequestAgent::rateLimitData)) {
+						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
+					}
+					else {
+						string tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+						HttpRequestAgent::rateLimitData.insert(make_pair(tempBucket, rateLimitDataNew));
+						HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, tempBucket));
+					}
 				}
 				else {
 					string tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -49,7 +56,14 @@ namespace DiscordCoreInternal {
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
+					if (HttpRequestAgent::rateLimitData.find(bucket) != end(HttpRequestAgent::rateLimitData)) {
+						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
+					}
+					else {
+						string tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+						HttpRequestAgent::rateLimitData.insert(make_pair(tempBucket, rateLimitDataNew));
+						HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, tempBucket));
+					}
 				}
 				else {
 					string tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -72,7 +86,14 @@ namespace DiscordCoreInternal {
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
+					if (HttpRequestAgent::rateLimitData.find(bucket) != end(HttpRequestAgent::rateLimitData)) {
+						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
+					}
+					else {
+						string tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+						HttpRequestAgent::rateLimitData.insert(make_pair(tempBucket, rateLimitDataNew));
+						HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, tempBucket));
+					}
 				}
 				else {
 					string tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());

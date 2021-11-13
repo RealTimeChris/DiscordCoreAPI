@@ -158,6 +158,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Channel structure.
 		static CoRoutine<Channel> followNewsChannelAsync(FollowNewsChannelData dataPackage);
 
+		/// Triggers the typing indicator for the bot in the given Channel. \brief Triggers the typing indicator for the bot in the given Channel.
+		/// \param dataPackage A TriggerTypingIndicatorData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 

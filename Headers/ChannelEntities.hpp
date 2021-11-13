@@ -86,6 +86,11 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };
 	};
 
+	/// For triggering the typing indicator in a given Channel. \brief For triggering the typing indicator in a given Channel.
+	struct TriggerTypingIndicatorData {
+		string channelId{ "" };
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -145,6 +150,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> followNewsChannelAsync(DiscordCoreAPI::FollowNewsChannelData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<void> triggerTypingIndicatorAsync(DiscordCoreAPI::TriggerTypingIndicatorData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 

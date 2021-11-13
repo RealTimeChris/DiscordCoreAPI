@@ -966,6 +966,7 @@ namespace  DiscordCoreInternal {
         POST_CHANNEL_INVITE = 45,
         DELETE_CHANNEL_PERMISSION_OVERWRITES = 46,
         POST_FOLLOW_NEWS_CHANNEL = 47,
+        POST_TRIGGER_TYPING_INDICATOR = 48,
 
         GET_USER,
         GET_USER_SELF,
