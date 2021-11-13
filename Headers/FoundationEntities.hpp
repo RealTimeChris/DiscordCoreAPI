@@ -1116,7 +1116,20 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
-        binary_semaphore* theSemaphore{ new binary_semaphore(0) };
+        RateLimitData operator=(const RateLimitData& other) {
+            this->nextExecutionTime = other.nextExecutionTime;
+            this->timeResettingAt = other.timeResettingAt;
+            this->msRemainTotal = other.msRemainTotal;
+            this->timeStartedAt = other.timeStartedAt;
+            this->getsRemaining = other.getsRemaining;
+            this->workloadType = other.workloadType;
+            this->isItMarked = other.isItMarked;
+            this->totalGets = other.totalGets;
+            this->msRemain = other.msRemain;
+            this->theMutex = other.theMutex;
+            this->bucket = other.bucket;
+            return *this;
+        }
         HttpWorkloadType workloadType{};
         float nextExecutionTime{ 0.0f };
         mutex* theMutex{ new mutex() };
@@ -1544,6 +1557,7 @@ namespace DiscordCoreAPI {
             newData.url = this->url;
             return newData;
         }
+
         /// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
         /// \param authorName The author's name.
         /// \param authorAvatarURL The url to their avatar.
@@ -1553,6 +1567,7 @@ namespace DiscordCoreAPI {
             this->author.iconUrl = authorAvatarURL;
             return this;
         }
+
         /// Sets the footer's values for the embed. \brief Sets the footer's values for the embed.
         /// \param footerText The footer's text.
         /// \param footerIconURLText Url to the footer's icon.
@@ -1562,6 +1577,7 @@ namespace DiscordCoreAPI {
             this->footer.iconUrl = footerIconURLText;
             return this;
         }
+
         /// Sets the timestamp on the embed. \brief Sets the timestamp on the embed.
         /// \param timeStamp The timestamp to be set.
         /// \returns A pointer to this embed.
@@ -1569,6 +1585,7 @@ namespace DiscordCoreAPI {
             this->timestamp = timeStamp;
             return this;
         }
+
         /// Adds a field to the embed. \brief Adds a field to the embed.
         /// \param name The title of the embed field.
         /// \param value The contents of the embed field.
@@ -1582,6 +1599,7 @@ namespace DiscordCoreAPI {
             this->fields.push_back(embedFieldData);
             return this;
         }
+
         /// Sets the description (the main contents) of the embed. \brief Sets the description (the main contents) of the embed.
         /// \param descriptionNew The contents of the description to set.
         /// \returns A pointer to this embed.
@@ -1589,6 +1607,7 @@ namespace DiscordCoreAPI {
             this->description = descriptionNew;
             return this;
         }
+
         /// Sets the color of the embed, by applying a hex-color value. \brief Sets the color of the embed, by applying a hex-color value.
         /// \param hexColorValueNew A string containing a hex-number value (Between 0x00 and 0xFFFFFF).
         /// \returns A pointer to this embed.
@@ -1596,6 +1615,7 @@ namespace DiscordCoreAPI {
             this->hexColorValue = hexColorValueNew;
             return this;
         }
+
         /// Sets the thumbnail of the embed. \brief Sets the thumbnail of the embed.
         /// \param thumbnailURL The url to the thumbnail to be used.
         /// \returns A pointer to this embed.
@@ -1603,6 +1623,7 @@ namespace DiscordCoreAPI {
             this->thumbnail.url = thumbnailURL;
             return this;
         }
+
         /// Sets the title of the embed. \brief Sets the title of the embed.
         /// \param titleNew A string containing the desired title.
         /// \returns A pointer to this embed.
@@ -1610,6 +1631,7 @@ namespace DiscordCoreAPI {
             this->title = titleNew;
             return this;
         }
+
         /// Sets the image of the embed. \brief Sets the image of the embed.
         /// \param imageURL The url of the image to be set on the embed.
         /// \returns A pointer to this embed.

@@ -18,13 +18,13 @@ namespace DiscordCoreInternal {
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
-			lock_guard<mutex> workloadLock{ HttpRequestAgent::workloadMutex };
+			unique_lock<mutex> workloadLock00{ HttpRequestAgent::workloadMutex };
 			shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
 			try {
+				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
-					rateLimitDataNew->theSemaphore->acquire();
 				}
 				if (rateLimitDataNew->getsRemaining <= 0) {
 					float loopStartTime = rateLimitDataNew->timeStartedAt;
@@ -86,27 +86,30 @@ namespace DiscordCoreInternal {
 				}	
 				returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
-				rateLimitDataNew->theSemaphore->release();
+				if (workloadLock00.owns_lock()) {
+					workloadLock00.unlock();
+				}
 				return returnObject;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
 			returnType returnObject{};
-			rateLimitDataNew->theSemaphore->release();
+			if (workloadLock00.owns_lock()) {
+				workloadLock00.unlock();
+			}
 			return returnObject;
 		}
 
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
-			lock_guard<mutex> workloadLock{ HttpRequestAgent::workloadMutex };
+			unique_lock<mutex> workloadLock00{ HttpRequestAgent::workloadMutex };
 			shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
 			try {
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
-					rateLimitDataNew->theSemaphore->acquire();
 				}
 				if (rateLimitDataNew->getsRemaining <= 0) {
 					float loopStartTime = rateLimitDataNew->timeStartedAt;
@@ -166,25 +169,29 @@ namespace DiscordCoreInternal {
 				else {
 					cout << workload.callStack + " Success: " << returnData.returnCode << ", " << returnData.returnMessage << endl << endl;
 				}
-				rateLimitDataNew->theSemaphore->release();
+				if (workloadLock00.owns_lock()) {
+					workloadLock00.unlock();
+				}
 				return;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
-			rateLimitDataNew->theSemaphore->release();
+			if (workloadLock00.owns_lock()) {
+				workloadLock00.unlock();
+			}
 			return;
 		}
 
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
-			lock_guard<mutex> workloadLock{ HttpRequestAgent::workloadMutex };
+			unique_lock<mutex> workloadLock00{ HttpRequestAgent::workloadMutex };
 			shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
 			try {
+				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					string bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					rateLimitDataNew = HttpRequestAgent::rateLimitData.at(bucket);
-					rateLimitDataNew->theSemaphore->acquire();
 				}
 				if (rateLimitDataNew->getsRemaining <= 0) {
 					float loopStartTime = rateLimitDataNew->timeStartedAt;
@@ -238,13 +245,17 @@ namespace DiscordCoreInternal {
 				HttpRequestAgent::rateLimitData.unsafe_erase(rateLimitDataNew->bucket);
 				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 				HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, rateLimitDataNew));
-				rateLimitDataNew->theSemaphore->release();
+				if (workloadLock00.owns_lock()) {
+					workloadLock00.unlock();
+				}
 				return returnData;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
-			rateLimitDataNew->theSemaphore->release();
+			if (workloadLock00.owns_lock()) {
+				workloadLock00.unlock();
+			}
 			return HttpData();
 		}
 
