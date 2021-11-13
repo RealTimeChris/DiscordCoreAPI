@@ -2,7 +2,7 @@
 ### **Deleting Own Reaction:**
 ---
 - Access the `Reactions` class of the `DiscordCoreAPI` namespace.
-- Select, from the `Reactions` class, the `deleteOwnReactionAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::CrosspostMessageData`, with a return value of type `void`.
+- Select, from the `Reactions` class, the `deleteOwnReactionAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::DeleteOwnReactionData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
