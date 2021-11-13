@@ -80,6 +80,12 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };
 	};
 
+	/// For following a news Channel. \brief For following a news Channel.
+	struct FollowNewsChannelData {
+		string targetChannelId{ "" };
+		string channelId{ "" };
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -137,6 +143,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InviteData> createChannelInviteAsync(DiscordCoreAPI::CreateChannelInviteData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> followNewsChannelAsync(DiscordCoreAPI::FollowNewsChannelData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 

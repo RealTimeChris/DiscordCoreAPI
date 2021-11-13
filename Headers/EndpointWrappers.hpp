@@ -153,6 +153,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing an InviteData structure.
 		static CoRoutine<InviteData> createChannelInviteAsync(CreateChannelInviteData dataPackage);
 
+		/// Follows a given new Channel with another Channel. \brief Follows a given new Channel with another Channel.
+		/// \param dataPackage A FollowNewsChannelData structure.
+		/// \returns A CoRoutine containing a Channel structure.
+		static CoRoutine<Channel> followNewsChannelAsync(FollowNewsChannelData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 
