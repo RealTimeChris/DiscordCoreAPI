@@ -11,6 +11,7 @@
 ## Channel Stuff:
 - ### [Getting a Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Channel.md)
 - ### [Modifying a Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Channel.md)
+- ### [Deleting a Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Channel.md)
 - ### [Getting a Direct-Message Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Direct-Message%20Channel.md)
 - ### [Editing Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Edit%20Permission%20Overwrites.md)
 - ### [Deleting Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20Permission%20Overwrites.md)
