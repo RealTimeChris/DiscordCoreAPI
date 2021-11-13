@@ -92,7 +92,6 @@ namespace DiscordCoreInternal {
 
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static concurrent_unordered_map<string, shared_ptr<RateLimitData>> rateLimitData;
-		static mutex workloadMutex;
 		static string botToken;
 		static string baseURL;
 
@@ -106,7 +105,6 @@ namespace DiscordCoreInternal {
 		static HttpClient postHttpClient;
 		static HttpClient putHttpClient;
 		static HttpClient getHttpClient;
-		string baseURLInd{ "" };
 
 		static HttpData executeByRateLimitData(shared_ptr<RateLimitData> rateLimitDataNew, HttpWorkloadData workload, bool printResult);
 

@@ -1118,7 +1118,6 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll RateLimitData {
         RateLimitData operator=(const RateLimitData& other) {
             this->nextExecutionTime = other.nextExecutionTime;
-            this->timeResettingAt = other.timeResettingAt;
             this->msRemainTotal = other.msRemainTotal;
             this->timeStartedAt = other.timeStartedAt;
             this->getsRemaining = other.getsRemaining;
@@ -1130,16 +1129,15 @@ namespace  DiscordCoreInternal {
             this->bucket = other.bucket;
             return *this;
         }
+        __int64  nextExecutionTime{ 0 };
+        __int64 msRemainTotal{ 0 };
+        __int64 timeStartedAt{ 0 };
+        __int64 getsRemaining{ 1 };
+        __int64 totalGets{ 0 };
         HttpWorkloadType workloadType{};
-        float nextExecutionTime{ 0.0f };
         mutex* theMutex{ new mutex() };
-        float timeResettingAt{ 0.0f };
-        float msRemainTotal{ 0.0f };
-        float timeStartedAt{ 0.0f };
-        __int32 getsRemaining{ 1 };
+        __int64 msRemain{ 0 };
         bool isItMarked{ false };
-        __int32 totalGets{ 0 };
-        float msRemain{ 0.0f };
         string bucket{ "" };
     };
 
