@@ -36,6 +36,7 @@
 - ### [Deleting Own Reaction](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20Own%20Reaction.md)
 - ### [Deleting User Reaction](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20User%20Reaction.md)
 - ### [Getting Reactions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Reactions.md)
+- ### [Deleting All Reactions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20All%20Reactions.md)
 ## Role Stuff:
 
 ## Input-Event Stuff:
