@@ -23,6 +23,7 @@
 - ### [Getting All Guilds](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20All%20Guilds.md)
 - ### [Getting a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild.md)
 ## Message Stuff:
+- ### [Editing A Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Message.md)
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
 - ### [Getting A Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Message.md)
 - ### [Creating A Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Message.md)
