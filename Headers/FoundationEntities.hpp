@@ -1137,14 +1137,14 @@ namespace  DiscordCoreInternal {
             return *this;
         }
         HttpWorkloadType workloadType{};
-        float nextExecutionTime{ 0.0f };
+        __int64 nextExecutionTime{ 0 };
         mutex* theMutex{ new mutex() };
-        float msRemainTotal{ 0.0f };
-        float timeStartedAt{ 0.0f };
+        __int64 msRemainTotal{ 0 };
+        __int64 timeStartedAt{ 0 };
         __int32 getsRemaining{ 1 };
         bool isItMarked{ false };
         __int32 totalGets{ 0 };
-        float msRemain{ 0.0f };
+        __int64 msRemain{ 0 };
         string bucket{ "" };
     };
 
