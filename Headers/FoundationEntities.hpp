@@ -1001,6 +1001,7 @@ namespace  DiscordCoreInternal {
         SOUNDCLOUD_AUTH,
         SOUNDCLOUD_SONG_GET,
         DELETE_OR_CLOSE_CHANNEL,
+        GET_CURRENT_USER
     };
 
     struct DiscordCoreAPI_Dll ChannelData : public DiscordCoreAPI::DiscordEntity {
