@@ -26,7 +26,7 @@
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
 - ### [Getting A Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Message.md)
 - ### [Creating A Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Message.md)
-- ### [Crossposting A Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Crossposting%20a%20Message.md)
+- ### [Crossposting A Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Crossposting%20a%20Message.md)
 ## User Stuff:
 
 ## Sticker Stuff:
