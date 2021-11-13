@@ -32,7 +32,7 @@
 ## Sticker Stuff:
 
 ## Reaction Stuff:
-
+- ### [Creating A Reaction](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Reaction.md)
 ## Role Stuff:
 
 ## Input-Event Stuff:
