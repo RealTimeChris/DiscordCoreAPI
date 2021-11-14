@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 		/// Delete a channel, or close a private message. \brief Delete a channel, or close a private message.
 		/// \param dataPackage A DeleteChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteChannelData dataPackage);
+		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);
 
 		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A EditChannelPermissionOverwritesData structure.
@@ -172,6 +172,21 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A StartThreadWithoutMessageData structure.
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> startThreadWithoutMessageAsync(StartThreadWithoutMessageData dataPackage);
+
+		/// Joins a Thread. \brief Joins a Thread.
+		/// \param dataPackage A JoinThreadData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> joinThreadAsync(JoinThreadData dataPackage);
+
+		/// Adds a new User to a chosen Thread. \brief Adds a new User to a chosen Thread.
+		/// \param dataPackage A AddThreadMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> addThreadMemberAsync(AddThreadMemberData dataPackage);
+
+		/// Leaves a Thread. \brief Leaves a Thread.
+		/// \param dataPackage A LeaveThreadData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> leaveThreadAsync(LeaveThreadData dataPackage);
 
 	protected:
 		static void insertChannel(Channel dataPackage);

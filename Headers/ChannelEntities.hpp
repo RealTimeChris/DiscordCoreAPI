@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
-	struct DiscordCoreAPI_Dll DeleteChannelData {
+	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
 		string channelId{ "" };
 		string reason{ "" };
 	};
@@ -114,6 +114,22 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< Reason for starting the Thread.
 	};
 
+	/// For joining a Thread. \brief For joining a Thread.
+	struct JoinThreadData {
+		string channelId{ "" };///< The id of the Thread to join.
+	};
+
+	/// Adds a chosen User to a chosen Thread. \brief Adds a chosen User to a chosen Thread.
+	struct AddThreadMemberData {
+		string channelId{ "" };///< The id of the Thread to join.
+		string userId{ "" };///< The id of the User to add to the Thread.
+	};
+
+	/// For leaving a Thread. \brief For leaving a Thread.
+	struct LeaveThreadData {
+		string channelId{ "" };///< The id of the Thread to leave.
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -160,7 +176,7 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> modifyChannelAsync(DiscordCoreAPI::ModifyChannelData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void>  deleteOrCloseChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
+		DiscordCoreAPI::CoRoutine<void>  deleteOrCloseChannelAsync(DiscordCoreAPI::DeleteOrCloseChannelData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
 
@@ -179,6 +195,12 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> startThreadWithMessageAsync(DiscordCoreAPI::StartThreadWithMessageData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> startThreadWithoutMessageAsync(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<void> joinThreadAsync(DiscordCoreAPI::JoinThreadData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<void> addThreadMemberAsync(DiscordCoreAPI::AddThreadMemberData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<void> leaveThreadAsync(DiscordCoreAPI::LeaveThreadData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 
