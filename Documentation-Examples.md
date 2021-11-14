@@ -21,6 +21,7 @@
 - ### [Deleting Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20Permission%20Overwrites.md)
 - ### [Following a News Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Following%20a%20News%20Channel.md)
 - ### [Triggering the Typing Indicator](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Triggering%20the%20Typing%20Indicator.md)
+- ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
 
 ## GuildMember Stuff:
 - ### [Getting a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Member.md)
