@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 				GetActiveThreadsData dataPackage{};
 				dataPackage.channelId = args->eventData.getChannelId();
 
-				auto newThreadMembers = Channels::getActiveThreadsAsync(dataPackage).get();
+				auto newActiveThreads = Channels::getActiveThreadsAsync(dataPackage).get();
 
 				co_return;
 			}
