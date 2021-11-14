@@ -975,9 +975,10 @@ namespace  DiscordCoreInternal {
         POST_THREAD_WITH_MESSAGE = 54,
         POST_THREAD_WITHOUT_MESSAGE = 55,
         PUT_SELF_IN_THREAD = 56,
-        PUT_USER_IN_THREAD = 57,
+        PUT_THREAD_MEMBER = 57,
         DELETE_SELF_FROM_THREAD = 58,
-        DELETE_USER_FROM_THREAD = 59,
+        DELETE_THREAD_MEMBER = 59,
+        GET_THREAD_MEMBER = 60,
 
         GET_USER,
         GET_USER_SELF,

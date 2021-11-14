@@ -136,6 +136,12 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The id of the User to remove from the Thread.
 	};
 
+	/// For removing a chosen User from a Thread. \brief For removing a chosen User from a Thread.
+	struct GetThreadMemberData {
+		string channelId{ "" };///< The id of the Thread to remove them from.
+		string userId{ "" };///< The id of the User to remove from the Thread.
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -209,6 +215,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> leaveThreadAsync(DiscordCoreAPI::LeaveThreadData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> removeThreadMemberAsync(DiscordCoreAPI::RemoveThreadMemberData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ThreadMemberData> getThreadMemberAsync(DiscordCoreAPI::GetThreadMemberData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 

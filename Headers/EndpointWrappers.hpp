@@ -193,6 +193,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeThreadMemberAsync(RemoveThreadMemberData dataPackage);
 
+		/// Collects a ThreadMember if they exist. \brief Collects a ThreadMember if they exist.
+		/// \param dataPackage A GetThreadMemberData structure.
+		/// \returns A CoRoutine containing ThreadMemberData.
+		static CoRoutine<ThreadMemberData> getThreadMemberAsync(GetThreadMemberData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 
