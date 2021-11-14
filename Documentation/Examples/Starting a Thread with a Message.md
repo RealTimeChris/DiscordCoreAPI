@@ -2,7 +2,7 @@
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Channels` class.
 - Populate a data structure of type `DiscordCoreAPI::StartThreadWithMessageData`.
-- Select, from the `Users` class, the `startThreadWithMessageAsync()` function and execute it, with a return value of type `auto` or `Channel`, while passing it the created data structure.
+- Select, from the `Channels` class, the `startThreadWithMessageAsync()` function and execute it, with a return value of type `auto` or `Channel`, while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
