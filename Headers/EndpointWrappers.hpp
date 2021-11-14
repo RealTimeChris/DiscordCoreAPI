@@ -188,6 +188,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> leaveThreadAsync(LeaveThreadData dataPackage);
 
+		/// Removes a User from a chosen Thread. \brief Removes a User from a chosen Thread.
+		/// \param dataPackage A RemoveThreadMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeThreadMemberAsync(RemoveThreadMemberData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 
