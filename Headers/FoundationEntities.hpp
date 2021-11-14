@@ -981,6 +981,7 @@ namespace  DiscordCoreInternal {
         GET_THREAD_MEMBER = 60,
         GET_THREAD_MEMBERS = 61,
         GET_ACTIVE_THREADS = 62,
+        GET_PUBLIC_ARCHIVED_THREADS = 63,
 
         GET_USER,
         GET_USER_SELF,
@@ -1870,6 +1871,8 @@ namespace DiscordCoreAPI {
         vector<ChannelData> threads{};
         bool hasMore{ false };
     };
+
+    struct ArchivedThreadsData : public ActiveThreadsData {};
 
     /// ApplicationCommand option type. \brief ApplicationCommand option type.
     enum class ApplicationCommandOptionType {

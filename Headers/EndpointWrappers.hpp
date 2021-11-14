@@ -208,6 +208,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a ActiveThreadsData.
 		static CoRoutine<ActiveThreadsData> getActiveThreadsAsync(GetActiveThreadsData dataPackage);
 
+		/// Collects a list of public archived Threads from a given Channel. \brief Collects a list of public archived Threads from a given Channel.
+		/// \param dataPackage A GetPublicArchivedThreadsData structure.
+		/// \returns A CoRoutine containing a ArchivedThreadsData.
+		static CoRoutine<ArchivedThreadsData> getPublicArchivedThreadsAsync(GetPublicArchivedThreadsData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 

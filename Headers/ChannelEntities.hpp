@@ -152,6 +152,13 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };///< The id of the Channel to collect the Threads from.
 	};
 
+	struct GetPublicArchivedThreadsData {
+		string channelId{ "" };///< The Channel to acquire the Threads from.
+		string before{ "" };///< Returns threads before this timestamp.
+		__int32 limit{ 0 };///< Maximum number of threads to return.
+		
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -231,6 +238,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::ThreadMemberData>> getThreadMembersAsync(DiscordCoreAPI::GetThreadMembersData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ActiveThreadsData> getActiveThreadsAsync(DiscordCoreAPI::GetActiveThreadsData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ArchivedThreadsData> getPublicArchivedThreadsAsync(DiscordCoreAPI::GetPublicArchivedThreadsData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 
