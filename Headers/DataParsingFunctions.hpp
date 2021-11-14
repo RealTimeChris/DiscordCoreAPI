@@ -110,8 +110,8 @@ namespace DiscordCoreInternal {
                 threadMetadata.archived = jsonObjectData.at("archived").get<bool>();
             }
 
-            if (jsonObjectData.contains("archiver_id") && !jsonObjectData.at("archiver_id").is_null()) {
-                threadMetadata.archiverId = jsonObjectData.at("archiver_id").get<string>();
+            if (jsonObjectData.contains("invitable") && !jsonObjectData.at("invitable").is_null()) {
+                threadMetadata.invitable = jsonObjectData.at("invitable").get<bool>();
             }
 
             if (jsonObjectData.contains("auto_archive_duration") && !jsonObjectData.at("auto_archive_duration").is_null()) {

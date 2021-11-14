@@ -692,7 +692,7 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll ThreadMetadataData {
         __int32 autoArchiveDuration{ 0 };
         string archiveTimestamp{ "" };
-        string archiverId{ "" };
+        bool invitable{ false };
         bool archived{ false };
         bool locked{ false };
     };
@@ -983,6 +983,7 @@ namespace  DiscordCoreInternal {
         GET_ACTIVE_THREADS = 62,
         GET_PUBLIC_ARCHIVED_THREADS = 63,
         GET_PRIVATE_ARCHIVED_THREADS = 64,
+        GET_JOINED_PRIVATE_ARCHIVED_THREADS = 65,
 
         GET_USER,
         GET_USER_SELF,
@@ -1718,14 +1719,14 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::ThreadMetadataData newData;
             newData.autoArchiveDuration = this->autoArchiveDuration;
             newData.archiveTimestamp = this->archiveTimestamp;
-            newData.archiverId = this->archiverId;
+            newData.invitable = this->invitable;
             newData.archived = this->archived;
             newData.locked = this->locked;
             return newData;
         };
         __int32 autoArchiveDuration{ 0 }; ///< How __int64 before archiving this thread.
         string archiveTimestamp{ "" }; ///< (Where applicable) the time at which this thread was archived.
-        string archiverId{ "" }; ///< The id of the individual who archived this thread.
+        bool invitable{ false }; ///< The id of the individual who archived this thread.
         bool archived{ false }; ///< Whether or not this thread is currently archived.
         bool locked{ false }; ///< Whether or not this thread is currently locked.
     };

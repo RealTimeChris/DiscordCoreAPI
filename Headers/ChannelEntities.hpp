@@ -152,17 +152,27 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };///< The id of the Channel to collect the Threads from.
 	};
 
+	/// For collecting puiblic archived Threads from a given Channel. \brief For collecting puiblic archived Threads from a given Channel.
 	struct GetPublicArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
 		__int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
+	/// For collecting private archived Threads from a given Channel. \brief For collecting private archived Threads from a given Channel.
 	struct GetPrivateArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
 		__int32 limit{ 0 };///< Maximum number of threads to return.
 	};
+
+	/// For collecting joined private archived Threads from a given Channel. \brief For collecting joined private archived Threads from a given Channel.
+	struct GetJoinedPrivateArchivedThreadsData {
+		string channelId{ "" };///< The Channel to acquire the Threads from.
+		string before{ "" };///< Returns threads before this timestamp.
+		__int32 limit{ 0 };///< Maximum number of threads to return.
+	};
+
 
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
@@ -247,6 +257,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ArchivedThreadsData> getPublicArchivedThreadsAsync(DiscordCoreAPI::GetPublicArchivedThreadsData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ArchivedThreadsData> getPrivateArchivedThreadsAsync(DiscordCoreAPI::GetPrivateArchivedThreadsData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(DiscordCoreAPI::GetJoinedPrivateArchivedThreadsData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 
