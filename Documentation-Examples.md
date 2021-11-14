@@ -26,6 +26,7 @@
 - ### [Joing a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Joining%20a%20Thread.md)
 - ### [Adding a User to a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20User%20to%20a%20Thread.md)
 - ### [Removing a User from a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20User%20from%20a%20Thread.md)
+- ### [Getting a Thread Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Thread%20Member.md)
 
 ## GuildMember Stuff:
 - ### [Getting a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Member.md)
