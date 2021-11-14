@@ -346,7 +346,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll UnpinMessageData {
 		string channelId{ "" };///< The Channel within which to unpin the Message.
 		string messageId{ "" };///< The Message which you would like to unpin.
-		string reason{ "" };///< Reason for unpinning this Message.
+		string reason{ "" };///< Reason for pinning this Message.
 	};
 
 	/// Send DM data. \brief Send DM data.

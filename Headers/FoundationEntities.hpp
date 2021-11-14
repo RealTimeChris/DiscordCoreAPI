@@ -970,7 +970,7 @@ namespace  DiscordCoreInternal {
         GET_PINNED_MESSAGES = 49,
         PUT_PIN_MESSAGE = 50,
         DELETE_PIN_MESSAGE = 51,
-        PUT_RECIPIENT_TO_GROUP_DM = 51,
+        PUT_RECIPIENT_TO_GROUP_DM = 52,
 
         GET_USER,
         GET_USER_SELF,
