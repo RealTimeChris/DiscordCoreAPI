@@ -104,6 +104,16 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< Reason for starting the Thread.
 	};
 
+	/// For starting a Thread, not based on a Message. \brief For starting a Thread, not based on a Message.
+	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData {
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::SHORTEST };///< The duration before it is auto-archived, in minutes.
+		ThreadType type{ ThreadType::GUILD_PUBLIC_THREAD };///< Type of Thread to create.
+		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
+		string threadName{ "" };///< The name of the new Thread.
+		string channelId{ "" };///< The Channel to start the Thread in.
+		string reason{ "" };///< Reason for starting the Thread.
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -167,6 +177,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> triggerTypingIndicatorAsync(DiscordCoreAPI::TriggerTypingIndicatorData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> startThreadWithMessageAsync(DiscordCoreAPI::StartThreadWithMessageData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> startThreadWithoutMessageAsync(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 

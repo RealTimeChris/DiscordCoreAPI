@@ -1736,6 +1736,12 @@ namespace DiscordCoreAPI {
         __int32 flags{ 0 }; ///< Flags.
     };
 
+    enum class ThreadType {
+        GUILD_NEWS_THREAD = 10,
+        GUILD_PUBLIC_THREAD = 11,
+        GUILD_PRIVATE_THREAD = 12,
+    };
+
     enum class ThreadAutoArchiveDuration :__int32 {
         SHORTEST = 60,
         SHORT = 1440,

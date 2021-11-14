@@ -168,6 +168,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> startThreadWithMessageAsync(StartThreadWithMessageData dataPackage);
 
+		/// Starts a Thread, not based on a starting Message. \brief Starts a Thread, not based on a starting Message.
+		/// \param dataPackage A StartThreadWithoutMessageData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> startThreadWithoutMessageAsync(StartThreadWithoutMessageData dataPackage);
+
 	protected:
 		static void insertChannel(Channel dataPackage);
 

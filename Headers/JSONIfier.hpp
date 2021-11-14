@@ -11,6 +11,7 @@
 namespace DiscordCoreAPI {
 
 	struct CreateDeferredInteractionResponseData;
+	struct StartThreadWithoutMessageData;
 	struct CreateInteractionResponseData;
 	struct EditInteractionResponseData;
 	struct CreateFollowUpMessageData;
@@ -103,4 +104,6 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::StartThreadWithMessageData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage);
 }
