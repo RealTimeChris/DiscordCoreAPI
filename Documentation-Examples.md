@@ -41,6 +41,7 @@
 - ### [Bulk Deleting Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Deleting%20Messages.md)
 - ### [Getting Pinned Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Pinned%20Messages.md)
 - ### [Pinning a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Pinning%20a%20Message.md)
+- ### [Unpinning a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Unpinning%20a%20Message.md)
 ## User Stuff:
 
 ## Sticker Stuff:
