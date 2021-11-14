@@ -42,7 +42,9 @@
 - ### [Getting Pinned Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Pinned%20Messages.md)
 - ### [Pinning a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Pinning%20a%20Message.md)
 - ### [Unpinning a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Unpinning%20a%20Message.md)
+
 ## User Stuff:
+- ### [Addding a Recipient to a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Recipient%20to%20a%20Group%20DM.md)
 
 ## Sticker Stuff:
 
