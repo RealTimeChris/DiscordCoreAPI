@@ -967,6 +967,10 @@ namespace  DiscordCoreInternal {
         DELETE_CHANNEL_PERMISSION_OVERWRITES = 46,
         POST_FOLLOW_NEWS_CHANNEL = 47,
         POST_TRIGGER_TYPING_INDICATOR = 48,
+        GET_PINNED_MESSAGES = 49,
+        PUT_PIN_MESSAGE = 50,
+        DELETE_PIN_MESSAGE = 51,
+        PUT_RECIPIENT_TO_GROUP_DM = 51,
 
         GET_USER,
         GET_USER_SELF,
@@ -983,18 +987,14 @@ namespace  DiscordCoreInternal {
         POST_ROLE,
         PUT_GUILD_MEMBER_ROLE,
         DELETE_GUILD_MEMBER_ROLE,
-
-
         DELETE_GUILD_ROLE,
         PATCH_GUILD_ROLES,
         YOUTUBE_SEARCH,
         YOUTUBE_VIDEO_QUERY,
         GET_INVITES,
         PATCH_GUILD_MEMBER,
-        GET_PINNED_MESSAGES,
         GET_INVITE,
         GET_VANITY_INVITE,
-        PUT_PIN_MESSAGE,
         PUT_GUILD_BAN,
         DELETE_LEAVE_GUILD,
         SOUNDCLOUD_SEARCH,
@@ -1113,7 +1113,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll HttpWorkloadData {
-        map<string, string> headerValuesToCollect{};
+        map<string, string> headersToInsert{};
         HttpWorkloadClass workloadClass{};
         HttpWorkloadType workloadType{};
         string relativePath{ "" };

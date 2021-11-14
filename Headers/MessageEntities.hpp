@@ -314,12 +314,14 @@ namespace DiscordCoreAPI {
 	public:
 		 __int32 timeDelay{ 0 }; ///< Number of milliseconds to wait before deleting the Message.
 		MessageData messageData;///< The Message to delete.
+		string reason{ "" };///< The reason for deleting the Message.
 	};
 
 	/// Delete Messages bulk data. \brief Delete Messages bulk data.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
 		vector<string> messageIds{}; ///< Array of Message ids to delete.
 		string channelId{ "" };///< Channel within which to delete the Messages.
+		string reason{ "" };///< The reason for deleting the Messages.
 	};
 
 	/// Crosspost Message Data. \brief Crosspost Message Data.
@@ -337,6 +339,14 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll PinMessageData {
 		string channelId{ "" };///< The Channel within which to pin the Message.
 		string messageId{ "" };///< The Message which you would like to pin.
+		string reason{ "" };///< Reason for pinning this Message.
+	};
+
+	/// Pin Message data. \brief Pin Message data.
+	struct DiscordCoreAPI_Dll UnpinMessageData {
+		string channelId{ "" };///< The Channel within which to unpin the Message.
+		string messageId{ "" };///< The Message which you would like to unpin.
+		string reason{ "" };///< Reason for unpinning this Message.
 	};
 
 	/// Send DM data. \brief Send DM data.
@@ -549,6 +559,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Message>> getPinnedMessagesAsync(DiscordCoreAPI::GetPinnedMessagesData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> pinMessageAsync(DiscordCoreAPI::PinMessageData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<void> unpinMessageAsync(DiscordCoreAPI::UnpinMessageData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> sendDMAsync(DiscordCoreAPI::SendDMData dataPackage);
 	};

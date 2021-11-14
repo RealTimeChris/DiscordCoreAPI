@@ -21,6 +21,7 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
 		string allow{ "" };	///< The permissions to list as "allowed".
 		string deny{ "" };	///< The permissions to list as "deny".
+		string reason{ "" };///< Reason for editing the permission overwrites.
 	};
 
 	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
@@ -33,6 +34,7 @@ namespace DiscordCoreAPI {
 		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
 		__int32 maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
 		__int32 maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
+		string reason{ "" };///< Reason for creating the invite.
 	};
 
 	/// For collecting a Channel from Discord's servers. \brief For collecting a Channel from Discord's servers.
@@ -62,12 +64,14 @@ namespace DiscordCoreAPI {
 		};
 		UpdateChannelData channelData{};///< The data of the channel to be updated.
 		string channelId{ "" };///< The id of the Channel to modify.
+		string reason{ "" };///< A reason for modifying the Channel.
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
 		string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
-		string channelId{ "" }; ///< The id of the Channel to modify permissions for..
+		string channelId{ "" }; ///< The id of the Channel to modify permissions for.
+		string reason{ "" };///< Reason for deleting these permission overwrites.
 	};
 
 	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.

@@ -376,6 +376,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
 
+		/// Unpins a Message from a given Channel. \brief Unpins a Message from a given Channel.
+		/// \param dataPackage A UnpinMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> unpinMessageAsync(DiscordCoreAPI::UnpinMessageData dataPackage);
+
 		/// Send a direct Message to a given User. \brief Send a direct Message to a given User.
 		/// \param dataPackage A SendDMData structure.
 		/// \returns A CoRoutine containing a Message.
@@ -507,6 +512,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
+
+		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
+		/// \param dataPackage A AddRecipientToGroupDMData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> addRecipientToGroupDMAsync(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage);
 
 	protected:
 		static void insertUser(User useruser);
