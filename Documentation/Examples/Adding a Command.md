@@ -1,6 +1,6 @@
 ### **Adding a Command:**
 ---
-- In a new header for the command (that is stored within the Commands folder) #include the `../DiscordCoreClient02.hpp` file.
+- In a new header for the command (that is stored within the Commands folder) #include the `Index.hpp` file.
 - Add this header to the `Commands/CommandsList.hpp` header.
 ```cpp
 // CommandsList.hpp - Commands! All of them!
@@ -8,18 +8,14 @@
 
 #pragma once
 
-#ifndef _COMMANDS_LIST_
-#define _COMMANDS_LIST_
-
 #include "Commands.hpp"
 #include "Test.hpp"
 
-#endif
 ```
 - Create a new class, within the `DiscordCoreAPI` namespace, derived from the `BaseFunction` class.
 - Set the `commandName` and `helpDescription` members of the class.
 - Add a `create()` function, where the return value is a pointer to the class type of the current command.
-- Add a `virtual task<void> execute()` function with an argument of type `shared_ptr<DiscordCoreAPI::BaseFunctionArguments>`.
+- Add a `virtual CoRoutine<void> execute()` function with an argument of type `shared_ptr<DiscordCoreAPI::BaseFunctionArguments>`.
 - CONTINUED FURTHER DOWN.
 
 ```cpp
@@ -46,7 +42,7 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual CoRoutine<void> execute(shared_ptr<BaseFunctionArguments> args) {
 			try {
 			if(args->argumentsArray[0] == "test"){
 			
@@ -90,8 +86,7 @@ namespace DiscordCoreAPI {
 // Main.cpp - Main source file, for "the framework".
 // https://github.com/RealTimeChris
 
-#include "pch.h"
-#include "./DiscordCoreAPI-main/DiscordCoreClient02.hpp"
+#include "Index.hpp"
 
 int main()
 {
