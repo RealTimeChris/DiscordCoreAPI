@@ -979,6 +979,8 @@ namespace  DiscordCoreInternal {
         DELETE_SELF_FROM_THREAD = 58,
         DELETE_THREAD_MEMBER = 59,
         GET_THREAD_MEMBER = 60,
+        GET_THREAD_MEMBERS = 61,
+        GET_ACTIVE_THREADS = 62,
 
         GET_USER,
         GET_USER_SELF,
@@ -1861,6 +1863,12 @@ namespace DiscordCoreAPI {
         bool mute{ false };///< Are they server muted?
         string nick{ "" };///< Their nick/display name.
         UserData user{};///< User data for the current GuildMember.
+    };
+
+    struct ActiveThreadsData {
+        vector<ThreadMemberData> members{};
+        vector<ChannelData> threads{};
+        bool hasMore{ false };
     };
 
     /// ApplicationCommand option type. \brief ApplicationCommand option type.

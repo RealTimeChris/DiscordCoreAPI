@@ -151,6 +151,18 @@ namespace DiscordCoreInternal {
             *pDataStructure = threadMember;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ThreadMemberData>* pDataStructure) {
+            vector<DiscordCoreAPI::ThreadMemberData> theVector{};
+
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::ThreadMemberData newData{};
+                parseObject(value, &newData);
+                theVector.push_back(newData);
+            }
+
+            *pDataStructure = theVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ChannelData* pDataStructure) {
             DiscordCoreAPI::ChannelData channelData = *pDataStructure;
 
@@ -3206,6 +3218,35 @@ namespace DiscordCoreInternal {
             }
 
             *pDataStructure = newData;
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ActiveThreadsData* pDataStructure) {
+            DiscordCoreAPI::ActiveThreadsData newFinalData{};
+            if (jsonObjectData.contains("threads") && !jsonObjectData.at("threads").is_null()) {
+                vector<DiscordCoreAPI::ChannelData> newVector{};
+                for (auto value : jsonObjectData.at("threads")) {
+                    DiscordCoreAPI::ChannelData newData{};
+                    parseObject(value, &newData);
+                    newVector.push_back(newData);
+                }
+                newFinalData.threads = newVector;
+            }
+            
+            if (jsonObjectData.contains("members") && !jsonObjectData.at("members").is_null()) {
+                vector<DiscordCoreAPI::ThreadMemberData> newVector{};
+                for (auto value : jsonObjectData.at("members")) {
+                    DiscordCoreAPI::ThreadMemberData newData{};
+                    parseObject(value, &newData);
+                    newVector.push_back(newData);
+                }
+                newFinalData.members = newVector;
+            }
+
+            if (jsonObjectData.contains("has_more") && !jsonObjectData.at("has_more").is_null()) {
+                newFinalData.hasMore = jsonObjectData.at("has_more").get<bool>();
+            }
+                
+            *pDataStructure = newFinalData;
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildEmojisUpdateEventData* pDataStructure) {

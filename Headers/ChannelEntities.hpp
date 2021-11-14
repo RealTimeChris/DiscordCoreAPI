@@ -136,10 +136,20 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The id of the User to remove from the Thread.
 	};
 
-	/// For removing a chosen User from a Thread. \brief For removing a chosen User from a Thread.
+	/// For collecting a ThreadMember data structure for a given ThreadMember. \brief For collecting a ThreadMember data structure for a given ThreadMember.
 	struct GetThreadMemberData {
-		string channelId{ "" };///< The id of the Thread to remove them from.
-		string userId{ "" };///< The id of the User to remove from the Thread.
+		string channelId{ "" };///< The id of the Thread to collect them from.
+		string userId{ "" };///< The id of the User to collect from the Thread.
+	};
+
+	/// For collecting the list of ThreadMembers from a Thread. \brief For collecting the list of ThreadMembers from a Thread.
+	struct GetThreadMembersData {
+		string channelId{ "" };///< The id of the Thread to collect them from.
+	};
+
+	/// For collecting the list of active Threads. \brief For collecting the list of active Threads.
+	struct GetActiveThreadsData {
+		string channelId{ "" };///< The id of the Channel to collect the Threads from.
 	};
 
 	/// A Channel object. \brief A Channel object.
@@ -217,6 +227,10 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> removeThreadMemberAsync(DiscordCoreAPI::RemoveThreadMemberData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ThreadMemberData> getThreadMemberAsync(DiscordCoreAPI::GetThreadMemberData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::ThreadMemberData>> getThreadMembersAsync(DiscordCoreAPI::GetThreadMembersData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ActiveThreadsData> getActiveThreadsAsync(DiscordCoreAPI::GetActiveThreadsData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 
