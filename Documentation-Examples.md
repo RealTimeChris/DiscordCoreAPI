@@ -44,7 +44,8 @@
 - ### [Unpinning a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Unpinning%20a%20Message.md)
 
 ## User Stuff:
-- ### [Addding a Recipient to a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Recipient%20to%20a%20Group%20DM.md)
+- ### [Adding a Recipient to a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Recipient%20to%20a%20Group%20DM.md)
+- ### [Removing a Recipient from a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Recipient%20from20a%20Group%20DM.md)
 
 ## Sticker Stuff:
 
