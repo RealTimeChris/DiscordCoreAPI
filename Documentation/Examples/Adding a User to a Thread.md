@@ -1,8 +1,8 @@
-### **Starting a Thread without a Message:**
+### **Adding a User to a Thread:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Channels` class.
-- Populate a data structure of type `DiscordCoreAPI::StartThreadWithoutMessageData`.
-- Select, from the `Channels` class, the `startThreadWithoutMessageAsync()` function and execute it, with a return value of type `auto` or `Channel`, while passing it the created data structure.
+- Populate a data structure of type `DiscordCoreAPI::AddThreadMemberData`.
+- Select, from the `Channels` class, the `addThreadMemberAsync()` function and execute it, with a return value of type `void`, while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -37,15 +37,11 @@ namespace DiscordCoreAPI {
 
 		virtual CoRoutine<void> executeAsync(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 			try {
-				StartThreadWithoutMessageData dataPackage{};
-				dataPackage.invitable = true;
-				dataPackage.type = ThreadType::GUILD_PUBLIC_THREAD;
-				dataPackage.reason = "TESTING REASONS!";
-				dataPackage.autoArchiveDuration = ThreadAutoArchiveDuration::SHORT;
-				dataPackage.channelId = args->eventData.getChannelId();
-				dataPackage.threadName = "NEW THREAD";
+				AddThreadMemberData dataPackage{};
+				dataPackage.channelId = "909407162776834069";
+				dataPackage.userId = args->eventData.getAuthorId();
 
-				Channel newThread = Channels::startThreadWithoutMessageAsync(dataPackage).get();
+				Channels::addThreadMemberAsync(dataPackage).get();
 
 				co_return;
 			}
