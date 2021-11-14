@@ -971,6 +971,8 @@ namespace  DiscordCoreInternal {
         PUT_PIN_MESSAGE = 50,
         DELETE_PIN_MESSAGE = 51,
         PUT_RECIPIENT_TO_GROUP_DM = 52,
+        DELETE_RECIPIENT_FROM_GROUP_DM = 53,
+        POST_THREAD_WITH_MESSAGE = 54,
 
         GET_USER,
         GET_USER_SELF,
@@ -1731,6 +1733,13 @@ namespace DiscordCoreAPI {
         string joinTimestamp{ "" }; ///< The time at which the member joined this thread.
         string userId{ "" };    ///< The User's id.
         __int32 flags{ 0 }; ///< Flags.
+    };
+
+    enum class ThreadAutoArchiveDuration :__int32 {
+        SHORTEST = 60,
+        SHORT = 1440,
+        LONG = 4320,
+        LONGEST = 10080
     };
 
     /// Data structure representing a single Channel. \brief Data structure representing a single Channel.

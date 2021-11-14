@@ -39,6 +39,11 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The user's Id.
 	};
 
+	struct RemoveRecipientFromGroupDMData {
+		string channelId{ "" };///< The channel Id of the DM.
+		string userId{ "" };///< The user's Id.
+	};
+
 	/// For updating the current voice state. \brief For updating the current voice state.
 	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
 		string channelId{ "" };///< Id of the desired voice Channel. Leave blank to disconnect.
@@ -98,6 +103,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationData> getApplicationDataAsync();
 
 		DiscordCoreAPI::CoRoutine<void> addRecipientToGroupDMAsync(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<void> removeRecipientFromGroupDMAsync(DiscordCoreAPI::RemoveRecipientFromGroupDMData dataPackage);
 
 		void insertUser(DiscordCoreAPI::User user);
 	};

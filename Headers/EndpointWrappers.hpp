@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 		/// Delete a channel, or close a private message. \brief Delete a channel, or close a private message.
 		/// \param dataPackage A DeleteChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<void> deleteOrCloseChannelAsync(DiscordCoreAPI::DeleteChannelData dataPackage);
+		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteChannelData dataPackage);
 
 		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A EditChannelPermissionOverwritesData structure.
@@ -162,6 +162,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A TriggerTypingIndicatorData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage);
+
+		/// Starts a Thread, based on a starting Message. \brief Starts a Thread, based on a starting Message.
+		/// \param dataPackage A StartThreadWithMessageData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> startThreadWithMessageAsync(StartThreadWithMessageData dataPackage);
 
 	protected:
 		static void insertChannel(Channel dataPackage);
@@ -379,7 +384,7 @@ namespace DiscordCoreAPI {
 		/// Unpins a Message from a given Channel. \brief Unpins a Message from a given Channel.
 		/// \param dataPackage A UnpinMessageData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> unpinMessageAsync(DiscordCoreAPI::UnpinMessageData dataPackage);
+		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
 
 		/// Send a direct Message to a given User. \brief Send a direct Message to a given User.
 		/// \param dataPackage A SendDMData structure.
@@ -516,7 +521,12 @@ namespace DiscordCoreAPI {
 		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
 		/// \param dataPackage A AddRecipientToGroupDMData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> addRecipientToGroupDMAsync(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage);
+		static CoRoutine<void> addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage);
+
+		/// Removes a chosen recipient from a group DM. \brief Removes a chosen recipient from a group DM.
+		/// \param dataPackage A RemoveRecipientFromGroupDMData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
 
 	protected:
 		static void insertUser(User useruser);

@@ -95,6 +95,15 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };
 	};
 
+	/// For starting a Thread, based on a Message. \brief For starting a Thread, based on a Message.
+	struct StartThreadWithMessageData {
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::SHORTEST };///< The duration before it is auto-archived, in minutes.
+		string threadName{ "" };///< The name of the new Thread.
+		string messageId{ "" };///< The Message Id to base the Thread off of.
+		string channeld{ "" };///< The Channel to start the Thread in.
+		string reason{ "" };///< Reason for starting the Thread.
+	};
+
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	protected:
@@ -156,6 +165,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> followNewsChannelAsync(DiscordCoreAPI::FollowNewsChannelData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> triggerTypingIndicatorAsync(DiscordCoreAPI::TriggerTypingIndicatorData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> startThreadWithMessageAsync(DiscordCoreAPI::StartThreadWithMessageData dataPackage);
 
 		void insertChannel(DiscordCoreAPI::Channel channel);
 
