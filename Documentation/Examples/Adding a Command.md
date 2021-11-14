@@ -27,7 +27,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include "../DiscordCoreClient02.hpp"
+#include "Index.hpp"
 
 namespace DiscordCoreAPI {
 
