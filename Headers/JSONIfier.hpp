@@ -14,12 +14,13 @@ namespace DiscordCoreAPI {
 	struct CreateInteractionResponseData;
 	struct EditInteractionResponseData;
 	struct CreateFollowUpMessageData;
+	struct AddRecipientToGroupDMData;
 	struct EditFollowUpMessageData;
 	struct DeleteMessagesBulkData;
 	struct UpdateRolePositionData;
 	struct ModifyGuildMemberData;
 	struct CreateGuildBanData;
-	struct CreateMessageData;	
+	struct CreateMessageData;
 	struct EditMessageData;
 	struct UpdateRoleData;
 	struct CreateRoleData;
