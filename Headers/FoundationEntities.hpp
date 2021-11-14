@@ -973,6 +973,7 @@ namespace  DiscordCoreInternal {
         PUT_RECIPIENT_TO_GROUP_DM = 52,
         DELETE_RECIPIENT_FROM_GROUP_DM = 53,
         POST_THREAD_WITH_MESSAGE = 54,
+        POST_THREAD_WITHOUT_MESSAGE = 55,
 
         GET_USER,
         GET_USER_SELF,

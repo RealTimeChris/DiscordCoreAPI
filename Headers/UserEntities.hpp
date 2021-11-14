@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The user's Id.
 	};
 
-	struct RemoveRecipientFromGroupDMData {
+	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
 		string channelId{ "" };///< The channel Id of the DM.
 		string userId{ "" };///< The user's Id.
 	};

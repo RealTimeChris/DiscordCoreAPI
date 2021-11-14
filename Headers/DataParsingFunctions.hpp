@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("flags") && !jsonObjectData.at("flags").is_null()) {
-                threadMember.flags = jsonObjectData.at("falgs").get<__int32>();
+                threadMember.flags = jsonObjectData.at("flags").get<__int32>();
             }
 
             *pDataStructure = threadMember;

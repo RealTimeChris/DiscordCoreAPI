@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
-	struct CreateChannelInviteData {
+	struct DiscordCoreAPI_Dll CreateChannelInviteData {
 		string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
 		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
 		string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
@@ -80,27 +80,27 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
-	struct GetChannelInvitesData {
+	struct DiscordCoreAPI_Dll GetChannelInvitesData {
 		string channelId{ "" };
 	};
 
 	/// For following a news Channel. \brief For following a news Channel.
-	struct FollowNewsChannelData {
+	struct DiscordCoreAPI_Dll FollowNewsChannelData {
 		string targetChannelId{ "" };
 		string channelId{ "" };
 	};
 
 	/// For triggering the typing indicator in a given Channel. \brief For triggering the typing indicator in a given Channel.
-	struct TriggerTypingIndicatorData {
+	struct DiscordCoreAPI_Dll TriggerTypingIndicatorData {
 		string channelId{ "" };
 	};
 
 	/// For starting a Thread, based on a Message. \brief For starting a Thread, based on a Message.
-	struct StartThreadWithMessageData {
+	struct DiscordCoreAPI_Dll StartThreadWithMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::SHORTEST };///< The duration before it is auto-archived, in minutes.
 		string threadName{ "" };///< The name of the new Thread.
 		string messageId{ "" };///< The Message Id to base the Thread off of.
-		string channeld{ "" };///< The Channel to start the Thread in.
+		string channelId{ "" };///< The Channel to start the Thread in.
 		string reason{ "" };///< Reason for starting the Thread.
 	};
 
