@@ -67,7 +67,7 @@
 - ### [Getting Reactions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Reactions.md)
 - ### [Deleting All Reactions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20All%20Reactions.md)
 - ### [Deleting All Reactions for Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20All%20Reactions%20for%20Emoji.md)
-- ### [Getting a List of Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Guild%20Emoiji.md)
+- ### [Getting a List of Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Guild%20Emoji.md)
 - ### [Getting a Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Emoji.md)
 
 ## Role Stuff:
