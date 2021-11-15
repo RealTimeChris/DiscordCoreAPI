@@ -23,7 +23,7 @@
 - ### [Triggering the Typing Indicator](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Triggering%20the%20Typing%20Indicator.md)
 - ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
 - ### [Starting a Thread without a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20without%20a%20Message.md)
-- ### [Joing a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Joining%20a%20Thread.md)
+- ### [Joining a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Joining%20a%20Thread.md)
 - ### [Adding a User to a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20User%20to%20a%20Thread.md)
 - ### [Removing a User from a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20User%20from%20a%20Thread.md)
 - ### [Getting a Thread Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Thread%20Member.md)
