@@ -1151,12 +1151,12 @@ namespace  DiscordCoreInternal {
             this->bucket = other.bucket;
             return *this;
         }
+        recursive_mutex* theMutex{ new recursive_mutex() };
         HttpWorkloadType workloadType{};
         __int64 nextExecutionTime{ 0 };
-        mutex* theMutex{ new mutex() };
         __int64 msRemainTotal{ 0 };
         __int64 timeStartedAt{ 0 };
-        __int32 getsRemaining{ 1 };
+        __int32 getsRemaining{ 0 };
         bool isItMarked{ false };
         __int32 totalGets{ 0 };
         __int64 msRemain{ 0 };
