@@ -40,7 +40,6 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Delete User Reaction data. \brief Delete User Reaction data.
-	/// Delete User Reaction data. \brief Delete User Reaction data.
 	struct DiscordCoreAPI_Dll DeleteUserReactionData {
 		string channelId{ "" };///< The Channel from which to remove the Reaction.
 		string messageId{ "" };///< The Message from which to remove the Reaction.
@@ -61,6 +60,17 @@ namespace DiscordCoreAPI {
 		string messageId{ "" };///< The Message from which you would like to remove the emoji.
 		string emojiName{ "" };///< The name of which emoji to remove.
 		string emojiId{ "" };///< The id of which emoji to remove.
+	};
+
+	/// For collecting a list of Emoji from a Guild.
+	struct DiscordCoreAPI_Dll GetEmojiListData {
+		string guildId{ "" };///< The id of the chosen Guild.
+	};
+
+	/// For collecting a single Guild Emoji.
+	struct DiscordCoreAPI_Dll GetGuildEmojiData {
+		string guildId{ "" };///< The id of the chosen Guild.
+		string emojiId{ "" };///< The id of the chosen Emoji
 	};
 	/**@}*/
 };
@@ -85,5 +95,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> deleteAllReactionsAsync(DiscordCoreAPI::DeleteAllReactionsData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<void> deleteReactionsByEmojiAsync(DiscordCoreAPI::DeleteReactionsByEmojiData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::EmojiData>> getEmojiListAsync(DiscordCoreAPI::GetEmojiListData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::EmojiData> getGuildEmojiAsync(DiscordCoreAPI::GetGuildEmojiData dataPackage);
 	};
 }

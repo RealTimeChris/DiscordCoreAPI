@@ -475,6 +475,16 @@ namespace DiscordCoreInternal {
             *pDataStructure = emojiData;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::EmojiData>* pDataStructure) {
+            vector<DiscordCoreAPI::EmojiData> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::EmojiData newData{};
+                parseObject(value, &newData);
+                newVector.push_back(newData);
+            }
+            *pDataStructure = newVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::VoiceStateData* pDataStructure) {
             DiscordCoreAPI::VoiceStateData voiceStateData = *pDataStructure;
 

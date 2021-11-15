@@ -485,6 +485,16 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A DeleteUserReactionData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage);
+
+		/// Collects a list of Guild Emoji from a chosen Guild. \brief Collects a list of Guild Emoji from a chosen Guild.
+		/// \param dataPackage A GetEmojiListData structure.
+		/// \returns A CoRoutine containing a vector of EmojiData.
+		static CoRoutine<vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
+
+		/// Collects a sing Guild Emoji from a chosen Guild. \brief Collects a single Guild Emoji from a chosen Guild.
+		/// \param dataPackage A GetGuildEmojiData structure.
+		/// \returns A CoRoutine containing an EmojiData.
+		static CoRoutine<EmojiData> getGuildEmojiAsync(GetGuildEmojiData dataPackage);
 	};
 	/**@}*/
 
