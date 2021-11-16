@@ -2,7 +2,7 @@
 ---
 - Access within the `DiscordCoreAPI` namespace, the `GuildMembers` class.
 - Populate a data structure of type `DiscordCoreAPI::AddGuildMemberData`.
-- Select, from the `GuildMembers` class, the `adGuildMemberAsync()` function and execute it, with a return value of type `auto` or `GuildMember`, while passing it the created data structure.
+- Select, from the `GuildMembers` class, the `addGuildMemberAsync()` function and execute it, with a return value of type `auto` or `GuildMember`, while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
