@@ -1,8 +1,7 @@
-
 ### **Getting a Guild:**
 ---
 - Access the `Guilds` class of the `DiscordCoreAPI` namespace.
-- Select, from the `Guilds` class, the `getGuildASync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::GetGuildData`, or `DiscordCoreAPI::FetchGuildData`), or simply `{.guildId = GUILDIDHERE}`.
+- Select, from the `Guilds` class, the `getCachedGuildAsync()` (which collects it from the cache), or `getGuildAsync()` (which collects it from the Discord servers) function, while passing to it a completed data structure `DiscordCoreAPI::GetGuildData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -37,9 +36,9 @@ namespace DiscordCoreAPI {
 
 		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
-			Guild guild = Guilds::getGuildAsync({ .guildId = args->eventData.getGuildId() }).get();
+			Guild guild01 = Guilds::getCachedGuildAsync({ args->eventData.getGuildId() }).get();
 
-			Guild guild = Guilds::fetchAsync({ .guildId = args->eventData.getGuildId() }).get();
+			Guild guild02 = Guilds::getGuildAsync({ args->eventData.getGuildId() }).get();
 
 			co_return;
 
