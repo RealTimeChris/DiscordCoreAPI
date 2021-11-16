@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
-		friend class DiscordCoreAPI::CoRoutine;
+		friend class CoRoutine;
 		friend class DiscordCoreInternal::DataParser;
 		friend struct OnChannelDeletionData;
 		friend struct OnChannelCreationData;
@@ -385,7 +385,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<ActiveThreadsData> listActiveThreadsAsync(ListActiveThreadsData dataPackage);
 
 	protected:
-		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Channel>> cache;
+		static shared_ptr<concurrent_unordered_map<string, Channel>> cache;
 
 		static void insertChannel(Channel dataPackage);
 

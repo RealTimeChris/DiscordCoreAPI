@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 	/// Create Message data. \brief Create Message data.
 	struct DiscordCoreAPI_Dll CreateMessageData {
 
-		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage);
+		friend string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
 		friend class InputEvents;
 		friend class Messages;
 
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns void
-		void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
 	/// Edit Message data. \brief Edit Message data.
 	struct DiscordCoreAPI_Dll EditMessageData {
 
-		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditMessageData dataPackage);
+		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
 		friend class InputEvents;
 		friend class Messages;
 
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns void
-		void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -352,7 +352,7 @@ namespace DiscordCoreAPI {
 	/// Send DM data. \brief Send DM data.
 	struct DiscordCoreAPI_Dll SendDMData {
 
-		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::SendDMData dataPackage);
+		friend string DiscordCoreInternal::JSONIFY(SendDMData dataPackage);
 		friend class InputEvents;
 		friend class Messages;
 
@@ -382,7 +382,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns void
-		void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -509,7 +509,7 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of milliseconds to wait for Messages before returning the results.
 		/// \param userIdNew User id to set for possible comparison.
 		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
-		/// \returns A DiscordCoreAPI::CoRoutine containing MessageCollectorReturnData.
+		/// \returns A CoRoutine containing MessageCollectorReturnData.
 		MessageCollectorReturnData  collectMessages(__int32 quantityToCollect, __int32 msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew);
 
 		~MessageCollector();

@@ -989,11 +989,12 @@ namespace  DiscordCoreInternal {
         POST_GUILD_CHANNEL = 77,
         PATCH_GUILD_CHANNEL_POSITIONS = 78,
         GET_GUILD_ACTIVE_THREADS = 79,
+        GET_GUILD_MEMBERS = 80,
+        GET_SEARCH_GUILD_MEMBERS = 81,
 
         GET_USER,
         GET_USER_SELF,        
         GET_GUILD_MEMBER,
-        GET_GUILD_MEMBERS,
         GET_ROLES,
         GET_USER_GUILDS,
         POST_USER_DM,

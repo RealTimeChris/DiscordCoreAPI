@@ -33,6 +33,20 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild from which you would like to acquire a member.
 	};
 
+	/// For listing the GuildMembers of a chosen Guild. \brief For listing the GuildMembers of a chosen Guild.
+	struct ListGuildMembersData {
+		string guildId{ "" };///< Guild from which to list the GuildMembers.
+		__int32 limit{ 0 };///< Max number of members to return (1 - 1000).
+		string after{ "" };///< The highest user id in the previous page.
+	};
+
+	/// For searching for one or more GuildMembers within a chosen Guild. \brief For searching for one or more GuildMembers within a chosen Guild.
+	struct SearchGuildMembersData {
+		string guildId{ "" };///< Guild within which to search for the GuildMembers.
+		string query{ "" };///< Query string to match username(s) and nickname(s) against.
+		__int32 limit{ 0 };///< Max number of members to return (1 - 1000).
+	};
+
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
@@ -45,7 +59,7 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template <typename returnVal>
-		friend class DiscordCoreAPI::CoRoutine;
+		friend class CoRoutine;
 		friend struct GetGuildMemberRolesData;
 		friend struct OnGuildMemberUpdateData;
 		friend struct OnGuildMemberAddData;
@@ -84,8 +98,18 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a GuildMember.
 		static CoRoutine<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
 
+		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
+		/// \param dataPackage A ListGuildMembersData structure.
+		/// \returns A CoRoutine containing a vector of GuildMembers.
+		static CoRoutine<vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
+
+		/// Searches for a list of GuildMembers of a chosen Guild. \brief Searches for a list of GuildMembers of a chosen Guild.
+		/// \param dataPackage A ListGuildMembersData structure.
+		/// \returns A CoRoutine containing a vector of GuildMembers.
+		static CoRoutine<vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+
 	protected:
-		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::GuildMember>> cache;
+		static shared_ptr<concurrent_unordered_map<string, GuildMember>> cache;
 
 		static void insertGuildMember(GuildMember dataPackage);
 

@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 
     /// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
     struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData {
-        vector<DiscordCoreAPI::ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
+        vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
         bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild
         ApplicationCommandType type{}; ///< The type of ApplicationCommand.
         string description{ "" };   ///< A description of the command.
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 
     /// For editing a single global ApplicationCommand. \brief For editing a single global ApplicationCommand.
     struct DiscordCoreAPI_Dll EditGlobalApplicationCommandData {
-        vector<DiscordCoreAPI::ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
+        vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
         bool defaultPermission{ false };///< Whether the command is enabled by default when the bot is added to a Guild
         string description{ "" };   ///< A description of the command.
         string name{ "" }; ///< A name for the new command.
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 
     /// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
     struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData {
-        vector<DiscordCoreAPI::ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
+        vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
         bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild.
         ApplicationCommandType type{}; ///< The type of ApplicationCommand.
         string description{ "" };   ///< A description of the command.
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 
     /// For editing a single Guild ApplicationCommand. \brief For editing a single Guild ApplicationCommand.
     struct DiscordCoreAPI_Dll EditGuildApplicationCommandData {
-        vector<DiscordCoreAPI::ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
+        vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
         bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild.
         string description{ "" };   ///< A description of the command.
         string guildId{ "" }; ///< The id of the Guild which you would like to add the new command to.

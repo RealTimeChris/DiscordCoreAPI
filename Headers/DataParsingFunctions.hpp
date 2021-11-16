@@ -419,6 +419,16 @@ namespace DiscordCoreInternal {
             *pDataStructure = guildMemberData;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildMemberData>* pDataStructure) {
+            vector<DiscordCoreAPI::GuildMemberData> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::GuildMemberData newData{};
+                parseObject(value, &newData);
+                newVector.push_back(newData);
+            }
+            *pDataStructure = newVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreInternal::VoiceReadyPayload* pDatastructure) {
             DiscordCoreInternal::VoiceReadyPayload readyPayload;
 

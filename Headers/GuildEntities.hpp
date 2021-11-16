@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
-		friend class DiscordCoreAPI::CoRoutine;
+		friend class CoRoutine;
 		friend struct OnGuildCreationData;
 		friend struct OnGuildDeletionData;
 		friend struct OnGuildUpdateData;
@@ -235,7 +235,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 
 	protected:
-		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Guild>> cache;
+		static shared_ptr<concurrent_unordered_map<string, Guild>> cache;
 
 		static void insertGuild(Guild Guild);
 
