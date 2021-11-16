@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "JSONIfier.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -72,6 +73,38 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the chosen Guild.
 		string emojiId{ "" };///< The id of the chosen Emoji
 	};
+
+	enum class ImageType {
+		JPG = 0,
+		PNG = 1,
+		GIF = 2,
+	};
+
+	/// For creating a new Guild Emoji.
+	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
+		friend string DiscordCoreInternal::JSONIFY(CreateGuildEmojiData dataPackage);
+		friend class DiscordCoreInternal::ReactionManager;
+
+		vector<unsigned __int8> imageData{};///< The image data.
+		vector<string> roles{};///< Roles that can use this Emoji.
+		string guildId{ "" };///< The Guild within which to create the Emoji.
+		string reason{ "" };///< Reason for creating the new Emoji.
+		string name{ "" };///< Name of the emoji.
+		ImageType type{};///< The type of image being uploaded.		
+	protected:
+		string imageDataFinal{};
+	};
+
+	/// For modifying a Guild Emoji.
+	struct ModifyGuildEmojiData {
+		vector<string> roles{};///< Roles that can use this Emoji.
+		string guildId{ "" };///< The Guild within which to modify the Emoji.
+		string emojiId{ "" };///< The id of the Emoji to modify.
+		string reason{ "" };///< Reason for modifying the Emoji.
+		string name{ "" };///< Name of the Emoji.		
+	};
+
+
 	/**@}*/
 };
 
@@ -99,5 +132,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::EmojiData>> getEmojiListAsync(DiscordCoreAPI::GetEmojiListData dataPackage);
 
 		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::EmojiData> getGuildEmojiAsync(DiscordCoreAPI::GetGuildEmojiData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::EmojiData> createGuildEmojiAsync(DiscordCoreAPI::CreateGuildEmojiData dataPackage);
+
+		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::EmojiData> modifyGuildEmojiAsync(DiscordCoreAPI::ModifyGuildEmojiData dataPackage);
 	};
 }

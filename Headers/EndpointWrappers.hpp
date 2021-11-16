@@ -491,10 +491,20 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a vector of EmojiData.
 		static CoRoutine<vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
 
-		/// Collects a sing Guild Emoji from a chosen Guild. \brief Collects a single Guild Emoji from a chosen Guild.
+		/// Collects a single Guild Emoji from a chosen Guild. \brief Collects a single Guild Emoji from a chosen Guild.
 		/// \param dataPackage A GetGuildEmojiData structure.
 		/// \returns A CoRoutine containing an EmojiData.
 		static CoRoutine<EmojiData> getGuildEmojiAsync(GetGuildEmojiData dataPackage);
+
+		/// Creates a single Guild Emoji within a chosen Guild. \brief Creates a single Guild Emoji within a chosen Guild.
+		/// \param dataPackage A CreateGuildEmojiData structure.
+		/// \returns A CoRoutine containing an EmojiData.
+		static CoRoutine<EmojiData> createGuildEmojiAsync(CreateGuildEmojiData dataPackage);
+
+		/// Modifies a single Guild Emoji within a chosen Guild. \brief Modifies a single Guild Emoji within a chosen Guild.
+		/// \param dataPackage A ModifyGuildEmojiData structure.
+		/// \returns A CoRoutine containing an EmojiData.
+		static CoRoutine<EmojiData> modifyGuildEmojiAsync(ModifyGuildEmojiData dataPackage);
 	};
 	/**@}*/
 

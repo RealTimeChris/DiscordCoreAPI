@@ -986,6 +986,8 @@ namespace  DiscordCoreInternal {
         GET_JOINED_PRIVATE_ARCHIVED_THREADS = 65,
         GET_EMOJI_LIST = 66,
         GET_GUILD_EMOJI = 67,
+        POST_GUILD_EMOJI = 68,
+        PATCH_GUILD_EMOJI = 69,
 
         GET_USER,
         GET_USER_SELF,
