@@ -1,7 +1,7 @@
 ### **Getting a Guild Member:**
 ---
-- Access the `GuildMemberSs` class of the `DiscordCoreAPI` namespace.
-- Select, from the `GuildMembers` class, the `getGuildMemberAsync()` (which collects it from the cache), or `fetchAsync()` (which collects it from the Discord servers) function, while passing to it either a completed data structure (`DiscordCoreAPI::GetGuildMemberData`, or `DiscordCoreAPI::FetchGuildMemberData`).
+- Access the `GuildMemberS` class of the `DiscordCoreAPI` namespace.
+- Select, from the `GuildMembers` class, the `getCachedGuildMemberAsync()` (which collects it from the cache), or `getGuildMember()` (which collects it from the Discord servers) function, while passing to it a completed data structure of the type `DiscordCoreAPI::GetGuildMemberData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,7 +13,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include "../DiscordCoreClient02.hpp"
+#include "Index.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -22,7 +22,7 @@ namespace DiscordCoreAPI {
 		Test() {
 			this->commandName = "test";
 			this->helpDescription = "Testing purposes!";
-			EmbedData msgEmbed;
+			EmbedData msgEmbed{};
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -34,21 +34,21 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual CoRoutine<void> executeAsync(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
+			try {
+				GetGuildMemberData dataPackage{};
+				dataPackage.guildId = args->eventData.getGuildId();
+				dataPackage.guildMemberId = args->eventData.getAuthorId();
 
-			GetGuildMemberData dataPackage01;
-			dataPackage01.guildId = args->eventData.getGuildId();
-			dataPackage01.guildMemberId = args->eventData.getAuthorId();
+				auto guildMember01 = GuildMembers::getCachedGuildMemberAsync(dataPackage).get();
 
-			GuildMember guildMember01 = args->eventData.discordCoreClient->guildMembers->getGuildMemberAsync(dataPackage01).get();
+				auto guildMember02 = GuildMembers::getGuildMemberAsync(dataPackage).get();
 
-			FetchGuildMemberData dataPackage02;
-			dataPackage02.guildId = args->eventData.getGuildId();
-			dataPackage02.guildMemberId = args->eventData.getAuthorId();
-			
-			GuildMember guildMember02 = GuildMembers::fetchAsync(dataPackage02).get();
-
-			co_return;
+				co_return;
+			}
+			catch (...) {
+				rethrowException("Test::executeAsync Error: ");
+			}
 		}
 	};
 }
