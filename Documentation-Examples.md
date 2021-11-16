@@ -114,7 +114,7 @@
 - ### [Collecting Button Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Button%20Input.md)
 
 ## Select-Menu Stuff:
-- ### [Instantiating/Creating a Select-Menu](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%Select-Menu.md)
+- ### [Instantiating/Creating a Select-Menu](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Select-Menu.md)
 - ### [Collecting Select-Menu Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Select-Menu%20Input.md)
 
 ## Voice Connection Stuff:
