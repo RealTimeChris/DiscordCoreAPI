@@ -71,7 +71,7 @@
 - ### [Getting a Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Emoji.md)
 - ### [Creating a Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Emoji.md)
 - ### [Modifying a Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Emoji.md)
-- ### [Deleting Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Emoji.md)
+- ### [Deleting a Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Emoji.md)
 
 ## Role Stuff:
 
