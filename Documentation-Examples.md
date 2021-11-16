@@ -33,6 +33,7 @@
 - ### [Getting Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Private%20Archived%20Threads.md)
 - ### [Getting Joined Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Joined%20Private%20Archived%20Threads.md)
 - ### [Getting Guild Channels](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Channels.md)
+- ### [Creating a Guild Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Channel.md)
 
 ## GuildMember Stuff:
 - ### [Getting a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Member.md)
