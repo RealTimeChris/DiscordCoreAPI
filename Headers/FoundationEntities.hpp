@@ -984,6 +984,7 @@ namespace  DiscordCoreInternal {
         GET_GUILD = 72,
         GET_GUILD_PREVIEW= 73,
         PATCH_GUILD = 74,
+        DELETE_GUILD = 75,
 
         GET_USER,
         GET_USER_SELF,
@@ -1136,20 +1137,7 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
-        RateLimitData operator=(const RateLimitData& other) {
-            this->nextExecutionTime = other.nextExecutionTime;
-            this->msRemainTotal = other.msRemainTotal;
-            this->timeStartedAt = other.timeStartedAt;
-            this->getsRemaining = other.getsRemaining;
-            this->workloadType = other.workloadType;
-            this->isItMarked = other.isItMarked;
-            this->totalGets = other.totalGets;
-            this->msRemain = other.msRemain;
-            this->theMutex = other.theMutex;
-            this->bucket = other.bucket;
-            return *this;
-        }
-        recursive_mutex* theMutex{ new recursive_mutex() };
+        recursive_mutex theMutex{ recursive_mutex() };
         HttpWorkloadType workloadType{};
         __int64 nextExecutionTime{ 0 };
         __int64 msRemainTotal{ 0 };
@@ -3078,7 +3066,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
-    struct DiscordCoreAPI_Dll GetAuditLogData {
+    struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
         AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
         string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
         string userId{ "" };///< The User for whom to look for the actions of.

@@ -62,6 +62,12 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetVanityInviteData {
 		string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
 	};
+
+	///	For deleting a Guild. \brief For deleting a Guild.
+	struct DiscordCoreAPI_Dll DeleteGuildData {
+		string guildId{ "" };///< The Guild you would like to delete.
+	};
+
 	/**@}*/
 
 	/**
@@ -108,7 +114,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
-	struct ModifyGuildData {
+	struct DiscordCoreAPI_Dll ModifyGuildData {
 		ModifyGuildData(Guild dataPackage) {
 			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
 			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
@@ -186,10 +192,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> modifyGuildAsync(ModifyGuildData dataPackage);
 
+		/// Deletes a chosen Guild. \brief Deletes a chosen Guild.
+		/// \param dataPackage A DeleteGuildData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteGuildAsync(DeleteGuildData dataPackage);
+
 		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
 		/// \param dataPackage A GetAuditLogData structure.
 		/// \returns A CoRoutine containing AuditLogData.
-		static CoRoutine<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
+		static CoRoutine<AuditLogData> getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage);
 
 		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.
