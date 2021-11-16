@@ -15,10 +15,11 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
+	/// For handling User input - Messages or Interactions. \brief For handling User input - Messages or Interactions.
 	class DiscordCoreAPI_Dll InputEvents {
 	public:
 
-		/// Responds to one of a number of types of "InputEventHandler". \brief Responds to one of a number of types of InputEventHandler.
+		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".
 		/// \param dataPackage A RespondToInputEventData structure.
 		/// \returns An InputEventData structure.
 		static InputEventData respondToEvent(RespondToInputEventData dataPackage);

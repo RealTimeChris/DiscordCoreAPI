@@ -14,6 +14,30 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
+
+	enum class AfkTimeOutDurations {
+		SHORTEST = 60,
+		SHORT = 300,
+		MEDIUM = 900,
+		LONG = 1800,
+		LONGEST = 3600
+	};
+
+	/// For creating a Guild. \brief For creating a Guild.
+	struct DiscordCoreAPI_Dll CreateGuildData {
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
+		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::SHORTEST };///< Afk timeout in seconds.
+		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
+		__int32 systemChannelFlags{ 0 };///< System channel flags.
+		vector<ChannelData> channels{};///< Array of partial channel objects.
+		__int32 verificationLevel{ 0 };///< Verification level.
+		vector<unsigned __int8> icon{};///< base64 128x128 image for the guild icon.
+		string systemChannelId{ "" };///< The id of the channel where guild notices such as welcome messages and boost events are posted.
+		string afkChannelId{ "" };///< Id for afk channel.
+		vector<RoleData> roles{};///< Array of role objects.
+		string name{ "" };///< The name of the new Guild.
+	};
+
 	/// For getting a Guild from the library's cache or a Discord server. \brief For getting a Guild from the library's cache or a Discord server.
 	struct DiscordCoreAPI_Dll GetGuildData {
 		string guildId{ "" };///< The id of the Guild to acquire.
@@ -97,6 +121,11 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClient;
 		friend class EventHandler;
+
+		/// Creates a new Guild. \brief Creates a new Guild.
+		/// \param dataPackage A CreateGuildData structure.
+		/// \returns A CoRoutine containing a Guild.
+		static CoRoutine<Guild> createGuildAsync(CreateGuildData dataPackage);
 
 		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
 		/// \param dataPackage A GetAuditLogData structure.

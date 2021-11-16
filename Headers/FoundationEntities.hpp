@@ -980,6 +980,7 @@ namespace  DiscordCoreInternal {
         POST_GUILD_EMOJI = 68,
         PATCH_GUILD_EMOJI = 69,
         DELETE_GUILD_EMOJI = 70,
+        POST_GUILD = 71,
 
         GET_USER,
         GET_USER_SELF,

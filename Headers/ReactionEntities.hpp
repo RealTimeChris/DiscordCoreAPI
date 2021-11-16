@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying a Guild Emoji.
-	struct ModifyGuildEmojiData {
+	struct DiscordCoreAPI_Dll ModifyGuildEmojiData {
 		vector<string> roles{};///< Roles that can use this Emoji.
 		string guildId{ "" };///< The Guild within which to modify the Emoji.
 		string emojiId{ "" };///< The id of the Emoji to modify.
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a Guild Emoji.
-	struct DeleteGuildEmojiData {
+	struct DiscordCoreAPI_Dll DeleteGuildEmojiData {
 		string guildId{ "" };///< The Guild within which to delete the Emoji.
 		string emojiId{ "" };///< The id of the Emoji to delete.
 		string reason{ "" };///< Reason for deleting the Emoji.

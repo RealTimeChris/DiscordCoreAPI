@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
-    /// \param returnType The type returned by the containing CoRoutined.
+    /// \param returnType The type returned by the containing CoRoutine.
     template<class returnType>
     DiscordCoreAPI_Dll inline auto NewThreadAwaitable() {
         class NewThreadAwaitable {
