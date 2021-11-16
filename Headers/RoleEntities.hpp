@@ -52,10 +52,12 @@ namespace DiscordCoreAPI {
 	/// Update Role position data.
 	struct DiscordCoreAPI_Dll UpdateRolePositionData {
 		friend string DiscordCoreInternal::JSONIFY(UpdateRolePositionData dataPackage);
-		friend class DiscordCoreInternal::RoleManager;
+		friend class Roles;
+
 		__int32 newPosition{ 0 };///< The new position of the Role.
 		string guildId{ "" };///< The Guild within which to move the Role.
 		string roleId{ "" };///< The id of the Role to move/
+
 	protected:
 		vector<RolePositionData> rolePositions;
 	};
@@ -91,45 +93,77 @@ namespace DiscordCoreAPI {
 		string roleId{ "" };///< The id of the Role to be removed.
 	};
 	/**@}*/
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll RoleManager {
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
+	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
+	class DiscordCoreAPI_Dll Roles {
 	public:
+		
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::Roles;
-		friend class DiscordCoreAPI::Guild;
+		/// Collects a given Role from the library's cache. \brief Collects a given Role from the library's cache.
+		/// \param dataPackage A GetRoleData structure.
+		/// \returns A CoRoutine containing a Role.
+		static CoRoutine<Role> getCachedRoleAsync(GetRoleData dataPackage);
 
-		RoleManager();
+		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
+		/// \param dataPackage A AddRoleToGuildMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> addRoleToGuildMemberAsync(AddRoleToGuildMemberData dataPackage);
+
+		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
+		/// \param dataPackage A CreateRoleData structure.
+		/// \returns A Role.
+		static CoRoutine<Role> createRoleAsync(CreateRoleData dataPackage);
+
+		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
+		/// \param dataPackage A GetRoleData structure.
+		/// \returns A Role.
+		static CoRoutine<Role> getRoleAsync(GetRoleData dataPackage);
+
+		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
+		/// \param dataPackage A GetGuildMemberRolesData structure.
+		/// \returns A vector of Roles.
+		static CoRoutine<vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
+
+		/// Collects the Roles that a Guild has. \brief Collects the Roles that a Guild has.
+		/// \param dataPackage A GetGuildRolesData structure.
+		/// \returns A CoRoutine containing a vector of Roles.
+		static CoRoutine<vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
+
+		/// Removes a given Role from a Guild. \brief Removes a given Role from a Guild.
+		/// \param dataPackage A RemoveRoleFromGuildData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeRoleFromGuildAsync(RemoveRoleFromGuildData dataPackage);
+
+		/// Removes a given Role from a chosen GuildMember. \brief Removes a given Role from a chosen GuildMember.
+		/// \param dataPackage A RemoveRoleFromGuildMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeRoleFromGuildMemberAsync(RemoveRoleFromGuildMemberData dataPackage);
+
+		/// Updates a given Role's properties. \brief Updates a given Role's properties.
+		/// \param dataPackage A UpdateRoleData structure.
+		/// \returns A CoRoutine containing a Role.
+		static CoRoutine<Role> updateRoleAsync(UpdateRoleData dataPackage);
+
+		/// Updates a Role's positions. \brief Updates a Role's positions.
+		/// \param dataPackage A UpdateRolePositionData structure.
+		/// \returns A vector containing Roles.
+		static CoRoutine<vector<Role>> updateRolePositionsAsync(UpdateRolePositionData dataPackage);
 
 	protected:
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Role>> cache{ nullptr };
+		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Role>> cache;
 
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildRolesAsync(DiscordCoreAPI::GetGuildRolesData dataPackage);
+		static void insertRole(Role dataPackage);
 
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> getGuildMemberRolesAsync(DiscordCoreAPI::GetGuildMemberRolesData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> getRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> getCachedRoleAsync(DiscordCoreAPI::GetRoleData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> createRoleAsync(DiscordCoreAPI::CreateRoleData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Role>> updateRolePositionsAsync(DiscordCoreAPI::UpdateRolePositionData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Role> updateRoleAsync(DiscordCoreAPI::UpdateRoleData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> removeRoleFromGuildAsync(DiscordCoreAPI::RemoveRoleFromGuildData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> addRoleToGuildMemberAsync(DiscordCoreAPI::AddRoleToGuildMemberData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> removeRoleFromGuildMemberAsync(DiscordCoreAPI::RemoveRoleFromGuildMemberData dataPackage);
-
-		void insertRole(DiscordCoreAPI::Role role);
-
-		void removeRole(string roleId);
+		static void removeRole(string roleId);
 	};
+	/**@}*/
+
 }

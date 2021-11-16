@@ -53,13 +53,13 @@ namespace DiscordCoreAPI {
 
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
-		friend class DiscordCoreInternal::GuildManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnGuildCreationData;
 		friend struct OnGuildDeletionData;
 		friend struct OnGuildUpdateData;
 		friend class DiscordCoreClient;
+		friend class Guilds;
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
@@ -86,40 +86,65 @@ namespace DiscordCoreAPI {
 		void initialize();
 	};
 	/**@}*/
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll GuildManager {
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
+	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
+	class DiscordCoreAPI_Dll Guilds {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::Guilds;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
 
-		GuildManager();
+		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
+		/// \param dataPackage A GetAuditLogData structure.
+		/// \returns A CoRoutine containing AuditLogData.
+		static CoRoutine<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
+
+		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
+		/// \param dataPackage A GetGuildData structure.
+		/// \returns A CoRoutine containing a Guild.
+		static CoRoutine<Guild> getCachedGuildAsync(GetGuildData dataPackage);
+
+		/// Collects a Guild from the Discord servers. \brief Collects a Guild from the Discord servers.
+		/// \param dataPackage A GetGuildData structure.
+		/// \returns A CoRoutine containing a Guild.
+		static CoRoutine<Guild> getGuildAsync(GetGuildData dataPackage);
+
+		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
+		/// \param dataPackage A GetInviteData structure.
+		/// \returns A CoRoutine containing InviteData.
+		static CoRoutine<InviteData> getInviteAsync(GetInviteData dataPackage);
+
+		/// Getes multiple invites from the Discord servers. \brief Getes multiple invites from the Discord servers.
+		/// \param dataPackage A GetInvitesData structure.
+		/// \returns A CoRoutine containing a vector of InviteData.
+		static CoRoutine<vector<InviteData>> getInvitesAsync(GetInvitesData dataPackage);
+
+		/// Getes the vanity invite data from a particular server. \brief Getes the vanity invite data from a particular server.
+		/// \param dataPackage A GetVanityInviteData structure.
+		/// \returns A CoRoutine containing InviteData.
+		static CoRoutine<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage);
+
+		/// Bans a GuildMember. \brief Bans a GuildMember.
+		/// \param dataPackage A CreateGuildBanData structure.
+		/// \returns A CoRoutine containing BanData.
+		static CoRoutine<BanData> createGuildBanAsync(CreateGuildBanData dataPackage);
+
+		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
+		/// \returns A CoRoutine containing a vector of Guild.
+		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 
 	protected:
+		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Guild>> cache;
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Guild>> cache{ nullptr };
+		static void insertGuild(Guild Guild);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::AuditLogData> getAuditLogDataAsync(DiscordCoreAPI::GetAuditLogData dataPackage);
+		static void removeGuild(string GuildId);
 
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Guild>> getAllGuildsAsync();
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Guild> getGuildAsync(DiscordCoreAPI::GetGuildData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Guild> getCachedGuildAsync(DiscordCoreAPI::GetGuildData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::BanData> createGuildBanAsync(DiscordCoreAPI::CreateGuildBanData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::InviteData>> getInvitesAsync(DiscordCoreAPI::GetInvitesData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InviteData> getInviteAsync(DiscordCoreAPI::GetInviteData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InviteData> getVanityInviteAsync(DiscordCoreAPI::GetVanityInviteData dataPackage);
-
-		void insertGuild(DiscordCoreAPI::Guild Guild);
-
-		void removeGuild(string guildId);
 	};
+	/**@}*/
+
 }

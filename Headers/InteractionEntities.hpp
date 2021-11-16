@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
     */
     /// Defer component response data. \brief Defer component response data.
     struct DiscordCoreAPI_Dll DeferComponentResponseData {
-        friend class InputEventHandler;
+        friend class InputEvents;
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->responseType = InputEventResponseType::DeferredResponse;
@@ -42,8 +42,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend class Interactions;
+        friend class InputEvents;
         friend class SelectMenuCollector;
         friend class ButtonCollector;
 
@@ -191,9 +191,11 @@ namespace DiscordCoreAPI {
     };
     /// Create deferred Interaction response data. \brief Create deferred Interaction response data.
     struct DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
+
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend class Interactions;
+        friend class InputEvents;
+
         CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
             this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -228,8 +230,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
     public:
 
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend class Interactions;
+        friend class InputEvents;
         CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
@@ -372,8 +374,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll EditInteractionResponseData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend class Interactions;
+        friend class InputEvents;
 
         EditInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -514,8 +516,9 @@ namespace DiscordCoreAPI {
     /// Delete Interaction response data. \brief Delete Interaction response data.
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
+        friend class InputEvents;
+        friend class Interactions;
 
         DeleteInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -532,8 +535,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll CreateFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend class Interactions;
+        friend class InputEvents;
 
         CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -677,8 +680,8 @@ namespace DiscordCoreAPI {
     /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
     struct DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
 
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend class Interactions;
+        friend class InputEvents;
         CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->data.type = InteractionCallbackType::ChannelMessageWithSource;
@@ -820,8 +823,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll EditFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+        friend class Interactions;
+        friend class InputEvents;
         EditFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -964,8 +967,11 @@ namespace DiscordCoreAPI {
 
     /// Delete follow up Message data. \brief Delete follow up Message data;
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
-        friend class DiscordCoreInternal::InteractionManager;
-        friend class InputEventHandler;
+
+        friend void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
+        friend class InputEvents;
+        friend class Interactions;
+        
         DeleteFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
@@ -977,17 +983,20 @@ namespace DiscordCoreAPI {
         MessagePackageData messagePackage{};
         unsigned __int32 timeDelay{ 0 };
     };
+
     /// Get Interaction response data. \brief Get Interaction response data.
     struct DiscordCoreAPI_Dll GetInteractionResponseData {
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
+
     /// Get FollowUp Message data. \brief Get FollowUp Message data.
     struct DiscordCoreAPI_Dll GetFollowUpMessageData {
         string messageId{ "" };///< Message id.
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
+
     /// A single Interaction.
     class DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
@@ -1013,46 +1022,68 @@ namespace DiscordCoreAPI {
         }
     };
     /**@}*/
-};
-namespace DiscordCoreInternal {
-    class DiscordCoreAPI_Dll InteractionManager {
+
+    /**
+    * \addtogroup discord_core_client
+    * @{
+    */
+    /// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
+    class DiscordCoreAPI_Dll Interactions {
     public:
-        friend class DiscordCoreAPI::SelectMenuCollector;
-        friend class DiscordCoreAPI::DiscordCoreClient;
-        friend class DiscordCoreAPI::ButtonCollector;
-        friend class DiscordCoreAPI::Interactions;
-        friend class DiscordCoreAPI::EventHandler;
-        friend class DiscordCoreAPI::InputEventHandler;
+
+        friend class DiscordCoreClient;
+        friend class EventManager;
+        friend class EventHandler;
+
+        /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.
+        /// \param dataPackage A CreateDeferredInteractionResponseData structure.
+        /// \returns A CoRoutine containing void.
+        static CoRoutine<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage);
+
+        /// Creates a response to an input Interaction. \brief Creates a response to an input Interaction.
+        /// \param dataPackage A CreateInteractionResponseData structure.
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
+
+        /// Collects an Interaction response. \brief Collects an Interaction response.
+        /// \param dataPackage A GetInteractionResponseData structure.
+        /// \returns A CoRoutine containing an InteractionResponseData.
+        static CoRoutine<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
+
+        /// Edits an Interaction response. \brief Edits an Interaction response.
+        /// \param dataPackage A EditInteractionResponseData structure.
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
+
+        /// Deletes an Interaction respnose. \brief Deletes an Interaction respnose.
+        /// \param dataPackage A DeleteInteractionResponseData structure.
+        /// \returns A CoRoutine containing void.
+        static CoRoutine<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
+
+        /// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
+        /// \param dataPackage A CreateFollowUpMessageData structure.
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
+
+        /// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
+        /// \param dataPackage A CreateFollowUpMessageData structure.
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<MessageData> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
+
+        /// Edits a follow up Message. \brief Edits a follow up Message.
+        /// \param dataPackage A EditFollowUpMessageData structure.
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
+
+        /// Deletes a follow up Message. \brief Deletes a follow up Message.
+        /// \param dataPackage A DeleteFollowUpMessageData structure.
+        /// \returns A CoRoutine containing void.
+        static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
     protected:
-
         static map<string, shared_ptr<concurrent_queue<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
-
-        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> createInteractionResponseAsync(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<void> createDeferredInteractionResponseAsync(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InteractionResponseData> getInteractionResponseAsync(DiscordCoreAPI::GetInteractionResponseData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> editInteractionResponseAsync(DiscordCoreAPI::EditInteractionResponseData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<void> deleteInteractionResponseAsync(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
-
-        void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> createFollowUpMessageAsync(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> getFollowUpMessageAsync(DiscordCoreAPI::GetFollowUpMessageData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageData> editFollowUpMessageAsync(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
-
-        DiscordCoreAPI::CoRoutine<void> deleteFollowUpMessageAsync(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
-
-        void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
-
     };
-};
-namespace DiscordCoreAPI {
+    /**@}*/
 
     /**
     * \addtogroup utilities
@@ -1093,8 +1124,6 @@ namespace DiscordCoreAPI {
         ~SelectMenuCollector();
 
     protected:
-
-        static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
 
         shared_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
         DiscordCoreAPI::InteractionData interactionData{};
@@ -1147,8 +1176,6 @@ namespace DiscordCoreAPI {
         ~ButtonCollector();
 
     protected:
-
-        static shared_ptr<DiscordCoreInternal::InteractionManager> interactions;
 
         shared_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};

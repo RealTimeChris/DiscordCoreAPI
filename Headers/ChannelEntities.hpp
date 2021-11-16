@@ -180,7 +180,6 @@ namespace DiscordCoreAPI {
 
 		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
-		friend class DiscordCoreInternal::ChannelManager;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
 		friend struct OnChannelDeletionData;
@@ -190,6 +189,7 @@ namespace DiscordCoreAPI {
 		friend struct OnChannelUpdateData;
 		friend struct OnThreadUpdateData;
 		friend class DiscordCoreClient;
+		friend class Channels;
 		friend class Guild;
 
 		Channel();
@@ -197,71 +197,139 @@ namespace DiscordCoreAPI {
 		Channel(ChannelData dataNew);
 	};
 	/**@}*/
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll ChannelManager {
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
+	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
+	class DiscordCoreAPI_Dll Channels {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::Channels;
-		friend class DiscordCoreAPI::Guild;
+		friend class EventHandler;
+		friend class Guild;		
 
-		ChannelManager();
+		/// Collects a Channel from the library's cache. \brief Collects a Channel from the library's cache.		
+		/// \param dataPackage A GetChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> getCachedChannelAsync(GetChannelData dataPackage);
+
+		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
+		/// \param dataPackage A GetChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> getChannelAsync(GetChannelData dataPackage);
+
+		/// Modifies a Channel's properties. \brief Modifies a Channel's properties.
+		/// \param dataPackage A ModifyChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> modifyChannelAsync(ModifyChannelData dataPackage);
+
+		/// Delete a channel, or close a private message. \brief Delete a channel, or close a private message.
+		/// \param dataPackage A DeleteChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);
+
+		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
+		/// \param dataPackage A EditChannelPermissionOverwritesData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
+
+		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
+		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
+
+		/// Collect a direct-Message Channel between the bot and the User. \brief Collect a direct-Message Channel between the bot and the User.
+		/// \param dataPackage A GetDMChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> getDMChannelAsync(GetDMChannelData dataPackage);
+
+		/// Collects a vector of the invites to a given Channel. \brief Collects a vector of the invites to a given Channel.
+		/// \param dataPackage A GetChannelInvitesData structure.
+		/// \returns A CoRoutine containing a vector of InviteData.
+		static CoRoutine<vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
+
+		/// Creates an invite to a selected Channel. \brief Creates an invite to a selected Channel.
+		/// \param dataPackage A CreateChannelInviteData structure.
+		/// \returns A CoRoutine containing an InviteData structure.
+		static CoRoutine<InviteData> createChannelInviteAsync(CreateChannelInviteData dataPackage);
+
+		/// Follows a given new Channel with another Channel. \brief Follows a given new Channel with another Channel.
+		/// \param dataPackage A FollowNewsChannelData structure.
+		/// \returns A CoRoutine containing a Channel structure.
+		static CoRoutine<Channel> followNewsChannelAsync(FollowNewsChannelData dataPackage);
+
+		/// Triggers the typing indicator for the bot in the given Channel. \brief Triggers the typing indicator for the bot in the given Channel.
+		/// \param dataPackage A TriggerTypingIndicatorData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage);
+
+		/// Starts a Thread, based on a starting Message. \brief Starts a Thread, based on a starting Message.
+		/// \param dataPackage A StartThreadWithMessageData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> startThreadWithMessageAsync(StartThreadWithMessageData dataPackage);
+
+		/// Starts a Thread, not based on a starting Message. \brief Starts a Thread, not based on a starting Message.
+		/// \param dataPackage A StartThreadWithoutMessageData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> startThreadWithoutMessageAsync(StartThreadWithoutMessageData dataPackage);
+
+		/// Joins a Thread. \brief Joins a Thread.
+		/// \param dataPackage A JoinThreadData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> joinThreadAsync(JoinThreadData dataPackage);
+
+		/// Adds a new User to a chosen Thread. \brief Adds a new User to a chosen Thread.
+		/// \param dataPackage A AddThreadMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> addThreadMemberAsync(AddThreadMemberData dataPackage);
+
+		/// Leaves a Thread. \brief Leaves a Thread.
+		/// \param dataPackage A LeaveThreadData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> leaveThreadAsync(LeaveThreadData dataPackage);
+
+		/// Removes a User from a chosen Thread. \brief Removes a User from a chosen Thread.
+		/// \param dataPackage A RemoveThreadMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeThreadMemberAsync(RemoveThreadMemberData dataPackage);
+
+		/// Collects a ThreadMember if they exist. \brief Collects a ThreadMember if they exist.
+		/// \param dataPackage A GetThreadMemberData structure.
+		/// \returns A CoRoutine containing ThreadMemberData.
+		static CoRoutine<ThreadMemberData> getThreadMemberAsync(GetThreadMemberData dataPackage);
+
+		/// Collects a list of ThreadMembers if they exist. \brief Collects a list of ThreadMembers if they exist.
+		/// \param dataPackage A GetThreadMembersData structure.
+		/// \returns A CoRoutine containing a vector<ThreadMemberData>.
+		static CoRoutine<vector<ThreadMemberData>> getThreadMembersAsync(GetThreadMembersData dataPackage);
+
+		/// Collects a list of Threads from a given Channel. \brief Collects a list of Threads from a given Channel.
+		/// \param dataPackage A GetActiveThreadsData structure.
+		/// \returns A CoRoutine containing a ActiveThreadsData.
+		static CoRoutine<ActiveThreadsData> getActiveThreadsAsync(GetActiveThreadsData dataPackage);
+
+		/// Collects a list of public archived Threads from a given Channel. \brief Collects a list of public archived Threads from a given Channel.
+		/// \param dataPackage A GetPublicArchivedThreadsData structure.
+		/// \returns A CoRoutine containing a ArchivedThreadsData.
+		static CoRoutine<ArchivedThreadsData> getPublicArchivedThreadsAsync(GetPublicArchivedThreadsData dataPackage);
+
+		/// Collects a list of private archived Threads from a given Channel. \brief Collects a list of private archived Threads from a given Channel.
+		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
+		/// \returns A CoRoutine containing a ArchivedThreadsData.
+		static CoRoutine<ArchivedThreadsData> getPrivateArchivedThreadsAsync(GetPrivateArchivedThreadsData dataPackage);
+
+		/// Collects a list of joined private archived Threads from a given Channel. \brief Collects a list of joined private archived Threads from a given Channel.
+		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
+		/// \returns A CoRoutine containing a ArchivedThreadsData.
+		static CoRoutine<ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(DiscordCoreAPI::GetJoinedPrivateArchivedThreadsData dataPackage);
 
 	protected:
+		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Channel>> cache;
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Channel>> cache{ nullptr };
+		static void insertChannel(Channel dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getCachedChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getChannelAsync(DiscordCoreAPI::GetChannelData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> modifyChannelAsync(DiscordCoreAPI::ModifyChannelData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void>  deleteOrCloseChannelAsync(DiscordCoreAPI::DeleteOrCloseChannelData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> getDMChannelAsync(DiscordCoreAPI::GetDMChannelData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> editChannelPermissionOverwritesAsync(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::InviteData>> getChannelInvitesAsync(DiscordCoreAPI::GetChannelInvitesData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::InviteData> createChannelInviteAsync(DiscordCoreAPI::CreateChannelInviteData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> deleteChannelPermissionOverwritesAsync(DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> followNewsChannelAsync(DiscordCoreAPI::FollowNewsChannelData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> triggerTypingIndicatorAsync(DiscordCoreAPI::TriggerTypingIndicatorData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> startThreadWithMessageAsync(DiscordCoreAPI::StartThreadWithMessageData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Channel> startThreadWithoutMessageAsync(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> joinThreadAsync(DiscordCoreAPI::JoinThreadData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> addThreadMemberAsync(DiscordCoreAPI::AddThreadMemberData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> leaveThreadAsync(DiscordCoreAPI::LeaveThreadData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> removeThreadMemberAsync(DiscordCoreAPI::RemoveThreadMemberData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ThreadMemberData> getThreadMemberAsync(DiscordCoreAPI::GetThreadMemberData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::ThreadMemberData>> getThreadMembersAsync(DiscordCoreAPI::GetThreadMembersData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ActiveThreadsData> getActiveThreadsAsync(DiscordCoreAPI::GetActiveThreadsData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ArchivedThreadsData> getPublicArchivedThreadsAsync(DiscordCoreAPI::GetPublicArchivedThreadsData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ArchivedThreadsData> getPrivateArchivedThreadsAsync(DiscordCoreAPI::GetPrivateArchivedThreadsData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(DiscordCoreAPI::GetJoinedPrivateArchivedThreadsData dataPackage);
-
-		void insertChannel(DiscordCoreAPI::Channel channel);
-
-		void removeChannel(string channelId);
+		static void removeChannel(string channelId);
 	};
+	/**@}*/
 }

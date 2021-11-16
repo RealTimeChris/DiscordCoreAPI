@@ -93,18 +93,7 @@ namespace DiscordCoreAPI {
 
 		shared_ptr<BotUser> currentUser{ nullptr };
 		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
-		unique_ptr<DiscordCoreInternal::ApplicationCommandManager> applicationCommands{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
-		unique_ptr<DiscordCoreInternal::GuildMemberManager> guildMembers{ nullptr };
-		unique_ptr<DiscordCoreInternal::InteractionManager> interactions{ nullptr };
-		unique_ptr<DiscordCoreInternal::ReactionManager> reactions{ nullptr };
-		unique_ptr<DiscordCoreInternal::MessageManager> messages{ nullptr };
-		unique_ptr<DiscordCoreInternal::StickerManager> stickers{ nullptr };
-		unique_ptr<DiscordCoreInternal::ChannelManager> channels{ nullptr };
-		unique_ptr<DiscordCoreInternal::RoleManager> roles{ nullptr };
-		unique_ptr<DiscordCoreInternal::UserManager> users{ nullptr };
-		unique_ptr<InputEventHandler> inputEvents{ nullptr };
-		unique_ptr<DiscordCoreInternal::GuildManager> guilds{ nullptr };
 		bool doWeQuit{ false };
 		string botToken{ "" };
 

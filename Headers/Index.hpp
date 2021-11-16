@@ -6,4 +6,3 @@
 #pragma once
 
 #include "CommandController.hpp"
-#include "EndpointWrappers.hpp"

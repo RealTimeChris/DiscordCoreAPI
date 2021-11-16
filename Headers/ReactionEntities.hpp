@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 	/// For creating a new Guild Emoji.
 	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
 		friend string DiscordCoreInternal::JSONIFY(CreateGuildEmojiData dataPackage);
-		friend class DiscordCoreInternal::ReactionManager;
+		friend class Reactions;
 
 		vector<unsigned __int8> imageData{};///< The image data.
 		vector<string> roles{};///< Roles that can use this Emoji.
@@ -104,37 +104,77 @@ namespace DiscordCoreAPI {
 		string name{ "" };///< Name of the Emoji.		
 	};
 
+	/// For deleting a Guild Emoji.
+	struct DeleteGuildEmojiData {
+		string guildId{ "" };///< The Guild within which to delete the Emoji.
+		string emojiId{ "" };///< The id of the Emoji to delete.
+		string reason{ "" };///< Reason for deleting the Emoji.
+	};
 
 	/**@}*/
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll ReactionManager {
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
+	/// An interface class for the Reaction related Discord endpoints. \brief An interface class for the Reaction related Discord endpoints.
+	class DiscordCoreAPI_Dll Reactions {
 	public:
 
-		friend class DiscordCoreAPI::Reactions;
+		/// Creates a Reaction on a Message. \brief Creates a Reaction on a Message.
+		/// \param dataPackage A CreateReactionData structure.
+		/// \returns A CoRoutine containing a Reaction.
+		static CoRoutine<Reaction> createReactionAsync(CreateReactionData dataPackage);
 
-	protected:
+		/// Get a list of users that reacted with this emoji. Returns an array of user objects on success. \brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
+		/// \param dataPackage A GetReactionsData structure.
+		/// \returns A CoRoutine containing a vector of Users.
+		static CoRoutine<vector<User>> getReactionsAsync(GetReactionsData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Reaction> createReactionAsync(DiscordCoreAPI::CreateReactionData dataPackage);
+		/// Deletes all of the Reactions from a given Message. \brief Deletes all of the Reactions from a given Message.
+		/// \param dataPackage A DeleteAllReactionsData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::User>> getReactionsAsync(DiscordCoreAPI::GetReactionsData dataPackage);
+		/// Deletes your own Reactions from a given Message. \brief Deletes your own Reactions from a given Message.
+		/// \param dataPackage A DeleteOwnReactionData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void> deleteOwnReactionAsync(DiscordCoreAPI::DeleteOwnReactionData dataPackage);
+		/// Deletes all of the Reactions by a specific emoji from a given Message. \brief Deletes all of the Reactions by a specific emoji from a given Message. 
+		/// \param dataPackage A DeleteReactionsByEmojiData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void> deleteUserReactionAsync(DiscordCoreAPI::DeleteUserReactionData dataPackage);
+		/// Deletes all of the Reactions by a specific User from a given Message. \brief Deletes all of the Reactions by a specific User from a given Message. 
+		/// \param dataPackage A DeleteUserReactionData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void> deleteAllReactionsAsync(DiscordCoreAPI::DeleteAllReactionsData dataPackage);
+		/// Collects a list of Guild Emoji from a chosen Guild. \brief Collects a list of Guild Emoji from a chosen Guild.
+		/// \param dataPackage A GetEmojiListData structure.
+		/// \returns A CoRoutine containing a vector of EmojiData.
+		static CoRoutine<vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void> deleteReactionsByEmojiAsync(DiscordCoreAPI::DeleteReactionsByEmojiData dataPackage);
+		/// Collects a single Guild Emoji from a chosen Guild. \brief Collects a single Guild Emoji from a chosen Guild.
+		/// \param dataPackage A GetGuildEmojiData structure.
+		/// \returns A CoRoutine containing an EmojiData.
+		static CoRoutine<EmojiData> getGuildEmojiAsync(GetGuildEmojiData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::EmojiData>> getEmojiListAsync(DiscordCoreAPI::GetEmojiListData dataPackage);
+		/// Creates a single Guild Emoji within a chosen Guild. \brief Creates a single Guild Emoji within a chosen Guild.
+		/// \param dataPackage A CreateGuildEmojiData structure.
+		/// \returns A CoRoutine containing an EmojiData.
+		static CoRoutine<EmojiData> createGuildEmojiAsync(CreateGuildEmojiData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::EmojiData> getGuildEmojiAsync(DiscordCoreAPI::GetGuildEmojiData dataPackage);
+		/// Modifies a single Guild Emoji within a chosen Guild. \brief Modifies a single Guild Emoji within a chosen Guild.
+		/// \param dataPackage A ModifyGuildEmojiData structure.
+		/// \returns A CoRoutine containing an EmojiData.
+		static CoRoutine<EmojiData> modifyGuildEmojiAsync(ModifyGuildEmojiData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::EmojiData> createGuildEmojiAsync(DiscordCoreAPI::CreateGuildEmojiData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::EmojiData> modifyGuildEmojiAsync(DiscordCoreAPI::ModifyGuildEmojiData dataPackage);
+		/// Deletes a single Guild Emoji within a chosen Guild. \brief Deletes a single Guild Emoji within a chosen Guild.
+		/// \param dataPackage A DeleteGuildEmojiData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteGuildEmojiAsync(DeleteGuildEmojiData dataPackage);
 	};
+	/**@}*/
 }

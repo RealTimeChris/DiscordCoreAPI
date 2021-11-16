@@ -42,7 +42,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
-		friend class DiscordCoreInternal::GuildMemberManager;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template <typename returnVal>
 		friend class DiscordCoreAPI::CoRoutine;
@@ -51,36 +50,45 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildMemberAddData;
 		friend class DiscordCoreClient;
 		friend class EventHandler;
+		friend class GuildMembers;
 		friend class Guild;
 
 		GuildMember() noexcept;
 	};
 	/**@}*/
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll GuildMemberManager {
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
+	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
+	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::GuildMembers;
-		friend class DiscordCoreAPI::Guild;
+		friend class EventHandler;
+		friend class Guild;
 
-		GuildMemberManager();
+		/// Collects a GuildMember from the library's cache. \brief Collects a GuildMember from the library's cache.
+		/// \param dataPackage A GetGuildMemberData structure.
+		/// \returns A CoRoutine containing a GuildMember.
+		static CoRoutine<GuildMember> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
+
+		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
+		/// \param dataPackage A GetGuildMemberData structure.
+		/// \returns A CoRoutine containing a GuildMember.
+		static CoRoutine<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage);
+
+		/// Modify's a GuildMember's properties. \brief Modify's a GuildMember's properties.
+		/// \param dataPackage A ModifyGuildMemberData structure.
+		/// \returns A CoRoutine containing a GuildMember.
+		static CoRoutine<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
 
 	protected:
+		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::GuildMember>> cache;
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::GuildMember>> cache{ nullptr };
+		static void insertGuildMember(GuildMember dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> getCachedGuildMemberAsync(DiscordCoreAPI::GetGuildMemberData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::GuildMember> modifyGuildMemberAsync(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
-
-		void insertGuildMember(DiscordCoreAPI::GuildMember guildMember);
-
-		void removeGuildMember(DiscordCoreAPI::GuildMember guildMember);
+		static void removeGuildMember(GuildMember dataPackage);
 	};
+	/**@}*/
 };

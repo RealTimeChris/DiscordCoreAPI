@@ -14,18 +14,14 @@ namespace DiscordCoreAPI {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Sticker>;
-		friend class DiscordCoreInternal::StickerManager;
 		friend class Guild;
 
 		Sticker();
 
 		Sticker(StickerData dataNew);
 	};
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll StickerManager {
+	class DiscordCoreAPI_Dll Stickers {
 	public:
 
 	};

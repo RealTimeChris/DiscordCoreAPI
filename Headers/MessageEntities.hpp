@@ -34,8 +34,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CreateMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage);
-		friend class DiscordCoreInternal::MessageManager;
-		friend class InputEventHandler;
+		friend class InputEvents;
+		friend class Messages;
 
 		CreateMessageData(string channelIdNew) {
 			this->channelId = channelIdNew;
@@ -181,8 +181,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll EditMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditMessageData dataPackage);
-		friend class DiscordCoreInternal::MessageManager;
-		friend class InputEventHandler;
+		friend class InputEvents;
+		friend class Messages;
 
 		EditMessageData(InputEventData dataPackage) {
 			this->requesterId = dataPackage.getRequesterId();
@@ -353,8 +353,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll SendDMData {
 
 		friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::SendDMData dataPackage);
-		friend class DiscordCoreInternal::MessageManager;
-		friend class InputEventHandler;
+		friend class InputEvents;
+		friend class Messages;
 
 		SendDMData(RespondToInputEventData dataPackage) {
 			this->requesterId = dataPackage.requesterId;
@@ -529,39 +529,70 @@ namespace DiscordCoreAPI {
 
 	};
 	/**@}*/
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll MessageManager {
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
+	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
+	class DiscordCoreAPI_Dll Messages {
 	public:
 
-		friend class DiscordCoreAPI::Messages;
+		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
+		/// \param dataPackage A GetMessageData structure.
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<Message> getMessageAsync(GetMessageData dataPackage);
 
-	protected:
+		/// Creates a new Message. \brief Creates a new Message.
+		/// \param dataPackage A CreateMessageData structure.
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<Message> createMessageAsync(CreateMessageData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Message>> getMessagesAsync(DiscordCoreAPI::GetMessagesData dataPackage);
+		/// Deletes a Message. \brief Deletes a Message.
+		/// \param dataPackage A DeleteMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteMessageAsync(DeleteMessageData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> getMessageAsync(DiscordCoreAPI::GetMessageData dataPackage);
+		/// Deletes a collection of Messages. \brief Deletes a collection of Messages.
+		/// \param dataPackage A DeleteMessagesBulkData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> createMessageAsync(DiscordCoreAPI::CreateMessageData dataPackage);
+		/// Crossposts a message from a News Channel to the following Channels. \brief Crossposts a message from a News Channel to the following Channels.
+		/// \param dataPackage A CrosspostMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<Message> crosspostMessageAsync(CrosspostMessageData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> editMessageAsync(DiscordCoreAPI::EditMessageData dataPackage);
+		/// Edit a Message. \brief Edit a Message.
+		/// \param dataPackage A EditMessageData structure.
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<Message> editMessageAsync(EditMessageData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void> deleteMessageAsync(DiscordCoreAPI::DeleteMessageData dataPackage);
+		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
+		/// \param dataPackage A GetMessagesData structure.
+		/// \returns A CoRoutine containing an optional vector of Message.
+		static CoRoutine<vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
-		void deleteMessageToBeWrapped(DiscordCoreAPI::DeleteMessageData dataPackage);
+		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
+		/// \param dataPackage A GetPinnedMessagesData structure.
+		/// \returns A CoRoutine containing a vector of Message.
+		static CoRoutine<vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<void> deleteMessagesBulkAsync(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
+		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.
+		/// \param dataPackage A PinMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> crosspostMessageAsync(DiscordCoreAPI::CrosspostMessageData dataPackage);
+		/// Unpins a Message from a given Channel. \brief Unpins a Message from a given Channel.
+		/// \param dataPackage A UnpinMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
 
-		DiscordCoreAPI::CoRoutine<vector<DiscordCoreAPI::Message>> getPinnedMessagesAsync(DiscordCoreAPI::GetPinnedMessagesData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> pinMessageAsync(DiscordCoreAPI::PinMessageData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> unpinMessageAsync(DiscordCoreAPI::UnpinMessageData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::Message> sendDMAsync(DiscordCoreAPI::SendDMData dataPackage);
+		/// Send a direct Message to a given User. \brief Send a direct Message to a given User.
+		/// \param dataPackage A SendDMData structure.
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<Message> sendDMAsync(SendDMData dataPackage);
 	};
+	/**@}*/
+
 }

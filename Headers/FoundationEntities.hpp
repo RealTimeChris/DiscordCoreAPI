@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
     class SelectMenuCollector;
     class ApplicationCommands;
     class DiscordCoreClient;
-    class InputEventHandler;
+    class InputEvents;
     class ButtonCollector;
     class VoiceConnection;
     class SoundCloudSong;
@@ -253,19 +253,10 @@ namespace  DiscordCoreInternal {
     * \addtogroup foundation_entities
     * @{
     */
-    class ApplicationCommandManager;
+    class ApplicationCommands;
     class BaseWebSocketAgent;
-    class GuildMemberManager;
-    class InteractionManager;
     class HttpRequestAgent;
-    class ReactionManager;
-    class ChannelManager;
-    class StickerManager;
-    class MessageManager;
     class ThreadManager;
-    class GuildManager;
-    class RoleManager;
-    class UserManager;
     class DataParser;
 
     enum class ConnectionWebSocketType {
@@ -988,6 +979,7 @@ namespace  DiscordCoreInternal {
         GET_GUILD_EMOJI = 67,
         POST_GUILD_EMOJI = 68,
         PATCH_GUILD_EMOJI = 69,
+        DELETE_GUILD_EMOJI = 70,
 
         GET_USER,
         GET_USER_SELF,
@@ -1338,7 +1330,6 @@ namespace DiscordCoreAPI {
 
         friend struct Concurrency::details::_ResultHolder<Role>;
         friend class DiscordCoreInternal::HttpRequestAgent;
-        friend class DiscordCoreInternal::RoleManager;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
         friend class DiscordCoreAPI::CoRoutine;
@@ -1346,6 +1337,7 @@ namespace DiscordCoreAPI {
         friend struct OnRoleCreationData;
         friend struct OnRoleUpdateData;
         friend class DiscordCoreClient;
+        friend class Roles;
         friend class Guild;
 
         Role();
@@ -1394,8 +1386,6 @@ namespace DiscordCoreAPI {
 
         friend struct Concurrency::details::_ResultHolder<User>;
         friend class DiscordCoreInternal::HttpRequestAgent;
-        friend class DiscordCoreInternal::ReactionManager;
-        friend class DiscordCoreInternal::UserManager;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
         friend class DiscordCoreAPI::CoRoutine;
@@ -1404,6 +1394,7 @@ namespace DiscordCoreAPI {
         friend struct OnGuildBanAddData;
         friend struct OnUserUpdateData;
         friend class DiscordCoreClient;
+        friend class Users;
         friend class Guild;
 
         DiscordCoreAPI::User();
@@ -1992,7 +1983,6 @@ namespace DiscordCoreAPI {
 
         friend struct Concurrency::details::_ResultHolder<Reaction>;
         friend class DiscordCoreInternal::HttpRequestAgent;
-        friend class DiscordCoreInternal::ReactionManager;
         template<typename returnValueType>
         friend class DiscordCoreAPI::CoRoutine;
         friend class DiscordCoreInternal::DataParser;
@@ -2793,7 +2783,6 @@ namespace DiscordCoreAPI {
     public:
 
         friend struct Concurrency::details::_ResultHolder<ApplicationCommand>;
-        friend class DiscordCoreInternal::ApplicationCommandManager;
         friend class DiscordCoreInternal::HttpRequestAgent;
         friend struct OnApplicationCommandDeletionData;
         friend struct OnApplicationCommandCreationData;
@@ -2801,6 +2790,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
         friend class DiscordCoreAPI::CoRoutine;
+        friend class ApplicationCommands;
         friend class DiscordCoreClient;
 
     protected:
@@ -2974,14 +2964,14 @@ namespace DiscordCoreAPI {
 
         friend struct Concurrency::details::_ResultHolder<Message>;
         friend class DiscordCoreInternal::HttpRequestAgent;
-        friend class DiscordCoreInternal::MessageManager;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
         friend class DiscordCoreAPI::CoRoutine;
         friend struct OnMessageCreationData;
         friend struct OnMessageUpdateData;
-        friend class InputEventHandler;
         friend class DiscordCoreClient;
+        friend class InputEvents;
+        
 
         Message();
 
@@ -3173,7 +3163,7 @@ namespace DiscordCoreAPI {
         friend class RespondToInputEventData;
         friend class BaseFunctionArguments;
         friend class DiscordCoreClient;
-        friend class InputEventHandler;
+        friend class InputEvents;
         friend class EventHandler;
         friend struct CommandData;
 
@@ -3447,7 +3437,7 @@ namespace DiscordCoreAPI {
         friend struct CreateFollowUpMessageData;
         friend struct EditFollowUpMessageData;
         friend struct CreateMessageData;
-        friend class InputEventHandler;
+        friend class InputEvents;
         friend struct SendDMData;
         
 

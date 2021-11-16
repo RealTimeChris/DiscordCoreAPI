@@ -75,37 +75,58 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::BaseWebSocketAgent* pBaseWebSocketAgent{ nullptr };
 	};
 	/**@}*/
-};
 
-namespace DiscordCoreInternal {
-
-	class DiscordCoreAPI_Dll UserManager {
+	/**
+	* \addtogroup discord_core_client
+	* @{
+	*/
+	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
+	class DiscordCoreAPI_Dll Users {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::Users;
-		friend class DiscordCoreAPI::Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Users;
+		friend class Guild;
+		
+		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
+		/// \param dataPackage A GetUserData structure.
+		/// \returns A CoRoutine containing a User.
+		static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
 
-		UserManager();
+		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
+		/// \param dataPackage A GetUserData structure.
+		/// \returns A CoRoutine containing a User.
+		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
+
+		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
+		/// \param dataPackage A AddRecipientToGroupDMData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage);
+
+		/// Removes a chosen recipient from a group DM. \brief Removes a chosen recipient from a group DM.
+		/// \param dataPackage A RemoveRecipientFromGroupDMData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
+
+		/// Collects the Bot's current User data. \brief Collects the Bot's current User data.
+		/// \returns A CoRoutine containing a User.
+		static CoRoutine<User> getCurrentUserAsync();
+
+		/// Removes the bot from a chosen Guild. \brief Removes the bot from a chosen Guild.
+		/// \param dataPackage A LeaveGuildData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
+
+		/// Collects the Application data associated with the current Bot. \brief Collects the Application data associated with the current Bot.
+		/// \returns A CoRoutine containing an Application.
+		static CoRoutine<ApplicationData> getApplicationDataAsync();
 
 	protected:
+		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::User>> cache;
 
-		shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::User>> cache{ };
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getCurrentUserAsync();
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getCachedUserAsync(DiscordCoreAPI::GetUserData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::User> getUserAsync(DiscordCoreAPI::GetUserData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> leaveGuildAsync(DiscordCoreAPI::LeaveGuildData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ApplicationData> getApplicationDataAsync();
-
-		DiscordCoreAPI::CoRoutine<void> addRecipientToGroupDMAsync(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage);
-
-		DiscordCoreAPI::CoRoutine<void> removeRecipientFromGroupDMAsync(DiscordCoreAPI::RemoveRecipientFromGroupDMData dataPackage);
-
-		void insertUser(DiscordCoreAPI::User user);
+		static void insertUser(User user);
 	};
+	/**@}*/
+
 }
