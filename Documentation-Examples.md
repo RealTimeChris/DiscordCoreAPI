@@ -40,6 +40,7 @@
 ## GuildMember Stuff:
 - ### [Getting a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Member.md)
 - ### [Listing Guild Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listing%20Guild%20Members.md)
+- ### [Searching Guild Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Searching%20Guild%20Members.md)
 - ### [Modifying a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Member.md)
 
 ## Guild Stuff:
