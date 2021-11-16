@@ -15,14 +15,6 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 
-	enum class AfkTimeOutDurations {
-		SHORTEST = 60,
-		SHORT = 300,
-		MEDIUM = 900,
-		LONG = 1800,
-		LONGEST = 3600
-	};
-
 	/// For creating a Guild. \brief For creating a Guild.
 	struct DiscordCoreAPI_Dll CreateGuildData {
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
@@ -114,6 +106,48 @@ namespace DiscordCoreAPI {
 
 		void initialize();
 	};
+
+	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
+	struct ModifyGuildData {
+		ModifyGuildData(Guild dataPackage) {
+			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
+			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
+			this->explicitContentFilter = dataPackage.explicitContentFilter;
+			this->systemChannelFlags = dataPackage.systemChannelFlags;
+			this->verificationLevel = dataPackage.verificationLevel;
+			this->preferredLocale = dataPackage.preferredLocale;
+			this->systemChannelId = dataPackage.systemChannelId;
+			this->rulesChannelId = dataPackage.rulesChannelId;
+			this->afkChannelId = dataPackage.afkChannelId;
+			this->description = dataPackage.description;
+			this->afkTimeout = dataPackage.afkTimeOut;
+			this->features = dataPackage.features;
+			this->ownerId = dataPackage.ownerId;
+			this->guildId = dataPackage.id;
+			this->name = dataPackage.name;
+		}
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
+		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
+		vector<unsigned __int8> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the guild discovery splash(when the server has the DISCOVERABLE feature).
+		VerificationLevel verificationLevel{};///< Verification level.
+		string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
+		vector<unsigned __int8> splash{};///< Base64 16 : 9 png / jpeg image for the guild splash(when the server has the INVITE_SPLASH feature).
+		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
+		vector<unsigned __int8> banner{};///< Base64 16 : 9 png / jpeg image for the guild banner(when the server has the BANNER feature).
+		__int32 systemChannelFlags{ 0 };///< System channel flags.
+		vector<unsigned __int8> icon{};///< Base64 1024x1024 png / jpeg / gif image for the guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
+		string preferredLocale{ "" };///< The preferred locale of a Community guild used in server discovery and notices from Discord; defaults to "en-US".
+		string systemChannelId{ "" };///< The id of the channel where guild notices such as welcome messages and boost events are posted.
+		string rulesChannelId{ "" };///< The id of the channel where Community guilds display rules and /or guidelines.
+		string afkChannelId{ "" };///< Id for afk channels.
+		vector<string> features{};///< Array of guild feature strings enabled guild features.
+		string description{ "" };///< The description for the guild, if the guild is discoverable.
+		string ownerId{ "" };///< User id to transfer guild ownership to(must be owner).
+		string guildId{ "" };///< Id of the chosen Guild to modify.
+		string reason{ "" };///< Reason for modifying the Guild.
+		string name{ "" };///< Desired name of the Guild.		
+	};
+
 	/**@}*/
 
 	/**
@@ -146,6 +180,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> getGuildAsync(GetGuildData dataPackage);
+
+		/// Modifies a chosen Guild's properties. \brief Modifies a chosen Guild's properties.
+		/// \param dataPackage A ModifyGuildData structure.
+		/// \returns A CoRoutine containing a Guild.
+		static CoRoutine<Guild> modifyGuildAsync(ModifyGuildData dataPackage);
 
 		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
 		/// \param dataPackage A GetAuditLogData structure.

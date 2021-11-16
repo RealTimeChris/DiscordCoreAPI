@@ -21,6 +21,7 @@ namespace DiscordCoreAPI {
 		string guildMemberId{ "" };	///< The user id of the desired Guild memeber.
 		vector<string> roleIds{}; ///<A collection of role id's to be applied to them.
 		string guildId{ "" }; ///< The id of the Guild for which you would like to modify a member.
+		string reason{ "" };///< Reason for modifying this GuildMember.
 		bool mute{ false }; ///< Whether or not to mute them in voice.
 		bool deaf{ false };	///< Whether or not to deafen them, in voice.
 		string nick{ "" };	///< Their new display/nick name.

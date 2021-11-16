@@ -1020,7 +1020,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("afk_timeout") && !jsonObjectData.at("afk_timeout").is_null()) {
-                guildData.afkTimeOut = jsonObjectData.at("afk_timeout").get<__int32>();
+                guildData.afkTimeOut = jsonObjectData.at("afk_timeout").get<DiscordCoreAPI::AfkTimeOutDurations>();
             }
 
             if (jsonObjectData.contains("widget_enabled") && !jsonObjectData.at("widget_enabled").is_null()) {

@@ -983,6 +983,7 @@ namespace  DiscordCoreInternal {
         POST_GUILD = 71,
         GET_GUILD = 72,
         GET_GUILD_PREVIEW= 73,
+        PATCH_GUILD = 74,
 
         GET_USER,
         GET_USER_SELF,
@@ -2409,6 +2410,14 @@ namespace DiscordCoreAPI {
         string id{ "" };
     };    
 
+    enum class AfkTimeOutDurations {
+        SHORTEST = 60,
+        SHORT = 300,
+        MEDIUM = 900,
+        LONG = 1800,
+        LONGEST = 3600
+    };
+
     /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
@@ -2424,6 +2433,7 @@ namespace DiscordCoreAPI {
         vector<GuildMemberData> members{};  ///< Array of GuildMembers.
         WelcomeScreenData welcomeScreen{};  ///< Welcome screen for the Guild.
         __int32 maxVideoChannelUsers{ 0 };  ///< Maximum quantity of users per video Channel.
+        AfkTimeOutDurations afkTimeOut{};    ///< Time for an individual to time out as afk.
         __int32 systemChannelFlags{ 0 };    ///< System Channel flags.
         vector<ChannelData> channels{}; ///< Array of Guild channels.
         vector<StickerData> stickers{}; ///< Array of Guild stickers.
@@ -2446,7 +2456,6 @@ namespace DiscordCoreAPI {
         vector<RoleData> roles{};   ///< Array of Guild roles.
         string description{ "" };   ///< Description of the Guild.
         __int32 memberCount{ 0 };   ///< Member count.
-        __int32 afkTimeOut{ 0 };    ///< Time for an individual to time out as afk.
         __int32 maxMembers{ 0 };    ///< Max quantity of members.
         __int32 nsfwLevel{ 0 }; ///< NSFW warning level.
         string createdAt{ "" }; ///< When was the Guild created?
