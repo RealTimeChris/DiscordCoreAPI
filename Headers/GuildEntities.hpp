@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For acquiring a Guild preview of a chosen Guild. \brief For acquiring a Guild preview of a chosen Guild.
-	struct GetGuildPreviewData {
+	struct DiscordCoreAPI_Dll GetGuildPreviewData {
 		string guildId{ "" };///< The id of the Guild's preview to acquire.
 	};
 
@@ -137,11 +137,6 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a GuildPreviewData.
 		static CoRoutine<GuildPreviewData> getGuildPreviewAsync(GetGuildPreviewData dataPackage);
 
-		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
-		/// \param dataPackage A GetAuditLogData structure.
-		/// \returns A CoRoutine containing AuditLogData.
-		static CoRoutine<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
-
 		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
@@ -151,6 +146,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> getGuildAsync(GetGuildData dataPackage);
+
+		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
+		/// \param dataPackage A GetAuditLogData structure.
+		/// \returns A CoRoutine containing AuditLogData.
+		static CoRoutine<AuditLogData> getAuditLogDataAsync(GetAuditLogData dataPackage);
 
 		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.
