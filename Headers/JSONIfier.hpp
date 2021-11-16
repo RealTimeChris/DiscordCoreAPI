@@ -27,6 +27,7 @@ namespace DiscordCoreAPI {
 	struct ModifyGuildMemberData;
 	struct ModifyGuildEmojiData;
 	struct CreateGuildEmojiData;
+	struct AddGuildMemberData;
 	struct CreateGuildBanData;
 	struct CreateMessageData;
 	struct ModifyChannelData;
@@ -128,5 +129,7 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildChannelData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildChannelPositionsData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::AddGuildMemberData dataPackage);
 	
 }

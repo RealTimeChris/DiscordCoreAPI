@@ -14,18 +14,6 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
-	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
-	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
-		string newVoiceChannelId{ "" }; ///< The new voice channel to move them into.
-		string currentChannelId{ "" }; ///< The current voice channel, if applicaple.
-		string guildMemberId{ "" };	///< The user id of the desired Guild memeber.
-		vector<string> roleIds{}; ///<A collection of role id's to be applied to them.
-		string guildId{ "" }; ///< The id of the Guild for which you would like to modify a member.
-		string reason{ "" };///< Reason for modifying this GuildMember.
-		bool mute{ false }; ///< Whether or not to mute them in voice.
-		bool deaf{ false };	///< Whether or not to deafen them, in voice.
-		string nick{ "" };	///< Their new display/nick name.
-	};
 
 	/// For getting a GuildMember, from the library's cache or Discord server. \brief For getting a GuildMember, from the library's cache or Discord server.
 	struct DiscordCoreAPI_Dll GetGuildMemberData {
@@ -45,6 +33,37 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< Guild within which to search for the GuildMembers.
 		string query{ "" };///< Query string to match username(s) and nickname(s) against.
 		__int32 limit{ 0 };///< Max number of members to return (1 - 1000).
+	};
+
+	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
+	struct AddGuildMemberData {
+		string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the guild.
+		vector<string>roles{};///< Array of role ids the member is assigned.
+		string guildId{ "" };///< The Guild to add the new GuildMember to.
+		string userId{ "" };///< The User id of the user you wish to add.
+		string nick{ "" };///< Value to set users nickname to.
+		bool mute{};///< Whether the user is muted in voice channels.
+		bool deaf{};///< Whether the user is deafened in voice channels.
+	};
+
+	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
+	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
+		string newVoiceChannelId{ "" }; ///< The new voice channel to move them into.
+		string currentChannelId{ "" }; ///< The current voice channel, if applicaple.
+		string guildMemberId{ "" };	///< The user id of the desired Guild memeber.
+		vector<string> roleIds{}; ///<A collection of role id's to be applied to them.
+		string guildId{ "" }; ///< The id of the Guild for which you would like to modify a member.
+		string reason{ "" };///< Reason for modifying this GuildMember.
+		bool mute{ false }; ///< Whether or not to mute them in voice.
+		bool deaf{ false };	///< Whether or not to deafen them, in voice.
+		string nick{ "" };	///< Their new display/nick name.
+	};
+
+	/// For modifying the Current GuildMember's values. \brief For modifying the Current GuildMember's values.
+	struct ModifyCurrentGuildMemberData {
+		string guildId{ "" };///< The Guild within which to modify the current user's values.
+		string reason{ "" };///< A reason for modifying the current user's values.
+		string nick{ "" };///< A new nickname for the current user.
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
@@ -93,11 +112,6 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a GuildMember.
 		static CoRoutine<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage);
 
-		/// Modify's a GuildMember's properties. \brief Modify's a GuildMember's properties.
-		/// \param dataPackage A ModifyGuildMemberData structure.
-		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
-
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
 		/// \returns A CoRoutine containing a vector of GuildMembers.
@@ -107,6 +121,21 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A ListGuildMembersData structure.
 		/// \returns A CoRoutine containing a vector of GuildMembers.
 		static CoRoutine<vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+
+		/// Adds a GuildMember to a chosen Guild. \brief Adds a GuildMember to a chosen Guild.
+		/// \param dataPackage A AddGuildMemberData structure.
+		/// \returns A CoRoutine containing a vector of GuildMembers.
+		static CoRoutine<GuildMember> addGuildMemberAsync(AddGuildMemberData dataPackage);
+
+		/// Modifies a GuildMember's properties. \brief Modifies a GuildMember's properties.
+		/// \param dataPackage A ModifyGuildMemberData structure.
+		/// \returns A CoRoutine containing a GuildMember.
+		static CoRoutine<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
+
+		/// Modifies the current GuildMember's properties. \brief /// Modifies the current GuildMember's properties.
+		/// \param dataPackage A ModifyCurrentGuildMemberData structure.
+		/// \returns A CoRoutine containing a GuildMember.
+		static CoRoutine<GuildMember> modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage);
 
 	protected:
 		static shared_ptr<concurrent_unordered_map<string, GuildMember>> cache;

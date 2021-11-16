@@ -991,6 +991,8 @@ namespace  DiscordCoreInternal {
         GET_GUILD_ACTIVE_THREADS = 79,
         GET_GUILD_MEMBERS = 80,
         GET_SEARCH_GUILD_MEMBERS = 81,
+        PUT_GUILD_MEMBER = 82,
+        PATCH_CURRENT_GUILD_MEMBER = 83,
 
         GET_USER,
         GET_USER_SELF,        
