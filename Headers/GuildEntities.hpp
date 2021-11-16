@@ -68,6 +68,14 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The Guild you would like to delete.
 	};
 
+	/// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
+	struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
+		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
+		string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
+		string userId{ "" };///< The User for whom to look for the actions of.
+		__int32 limit{ 0 };///< The maximum number of actions to acquire from the log.
+	};
+
 	/**@}*/
 
 	/**
@@ -167,6 +175,11 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class EventHandler;
 
+		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
+		/// \param dataPackage A GetGuildAuditLogsData structure.
+		/// \returns A CoRoutine containing AuditLogData.
+		static CoRoutine<AuditLogData> getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage);
+
 		/// Creates a new Guild. \brief Creates a new Guild.
 		/// \param dataPackage A CreateGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
@@ -196,11 +209,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A DeleteGuildData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildAsync(DeleteGuildData dataPackage);
-
-		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
-		/// \param dataPackage A GetAuditLogData structure.
-		/// \returns A CoRoutine containing AuditLogData.
-		static CoRoutine<AuditLogData> getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage);
 
 		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.

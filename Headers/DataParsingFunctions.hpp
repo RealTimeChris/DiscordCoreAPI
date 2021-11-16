@@ -281,6 +281,18 @@ namespace DiscordCoreInternal {
             *pDataStructure = channelData;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ChannelData>* pDataStructure) {
+            vector<DiscordCoreAPI::ChannelData> theVector{};
+
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::ChannelData newData{};
+                parseObject(value, &newData);
+                theVector.push_back(newData);
+            }
+
+            *pDataStructure = theVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::RoleTagsData* pDataStructure) {
             DiscordCoreAPI::RoleTagsData roleTagsData = *pDataStructure;
 
@@ -3476,7 +3488,7 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("thumbnail") && !jsonObjectData.at("thumbnail").is_null()) {
                 newData.thumbnailURL = jsonObjectData.at("thumbnail").at("thumbnails").at(0).at("url").get<string>();
             }
-
+            
             if (jsonObjectData.contains("videoId") && !jsonObjectData.at("videoId").is_null()) {
                 newData.songId = "https://www.youtube.com/watch?v=" + jsonObjectData.at("videoId").get<string>();
             }

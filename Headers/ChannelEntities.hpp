@@ -115,64 +115,103 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.
-	struct JoinThreadData {
+	struct DiscordCoreAPI_Dll JoinThreadData {
 		string channelId{ "" };///< The id of the Thread to join.
 	};
 
 	/// Adds a chosen User to a chosen Thread. \brief Adds a chosen User to a chosen Thread.
-	struct AddThreadMemberData {
+	struct DiscordCoreAPI_Dll AddThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to join.
 		string userId{ "" };///< The id of the User to add to the Thread.
 	};
 
 	/// For leaving a Thread. \brief For leaving a Thread.
-	struct LeaveThreadData {
+	struct DiscordCoreAPI_Dll LeaveThreadData {
 		string channelId{ "" };///< The id of the Thread to leave.
 	};
 
 	/// For removing a chosen User from a Thread. \brief For removing a chosen User from a Thread.
-	struct RemoveThreadMemberData {
+	struct DiscordCoreAPI_Dll RemoveThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to remove them from.
 		string userId{ "" };///< The id of the User to remove from the Thread.
 	};
 
 	/// For collecting a ThreadMember data structure for a given ThreadMember. \brief For collecting a ThreadMember data structure for a given ThreadMember.
-	struct GetThreadMemberData {
+	struct DiscordCoreAPI_Dll GetThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to collect them from.
 		string userId{ "" };///< The id of the User to collect from the Thread.
 	};
 
 	/// For collecting the list of ThreadMembers from a Thread. \brief For collecting the list of ThreadMembers from a Thread.
-	struct GetThreadMembersData {
+	struct DiscordCoreAPI_Dll GetThreadMembersData {
 		string channelId{ "" };///< The id of the Thread to collect them from.
 	};
 
 	/// For collecting the list of active Threads. \brief For collecting the list of active Threads.
-	struct GetActiveThreadsData {
+	struct DiscordCoreAPI_Dll GetActiveThreadsData {
 		string channelId{ "" };///< The id of the Channel to collect the Threads from.
 	};
 
 	/// For collecting puiblic archived Threads from a given Channel. \brief For collecting puiblic archived Threads from a given Channel.
-	struct GetPublicArchivedThreadsData {
+	struct DiscordCoreAPI_Dll GetPublicArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
 		__int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting private archived Threads from a given Channel. \brief For collecting private archived Threads from a given Channel.
-	struct GetPrivateArchivedThreadsData {
+	struct DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
 		__int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting joined private archived Threads from a given Channel. \brief For collecting joined private archived Threads from a given Channel.
-	struct GetJoinedPrivateArchivedThreadsData {
+	struct DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
 		__int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
+	/// For acquiring a list of Channels from a chosen Guild. /brief For acquiring a list of Channels from a chosen Guild.
+	struct DiscordCoreAPI_Dll GetGuildChannelsData {
+		string guildId{ "" };///< The Guild from which to collect the Channels from.
+	};
+
+	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
+	struct DiscordCoreAPI_Dll CreateGuildChannelData {
+		vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the channel's permission overwrites.
+		__int32 rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
+		__int32 userLimit{ 0 };///< The user limit of the voice channel(voice only).
+		string parentId{ "" };///< Id of the parent category for a channel.
+		__int32 position{ 0 };///< Sorting position of the channel.
+		__int32 bitrate{ 0 };///< The bitrate(in bits) of the voice channel(voice only).
+		string guildId{ "" };///< The Guild within which to create the Channel.
+		string reason{ "" };///< Reason for creating the channel.
+		ChannelType type{};///< The type of channel.
+		string topic{ "" };///< Channel topic(0 - 1024 characters).
+		bool nsfw{ false };///<  Whether the channel is nsfw.
+		string name{ "" };///< The name of the Channel.
+	};
+
+	struct ModifyGuildChannelPositionData {
+		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
+		string parentId{ "" };///< The new parent ID for the channel that is moved.
+		__int32 position{ 0 };///< Sorting position of the channel.
+		string id{ "" };///< Channel id.
+	};
+
+	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
+	struct ModifyGuildChannelPositionsData {
+		vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's data.
+		string guildId{ "" };///< Guild within which to re-order the Channel positions.
+		string reason{ "" };///< Reason for re-ordering the Channel positions.
+	};
+
+	/// For listing the active Threads in a chosen Guild. \brief For listing the active Threads in a chosen Guild.
+	struct ListActiveThreadsData {
+		string guildId{ "" };///< The Guild from which to list the Threads from.
+	};
 
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
@@ -182,6 +221,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
 		friend class DiscordCoreAPI::CoRoutine;
+		friend class DiscordCoreInternal::DataParser;
 		friend struct OnChannelDeletionData;
 		friend struct OnChannelCreationData;
 		friend struct OnThreadCreationData;
@@ -322,7 +362,27 @@ namespace DiscordCoreAPI {
 		/// Collects a list of joined private archived Threads from a given Channel. \brief Collects a list of joined private archived Threads from a given Channel.
 		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
 		/// \returns A CoRoutine containing a ArchivedThreadsData.
-		static CoRoutine<ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(DiscordCoreAPI::GetJoinedPrivateArchivedThreadsData dataPackage);
+		static CoRoutine<ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(GetJoinedPrivateArchivedThreadsData dataPackage);
+
+		/// Collects a list of Channels from a chosen Guild. \brief Collects a list of Channels from a chosen Guild.
+		/// \param dataPackage A GetGuildChannelsData structure.
+		/// \returns A CoRoutine containing a vector of Channels.
+		static CoRoutine<vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
+
+		/// Creates a new Channel within a chosen Guild. \brief Creates a new Channel within a chosen Guild.
+		/// \param dataPackage A GetGuildChannelsData structure.
+		/// \returns A CoRoutine containing a vector of Channels.
+		static CoRoutine<Channel> createGuildChannelAsync(CreateGuildChannelData dataPackage);
+
+		/// Re-orders the Channel positions, within a chosen Guild. \brief Re-orders the Channel positions, within a chosen Guild.
+		/// \param dataPackage A ModifyGuildChannelPositionsData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage);
+
+		/// Lists all of the active Threads of a chosen Guild. \brief Lists all of the active Threads of a chosen Guild.
+		/// \param dataPackage A ListActiveThreadsData structure.
+		/// \returns A CoRoutine containing a vector of Channels.
+		static CoRoutine<ActiveThreadsData> listActiveThreadsAsync(ListActiveThreadsData dataPackage);
 
 	protected:
 		static shared_ptr<concurrent_unordered_map<string, DiscordCoreAPI::Channel>> cache;

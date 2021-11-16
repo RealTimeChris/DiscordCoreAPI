@@ -934,7 +934,7 @@ namespace  DiscordCoreInternal {
         GET_FOLLOWUP_MESSAGE = 22,
         PATCH_FOLLOWUP_MESSAGE = 23,
         DELETE_FOLLOWUP_MESSAGE = 24,
-        GET_GUILD_AUDIT_LOG = 25,
+        GET_GUILD_AUDIT_LOGS = 25,
         GET_CHANNEL = 26,
         PATCH_CHANNEL = 27,
         DELETE_CHANNEL = 28,
@@ -985,10 +985,13 @@ namespace  DiscordCoreInternal {
         GET_GUILD_PREVIEW= 73,
         PATCH_GUILD = 74,
         DELETE_GUILD = 75,
+        GET_GUILD_CHANNELS = 76,
+        POST_GUILD_CHANNEL = 77,
+        PATCH_GUILD_CHANNEL_POSITIONS = 78,
+        GET_GUILD_ACTIVE_THREADS = 79,
 
         GET_USER,
-        GET_USER_SELF,
-        
+        GET_USER_SELF,        
         GET_GUILD_MEMBER,
         GET_GUILD_MEMBERS,
         GET_ROLES,
@@ -3063,14 +3066,6 @@ namespace DiscordCoreAPI {
         InteractionData(string requesterId) {
             this->requesterId = requesterId;
         }
-    };
-
-    /// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
-    struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
-        AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
-        string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
-        string userId{ "" };///< The User for whom to look for the actions of.
-        __int32 limit{ 0 };///< The maximum number of actions to acquire from the log.
     };
 
     /**@}*/
