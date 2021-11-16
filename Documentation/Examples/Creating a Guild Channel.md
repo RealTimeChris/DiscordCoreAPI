@@ -40,8 +40,19 @@ namespace DiscordCoreAPI {
 				CreateGuildChannelData dataPackage{};
 				dataPackage.type = ChannelType::GUILD_TEXT;
 				dataPackage.name = "TEST CHANNEL";
+				dataPackage.guildId = args->eventData.getGuildId();
+				dataPackage.reason = "TESTING PURPOSES!";
 
-				Channel channels = Channels::createGuildChannelAsync(dataPackage).get();
+				vector<Channel> channels = Channels::getGuildChannelsAsync({ .guildId = args->eventData.getGuildId() }).get();
+
+				for (auto value : channels) {
+					if (value.type == ChannelType::GUILD_CATEGORY) {
+						dataPackage.parentId = value.id;
+						break;
+					}
+				}
+
+				Channel channel = Channels::createGuildChannelAsync(dataPackage).get();
 
 				cout << "THE NAME: " << channel.name << endl;
 
