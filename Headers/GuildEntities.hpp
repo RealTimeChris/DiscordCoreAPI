@@ -43,6 +43,11 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild to acquire.
 	};
 
+	/// For acquiring a Guild preview of a chosen Guild. \brief For acquiring a Guild preview of a chosen Guild.
+	struct GetGuildPreviewData {
+		string guildId{ "" };///< The id of the Guild's preview to acquire.
+	};
+
 	/// For banning a current GuildMember. \brief For banning a current GuildMember.
 	struct DiscordCoreAPI_Dll CreateGuildBanData {
 		__int32 deleteMessageDays{ 0 };///< The number of days of their Messages to delete.
@@ -126,6 +131,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> createGuildAsync(CreateGuildData dataPackage);
+
+		/// Acquires the preview Data of a chosen Guild. \brief Acquires the preview Data of a chosen Guild.
+		/// \param dataPackage A GetGuildPreviewData structure.
+		/// \returns A CoRoutine containing a GuildPreviewData.
+		static CoRoutine<GuildPreviewData> getGuildPreviewAsync(GetGuildPreviewData dataPackage);
 
 		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
 		/// \param dataPackage A GetAuditLogData structure.

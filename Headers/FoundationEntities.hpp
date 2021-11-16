@@ -981,10 +981,12 @@ namespace  DiscordCoreInternal {
         PATCH_GUILD_EMOJI = 69,
         DELETE_GUILD_EMOJI = 70,
         POST_GUILD = 71,
+        GET_GUILD = 72,
+        GET_GUILD_PREVIEW= 73,
 
         GET_USER,
         GET_USER_SELF,
-        GET_GUILD,
+        
         GET_GUILD_MEMBER,
         GET_GUILD_MEMBERS,
         GET_ROLES,
@@ -2393,6 +2395,19 @@ namespace DiscordCoreAPI {
         string tags{ "" };  ///< Tags for the sticker to use.
         UserData user{};    ///< The user that uploaded the Guild sticker.
     };
+
+    struct GuildPreviewData {
+        __int32 approximatePresenceCount{ 0 };
+        __int32 approximateMemberCount{ 0 };
+        string discoverySplash{ "" };
+        vector<EmojiData> emojis{};
+        vector<string> features{};
+        string description{ "" };
+        string splash{ "" };
+        string name{ "" };
+        string icon{ "" };
+        string id{ "" };
+    };    
 
     /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {

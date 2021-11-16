@@ -485,6 +485,61 @@ namespace DiscordCoreInternal {
             *pDataStructure = newVector;
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildPreviewData* pDataStructure) {
+            DiscordCoreAPI::GuildPreviewData newData{};
+
+            if (jsonObjectData.contains("approximate_presence_count") && !jsonObjectData.at("approximate_presence_count").is_null()) {
+                newData.approximatePresenceCount = jsonObjectData.at("approximate_presence_count").get<__int32>();
+            }
+
+            if (jsonObjectData.contains("approximate_member_count") && !jsonObjectData.at("approximate_member_count").is_null()) {
+                newData.approximateMemberCount = jsonObjectData.at("approximate_member_count").get<__int32>();
+            }
+
+            if (jsonObjectData.contains("discovery_splash") && !jsonObjectData.at("discovery_splash").is_null()) {
+                newData.discoverySplash = jsonObjectData.at("discovery_splash").get<string>();
+            }
+
+            if (jsonObjectData.contains("emojis") && !jsonObjectData.at("emojis").is_null()) {
+                vector<DiscordCoreAPI::EmojiData> newVector{};
+                for (auto value : jsonObjectData.at("emojis")) {
+                    DiscordCoreAPI::EmojiData newDataValue{};
+                    parseObject(value, &newDataValue);
+                }
+                newData.emojis = newVector;
+            }
+
+            if (jsonObjectData.contains("features") && !jsonObjectData.at("features").is_null()) {
+                vector<string> newVector{};
+                for (auto value : jsonObjectData.at("features")) {
+                    DiscordCoreAPI::EmojiData newDataValue{};
+                    newVector.push_back(value.get<string>());
+                }
+                newData.features = newVector;
+            }
+
+            if (jsonObjectData.contains("description") && !jsonObjectData.at("description").is_null()) {
+                newData.description = jsonObjectData.at("description").get<string>();
+            }
+
+            if (jsonObjectData.contains("splash") && !jsonObjectData.at("splash").is_null()) {
+                newData.splash = jsonObjectData.at("splash").get<string>();
+            }
+
+            if (jsonObjectData.contains("icon") && !jsonObjectData.at("icon").is_null()) {
+                newData.icon = jsonObjectData.at("icon").get<string>();
+            }
+
+            if (jsonObjectData.contains("name") && !jsonObjectData.at("name").is_null()) {
+                newData.name = jsonObjectData.at("name").get<string>();
+            }
+
+            if (jsonObjectData.contains("id") && !jsonObjectData.at("id").is_null()) {
+                newData.id = jsonObjectData.at("id").get<string>();
+            }
+
+            *pDataStructure = newData;
+        }
         static void parseObject(json jsonObjectData, DiscordCoreAPI::VoiceStateData* pDataStructure) {
             DiscordCoreAPI::VoiceStateData voiceStateData = *pDataStructure;
 
