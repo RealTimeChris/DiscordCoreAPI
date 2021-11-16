@@ -42,10 +42,10 @@ namespace DiscordCoreAPI {
 				vector<ModifyGuildChannelPositionData> dataPackage00{};
 
 				ModifyGuildChannelPositionData dataPackage01{};
-				dataPackage01.id = channels.at(0).id;
+				dataPackage01.id = channels.at(1).id;
 				dataPackage01.lockPermissions = false;
-				dataPackage01.parentId = channels.at(0).parentId;
-				dataPackage01.position = channels.at(0).position - 1;
+				dataPackage01.parentId = channels.at(1).parentId;
+				dataPackage01.position = channels.at(1).position - 1;
 
 				dataPackage00.push_back(dataPackage01);
 
