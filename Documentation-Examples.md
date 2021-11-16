@@ -38,12 +38,13 @@
 - ### [Modifying a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Member.md)
 
 ## Guild Stuff:
+- ### [Getting Audit Logs](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Audit%20Logs.md)
 - ### [Creating a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild.md)
 - ### [Getting All Guilds](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20All%20Guilds.md)
 - ### [Getting a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild.md)
 - ### [Getting a Guild Preview](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Preview.md)
 - ### [Modifying a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild.md)
-- ### [Getting Audit Logs](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Audit%20Logs.md)
+- ### [Deleting a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild.md)
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
