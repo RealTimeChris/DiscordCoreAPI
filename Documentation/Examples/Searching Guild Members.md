@@ -1,4 +1,4 @@
-### **Getting A list of Guild Emoji:**
+### **Searching Guild Members:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `GuildMembers` class.
 - Populate a data structure of type `DiscordCoreAPI::SearchGuildMembersData`.
