@@ -8,13 +8,13 @@
 
 ## [Build Instructions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Build%20Instructions.md)
 
+## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
+
 ## [Doxygen-Generated Documentation](https://realtimechris.github.io/DiscordCoreAPI-Docs/)
 
 ## [Raw DLL Source](https://github.com/RealTimeChris/DiscordCoreAPI-DLL)
 
-## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/qbuBKsumAG)
-
-## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
+## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/KRef5CdytH)
 
 ## [Example "Music" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-MusicHouse-Cpp)
 
