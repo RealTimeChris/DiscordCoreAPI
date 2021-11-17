@@ -86,7 +86,7 @@
 - ### [Deleting a Guild Emoji](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Emoji.md)
 
 ## Role Stuff:
-- ### [Adding a Role to a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Role%20to%20a%20Guild%Member.md)
+- ### [Adding a Role to a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Role%20to%20a%20Guild%20Member.md)
 
 ## Input-Event Stuff:
 - ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
