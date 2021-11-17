@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 		static vector<RepeatedFunctionData> functionsToExecute;
 
 		shared_ptr<BotUser> currentUser{ nullptr };
-		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ nullptr };
+		unique_ptr<concurrent_queue<shared_ptr<DiscordCoreInternal::WebSocketWorkload>>> webSocketWorkloadTarget{ nullptr };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		bool doWeQuit{ false };
 		string botToken{ "" };

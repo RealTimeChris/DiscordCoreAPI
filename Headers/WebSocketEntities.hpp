@@ -68,6 +68,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
 		WebSocketEventType eventType{};
 		json payLoad{};
+		~WebSocketWorkload() {};
 	};
 
 	class DiscordCoreAPI_Dll BaseWebSocketAgent {
@@ -78,7 +79,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<WebSocketWorkload>* workloadTarget);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, concurrent_queue<shared_ptr<WebSocketWorkload>>* workloadTarget);
 
 		void connect();
 
@@ -88,7 +89,7 @@ namespace DiscordCoreInternal {
 
 		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
-		unbounded_buffer<WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
+		concurrent_queue<shared_ptr<WebSocketWorkload>>* webSocketWorkloadTarget{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };

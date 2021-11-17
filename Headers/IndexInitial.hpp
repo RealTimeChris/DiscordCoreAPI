@@ -24,12 +24,6 @@
 #define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #endif
 
-#ifdef _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#include <cstdlib>
-#include <crtdbg.h>
-#endif
-
 #pragma comment(lib, "windowsapp")
 
 #pragma warning(push)

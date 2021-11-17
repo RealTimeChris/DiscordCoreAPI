@@ -19,7 +19,7 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
+				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
+				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew{ new RateLimitData() };
+				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
