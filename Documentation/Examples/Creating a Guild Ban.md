@@ -2,7 +2,7 @@
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Guilds` class.
 - Populate a data structure of type `DiscordCoreAPI::CreateGuildBanData.
-- Select, from the `Reactions` class, the `createGuildBanAsync()` function and execute it, with a return value of type `void`, while passing it the created data structure.
+- Select, from the `Guilds` class, the `createGuildBanAsync()` function and execute it, with a return value of type `void`, while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
