@@ -22,15 +22,23 @@ namespace DiscordCoreAPI {
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
 	class DiscordCoreAPI_Dll BaseFunctionArguments {
 	public:
+
+		vector<string> argumentsArray{};///< A vector of string arguments.
+		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
+
 		BaseFunctionArguments(BaseFunctionArguments& args) {
 			this->argumentsArray = args.argumentsArray;
 			this->eventData = args.eventData;
 		}
+
 		BaseFunctionArguments(InputEventData inputEventData) {
 			this->eventData = inputEventData;
 		}
-		vector<string> argumentsArray{};///< A vector of string arguments.
-		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
+
+		BaseFunctionArguments(const BaseFunctionArguments& other) {
+			this->argumentsArray = other.argumentsArray;
+			this->eventData = other.eventData;
+		}
 	};
 
 	/// Base class for the command classes. \brief Base class for the command classes.
