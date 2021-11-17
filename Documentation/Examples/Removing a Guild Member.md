@@ -37,14 +37,15 @@ namespace DiscordCoreAPI {
 
 		virtual CoRoutine<void> executeAsync(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 			try {
-				GetEmojiListData dataPackage{};
-				dataPackage.guildId = args->eventData.getGuildId();
 
-				auto emojiList = Reactions::getEmojiListAsync(dataPackage).get();
+				RemoveGuildMemberData dataPackage01{};
+				dataPackage01.guildId = args->eventData.getGuildId();
+				if (args->argumentsArray.size() > 0) {
+					dataPackage01.guildMemberId = args->argumentsArray[0];
+				}				
+				dataPackage01.reason = "TESTING PURPOSES!";
 
-				for (auto value : emojiList) {
-					cout << "THE NAME: " << value.name << endl;
-				}
+				GuildMembers::removeGuildMemberAsync(dataPackage01).get();
 
 				co_return;
 			}
