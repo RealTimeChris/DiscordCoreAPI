@@ -3233,6 +3233,16 @@ namespace DiscordCoreInternal {
             *pDataStructure = newData;
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::BanData>* pDataStructure) {
+            vector<DiscordCoreAPI::BanData> newVector{};
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::BanData newData{};
+                parseObject(value, &newData)
+                newVector.push_back(newData);
+            }
+            *pDataStructure = newVector;
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ThreadListSyncData* pDataStructure) {
             DiscordCoreAPI::ThreadListSyncData newData = *pDataStructure;
 

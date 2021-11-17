@@ -15,6 +15,22 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
+	/// For addin a Role to a GuildMember. \brief For addin a Role to a GuildMember.
+	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
+		string guildId{ "" };///< The id of the Guild within which to assign the Role.
+		string userId{ "" };///< The id of the User to whom to assign the Role.
+		string roleId{ "" };///< The id of the Role to be assigned.
+		string reason{ "" };///< Reason for adding the GuildMember's Role.
+	};
+
+	/// For removing a Role from a GuildMember. \brief For removing a Role from a GuildMember.
+	struct DiscordCoreAPI_Dll RemoveGuildMemberRoleData {
+		string guildId{ "" };///< The id of the Guild within which to remove the Role.
+		string userId{ "" };///< The id of the User from whom to remove the Role.
+		string roleId{ "" };///< The id of the Role to be removed.
+		string reason{ "" };///< Reason for removing the GuildMember's Role.
+	};
+
 	/// Get Guild roles data. \brief Get Guild roles data.
 	struct DiscordCoreAPI_Dll GetGuildRolesData {
 		string guildId{ "" };///< Guild id for which Guild to get the roles from.
@@ -79,19 +95,6 @@ namespace DiscordCoreAPI {
 		string roleId{ "" };///< The id of the Role to remove.
 	};
 
-	/// Add Role to GuildMember data.
-	struct DiscordCoreAPI_Dll AddRoleToGuildMemberData {
-		string guildId{ "" };///< The id of the Guild within which to assign the Role.
-		string userId{ "" };///< The id of the User to whom to assign the Role.
-		string roleId{ "" };///< The id of the Role to be assigned.
-	};
-
-	/// Remove Role from GuildMember data.
-	struct DiscordCoreAPI_Dll RemoveRoleFromGuildMemberData {
-		string guildId{ "" };///< The id of the Guild within which to remove the Role.
-		string userId{ "" };///< The id of the User from whom to remove the Role.
-		string roleId{ "" };///< The id of the Role to be removed.
-	};
 	/**@}*/
 
 	/**
@@ -106,15 +109,20 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
+		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
+		/// \param dataPackage A AddRoleToGuildMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage);
+
+		/// Removes a given Role from a chosen GuildMember. \brief Removes a given Role from a chosen GuildMember.
+		/// \param dataPackage A RemoveGuildMemberRoleData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage);
+
 		/// Collects a given Role from the library's cache. \brief Collects a given Role from the library's cache.
 		/// \param dataPackage A GetRoleData structure.
 		/// \returns A CoRoutine containing a Role.
 		static CoRoutine<Role> getCachedRoleAsync(GetRoleData dataPackage);
-
-		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
-		/// \param dataPackage A AddRoleToGuildMemberData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> addRoleToGuildMemberAsync(AddRoleToGuildMemberData dataPackage);
 
 		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
 		/// \param dataPackage A CreateRoleData structure.
@@ -140,11 +148,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A RemoveRoleFromGuildData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeRoleFromGuildAsync(RemoveRoleFromGuildData dataPackage);
-
-		/// Removes a given Role from a chosen GuildMember. \brief Removes a given Role from a chosen GuildMember.
-		/// \param dataPackage A RemoveRoleFromGuildMemberData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> removeRoleFromGuildMemberAsync(RemoveRoleFromGuildMemberData dataPackage);
 
 		/// Updates a given Role's properties. \brief Updates a given Role's properties.
 		/// \param dataPackage A UpdateRoleData structure.

@@ -76,6 +76,11 @@ namespace DiscordCoreAPI {
 		__int32 limit{ 0 };///< The maximum number of actions to acquire from the log.
 	};
 
+	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
+	struct GetGuildBansData {
+		string guildId{ "" };///< The Guild from which to collec the list of bans.
+	};
+
 	/**@}*/
 
 	/**
@@ -210,6 +215,20 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildAsync(DeleteGuildData dataPackage);
 
+		/// Bans a GuildMember. \brief Bans a GuildMember.
+		/// \param dataPackage A CreateGuildBanData structure.
+		/// \returns A CoRoutine containing BanData.
+		static CoRoutine<BanData> createGuildBanAsync(CreateGuildBanData dataPackage);
+
+		/// Collects a list of Bans from a chosen Guild. \brief Collects a list of Bans from a chosen Guild.
+		/// \param dataPackage A GetGuildBansData structure.
+		/// \returns A CoRoutine containing a vector of BanData.
+		static CoRoutine<vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
+
+		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
+		/// \returns A CoRoutine containing a vector of Guild.
+		static CoRoutine<vector<Guild>> getAllGuildsAsync();
+		
 		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.
 		/// \returns A CoRoutine containing InviteData.
@@ -224,15 +243,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetVanityInviteData structure.
 		/// \returns A CoRoutine containing InviteData.
 		static CoRoutine<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage);
-
-		/// Bans a GuildMember. \brief Bans a GuildMember.
-		/// \param dataPackage A CreateGuildBanData structure.
-		/// \returns A CoRoutine containing BanData.
-		static CoRoutine<BanData> createGuildBanAsync(CreateGuildBanData dataPackage);
-
-		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
-		/// \returns A CoRoutine containing a vector of Guild.
-		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 
 	protected:
 		static shared_ptr<concurrent_unordered_map<string, Guild>> cache;

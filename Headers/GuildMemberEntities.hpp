@@ -22,21 +22,21 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For listing the GuildMembers of a chosen Guild. \brief For listing the GuildMembers of a chosen Guild.
-	struct ListGuildMembersData {
+	struct DiscordCoreAPI_Dll ListGuildMembersData {
 		string guildId{ "" };///< Guild from which to list the GuildMembers.
 		__int32 limit{ 0 };///< Max number of members to return (1 - 1000).
 		string after{ "" };///< The highest user id in the previous page.
 	};
 
 	/// For searching for one or more GuildMembers within a chosen Guild. \brief For searching for one or more GuildMembers within a chosen Guild.
-	struct SearchGuildMembersData {
+	struct DiscordCoreAPI_Dll SearchGuildMembersData {
 		string guildId{ "" };///< Guild within which to search for the GuildMembers.
 		string query{ "" };///< Query string to match username(s) and nickname(s) against.
 		__int32 limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
-	struct AddGuildMemberData {
+	struct DiscordCoreAPI_Dll AddGuildMemberData {
 		string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the guild.
 		vector<string>roles{};///< Array of role ids the member is assigned.
 		string guildId{ "" };///< The Guild to add the new GuildMember to.
@@ -60,10 +60,17 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the Current GuildMember's values. \brief For modifying the Current GuildMember's values.
-	struct ModifyCurrentGuildMemberData {
+	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
 		string guildId{ "" };///< The Guild within which to modify the current user's values.
 		string reason{ "" };///< A reason for modifying the current user's values.
 		string nick{ "" };///< A new nickname for the current user.
+	};
+
+	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.
+	struct RemoveGuildMemberData {
+		string guildMemberId{ "" };///< Id of the chosen GuildMember to kick.
+		string guildId{ "" };///< Guild from which to kick the chosen GuildMember.
+		string reason{ "" };///< Reason for kicking the GuildMember.
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
@@ -132,10 +139,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a GuildMember.
 		static CoRoutine<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
 
-		/// Modifies the current GuildMember's properties. \brief /// Modifies the current GuildMember's properties.
+		/// Modifies the current GuildMember's properties. \brief Modifies the current GuildMember's properties.
 		/// \param dataPackage A ModifyCurrentGuildMemberData structure.
 		/// \returns A CoRoutine containing a GuildMember.
 		static CoRoutine<GuildMember> modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage);
+
+		/// Removes a chosen GuildMember from a chosen Guild. \brief Removes a chosen GuildMember from a chosen Guild.
+		/// \param dataPackage A RemoveGuildMemberData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
 	protected:
 		static shared_ptr<concurrent_unordered_map<string, GuildMember>> cache;
