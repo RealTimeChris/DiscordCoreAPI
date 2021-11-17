@@ -3491,7 +3491,7 @@ namespace DiscordCoreInternal {
             }
             *pDataStructure = newVector;
         }
-
+        
         static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure) {
             DiscordCoreAPI::YouTubeSong newData = *pDataStructure;
 
@@ -3601,6 +3601,6 @@ namespace DiscordCoreInternal {
 
             *pDataStructure = newData;
         }
-
+        
     };
 };

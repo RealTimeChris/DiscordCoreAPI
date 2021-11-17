@@ -51,9 +51,9 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CommandController {
 	public:
-		static map<string, BaseFunction*> functions;
+		static map<string, unique_ptr<BaseFunction>> functions;
 
-		static void registerFunction(vector<string> functionNames, BaseFunction* baseFunction);
+		static void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
 
 		static void checkForAndRunCommand(CommandData commandData);
 

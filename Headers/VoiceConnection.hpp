@@ -10,7 +10,7 @@
 #include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
-
+	
 	/**
 	* \addtogroup voice_connection
 	* @{
@@ -110,4 +110,5 @@ namespace DiscordCoreAPI {
 		CoRoutine<void> run();
 	};
 	/**@}*/
+	
 };

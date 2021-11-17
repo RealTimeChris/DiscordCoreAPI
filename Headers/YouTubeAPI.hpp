@@ -10,7 +10,7 @@
 #include "SongDecoder.hpp"
 
 namespace DiscordCoreAPI {
-
+	
 	DiscordCoreAPI_Dll string between(string body, string left, string right);
 
 	DiscordCoreAPI_Dll vector<char> splitString(string stringToSplit);
@@ -68,4 +68,5 @@ namespace DiscordCoreAPI {
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 
 	};
+	
 };

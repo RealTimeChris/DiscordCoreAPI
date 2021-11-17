@@ -10,7 +10,7 @@
 #include "SongDecoder.hpp"
 
 namespace DiscordCoreAPI {
-
+	
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
@@ -47,4 +47,5 @@ namespace DiscordCoreAPI {
 		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
 
 	};
+	
 };

@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
         __int64 maxNumberOfMs{ 0 };
         __int64 startTime{ 0 };
     };
-
+    
     template <typename T>
     bool waitForTimeToPass(unbounded_buffer<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
         StopWatch stopWatch(timeInMsNew);
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
         };
         return doWeBreak;
     }
-
+    
     template <typename T>
     bool waitForTimeToPass(concurrent_queue<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
         StopWatch stopWatch(timeInMsNew);
@@ -3002,7 +3002,7 @@ namespace DiscordCoreAPI {
     /// A single Message. \brief A single Message.
     class DiscordCoreAPI_Dll Message : public MessageData {
     protected:
-
+        
         friend struct Concurrency::details::_ResultHolder<Message>;
         friend class DiscordCoreInternal::HttpRequestAgent;
         friend class DiscordCoreInternal::DataParser;
@@ -3011,6 +3011,7 @@ namespace DiscordCoreAPI {
         friend struct OnMessageCreationData;
         friend struct OnMessageUpdateData;
         friend class DiscordCoreClient;
+        friend class MessageCollector;
         friend class InputEvents;
         
 
@@ -3745,7 +3746,7 @@ namespace DiscordCoreAPI {
         START_EMBEDDED_ACTIVITIES = 0x8000000000
     };
     /**@}*/
-
+    
     class DiscordCoreAPI_Dll YouTubeSong : public Song {
     public:
 
@@ -3777,7 +3778,7 @@ namespace DiscordCoreAPI {
         YouTubeSong collectDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
 
     };
-
+    
     class DiscordCoreAPI_Dll SoundCloudSong : public Song {
     public:
 
@@ -3816,7 +3817,7 @@ namespace DiscordCoreAPI {
 
         SoundCloudSong findFinalDownloadURLs(SoundCloudSong newSong);
     };
-
+    
     struct DiscordCoreAPI_Dll DBPlaylist;
 
     /**

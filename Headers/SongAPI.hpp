@@ -10,7 +10,7 @@
 #include "GuildMemberEntities.hpp"
 
 namespace DiscordCoreAPI {
-
+	
 	class DiscordGuild;
 
 	/**
