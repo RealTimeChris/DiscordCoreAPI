@@ -44,6 +44,7 @@
 - ### [Adding a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Guild%20Member.md)
 - ### [Modifying a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Member.md)
 - ### [Modifying the Current Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20the%20Current%20Guild%20Member.md)
+- ### [Removing a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Guild%20Member.md)
 
 ## Guild Stuff:
 - ### [Getting Audit Logs](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Audit%20Logs.md)
