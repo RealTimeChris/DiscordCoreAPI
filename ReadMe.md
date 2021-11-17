@@ -23,7 +23,7 @@
 ## Features
 ### Concurrent Discord API Access
 ----
-- As a result of using custom asynchronous coroutines, this library has the ability to make fully asynchronous/concurrent requests to the Discord API.
+- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI-DLL/blob/main/Headers/CoRoutine.hpp), this library has the ability to make fully asynchronous/concurrent requests to the Discord API.
 
 ### Slash Commands and Buttons
 ----
