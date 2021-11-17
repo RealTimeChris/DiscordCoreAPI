@@ -54,6 +54,7 @@
 - ### [Getting a Guild Preview](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Preview.md)
 - ### [Modifying a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild.md)
 - ### [Deleting a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild.md)
+- ### [Getting Guild Bans](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Bans.md)
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
