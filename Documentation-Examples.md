@@ -57,7 +57,7 @@
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
-- ### [Getting a Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Message.md)
+- ### [Getting a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Message.md)
 - ### [Creating a Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Message.md)
 - ### [Crossposting a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Crossposting%20a%20Message.md)
 - ### [Editing a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Message.md)
