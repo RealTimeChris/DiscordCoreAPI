@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		string sessionId{ "" };
 		string botToken{ "" };
 
-		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs const& args);
+		fire_and_forget onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs args);
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
 
@@ -145,10 +145,10 @@ namespace DiscordCoreInternal {
 	protected:
 
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
+		shared_ptr<DiscordCoreAPI::SongDecoder> songDecoder{ nullptr };
 		shared_ptr<BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		shared_ptr<concurrency::event> reconnectionEvent{ nullptr };
 		shared_ptr<concurrency::event> readyEvent{ nullptr };
-		DiscordCoreAPI::SongDecoder* songDecoder{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
 		event_token onConnectionDataReceivedToken{};

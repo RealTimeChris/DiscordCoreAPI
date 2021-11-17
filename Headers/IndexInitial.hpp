@@ -32,7 +32,8 @@
 
 #pragma comment(lib, "windowsapp")
 
-#include <mongocxx/client.hpp>
+#pragma warning(push)
+#pragma warning(disable : 4251 4275)
 
 #include <memorybuffer.h>
 #include <winrt/Windows.Foundation.Collections.h>

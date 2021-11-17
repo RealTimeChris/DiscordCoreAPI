@@ -244,6 +244,8 @@ namespace DiscordCoreAPI {
         /// Converts the snowflake-id into a time and date stamp. \brief Converts the snowflake-id into a time and date stamps.
         /// \returns A string containing the timestamp.
         string getCreatedAtTimestamp();
+
+        virtual ~DiscordEntity();
     };
 
     /**@}*/
@@ -1324,6 +1326,8 @@ namespace DiscordCoreAPI {
         bool hoist{ false };///< Is it hoisted above the other roles?
         __int32 color{ 0 };///< The Role's color.
         string name{ "" };///< The Role's name.
+
+        virtual ~RoleData() {};
     };
 
     /// A single Role.
@@ -1379,7 +1383,9 @@ namespace DiscordCoreAPI {
         string locale{ "" };///< The region they are from/in.
         string email{ "" };///< Their email address.
         __int32 flags{ 0 };///< Flags.
-        bool bot{ false };///< Are they a bot?        
+        bool bot{ false };///< Are they a bot?
+
+        virtual ~UserData() {};
     };
 
     /// A single User. \brief A single User.
@@ -1816,6 +1822,8 @@ namespace DiscordCoreAPI {
         bool nsfw{ false }; ///< Whether or not it is nsfw.
         string name{ "" };  ///< Name of the Channel.
         string icon{ "" };  ///< Icon for the Channel, if applicable.
+
+        virtual ~ChannelData() {};
     };
 
     /// Voice state data. \brief Voice state data.
@@ -1863,6 +1871,8 @@ namespace DiscordCoreAPI {
         bool mute{ false };///< Are they server muted?
         string nick{ "" };///< Their nick/display name.
         UserData user{};///< User data for the current GuildMember.
+
+        virtual ~GuildMemberData() {};
     };
 
     struct ActiveThreadsData {
@@ -1977,6 +1987,8 @@ namespace DiscordCoreAPI {
         __int32 count{ 0 };///< The number of times this particular emoji was placed as a reaction to the given Message.
         EmojiData emoji{}; ///< The emoji that was placed as a reaction.
         bool me{ false }; ///< Whether or not I (The bot) placed it.
+
+        virtual ~ReactionData() {};
     };
 
     /// A single Reaction. \brief A single Reaction.
@@ -2393,6 +2405,8 @@ namespace DiscordCoreAPI {
         string name{ "" }; ///< The sticker's name.
         string tags{ "" };  ///< Tags for the sticker to use.
         UserData user{};    ///< The user that uploaded the Guild sticker.
+
+        virtual ~StickerData() {};
     };
 
     struct GuildPreviewData {
@@ -2468,6 +2482,8 @@ namespace DiscordCoreAPI {
         string banner{ "" };    ///< URL to the Guild's banner.       
         string icon{ "" };  ///< URL to the Guild's icon.
         string name{ "" };  ///< The Guild's name.
+
+        virtual ~GuildData() {};
     };
 
     /// Invite data. \brief Invite data.
@@ -2979,6 +2995,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll MessageData :public MessageDataOld {
         MessageDataOld referencedMessage{}; ///< The referenced Message, to reply to.
         string requesterId{ "" }; ///< Requester's id, of who sent this Message.
+
+        virtual ~MessageData() {};
     };
 
     /// A single Message. \brief A single Message.
@@ -3178,9 +3196,9 @@ namespace DiscordCoreAPI {
         friend class RespondToInputEventData;
         friend class BaseFunctionArguments;
         friend class DiscordCoreClient;
-        friend class InputEvents;
-        friend class EventHandler;
         friend struct CommandData;
+        friend class EventHandler;
+        friend class InputEvents;
 
         InputEventResponseType inputEventResponseType{}; ///< The type of event response that is represented by this structure.
         InputEventType eventType{}; ///< The type of input-event that is represented by this structure.
@@ -3447,14 +3465,14 @@ namespace DiscordCoreAPI {
         friend struct CreateDeferredInteractionResponseData;
         friend struct CreateEphemeralFollowUpMessageData;
         friend struct CreateInteractionResponseData;
-        friend struct EditInteractionResponseData;        
+        friend struct EditInteractionResponseData;
         friend struct DeferComponentResponseData;
         friend struct CreateFollowUpMessageData;
         friend struct EditFollowUpMessageData;
         friend struct CreateMessageData;
-        friend class InputEvents;
+        friend struct EditMessageData;
         friend struct SendDMData;
-        
+        friend class InputEvents;
 
         InputEventResponseType type{}; ///< The type of response to make.
 

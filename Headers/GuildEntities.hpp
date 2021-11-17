@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
-
+		
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
@@ -112,6 +112,8 @@ namespace DiscordCoreAPI {
 		friend struct OnGuildDeletionData;
 		friend struct OnGuildUpdateData;
 		friend class DiscordCoreClient;
+		friend class EventManager;
+		friend class EventHandler;
 		friend class Guilds;
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
@@ -128,13 +130,13 @@ namespace DiscordCoreAPI {
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
 
-	protected:
-
-		bool areWeConnectedBool{ false };
-
 		Guild();
 
 		Guild(GuildData dataNew);
+
+	protected:
+
+		bool areWeConnectedBool{ false };
 
 		void initialize();
 	};

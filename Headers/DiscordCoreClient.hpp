@@ -25,11 +25,11 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			unique_ptr<map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>> audioBuffersMap{ new map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>() };
-			unique_ptr<map<string, unique_ptr<VoiceConnection>>> voiceConnectionMap{ new map<string, unique_ptr<VoiceConnection>>() };
-			unique_ptr<map<string, unique_ptr<SoundCloudAPI>>> soundCloudAPIMap{ new map<string, unique_ptr<SoundCloudAPI>>() };
-			unique_ptr<map<string, unique_ptr<YouTubeAPI>>> youtubeAPIMap{ new map<string, unique_ptr<YouTubeAPI>>() };
-			unique_ptr<map<string, unique_ptr<SongAPI>>> songAPIMap{ new map<string, unique_ptr<SongAPI>>() };
+			unique_ptr<map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>> audioBuffersMap = make_unique<map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>>();
+			unique_ptr<map<string, unique_ptr<VoiceConnection>>> voiceConnectionMap = make_unique<map<string, unique_ptr<VoiceConnection>>>();
+			unique_ptr<map<string, unique_ptr<SoundCloudAPI>>> soundCloudAPIMap = make_unique<map<string, unique_ptr<SoundCloudAPI>>>();
+			unique_ptr<map<string, unique_ptr<YouTubeAPI>>> youtubeAPIMap = make_unique<map<string, unique_ptr<YouTubeAPI>>>();
+			unique_ptr<map<string, unique_ptr<SongAPI>>> songAPIMap = make_unique<map<string, unique_ptr<SongAPI>>>();
 		}
 	}
 
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<string> getGateWayUrl();
 
-		Guild createGuild(GuildData guildData);
+		Guild createGuild(Guild guildData);
 
 		void terminate();
 

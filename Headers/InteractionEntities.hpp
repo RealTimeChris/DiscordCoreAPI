@@ -16,7 +16,10 @@ namespace DiscordCoreAPI {
     */
     /// Defer component response data. \brief Defer component response data.
     struct DiscordCoreAPI_Dll DeferComponentResponseData {
+
+        friend struct CreateInteractionResponseData;
         friend class InputEvents;
+
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->responseType = InputEventResponseType::DeferredResponse;
@@ -24,6 +27,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->type = InteractionCallbackType::DeferredUpdateMessage;
         }
+
         DeferComponentResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
@@ -31,10 +35,159 @@ namespace DiscordCoreAPI {
             this->responseType = InputEventResponseType::DeferredResponse;
             this->type = InteractionCallbackType::DeferredUpdateMessage;
         }
+
     protected:
+
         InteractionPackageData interactionPackage{};
         InputEventResponseType responseType{};
         InteractionCallbackType type{};
+    };
+
+    /// Create ephemeral Interaction response data. \brief Create ephemeral Interaction response data.
+    struct DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
+    public:
+
+        friend struct CreateInteractionResponseData;
+        friend class Interactions;
+        friend class InputEvents;
+
+        CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.tts = dataPackage.tts;
+            this->data.data.flags = 64;
+        }
+
+        CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
+            this->interactionPackage.applicationId = dataPackage.getApplicationId();
+            this->interactionPackage.interactionId = dataPackage.getInteractionId();
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->requesterId = dataPackage.getRequesterId();
+            this->data.data.flags = 64;
+        }
+
+        /// Adds a button to the response Message. \brief Adds a button to the response Message.
+        /// \param disabled Whether the button is active or not.
+        /// \param customId A custom id to give for identifying the button.
+        /// \param buttonLabel A visible label for the button.
+        /// \param buttonStyle The style of the button.
+        /// \param emojiName An emoji name, if desired.        
+        /// \param emojiId An emoji id, if desired.
+        /// \param url A url, if applicable.
+        /// \returns void
+        void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+            if (this->data.data.components.size() == 0) {
+                ActionRowData actionRowData;
+                this->data.data.components.push_back(actionRowData);
+            }
+            if (this->data.data.components.size() < 5) {
+                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.type = ComponentType::Button;
+                    component.emoji.name = emojiName;
+                    component.label = buttonLabel;
+                    component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
+                    component.url = url;
+                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
+                }
+                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->data.data.components.push_back(actionRowData);
+                }
+            }
+        }
+
+        /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
+        /// \param disabled Whether the select-menu is active or not.
+        /// \param customId A custom id to give for identifying the select-menu.
+        /// \param options A vector of select-menu-options to offer.
+        /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
+        /// \param maxValues Maximum number of selections that are possible.
+        /// \param minValues Minimum required number of selections that are required.
+        /// \returns void
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+            if (this->data.data.components.size() == 0) {
+                ActionRowData actionRowData;
+                this->data.data.components.push_back(actionRowData);
+            }
+            if (this->data.data.components.size() < 5) {
+                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->data.data.components.push_back(actionRowData);
+                }
+
+            }
+        }
+
+        /// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
+        /// \param dataPackage An AllowedMentionsData structure.
+        /// \returns void
+        void addAllowedMentions(AllowedMentionsData dataPackage) {
+            this->data.data.allowedMentions = dataPackage;
+        }
+
+        /// For setting the components in a response. \brief For setting the components in a response. 
+        /// \param dataPackage An ActionRowData structure.
+        /// \returns void
+        void addComponentRow(ActionRowData dataPackage) {
+            this->data.data.components.push_back(dataPackage);
+        }
+
+        /// Sets the response type of the current Message. \brief Sets the response type of the current Message.
+        /// \param type Interaction callback type.
+        /// \returns void
+        void setResponseType(InteractionCallbackType type) {
+            this->data.type = type;
+        }
+
+        /// For setting the embeds in a response. \brief For setting the embeds in a response.
+        /// \param dataPackage An EmbedData structure.
+        /// \returns void
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        /// For setting the Message content in a response. \brief For setting the Message content in a response.
+        /// \param dataPackage A string, containing the content.
+        /// \returns void
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
+        /// For setting the tts status of a response. \brief For setting the tts status of a response.
+        /// \param enabledTTs A bool.
+        /// \returns void
+        void setTTSStatus(bool enabledTTs) {
+            this->data.data.tts = enabledTTs;
+        }
+
+    protected:
+        InteractionPackageData interactionPackage{};
+        InteractionResponseData data{};
+        string requesterId{ "" };
+
     };
 
     /// Create Interaction response data. \brief Create Interaction response data.
@@ -42,10 +195,27 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
-        friend class Interactions;
-        friend class InputEvents;
         friend class SelectMenuCollector;
         friend class ButtonCollector;
+        friend class Interactions;
+        friend class InputEvents;        
+
+        CreateInteractionResponseData(DeferComponentResponseData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+            this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+            this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+            this->data.type = dataPackage.type;
+        }
+
+        CreateInteractionResponseData(CreateEphemeralInteractionResponseData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+            this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+            this->data.data.components = dataPackage.data.data.components;
+            this->data.type = dataPackage.data.type;
+            this->data = dataPackage.data;
+            this->data.data.flags = 64;
+        }
 
         CreateInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -226,150 +396,6 @@ namespace DiscordCoreAPI {
         string channelId{ "" };
     };
 
-    /// Create ephemeral Interaction response data. \brief Create ephemeral Interaction response data.
-    struct DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
-    public:
-
-        friend class Interactions;
-        friend class InputEvents;
-        CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->interactionPackage.applicationId = dataPackage.applicationId;
-            this->interactionPackage.interactionId = dataPackage.interactionId;
-            this->data.data.allowedMentions = dataPackage.allowedMentions;
-            this->data.data.components = dataPackage.components;
-            this->data.data.content = dataPackage.content;
-            this->data.data.embeds = dataPackage.embeds;
-            this->requesterId = dataPackage.requesterId;
-            this->data.data.tts = dataPackage.tts;
-            this->data.data.flags = 64;
-        }
-        CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-            this->data.data.flags = 64;
-        }
-
-        /// Adds a button to the response Message. \brief Adds a button to the response Message.
-        /// \param disabled Whether the button is active or not.
-        /// \param customId A custom id to give for identifying the button.
-        /// \param buttonLabel A visible label for the button.
-        /// \param buttonStyle The style of the button.
-        /// \param emojiName An emoji name, if desired.        
-        /// \param emojiId An emoji id, if desired.
-        /// \param url A url, if applicable.
-        /// \returns void
-        void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
-            if (this->data.data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.data.components.push_back(actionRowData);
-            }
-            if (this->data.data.components.size() < 5) {
-                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.type = ComponentType::Button;
-                    component.emoji.name = emojiName;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.id = emojiId;
-                    component.url = url;
-                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
-                }
-                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.data.components.push_back(actionRowData);
-                }
-            }
-        }
-
-        /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
-        /// \param disabled Whether the select-menu is active or not.
-        /// \param customId A custom id to give for identifying the select-menu.
-        /// \param options A vector of select-menu-options to offer.
-        /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-        /// \param maxValues Maximum number of selections that are possible.
-        /// \param minValues Minimum required number of selections that are required.
-        /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
-            if (this->data.data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.data.components.push_back(actionRowData);
-            }
-            if (this->data.data.components.size() < 5) {
-                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.data.components.push_back(actionRowData);
-                }
-
-            }
-        }
-
-        /// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
-        /// \param dataPackage An AllowedMentionsData structure.
-        /// \returns void
-        void addAllowedMentions(AllowedMentionsData dataPackage) {
-            this->data.data.allowedMentions = dataPackage;
-        }
-
-        /// For setting the components in a response. \brief For setting the components in a response. 
-        /// \param dataPackage An ActionRowData structure.
-        /// \returns void
-        void addComponentRow(ActionRowData dataPackage) {
-            this->data.data.components.push_back(dataPackage);
-        }
-
-        /// Sets the response type of the current Message. \brief Sets the response type of the current Message.
-        /// \param type Interaction callback type.
-        /// \returns void
-        void setResponseType(InteractionCallbackType type) {
-            this->data.type = type;
-        }
-
-        /// For setting the embeds in a response. \brief For setting the embeds in a response.
-        /// \param dataPackage An EmbedData structure.
-        /// \returns void
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-
-        /// For setting the Message content in a response. \brief For setting the Message content in a response.
-        /// \param dataPackage A string, containing the content.
-        /// \returns void
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
-
-        /// For setting the tts status of a response. \brief For setting the tts status of a response.
-        /// \param enabledTTs A bool.
-        /// \returns void
-        void setTTSStatus(bool enabledTTs) {
-            this->data.data.tts = enabledTTs;
-        }
-
-    protected:
-        InteractionPackageData interactionPackage{};
-        InteractionResponseData data{};
-        string requesterId{ "" };
-
-    };
-
     /// Edit Interaction response data. \brief Edit Interaction response data.
     struct DiscordCoreAPI_Dll EditInteractionResponseData {
 
@@ -531,12 +557,163 @@ namespace DiscordCoreAPI {
         unsigned __int32 timeDelay{ 0 };
     };
 
+    /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
+    struct DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
+
+        friend struct CreateFollowUpMessageData;
+        friend class Interactions;
+        friend class InputEvents;
+
+        CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->data.data.allowedMentions = dataPackage.allowedMentions;
+            this->data.data.components = dataPackage.components;
+            this->data.data.content = dataPackage.content;
+            this->data.data.embeds = dataPackage.embeds;
+            this->requesterId = dataPackage.requesterId;
+            this->data.data.tts = dataPackage.tts;
+            this->data.data.flags = 64;
+        }
+
+        CreateEphemeralFollowUpMessageData(InputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
+            this->interactionPackage.applicationId = dataPackage.getApplicationId();
+            this->interactionPackage.interactionId = dataPackage.getInteractionId();
+            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            this->requesterId = dataPackage.getRequesterId();
+            this->data.data.flags = 64;
+        }
+
+        /// Adds a button to the response Message. \brief Adds a button to the response Message.
+        /// \param disabled Whether the button is active or not.
+        /// \param customId A custom id to give for identifying the button.
+        /// \param buttonLabel A visible label for the button.
+        /// \param buttonStyle The style of the button.
+        /// \param emojiName An emoji name, if desired.        
+        /// \param emojiId An emoji id, if desired.
+        /// \param url A url, if applicable.
+        /// \returns void
+        void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+            if (this->data.data.components.size() == 0) {
+                ActionRowData actionRowData;
+                this->data.data.components.push_back(actionRowData);
+            }
+            if (this->data.data.components.size() < 5) {
+                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.type = ComponentType::Button;
+                    component.emoji.name = emojiName;
+                    component.label = buttonLabel;
+                    component.style = buttonStyle;
+                    component.customId = customId;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
+                    component.url = url;
+                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
+                }
+                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->data.data.components.push_back(actionRowData);
+                }
+            }
+        }
+
+        /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
+        /// \param disabled Whether the select-menu is active or not.
+        /// \param customId A custom id to give for identifying the select-menu.
+        /// \param options A vector of select-menu-options to offer.
+        /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
+        /// \param maxValues Maximum number of selections that are possible.
+        /// \param minValues Minimum required number of selections that are required.
+        /// \returns void
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+            if (this->data.data.components.size() == 0) {
+                ActionRowData actionRowData;
+                this->data.data.components.push_back(actionRowData);
+            }
+            if (this->data.data.components.size() < 5) {
+                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customId;
+                    componentData.options = options;
+                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->data.data.components.push_back(actionRowData);
+                }
+
+            }
+        }
+
+        /// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
+        /// \param dataPackage An AllowedMentionsData structure.
+        /// \returns void
+        void addAllowedMentions(AllowedMentionsData dataPackage) {
+            this->data.data.allowedMentions = dataPackage;
+        }
+
+        /// For setting the components in a response. \brief For setting the components in a response. 
+        /// \param dataPackage An ActionRowData structure.
+        /// \returns void
+        void addComponentRow(ActionRowData dataPackage) {
+            this->data.data.components.push_back(dataPackage);
+        }
+
+        /// Sets the response type of the current Message. \brief Sets the response type of the current Message.
+        /// \param type Interaction callback type.
+        /// \returns void
+        void setResponseType(InteractionCallbackType type) {
+            this->data.type = type;
+        }
+
+        /// For setting the embeds in a response. \brief For setting the embeds in a response.
+        /// \param dataPackage An EmbedData structure.
+        /// \returns void
+        void addMessageEmbed(EmbedData dataPackage) {
+            this->data.data.embeds.push_back(dataPackage);
+        }
+
+        /// For setting the Message content in a response. \brief For setting the Message content in a response.
+        /// \param dataPackage A string, containing the content.
+        /// \returns void
+        void addContent(string dataPackage) {
+            this->data.data.content = dataPackage;
+        }
+
+        /// For setting the tts status of a response. \brief For setting the tts status of a response.
+        /// \param enabledTTs A bool.
+        /// \returns void
+        void setTTSStatus(bool enabledTTs) {
+            this->data.data.tts = enabledTTs;
+        }
+
+    protected:
+        InteractionPackageData interactionPackage{};
+        InteractionResponseData data{};
+        string requesterId{ "" };
+    };
+
     /// Create follow up Message data. \brief Create follow up Message data.
     struct DiscordCoreAPI_Dll CreateFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
         friend class Interactions;
         friend class InputEvents;
+
+        CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData dataPackage) {
+            this->interactionPackage = dataPackage.interactionPackage;
+            this->requesterId = dataPackage.requesterId;
+            this->data = dataPackage.data;
+        }
 
         CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -675,148 +852,6 @@ namespace DiscordCoreAPI {
         string requesterId{ "" };
 
         CreateFollowUpMessageData() {};
-    };
-
-    /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
-    struct DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
-
-        friend class Interactions;
-        friend class InputEvents;
-        CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->interactionPackage.applicationId = dataPackage.applicationId;
-            this->interactionPackage.interactionId = dataPackage.interactionId;
-            this->data.data.allowedMentions = dataPackage.allowedMentions;
-            this->data.data.components = dataPackage.components;
-            this->data.data.content = dataPackage.content;
-            this->data.data.embeds = dataPackage.embeds;
-            this->requesterId = dataPackage.requesterId;
-            this->data.data.tts = dataPackage.tts;
-            this->data.data.flags = 64;
-        }
-        CreateEphemeralFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-            this->data.data.flags = 64;
-        }
-
-        /// Adds a button to the response Message. \brief Adds a button to the response Message.
-        /// \param disabled Whether the button is active or not.
-        /// \param customId A custom id to give for identifying the button.
-        /// \param buttonLabel A visible label for the button.
-        /// \param buttonStyle The style of the button.
-        /// \param emojiName An emoji name, if desired.        
-        /// \param emojiId An emoji id, if desired.
-        /// \param url A url, if applicable.
-        /// \returns void
-        void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
-            if (this->data.data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.data.components.push_back(actionRowData);
-            }
-            if (this->data.data.components.size() < 5) {
-                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
-                    ComponentData component;
-                    component.type = ComponentType::Button;
-                    component.emoji.name = emojiName;
-                    component.label = buttonLabel;
-                    component.style = buttonStyle;
-                    component.customId = customId;
-                    component.disabled = disabled;
-                    component.emoji.id = emojiId;
-                    component.url = url;
-                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(component);
-                }
-                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.data.components.push_back(actionRowData);
-                }
-            }
-        }
-
-        /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
-        /// \param disabled Whether the select-menu is active or not.
-        /// \param customId A custom id to give for identifying the select-menu.
-        /// \param options A vector of select-menu-options to offer.
-        /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-        /// \param maxValues Maximum number of selections that are possible.
-        /// \param minValues Minimum required number of selections that are required.
-        /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
-            if (this->data.data.components.size() == 0) {
-                ActionRowData actionRowData;
-                this->data.data.components.push_back(actionRowData);
-            }
-            if (this->data.data.components.size() < 5) {
-                if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() < 5) {
-                    ComponentData componentData;
-                    componentData.type = ComponentType::SelectMenu;
-                    componentData.placeholder = placeholder;
-                    componentData.maxValues = maxValues;
-                    componentData.minValues = minValues;
-                    componentData.disabled = disabled;
-                    componentData.customId = customId;
-                    componentData.options = options;
-                    this->data.data.components.at(this->data.data.components.size() - 1).components.push_back(componentData);
-                }
-                else if (this->data.data.components.at(this->data.data.components.size() - 1).components.size() == 5) {
-                    ActionRowData actionRowData;
-                    this->data.data.components.push_back(actionRowData);
-                }
-
-            }
-        }
-
-        /// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
-        /// \param dataPackage An AllowedMentionsData structure.
-        /// \returns void
-        void addAllowedMentions(AllowedMentionsData dataPackage) {
-            this->data.data.allowedMentions = dataPackage;
-        }
-
-        /// For setting the components in a response. \brief For setting the components in a response. 
-        /// \param dataPackage An ActionRowData structure.
-        /// \returns void
-        void addComponentRow(ActionRowData dataPackage) {
-            this->data.data.components.push_back(dataPackage);
-        }
-
-        /// Sets the response type of the current Message. \brief Sets the response type of the current Message.
-        /// \param type Interaction callback type.
-        /// \returns void
-        void setResponseType(InteractionCallbackType type) {
-            this->data.type = type;
-        }
-
-        /// For setting the embeds in a response. \brief For setting the embeds in a response.
-        /// \param dataPackage An EmbedData structure.
-        /// \returns void
-        void addMessageEmbed(EmbedData dataPackage) {
-            this->data.data.embeds.push_back(dataPackage);
-        }
-
-        /// For setting the Message content in a response. \brief For setting the Message content in a response.
-        /// \param dataPackage A string, containing the content.
-        /// \returns void
-        void addContent(string dataPackage) {
-            this->data.data.content = dataPackage;
-        }
-
-        /// For setting the tts status of a response. \brief For setting the tts status of a response.
-        /// \param enabledTTs A bool.
-        /// \returns void
-        void setTTSStatus(bool enabledTTs) {
-            this->data.data.tts = enabledTTs;
-        }
-
-    protected:
-        InteractionPackageData interactionPackage{};
-        InteractionResponseData data{};
-        string requesterId{ "" };
     };
 
     /// Edit follow up Message data. \brief Edit follow up Message data.

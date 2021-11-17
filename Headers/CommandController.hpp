@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "DiscordCoreClient.hpp"
 #include "CoRoutine.hpp"
 #include "SongAPI.hpp"
 #include "InputEvents.hpp"
@@ -42,8 +43,8 @@ namespace DiscordCoreAPI {
 		/// The base function for the command's execute function.
 		/// \param args A shared_ptr containing a copy of BaseFunctionArguments.
 		/// \returns A CoRoutine containing void.
-		virtual CoRoutine<void> executeAsync(shared_ptr<BaseFunctionArguments>args) = 0;
-		virtual BaseFunction* create() = 0;
+		virtual CoRoutine<void> executeAsync(unique_ptr<BaseFunctionArguments>args) = 0;
+		virtual unique_ptr<BaseFunction> create() = 0;
 		virtual ~BaseFunction() {};
 	};
 	/**@}*/
@@ -58,9 +59,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static shared_ptr<BaseFunction> createFunction(string functionName);
+		static unique_ptr<BaseFunction> createFunction(string functionName);
 
-		static shared_ptr<BaseFunction> getCommand(string commandName, CommandData commandData);
+		static unique_ptr<BaseFunction> getCommand(string commandName, CommandData commandData);
 
 		static string parseCommandName(string messageContents, CommandData commandData);
 

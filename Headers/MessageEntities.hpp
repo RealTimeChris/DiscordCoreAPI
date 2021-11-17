@@ -181,6 +181,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll EditMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
+		friend class shared_ptr<EditMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -188,6 +189,20 @@ namespace DiscordCoreAPI {
 			this->requesterId = dataPackage.getRequesterId();
 			this->channelId = dataPackage.getChannelId();
 			this->messageId = dataPackage.getMessageId();
+		}
+
+		EditMessageData(RespondToInputEventData dataPackage) {
+			this->channelId = dataPackage.channelId;
+			this->messageId = dataPackage.messageId;
+			this->addAllowedMentions(dataPackage.allowedMentions);
+			this->requesterId = dataPackage.requesterId;
+			for (auto value : dataPackage.components) {
+				this->components.push_back(value);
+			}
+			this->addContent(dataPackage.content);
+			for (auto value : dataPackage.embeds) {
+				this->embeds.push_back(value);
+			}
 		}
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
@@ -515,8 +530,8 @@ namespace DiscordCoreAPI {
 		~MessageCollector();
 
 	protected:
-		static map<string, unbounded_buffer<Message>*> messagesBufferMap;
-		unbounded_buffer<Message>* messagesBuffer{ nullptr };
+		static map<string, shared_ptr<unbounded_buffer<Message>>> messagesBufferMap;
+		shared_ptr<unbounded_buffer<Message>> messagesBuffer{ nullptr };
 		function<bool(Message)> filteringFunction{ nullptr };
 		MessageCollectorReturnData messageReturnData{};
 		__int32 quantityOfMessageToCollect{ 0 };
