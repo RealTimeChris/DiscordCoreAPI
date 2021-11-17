@@ -3237,7 +3237,7 @@ namespace DiscordCoreInternal {
             vector<DiscordCoreAPI::BanData> newVector{};
             for (auto value : jsonObjectData) {
                 DiscordCoreAPI::BanData newData{};
-                parseObject(value, &newData)
+                parseObject(value, &newData);
                 newVector.push_back(newData);
             }
             *pDataStructure = newVector;

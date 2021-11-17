@@ -997,6 +997,9 @@ namespace  DiscordCoreInternal {
         DELETE_GUILD_MEMBER_ROLE = 85,
         DELETE_GUILD_MEMBER = 86,
         GET_GUILD_BANS = 87,
+        GET_GUILD_BAN = 88,
+        PUT_GUILD_BAN = 89,
+        DELETE_GUILD_BAN = 90,
 
         GET_USER,
         GET_USER_SELF,        
@@ -1017,7 +1020,6 @@ namespace  DiscordCoreInternal {
         PATCH_GUILD_MEMBER,
         GET_INVITE,
         GET_VANITY_INVITE,
-        PUT_GUILD_BAN,
         DELETE_LEAVE_GUILD,
         SOUNDCLOUD_SEARCH,
         SOUNDCLOUD_AUTH,

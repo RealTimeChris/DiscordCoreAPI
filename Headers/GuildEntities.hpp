@@ -48,6 +48,13 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< The reason for the ban.
 	};
 
+	/// For removing a previous created Ban. \brief For removing a previous created Ban.
+	struct DiscordCoreAPI_Dll RemoveGuildBanData {
+		string guildId{ "" };///< The Guild from which to remove the Ban.
+		string userId{ "" };///< The user Id of the user who's ban to remove.
+		string reason{ "" };///< The reason for removing this Ban.
+	};
+
 	/// For geting all of the current invites from a Guild. \brief For geting all of the current invites from a Guild.
 	struct DiscordCoreAPI_Dll GetInvitesData {
 		string guildId{ "" };///< The id of the Guild you wish to acquire.
@@ -77,8 +84,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
-	struct GetGuildBansData {
-		string guildId{ "" };///< The Guild from which to collec the list of bans.
+	struct DiscordCoreAPI_Dll GetGuildBansData {
+		string guildId{ "" };///< The Guild from which to collect the list of bans.
+	};
+
+	/// For getting a single Guild Ban. \brief For getting a single Guild Ban.
+	struct DiscordCoreAPI_Dll GetGuildBanData {
+		string guildId{ "" };///< The Guild from which to collect the Ban from.
+		string userId{ "" };///< The User for whom to collect the Ban of.
 	};
 
 	/**@}*/
@@ -215,15 +228,25 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildAsync(DeleteGuildData dataPackage);
 
-		/// Bans a GuildMember. \brief Bans a GuildMember.
-		/// \param dataPackage A CreateGuildBanData structure.
-		/// \returns A CoRoutine containing BanData.
-		static CoRoutine<BanData> createGuildBanAsync(CreateGuildBanData dataPackage);
-
 		/// Collects a list of Bans from a chosen Guild. \brief Collects a list of Bans from a chosen Guild.
 		/// \param dataPackage A GetGuildBansData structure.
 		/// \returns A CoRoutine containing a vector of BanData.
 		static CoRoutine<vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
+
+		/// Collects a single Ban from a chosen Guild. \brief Collects a single Ban from a chosen Guild.
+		/// \param dataPackage A GetGuildBanData structure.
+		/// \returns A CoRoutine containing a vector of BanData.
+		static CoRoutine<BanData> getGuildBanAsync(GetGuildBanData dataPackage);
+
+		/// Bans a GuildMember. \brief Bans a GuildMember.
+		/// \param dataPackage A CreateGuildBanData structure.
+		/// \returns A CoRoutine containing BanData.
+		static CoRoutine<void> createGuildBanAsync(CreateGuildBanData dataPackage);
+
+		/// Removes a previously created ban. \brief Removes a previously created ban.
+		/// \param dataPackage A RemoveGuildBanData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeGuildBanAsync(RemoveGuildBanData dataPackage);
 
 		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
 		/// \returns A CoRoutine containing a vector of Guild.
