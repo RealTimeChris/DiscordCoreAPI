@@ -94,10 +94,5 @@ else {
 - [Glib](https://github.com/GNOME/glib) (.\vcpkg install glib:x64-windows)
 
 ## Roadmap
-I am currently working on getting this thing to be "useful", and here are some of the things I plan on implementing:
+I am currently working on getting this thing to be used by people like you! So, if you have any suggestions for the library that would make it more usable - don't hesitate to let me know! I can be easily found on the Discord server that is linked to above! Cheers and thanks for your time!
 
-- Finish adding the base Discord-API data structures, along with classes to utilize/access/change their values.
-
-- Build a few bots with the library and document examples.
-
-If you have any suggestions, feel free to let me know, and I will consider taking you up on it. Thanks!
