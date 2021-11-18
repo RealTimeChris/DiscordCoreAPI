@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 	public:
 		static vector<unsigned __int8> parseJsonToEtf(json dataToParse);
 
-		static json parseEtfToJson(const vector<unsigned __int8>& dataToParse);
+		static void parseEtfToJson(const vector<unsigned __int8>& dataToParse, shared_ptr<json> newValue);
 
 	protected:
 		static unsigned __int16 etfByteOrder16(unsigned __int16 x);
@@ -131,47 +131,47 @@ namespace DiscordCoreInternal {
 
 		static const char* readString(ErlPackBuffer* buffer, unsigned __int32 length);
 
-		static json singleValueETFToJson(ErlPackBuffer* buffer);
+		static void singleValueETFToJson(ErlPackBuffer* buffer, shared_ptr<json> returnValue);
 
-		static json processAtom(ErlPackBuffer* buffer, const char* atom, unsigned __int16 length);
+		static void processAtom(ErlPackBuffer* buffer, const char* atom, unsigned __int16 length, shared_ptr<json> newValue);
 
-		static json parseAtom(ErlPackBuffer* buffer);
+		static void parseAtom(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseSmallAtom(ErlPackBuffer* buffer);
+		static void parseSmallAtom(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseSmallInteger(ErlPackBuffer* buffer);
+		static void parseSmallInteger(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseInteger(ErlPackBuffer* buffer);
+		static void parseInteger(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseArray(ErlPackBuffer* buffer, unsigned __int32 length);
+		static void parseArray(ErlPackBuffer* buffer, unsigned __int32 length, shared_ptr<json> newValue);
 
-		static json parseList(ErlPackBuffer* buffer);
+		static void parseList(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseTuple(ErlPackBuffer* buffer, unsigned __int32 length);
+		static void parseTuple(ErlPackBuffer* buffer, unsigned __int32 length, shared_ptr<json> newValue);
 
-		static json parseNil(ErlPackBuffer* buffer);
+		static void parseNil(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseMap(ErlPackBuffer* buffer);
+		static void parseMap(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseFloat(ErlPackBuffer* buffer);
+		static void parseFloat(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseNewFloat(ErlPackBuffer* buffer);
+		static void parseNewFloat(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseBigint(ErlPackBuffer* buffer, unsigned __int32 digits);
+		static void parseBigint(ErlPackBuffer* buffer, unsigned __int32 digits, shared_ptr<json> newValue);
 
-		static json parseSmallBigint(ErlPackBuffer* buffer);
+		static void parseSmallBigint(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseLargeBigint(ErlPackBuffer* buffer);
+		static void parseLargeBigint(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseBinary(ErlPackBuffer* buffer);
+		static void parseBinary(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseString(ErlPackBuffer* buffer);
+		static void parseString(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseStringAsList(ErlPackBuffer* buffer);
+		static void parseStringAsList(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseSmallTuple(ErlPackBuffer* buffer);
+		static void parseSmallTuple(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
-		static json parseLargeTuple(ErlPackBuffer* buffer);
+		static void parseLargeTuple(ErlPackBuffer* buffer, shared_ptr<json> newValue);
 
 	};
 

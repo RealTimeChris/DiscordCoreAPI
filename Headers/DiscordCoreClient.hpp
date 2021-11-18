@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		queue<unique_ptr<DiscordCoreInternal::WebSocketWorkload>, deque<unique_ptr<DiscordCoreInternal::WebSocketWorkload>>> webSocketWorkloadTarget{};
+		concurrent_queue<shared_ptr<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{};
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		shared_ptr<mutex> workloadMutex{ make_shared<mutex>() };
 		shared_ptr<BotUser> currentUser{ nullptr };

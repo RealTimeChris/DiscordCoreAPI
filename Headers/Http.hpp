@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
 				}
 				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataNew, workload, true);
 				returnType returnObject{};
-				DataParser::parseObject(returnData.data, &returnObject);
+				DataParser::parseObject(move(returnData.data), &returnObject);
 				return returnObject;
 			}
 			catch (...) {
