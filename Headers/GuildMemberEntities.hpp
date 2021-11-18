@@ -106,6 +106,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 
+		friend class DiscordCoreClient;
 		friend class EventHandler;
 		friend class Guild;
 
@@ -150,7 +151,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
 	protected:
-		static shared_ptr<concurrent_unordered_map<string, GuildMember>> cache;
+		static unique_ptr<concurrent_unordered_map<string, GuildMember>> cache;
 
 		static void insertGuildMember(GuildMember dataPackage);
 

@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static shared_ptr<concurrent_unordered_map<string, Role>> cache;
+		static unique_ptr<concurrent_unordered_map<string, Role>> cache;
 
 		static void insertRole(Role dataPackage);
 

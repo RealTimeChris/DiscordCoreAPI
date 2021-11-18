@@ -246,6 +246,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channels {
 	public:
 
+		friend class DiscordCoreClient;
 		friend class EventHandler;
 		friend class Guild;		
 
@@ -385,7 +386,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<ActiveThreadsData> listActiveThreadsAsync(ListActiveThreadsData dataPackage);
 
 	protected:
-		static shared_ptr<concurrent_unordered_map<string, Channel>> cache;
+		static unique_ptr<concurrent_unordered_map<string, Channel>> cache;
 
 		static void insertChannel(Channel dataPackage);
 

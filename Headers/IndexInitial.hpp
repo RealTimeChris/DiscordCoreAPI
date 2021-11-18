@@ -24,6 +24,11 @@
 #define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #endif
 
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include "crtdbg.h"
+#endif
+
 #pragma comment(lib, "windowsapp")
 
 #pragma warning(push)
@@ -106,9 +111,11 @@ extern "C"
 #include <fstream>
 #include <bitset>
 #include <future>
+#include <memory>
 #include <atomic>
 #include <ppl.h>
 #include <queue>
+#include <deque>
 #include <regex>
 #include <ios>
 #define CURL_STATICLIB

@@ -91,13 +91,16 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		shared_ptr<BotUser> currentUser{ nullptr };
-		unique_ptr<concurrent_queue<shared_ptr<DiscordCoreInternal::WebSocketWorkload>>> webSocketWorkloadTarget{ nullptr };
+		queue<unique_ptr<DiscordCoreInternal::WebSocketWorkload>, deque<unique_ptr<DiscordCoreInternal::WebSocketWorkload>>> webSocketWorkloadTarget{};
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
+		shared_ptr<mutex> workloadMutex{ make_shared<mutex>() };
+		shared_ptr<BotUser> currentUser{ nullptr };
 		bool doWeQuit{ false };
 		string botToken{ "" };
 
 		CoRoutine<void> initialize();
+
+		static void cleanup();
 
 		CoRoutine<string> getGateWayUrl();
 

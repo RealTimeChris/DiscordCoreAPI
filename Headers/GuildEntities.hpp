@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage);
 
 	protected:
-		static shared_ptr<concurrent_unordered_map<string, Guild>> cache;
+		static unique_ptr<concurrent_unordered_map<string, Guild>> cache;
 
 		static void insertGuild(Guild Guild);
 
