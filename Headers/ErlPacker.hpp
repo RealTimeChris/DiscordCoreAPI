@@ -15,60 +15,56 @@
 #undef min
 #endif
 
-constexpr unsigned __int8 FORMAT_VERSION{ 131 };
-
-enum class ETFTokenType : unsigned __int8 {
-	NEW_FLOAT = 70,
-	BIT_BINARY = 77,
-	COMPRESSED = 80,
-	SMALL_INTEGER = 97,
-	INTEGER = 98,
-	FLOAT = 99,
-	ATOM = 100,
-	REFERENCE = 101,
-	PORT = 102,
-	PID = 103,
-	SMALL_TUPLE = 104,
-	LARGE_TUPLE = 105,
-	NIL = 106,
-	STRING = 107,
-	LIST = 108,
-	BINARY = 109,
-	SMALL_BIGINT = 110,
-	LARGE_BIGINT = 111,
-	NEW_FUNCTION = 112,
-	EXPORT = 113,
-	NEW_REFERENCE = 114,
-	SMALL_ATOM = 115,
-	MAP = 116,
-	FUNCTION = 117,
-	UTF8_ATOM = 118,
-	SMALL_UTF8_ATOM = 119
-};
-
 namespace DiscordCoreInternal {
+
+	constexpr unsigned __int8 FORMAT_VERSION{ 131 };
+
+	enum class ETFTokenType : unsigned __int8 {
+		NEW_FLOAT = 70,
+		BIT_BINARY = 77,
+		COMPRESSED = 80,
+		SMALL_INTEGER = 97,
+		INTEGER = 98,
+		FLOAT = 99,
+		ATOM = 100,
+		REFERENCE = 101,
+		PORT = 102,
+		PID = 103,
+		SMALL_TUPLE = 104,
+		LARGE_TUPLE = 105,
+		NIL = 106,
+		STRING = 107,
+		LIST = 108,
+		BINARY = 109,
+		SMALL_BIGINT = 110,
+		LARGE_BIGINT = 111,
+		NEW_FUNCTION = 112,
+		EXPORT = 113,
+		NEW_REFERENCE = 114,
+		SMALL_ATOM = 115,
+		MAP = 116,
+		FUNCTION = 117,
+		UTF8_ATOM = 118,
+		SMALL_UTF8_ATOM = 119
+	};
 
 	class DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
-
 		unsigned __int8* buffer{ nullptr };
-
 		unsigned __int32 currentSize{};
-
 		bool builtFromExternalBuffer{ false };
-		
+
 		unsigned __int64 offSet{};
-
 		void growBuffer();
-
 		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
+
 	public:
 		static vector<unsigned __int8> parseJsonToEtf(json dataToParse);
 
-		static void parseEtfToJson(const vector<unsigned __int8>& dataToParse, shared_ptr<json> newValue);
+		static json parseEtfToJson(const vector<unsigned __int8>& dataToParse);
 
 	protected:
 		static unsigned __int16 etfByteOrder16(unsigned __int16 x);
@@ -122,7 +118,7 @@ namespace DiscordCoreInternal {
 		static void appendMapHeader(ErlPackBuffer* buffer, unsigned __int64 size);
 
 		static unsigned __int8 read8Bits(ErlPackBuffer* buffer);
-		
+
 		static unsigned __int16 read16Bits(ErlPackBuffer* buffer);
 
 		static unsigned __int32 read32Bits(ErlPackBuffer* buffer);
@@ -131,47 +127,47 @@ namespace DiscordCoreInternal {
 
 		static const char* readString(ErlPackBuffer* buffer, unsigned __int32 length);
 
-		static void singleValueETFToJson(ErlPackBuffer* buffer, shared_ptr<json> returnValue);
+		static json singleValueETFToJson(ErlPackBuffer* buffer);
 
-		static void processAtom(ErlPackBuffer* buffer, const char* atom, unsigned __int16 length, shared_ptr<json> newValue);
+		static json processAtom(ErlPackBuffer* buffer, const char* atom, unsigned __int16 length);
 
-		static void parseAtom(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseAtom(ErlPackBuffer* buffer);
 
-		static void parseSmallAtom(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseSmallAtom(ErlPackBuffer* buffer);
 
-		static void parseSmallInteger(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseSmallInteger(ErlPackBuffer* buffer);
 
-		static void parseInteger(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseInteger(ErlPackBuffer* buffer);
 
-		static void parseArray(ErlPackBuffer* buffer, unsigned __int32 length, shared_ptr<json> newValue);
+		static json parseArray(ErlPackBuffer* buffer, unsigned __int32 length);
 
-		static void parseList(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseList(ErlPackBuffer* buffer);
 
-		static void parseTuple(ErlPackBuffer* buffer, unsigned __int32 length, shared_ptr<json> newValue);
+		static json parseTuple(ErlPackBuffer* buffer, unsigned __int32 length);
 
-		static void parseNil(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseNil(ErlPackBuffer* buffer);
 
-		static void parseMap(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseMap(ErlPackBuffer* buffer);
 
-		static void parseFloat(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseFloat(ErlPackBuffer* buffer);
 
-		static void parseNewFloat(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseNewFloat(ErlPackBuffer* buffer);
 
-		static void parseBigint(ErlPackBuffer* buffer, unsigned __int32 digits, shared_ptr<json> newValue);
+		static json parseBigint(ErlPackBuffer* buffer, unsigned __int32 digits);
 
-		static void parseSmallBigint(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseSmallBigint(ErlPackBuffer* buffer);
 
-		static void parseLargeBigint(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseLargeBigint(ErlPackBuffer* buffer);
 
-		static void parseBinary(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseBinary(ErlPackBuffer* buffer);
 
-		static void parseString(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseString(ErlPackBuffer* buffer);
 
-		static void parseStringAsList(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseStringAsList(ErlPackBuffer* buffer);
 
-		static void parseSmallTuple(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseSmallTuple(ErlPackBuffer* buffer);
 
-		static void parseLargeTuple(ErlPackBuffer* buffer, shared_ptr<json> newValue);
+		static json parseLargeTuple(ErlPackBuffer* buffer);
 
 	};
 
