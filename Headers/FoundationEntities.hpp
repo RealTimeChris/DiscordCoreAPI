@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
         __int64 maxNumberOfMs{ 0 };
         __int64 startTime{ 0 };
     };
-    
+
     template <typename T>
     bool waitForTimeToPass(unbounded_buffer<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
         StopWatch stopWatch(timeInMsNew);
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
         };
         return doWeBreak;
     }
-    
+
     template <typename T>
     bool waitForTimeToPass(concurrent_queue<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
         StopWatch stopWatch(timeInMsNew);
@@ -984,7 +984,7 @@ namespace  DiscordCoreInternal {
         DELETE_GUILD_EMOJI = 70,
         POST_GUILD = 71,
         GET_GUILD = 72,
-        GET_GUILD_PREVIEW= 73,
+        GET_GUILD_PREVIEW = 73,
         PATCH_GUILD = 74,
         DELETE_GUILD = 75,
         GET_GUILD_CHANNELS = 76,
@@ -1004,7 +1004,7 @@ namespace  DiscordCoreInternal {
         DELETE_GUILD_BAN = 90,
 
         GET_USER,
-        GET_USER_SELF,        
+        GET_USER_SELF,
         GET_GUILD_MEMBER,
         GET_ROLES,
         GET_USER_GUILDS,
@@ -2420,7 +2420,7 @@ namespace DiscordCoreAPI {
         string name{ "" };
         string icon{ "" };
         string id{ "" };
-    };    
+    };
 
     enum class AfkTimeOutDurations {
         SHORTEST = 60,
@@ -2486,25 +2486,65 @@ namespace DiscordCoreAPI {
         virtual ~GuildData() {};
     };
 
+    enum class GuildScheduledEventPrivacyLevel {
+        PUBLIC = 1,///< The scheduled event is public and available in discovery.
+        GUILD_ONLY = 2///< The scheduled event is only accessible to guild members.
+    };
+
+    enum class GuildScheduledEventStatus {
+        SCHEDULED = 1,
+        ACTIVE = 2,
+        COMPLETED = 3,
+        CANCELED = 4
+    };
+
+    enum class GuildScheduledEventEntityType {
+        NONE = 0,
+        STAGE_INSTANCE = 1,
+        VOICE = 2,
+        EXTERNAL = 3
+    };
+
+    struct GuildScheduledEventEntityMetadata {
+        string location{ "" };
+    };
+
+    struct GuildScheduledEventData {
+        GuildScheduledEventEntityMetadata entityMetadata{};
+        GuildScheduledEventPrivacyLevel privacyLevel{};
+        GuildScheduledEventEntityType entityType{};
+        GuildScheduledEventStatus status{};
+        string scheduledStartTime{ "" };
+        string scheduledEndTime{ "" };
+        string description{ "" };
+        __int32 userCount{ 0 };
+        string channelId{ "" };
+        string creatorId{ "" };
+        string entityId{ "" };
+        string guildId{ "" };
+        UserData creator{};
+        string name{ "" };
+        string id{ "" };
+    };
+
     /// Invite data. \brief Invite data.
     struct DiscordCoreAPI_Dll InviteData {
+        GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
         __int32 approximatePresenceCount{ 0 };///< Approximate presence count.
-        ApplicationData targetApplication{};///< Application data.
         __int32 approximateMemberCount{ 0 };///< Approximate member count.
+        ApplicationData targetApplication{};///< Application data.
         StageInstanceData stageInstance{};///< Stage instance data.        
         __int32 targetType{ 0 };///< Target type.
         bool temporary{ false };///< Is it temporary?
         string createdAt{ "" };///< Time it was created at.
         string expiresAt{ "" };///< When the invite expires.
-        string channelId{ "" };///< Channel id for which the invite is for.
+        UserData targetUser{};///< Target User of the invite.
         ChannelData channel{};///< Channel data of the Channel that the invite is for.
-        UserData targetUser{};///< Target User id of the invite.
-        string guildId{ "" };///< Guild id for which the invite is for.
         __int32 maxUses{ 0 };///< Max number of uses.
         __int32 maxAge{ 0 };///< Maximum age of the invite.
         UserData inviter{};///< The User who created the invite.
-        GuildData Guild{};///< Guild data of the Channel that the invite is for.
         string code{ "" };///< Unique invite code.
+        GuildData guild{};///< Guild data of the Channel that the invite is for.
         __int32 uses{ 0 };///< Maximum nunmber of uses.
     };
 
@@ -3002,7 +3042,7 @@ namespace DiscordCoreAPI {
     /// A single Message. \brief A single Message.
     class DiscordCoreAPI_Dll Message : public MessageData {
     protected:
-        
+
         friend struct Concurrency::details::_ResultHolder<Message>;
         friend class DiscordCoreInternal::HttpRequestAgent;
         friend class DiscordCoreInternal::DataParser;
@@ -3013,7 +3053,7 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreClient;
         friend class MessageCollector;
         friend class InputEvents;
-        
+
 
         Message();
 
@@ -3746,7 +3786,7 @@ namespace DiscordCoreAPI {
         START_EMBEDDED_ACTIVITIES = 0x8000000000
     };
     /**@}*/
-    
+
     class DiscordCoreAPI_Dll YouTubeSong : public Song {
     public:
 
@@ -3778,7 +3818,7 @@ namespace DiscordCoreAPI {
         YouTubeSong collectDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
 
     };
-    
+
     class DiscordCoreAPI_Dll SoundCloudSong : public Song {
     public:
 
@@ -3817,7 +3857,7 @@ namespace DiscordCoreAPI {
 
         SoundCloudSong findFinalDownloadURLs(SoundCloudSong newSong);
     };
-    
+
     struct DiscordCoreAPI_Dll DBPlaylist;
 
     /**

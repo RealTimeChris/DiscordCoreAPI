@@ -107,6 +107,7 @@ extern "C"
 #include <concrt.h>
 #include <unknwn.h>
 #include <xiosbase>
+#include <utility>
 #include <stdio.h>
 #include <fstream>
 #include <bitset>

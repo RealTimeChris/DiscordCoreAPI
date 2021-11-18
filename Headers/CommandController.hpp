@@ -59,6 +59,8 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CommandController {
 	public:
+		friend class DiscordCoreClient;
+
 		static map<string, unique_ptr<BaseFunction>> functions;
 
 		static void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
@@ -75,6 +77,7 @@ namespace DiscordCoreAPI {
 
 		static vector<string> parseArguments(string messageContents);
 
+		static void cleanup();
 	};
 
 };
