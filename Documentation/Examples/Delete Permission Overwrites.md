@@ -11,7 +11,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include "../DiscordCoreClient02.hpp"
+#include "Index.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 			return new Test;
 		}
 
-		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual  CoRoutine<void> execute(shared_ptr<BaseFunctionArguments> args) {
 
 			DeleteChannelPermissionOverwritesData dataPackage;
 			dataPackage.channelId = args->eventData.getChannelId();
