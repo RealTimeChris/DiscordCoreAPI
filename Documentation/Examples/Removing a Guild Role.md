@@ -1,4 +1,4 @@
-### **Deleting a Guild Role:**
+### **Removing a Guild Role:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Roles` class.
 - Populate a data structure of type `DiscordCoreAPI::RemoveGuildRoleData`.
