@@ -97,6 +97,7 @@
 - ### [Creating a Guild Role](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Role.md)
 - ### [Modifying Guild Role Positions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Guild%20Role%20Positions.md)
 - ### [Modifying a Guild Role](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Role.md)
+- ### [Deleting a Guild Role](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Role.md)
 
 ## Input-Event Stuff:
 - ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
