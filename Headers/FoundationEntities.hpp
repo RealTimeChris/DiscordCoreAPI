@@ -122,18 +122,20 @@ namespace DiscordCoreAPI {
     CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args) {
         co_await NewThreadAwaitable<void>();
         ThreadPoolTimer threadPoolTimer{ nullptr };
-        if (timeDelayInMs > 0) {
-            auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+        if (timeDelayInMs > 0 && !isRepeating) {
+            auto timeElapsedHandler = [=]()->void {
                 concurrency::wait(timeDelayInMs);
                 theFunction(args...);
                 return;
             };
-            if (!isRepeating) {
-                timeElapsedHandler(threadPoolTimer);
-            }
-            else {
-                threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            }
+            timeElapsedHandler();
+        }
+        else if (timeDelayInMs > 0 && isRepeating) {
+            auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                theFunction(args...);
+                return;
+            };
+            threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
         }
         else {
             theFunction(args...);
