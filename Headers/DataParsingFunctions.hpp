@@ -429,30 +429,6 @@ namespace DiscordCoreInternal {
             *pDataStructure = newVector;
         }
 
-        static void parseObject(json jsonObjectData, DiscordCoreInternal::VoiceReadyPayload* pDatastructure) {
-            DiscordCoreInternal::VoiceReadyPayload readyPayload;
-
-            if (jsonObjectData.contains("ip") && !jsonObjectData.at("ip").is_null()) {
-                readyPayload.ip = jsonObjectData.at("ip").get<string>();
-            }
-
-            if (jsonObjectData.contains("port") && !jsonObjectData.at("port").is_null()) {
-                readyPayload.port = jsonObjectData.at("port").get<__int32>();
-            }
-
-            if (jsonObjectData.contains("ssrc") && !jsonObjectData.at("ssrc").is_null()) {
-                readyPayload.ssrc = jsonObjectData.at("ssrc").get<__int32>();
-            }
-
-            if (jsonObjectData.contains("modes") && !jsonObjectData.at("modes").is_null()) {
-                for (auto value : jsonObjectData.at("modes")) {
-                    readyPayload.modes.push_back(value.get<string>());
-                };
-            }
-
-            *pDatastructure = readyPayload;
-        }
-
         static void parseObject(json jsonObjectData, DiscordCoreAPI::EmojiData* pDataStructure) {
             DiscordCoreAPI::EmojiData emojiData = *pDataStructure;
 

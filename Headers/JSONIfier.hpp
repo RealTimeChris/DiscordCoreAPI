@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 	struct ModifyGuildData;
 	struct EditMessageData;
 	struct CreateGuildData;
-	struct UpdateRoleData;
+	struct ModifyGuildRoleData;
 	struct SendDMData;	
 
 };
@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::UpdateRoleData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildRoleData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(string initialPayload);
 
@@ -80,15 +80,15 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditMessageData dataPackage);
 
-	DiscordCoreAPI_Dll void JSONIFY(ApplicationCommandOptionData dataPackage, json* pJSONData);
+	DiscordCoreAPI_Dll void JSONIFY(DiscordCoreAPI::ApplicationCommandOptionData dataPackage, json* pJSONData);
 
-	DiscordCoreAPI_Dll string JSONIFY(PutEditApplicationCommandPermissionsData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PutEditApplicationCommandPermissionsData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(PutBatchEditApplicationCommandPermissionsData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PutBatchEditApplicationCommandPermissionsData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(PostApplicationCommandData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PostApplicationCommandData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(PatchApplicationCommandData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PatchApplicationCommandData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
 

@@ -11,12 +11,25 @@
 #undef DELETE
 #endif
 
+namespace  DiscordCoreInternal {
+
+    class ApplicationCommands;
+    class BaseWebSocketAgent;
+    class HttpRequestAgent;
+    class ThreadManager;
+    class DataParser;
+};
+
 namespace DiscordCoreAPI {
 
     struct SongCompletionEventData;
     struct ButtonInteractionData;
+    struct ClientStatusData;
+    struct GuildMemberData;
     struct AudioFrameData;
+    struct ActivityData;
     struct CommandData;
+    struct UserData;
     struct Song;
 
     template<typename returnType>
@@ -250,1067 +263,11 @@ namespace DiscordCoreAPI {
 
     /**@}*/
 };
-namespace  DiscordCoreInternal {
-    /**
-    * \addtogroup foundation_entities
-    * @{
-    */
-    class ApplicationCommands;
-    class BaseWebSocketAgent;
-    class HttpRequestAgent;
-    class ThreadManager;
-    class DataParser;
-
-    enum class ConnectionWebSocketType {
-        Receive = 0,
-        Send = 1
-    };
-
-    struct ConnectionWebSocketData {
-        friend class DiscordCoreAPI::VoiceConnection;
-        friend class VoiceChannelWebSocketAgent;
-        ConnectionWebSocketType type{};
-        string endpoint{ "" };
-        string port{ "" };
-    protected:
-        shared_ptr<unbounded_buffer<DiscordCoreAPI::AudioFrameData>> audioDataBuffer{ nullptr };
-    };
-
-    struct DiscordCoreAPI_Dll AllowedMentionsData {
-        bool repliedUser{ false };
-        vector<string> parse{};
-        vector<string> roles{};
-        vector<string> users{};
-    };
-
-    struct DiscordCoreAPI_Dll MessageReferenceData {
-        bool failIfNotExists{ false };
-        string messageId{ "" };
-        string channelId{ "" };
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll AttachmentData : public DiscordCoreAPI::DiscordEntity {
-        string contentType{ "" };
-        string filename{ "" };
-        string proxyUrl{ "" };
-        string url{ "" };
-        __int32 height{ 0 };
-        __int32 width{ 0 };
-        __int32 size{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedFooterData {
-        string proxyIconUrl{ "" };
-        string iconUrl{ "" };
-        string text{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedImageData {
-        string proxyUrl{ "" };
-        string url{ "" };
-        __int32 height{ 0 };
-        __int32 width{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedThumbnailData {
-        string proxyUrl{ "" };
-        string url{ "" };
-        __int32 height{ 0 };
-        __int32 width{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedVideoData {
-        string proxyUrl{ "" };
-        string url{ "" };
-        __int32 height{ 0 };
-        __int32 width{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedProviderData {
-        string name{ "" };
-        string url{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedAuthorData {
-        string proxyIconUrl{ "" };
-        string proxyUrl{ "" };
-        string iconUrl{ "" };
-        string name{ "" };
-        string url{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedFieldData {
-        string iconUrl{ "" };
-        bool Inline{ false };
-        string value{ "" };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll EmbedData {
-        vector<EmbedFieldData> fields{};
-        EmbedThumbnailData thumbnail{};
-        EmbedProviderData provider{};
-        string hexColorValue{ "" };
-        string description{ "" };
-        EmbedFooterData footer{};
-        EmbedAuthorData author{};
-        string timestamp{ "" };
-        EmbedImageData image{};
-        EmbedVideoData video{};
-        string title{ "" };
-        string type{ "" };
-        string url{ "" };
-        EmbedData* setAuthor(string authorName, string authorAvatarURL = "") {
-            this->author.name = authorName;
-            this->author.iconUrl = authorAvatarURL;
-            return this;
-        }
-        EmbedData* setFooter(string footerText, string footerIconURLText = "") {
-            this->footer.text = footerText;
-            this->footer.iconUrl = footerIconURLText;
-            return this;
-        }
-        EmbedData* setTimeStamp(string timeStamp) {
-            this->timestamp = timeStamp;
-            return this;
-        }
-        EmbedData* addField(string name, string value, bool Inline = true) {
-            EmbedFieldData embedFieldData;
-            embedFieldData.name = name;
-            embedFieldData.Inline = Inline;
-            embedFieldData.value = value;
-            this->fields.push_back(embedFieldData);
-            return this;
-        }
-        EmbedData* setDescription(string descriptionNew) {
-            this->description = descriptionNew;
-            return this;
-        }
-        EmbedData* setColor(string hexColorValueNew) {
-            this->hexColorValue = hexColorValueNew;
-            return this;
-        }
-        EmbedData* setThumbnail(string thumbnailURL) {
-            this->thumbnail.url = thumbnailURL;
-            return this;
-        }
-        EmbedData* setTitle(string titleNew) {
-            this->title = titleNew;
-            return this;
-        }
-        EmbedData* setImage(string imageURL) {
-            this->image.url = imageURL;
-            return this;
-        }
-    };
-
-    enum class Permissions :__int64 {
-        CREATE_INSTANT_INVITE = 0x0000000001,
-        KICK_MEMBERS = 0x0000000002,
-        BAN_MEMBERS = 0x0000000004,
-        ADMINISTRATOR = 0x0000000008,
-        MANAGE_CHANNELS = 0x0000000010,
-        MANAGE_GUILD = 0x0000000020,
-        ADD_REACTIONS = 0x0000000040,
-        VIEW_AUDIT_LOG = 0x0000000080,
-        PRIORITY_SPEAKER = 0x0000000100,
-        STREAM = 0x0000000200,
-        VIEW_CHANNEL = 0x0000000400,
-        SEND_MESSAGES = 0x0000000800,
-        SEND_TTS_MESSAGES = 0x0000001000,
-        MANAGE_MESSAGES = 0x0000002000,
-        EMBED_LINKS = 0x0000004000,
-        ATTACH_FILES = 0x0000008000,
-        READ_MESSAGE_HISTORY = 0x0000010000,
-        MENTION_EVERYONE = 0x0000020000,
-        USE_EXTERNAL_EMOJIS = 0x0000040000,
-        VIEW_GUILD_INSIGHTS = 0x0000080000,
-        CONNECT = 0x0000100000,
-        SPEAK = 0x0000200000,
-        MUTE_MEMBERS = 0x0000400000,
-        DEAFEN_MEMBERS = 0x0000800000,
-        MOVE_MEMBERS = 0x0001000000,
-        USE_VAD = 0x0002000000,
-        CHANGE_NICKNAME = 0x0004000000,
-        MANAGE_NICKNAMES = 0x0008000000,
-        MANAGE_ROLES = 0x0010000000,
-        MANAGE_WEBHOOKS = 0x0020000000,
-        MANAGE_EMOJIS_AND_STICKERS = 0x0040000000,
-        USE_APPLICATION_COMMANDS = 0x0080000000,
-        REQUEST_TO_SPEAK = 0x0100000000,
-        MANAGE_THREADS = 0x0400000000,
-        CREATE_PUBLIC_THREADS = 0x0800000000,
-        CREATE_PRIVATE_THREADS = 0x1000000000,
-        USE_EXTERNAL_STICKERS = 0x2000000000,
-        SEND_MESSAGES_IN_THREADS = 0x4000000000,
-        START_EMBEDDED_ACTIVITIES = 0x8000000000
-    };
-
-    enum class UserFlags {
-        NONE = 0,
-        DISCORD_EMPLOYEE = 1 << 0,
-        PARTNERED_SERVER_OWNER = 1 << 1,
-        HYPESQUAD_EVENTS = 1 << 2,
-        BUG_HUNTER_LEVEL_1 = 1 << 3,
-        HOUSE_BRAVERY = 1 << 6,
-        HOUSE_BRILLIANCE = 1 << 7,
-        HOUSE_BALANCE = 1 << 8,
-        EARLY_SUPPORTER = 1 << 9,
-        TEAM_USER = 1 << 10,
-        BUG_HUNTER_LEVEL_2 = 1 << 14,
-        VERIFIED_BOT = 1 << 16,
-        EARLY_VERIFIED_BOT_DEVELOPER = 1 << 17
-    };
-
-    enum class DefaultMessageNotificationLevel {
-        ALL_MESSAGES = 0,
-        ONLY_MENTIONS = 1
-    };
-
-    enum class ExplicitContentFilterLevel {
-        DISABLED = 0,
-        MEMBERS_WITHOUT_ROLES = 1,
-        ALL_MEMBERS = 2
-    };
-
-    enum class MFALevel {
-        NONE = 0,
-        ELEVATED = 1
-    };
-
-    enum class VerificationLevel {
-        NONE = 0,
-        LOW = 1,
-        MEDIUM = 2,
-        HIGH = 3,
-        VERY_HIGH = 4
-    };
-
-    enum class PremiumTier {
-        NONE = 0,
-        TIER_2 = 2,
-        TIER_1 = 1,
-        TIER_3 = 3
-    };
-
-    enum class NitroSubscriptionLevel {
-        NONE = 0,
-        NITRO_CLASSIC = 1,
-        NITRO = 2
-    };
-
-    enum class InteractionCallbackType {
-        Pong = 1,
-        Acknowledge = 2,
-        ChannelMessage = 3,
-        ChannelMessageWithSource = 4,
-        DeferredChannelMessageWithSource = 5,
-        DeferredUpdateMessage = 6,
-        UpdateMessage = 7
-    };
-
-    enum class ChannelType {
-        GUILD_TEXT = 0,
-        DM = 1,
-        GUILD_VOICE = 2,
-        GROUP_DM = 3,
-        GUILD_CATEGORY = 4,
-        GUILD_NEWS = 5,
-        GUILD_STORE = 6,
-        GUILD_NEWS_THREAD = 10,
-        GUILD_PUBLIC_THREAD = 11,
-        GUILD_protected_THREAD = 12,
-        GUILD_STAGE_VOICE = 13
-    };
-
-    struct DiscordCoreAPI_Dll UserData : public DiscordCoreAPI::DiscordEntity {
-        string discriminator{ "" };
-        bool mfaEnabled{ false };
-        bool verified{ false };
-        string createdAt{ "" };
-        string userName{ "" };
-        bool system{ false };
-        __int32 premiumType{ 0 };
-        __int32 publicFlags{ 0 };
-        string avatar{ "" };
-        string locale{ "" };
-        string email{ "" };
-        bool bot{ false };
-        __int32 flags{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll RoleTagsData {
-        string premiumSubscriber{ "" };
-        string integrationId{ "" };
-        string botId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll RoleData : public DiscordCoreAPI::DiscordEntity {
-        bool mentionable{ false };
-        bool managed{ false };
-        bool hoist{ false };
-        RoleTagsData tags{};
-        string permissions;
-        string name{ "" };
-        __int32 position{ 0 };
-        __int32 color{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll GuildMemberData {
-        string premiumSince{ "" };
-        string permissions{ "" };
-        string userMention{ "" };
-        vector<string> roles{};
-        bool pending{ false };
-        string joinedAt{ "" };
-        string guildId{ "" };
-        bool deaf{ false };
-        bool mute{ false };
-        string nick{ "" };
-        UserData user{};
-    };
-
-    struct DiscordCoreAPI_Dll WelcomeScreenChannelData {
-        string description{ "" };
-        string channelId{ "" };
-        string emojiName{ "" };
-        string emojiId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll WelcomeScreenData {
-        vector<WelcomeScreenChannelData> welcomeChannels{};
-        string description{};
-    };
-
-    struct DiscordCoreAPI_Dll PartyData : public DiscordCoreAPI::DiscordEntity {
-        vector<__int32> size{ 0, 0 };
-    };
-
-    struct DiscordCoreAPI_Dll AssetsData {
-        string largeImage{ "" };
-        string smallImage{ "" };
-        string largeText{ "" };
-        string smallText{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll SecretsData {
-        string spectate{ "" };
-        string match{ "" };
-        string join{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll TimestampData {
-        __int64 start{ 0 };
-        __int64 end{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll ButtonData {
-        string label{ "" };
-        string url{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll EmojiData : public DiscordCoreAPI::DiscordEntity {
-        bool requireColons{ false };
-        vector<RoleData> roles{};
-        bool available{ false };
-        bool animated{ false };
-        bool managed{ false };
-        string name{ "" };
-        UserData user{};
-    };
-
-    struct DiscordCoreAPI_Dll ReactionData {
-        GuildMemberData member{};
-        string channelId{ "" };
-        string messageId{ "" };
-        string guildId{ "" };
-        string userId{ "" };
-        EmojiData emoji{};
-        bool me{ false };
-        __int32 count{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll ActivityData {
-        TimestampData timestamps{};
-        string applicationId{ "" };
-        bool instance{ false };
-        SecretsData secrets{};
-        string details{ "" };
-        ButtonData buttons{};
-        AssetsData assets{};
-        string state{ "" };
-        __int32 createdAt = 0;
-        EmojiData emoji{};
-        PartyData party{};
-        string name{ "" };
-        string url{ "" };
-        __int32 flags{ 0 };
-        __int32 type{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll ClientStatusData {
-        string desktop{ "" };
-        string mobile{ "" };
-        string web{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll UpdatePresenceData {
-        vector<ActivityData> activities{};
-        string status{ "" };
-        __int64 since{ 0 };
-        bool afk{ false };
-    };
-
-    struct DiscordCoreAPI_Dll PresenceUpdateData {
-        vector<ActivityData> activities{};
-        ClientStatusData clientStatus{};
-        string guildId{ "" };
-        string status{ "" };
-        UserData user{};
-    };
-
-    enum class EditChannelPermissionOverwritesType {
-        Role = 0,
-        User = 1
-    };
-
-    struct DiscordCoreAPI_Dll OverWriteData : public DiscordCoreAPI::DiscordEntity {
-        EditChannelPermissionOverwritesType type{};
-        string channelId{ "" };
-        string allow{ "" };
-        string deny{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll ThreadMetadataData {
-        __int32 autoArchiveDuration{ 0 };
-        string archiveTimestamp{ "" };
-        bool invitable{ false };
-        bool archived{ false };
-        bool locked{ false };
-    };
-
-    struct DiscordCoreAPI_Dll ThreadMemberData : public DiscordCoreAPI::DiscordEntity {
-        string joinTimestamp{ "" };
-        string userId{ "" };
-        __int32 flags{ 0 };
-    };
-
-    struct DiscordCoreAPI_Dll VoiceStateData {
-        string requestToSpeakTimestamp{ "" };
-        GuildMemberData guildMember{};
-        bool selfStream{ false };
-        bool selfVideo{ false };
-        string channelId{ "" };
-        string sessionId{ "" };
-        bool selfDeaf{ false };
-        bool selfMute{ false };
-        bool suppress{ false };
-        string guildId{ "" };
-        string userId{ "" };
-        bool deaf{ false };
-        bool mute{ false };
-    };
-
-    struct DiscordCoreAPI_Dll StageInstanceData : public DiscordCoreAPI::DiscordEntity {
-        bool discoverableDisabled{ false };
-        __int32 privacyLevel{ 0 };
-        string channelId{ "" };
-        string guildId{ "" };
-        string topic{ "" };
-    };
-
-    enum class StickerType {
-        STANDARD = 1,
-        GUILD = 2
-    };
-
-    enum class StickerFormatType {
-        PNG = 1,
-        APNG = 2,
-        LOTTIE = 3
-    };
-
-    struct DiscordCoreAPI_Dll StickerData : public DiscordCoreAPI::DiscordEntity {
-        StickerFormatType formatType{};
-        string description{ "" };
-        bool available{ false };
-        __int32 sortValue{ 0 };
-        string guildId{ "" };
-        string packId{ "" };
-        string asset{ "" };
-        StickerType type{};
-        string name{ "" };
-        string tags{ "" };
-        UserData user{};
-    };
-
-    enum class ThreadType {
-        Regular = 0,
-        Music = 1
-    };
-
-    class DiscordCoreAPI_Dll SchedulerWrapper {
-    public:
-        SchedulerWrapper(Scheduler* dataPackage) {
-            this->scheduler = dataPackage;
-        }
-        Scheduler* scheduler{ nullptr };
-    };
-
-    class DiscordCoreAPI_Dll ThreadContext {
-    public:
-        shared_ptr<SchedulerWrapper> scheduler{ nullptr };
-
-        static unique_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
-
-        Scheduler* operator*();
-
-        ThreadContext(ThreadType threadType);
-
-        ThreadContext(string);
-
-        ~ThreadContext();
-
-    protected:
-        friend class DiscordCoreAPI::DiscordCoreClient;
-
-        static vector<shared_ptr<SchedulerWrapper>> schedulers;
-
-        static vector<unique_ptr<thread>> threads;
-
-        unique_ptr<thread> threadOfExecution{ nullptr };
-
-        ThreadContext(ThreadContext& newThread);
-
-        void releaseContext();
-
-        static void cleanup();
-
-    };
-
-    enum class HeaderTypes {
-        Bot_Auth = 0,
-        X_Audit_Log_Reason = 1
-    };
-
-    struct DiscordCoreAPI_Dll Headers {
-        HeaderTypes headerType{};
-        string headerValue{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll HttpAgentResources {
-        vector<Headers> headers{};
-        string userAgent{ "" };
-        string baseURL{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll ChannelMentionData : public DiscordCoreAPI::DiscordEntity {
-        ChannelType type{ -1 };
-        string guildId{ "" };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll TeamMembersObjectData {
-        vector<string> permissions{};
-        __int32 membershipState{ -1 };
-        string teamId{ "" };
-        UserData user{};
-    };
-
-    struct DiscordCoreAPI_Dll TeamObjectData : public DiscordCoreAPI::DiscordEntity {
-        vector<TeamMembersObjectData> members{};
-        string ownerUserId{ "" };
-        string icon{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll ApplicationData : public DiscordCoreAPI::DiscordEntity {
-        bool botRequireCodeGrant{ false };
-        string termsOfServiceUrl{ "" };
-        string privacyPolicyUrl{ "" };
-        vector<string> rpcOrigins{};
-        string primarySkuId{ "" };
-        string description{ "" };
-        bool botPublic{ false };
-        string coverImage{ "" };
-        string verifyKey{ "" };
-        string  summary{ "" };
-        TeamObjectData team{};
-        string guildId{ "" };
-        __int32 flags{ 0 };
-        string slug{ "" };
-        string name{ "" };
-        string icon{ "" };
-        UserData owner{};
-    };
-
-    struct DiscordCoreAPI_Dll SelectOptionData {
-        string description{ "" };
-        bool _default{ false };
-        string label{ "" };
-        string value{ "" };
-        EmojiData emoji{};
-    };
-
-    enum class ComponentType {
-        ActionRow = 1,
-        Button = 2,
-        SelectMenu = 3
-    };
-
-    enum class ButtonStyle {
-        Primary = 1,
-        Secondary = 2,
-        Success = 3,
-        Danger = 4,
-        Link = 5
-    };
-
-    struct DiscordCoreAPI_Dll ComponentData {
-        vector<SelectOptionData> options{};
-        string placeholder{ "" };
-        bool disabled{ false };
-        __int32 maxValues{ 0 };
-        __int32 minValues{ 0 };
-        string customId{ "" };
-        ComponentType type{};
-        ButtonStyle style{};
-        string label{ "" };
-        EmojiData emoji{};
-        string url{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll ActionRowData {
-        vector<ComponentData> components{};
-    };
-
-    struct DiscordCoreAPI_Dll InteractionApplicationCommandCallbackData {
-        AllowedMentionsData allowedMentions{};
-        vector<ActionRowData> components{};
-        vector<EmbedData> embeds{};
-        string content{ "" };
-        __int32 flags{ 0 };
-        bool tts{ false };
-    };
-
-    struct DiscordCoreAPI_Dll ReactionAddEventData {
-        GuildMemberData member{};
-        string channelId{ "" };
-        string messageId{ "" };
-        string guildId{ "" };
-        string userId{ "" };
-        EmojiData emoji{};
-    };
-
-    enum class HttpWorkloadClass {
-        GET = 0,
-        PUT = 1,
-        POST = 2,
-        PATCH = 3,
-        DELETE = 4
-    };
-
-    enum class HttpWorkloadType {
-        UNSET = 0,
-        GET_GLOBAL_APPLICATION_COMMANDS = 1,
-        POST_GLOBAL_APPLICATION_COMMAND = 2,
-        GET_GLOBAL_APPLICATION_COMMAND = 3,
-        PATCH_GLOBAL_APPLICATION_COMMAND = 4,
-        DELETE_GLOBAL_APPLICATION_COMMAND = 5,
-        BULK_PUT_GLOBAL_APPLICATION_COMMANDS = 6,
-        GET_GUILD_APPLICATION_COMMANDS = 7,
-        POST_GUILD_APPLICATION_COMMAND = 8,
-        GET_GUILD_APPLICATION_COMMAND = 9,
-        PATCH_GUILD_APPLICATION_COMMAND = 10,
-        DELETE_GUILD_APPLICATION_COMMAND = 11,
-        BULK_PUT_GUILD_APPLICATION_COMMANDS = 12,
-        GET_GUILD_APPLICATION_COMMANDS_PERMISSIONS = 13,
-        GET_GUILD_APPLICATION_COMMAND_PERMISSIONS = 14,
-        PUT_GUILD_APPLICATION_COMMAND_PERMISSIONS = 15,
-        BATCH_PUT_GUILD_APPLICATION_COMMAND_PERMISSIONS = 16,
-        POST_INTERACTION_RESPONSE = 17,
-        GET_INTERACTION_RESPONSE = 18,
-        PATCH_INTERACTION_RESPONSE = 19,
-        DELETE_INTERACTION_RESPONSE = 20,
-        POST_FOLLOWUP_MESSAGE = 21,
-        GET_FOLLOWUP_MESSAGE = 22,
-        PATCH_FOLLOWUP_MESSAGE = 23,
-        DELETE_FOLLOWUP_MESSAGE = 24,
-        GET_GUILD_AUDIT_LOGS = 25,
-        GET_CHANNEL = 26,
-        PATCH_CHANNEL = 27,
-        DELETE_CHANNEL = 28,
-        GET_MESSAGES = 29,
-        GET_MESSAGE = 30,
-        POST_MESSAGE = 31,
-        CROSSPOST_MESSAGE = 32,
-        PUT_REACTION = 33,
-        DELETE_OWN_REACTION = 34,
-        DELETE_USER_REACTION = 35,
-        GET_REACTIONS = 36,
-        DELETE_ALL_REACTIONS = 37,
-        DELETE_REACTIONS_BY_EMOJI = 38,
-        PATCH_MESSAGE = 39,
-        DELETE_MESSAGE = 40,
-        DELETE_MESSAGE_OLD = 41,
-        BULK_DELETE_MESSAGES = 42,
-        PUT_CHANNEL_PERMISSION_OVERWRITES = 43,
-        GET_CHANNEL_INVITES = 44,
-        POST_CHANNEL_INVITE = 45,
-        DELETE_CHANNEL_PERMISSION_OVERWRITES = 46,
-        POST_FOLLOW_NEWS_CHANNEL = 47,
-        POST_TRIGGER_TYPING_INDICATOR = 48,
-        GET_PINNED_MESSAGES = 49,
-        PUT_PIN_MESSAGE = 50,
-        DELETE_PIN_MESSAGE = 51,
-        PUT_RECIPIENT_TO_GROUP_DM = 52,
-        DELETE_RECIPIENT_FROM_GROUP_DM = 53,
-        POST_THREAD_WITH_MESSAGE = 54,
-        POST_THREAD_WITHOUT_MESSAGE = 55,
-        PUT_SELF_IN_THREAD = 56,
-        PUT_THREAD_MEMBER = 57,
-        DELETE_SELF_FROM_THREAD = 58,
-        DELETE_THREAD_MEMBER = 59,
-        GET_THREAD_MEMBER = 60,
-        GET_THREAD_MEMBERS = 61,
-        GET_ACTIVE_THREADS = 62,
-        GET_PUBLIC_ARCHIVED_THREADS = 63,
-        GET_PRIVATE_ARCHIVED_THREADS = 64,
-        GET_JOINED_PRIVATE_ARCHIVED_THREADS = 65,
-        GET_EMOJI_LIST = 66,
-        GET_GUILD_EMOJI = 67,
-        POST_GUILD_EMOJI = 68,
-        PATCH_GUILD_EMOJI = 69,
-        DELETE_GUILD_EMOJI = 70,
-        POST_GUILD = 71,
-        GET_GUILD = 72,
-        GET_GUILD_PREVIEW = 73,
-        PATCH_GUILD = 74,
-        DELETE_GUILD = 75,
-        GET_GUILD_CHANNELS = 76,
-        POST_GUILD_CHANNEL = 77,
-        PATCH_GUILD_CHANNEL_POSITIONS = 78,
-        GET_GUILD_ACTIVE_THREADS = 79,
-        GET_GUILD_MEMBERS = 80,
-        GET_SEARCH_GUILD_MEMBERS = 81,
-        PUT_GUILD_MEMBER = 82,
-        PATCH_CURRENT_GUILD_MEMBER = 83,
-        PUT_GUILD_MEMBER_ROLE = 84,
-        DELETE_GUILD_MEMBER_ROLE = 85,
-        DELETE_GUILD_MEMBER = 86,
-        GET_GUILD_BANS = 87,
-        GET_GUILD_BAN = 88,
-        PUT_GUILD_BAN = 89,
-        DELETE_GUILD_BAN = 90,
-        GET_GUILD_ROLES = 91,
-        POST_GUILD_ROLE = 92,
-        PATCH_GUILD_ROLE_POSITIONS = 93,
-
-        GET_USER,
-        GET_USER_SELF,
-        GET_GUILD_MEMBER,
-        GET_USER_GUILDS,
-        POST_USER_DM,
-        GET_DM_CHANNEL,
-        PATCH_ROLE,
-        GET_APPLICATION,
-        GET_SOCKET_PATH,
-        DELETE_GUILD_ROLE,
-        YOUTUBE_SEARCH,
-        YOUTUBE_VIDEO_QUERY,
-        GET_INVITES,
-        PATCH_GUILD_MEMBER,
-        GET_INVITE,
-        GET_VANITY_INVITE,
-        DELETE_LEAVE_GUILD,
-        SOUNDCLOUD_SEARCH,
-        SOUNDCLOUD_AUTH,
-        SOUNDCLOUD_SONG_GET,
-        DELETE_OR_CLOSE_CHANNEL,
-        GET_CURRENT_USER
-    };
-
-    struct DiscordCoreAPI_Dll ChannelData : public DiscordCoreAPI::DiscordEntity {
-        map<string, OverWriteData> permissionOverwrites{};
-        __int32 defaultAutoArchiveDuration{ 0 };
-        ThreadMetadataData threadMetadata{};
-        ChannelType type{ ChannelType::DM };
-        __int32 videoQualityMode{ 0 };
-        __int32 rateLimitPerUser{ 0 };
-        vector<UserData> recipients{};
-        string lastPinTimestamp{ "" };
-        string lastMessageId{ "" };
-        string applicationId{ "" };
-        ThreadMemberData member{};
-        __int32 messageCount{ 0 };
-        __int32 memberCount{ 0 };
-        string rtcRegion{ "" };
-        __int32 userLimit{ 0 };
-        __int32 position{ 0 };
-        string parentId{ "" };
-        string guildId{ "" };
-        string ownerId{ "" };
-        __int32 bitrate{ 0 };
-        string topic{ "" };
-        bool nsfw{ false };
-        string name{ "" };
-        string icon{ "" };
-    };
-
-    enum class StickerItemType {
-        PNG = 1,
-        APNG = 2,
-        LOTTIE = 3
-    };
-
-    struct DiscordCoreAPI_Dll StickerItemData : public DiscordCoreAPI::DiscordEntity {
-        StickerItemType formatType{};
-        string name{ "" };
-    };
-
-    enum class InteractionType {
-        Ping = 1,
-        ApplicationCommand = 2,
-        MessageComponent = 3
-    };
-
-    struct DiscordCoreAPI_Dll MessageInteractionData : public DiscordCoreAPI::DiscordEntity {
-        InteractionType type{};
-        string name{ "" };
-        UserData user{};
-    };
-
-    enum class ApplicationCommandOptionType {
-        SUB_COMMAND = 1,
-        SUB_COMMAND_GROUP = 2,
-        STRING = 3,
-        INTEGER = 4,
-        BOOLEAN = 5,
-        USER = 6,
-        CHANNEL = 7,
-        ROLE = 8,
-        MENTIONABLE = 9,
-        NUMBER = 10
-    };
-
-    struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
-        vector<ApplicationCommandInteractionDataOption> options{};
-        ApplicationCommandOptionType type{};
-        __int32 valueInt{ false };
-        string valueString{ "" };
-        bool valueBool{ false };
-        string name{ "" };
-    };
-
-    enum class InputEventType {
-        SLASH_COMMAND_INTERACTION = 1,
-        BUTTON_INTERACTION = 2,
-        REGULAR_MESSAGE = 3,
-        SELECT_MENU_INTERACTION = 4
-    };
-
-    enum class ApplicationCommandType {
-        CHAT_INPUT = 1,
-        USER = 2,
-        MESSAGE = 3
-    };
-
-    enum class ApplicationCommandPermissionType {
-        Role = 1,
-        User = 2
-    };
-
-    struct DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordCoreAPI::DiscordEntity {
-        ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };
-        bool permission{ false };
-    };
-
-    struct DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordCoreAPI::DiscordEntity {
-        vector<ApplicationCommandPermissionData> permissions{};
-        string applicationId{ "" };
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll HttpData {
-        vector<string> responseHeaderValues{};
-        string returnMessage{ "" };
-        __int32 returnCode{ 0 };
-        json data{};
-    };
-
-    struct DiscordCoreAPI_Dll HttpWorkloadData {
-        map<string, string> headersToInsert{};
-        HttpWorkloadClass workloadClass{};
-        HttpWorkloadType workloadType{};
-        string relativePath{ "" };
-        string callStack{ "" };
-        string content{ "" };
-        string baseURL{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll RateLimitData {
-        RateLimitData() {};
-        RateLimitData(RateLimitData& other) {
-            this->nextExecutionTime = other.nextExecutionTime;
-            this->getsRemaining = other.getsRemaining;
-            this->msRemainTotal = other.msRemainTotal;
-            this->timeStartedAt = other.timeStartedAt;
-            this->workloadType = other.workloadType;
-            this->isItMarked = other.isItMarked;
-            this->theMutex.swap(other.theMutex);
-            this->totalGets = other.totalGets;
-            this->msRemain = other.msRemain;
-            this->bucket = other.bucket;
-        }
-        unique_ptr<recursive_mutex> theMutex{ make_unique<recursive_mutex>() };
-        HttpWorkloadType workloadType{};
-        __int64 nextExecutionTime{ 0 };
-        __int64 msRemainTotal{ 0 };
-        __int64 timeStartedAt{ 0 };
-        __int32 getsRemaining{ 0 };
-        bool isItMarked{ false };
-        __int32 totalGets{ 0 };
-        __int64 msRemain{ 0 };
-        string bucket{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll UpdateVoiceStateData {
-        string channelId{ "" };
-        bool selfMute{ false };
-        bool selfDeaf{ false };
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
-        float valueFloat{ 0.0f };
-        string valueString{ "" };
-        __int32	valueInt{ 0 };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
-        vector<ApplicationCommandOptionChoiceData>	choices{};
-        vector<ApplicationCommandOptionData> options{};
-        ApplicationCommandOptionType type{};
-        vector<ChannelType> channelTypes{};
-        string description{ "" };
-        bool required{ false };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll ApplicationCommandData : public DiscordCoreAPI::DiscordEntity {
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string description{ "" };
-        string guildId{ "" };
-        string version{ "" };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PatchApplicationCommandData {
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-        string description{ "" };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PostApplicationCommandData {
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string description{ "" };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutEditApplicationCommandPermissionsData {
-        vector<ApplicationCommandPermissionData> permissions{};
-        string commandName{ "" };
-        string guildId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutBatchEditApplicationCommandPermissionsData {
-        vector<GuildApplicationCommandPermissionData> permissions{};
-        string guildId{ "" };
-    };
-
-    enum class AuditLogEvent {
-        GUILD_UPDATE = 1,
-        CHANNEL_CREATE = 10,
-        CHANNEL_UPDATE = 11,
-        CHANNEL_DELETE = 12,
-        CHANNEL_OVERWRITE_CREATE = 13,
-        CHANNEL_OVERWRITE_UPDATE = 14,
-        CHANNEL_OVERWRITE_DELETE = 15,
-        MEMBER_KICK = 20,
-        MEMBER_PRUNE = 21,
-        MEMBER_BAN_ADD = 22,
-        MEMBER_BAN_REMOVE = 23,
-        MEMBER_UPDATE = 24,
-        MEMBER_ROLE_UPDATE = 25,
-        MEMBER_MOVE = 26,
-        MEMBER_DISCONNECT = 27,
-        BOT_ADD = 28,
-        ROLE_CREATE = 30,
-        ROLE_UPDATE = 31,
-        ROLE_DELETE = 32,
-        INVITE_CREATE = 40,
-        INVITE_UPDATE = 41,
-        INVITE_DELETE = 42,
-        WEBHOOK_CREATE = 50,
-        WEBHOOK_UPDATE = 51,
-        WEBHOOK_DELETE = 52,
-        EMOJI_CREATE = 60,
-        EMOJI_UPDATE = 61,
-        EMOJI_DELETE = 62,
-        MESSAGE_DELETE = 72,
-        MESSAGE_BULK_DELETE = 73,
-        MESSAGE_PIN = 74,
-        MESSAGE_UNPIN = 75,
-        INTEGRATION_CREATE = 80,
-        INTEGRATION_UPDATE = 81,
-        INTEGRATION_DELETE = 82
-    };
-
-    struct DiscordCoreAPI_Dll VoiceConnectInitData {
-        string channelId{ "" };
-        string guildId{ "" };
-        string userId{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll VoiceConnectionData {
-        vector<unsigned __int8> secretKey{};
-        string voiceEncryptionMode{ "" };
-        unsigned __int32 audioSSRC{ 0 };
-        string externalIp{ "" };
-        string voicePort{ "" };
-        string sessionId{ "" };
-        string endPoint{ "" };
-        string voiceIp{ "" };
-        string token{ "" };
-        string keys{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll VoiceReadyPayload {
-        unsigned __int32 ssrc{ 0 };
-        vector<string> modes{};
-        __int32 port{ 0 };
-        string ip{ "" };
-    };
-};
 
 namespace DiscordCoreAPI {
 
     /// Role tags data. \brief Role tags data.
     struct DiscordCoreAPI_Dll RoleTagsData {
-        operator DiscordCoreInternal::RoleTagsData() {
-            DiscordCoreInternal::RoleTagsData newData;
-            newData.integrationId = this->integrationId;
-            newData.botId = this->botId;
-            return newData;
-        }
         string premiumSubscriber{ "" };///< Are they a premium subscriber?
         string integrationId{ "" };///< What is the integration id?
         string botId{ "" };///< What is the bot id?
@@ -1318,19 +275,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single Role. \brief Data structure representing a single Role.
     struct DiscordCoreAPI_Dll RoleData : public DiscordEntity {
-        operator DiscordCoreInternal::RoleData() {
-            DiscordCoreInternal::RoleData newData;
-            newData.permissions = this->permissions;
-            newData.mentionable = this->mentionable;
-            newData.position = this->position;
-            newData.managed = this->managed;
-            newData.color = this->color;
-            newData.hoist = this->hoist;
-            newData.name = this->name;
-            newData.tags = this->tags;
-            newData.id = this->id;
-            return newData;
-        }
         bool mentionable{ false }; ///< Is ths Role mentionable?
         string permissions{ "" }; ///< The Role's base Guild Permissions.
         __int32 position{ 0 }; ///< Its position amongst the rest of the Guild's roles.
@@ -1366,24 +310,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single user.
     struct DiscordCoreAPI_Dll UserData : public DiscordEntity {
-        operator DiscordCoreInternal::UserData() {
-            DiscordCoreInternal::UserData newData;
-            newData.discriminator = this->discriminator;
-            newData.premiumType = this->premiumType;
-            newData.publicFlags = this->publicFlags;
-            newData.mfaEnabled = this->mfaEnabled;
-            newData.createdAt = this->createdAt;
-            newData.userName = this->userName;
-            newData.verified = this->verified;
-            newData.avatar = this->avatar;
-            newData.locale = this->locale;
-            newData.system = this->system;
-            newData.email = this->email;
-            newData.flags = this->flags;
-            newData.bot = this->bot;
-            newData.id = this->id;
-            return newData;
-        }
         string discriminator{ "" }; ///< The # next to their User name.
         bool mfaEnabled{ false };///< MFA enabled?
         __int32 premiumType{ 0 };///< Their premium nitro status.
@@ -1425,18 +351,6 @@ namespace DiscordCoreAPI {
 
     /// Attachment data. \brief Attachment data.
     struct DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
-        operator DiscordCoreInternal::AttachmentData() {
-            DiscordCoreInternal::AttachmentData newData;
-            newData.contentType = this->contentType;
-            newData.proxyUrl = this->proxyUrl;
-            newData.filename = this->filename;
-            newData.height = this->height;
-            newData.width = this->width;
-            newData.size = this->size;
-            newData.url = this->url;
-            newData.id = this->id;
-            return newData;
-        }
         string contentType{ "" }; ///< Type of content for the attachment.
         string filename{ "" };///< The file name of the attachment.
         string proxyUrl{ "" };///< The proxy url for the attachment.
@@ -1455,13 +369,6 @@ namespace DiscordCoreAPI {
 
     /// Embed footer data. \brief Embed footer data.
     struct DiscordCoreAPI_Dll EmbedFooterData {
-        operator DiscordCoreInternal::EmbedFooterData() {
-            DiscordCoreInternal::EmbedFooterData newData;
-            newData.proxyIconUrl = this->proxyIconUrl;
-            newData.iconUrl = this->iconUrl;
-            newData.text = this->text;
-            return newData;
-        };
         string proxyIconUrl{ "" };///< Proxy icon url.
         string iconUrl{ "" };///< Icon url.
         string text{ "" };///< Footer text.
@@ -1469,14 +376,6 @@ namespace DiscordCoreAPI {
 
     /// Embed image data. \brief Embed image data.
     struct DiscordCoreAPI_Dll EmbedImageData {
-        operator DiscordCoreInternal::EmbedImageData() {
-            DiscordCoreInternal::EmbedImageData newData;
-            newData.proxyUrl = this->proxyUrl;
-            newData.height = this->height;
-            newData.width = this->width;
-            newData.url = this->url;
-            return newData;
-        }
         string proxyUrl{ "" };///< Proxy url.
         __int32 height{ 0 };///< Image height.
         __int32 width{ 0 };///< Image width.
@@ -1485,14 +384,6 @@ namespace DiscordCoreAPI {
 
     /// Embed thumbnail data. \brief Embed thumbnail data.
     struct DiscordCoreAPI_Dll EmbedThumbnailData {
-        operator DiscordCoreInternal::EmbedThumbnailData() {
-            DiscordCoreInternal::EmbedThumbnailData newData;
-            newData.proxyUrl = this->proxyUrl;
-            newData.height = this->height;
-            newData.width = this->width;
-            newData.url = this->url;
-            return newData;
-        }
         string proxyUrl{ "" };///< Proxy url.
         __int32 height{ 0 };///< Image height.
         __int32 width{ 0 };///< Image width.
@@ -1501,14 +392,6 @@ namespace DiscordCoreAPI {
 
     /// Embed video data. \brief Embed video data.
     struct DiscordCoreAPI_Dll EmbedVideoData {
-        operator DiscordCoreInternal::EmbedVideoData() {
-            DiscordCoreInternal::EmbedVideoData newData;
-            newData.proxyUrl = this->proxyUrl;
-            newData.height = this->height;
-            newData.width = this->width;
-            newData.url = this->url;
-            return newData;
-        }
         string proxyUrl{ "" };///< Proxy url.
         __int32 height{ 0 };///< Image height.
         __int32 width{ 0 };///< Image width.
@@ -1517,26 +400,12 @@ namespace DiscordCoreAPI {
 
     /// Embed provider data. \brief Embed provider data.
     struct DiscordCoreAPI_Dll EmbedProviderData {
-        operator DiscordCoreInternal::EmbedProviderData() {
-            DiscordCoreInternal::EmbedProviderData newData;
-            newData.name = this->name;
-            newData.url = this->url;
-            return newData;
-        }
         string name{ "" }; ///< Name.
         string url{ "" };///< Url.
     };
 
     /// Embed author data.
     struct DiscordCoreAPI_Dll EmbedAuthorData {
-        operator DiscordCoreInternal::EmbedAuthorData() {
-            DiscordCoreInternal::EmbedAuthorData newData;
-            newData.proxyIconUrl = this->proxyIconUrl;
-            newData.iconUrl = this->iconUrl;
-            newData.name = this->name;
-            newData.url = this->url;
-            return newData;
-        };
         string proxyIconUrl{ "" };///< Proxy icon url.
         string iconUrl{ "" };///< Icon url.
         string name{ "" }; ///< Name.
@@ -1545,13 +414,6 @@ namespace DiscordCoreAPI {
 
     /// Embed field data. \brief Embed field data.
     struct DiscordCoreAPI_Dll EmbedFieldData {
-        operator DiscordCoreInternal::EmbedFieldData() {
-            DiscordCoreInternal::EmbedFieldData newData;
-            newData.Inline = this->Inline;
-            newData.value = this->value;
-            newData.name = this->name;
-            return newData;
-        }
         bool Inline{ false };///< Is the field inline with the rest of them?
         string value{ "" };///< The text on the field.
         string name{ "" };///< The title of the field.
@@ -1572,25 +434,6 @@ namespace DiscordCoreAPI {
         string title{ "" };///< Title of the embed.
         string type{ "" };///< Type of the embed.
         string url{ "" };///< Url for the embed.
-        operator DiscordCoreInternal::EmbedData() {
-            DiscordCoreInternal::EmbedData newData;
-            newData.hexColorValue = this->hexColorValue;
-            newData.description = this->description;
-            newData.timestamp = this->timestamp;
-            for (auto value : this->fields) {
-                newData.fields.push_back(value);
-            }
-            newData.thumbnail = this->thumbnail;
-            newData.provider = this->provider;
-            newData.footer = this->footer;
-            newData.author = this->author;
-            newData.image = this->image;
-            newData.title = this->title;
-            newData.video = this->video;
-            newData.type = this->type;
-            newData.url = this->url;
-            return newData;
-        }
 
         /// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
         /// \param authorName The author's name.
@@ -1677,14 +520,6 @@ namespace DiscordCoreAPI {
 
     /// Message reference data.\brief Message reference data.
     struct DiscordCoreAPI_Dll MessageReferenceData {
-        operator DiscordCoreInternal::MessageReferenceData() {
-            DiscordCoreInternal::MessageReferenceData newData;
-            newData.failIfNotExists = this->failIfNotExists;
-            newData.channelId = this->channelId;
-            newData.messageId = this->messageId;
-            newData.guildId = this->guildId;
-            return newData;
-        }
         bool failIfNotExists{ false };///< Fail if the Message doesn't exist?
         string messageId{ "" };///< Id of the Message to reference.
         string channelId{ "" };///< Id of the Channel that the referenced Message was sent in.
@@ -1699,15 +534,6 @@ namespace DiscordCoreAPI {
 
     /// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
     struct DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
-        operator DiscordCoreInternal::OverWriteData() {
-            DiscordCoreInternal::OverWriteData newData;
-            newData.type = (DiscordCoreInternal::EditChannelPermissionOverwritesType)this->type;
-            newData.channelId = this->channelId;
-            newData.allow = this->allow;
-            newData.deny = this->deny;
-            newData.id = this->id;
-            return newData;
-        }
         EditChannelPermissionOverwritesType type{};   ///< Role or User type.
         string channelId{ "" };///< Channel id for which Channel this overwrite be__int64s to.
         string allow{ "" };///< Collection of Permissions to allow.
@@ -1731,15 +557,6 @@ namespace DiscordCoreAPI {
 
     /// Meta data for a thread type of Channel. \brief Meta data for a thread type of Channel.
     struct DiscordCoreAPI_Dll ThreadMetadataData {
-        operator DiscordCoreInternal::ThreadMetadataData() {
-            DiscordCoreInternal::ThreadMetadataData newData;
-            newData.autoArchiveDuration = this->autoArchiveDuration;
-            newData.archiveTimestamp = this->archiveTimestamp;
-            newData.invitable = this->invitable;
-            newData.archived = this->archived;
-            newData.locked = this->locked;
-            return newData;
-        };
         __int32 autoArchiveDuration{ 0 }; ///< How __int64 before archiving this thread.
         string archiveTimestamp{ "" }; ///< (Where applicable) the time at which this thread was archived.
         bool invitable{ false }; ///< The id of the individual who archived this thread.
@@ -1749,14 +566,6 @@ namespace DiscordCoreAPI {
 
     /// Data for a single member of a thread. \brief Data for a single member of a thread.
     struct DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
-        operator DiscordCoreInternal::ThreadMemberData() {
-            DiscordCoreInternal::ThreadMemberData newData;
-            newData.joinTimestamp = this->joinTimestamp;
-            newData.userId = this->userId;
-            newData.flags = this->flags;
-            newData.id = this->id;
-            return newData;
-        }
         string joinTimestamp{ "" }; ///< The time at which the member joined this thread.
         string userId{ "" };    ///< The User's id.
         __int32 flags{ 0 }; ///< Flags.
@@ -1777,40 +586,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single Channel. \brief Data structure representing a single Channel.
     struct DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
-        operator DiscordCoreInternal::ChannelData() {
-            DiscordCoreInternal::ChannelData newData;
-            newData.defaultAutoArchiveDuration = this->defaultAutoArchiveDuration;
-            newData.type = (DiscordCoreInternal::ChannelType)this->type;
-            for (auto [key, value] : this->permissionOverwrites) {
-                newData.permissionOverwrites.insert(make_pair(key, value));
-            }
-            newData.lastPinTimestamp = this->lastPinTimestamp;
-            newData.videoQualityMode = this->videoQualityMode;
-            newData.videoQualityMode = this->videoQualityMode;
-            newData.rateLimitPerUser = this->rateLimitPerUser;
-            newData.threadMetadata = this->threadMetadata;
-            newData.lastMessageId = this->lastMessageId;
-            newData.applicationId = this->applicationId;
-            newData.messageCount = this->messageCount;
-            newData.memberCount = this->memberCount;
-            for (auto value : this->recipients) {
-                newData.recipients.push_back(value);
-            }
-            newData.rtcRegion = this->rtcRegion;
-            newData.userLimit = this->userLimit;
-            newData.parentId = this->parentId;
-            newData.position = this->position;
-            newData.bitrate = this->bitrate;
-            newData.guildId = this->guildId;
-            newData.ownerId = this->ownerId;
-            newData.member = this->member;
-            newData.topic = this->topic;
-            newData.icon = this->icon;
-            newData.name = this->name;
-            newData.nsfw = this->nsfw;
-            newData.id = this->id;
-            return newData;
-        }
         map<string, OverWriteData> permissionOverwrites{}; ///< Permission overwrites for the given Channel.
         __int32 defaultAutoArchiveDuration{ 0 };
         ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a thread.
@@ -1857,21 +632,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
     struct DiscordCoreAPI_Dll GuildMemberData : DiscordEntity {
-        operator DiscordCoreInternal::GuildMemberData() {
-            DiscordCoreInternal::GuildMemberData newData;
-            newData.premiumSince = this->premiumSince;
-            newData.permissions = this->permissions;
-            newData.userMention = this->userMention;
-            newData.joinedAt = this->joinedAt;
-            newData.pending = this->pending;
-            newData.guildId = this->guildId;
-            newData.roles = this->roles;
-            newData.deaf = this->deaf;
-            newData.mute = this->mute;
-            newData.nick = this->nick;
-            newData.user = this->user;
-            return newData;
-        }
         VoiceStateData voiceData{};///< The voice state data for the GuildMember.
         string premiumSince{ "" };///< If applicable, when they first boosted the server.
         string permissions{ "" };///< Their base-level Permissions in the Guild.
@@ -1918,13 +678,6 @@ namespace DiscordCoreAPI {
 
     /// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
     struct DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity {
-        operator DiscordCoreInternal::ApplicationCommandPermissionData() {
-            DiscordCoreInternal::ApplicationCommandPermissionData newData{};
-            newData.id = this->id;
-            newData.permission = this->permission;
-            newData.type = (DiscordCoreInternal::ApplicationCommandPermissionType)this->type;
-            return newData;
-        }
         ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role }; ///< The type of Permission.
         bool permission{ false }; ///< Whether the Permission is active or not.
     };
@@ -1938,20 +691,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single emoji. \brief Data structure representing a single emoji.
     struct DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
-        operator DiscordCoreInternal::EmojiData() {
-            DiscordCoreInternal::EmojiData newData;
-            newData.requireColons = this->requireColons;
-            newData.available = this->available;
-            for (auto value : this->roles) {
-                newData.roles.push_back(value);
-            }
-            newData.animated = this->animated;
-            newData.managed = this->managed;
-            newData.user = this->user;
-            newData.name = this->name;
-            newData.id = this->id;
-            return newData;
-        }
         bool requireColons{ false };///< Require colons to render it?
         vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
         bool available{ true };///< Is it available to be used?
@@ -1980,18 +719,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single reaction.
     struct DiscordCoreAPI_Dll ReactionData : public DiscordEntity {
-        operator DiscordCoreInternal::ReactionData() {
-            DiscordCoreInternal::ReactionData newData;
-            newData.channelId = this->channelId;
-            newData.messageId = this->messageId;
-            newData.guildId = this->guildId;
-            newData.member = this->member;
-            newData.userId = this->userId;
-            newData.count = this->count;
-            newData.emoji = this->emoji;
-            newData.me = this->me;
-            return newData;
-        }
         GuildMemberData member{}; ///< The GuildMember who placed the reaction.
         string channelId{ "" }; ///< The id of the Channel where it was placed.
         string messageId{ "" }; ///< The id of the Message upon which it was placed.
@@ -2043,14 +770,6 @@ namespace DiscordCoreAPI {
 
     /// Team members object data. \brief Team members object data.
     struct DiscordCoreAPI_Dll TeamMembersObjectData {
-        operator DiscordCoreInternal::TeamMembersObjectData() {
-            DiscordCoreInternal::TeamMembersObjectData newData;
-            newData.membershipState = this->membershipState;
-            newData.permissions = this->permissions;
-            newData.teamId = this->teamId;
-            newData.user = this->user;
-            return newData;
-        }
         vector<string> permissions{};///< Permissions for the team.
         __int32 membershipState{ 0 };///< Current state.
         string teamId{ "" };///< Id of the current team.
@@ -2059,13 +778,6 @@ namespace DiscordCoreAPI {
 
     /// Team object data. \brief Team object data.
     struct DiscordCoreAPI_Dll TeamObjectData : public DiscordEntity {
-        operator DiscordCoreInternal::TeamObjectData() {
-            DiscordCoreInternal::TeamObjectData newData;
-            newData.ownerUserId = this->ownerUserId;
-            newData.icon = this->icon;
-            newData.id = this->id;
-            return newData;
-        }
         vector<TeamMembersObjectData> members{};///< Array of team members object data.
         string ownerUserId{ "" };///< User id of the team owner.
         string icon{ "" };///<Icon for the team.
@@ -2073,28 +785,6 @@ namespace DiscordCoreAPI {
 
     /// Application data. \brief Application data.
     struct DiscordCoreAPI_Dll ApplicationData : public DiscordEntity {
-        operator DiscordCoreInternal::ApplicationData() {
-            DiscordCoreInternal::ApplicationData newData;
-            newData.botRequireCodeGrant = this->botRequireCodeGrant;
-            newData.termsOfServiceUrl = this->termsOfServiceUrl;
-            newData.privacyPolicyUrl = this->privacyPolicyUrl;
-            newData.primarySkuId = this->primarySkuId;
-            newData.description = this->description;
-            newData.coverImage = this->coverImage;
-            newData.rpcOrigins = this->rpcOrigins;
-            newData.botPublic = this->botPublic;
-            newData.verifyKey = this->verifyKey;
-            newData.guildId = this->guildId;
-            newData.summary = this->summary;
-            newData.owner = this->owner;
-            newData.flags = this->flags;
-            newData.icon = this->icon;
-            newData.name = this->name;
-            newData.slug = this->slug;
-            newData.team = this->team;
-            newData.id = this->id;
-            return newData;
-        }
         bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
         string termsOfServiceUrl{ "" };///< Terms of service URL.
         string privacyPolicyUrl{ "" };///< Privacy policy URL.
@@ -2211,26 +901,11 @@ namespace DiscordCoreAPI {
 
     /// Party data. \brief Party data.
     struct DiscordCoreAPI_Dll PartyData : public DiscordEntity {
-        operator DiscordCoreInternal::PartyData() {
-            DiscordCoreInternal::PartyData newData;
-            newData.size[0] = this->size[0];
-            newData.size[1] = this->size[1];
-            newData.id = this->id;
-            return newData;
-        }
         vector<__int32> size{ 0, 0 };///< The size of the party.
     };
 
     /// Assets data. \brief Party data.
     struct DiscordCoreAPI_Dll AssetsData {
-        operator DiscordCoreInternal::AssetsData() {
-            DiscordCoreInternal::AssetsData newData;
-            newData.largeImage = this->largeImage;
-            newData.smallImage = this->smallImage;
-            newData.largeText = this->largeText;
-            newData.smallText = this->smallText;
-            return newData;
-        }
         string largeImage{ "" };    ///< Keyname of an asset to display.
         string smallImage{ "" };    ///< Keyname of an asset to display.
         string largeText{ "" };     ///< Hover text for the large image.
@@ -2239,13 +914,6 @@ namespace DiscordCoreAPI {
 
     /// Secrets data. \brief Secrets data.
     struct DiscordCoreAPI_Dll SecretsData {
-        operator DiscordCoreInternal::SecretsData() {
-            DiscordCoreInternal::SecretsData newData;
-            newData.spectate = this->spectate;
-            newData.match = this->match;
-            newData.join = this->join;
-            return newData;
-        }
         string spectate{ "" }; ///< Unique hash for the given match context.
         string match{ "" };	///< Unique hash for Spectate button.
         string join{ "" };	///< Unique hash for chat invitesand Ask to Join.
@@ -2253,24 +921,12 @@ namespace DiscordCoreAPI {
 
     /// Timestamp data. \brief Timestamp data.
     struct DiscordCoreAPI_Dll TimestampData {
-        operator DiscordCoreInternal::TimestampData() {
-            DiscordCoreInternal::TimestampData newData;
-            newData.start = this->start;
-            newData.end = this->end;
-            return newData;
-        }
         __int64 start{ 0 }; ///< Unix timestamp - Send this to have an "elapsed" timer.
         __int64 end{ 0 };   ///< Unix timestamp - send this to have a "remaining" timer.
     };
 
     /// Button data. \brief Button data.
     struct DiscordCoreAPI_Dll ButtonData {
-        operator DiscordCoreInternal::ButtonData() {
-            DiscordCoreInternal::ButtonData newData;
-            newData.label = this->label;
-            newData.url = this->url;
-            return newData;
-        }
         string label{ "" }; ///< Visible label of the button.
         string url{ "" };   ///< URL to display on the button.
     };
@@ -2287,25 +943,6 @@ namespace DiscordCoreAPI {
 
     /// Activity data. \brief Activity data.
     struct DiscordCoreAPI_Dll ActivityData {
-        operator DiscordCoreInternal::ActivityData() {
-            DiscordCoreInternal::ActivityData newData;
-            newData.applicationId = this->applicationId;
-            newData.timestamps = this->timestamps;
-            newData.createdAt = this->createdAt;
-            newData.instance = this->instance;
-            newData.secrets = this->secrets;
-            newData.details = this->details;
-            newData.buttons = this->buttons;
-            newData.type = (__int32)this->type;
-            newData.assets = this->assets;
-            newData.emoji = this->emoji;
-            newData.flags = this->flags;
-            newData.party = this->party;
-            newData.state = this->state;
-            newData.name = this->name;
-            newData.url = this->url;
-            return newData;
-        }
         TimestampData timestamps{}; ///< Timestamp data.
         string applicationId{ "" }; ///< Application id for the current application.
         __int32 createdAt{ 0 };     ///< Timestamp of when the activity began.
@@ -2607,6 +1244,7 @@ namespace DiscordCoreAPI {
         vector<ChannelData> threads{};///< Array of Channel data.
         vector<UserData> users{};///< Array of u
     };
+
     struct DiscordCoreAPI_Dll ReactionRemoveData {
         string channelId{ "" };
         string messageId{ "" };
@@ -2614,11 +1252,13 @@ namespace DiscordCoreAPI {
         string userId{ "" };
         EmojiData emoji{};
     };
+
     struct DiscordCoreAPI_Dll InteractionPackageData {
         string interactionToken{ "" };
         string applicationId{ "" };
         string interactionId{ "" };
     };
+
     struct DiscordCoreAPI_Dll MessagePackageData {
         string channelId{ "" };
         string messageId{ "" };
@@ -2626,14 +1266,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
     struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
-        operator DiscordCoreInternal::ApplicationCommandOptionChoiceData() {
-            DiscordCoreInternal::ApplicationCommandOptionChoiceData newData;
-            newData.valueString = this->valueString;
-            newData.valueFloat = this->valueFloat;
-            newData.valueInt = this->valueInt;
-            newData.name = this->name;
-            return newData;
-        }
         string valueString{ "" }; ///< The value, if the given choice is a string.
         float valueFloat{ 0.0f }; ///< The value, if the given choice is a float.
         __int32	valueInt{ 0 }; ///< The value, if the given choice is an __int32.
@@ -2642,20 +1274,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
     struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
-        operator DiscordCoreInternal::ApplicationCommandOptionData() {
-            DiscordCoreInternal::ApplicationCommandOptionData newData;
-            for (auto value : this->choices) {
-                newData.choices.push_back(value);
-            }
-            newData.description = this->description;
-            newData.name = this->name;
-            for (auto value : this->options) {
-                newData.options.push_back(value);
-            }
-            newData.required = this->required;
-            newData.type = (DiscordCoreInternal::ApplicationCommandOptionType)this->type;
-            return newData;
-        }
         vector<ApplicationCommandOptionChoiceData>	choices{}; ///< A vector of possible choices for the current ApplicationCommand option.
         vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand option.
         ApplicationCommandOptionType type{};///< The type of command option.
@@ -2720,14 +1338,6 @@ namespace DiscordCoreAPI {
 
     /// Allowable mentions for a Message. \brief Allowable mentions for a Message.
     struct DiscordCoreAPI_Dll AllowedMentionsData {
-        operator DiscordCoreInternal::AllowedMentionsData() {
-            DiscordCoreInternal::AllowedMentionsData newData;
-            newData.repliedUser = this->repliedUser;
-            newData.parse = this->parse;
-            newData.roles = this->roles;
-            newData.users = this->users;
-            return newData;
-        }
         bool repliedUser{ false };///< For replies, whether to mention the author of the Message being replied to (default false).
         vector<string> parse{}; ///< A vector of allowed mention types to parse from the content.
         vector<string> roles{}; ///< Array of role_ids to mention (Max size of 100)
@@ -2743,15 +1353,6 @@ namespace DiscordCoreAPI {
 
     /// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
     struct DiscordCoreAPI_Dll SelectOptionData {
-        operator DiscordCoreInternal::SelectOptionData() {
-            DiscordCoreInternal::SelectOptionData newData;
-            newData.description = this->description;
-            newData._default = this->_default;
-            newData.emoji = this->emoji;
-            newData.label = this->label;
-            newData.value = this->value;
-            return newData;
-        }
         string description{ "" };///< Description of the select-menu-option.
         bool _default{ false };///<Is it the default option?
         string label{ "" };///< A visible label for the select-menu-option.
@@ -2777,23 +1378,6 @@ namespace DiscordCoreAPI {
 
     /// Represents a single Message-component. \brief Represents a single Message-component.
     struct DiscordCoreAPI_Dll ComponentData {
-        operator DiscordCoreInternal::ComponentData() {
-            DiscordCoreInternal::ComponentData newData;
-            newData.style = (DiscordCoreInternal::ButtonStyle)this->style;
-            newData.type = (DiscordCoreInternal::ComponentType)this->type;
-            newData.placeholder = this->placeholder;
-            for (auto value : this->options) {
-                newData.options.push_back(value);
-            }
-            newData.maxValues = this->maxValues;
-            newData.minValues = this->minValues;
-            newData.customId = this->customId;
-            newData.disabled = this->disabled;
-            newData.emoji = this->emoji;
-            newData.label = this->label;
-            newData.url = this->url;
-            return newData;
-        }
         vector<SelectOptionData> options{}; ///< A vector of select-options, in the case of this being a select-menu.
         string placeholder{ "" };   ///< Custom placeholder text if nothing is selected, max 100 characters.
         bool disabled{ false }; ///< Whether this component is active.
@@ -2809,13 +1393,6 @@ namespace DiscordCoreAPI {
 
     /// Action row data of Message components. \brief Action row data of Message components.
     struct DiscordCoreAPI_Dll ActionRowData {
-        operator DiscordCoreInternal::ActionRowData() {
-            DiscordCoreInternal::ActionRowData newData;
-            for (auto value : this->components) {
-                newData.components.push_back(value);
-            }
-            return newData;
-        }
         vector<ComponentData> components{}; ///< Array of components to make up the action-row.
     };
 
@@ -2830,20 +1407,6 @@ namespace DiscordCoreAPI {
 
     /// Interaction ApplicationCommand callback data. \brief Interaction ApplicationCommand callback data.
     struct DiscordCoreAPI_Dll InteractionApplicationCommandCallbackData {
-        operator DiscordCoreInternal::InteractionApplicationCommandCallbackData() {
-            DiscordCoreInternal::InteractionApplicationCommandCallbackData newData;
-            newData.allowedMentions = this->allowedMentions;
-            for (auto value : this->components) {
-                newData.components.push_back(value);
-            }
-            newData.content = this->content;
-            for (auto value : this->embeds) {
-                newData.embeds.push_back(value);
-            }
-            newData.flags = this->flags;
-            newData.tts = this->tts;
-            return newData;
-        }
         AllowedMentionsData allowedMentions{};///< Allowed mentions data.
         vector<ActionRowData> components{};///< Message components.
         vector<EmbedData> embeds{};///< Message embeds.
@@ -2901,14 +1464,6 @@ namespace DiscordCoreAPI {
 
     /// Channel mention data. \brief Channel mention data.
     struct DiscordCoreAPI_Dll ChannelMentionData : public DiscordEntity {
-        operator DiscordCoreInternal::ChannelMentionData() {
-            DiscordCoreInternal::ChannelMentionData newData;
-            newData.guildId = this->guildId;
-            newData.name = this->name;
-            newData.type = (DiscordCoreInternal::ChannelType)this->type;
-            newData.id = this->id;
-            return newData;
-        }
         string guildId{ "" }; ///< The id of the Guild where it took place.
         string name{ "" }; ///< The name of the Channel that was mentioned.
         ChannelType type{}; ///< The type of Channel that was mentioned.
@@ -2939,14 +1494,6 @@ namespace DiscordCoreAPI {
 
     /// Message interaction data.
     struct DiscordCoreAPI_Dll MessageInteractionData : public DiscordEntity {
-        operator DiscordCoreInternal::MessageInteractionData() {
-            DiscordCoreInternal::MessageInteractionData newData;
-            newData.type = (DiscordCoreInternal::InteractionType)this->type;
-            newData.name = this->name;
-            newData.user = this->user;
-            newData.id = this->id;
-            return newData;
-        }
         InteractionType type{};
         string name{ "" };
         UserData user{};
@@ -2999,13 +1546,6 @@ namespace DiscordCoreAPI {
 
     /// Message sticker item data. \brief Message sticker item data.
     struct DiscordCoreAPI_Dll StickerItemData : public DiscordEntity {
-        operator DiscordCoreInternal::StickerItemData() {
-            DiscordCoreInternal::StickerItemData newData;
-            newData.formatType = (DiscordCoreInternal::StickerItemType)this->formatType;
-            newData.name = this->name;
-            newData.id = this->id;
-            return newData;
-        }
         StickerItemType formatType{}; ///< Message sticker item type.
         string name{ "" }; ///< The name of the sticker.
     };
@@ -3089,20 +1629,10 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption;
 
-    DiscordCoreAPI_Dll vector<DiscordCoreInternal::ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions);
+    DiscordCoreAPI_Dll vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions);
 
     /// ApplicationCommand interaction data option. \brief ApplicationCommand interaction data option.
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
-        operator DiscordCoreInternal::ApplicationCommandInteractionDataOption() {
-            DiscordCoreInternal::ApplicationCommandInteractionDataOption newData;
-            newData.type = (DiscordCoreInternal::ApplicationCommandOptionType)this->type;
-            newData.options = convertAppCommandInteractionDataOptions(this->options);
-            newData.valueString = this->valueString;
-            newData.valueBool = this->valueBool;
-            newData.valueInt = this->valueInt;
-            newData.name = this->name;
-            return newData;
-        }
         vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand interaction data options.
         ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
         string valueString{ "" };///< The value if it's a string.
@@ -3709,7 +2239,6 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll Song {
     public:
 
-        friend vector<Song> cleanQueue(vector<Song> originalQueue);
         friend class DiscordCoreInternal::DataParser;
         friend class DatabaseManagerAgent;
         friend class SoundCloudSong;
@@ -3887,6 +2416,39 @@ namespace DiscordCoreAPI {
         Song currentSong{};///< The current Song that is playing.
     };
 
+    struct DiscordCoreAPI_Dll PatchApplicationCommandData {
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ true };
+        string description{ "" };
+        string name{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll PostApplicationCommandData {
+        vector<ApplicationCommandOptionData> options{};
+        bool defaultPermission{ true };
+        ApplicationCommandType type{};
+        string applicationId{ "" };
+        string description{ "" };
+        string name{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll PutEditApplicationCommandPermissionsData {
+        vector<ApplicationCommandPermissionData> permissions{};
+        string commandName{ "" };
+        string guildId{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordCoreAPI::DiscordEntity {
+        vector<ApplicationCommandPermissionData> permissions{};
+        string applicationId{ "" };
+        string guildId{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll PutBatchEditApplicationCommandPermissionsData {
+        vector<GuildApplicationCommandPermissionData> permissions{};
+        string guildId{ "" };
+    };
+
     struct DiscordCoreAPI_Dll DBPlaylist {
     public:
         operator Playlist();
@@ -3971,4 +2533,311 @@ namespace DiscordCoreAPI {
     /// \returns A RecurseThroughMessagePageData structure.
     DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, unsigned __int32 currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, unsigned __int32 waitForMaxMs, bool returnResult = false);
     /**@}*/
+};
+
+namespace  DiscordCoreInternal {
+    /**
+    * \addtogroup foundation_entities
+    * @{
+    */
+    class ApplicationCommands;
+    class BaseWebSocketAgent;
+    class HttpRequestAgent;
+    class ThreadManager;
+    class DataParser;
+
+    enum class ConnectionWebSocketType {
+        Receive = 0,
+        Send = 1
+    };
+
+    struct ConnectionWebSocketData {
+        friend class DiscordCoreAPI::VoiceConnection;
+        friend class VoiceChannelWebSocketAgent;
+        ConnectionWebSocketType type{};
+        string endpoint{ "" };
+        string port{ "" };
+    protected:
+        shared_ptr<unbounded_buffer<DiscordCoreAPI::AudioFrameData>> audioDataBuffer{ nullptr };
+    };
+
+    struct DiscordCoreAPI_Dll UpdatePresenceData {
+        vector<DiscordCoreAPI::ActivityData> activities{};
+        string status{ "" };
+        __int64 since{ 0 };
+        bool afk{ false };
+    };
+
+    struct DiscordCoreAPI_Dll VoiceStateData {
+        string requestToSpeakTimestamp{ "" };
+        DiscordCoreAPI::GuildMemberData guildMember{};
+        bool selfStream{ false };
+        bool selfVideo{ false };
+        string channelId{ "" };
+        string sessionId{ "" };
+        bool selfDeaf{ false };
+        bool selfMute{ false };
+        bool suppress{ false };
+        string guildId{ "" };
+        string userId{ "" };
+        bool deaf{ false };
+        bool mute{ false };
+    };
+
+    enum class ThreadType {
+        Regular = 0,
+        Music = 1
+    };
+
+    class DiscordCoreAPI_Dll SchedulerWrapper {
+    public:
+        SchedulerWrapper(Scheduler* dataPackage) {
+            this->scheduler = dataPackage;
+        }
+        Scheduler* scheduler{ nullptr };
+    };
+
+    class DiscordCoreAPI_Dll ThreadContext {
+    public:
+        shared_ptr<SchedulerWrapper> scheduler{ nullptr };
+
+        static unique_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
+
+        Scheduler* operator*();
+
+        ThreadContext(ThreadType threadType);
+
+        ThreadContext(string);
+
+        ~ThreadContext();
+
+    protected:
+        friend class DiscordCoreAPI::DiscordCoreClient;
+
+        static vector<shared_ptr<SchedulerWrapper>> schedulers;
+
+        static vector<unique_ptr<thread>> threads;
+
+        unique_ptr<thread> threadOfExecution{ nullptr };
+
+        ThreadContext(ThreadContext& newThread);
+
+        void releaseContext();
+
+        static void cleanup();
+
+    };
+
+    enum class HeaderTypes {
+        Bot_Auth = 0,
+        X_Audit_Log_Reason = 1
+    };
+
+    struct DiscordCoreAPI_Dll Headers {
+        HeaderTypes headerType{};
+        string headerValue{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll HttpAgentResources {
+        vector<Headers> headers{};
+        string userAgent{ "" };
+        string baseURL{ "" };
+    };
+
+    enum class HttpWorkloadClass {
+        GET = 0,
+        PUT = 1,
+        POST = 2,
+        PATCH = 3,
+        DELETE = 4
+    };
+
+    enum class HttpWorkloadType {
+        UNSET = 0,
+        GET_GLOBAL_APPLICATION_COMMANDS = 1,
+        POST_GLOBAL_APPLICATION_COMMAND = 2,
+        GET_GLOBAL_APPLICATION_COMMAND = 3,
+        PATCH_GLOBAL_APPLICATION_COMMAND = 4,
+        DELETE_GLOBAL_APPLICATION_COMMAND = 5,
+        BULK_PUT_GLOBAL_APPLICATION_COMMANDS = 6,
+        GET_GUILD_APPLICATION_COMMANDS = 7,
+        POST_GUILD_APPLICATION_COMMAND = 8,
+        GET_GUILD_APPLICATION_COMMAND = 9,
+        PATCH_GUILD_APPLICATION_COMMAND = 10,
+        DELETE_GUILD_APPLICATION_COMMAND = 11,
+        BULK_PUT_GUILD_APPLICATION_COMMANDS = 12,
+        GET_GUILD_APPLICATION_COMMANDS_PERMISSIONS = 13,
+        GET_GUILD_APPLICATION_COMMAND_PERMISSIONS = 14,
+        PUT_GUILD_APPLICATION_COMMAND_PERMISSIONS = 15,
+        BATCH_PUT_GUILD_APPLICATION_COMMAND_PERMISSIONS = 16,
+        POST_INTERACTION_RESPONSE = 17,
+        GET_INTERACTION_RESPONSE = 18,
+        PATCH_INTERACTION_RESPONSE = 19,
+        DELETE_INTERACTION_RESPONSE = 20,
+        POST_FOLLOWUP_MESSAGE = 21,
+        GET_FOLLOWUP_MESSAGE = 22,
+        PATCH_FOLLOWUP_MESSAGE = 23,
+        DELETE_FOLLOWUP_MESSAGE = 24,
+        GET_GUILD_AUDIT_LOGS = 25,
+        GET_CHANNEL = 26,
+        PATCH_CHANNEL = 27,
+        DELETE_CHANNEL = 28,
+        GET_MESSAGES = 29,
+        GET_MESSAGE = 30,
+        POST_MESSAGE = 31,
+        CROSSPOST_MESSAGE = 32,
+        PUT_REACTION = 33,
+        DELETE_OWN_REACTION = 34,
+        DELETE_USER_REACTION = 35,
+        GET_REACTIONS = 36,
+        DELETE_ALL_REACTIONS = 37,
+        DELETE_REACTIONS_BY_EMOJI = 38,
+        PATCH_MESSAGE = 39,
+        DELETE_MESSAGE = 40,
+        DELETE_MESSAGE_OLD = 41,
+        BULK_DELETE_MESSAGES = 42,
+        PUT_CHANNEL_PERMISSION_OVERWRITES = 43,
+        GET_CHANNEL_INVITES = 44,
+        POST_CHANNEL_INVITE = 45,
+        DELETE_CHANNEL_PERMISSION_OVERWRITES = 46,
+        POST_FOLLOW_NEWS_CHANNEL = 47,
+        POST_TRIGGER_TYPING_INDICATOR = 48,
+        GET_PINNED_MESSAGES = 49,
+        PUT_PIN_MESSAGE = 50,
+        DELETE_PIN_MESSAGE = 51,
+        PUT_RECIPIENT_TO_GROUP_DM = 52,
+        DELETE_RECIPIENT_FROM_GROUP_DM = 53,
+        POST_THREAD_WITH_MESSAGE = 54,
+        POST_THREAD_WITHOUT_MESSAGE = 55,
+        PUT_SELF_IN_THREAD = 56,
+        PUT_THREAD_MEMBER = 57,
+        DELETE_SELF_FROM_THREAD = 58,
+        DELETE_THREAD_MEMBER = 59,
+        GET_THREAD_MEMBER = 60,
+        GET_THREAD_MEMBERS = 61,
+        GET_ACTIVE_THREADS = 62,
+        GET_PUBLIC_ARCHIVED_THREADS = 63,
+        GET_PRIVATE_ARCHIVED_THREADS = 64,
+        GET_JOINED_PRIVATE_ARCHIVED_THREADS = 65,
+        GET_EMOJI_LIST = 66,
+        GET_GUILD_EMOJI = 67,
+        POST_GUILD_EMOJI = 68,
+        PATCH_GUILD_EMOJI = 69,
+        DELETE_GUILD_EMOJI = 70,
+        POST_GUILD = 71,
+        GET_GUILD = 72,
+        GET_GUILD_PREVIEW = 73,
+        PATCH_GUILD = 74,
+        DELETE_GUILD = 75,
+        GET_GUILD_CHANNELS = 76,
+        POST_GUILD_CHANNEL = 77,
+        PATCH_GUILD_CHANNEL_POSITIONS = 78,
+        GET_GUILD_ACTIVE_THREADS = 79,
+        GET_GUILD_MEMBERS = 80,
+        GET_SEARCH_GUILD_MEMBERS = 81,
+        PUT_GUILD_MEMBER = 82,
+        PATCH_CURRENT_GUILD_MEMBER = 83,
+        PUT_GUILD_MEMBER_ROLE = 84,
+        DELETE_GUILD_MEMBER_ROLE = 85,
+        DELETE_GUILD_MEMBER = 86,
+        GET_GUILD_BANS = 87,
+        GET_GUILD_BAN = 88,
+        PUT_GUILD_BAN = 89,
+        DELETE_GUILD_BAN = 90,
+        GET_GUILD_ROLES = 91,
+        POST_GUILD_ROLE = 92,
+        PATCH_GUILD_ROLE_POSITIONS = 93,
+        PATCH_GUILD_ROLE = 94,
+        DELETE_GUILD_ROLE = 95,
+
+        GET_USER,
+        GET_USER_SELF,
+        GET_GUILD_MEMBER,
+        GET_USER_GUILDS,
+        POST_USER_DM,
+        POST_CREATE_USER_DM,
+        GET_APPLICATION,
+        GET_SOCKET_PATH,
+        YOUTUBE_SEARCH,
+        YOUTUBE_VIDEO_QUERY,
+        GET_INVITES,
+        PATCH_GUILD_MEMBER,
+        GET_INVITE,
+        GET_VANITY_INVITE,
+        DELETE_LEAVE_GUILD,
+        SOUNDCLOUD_SEARCH,
+        SOUNDCLOUD_AUTH,
+        SOUNDCLOUD_SONG_GET,
+        DELETE_OR_CLOSE_CHANNEL,
+        GET_CURRENT_USER
+    };
+
+    struct DiscordCoreAPI_Dll HttpData {
+        vector<string> responseHeaderValues{};
+        string returnMessage{ "" };
+        __int32 returnCode{ 0 };
+        json data{};
+    };
+
+    struct DiscordCoreAPI_Dll HttpWorkloadData {
+        map<string, string> headersToInsert{};
+        HttpWorkloadClass workloadClass{};
+        HttpWorkloadType workloadType{};
+        string relativePath{ "" };
+        string callStack{ "" };
+        string content{ "" };
+        string baseURL{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll RateLimitData {
+        RateLimitData() {};
+        RateLimitData(RateLimitData& other) {
+            this->nextExecutionTime = other.nextExecutionTime;
+            this->getsRemaining = other.getsRemaining;
+            this->msRemainTotal = other.msRemainTotal;
+            this->timeStartedAt = other.timeStartedAt;
+            this->workloadType = other.workloadType;
+            this->isItMarked = other.isItMarked;
+            this->theMutex.swap(other.theMutex);
+            this->totalGets = other.totalGets;
+            this->msRemain = other.msRemain;
+            this->bucket = other.bucket;
+        }
+        unique_ptr<recursive_mutex> theMutex{ make_unique<recursive_mutex>() };
+        HttpWorkloadType workloadType{};
+        __int64 nextExecutionTime{ 0 };
+        __int64 msRemainTotal{ 0 };
+        __int64 timeStartedAt{ 0 };
+        __int32 getsRemaining{ 0 };
+        bool isItMarked{ false };
+        __int32 totalGets{ 0 };
+        __int64 msRemain{ 0 };
+        string bucket{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll UpdateVoiceStateData {
+        string channelId{ "" };
+        bool selfMute{ false };
+        bool selfDeaf{ false };
+        string guildId{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll VoiceConnectInitData {
+        string channelId{ "" };
+        string guildId{ "" };
+        string userId{ "" };
+    };
+
+    struct DiscordCoreAPI_Dll VoiceConnectionData {
+        vector<unsigned __int8> secretKey{};
+        string voiceEncryptionMode{ "" };
+        unsigned __int32 audioSSRC{ 0 };
+        string externalIp{ "" };
+        string voicePort{ "" };
+        string sessionId{ "" };
+        string endPoint{ "" };
+        string voiceIp{ "" };
+        string token{ "" };
+        string keys{ "" };
+    };
 };

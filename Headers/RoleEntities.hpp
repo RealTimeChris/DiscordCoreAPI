@@ -79,20 +79,22 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Update Role data.
-	struct DiscordCoreAPI_Dll UpdateRoleData {
+	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		string hexColorValue{ "" };///< A hex-color value between 0x00 and 0xFFFFFF.
+		string permissions{ "0" };///< Base Guild permissions for the Role.
 		bool mentionable{ false };///< Is it mentionable?
-		string permissions{ "" };///< Base Guild permissions for the Role.
 		string guildId{ "" };///< The id of the Guild within which to update the Role.
 		string roleId{ "" };///< The id of the Role to update.
 		bool hoist{ false };///< Is this Role hoisted above the others?
+		string reason{ "" };///<< Reason for modifying the Role.
 		string name{ "" };///< What the name of the Role is going to be.
 	};
 
 	/// Removes a Role from a given Guild.
-	struct DiscordCoreAPI_Dll RemoveRoleFromGuildData {
+	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
 		string guildId{ "" };///< The id of the Guild from which to remove the Role.
 		string roleId{ "" };///< The id of the Role to remove.
+		string reason{ "" };///< Reason for removing this Role.
 	};
 
 	/**@}*/
@@ -145,17 +147,17 @@ namespace DiscordCoreAPI {
 		static CoRoutine<vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// Removes a given Role from a Guild. \brief Removes a given Role from a Guild.
-		/// \param dataPackage A RemoveRoleFromGuildData structure.
+		/// \param dataPackage A RemoveGuildRoleData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> removeRoleFromGuildAsync(RemoveRoleFromGuildData dataPackage);
+		static CoRoutine<void> removeGuildRoleAsync(RemoveGuildRoleData dataPackage);
 
 		/// Updates a given Role's properties. \brief Updates a given Role's properties.
-		/// \param dataPackage A UpdateRoleData structure.
+		/// \param dataPackage A ModifyGuildRoleData structure.
 		/// \returns A CoRoutine containing a Role.
-		static CoRoutine<Role> updateRoleAsync(UpdateRoleData dataPackage);
+		static CoRoutine<Role> modifyGuildRoleAsync(ModifyGuildRoleData dataPackage);
 
 		/// Updates a Role's positions. \brief Updates a Role's positions.
-		/// \param dataPackage A UpdateRolePositionData structure.
+		/// \param dataPackage A ModifyGuildRolePositionsData structure.
 		/// \returns A vector containing Roles.
 		static CoRoutine<vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
