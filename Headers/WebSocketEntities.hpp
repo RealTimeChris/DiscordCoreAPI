@@ -68,6 +68,11 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
 		unique_ptr<json> payLoad{ make_unique<json>() };
 		WebSocketEventType eventType{};
+		WebSocketWorkload() {};
+		WebSocketWorkload(WebSocketWorkload& other) {
+			this->payLoad.swap(other.payLoad);
+			this->eventType = other.eventType;
+		}
 		~WebSocketWorkload() {};
 	};
 
@@ -79,7 +84,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, shared_ptr<mutex> workloadMutex);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, shared_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>> workloadNew);
 
 		void connect();
 
@@ -88,12 +93,11 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		shared_ptr<concurrent_queue<shared_ptr<DiscordCoreInternal::WebSocketWorkload>>> webSocketWorkloadTarget{ nullptr };
+		shared_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>> webSocketWorkloadTarget{ nullptr };
 		shared_ptr<VoiceConnectionData> voiceConnectionData{ make_shared<VoiceConnectionData>() };
 		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
-		shared_ptr<mutex> workloadMutex{ nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		concurrency::event disconnectionEvent {};
 		const __int32 maxReconnectTries{ 10 };

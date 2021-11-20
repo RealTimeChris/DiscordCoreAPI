@@ -1002,20 +1002,20 @@ namespace  DiscordCoreInternal {
         GET_GUILD_BAN = 88,
         PUT_GUILD_BAN = 89,
         DELETE_GUILD_BAN = 90,
+        GET_GUILD_ROLES = 91,
+        POST_GUILD_ROLE = 92,
+        PATCH_GUILD_ROLE_POSITIONS = 93,
 
         GET_USER,
         GET_USER_SELF,
         GET_GUILD_MEMBER,
-        GET_ROLES,
         GET_USER_GUILDS,
         POST_USER_DM,
         GET_DM_CHANNEL,
         PATCH_ROLE,
         GET_APPLICATION,
         GET_SOCKET_PATH,
-        POST_ROLE,
         DELETE_GUILD_ROLE,
-        PATCH_GUILD_ROLES,
         YOUTUBE_SEARCH,
         YOUTUBE_VIDEO_QUERY,
         GET_INVITES,
@@ -1149,7 +1149,20 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
-        recursive_mutex theMutex{ recursive_mutex() };
+        RateLimitData() {};
+        RateLimitData(RateLimitData& other) {
+            this->nextExecutionTime = other.nextExecutionTime;
+            this->getsRemaining = other.getsRemaining;
+            this->msRemainTotal = other.msRemainTotal;
+            this->timeStartedAt = other.timeStartedAt;
+            this->workloadType = other.workloadType;
+            this->isItMarked = other.isItMarked;
+            this->theMutex.swap(other.theMutex);
+            this->totalGets = other.totalGets;
+            this->msRemain = other.msRemain;
+            this->bucket = other.bucket;
+        }
+        unique_ptr<recursive_mutex> theMutex{ make_unique<recursive_mutex>() };
         HttpWorkloadType workloadType{};
         __int64 nextExecutionTime{ 0 };
         __int64 msRemainTotal{ 0 };

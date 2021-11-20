@@ -19,23 +19,24 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
+				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.find(rateLimitDataNew->bucket) != end(HttpRequestAgent::rateLimitData)) {
-						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket);
+						rateLimitDataRaw = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).get();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, rateLimitDataNew));
+						HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 					}
 				}
 				else {
 					rateLimitDataNew->bucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, rateLimitDataNew));
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
+					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataNew, workload, true);
+				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataRaw, workload, true);
 				returnType returnObject{};
 				DataParser::parseObject(move(returnData.data), &returnObject);
 				return returnObject;
@@ -50,23 +51,24 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
+				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.find(rateLimitDataNew->bucket) != end(HttpRequestAgent::rateLimitData)) {
-						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket);
+						rateLimitDataRaw = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).get();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, rateLimitDataNew));
+						HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 					}
 				}
 				else {
 					rateLimitDataNew->bucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, rateLimitDataNew));
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
+					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataNew, workload, true);
+				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataRaw, workload, true);
 				return;
 			}
 			catch (...) {
@@ -78,23 +80,24 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
+				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.find(rateLimitDataNew->bucket) != end(HttpRequestAgent::rateLimitData)) {
-						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket);
+						rateLimitDataRaw = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).get();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, rateLimitDataNew));
+						HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 					}
 				}
 				else {
 					rateLimitDataNew->bucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, rateLimitDataNew));
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
+					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataNew, workload, false);
+				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataRaw, workload, false);
 				return returnData;
 			}
 			catch (...) {
@@ -106,7 +109,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		static concurrent_unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static concurrent_unordered_map<string, shared_ptr<RateLimitData>> rateLimitData;
+		static concurrent_unordered_map<string, unique_ptr<RateLimitData>> rateLimitData;
 		static string botToken;
 		static string baseURL;
 
@@ -121,17 +124,17 @@ namespace DiscordCoreInternal {
 		static HttpClient putHttpClient;
 		static HttpClient getHttpClient;
 
-		static HttpData executeByRateLimitData(shared_ptr<RateLimitData> rateLimitDataNew, HttpWorkloadData workload, bool printResult);
+		static HttpData executeByRateLimitData(RateLimitData* rateLimitDataNew, HttpWorkloadData workload, bool printResult);
 
-		static HttpData httpGETObjectData(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpPUTObjectData(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpPOSTObjectData(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpPATCHObjectData(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpDELETEObjectData(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
 	};
 }

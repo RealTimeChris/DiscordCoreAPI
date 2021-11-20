@@ -23,6 +23,14 @@ DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
 
+	struct CacheOptions {
+		bool cacheGuildMembers{ false };
+		bool cacheChannels{ false };
+		bool cacheGuilds{ false };
+		bool cacheRoles{ false };
+		bool cacheUsers{ false };
+	};
+
 	namespace Statics {
 		namespace {
 			unique_ptr<map<string, shared_ptr<unbounded_buffer<AudioFrameData>>>> audioBuffersMap{ nullptr };
@@ -77,7 +85,7 @@ namespace DiscordCoreAPI {
 		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
 		/// \param functionVector A pointer to a vector of function pointers to be run on timers.
 		/// \returns void
-		static void setup(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionVector = vector<RepeatedFunctionData>());
+		static void setup(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionVector = vector<RepeatedFunctionData>(), CacheOptions cacheOptions = CacheOptions());
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		/// \returns void
@@ -91,10 +99,11 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		shared_ptr<concurrent_queue<shared_ptr<DiscordCoreInternal::WebSocketWorkload>>> webSocketWorkloadTarget{ make_shared<concurrent_queue<shared_ptr<DiscordCoreInternal::WebSocketWorkload>>>() };
+		shared_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>> webSocketWorkloadTarget{ make_shared<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>>() };
 		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		shared_ptr<mutex> workloadMutex{ make_shared<mutex>() };
 		shared_ptr<BotUser> currentUser{ nullptr };
+		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		string botToken{ "" };
 

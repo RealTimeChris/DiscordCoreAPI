@@ -76,6 +76,8 @@ namespace DiscordCoreAPI {
 		static string parseCommandName(string messageContents, CommandData commandData);
 
 		static vector<string> parseArguments(string messageContents);
+
+		static void cleanup();
 	};
 
 };

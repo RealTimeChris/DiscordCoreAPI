@@ -55,25 +55,25 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Create Role data. \brief Create Role data.
-	struct DiscordCoreAPI_Dll CreateRoleData {
+	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild?
 		string permissions{ "0" };///< The base permissions to give the Role.
+		__int32 position{ 0 };///< The position amongst the other roles.
 		string guildId{ "" };///< Which Guild to make the Role in.
 		bool hoist{ false };///< Is this Role hoisted above the rest of them?
+		string reason{ "" };///< Reason for creating the Role.
 		string name{ "" };///< The name of the Role.
-		__int32 position{ 0 };///< The position amongst the other roles.
 	};
 
 	/// Update Role position data.
-	struct DiscordCoreAPI_Dll UpdateRolePositionData {
-		friend string DiscordCoreInternal::JSONIFY(UpdateRolePositionData dataPackage);
+	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
+		friend string DiscordCoreInternal::JSONIFY(ModifyGuildRolePositionsData dataPackage);
 		friend class Roles;
-
 		__int32 newPosition{ 0 };///< The new position of the Role.
 		string guildId{ "" };///< The Guild within which to move the Role.
 		string roleId{ "" };///< The id of the Role to move/
-
+		string reason{ "" };///< Reason for modifying the Role positions.
 	protected:
 		vector<RolePositionData> rolePositions;
 	};
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
 		/// \param dataPackage A CreateRoleData structure.
 		/// \returns A Role.
-		static CoRoutine<Role> createRoleAsync(CreateRoleData dataPackage);
+		static CoRoutine<Role> createGuildRoleAsync(CreateGuildRoleData dataPackage);
 
 		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 		/// Updates a Role's positions. \brief Updates a Role's positions.
 		/// \param dataPackage A UpdateRolePositionData structure.
 		/// \returns A vector containing Roles.
-		static CoRoutine<vector<Role>> updateRolePositionsAsync(UpdateRolePositionData dataPackage);
+		static CoRoutine<vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 	protected:
 

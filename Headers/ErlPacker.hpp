@@ -50,13 +50,17 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
-		unsigned __int8* buffer{ nullptr };
+		unique_ptr<unsigned __int8[]> buffer{ nullptr };
+
 		unsigned __int32 currentSize{};
+
 		bool builtFromExternalBuffer{ false };
 
-		unsigned __int64 offSet{};
+		unsigned __int32 offSet{};
+
 		void growBuffer();
-		~ErlPackBuffer();
+
+		ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
@@ -81,7 +85,7 @@ namespace DiscordCoreInternal {
 
 		static void singleValueJsonToETF(const json* jsonData, ErlPackBuffer* buffer);
 
-		static void writeToBuffer(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 length);
+		static void writeToBuffer(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int32 length);
 
 		static void appendVersion(ErlPackBuffer* buffer);
 
@@ -101,21 +105,21 @@ namespace DiscordCoreInternal {
 
 		static void appendDouble(ErlPackBuffer* buffer, double value);
 
-		static void appendAtom(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 size);
+		static void appendAtom(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int32 size);
 
-		static void appendAtomUf8(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 size);
+		static void appendAtomUf8(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int32 size);
 
-		static void appendBinary(ErlPackBuffer* buffer, const char* bytes, unsigned __int64 size);
+		static void appendBinary(ErlPackBuffer* buffer, const char* bytes, unsigned __int32 size);
 
-		static void appendString(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int64 size);
+		static void appendString(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int32 size);
 
-		static void appendTupleHeader(ErlPackBuffer* buffer, unsigned __int64 size);
+		static void appendTupleHeader(ErlPackBuffer* buffer, unsigned __int32 size);
 
 		static void appendNilExt(ErlPackBuffer* buffer);
 
-		static void appendListHeader(ErlPackBuffer* buffer, unsigned __int64 size);
+		static void appendListHeader(ErlPackBuffer* buffer, unsigned __int32 size);
 
-		static void appendMapHeader(ErlPackBuffer* buffer, unsigned __int64 size);
+		static void appendMapHeader(ErlPackBuffer* buffer, unsigned __int32 size);
 
 		static unsigned __int8 read8Bits(ErlPackBuffer* buffer);
 

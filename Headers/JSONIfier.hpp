@@ -15,6 +15,7 @@ namespace DiscordCoreAPI {
 	struct StartThreadWithoutMessageData;
 	struct CreateInteractionResponseData;
 	struct StartThreadWithoutMessageData;
+	struct ModifyGuildRolePositionsData;
 	struct EditInteractionResponseData;
 	struct StartThreadWithMessageData;
 	struct CreateFollowUpMessageData;
@@ -22,11 +23,11 @@ namespace DiscordCoreAPI {
 	struct EditFollowUpMessageData;
 	struct CreateChannelInviteData;
 	struct DeleteMessagesBulkData;
-	struct UpdateRolePositionData;
 	struct FollowNewsChannelData;
 	struct ModifyGuildMemberData;
 	struct ModifyGuildEmojiData;
 	struct CreateGuildEmojiData;
+	struct CreateGuildRoleData;
 	struct AddGuildMemberData;
 	struct CreateGuildBanData;
 	struct CreateMessageData;
@@ -35,7 +36,6 @@ namespace DiscordCoreAPI {
 	struct EditMessageData;
 	struct CreateGuildData;
 	struct UpdateRoleData;
-	struct CreateRoleData;	
 	struct SendDMData;	
 
 };
@@ -98,9 +98,9 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateRoleData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::UpdateRolePositionData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildRolePositionsData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
 
