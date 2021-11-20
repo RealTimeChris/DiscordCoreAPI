@@ -66,14 +66,8 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
-		unique_ptr<json> payLoad{ make_unique<json>() };
 		WebSocketEventType eventType{};
-		WebSocketWorkload() {};
-		WebSocketWorkload(WebSocketWorkload& other) {
-			this->payLoad.swap(other.payLoad);
-			this->eventType = other.eventType;
-		}
-		~WebSocketWorkload() {};
+		json payLoad{};
 	};
 
 	class DiscordCoreAPI_Dll BaseWebSocketAgent {
@@ -84,7 +78,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, shared_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>> workloadNew);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, concurrent_queue<DiscordCoreInternal::WebSocketWorkload>* workloadNew);
 
 		void connect();
 
@@ -93,9 +87,9 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		shared_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>> webSocketWorkloadTarget{ nullptr };
-		shared_ptr<VoiceConnectionData> voiceConnectionData{ make_shared<VoiceConnectionData>() };
-		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
+		concurrent_queue<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
+		unique_ptr<VoiceConnectionData> voiceConnectionData{ make_unique<VoiceConnectionData>() };
+		unique_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
@@ -136,7 +130,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(shared_ptr<concurrency::event> readyEventNew, VoiceConnectInitData initDataNew, shared_ptr<BaseWebSocketAgent> baseWebSocketAgentNew, bool* doWeReconnectNew, shared_ptr<concurrency::event> reconnectionEvent);
+		VoiceChannelWebSocketAgent(shared_ptr<concurrency::event> readyEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew, shared_ptr<concurrency::event> reconnectionEvent);
 
 		void sendMessage(string const& text);
 
@@ -150,13 +144,12 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		shared_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
-		shared_ptr<DiscordCoreAPI::SongDecoder> songDecoder{ nullptr };
-		shared_ptr<BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
+		unbounded_buffer<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		shared_ptr<concurrency::event> reconnectionEvent{ nullptr };
 		shared_ptr<concurrency::event> readyEvent{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
+		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };

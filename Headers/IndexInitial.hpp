@@ -36,29 +36,16 @@
 
 #include <memorybuffer.h>
 #include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Windows.Security.Cryptography.h>
-#include <winrt/Windows.Media.MediaProperties.h>
-#include <winrt/Windows.Devices.Enumeration.h>
 #include <winrt/Windows.Networking.Sockets.h>
+#include <winrt/Windows.System.Threading.h>
 #include <winrt/Windows.Web.Http.Headers.h>
 #include <winrt/Windows.Web.Http.Filters.h>
-#include <winrt/Windows.ApplicationModel.h>
-#include <winrt/Windows.System.Threading.h>
 #include <winrt/Windows.Storage.Streams.h>
-#include <winrt/Windows.Media.Devices.h>
-#include <winrt/Windows.Media.Render.h>
-#include <winrt/Windows.Media.Audio.h>
-#include <winrt/Windows.Networking.h>
-#include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Foundation.h>
 #include <concurrent_unordered_map.h>
 #include <winrt/Windows.Devices.h>
-#include <winrt/Windows.Storage.h>
-#include <winrt/Windows.System.h>
-#include <winrt/Windows.Media.h>
-#include <winrt/Windows.Web.h>
 #include <concurrent_vector.h>
 #include <ppltaskscheduler.h>
+
 extern "C"
 {
 #include <libavutil/mastering_display_metadata.h>
@@ -114,8 +101,8 @@ extern "C"
 #include <future>
 #include <memory>
 #include <atomic>
-#include <ppl.h>
 #include <queue>
+#include <ppl.h>
 #include <deque>
 #include <regex>
 #include <ios>
@@ -133,7 +120,6 @@ using namespace winrt::Windows::Web::Http;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace concurrency::details;
-using namespace Concurrency::details;
 using namespace winrt::Windows::Web;
 using namespace concurrency;
 using namespace nlohmann;

@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class Test;
 
-		static shared_ptr<DiscordCoreClient> thisPointer;
+		static unique_ptr<DiscordCoreClient> thisPointer;
 		static string commandPrefix;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
@@ -99,10 +99,9 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		shared_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>> webSocketWorkloadTarget{ make_shared<concurrent_queue<DiscordCoreInternal::WebSocketWorkload*>>() };
-		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
-		shared_ptr<mutex> workloadMutex{ make_shared<mutex>() };
-		shared_ptr<BotUser> currentUser{ nullptr };
+		unique_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ make_unique<concurrent_queue<DiscordCoreInternal::WebSocketWorkload>>() };
+		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
+		unique_ptr<BotUser> currentUser{ nullptr };
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		string botToken{ "" };

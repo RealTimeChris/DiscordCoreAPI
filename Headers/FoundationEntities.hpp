@@ -2815,13 +2815,6 @@ namespace  DiscordCoreInternal {
         string bucket{ "" };
     };
 
-    struct DiscordCoreAPI_Dll UpdateVoiceStateData {
-        string channelId{ "" };
-        bool selfMute{ false };
-        bool selfDeaf{ false };
-        string guildId{ "" };
-    };
-
     struct DiscordCoreAPI_Dll VoiceConnectInitData {
         string channelId{ "" };
         string guildId{ "" };

@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "WebSocketEntities.hpp"
 #include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
@@ -26,7 +27,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class Test;
 
-		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebsocketAgentNew, DiscordCoreInternal::ConnectionWebSocketData* connectionData);
+		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgentNew, DiscordCoreInternal::ConnectionWebSocketData* connectionData);
 
 		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
 		/// \param frameData A single frame worth of audio data.
@@ -53,7 +54,6 @@ namespace DiscordCoreAPI {
 
 		shared_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ new winrt::event<delegate<SongCompletionEventData>>() };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		shared_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebsocketAgent{ nullptr };
 		shared_ptr<concurrency::event> connectionReadyEvent{ new concurrency::event() };
 		shared_ptr<concurrency::event> disconnectionEvent{ new concurrency::event() };
 		shared_ptr<concurrency::event> reconnectionEvent{ new concurrency::event() };
@@ -62,6 +62,7 @@ namespace DiscordCoreAPI {
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		shared_ptr<concurrency::event> playSetEvent{ new concurrency::event() };
 		shared_ptr<concurrency::event> stopSetEvent{ new concurrency::event() };
+		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		shared_ptr<concurrency::event> pauseEvent{ new concurrency::event() };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
