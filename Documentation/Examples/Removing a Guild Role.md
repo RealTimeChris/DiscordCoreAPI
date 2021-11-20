@@ -1,8 +1,8 @@
 ### **Deleting a Guild Role:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Roles` class.
-- Populate a data structure of type `DiscordCoreAPI::DeleteGuildRoleData`.
-- Select, from the `Roles` class, the `deleteGuildRoleAsync()` function and execute it, with a return value of type `void`, while passing it the created data structure.
+- Populate a data structure of type `DiscordCoreAPI::RemoveGuildRoleData`.
+- Select, from the `Roles` class, the `removeGuildRoleAsync()` function and execute it, with a return value of type `void`, while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
