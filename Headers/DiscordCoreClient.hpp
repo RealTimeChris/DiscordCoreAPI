@@ -114,8 +114,6 @@ namespace DiscordCoreAPI {
 
 		void terminate();
 
-		Guild createGuild(Guild guildData);
-
 		CoRoutine<void> run();
 	};
 	/**@}*/

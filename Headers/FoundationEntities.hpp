@@ -260,7 +260,7 @@ namespace DiscordCoreAPI {
         /// \returns A string containing the timestamp.
         string getCreatedAtTimestamp();
 
-        virtual ~DiscordEntity();
+        virtual ~DiscordEntity() {};
     };
 
     /**@}*/
@@ -291,17 +291,23 @@ namespace DiscordCoreAPI {
 
     /// A single Role.
     class DiscordCoreAPI_Dll Role : public RoleData {
+    public:
+
+        virtual ~Role() {};
+
     protected:
 
         friend struct Concurrency::details::_ResultHolder<Role>;
         friend class DiscordCoreInternal::HttpRequestAgent;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
-        friend class DiscordCoreAPI::CoRoutine;
+        friend class CoRoutine;
         friend struct OnRoleDeletionData;
         friend struct OnRoleCreationData;
         friend struct OnRoleUpdateData;
         friend class DiscordCoreClient;
+        friend class EventHandler;
+        friend class EventManager;
         friend class Roles;
         friend class Guild;
 
@@ -331,13 +337,13 @@ namespace DiscordCoreAPI {
 
     /// A single User. \brief A single User.
     class DiscordCoreAPI_Dll User : public UserData {
-    protected:
+    public:
 
         friend struct Concurrency::details::_ResultHolder<User>;
         friend class DiscordCoreInternal::HttpRequestAgent;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
-        friend class DiscordCoreAPI::CoRoutine;
+        friend class CoRoutine;
         friend struct OnGuildMemberRemoveData;
         friend struct OnGuildBanRemoveData;
         friend struct OnGuildBanAddData;
@@ -346,7 +352,11 @@ namespace DiscordCoreAPI {
         friend class Users;
         friend class Guild;
 
-        DiscordCoreAPI::User();
+        virtual ~User() {};
+
+    protected:
+
+        User();
 
         User(UserData dataNew);
     };
@@ -634,7 +644,7 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
     struct DiscordCoreAPI_Dll GuildMemberData : DiscordEntity {
-        VoiceStateData voiceData{};///< The voice state data for the GuildMember.
+        shared_ptr<VoiceStateData> voiceData{ nullptr };///< The voice state data for the GuildMember.
         string premiumSince{ "" };///< If applicable, when they first boosted the server.
         string permissions{ "" };///< Their base-level Permissions in the Guild.
         string userMention{ "" };///< What to enter to get them mentioned in a Message.
@@ -700,6 +710,8 @@ namespace DiscordCoreAPI {
         bool managed{ false };///< Is it managed?
         string name{ "" };///< What is its name?
         UserData user{};///< User that created this emoji.
+
+        virtual ~EmojiData() {};
     };
 
     /// For updating/modifying a given Channel's properties.
@@ -735,12 +747,16 @@ namespace DiscordCoreAPI {
 
     /// A single Reaction. \brief A single Reaction.
     class DiscordCoreAPI_Dll Reaction : public ReactionData {
+    public:
+
+        virtual ~Reaction() {};
+
     protected:
 
         friend struct Concurrency::details::_ResultHolder<Reaction>;
         friend class DiscordCoreInternal::HttpRequestAgent;
         template<typename returnValueType>
-        friend class DiscordCoreAPI::CoRoutine;
+        friend class CoRoutine;
         friend class DiscordCoreInternal::DataParser;
         friend struct OnReactionAddData;
         friend class DiscordCoreClient;
@@ -748,6 +764,7 @@ namespace DiscordCoreAPI {
         Reaction();
 
         Reaction(ReactionData dataNew);
+        
     };
 
     enum class MessageActivityType {
@@ -1086,12 +1103,12 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
+        map<string, shared_ptr<VoiceStateData>> voiceStates{};///< Array of Guild-member voice-states.
         vector<StageInstanceData> stageInstances{}; ///< Array of stage instances.
         vector<PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
         __int32 premiumSubscriptionCount{ 0 }; ///< Premium subscription count.
         __int32 approximatePresenceCount{ 0 }; ///< Approximate quantity of presences.
         VerificationLevel verificationLevel{};  ///< Verification level required.
-        vector<VoiceStateData> voiceStates{};   ///< Array of Guild-member voice-states.
         string publicUpdatesChannelId{ "" }; ///< Id of the public updates Channel.        
         __int32 approximateMemberCount{ 0 };    ///< Approximate member count.
         vector<GuildMemberData> members{};  ///< Array of GuildMembers.
@@ -1446,7 +1463,7 @@ namespace DiscordCoreAPI {
         friend struct OnApplicationCommandUpdateData;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
-        friend class DiscordCoreAPI::CoRoutine;
+        friend class CoRoutine;
         friend class ApplicationCommands;
         friend class DiscordCoreClient;
 
@@ -1596,23 +1613,23 @@ namespace DiscordCoreAPI {
 
     /// A single Message. \brief A single Message.
     class DiscordCoreAPI_Dll Message : public MessageData {
+    public:
+        Message();
+
+        Message(MessageData dataNew);
+
     protected:
 
         friend struct Concurrency::details::_ResultHolder<Message>;
         friend class DiscordCoreInternal::HttpRequestAgent;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
-        friend class DiscordCoreAPI::CoRoutine;
+        friend class CoRoutine;
         friend struct OnMessageCreationData;
         friend struct OnMessageUpdateData;
         friend class DiscordCoreClient;
         friend class MessageCollector;
         friend class InputEvents;
-
-
-        Message();
-
-        Message(MessageData dataNew);
     };
 
     /// Resolved data.
@@ -2094,7 +2111,7 @@ namespace DiscordCoreAPI {
         /// \param emojiId An emoji id, if desired.
         /// \param url A url, if applicable.
         /// \returns void
-        void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+        void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
             if (this->components.size() == 0) {
                 ActionRowData actionRowData;
                 this->components.push_back(actionRowData);
@@ -2440,7 +2457,7 @@ namespace DiscordCoreAPI {
         string guildId{ "" };
     };
 
-    struct DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordCoreAPI::DiscordEntity {
+    struct DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordEntity {
         vector<ApplicationCommandPermissionData> permissions{};
         string applicationId{ "" };
         string guildId{ "" };

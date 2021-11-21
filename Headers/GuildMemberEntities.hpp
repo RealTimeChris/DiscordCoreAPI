@@ -76,9 +76,10 @@ namespace DiscordCoreAPI {
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
-		GuildMember(GuildMemberData dataNew, string guildIdNew) noexcept;
 
 		GuildMember(GuildMemberData dataNew) noexcept;
+
+		virtual ~GuildMember() {};
 
 	protected:
 

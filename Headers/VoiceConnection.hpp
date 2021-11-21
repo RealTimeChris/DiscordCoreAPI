@@ -52,18 +52,18 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ new winrt::event<delegate<SongCompletionEventData>>() };
+		shared_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ make_shared<winrt::event<delegate<SongCompletionEventData>>>() };
 		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		shared_ptr<concurrency::event> connectionReadyEvent{ new concurrency::event() };
-		shared_ptr<concurrency::event> disconnectionEvent{ new concurrency::event() };
-		shared_ptr<concurrency::event> reconnectionEvent{ new concurrency::event() };
-		shared_ptr<concurrency::event> playWaitEvent{ new concurrency::event() };
-		shared_ptr<concurrency::event> stopWaitEvent{ new concurrency::event() };
+		shared_ptr<concurrency::event> connectionReadyEvent{ make_shared<concurrency::event>() };
+		shared_ptr<concurrency::event> disconnectionEvent{ make_shared<concurrency::event>() };
+		shared_ptr<concurrency::event> reconnectionEvent{ make_shared<concurrency::event>() };
+		shared_ptr<concurrency::event> playWaitEvent{ make_shared<concurrency::event>() };
+		shared_ptr<concurrency::event> stopWaitEvent{ make_shared<concurrency::event>() };
+		shared_ptr<concurrency::event> playSetEvent{ make_shared<concurrency::event>() };
+		shared_ptr<concurrency::event> stopSetEvent{ make_shared<concurrency::event>() };
+		shared_ptr<concurrency::event> pauseEvent{ make_shared<concurrency::event>() };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
-		shared_ptr<concurrency::event> playSetEvent{ new concurrency::event() };
-		shared_ptr<concurrency::event> stopSetEvent{ new concurrency::event() };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
-		shared_ptr<concurrency::event> pauseEvent{ new concurrency::event() };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		const __int32 maxBufferSize{ 1276 };

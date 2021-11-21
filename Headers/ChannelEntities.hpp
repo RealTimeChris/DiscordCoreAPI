@@ -215,6 +215,10 @@ namespace DiscordCoreAPI {
 
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
+	public:
+
+		virtual ~Channel() {};
+
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Channel>;

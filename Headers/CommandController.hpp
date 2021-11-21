@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		virtual CoRoutine<void> executeAsync(unique_ptr<BaseFunctionArguments>args) = 0;
 		virtual unique_ptr<BaseFunction> create() = 0;
-		virtual ~BaseFunction() {};
+		virtual ~BaseFunction() = default;
 	};
 	/**@}*/
 

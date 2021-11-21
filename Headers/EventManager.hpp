@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
-		Guild Guild{}; ///< The deleted Guild.
+		Guild guild{}; ///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
-		VoiceStateData voiceStateData{}; ///< VoiceStateData for the new voice state.
+		shared_ptr<VoiceStateData> voiceStateData{ make_shared<VoiceStateData>() };///< VoiceStateData for the new voice state.
 	};
 
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
