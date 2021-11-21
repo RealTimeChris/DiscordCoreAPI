@@ -54,8 +54,6 @@ namespace DiscordCoreInternal {
 
 		unsigned __int32 currentSize{};
 
-		bool builtFromExternalBuffer{ false };
-
 		unsigned __int32 offSet{};
 
 		void growBuffer();
