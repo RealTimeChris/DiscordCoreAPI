@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, concurrent_queue<DiscordCoreInternal::WebSocketWorkload>* workloadNew);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* workloadNew);
 
 		void connect();
 
@@ -87,7 +87,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		concurrent_queue<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
+		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		unique_ptr<VoiceConnectionData> voiceConnectionData{ make_unique<VoiceConnectionData>() };
 		unique_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};

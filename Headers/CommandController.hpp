@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 	public:
 		friend class DiscordCoreClient;
 
-		static map<string, unique_ptr<BaseFunction>> functions;
+		static map<vector<string>, unique_ptr<BaseFunction>> functions;
 
 		static void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
 

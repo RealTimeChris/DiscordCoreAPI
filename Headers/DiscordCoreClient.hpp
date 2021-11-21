@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		unique_ptr<concurrent_queue<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ make_unique<concurrent_queue<DiscordCoreInternal::WebSocketWorkload>>() };
+		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ make_unique<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>>() };
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		unique_ptr<BotUser> currentUser{ nullptr };
 		CacheOptions cacheOptions{};
