@@ -103,6 +103,7 @@ namespace DiscordCoreAPI {
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		unique_ptr<BotUser> currentUser{ nullptr };
 		unique_ptr<CoRoutine<void>> theTask{};
+		binary_semaphore theSemaphore{ 1 };
 		__int64 currentIteration{ 0 };
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
