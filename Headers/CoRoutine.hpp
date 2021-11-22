@@ -99,6 +99,9 @@ namespace DiscordCoreAPI {
             }
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
+                if (coroutineHandle.promise().newThread->joinable()) {
+                    coroutineHandle.promise().newThread->join();
+                }
             }
             exception_ptr exceptionPtr{};
             while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
@@ -214,6 +217,9 @@ namespace DiscordCoreAPI {
             }
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
+                if (coroutineHandle.promise().newThread->joinable()) {
+                    coroutineHandle.promise().newThread->join();
+                }
             }
             exception_ptr exceptionPtr{};
             while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
@@ -279,6 +285,32 @@ namespace DiscordCoreAPI {
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+                this->waiterHandle = handle;
+                this->waiterHandle.promise().newThread = make_shared<jthread>([=] { this->waiterHandle.resume(); });
+                return true;
+            }
+
+            auto await_resume() {
+                return this->waiterHandle;
+            }
+        };
+        return NewThreadAwaitable();
+    }
+
+    template<>
+    DiscordCoreAPI_Dll inline auto NewThreadAwaitable<void>() {
+        class NewThreadAwaitable {
+        public:
+
+            coroutine_handle<CoRoutine<void>::promise_type> waiterHandle{ nullptr };
+
+            NewThreadAwaitable() {}
+
+            bool await_ready() const noexcept {
+                return false;
+            }
+
+            bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
                 this->waiterHandle = handle;
                 this->waiterHandle.promise().newThread = make_shared<jthread>([=] { this->waiterHandle.resume(); });
                 return true;

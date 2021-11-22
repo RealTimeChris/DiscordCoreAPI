@@ -102,8 +102,8 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ make_unique<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>>() };
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
+		unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		unique_ptr<BotUser> currentUser{ nullptr };
-		unique_ptr<CoRoutine<void>> theTask{};
 		__int64 currentIteration{ 0 };
 		condition_variable upperCV{};
 		CacheOptions cacheOptions{};
