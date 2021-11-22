@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<ApplicationData> getApplicationDataAsync();
 
 	protected:
-		static unique_ptr<concurrent_unordered_map<string, User>> cache;
+		static ObjectCache<User> cache;
 
 		static void insertUser(User user);
 	};

@@ -66,6 +66,50 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll void spinLock(__int64 timeInNsToSpinLockFor);
 
+    template<typename storageType>
+    class ObjectCache : public unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> {
+    public:
+
+        ObjectCache() : unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>>(make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>()) {}
+
+        storageType returnValue(string valueId) {
+            return *(*this)->at(valueId);
+        }
+
+        bool contains(string valueId) {
+            if ((*this)->find(valueId) == end(*this->get())) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        void erase(string valueId) {
+            if (this->contains(valueId)) {
+                (*this)->unsafe_erase(valueId);
+                unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> newCache{ make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>() };
+                for (auto& value : *newCache.get()) {
+                    newCache->insert(make_pair(value.first, move(value.second)));
+                }
+                this->swap(newCache);
+            }
+        }
+
+        void storeValue(string valueId, storageType storageValue) {
+            unique_ptr<storageType> newPtr{ make_unique<storageType>(storageValue) };
+            unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> newCache{ make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>() };
+            if (this->contains(valueId)) {
+                (*this)->unsafe_erase(valueId);
+            }
+            for (auto& value : *this->get()) {
+                newCache->insert(make_pair(value.first, move(value.second)));
+            }
+            this->swap(newCache);
+            (*this)->insert(make_pair(valueId, move(newPtr)));
+        }
+    };
+
     class DiscordCoreAPI_Dll StopWatch {
     public:
         StopWatch(__int64 maxNumberOfMsNew) {

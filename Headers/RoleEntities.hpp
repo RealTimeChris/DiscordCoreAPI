@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static unique_ptr<concurrent_unordered_map<string, Role>> cache;
+		static ObjectCache<Role> cache;
 
 		static void insertRole(Role dataPackage);
 

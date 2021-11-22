@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
 	protected:
-		static unique_ptr<concurrent_unordered_map<string, GuildMember>> cache;
+		static ObjectCache<GuildMember> cache;
 
 		static void insertGuildMember(GuildMember dataPackage);
 

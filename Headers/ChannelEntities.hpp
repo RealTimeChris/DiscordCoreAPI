@@ -390,7 +390,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<ActiveThreadsData> listActiveThreadsAsync(ListActiveThreadsData dataPackage);
 
 	protected:
-		static unique_ptr<concurrent_unordered_map<string, Channel>> cache;
+		static ObjectCache<Channel> cache;
 
 		static void insertChannel(Channel dataPackage);
 
