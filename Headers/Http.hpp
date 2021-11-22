@@ -36,10 +36,10 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataRaw, workload, true);
+				unique_ptr<HttpData> returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataRaw, workload, true);
 				returnType returnObject{};
-				DataParser::parseObject(move(returnData.data), &returnObject);
-				return returnObject;
+				DataParser::parseObject(move(returnData->data), &returnObject);
+				return move(returnObject);
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
@@ -97,8 +97,8 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				auto returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataRaw, workload, false);
-				return returnData;
+				unique_ptr<HttpData> returnData = HttpRequestAgent::executeByRateLimitData(rateLimitDataRaw, workload, false);
+				return move(*returnData);
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
@@ -124,17 +124,17 @@ namespace DiscordCoreInternal {
 		static HttpClient putHttpClient;
 		static HttpClient getHttpClient;
 
-		static HttpData executeByRateLimitData(RateLimitData* rateLimitDataNew, HttpWorkloadData workload, bool printResult);
+		static unique_ptr<HttpData> executeByRateLimitData(RateLimitData* rateLimitDataNew, HttpWorkloadData workload, bool printResult);
 
-		static HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static unique_ptr<HttpData> httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static unique_ptr<HttpData> httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static unique_ptr<HttpData> httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static unique_ptr<HttpData> httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
-		static HttpData httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+		static unique_ptr<HttpData> httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 
 	};
 }
