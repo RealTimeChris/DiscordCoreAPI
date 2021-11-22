@@ -889,7 +889,7 @@ namespace DiscordCoreAPI {
 	/**@}*/
 	class DiscordCoreAPI_Dll EventHandler {
 	public:
-
+		
 		static void onChannelCreation(OnChannelCreationData dataPackage);
 
 		static void onChannelUpdate(OnChannelUpdateData dataPackage);
@@ -913,9 +913,10 @@ namespace DiscordCoreAPI {
 		static void onRoleUpdate(OnRoleUpdateData dataPackage);
 
 		static void onRoleDeletion(OnRoleDeletionData dataPackage);
-
+		
 		static CoRoutine<void> onInputEventCreation(OnInputEventCreationData dataPackage);
-
+		
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
+		
 	};
 }

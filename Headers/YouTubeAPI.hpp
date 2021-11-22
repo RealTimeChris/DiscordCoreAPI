@@ -48,12 +48,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		unique_ptr<SongDecoder> songDecoder{ nullptr };
+		unique_ptr<SongEncoder> songEncoder{ nullptr };
 		concurrency::event readyToQuitEventOut {};
-		concurrency::event readyToQuitEventIn {};
+		concurrency::event readyToQuitEventIn {};		
 		CoRoutine<void> currentlyRunningSong{};
 		const __int32 maxBufferSize{ 8192 };
-		SongDecoder* songDecoder{ nullptr };
-		SongEncoder* songEncoder{ nullptr };
 		YouTubeSong theSong{};
 		string guildId{ "" };
 
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
-		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>* sendAudioDataBufferNew);
+		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>& sendAudioDataBufferNew);
 		
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 
