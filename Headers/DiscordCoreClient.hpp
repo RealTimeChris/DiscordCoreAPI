@@ -102,6 +102,8 @@ namespace DiscordCoreAPI {
 		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ make_unique<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>>() };
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		unique_ptr<BotUser> currentUser{ nullptr };
+		unique_ptr<CoRoutine<void>> theTask{};
+		__int64 currentIteration{ 0 };
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		string botToken{ "" };
@@ -109,6 +111,8 @@ namespace DiscordCoreAPI {
 		CoRoutine<void> initialize();
 
 		static void cleanup();
+
+		void watcherLoop();
 
 		CoRoutine<string> getGateWayUrl();
 
