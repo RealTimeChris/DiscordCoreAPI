@@ -79,6 +79,7 @@ namespace DiscordCoreAPI {
 		static string commandPrefix;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
+		bool isItReady{ false };
 
 		/// Sets up some resources for the library. \brief Sets up some resources for the library.
 		/// \param botTokenNew Your bot token. 
@@ -103,10 +104,11 @@ namespace DiscordCoreAPI {
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		unique_ptr<BotUser> currentUser{ nullptr };
 		unique_ptr<CoRoutine<void>> theTask{};
-		binary_semaphore theSemaphore{ 1 };
 		__int64 currentIteration{ 0 };
+		condition_variable upperCV{};
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
+		mutex iteratorMutex{};
 		string botToken{ "" };
 
 		CoRoutine<void> initialize();

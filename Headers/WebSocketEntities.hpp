@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
-		WebSocketEventType eventType{};
+		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		json payLoad{};
 		~WebSocketWorkload() {};
 	};

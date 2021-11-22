@@ -99,9 +99,6 @@ namespace DiscordCoreAPI {
             }
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
-                if (coroutineHandle.promise().newThread->joinable()) {
-                    coroutineHandle.promise().newThread->join();
-                }
             }
             exception_ptr exceptionPtr{};
             while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
@@ -118,7 +115,7 @@ namespace DiscordCoreAPI {
 
             unbounded_buffer<exception_ptr> exceptionBuffer{};
 
-            unique_ptr<jthread> newThread{ nullptr };
+            shared_ptr<jthread> newThread{ nullptr };
 
             returnType result{};
 
@@ -217,9 +214,6 @@ namespace DiscordCoreAPI {
             }
             if (coroutineHandle.promise().newThread != nullptr) {
                 coroutineHandle.promise().newThread->get_stop_source().request_stop();
-                if (coroutineHandle.promise().newThread->joinable()) {
-                    coroutineHandle.promise().newThread->join();
-                }
             }
             exception_ptr exceptionPtr{};
             while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
@@ -236,7 +230,7 @@ namespace DiscordCoreAPI {
 
             unbounded_buffer<exception_ptr> exceptionBuffer{};
 
-            unique_ptr<jthread> newThread{ nullptr };
+            shared_ptr<jthread> newThread{ nullptr };
 
             promise_type() {}
 
@@ -286,7 +280,7 @@ namespace DiscordCoreAPI {
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
                 this->waiterHandle = handle;
-                this->waiterHandle.promise().newThread = make_unique<jthread>([=] { this->waiterHandle.resume(); });
+                this->waiterHandle.promise().newThread = make_shared<jthread>([=] { this->waiterHandle.resume(); });
                 return true;
             }
 

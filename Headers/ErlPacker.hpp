@@ -50,15 +50,17 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
-		unique_ptr<unsigned __int8[]> buffer{ nullptr };
+		unsigned __int8* buffer{ nullptr };
+
+		bool builtFromExternalBuffer{ false };
 
 		unsigned __int32 currentSize{};
 
 		unsigned __int32 offSet{};
 
-		void growBuffer();
+		void growBuffer();;
 
-		ErlPackBuffer();
+		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
@@ -111,13 +113,13 @@ namespace DiscordCoreInternal {
 
 		static void appendString(ErlPackBuffer* buffer, const unsigned __int8* bytes, unsigned __int32 size);
 
-		static void appendTupleHeader(ErlPackBuffer* buffer, unsigned __int32 size);
+		static void appendTupleHeader(ErlPackBuffer* buffer, unsigned __int64 size);
 
 		static void appendNilExt(ErlPackBuffer* buffer);
 
-		static void appendListHeader(ErlPackBuffer* buffer, unsigned __int32 size);
+		static void appendListHeader(ErlPackBuffer* buffer, unsigned __int64 size);
 
-		static void appendMapHeader(ErlPackBuffer* buffer, unsigned __int32 size);
+		static void appendMapHeader(ErlPackBuffer* buffer, unsigned __int64 size);
 
 		static unsigned __int8 read8Bits(ErlPackBuffer* buffer);
 
