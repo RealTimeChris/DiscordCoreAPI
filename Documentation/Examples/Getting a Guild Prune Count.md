@@ -31,30 +31,21 @@ namespace DiscordCoreAPI {
 			this->helpEmbed = msgEmbed;
 		}
 
-		Test* create() {
-			return new Test;
+		unique_ptr<BaseFunction> create() {
+			return make_unique<Test>();
 		}
 
-		virtual CoRoutine<void> executeAsync(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
+		virtual CoRoutine<void> executeAsync(unique_ptr<BaseFunctionArguments> args) {
 			try {
-				CreateGuildChannelData dataPackage{};
-				dataPackage.type = ChannelType::GUILD_TEXT;
-				dataPackage.name = "TEST CHANNEL";
-				dataPackage.guildId = args->eventData.getGuildId();
-				dataPackage.reason = "TESTING PURPOSES!";
 
-				vector<Channel> channels = Channels::getGuildChannelsAsync({ .guildId = args->eventData.getGuildId() }).get();
+				GetGuildPruneCountData dataPackage01{};
+				dataPackage01.days = 28;
+				dataPackage01.roles.push_back("860075141818744853");
+				dataPackage01.guildId = args->eventData.getGuildId();
 
-				for (auto value : channels) {
-					if (value.type == ChannelType::GUILD_CATEGORY) {
-						dataPackage.parentId = value.id;
-						break;
-					}
-				}
+				auto responseData = Guilds::getGuildPruneCountAsync(dataPackage01).get();
 
-				Channel channel = Channels::createGuildChannelAsync(dataPackage).get();
-
-				cout << "THE NAME: " << channel.name << endl;
+				cout << responseData.count << endl;
 
 				co_return;
 			}
@@ -65,4 +56,5 @@ namespace DiscordCoreAPI {
 	};
 }
 #endif
+
 ```
