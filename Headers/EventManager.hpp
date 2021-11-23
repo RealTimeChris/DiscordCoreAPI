@@ -19,7 +19,12 @@ namespace DiscordCoreAPI {
 	*/
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
-		InputEventData inputEventData{};///< InputEventData representing the input-event.
+		unique_ptr<InputEventData> inputEventData{ make_unique<InputEventData>() };///< InputEventData representing the input-event.
+		OnInputEventCreationData(){}		
+		OnInputEventCreationData(const OnInputEventCreationData& other) {
+			InputEventData* newPtr = other.inputEventData.get();
+			this->inputEventData.reset(newPtr);
+		}
 	};
 
 	/// Data that is received as part of an ApplicationCommand creation event. \brief Data that is received as part of an ApplicationCommand creation event.

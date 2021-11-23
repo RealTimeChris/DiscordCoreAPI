@@ -803,6 +803,15 @@ namespace DiscordCoreAPI {
         virtual ~ReactionData() {};
     };
 
+    /// Structure representing Voice Region Data.
+    struct VoiceRegionData {
+        bool deprecated{ false };///< Whether this is a deprecated voice region(avoid switching to these).
+        bool optimal{ false };///< True for a single server that is closest to the current user's client.
+        bool custom{ false };///< Whether this is a custom voice region(used for events / etc).
+        string name{ "" };///< Name of the region.
+        string id{ "" };///< Unique ID for the region.
+    };
+
     /// A single Reaction. \brief A single Reaction.
     class DiscordCoreAPI_Dll Reaction : public ReactionData {
     public:
@@ -1165,23 +1174,25 @@ namespace DiscordCoreAPI {
     /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
-        ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, shared_ptr<VoiceStateData>> voiceStates{};///< Array of Guild-member voice-states.
+        ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
+        map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
         vector<StageInstanceData> stageInstances{}; ///< Array of stage instances.
-        vector<PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
+        map<string, GuildMemberData> members{};  ///< Array of GuildMembers.
         __int32 premiumSubscriptionCount{ 0 }; ///< Premium subscription count.
         __int32 approximatePresenceCount{ 0 }; ///< Approximate quantity of presences.
         VerificationLevel verificationLevel{};  ///< Verification level required.
+        map<string, StickerData> stickers{}; ///< Array of Guild stickers.
+        map<string, ChannelData> channels{}; ///< Array of Guild channels.
         string publicUpdatesChannelId{ "" }; ///< Id of the public updates Channel.        
         __int32 approximateMemberCount{ 0 };    ///< Approximate member count.
-        vector<GuildMemberData> members{};  ///< Array of GuildMembers.
+        map<string, ChannelData> threads{};  ///< Array of Guild threads.        
         WelcomeScreenData welcomeScreen{};  ///< Welcome screen for the Guild.
         __int32 maxVideoChannelUsers{ 0 };  ///< Maximum quantity of users per video Channel.
         AfkTimeOutDurations afkTimeOut{};    ///< Time for an individual to time out as afk.
         __int32 systemChannelFlags{ 0 };    ///< System Channel flags.
-        vector<ChannelData> channels{}; ///< Array of Guild channels.
-        vector<StickerData> stickers{}; ///< Array of Guild stickers.
-        vector<ChannelData> threads{};  ///< Array of Guild threads.        
+        map<string, EmojiData> emoji{};  ///< Array of Guild emojis.
+        map<string, RoleData> roles{};   ///< Array of Guild roles.
         string discoverySplash{ "" };   ///< Link to the discovery image's splash.
         string preferredLocale{ "" };   ///< Preferred locale, for voice chat servers.
         string widgetChannelId{ "" };   ///< Channel id for the Guild's widget.
@@ -1191,13 +1202,11 @@ namespace DiscordCoreAPI {
         string vanityURLCode{ "" }; ///< Vanity URL code, if applicable.
         string applicationId{ "" }; ///< The current application id.
         __int32 maxPresences{ 0 };  ///< Max number of presences allowed.
-        vector<EmojiData> emoji{};  ///< Array of Guild emojis.
         string afkChannelId{ "" };  ///< Channel if of the "afk" Channel,
         vector<string> features{};  ///< List of Guild features.
         bool unavailable{ false };  ///< Is the Guild currently available to the bot?
         PremiumTier premiumTier{};  ///< What is the premium tier?
         string permissions{ "" };   ///< Current Permissions for the bot in the Guild.
-        vector<RoleData> roles{};   ///< Array of Guild roles.
         string description{ "" };   ///< Description of the Guild.
         __int32 memberCount{ 0 };   ///< Member count.
         __int32 maxMembers{ 0 };    ///< Max quantity of members.
