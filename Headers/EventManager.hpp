@@ -13,18 +13,25 @@
 
 namespace DiscordCoreAPI {
 
+	template<typename storedType>
+	class unique_ptr_wrapper : public unique_ptr<storedType> {
+	public:
+		unique_ptr_wrapper() :unique_ptr<storedType>(make_unique<storedType>()){}
+		unique_ptr_wrapper(const unique_ptr_wrapper& other):unique_ptr<storedType>(make_unique<storedType>()) {
+			auto newPtr = other.get();
+			auto newValue = *this->get();
+			this->reset(newPtr);
+			*other.get() = newValue;
+		}
+	};
+
 	/**
 	* \addtogroup discord_events
 	* @{
 	*/
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
-		unique_ptr<InputEventData> inputEventData{ make_unique<InputEventData>() };///< InputEventData representing the input-event.
-		OnInputEventCreationData(){}		
-		OnInputEventCreationData(const OnInputEventCreationData& other) {
-			InputEventData* newPtr = other.inputEventData.get();
-			this->inputEventData.reset(newPtr);
-		}
+		unique_ptr_wrapper<InputEventData> inputEventData{};///< InputEventData representing the input-event.
 	};
 
 	/// Data that is received as part of an ApplicationCommand creation event. \brief Data that is received as part of an ApplicationCommand creation event.
