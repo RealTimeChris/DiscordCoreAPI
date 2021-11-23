@@ -1673,6 +1673,9 @@ namespace DiscordCoreAPI {
         UserData author{};///< The author's User data.
         bool tts{ false };///< Is it a text-to-speech Message?
         __int32 flags{ 0 };///< Flags.
+
+        virtual ~MessageDataOld() {};
+
     };
 
     /// Data structure representing a single Message. \brief Data structure representing a single Message.
@@ -2125,6 +2128,8 @@ namespace DiscordCoreAPI {
         string getRequesterId() {
             return this->requesterId;
         };
+
+        virtual ~InputEventData() {};
 
     protected:
         InteractionData interactionData{};
