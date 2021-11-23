@@ -19,7 +19,7 @@ namespace DiscordCoreAPI {
 	*/
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
-		InputEventData* inputEventData{ nullptr };///< InputEventData representing the input-event.
+		InputEventData inputEventData{};///< InputEventData representing the input-event.
 	};
 
 	/// Data that is received as part of an ApplicationCommand creation event. \brief Data that is received as part of an ApplicationCommand creation event.
@@ -914,7 +914,7 @@ namespace DiscordCoreAPI {
 
 		static void onRoleDeletion(OnRoleDeletionData dataPackage);
 		
-		static CoRoutine<void> onInputEventCreation(OnInputEventCreationData dataPackage);
+		//static CoRoutine<void> onInputEventCreation(OnInputEventCreationData dataPackage);
 		
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
 		

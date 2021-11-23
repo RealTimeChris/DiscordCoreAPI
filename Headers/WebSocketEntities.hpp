@@ -92,7 +92,6 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		unique_ptr<VoiceConnectionData> voiceConnectionData{ make_unique<VoiceConnectionData>() };
 		unique_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
-		unique_ptr<WebSocketWorkload> webSocketWorkload{ make_unique<WebSocketWorkload>() };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };

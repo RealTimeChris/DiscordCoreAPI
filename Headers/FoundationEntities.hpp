@@ -73,17 +73,17 @@ namespace DiscordCoreAPI {
         friend class Guilds;
 
         ObjectCache() {
-            this->cache = make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>();
+            this->cache = make_unique<concurrent_unordered_map<string, storageType>>();
         }
 
         ~ObjectCache() {}
 
         storageType returnValue(string valueId) {
-            return *(*this->cache).at(valueId);
+            return (*this->cache).at(valueId);
         }
 
         storageType* returnPointer(string valueId) {
-            return (*this->cache).at(valueId).get();
+            return &(*this->cache).at(valueId).get();
         }
 
         bool contains(string valueId) {
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
         void erase(string valueId) {
             if (this->contains(valueId)) {
                 (*this->cache).unsafe_erase(valueId);
-                unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> newCache{ make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>() };
+                unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
                 for (auto& value : *newCache.get()) {
                     newCache->insert(make_pair(value.first, move(value.second)));
                 }
@@ -108,8 +108,8 @@ namespace DiscordCoreAPI {
         }
 
         void storeValue(string valueId, storageType storageValue) {
-            unique_ptr<storageType> newPtr{ make_unique<storageType>(storageValue) };
-            unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> newCache{ make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>() };
+            storageType newPtr{ storageValue };
+            unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
             if (this->contains(valueId)) {
                 (*this->cache).unsafe_erase(valueId);
             }
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
             this->cache->insert(make_pair(valueId, move(newPtr)));
         }
     protected:
-        unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> cache{ nullptr };
+        unique_ptr<concurrent_unordered_map<string, storageType>> cache{ nullptr };
     };
 
     class DiscordCoreAPI_Dll StopWatch {
@@ -2866,7 +2866,6 @@ namespace  DiscordCoreInternal {
         SOUNDCLOUD_SEARCH,
         SOUNDCLOUD_AUTH,
         SOUNDCLOUD_SONG_GET,
-        DELETE_OR_CLOSE_CHANNEL,
         GET_CURRENT_USER
     };
 
