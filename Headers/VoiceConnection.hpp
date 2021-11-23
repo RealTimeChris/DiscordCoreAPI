@@ -26,8 +26,10 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 		friend class Test;
-
+		
 		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgentNew, DiscordCoreInternal::ConnectionWebSocketData* connectionData);
+
+		VoiceConnection();
 
 		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
 		/// \param frameData A single frame worth of audio data.

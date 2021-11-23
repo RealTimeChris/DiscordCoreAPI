@@ -67,17 +67,27 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll void spinLock(__int64 timeInNsToSpinLockFor);
 
     template<typename storageType>
-    class ObjectCache : public unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> {
+    class ObjectCache {
     public:
 
-        ObjectCache() : unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>>(make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>()) {}
+        friend class Guilds;
+
+        ObjectCache() {
+            this->cache = make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>();
+        }
+
+        ~ObjectCache() {}
 
         storageType returnValue(string valueId) {
-            return *(*this)->at(valueId);
+            return *(*this->cache).at(valueId);
+        }
+
+        storageType* returnPointer(string valueId) {
+            return (*this->cache).at(valueId).get();
         }
 
         bool contains(string valueId) {
-            if ((*this)->find(valueId) == end(*this->get())) {
+            if ((*this->cache).find(valueId) == end(*this->cache.get())) {
                 return false;
             }
             else {
@@ -87,12 +97,13 @@ namespace DiscordCoreAPI {
 
         void erase(string valueId) {
             if (this->contains(valueId)) {
-                (*this)->unsafe_erase(valueId);
+                (*this->cache).unsafe_erase(valueId);
                 unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> newCache{ make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>() };
                 for (auto& value : *newCache.get()) {
                     newCache->insert(make_pair(value.first, move(value.second)));
                 }
-                this->swap(newCache);
+                this->cache.reset(nullptr);
+                this->cache = move(newCache);
             }
         }
 
@@ -100,14 +111,17 @@ namespace DiscordCoreAPI {
             unique_ptr<storageType> newPtr{ make_unique<storageType>(storageValue) };
             unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> newCache{ make_unique<concurrent_unordered_map<string, unique_ptr<storageType>>>() };
             if (this->contains(valueId)) {
-                (*this)->unsafe_erase(valueId);
+                (*this->cache).unsafe_erase(valueId);
             }
-            for (auto& value : *this->get()) {
+            for (auto& value : *this->cache.get()) {
                 newCache->insert(make_pair(value.first, move(value.second)));
             }
-            this->swap(newCache);
-            (*this)->insert(make_pair(valueId, move(newPtr)));
+            this->cache.reset(nullptr);
+            this->cache = move(newCache);
+            this->cache->insert(make_pair(valueId, move(newPtr)));
         }
+    protected:
+        unique_ptr<concurrent_unordered_map<string, unique_ptr<storageType>>> cache{ nullptr };
     };
 
     class DiscordCoreAPI_Dll StopWatch {
@@ -459,7 +473,7 @@ namespace DiscordCoreAPI {
         string name{ "" }; ///< Name.
         string url{ "" };///< Url.
     };
-
+    
     /// Embed author data.
     struct DiscordCoreAPI_Dll EmbedAuthorData {
         string proxyIconUrl{ "" };///< Proxy icon url.
@@ -477,10 +491,10 @@ namespace DiscordCoreAPI {
 
     /// Embed data. \brief Embed data.
     struct DiscordCoreAPI_Dll EmbedData {
+        string hexColorValue{ "000000" };///< Hex color value of the embed.
         vector<EmbedFieldData> fields{};///< Array of embed fields.
         EmbedThumbnailData thumbnail{};///< Embed thumbnail data.
         EmbedProviderData provider{};///< Embed provider data.
-        string hexColorValue{ "" };///< Hex color value of the embed.
         string description{ "" };///< Description of the embed.
         EmbedFooterData footer{};///< Embed footer data.
         EmbedAuthorData author{};///< Embed author data.
@@ -808,7 +822,7 @@ namespace DiscordCoreAPI {
         Reaction();
 
         Reaction(ReactionData dataNew);
-        
+
     };
 
     enum class MessageActivityType {
@@ -949,6 +963,11 @@ namespace DiscordCoreAPI {
         __int32 newValueInt{ 0 };///< New value, if it's an __int32.
         __int32 oldValueInt{ 0 };///< Old value, if it's an __int32.
         string key{ "" };///< The key of the audit log change.
+    };
+
+    /// Guild prune count data.
+    struct GuildPruneCountData {
+        __int32 count{ 0 };
     };
 
     /// Audit log entry data. \brief Audit log entry data.
@@ -2812,6 +2831,8 @@ namespace  DiscordCoreInternal {
         PATCH_GUILD_ROLE_POSITIONS = 93,
         PATCH_GUILD_ROLE = 94,
         DELETE_GUILD_ROLE = 95,
+        GET_GUILD_PRUNE_COUNT = 96,
+        POST_GUILD_PRUNE = 97,
 
         GET_USER,
         GET_USER_SELF,

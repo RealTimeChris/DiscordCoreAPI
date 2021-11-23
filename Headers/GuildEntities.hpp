@@ -94,6 +94,22 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The User for whom to collect the Ban of.
 	};
 
+	/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
+	struct GetGuildPruneCountData {
+		vector<string> includeRoles{};///< Roles to be included in the prune.
+		string guildId{ "" };///< The Guild to be pruned.
+		__int32 days{ 0 };///< The number of days beyond which to prune the user's for inactivity.
+	};
+
+	/// For pruning a number of GuildMembers from the Guild. \brief For pruning a number of GuildMembers from the Guild.
+	struct BeginGuildPruneData {
+		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
+		vector<string> includeRoles{};/// Roles to be included in the prune.
+		string guildId{ "" };///< Guild within which to perform the prune.
+		string reason{ "" };///< Reason for pruning the GuildMembers.
+		__int32 days{ 0 };/// Number of days after which to prune a given GuildMember.
+	};
+
 	/**@}*/
 
 	/**
@@ -254,6 +270,16 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a vector of Guild.
 		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 		
+		/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
+		/// \param dataPackage A GetGuildPruneCountData structure.
+		/// \returns A CoRoutine containing GuildPruneCountData.
+		static CoRoutine<GuildPruneCountData> getGuildPruneCountAsync(GetGuildPruneCountData dataPackage);
+
+		/// For performing a pruning of the GuildMembers of the Guild, based on days of inactivity. \brief For performing a pruning of the GuildMembers of the Guild, based on days of inactivity.
+		/// \param dataPackage A BeginGuildPruneData structure.
+		/// \returns A CoRoutine containing GuildPruneCountData.
+		static CoRoutine<GuildPruneCountData> beginGuildPruneAsync(BeginGuildPruneData dataPackage);
+
 		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.
 		/// \returns A CoRoutine containing InviteData.

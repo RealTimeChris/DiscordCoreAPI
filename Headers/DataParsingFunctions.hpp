@@ -792,7 +792,13 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
                 parseObject(jsonObjectData["user"], &pDataStructure->user);
             }
+        }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildPruneCountData* pDataStructure) {
+
+            if (jsonObjectData.contains("pruned") && !jsonObjectData.at("pruned").is_null()) {
+                pDataStructure->count = jsonObjectData.at("pruned").get<__int32>();
+            }
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildData* pDataStructure) {

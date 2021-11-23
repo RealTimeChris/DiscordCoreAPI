@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* workloadNew);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<WebSocketWorkload>* workloadNew);
 
 		void connect();
 
@@ -92,6 +92,7 @@ namespace DiscordCoreInternal {
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		unique_ptr<VoiceConnectionData> voiceConnectionData{ make_unique<VoiceConnectionData>() };
 		unique_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
+		unique_ptr<WebSocketWorkload> webSocketWorkload{ make_unique<WebSocketWorkload>() };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
