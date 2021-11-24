@@ -387,8 +387,6 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
                 pDataStructure->guildId = jsonObjectData["guild_id"].get<string>();
             }
-
-            pDataStructure->voiceData = make_shared<DiscordCoreAPI::VoiceStateData>();
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildMemberData>* pDataStructure) {
@@ -511,9 +509,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
-                DiscordCoreAPI::GuildMemberData guildMemberData;
-                parseObject(jsonObjectData["member"], &guildMemberData);
-                pDataStructure->userId = guildMemberData.user.id;
+                parseObject(jsonObjectData["member"], &pDataStructure->member);
             }
 
             if (jsonObjectData.contains("session_id") && !jsonObjectData["session_id"].is_null()) {
@@ -1035,14 +1031,14 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("voice_states") && !jsonObjectData["voice_states"].is_null()) {
-                map<string, shared_ptr<DiscordCoreAPI::VoiceStateData>> newMap{};
+                map<string, DiscordCoreAPI::VoiceStateData> newMap{};
                 for (auto value : jsonObjectData["voice_states"]) {
-                    shared_ptr<DiscordCoreAPI::VoiceStateData> newData{ make_shared<DiscordCoreAPI::VoiceStateData>() };
+                    DiscordCoreAPI::VoiceStateData newData{};
                     if (pDataStructure->roles.contains(value.at("user_id"))) {
                         newData = pDataStructure->voiceStates.at(value.at("user_id"));
                     }
-                    parseObject(value, newData.get());
-                    newMap.insert_or_assign(newData->userId, move(newData));
+                    parseObject(value, &newData);
+                    newMap.insert_or_assign(newData.userId, move(newData));
                 }
                 pDataStructure->voiceStates = newMap;
             }

@@ -682,31 +682,30 @@ namespace DiscordCoreAPI {
         virtual ~ChannelData() {};
     };
 
-    /// Voice state data. \brief Voice state data.
-    struct DiscordCoreAPI_Dll VoiceStateData {
-        string requestToSpeakTimestamp{ "" }; ///< When they last requested to speak.
-        bool selfStream{ false };///<Are they streaming?
-        bool selfVideo{ false };///< Is their video turned on?
-        bool selfDeaf{ false };///< Are they self-deafened?
-        bool selfMute{ false };///< Are they self-muted?
-        string sessionId{ "" };///< The session id.
-        string channelId{ "" };///< The current Channel id.
-        bool suppress{ false };///< Are they currently suppressed?
-        string guildId{ "" };///< The current Guild id.
-        string userId{ "" };///< Their User id.
-        bool deaf{ false };///< Are they server-deafened?
-        bool mute{ false };///< Are they server-muted?
+    struct VoiceData {
+        string requestToSpeakTimestamp{ "" };///< The time at which the user requested to speak.
+        bool selfStream{ false };///< Whether this user is streaming using "Go Live".
+        bool selfVideo{ false };///< Whether this user's camera is enabled.
+        bool selfDeaf{ false };///< Whether this user is locally deafened.
+        bool selfMute{ false };///< Whether this user is locally muted.
+        string channelId{ "" };///< The channel id this user is connected to.
+        string sessionId{ "" };///< The session id for this voice state.
+        bool suppress{ false };///< Whether this user is muted by the current user.
+        string guildId{ "" };///< The guild id this voice state is for.
+        string userId{ "" };///< The user id this voice state is for.
+        bool deaf{ false };///< Whether this user is deafened by the server.
+        bool mute{ false };///< Whether this user is muted by the server.
     };
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
     struct DiscordCoreAPI_Dll GuildMemberData : DiscordEntity {
-        shared_ptr<VoiceStateData> voiceData{ nullptr };///< The voice state data for the GuildMember.
         string premiumSince{ "" };///< If applicable, when they first boosted the server.
         string permissions{ "" };///< Their base-level Permissions in the Guild.
         string userMention{ "" };///< What to enter to get them mentioned in a Message.
         vector<string> roles{}; ///< The Guild roles that they have.
         string joinedAt{ "" };///< When they joined the Guild.
         bool pending{ false };///< Are they waiting at the entry screen?
+        VoiceData voiceData{};///< Info about this GuildMember's voice state.
         string guildId{ "" };///< The current Guild's id.
         bool deaf{ false };///< Are they server deafened?
         bool mute{ false };///< Are they server muted?
@@ -714,6 +713,39 @@ namespace DiscordCoreAPI {
         UserData user{};///< User data for the current GuildMember.
 
         virtual ~GuildMemberData() {};
+    };
+
+    /// Voice state data. \brief Voice state data.
+    struct DiscordCoreAPI_Dll VoiceStateData {
+        string requestToSpeakTimestamp{ "" };///< The time at which the user requested to speak.
+        GuildMemberData member{};///< The guild member this voice state is for.
+        bool selfStream{ false };///< Whether this user is streaming using "Go Live".
+        bool selfVideo{ false };///< Whether this user's camera is enabled.
+        bool selfDeaf{ false };///< Whether this user is locally deafened.
+        bool selfMute{ false };///< Whether this user is locally muted.
+        string channelId{ "" };///< The channel id this user is connected to.
+        string sessionId{ "" };///< The session id for this voice state.
+        bool suppress{ false };///< Whether this user is muted by the current user.
+        string guildId{ "" };///< The guild id this voice state is for.
+        string userId{ "" };///< The user id this voice state is for.
+        bool deaf{ false };///< Whether this user is deafened by the server.
+        bool mute{ false };///< Whether this user is muted by the server.
+        operator VoiceData(){
+            VoiceData newData{};
+            newData.channelId = this->channelId;
+            newData.deaf = this->deaf;
+            newData.guildId = this->guildId;
+            newData.mute = this->mute;
+            newData.requestToSpeakTimestamp = this->requestToSpeakTimestamp;
+            newData.selfDeaf = this->selfDeaf;
+            newData.selfMute = this->selfMute;
+            newData.selfStream = this->selfStream;
+            newData.selfVideo = this->selfVideo;
+            newData.sessionId = this->sessionId;
+            newData.suppress = this->suppress;
+            newData.userId = this->userId;
+            return newData;
+        }
     };
 
     struct ActiveThreadsData {
@@ -1172,10 +1204,10 @@ namespace DiscordCoreAPI {
     /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
-        map<string, shared_ptr<VoiceStateData>> voiceStates{};///< Array of Guild-member voice-states.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
         vector<StageInstanceData> stageInstances{}; ///< Array of stage instances.
+        map<string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
         map<string, GuildMemberData> members{};  ///< Array of GuildMembers.
         __int32 premiumSubscriptionCount{ 0 }; ///< Premium subscription count.
         __int32 approximatePresenceCount{ 0 }; ///< Approximate quantity of presences.
