@@ -73,21 +73,21 @@ namespace DiscordCoreAPI {
         friend class Guilds;
 
         ObjectCache() {
-            this->cache = make_unique<concurrent_unordered_map<string, storageType>>();
+            this->cache = concurrent_unordered_map<string, storageType>();
         }
 
         ~ObjectCache() {}
 
         storageType returnValue(string valueId) {
-            return (*this->cache).at(valueId);
+            return this->cache.at(valueId);
         }
 
         storageType* returnPointer(string valueId) {
-            return &(*this->cache).at(valueId).get();
+            return &this->cache.at(valueId);
         }
 
         bool contains(string valueId) {
-            if ((*this->cache).find(valueId) == end(*this->cache.get())) {
+            if (this->cache.find(valueId) == end(this->cache)) {
                 return false;
             }
             else {
@@ -97,31 +97,29 @@ namespace DiscordCoreAPI {
 
         void erase(string valueId) {
             if (this->contains(valueId)) {
-                (*this->cache).unsafe_erase(valueId);
-                unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
-                for (auto& value : *newCache.get()) {
-                    newCache->insert(make_pair(value.first, move(value.second)));
+                this->cache.unsafe_erase(valueId);
+                concurrent_unordered_map<string, storageType> newCache{ concurrent_unordered_map<string, storageType>() };
+                for (auto& value : newCache) {
+                    newCache.insert(make_pair(value.first, move(value.second)));
                 }
-                this->cache.reset(nullptr);
                 this->cache = move(newCache);
             }
         }
 
         void storeValue(string valueId, storageType storageValue) {
             storageType newPtr{ storageValue };
-            unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
+            concurrent_unordered_map<string, storageType> newCache{ concurrent_unordered_map<string, storageType>() };
             if (this->contains(valueId)) {
-                (*this->cache).unsafe_erase(valueId);
+                this->cache.unsafe_erase(valueId);
             }
-            for (auto& value : *this->cache.get()) {
-                newCache->insert(make_pair(value.first, move(value.second)));
+            for (auto& value : this->cache) {
+                newCache.insert(make_pair(value.first, move(value.second)));
             }
-            this->cache.reset(nullptr);
             this->cache = move(newCache);
-            this->cache->insert(make_pair(valueId, move(newPtr)));
+            this->cache.insert(make_pair(valueId, move(newPtr)));
         }
     protected:
-        unique_ptr<concurrent_unordered_map<string, storageType>> cache{ nullptr };
+        concurrent_unordered_map<string, storageType> cache{};
     };
 
     class DiscordCoreAPI_Dll StopWatch {
@@ -660,9 +658,9 @@ namespace DiscordCoreAPI {
         __int32 defaultAutoArchiveDuration{ 0 };
         ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a thread.
         ChannelType type{ ChannelType::DM };    ///< The type of the Channel.
+        map<string, UserData> recipients{};  ///< Recipients, in the case of a group DM or DM.
         __int32 videoQualityMode{ 0 };  ///< Video quality mode.
         __int32 rateLimitPerUser{ 0 };  ///< Amount of seconds a User has to wait before sending another Message.
-        vector<UserData> recipients{};  ///< Recipients, in the case of a group DM or DM.
         string lastPinTimestamp{ "" };  ///< Timestamp of the last pinned Message.
         string lastMessageId{ "" }; ///< Id of the last Message.
         string applicationId{ "" }; ///< Application id of the current application.

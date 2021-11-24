@@ -165,11 +165,16 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("permission_overwrites") && !jsonObjectData["permission_overwrites"].is_null()) {
-                for (auto newValue : jsonObjectData["permission_overwrites"]) {
+                map<string, DiscordCoreAPI::OverWriteData> newMap{};
+                for (auto value : jsonObjectData["permission_overwrites"]) {
                     DiscordCoreAPI::OverWriteData newData{};
-                    parseObject(newValue, &newData);
-                    pDataStructure->permissionOverwrites.insert(make_pair(pDataStructure->id, newData));
+                    if (pDataStructure->permissionOverwrites.contains(value.at("id"))) {
+                        newData = pDataStructure->permissionOverwrites.at(value.at("id"));
+                    }
+                    parseObject(value, &newData);
+                    newMap.insert_or_assign(newData.id, move(newData));
                 }
+                pDataStructure->permissionOverwrites = newMap;
             }
 
             if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
@@ -201,11 +206,16 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("recipients") && !jsonObjectData["recipients"].is_null()) {
-                for (auto newValue : jsonObjectData["recipients"]) {
+                map<string, DiscordCoreAPI::UserData> newMap{};
+                for (auto value : jsonObjectData["recipients"]) {
                     DiscordCoreAPI::UserData newData{};
-                    parseObject(newValue, &newData);
-                    pDataStructure->recipients.push_back(move(newData));
+                    if (pDataStructure->recipients.contains(value.at("id"))) {
+                        newData = pDataStructure->recipients.at(value.at("id"));
+                    }
+                    parseObject(value, &newData);
+                    newMap.insert_or_assign(newData.id, move(newData));
                 }
+                pDataStructure->recipients = newMap;
             }
 
             if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
