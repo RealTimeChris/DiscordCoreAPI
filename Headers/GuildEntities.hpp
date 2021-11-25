@@ -129,7 +129,25 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a Guild's widget settings. \brief For collecting a Guild's widget settings.
 	struct GetGuildWidgetSettingsData {
-		string guildId{ "" };///< The Guild from which to collec the widget from.
+		string guildId{ "" };///< The Guild from which to collect the widget from.
+	};
+
+	/// For modifying a Guild's widget. \brief For modifying a Guild's widget.
+	struct ModifyGuildWidgetData {
+		GuildWidgetData widgetData{};///< The new Guild widget data.
+		string guildId{ "" };///< The Guild for which to modify the widget of.
+		string reason{ "" };///< Reason for modifying the widget.
+	};
+
+	/// For collecting a Guild's widget. \brief For collecting a Guild's widget.
+	struct GetGuildWidgetData {
+		string guildId{ "" };///< The Guild from which to collect the widget from.
+	};
+
+	/// For collecting a Guild's widget image. \brief For collecting a Guild's widget image.
+	struct GetGuildWidgetImageData {
+		WidgetStyleOptions widgetStlye{};///< The style of widget image to collect.
+		string guildId{ "" };///< The Guild for which to collect the widget image from.		
 	};
 
 	/**@}*/
@@ -317,10 +335,25 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage);
 
-		/// Gets the Guild widget for a particular server. \brief Gets the Guild widget for a particular server.
+		/// Gets the Guild widget's settings for a particular server. \brief Gets the Guild widget's settings for a particular server.
 		/// \param dataPackage A GetGuildWidgetSettingsData structure.
 		/// \returns A CoRoutine containing a GuildWidgetData.
 		static CoRoutine<GuildWidgetData> getGuildWidgetSettingsAsync(GetGuildWidgetSettingsData dataPackage);
+
+		/// Modifies the Guild widget for a particular server. \brief Modifies the Guild widget for a particular server.
+		/// \param dataPackage A ModifyGuildWidgetData structure.
+		/// \returns A CoRoutine containing a GuildWidgetData.
+		static CoRoutine<GuildWidgetData> modifyGuildWidgetAsync(ModifyGuildWidgetData dataPackage);
+
+		/// Gets the Guild widget for a particular server. \brief Gets the Guild widget for a particular server.
+		/// \param dataPackage A GetGuildWidgetData structure.
+		/// \returns A CoRoutine containing a GuildWidgetData.
+		static CoRoutine<GuildWidgetData> getGuildWidgetAsync(GetGuildWidgetData dataPackage);
+
+		/// Gets the Guild widget image for a particular server. \brief Gets the Guild widget image for a particular server.
+		/// \param dataPackage A GetGuildWidgetImageData structure.
+		/// \returns A CoRoutine containing a GuildWidgetImageData.
+		static CoRoutine<GuildWidgetImageData> getGuildWidgetImageAsync(GetGuildWidgetImageData dataPackage);
 
 		/// Gets an invite from the Discord servers. \brief Gets an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.

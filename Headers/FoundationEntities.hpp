@@ -72,56 +72,42 @@ namespace DiscordCoreAPI {
 
         friend class Guilds;
 
-        ObjectCache() {
-            this->cache = make_unique<concurrent_unordered_map<string, storageType>>();
-        }
+        ObjectCache() {}
 
         ~ObjectCache() {}
 
         storageType returnValue(string valueId) {
-            return this->cache->at(valueId);
+            lock_guard<mutex> returnLock{ this->accessMutex };
+            return this->cache.at(valueId);
         }
 
         storageType* returnPointer(string valueId) {
-            return &(this->cache)->at(valueId);
+            lock_guard<mutex> returnLock{ this->accessMutex };
+            return &(this->cache).at(valueId);
         }
 
         bool contains(string valueId) {
-            if (this->cache->find(valueId) == end(*this->cache)) {
-                return false;
-            }
-            else {
-                return true;
-            }
+            lock_guard<mutex> containLock{ this->accessMutex };
+            return this->cache.contains(valueId);
         }
 
         void erase(string valueId) {
-            if (this->contains(valueId)) {
-                this->cache->unsafe_erase(valueId);
-                unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
-                for (auto& value : *newCache) {
-                    newCache->insert(make_pair(value.first, move(value.second)));
-                }
-                this->cache.swap(newCache);
-                newCache.reset(nullptr);
+            lock_guard<mutex> eraseLock{ this->accessMutex };
+            if (this->cache.contains(valueId)) {
+                this->cache.erase(valueId);
             }
         }
 
         void storeValue(string valueId, storageType storageValue) {
-            storageType newPtr{ storageValue };
-            unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
-            if (this->contains(valueId)) {
-                this->cache->unsafe_erase(valueId);
-            }
-            for (auto& value : *this->cache) {
-                newCache->insert(make_pair(value.first, move(value.second)));
-            }
-            this->cache.swap(newCache);
-            newCache.reset(nullptr);
-            this->cache->insert(make_pair(valueId, move(newPtr)));
+            lock_guard<mutex> storeLock{ this->accessMutex };
+            this->cache.insert_or_assign(valueId, move(storageValue));
         }
+
     protected:
-        unique_ptr<concurrent_unordered_map<string, storageType>> cache{};
+
+        map<string, storageType> cache{};
+
+        mutex accessMutex{};
     };
 
     class DiscordCoreAPI_Dll StopWatch {
@@ -931,6 +917,19 @@ namespace DiscordCoreAPI {
     struct GuildWidgetData {
         string channelId{ "" };///< The widget channel id.
         bool enabled{ false };///< Whether the widget is enabled.
+    };
+
+    /// Widget Style Options.
+    enum class WidgetStyleOptions {
+        Shield = 0,
+        Banner1 = 1,
+        Banner2 = 2,
+        Banner3 = 3,
+        Banner4 = 4
+    };
+
+    struct GuildWidgetImageData {
+        string url{ "" };
     };
 
     /// Integration data. \brief Integration data.
@@ -2817,33 +2816,37 @@ namespace  DiscordCoreInternal {
         POST_GUILD_CHANNEL = 77,
         PATCH_GUILD_CHANNEL_POSITIONS = 78,
         GET_GUILD_ACTIVE_THREADS = 79,
-        GET_GUILD_MEMBERS = 80,
-        GET_SEARCH_GUILD_MEMBERS = 81,
-        PUT_GUILD_MEMBER = 82,
-        PATCH_CURRENT_GUILD_MEMBER = 83,
-        PUT_GUILD_MEMBER_ROLE = 84,
-        DELETE_GUILD_MEMBER_ROLE = 85,
-        DELETE_GUILD_MEMBER = 86,
-        GET_GUILD_BANS = 87,
-        GET_GUILD_BAN = 88,
-        PUT_GUILD_BAN = 89,
-        DELETE_GUILD_BAN = 90,
-        GET_GUILD_ROLES = 91,
-        POST_GUILD_ROLE = 92,
-        PATCH_GUILD_ROLE_POSITIONS = 93,
-        PATCH_GUILD_ROLE = 94,
-        DELETE_GUILD_ROLE = 95,
-        GET_GUILD_PRUNE_COUNT = 96,
-        POST_GUILD_PRUNE = 97,
-        GET_GUILD_VOICE_REGIONS = 98,
-        GET_GUILD_INVITES = 99,
-        GET_GUILD_INTEGRATIONS = 100,
-        DELETE_GUILD_INTEGRATION = 101,
-        GET_GUILD_WIDGET_SETTINGS = 102,
+        GET_GUILD_MEMBER = 80,
+        GET_GUILD_MEMBERS = 81,
+        GET_SEARCH_GUILD_MEMBERS = 82,
+        PUT_GUILD_MEMBER = 83,
+        PATCH_CURRENT_GUILD_MEMBER = 84,
+        PUT_GUILD_MEMBER_ROLE = 85,
+        DELETE_GUILD_MEMBER_ROLE = 86,
+        DELETE_GUILD_MEMBER = 87,
+        GET_GUILD_BANS = 88,
+        GET_GUILD_BAN = 89,
+        PUT_GUILD_BAN = 90,
+        DELETE_GUILD_BAN = 91,
+        GET_GUILD_ROLES = 92,
+        POST_GUILD_ROLE = 93,
+        PATCH_GUILD_ROLE_POSITIONS = 94,
+        PATCH_GUILD_ROLE = 95,
+        DELETE_GUILD_ROLE = 96,
+        GET_GUILD_PRUNE_COUNT = 97,
+        POST_GUILD_PRUNE = 98,
+        GET_GUILD_VOICE_REGIONS = 99,
+        GET_GUILD_INVITES = 100,
+        GET_GUILD_INTEGRATIONS = 101,
+        DELETE_GUILD_INTEGRATION = 102,
+        GET_GUILD_WIDGET_SETTINGS = 103,
+        MODIFY_GUILD_WIDGET = 104,
+        GET_GUILD_WIDGET = 105,
+        GET_VANITY_INVITE = 106,
+        GET_GUILD_WIDGET_IMAGE = 107,
 
         GET_USER,
         GET_USER_SELF,
-        GET_GUILD_MEMBER,
         GET_USER_GUILDS,
         POST_USER_DM,
         POST_CREATE_USER_DM,
@@ -2853,7 +2856,6 @@ namespace  DiscordCoreInternal {
         YOUTUBE_VIDEO_QUERY,
         PATCH_GUILD_MEMBER,
         GET_INVITE,
-        GET_VANITY_INVITE,
         DELETE_LEAVE_GUILD,
         SOUNDCLOUD_SEARCH,
         SOUNDCLOUD_AUTH,
