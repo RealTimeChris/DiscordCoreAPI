@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = Guilds::getGuildWidgetImageAsync(dataPackage01).get();
 
-				cout << boolalpha << responseData.code << endl;
+				cout << boolalpha << responseData.url << endl;
 				co_return;
 			}
 			catch (...) {
