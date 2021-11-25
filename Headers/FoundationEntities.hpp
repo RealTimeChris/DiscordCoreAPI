@@ -2844,6 +2844,7 @@ namespace  DiscordCoreInternal {
         GET_GUILD_WIDGET = 105,
         GET_VANITY_INVITE = 106,
         GET_GUILD_WIDGET_IMAGE = 107,
+        GET_GUILD_WELCOME_SCREEN = 108,
 
         GET_USER,
         GET_USER_SELF,

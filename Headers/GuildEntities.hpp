@@ -150,6 +150,11 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The Guild for which to collect the widget image from.		
 	};
 
+	/// For collecting a Guild's welcome screen. \brief For collecting a Guild's welcome screen.
+	struct GetGuildWelcomeScreenData {
+		string guildId{ "" };///< The Guild for which to collect the widget image from.		
+	};
+
 	/**@}*/
 
 	/**
@@ -354,6 +359,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetGuildWidgetImageData structure.
 		/// \returns A CoRoutine containing a GuildWidgetImageData.
 		static CoRoutine<GuildWidgetImageData> getGuildWidgetImageAsync(GetGuildWidgetImageData dataPackage);
+
+		/// Gets the Guild welcome screen for a particular server. \brief Gets the Guild welcome screen for a particular server.
+		/// \param dataPackage A GetGuildWelcomeScreenData structure.
+		/// \returns A CoRoutine containing a WelcomeScreenData.
+		static CoRoutine<WelcomeScreenData> getGuildWelcomeScreenAsync(GetGuildWelcomeScreenData dataPackage);
 
 		/// Gets an invite from the Discord servers. \brief Gets an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.
