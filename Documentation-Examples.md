@@ -60,7 +60,7 @@
 - ### [Removing a Guild Ban](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Guild%20Ban.md)
 - ### [Getting a Guild Prune Count](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Prune%20Count.md)
 - ### [Beginning a Guild Prune](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Beginning%20a%20Guild%20Prune.md)
-- ### [Getting Guild Voice Regions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guilds%20Voice%20Regions.md)
+- ### [Getting Guild Voice Regions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Voice%20Regions.md)
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
