@@ -64,10 +64,10 @@ namespace DiscordCoreAPI {
 		unique_ptr<concurrency::event> playSetEvent{ make_unique<concurrency::event>() };
 		unique_ptr<concurrency::event> stopSetEvent{ make_unique<concurrency::event>() };
 		unique_ptr<concurrency::event> pauseEvent{ make_unique<concurrency::event>() };
-		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		unbounded_buffer<AudioFrameData>* audioDataBuffer{ nullptr };
 		const __int32 maxBufferSize{ 1276 };
 		unsigned __int16 sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };

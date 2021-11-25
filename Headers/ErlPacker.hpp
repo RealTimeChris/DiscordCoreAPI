@@ -50,9 +50,17 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
-		vector<unsigned __int8> buffer{};
+		bool builtFromExternalBuffer{ false };
+
+		unsigned __int8* buffer{ nullptr };
+
+		unsigned __int32 currentSize{};
 
 		unsigned __int32 offSet{};
+
+		void growBuffer();
+
+		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {

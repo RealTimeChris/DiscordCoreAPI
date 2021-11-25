@@ -181,7 +181,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll EditMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
-		friend class shared_ptr<EditMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -530,8 +529,8 @@ namespace DiscordCoreAPI {
 		~MessageCollector();
 
 	protected:
-		static map<string, shared_ptr<unbounded_buffer<Message>>> messagesBufferMap;
-		shared_ptr<unbounded_buffer<Message>> messagesBuffer{ nullptr };
+		static map<string, unbounded_buffer<Message>*> messagesBufferMap;
+		unique_ptr<unbounded_buffer<Message>> messagesBuffer{ nullptr };
 		function<bool(Message)> filteringFunction{ nullptr };
 		MessageCollectorReturnData messageReturnData{};
 		__int32 quantityOfMessageToCollect{ 0 };

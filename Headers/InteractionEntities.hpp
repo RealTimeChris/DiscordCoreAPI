@@ -1116,7 +1116,7 @@ namespace DiscordCoreAPI {
         static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
     protected:
-        static map<string, shared_ptr<concurrent_queue<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
+        static map<string, unique_ptr<concurrent_queue<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
     };
     /**@}*/
 
@@ -1140,7 +1140,7 @@ namespace DiscordCoreAPI {
     public:
         friend class DiscordCoreClient;
 
-        static map<string, shared_ptr<concurrent_queue<InteractionData>>>selectMenuInteractionBufferMap;
+        static map<string, concurrent_queue<InteractionData>*>selectMenuInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -1160,7 +1160,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        shared_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
+        unique_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
         DiscordCoreAPI::InteractionData interactionData{};
         vector<SelectMenuResponseData> responseVector{};
         __int32 currentCollectedSelectMenuCount{ 0 };
@@ -1192,7 +1192,7 @@ namespace DiscordCoreAPI {
     public:
         friend class DiscordCoreClient;
 
-        static map<string, shared_ptr<concurrent_queue<InteractionData>>> buttonInteractionBufferMap;
+        static map<string, concurrent_queue<InteractionData>*> buttonInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -1212,7 +1212,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        shared_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
+        unique_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};
         bool doWeSendInitialResponse{ false };
         InteractionData interactionData{};

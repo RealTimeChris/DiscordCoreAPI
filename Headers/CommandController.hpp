@@ -39,6 +39,8 @@ namespace DiscordCoreAPI {
 			this->argumentsArray = other.argumentsArray;
 			this->eventData = other.eventData;
 		}
+
+		virtual ~BaseFunctionArguments() {};
 	};
 
 	/// Base class for the command classes. \brief Base class for the command classes.
@@ -49,7 +51,7 @@ namespace DiscordCoreAPI {
 		EmbedData helpEmbed{};///< A message embed for displaying the command via the Help command.
 
 		/// The base function for the command's execute function.
-		/// \param args A shared_ptr containing a copy of BaseFunctionArguments.
+		/// \param args A unique_ptr containing a copy of BaseFunctionArguments.
 		/// \returns A CoRoutine containing void.
 		virtual CoRoutine<void> executeAsync(unique_ptr<BaseFunctionArguments>args) = 0;
 		virtual unique_ptr<BaseFunction> create() = 0;

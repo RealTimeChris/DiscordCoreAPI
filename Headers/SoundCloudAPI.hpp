@@ -27,12 +27,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		unique_ptr<SongDecoder> songDecoder{ nullptr };
+		unique_ptr<SongEncoder> songEncoder{ nullptr };
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
 		CoRoutine<void> currentlyRunningSong{};
 		const __int32 maxBufferSize{ 8192 };
-		SongDecoder* songDecoder{ nullptr };
-		SongEncoder* songEncoder{ nullptr };
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
 

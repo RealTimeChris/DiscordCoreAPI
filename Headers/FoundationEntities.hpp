@@ -2691,7 +2691,7 @@ namespace  DiscordCoreInternal {
         string endpoint{ "" };
         string port{ "" };
     protected:
-        shared_ptr<unbounded_buffer<DiscordCoreAPI::AudioFrameData>> audioDataBuffer{ nullptr };
+        unbounded_buffer<DiscordCoreAPI::AudioFrameData>* audioDataBuffer{ nullptr };
     };
 
     struct DiscordCoreAPI_Dll UpdatePresenceData {
