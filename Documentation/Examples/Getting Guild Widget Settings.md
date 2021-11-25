@@ -1,7 +1,7 @@
 ### **Getting Guild Widget Settings:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Guilds` class.
-- Populate a data structure of type `DiscordCoreAPI::GetGuildWidgetSettingsData
+- Populate a data structure of type `DiscordCoreAPI::GetGuildWidgetSettingsData`.
 - Select, from the `Guilds` class, the `getGuildWidgetSettingsAsync()` function and execute it, with a return value of type `auto` or `GuildWidgetData` while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
