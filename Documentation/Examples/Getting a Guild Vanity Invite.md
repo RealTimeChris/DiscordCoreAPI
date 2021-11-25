@@ -1,4 +1,4 @@
-### **Getting a Guild Vanity URL:**
+### **Getting a Guild Vanity Invite:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Guilds` class.
 - Populate a data structure of type `DiscordCoreAPI::GetGuildVanityInviteData`.
