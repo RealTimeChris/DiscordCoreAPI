@@ -56,17 +56,17 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For geting all of the current invites from a Guild. \brief For geting all of the current invites from a Guild.
-	struct DiscordCoreAPI_Dll GetInvitesData {
+	struct DiscordCoreAPI_Dll GetGuildInvitesData {
 		string guildId{ "" };///< The id of the Guild you wish to acquire.
 	};
 
 	/// For geting a single invite's data from a Guild. \brief For geting a single invite's data from a Guild.
-	struct DiscordCoreAPI_Dll GetInviteData {
+	struct DiscordCoreAPI_Dll GetGuildInviteData {
 		string inviteId{ "" };///< The id of the invite you wish to acquire.
 	};
 
 	/// For geting the vanity invite data of a Guild. \brief For geting the vanity invite data of a Guild.
-	struct DiscordCoreAPI_Dll GetVanityInviteData {
+	struct DiscordCoreAPI_Dll GetGuildVanityInviteData {
 		string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
 	};
 
@@ -108,6 +108,28 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< Guild within which to perform the prune.
 		string reason{ "" };///< Reason for pruning the GuildMembers.
 		__int32 days{ 0 };/// Number of days after which to prune a given GuildMember.
+	};
+
+	/// For collecting a list of Guild voice regions. \brief For collecting a list of Guild voice regions.
+	struct GetGuildVoiceRegionsData {
+		string guildId{ "" };///< The guild for which to collect the voice regions from.
+	};
+
+	/// For collecting a list of Guild voice integrations. \brief
+	struct GetGuildIntegrationsData {
+		string guildId{ "" };///< The guild for which to collect the integrations from.
+	};
+
+	/// For deleting a Guild integration. \brief For deleting a Guild integration.
+	struct DeleteGuildIntegrationData {
+		string integrationId{ "" };///< The integration's id which we are going to delete.
+		string guildId{ "" };///< The guild from which to delete the integration from.
+		string reason{ "" };///< Reason for deleting the integration.
+	};
+
+	/// For collecting a Guild's widget settings. \brief For collecting a Guild's widget settings.
+	struct GetGuildWidgetSettingsData {
+		string guildId{ "" };///< The Guild from which to collec the widget from.
 	};
 
 	/**@}*/
@@ -280,20 +302,40 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildPruneCountData.
 		static CoRoutine<GuildPruneCountData> beginGuildPruneAsync(BeginGuildPruneData dataPackage);
 
-		/// Getes an invite from the Discord servers. \brief Getes an invite from the Discord servers.
+		/// Getes the list of voice regions for a particular server. \brief Getes the list of voice regions for a particular server.
+		/// \param dataPackage A GetGuildVoiceRegionsData structure.
+		/// \returns A CoRoutine containing a vector of VoiceRegionData.
+		static CoRoutine<vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
+
+		/// Gets the list of Guild integrations for a particular server. \brief Gets the list of Guild integrations for a particular server.
+		/// \param dataPackage A GetGuildIntegrationsData structure.
+		/// \returns A CoRoutine containing a vector of IntegrationData.
+		static CoRoutine<vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
+
+		/// Deletes an integration from a Guild. \brief Deletes an integration from a Guild.
+		/// \param dataPackage A DeleteGuildIntegrationData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage);
+
+		/// Gets the Guild widget for a particular server. \brief Gets the Guild widget for a particular server.
+		/// \param dataPackage A GetGuildWidgetSettingsData structure.
+		/// \returns A CoRoutine containing a GuildWidgetData.
+		static CoRoutine<GuildWidgetData> getGuildWidgetSettingsAsync(GetGuildWidgetSettingsData dataPackage);
+
+		/// Gets an invite from the Discord servers. \brief Gets an invite from the Discord servers.
 		/// \param dataPackage A GetInviteData structure.
 		/// \returns A CoRoutine containing InviteData.
-		static CoRoutine<InviteData> getInviteAsync(GetInviteData dataPackage);
+		static CoRoutine<InviteData> getGuildInviteAsync(GetGuildInviteData dataPackage);
 
-		/// Getes multiple invites from the Discord servers. \brief Getes multiple invites from the Discord servers.
+		/// Gets multiple invites from the Discord servers. \brief Gets multiple invites from the Discord servers.
 		/// \param dataPackage A GetInvitesData structure.
 		/// \returns A CoRoutine containing a vector of InviteData.
-		static CoRoutine<vector<InviteData>> getInvitesAsync(GetInvitesData dataPackage);
+		static CoRoutine<vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
 
-		/// Getes the vanity invite data from a particular server. \brief Getes the vanity invite data from a particular server.
+		/// Gets the vanity invite data from a particular server. \brief Gets the vanity invite data from a particular server.
 		/// \param dataPackage A GetVanityInviteData structure.
 		/// \returns A CoRoutine containing InviteData.
-		static CoRoutine<InviteData> getVanityInviteAsync(GetVanityInviteData dataPackage);
+		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);
 
 	protected:
 		static ObjectCache<Guild> cache;

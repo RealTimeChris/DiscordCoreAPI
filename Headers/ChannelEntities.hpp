@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	*/
 	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
-		EditChannelPermissionOverwritesType type{}; ///< The type of overwrite.
+		PermissionOverwritesType type{}; ///< The type of overwrite.
 		string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
 		string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
 		string allow{ "" };	///< The permissions to list as "allowed".

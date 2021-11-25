@@ -14,7 +14,7 @@ namespace DiscordCoreInternal {
         static void parseObject(json jsonObjectData, DiscordCoreAPI::OverWriteData* pDataStructure) {
 
             if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-                pDataStructure->type = (DiscordCoreAPI::EditChannelPermissionOverwritesType)jsonObjectData["type"].get<__int32>();
+                pDataStructure->type = (DiscordCoreAPI::PermissionOverwritesType)jsonObjectData["type"].get<__int32>();
             }
 
             if (jsonObjectData.contains("allow") && !jsonObjectData["allow"].is_null()) {
@@ -1141,6 +1141,17 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
+            }
+        };
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildWidgetData* pDataStructure) {
+
+            if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
+                pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
+            }
+
+            if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+                pDataStructure->channelId = jsonObjectData["channel_id"].get<string>();
             }
         };
 
@@ -2859,6 +2870,14 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
                 parseObject(jsonObjectData["application"], &pDataStructure->application);
+            }
+        }
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::IntegrationData>* pDataStructure) {
+            for (auto value : jsonObjectData) {
+                DiscordCoreAPI::IntegrationData newData{};
+                parseObject(value, &newData);
+                pDataStructure->push_back(newData);
             }
         }
 

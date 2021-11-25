@@ -597,14 +597,14 @@ namespace DiscordCoreAPI {
     };
 
     /// Edit Channel Permission overwrites type. \brief Edit Channel Permission overwrites type.
-    enum class EditChannelPermissionOverwritesType {
+    enum class PermissionOverwritesType {
         Role = 0,///<Role
         User = 1///<User
     };
 
     /// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
     struct DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
-        EditChannelPermissionOverwritesType type{};   ///< Role or User type.
+        PermissionOverwritesType type{};   ///< Role or User type.
         string channelId{ "" };///< Channel id for which Channel this overwrite be__int64s to.
         string allow{ "" };///< Collection of Permissions to allow.
         string deny{ "" };///< Collection of Permissions to deny.
@@ -925,6 +925,12 @@ namespace DiscordCoreAPI {
     /// Account data. \brief Account data.
     struct DiscordCoreAPI_Dll AccountData : public DiscordEntity {
         string name{ "" };///< Name of the account.
+    };
+
+    /// Guild Widget Data.
+    struct GuildWidgetData {
+        string channelId{ "" };///< The widget channel id.
+        bool enabled{ false };///< Whether the widget is enabled.
     };
 
     /// Integration data. \brief Integration data.
@@ -2829,6 +2835,11 @@ namespace  DiscordCoreInternal {
         DELETE_GUILD_ROLE = 95,
         GET_GUILD_PRUNE_COUNT = 96,
         POST_GUILD_PRUNE = 97,
+        GET_GUILD_VOICE_REGIONS = 98,
+        GET_GUILD_INVITES = 99,
+        GET_GUILD_INTEGRATIONS = 100,
+        DELETE_GUILD_INTEGRATION = 101,
+        GET_GUILD_WIDGET_SETTINGS = 102,
 
         GET_USER,
         GET_USER_SELF,
@@ -2840,7 +2851,6 @@ namespace  DiscordCoreInternal {
         GET_SOCKET_PATH,
         YOUTUBE_SEARCH,
         YOUTUBE_VIDEO_QUERY,
-        GET_INVITES,
         PATCH_GUILD_MEMBER,
         GET_INVITE,
         GET_VANITY_INVITE,

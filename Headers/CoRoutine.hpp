@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 
             unbounded_buffer<exception_ptr> exceptionBuffer{};
 
-            shared_ptr<jthread> newThread{ nullptr };
+            unique_ptr<jthread> newThread{ nullptr };
 
             returnType result{};
 
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 
             unbounded_buffer<exception_ptr> exceptionBuffer{};
 
-            shared_ptr<jthread> newThread{ nullptr };
+            unique_ptr<jthread> newThread{ nullptr };
 
             promise_type() {}
 
@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
                 this->waiterHandle = handle;
-                this->waiterHandle.promise().newThread = make_shared<jthread>([=] { this->waiterHandle.resume(); });
+                this->waiterHandle.promise().newThread = make_unique<jthread>([=] { this->waiterHandle.resume(); });
                 return true;
             }
 
