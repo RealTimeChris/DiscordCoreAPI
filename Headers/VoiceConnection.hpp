@@ -54,16 +54,16 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ make_shared<winrt::event<delegate<SongCompletionEventData>>>() };
-		shared_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		shared_ptr<concurrency::event> connectionReadyEvent{ make_shared<concurrency::event>() };
-		shared_ptr<concurrency::event> disconnectionEvent{ make_shared<concurrency::event>() };
-		shared_ptr<concurrency::event> reconnectionEvent{ make_shared<concurrency::event>() };
-		shared_ptr<concurrency::event> playWaitEvent{ make_shared<concurrency::event>() };
-		shared_ptr<concurrency::event> stopWaitEvent{ make_shared<concurrency::event>() };
-		shared_ptr<concurrency::event> playSetEvent{ make_shared<concurrency::event>() };
-		shared_ptr<concurrency::event> stopSetEvent{ make_shared<concurrency::event>() };
-		shared_ptr<concurrency::event> pauseEvent{ make_shared<concurrency::event>() };
+		unique_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ make_unique<winrt::event<delegate<SongCompletionEventData>>>() };
+		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
+		unique_ptr<concurrency::event> connectionReadyEvent{ make_unique<concurrency::event>() };
+		unique_ptr<concurrency::event> disconnectionEvent{ make_unique<concurrency::event>() };
+		unique_ptr<concurrency::event> reconnectionEvent{ make_unique<concurrency::event>() };
+		unique_ptr<concurrency::event> playWaitEvent{ make_unique<concurrency::event>() };
+		unique_ptr<concurrency::event> stopWaitEvent{ make_unique<concurrency::event>() };
+		unique_ptr<concurrency::event> playSetEvent{ make_unique<concurrency::event>() };
+		unique_ptr<concurrency::event> stopSetEvent{ make_unique<concurrency::event>() };
+		unique_ptr<concurrency::event> pauseEvent{ make_unique<concurrency::event>() };
 		shared_ptr<unbounded_buffer<AudioFrameData>> audioDataBuffer{ nullptr };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};

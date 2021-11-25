@@ -53,8 +53,6 @@ namespace DiscordCoreInternal {
 		vector<unsigned __int8> buffer{};
 
 		unsigned __int32 offSet{};
-
-		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {

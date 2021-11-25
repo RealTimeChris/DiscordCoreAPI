@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
 				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, false);
-				return move(returnData);
+				return returnData;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");

@@ -99,14 +99,14 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		unique_ptr<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>> webSocketWorkloadTarget{ make_unique<unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>>() };
+		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
-		unique_ptr<CoRoutine<void>> theTask{ nullptr };
-		unique_ptr<BotUser> currentUser{ nullptr };
+		CoRoutine<void> theTask{ nullptr };
 		__int64 currentIteration{ 0 };
 		condition_variable condVar{};
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
+		BotUser currentUser{};
 		mutex iteratorMutex{};
 		string botToken{ "" };
 

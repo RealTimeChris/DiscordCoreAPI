@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<WebSocketWorkload>* workloadNew);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<WebSocketWorkload>* workloadBufferNew);
 
 		void connect();
 
@@ -90,11 +90,11 @@ namespace DiscordCoreInternal {
 
 		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
-		unique_ptr<VoiceConnectionData> voiceConnectionData{ make_unique<VoiceConnectionData>() };
-		unique_ptr<unbounded_buffer<VoiceConnectionData>> voiceConnectionDataBuffer{ nullptr };
+		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
+		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
 		const __int32 maxReconnectTries{ 10 };
 		MessageWebSocket webSocket{ nullptr };
@@ -132,7 +132,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(shared_ptr<concurrency::event> readyEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew, shared_ptr<concurrency::event> reconnectionEvent);
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event* reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
 		void sendMessage(string const& text);
 
@@ -147,13 +147,13 @@ namespace DiscordCoreInternal {
 	protected:
 
 		unbounded_buffer<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
-		shared_ptr<concurrency::event> reconnectionEvent{ nullptr };
-		shared_ptr<concurrency::event> readyEvent{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
 		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };
+		concurrency::event* reconnectionEvent { nullptr };
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
+		concurrency::event* readyEvent { nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };

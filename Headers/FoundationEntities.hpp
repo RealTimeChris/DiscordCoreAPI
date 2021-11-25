@@ -73,21 +73,21 @@ namespace DiscordCoreAPI {
         friend class Guilds;
 
         ObjectCache() {
-            this->cache = concurrent_unordered_map<string, storageType>();
+            this->cache = make_unique<concurrent_unordered_map<string, storageType>>();
         }
 
         ~ObjectCache() {}
 
         storageType returnValue(string valueId) {
-            return this->cache.at(valueId);
+            return this->cache->at(valueId);
         }
 
         storageType* returnPointer(string valueId) {
-            return &this->cache.at(valueId);
+            return &(this->cache)->at(valueId);
         }
 
         bool contains(string valueId) {
-            if (this->cache.find(valueId) == end(this->cache)) {
+            if (this->cache->find(valueId) == end(*this->cache)) {
                 return false;
             }
             else {
@@ -97,29 +97,31 @@ namespace DiscordCoreAPI {
 
         void erase(string valueId) {
             if (this->contains(valueId)) {
-                this->cache.unsafe_erase(valueId);
-                concurrent_unordered_map<string, storageType> newCache{ concurrent_unordered_map<string, storageType>() };
-                for (auto& value : newCache) {
-                    newCache.insert(make_pair(value.first, move(value.second)));
+                this->cache->unsafe_erase(valueId);
+                unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
+                for (auto& value : *newCache) {
+                    newCache->insert(make_pair(value.first, move(value.second)));
                 }
-                this->cache = move(newCache);
+                this->cache.swap(newCache);
+                newCache.reset(nullptr);
             }
         }
 
         void storeValue(string valueId, storageType storageValue) {
             storageType newPtr{ storageValue };
-            concurrent_unordered_map<string, storageType> newCache{ concurrent_unordered_map<string, storageType>() };
+            unique_ptr<concurrent_unordered_map<string, storageType>> newCache{ make_unique<concurrent_unordered_map<string, storageType>>() };
             if (this->contains(valueId)) {
-                this->cache.unsafe_erase(valueId);
+                this->cache->unsafe_erase(valueId);
             }
-            for (auto& value : this->cache) {
-                newCache.insert(make_pair(value.first, move(value.second)));
+            for (auto& value : *this->cache) {
+                newCache->insert(make_pair(value.first, move(value.second)));
             }
-            this->cache = move(newCache);
-            this->cache.insert(make_pair(valueId, move(newPtr)));
+            this->cache.swap(newCache);
+            newCache.reset(nullptr);
+            this->cache->insert(make_pair(valueId, move(newPtr)));
         }
     protected:
-        concurrent_unordered_map<string, storageType> cache{};
+        unique_ptr<concurrent_unordered_map<string, storageType>> cache{};
     };
 
     class DiscordCoreAPI_Dll StopWatch {
@@ -732,18 +734,18 @@ namespace DiscordCoreAPI {
         bool mute{ false };///< Whether this user is muted by the server.
         operator VoiceData(){
             VoiceData newData{};
-            newData.channelId = this->channelId;
-            newData.deaf = this->deaf;
-            newData.guildId = this->guildId;
-            newData.mute = this->mute;
             newData.requestToSpeakTimestamp = this->requestToSpeakTimestamp;
-            newData.selfDeaf = this->selfDeaf;
-            newData.selfMute = this->selfMute;
             newData.selfStream = this->selfStream;
             newData.selfVideo = this->selfVideo;
             newData.sessionId = this->sessionId;
+            newData.channelId = this->channelId;
             newData.suppress = this->suppress;
+            newData.selfDeaf = this->selfDeaf;
+            newData.selfMute = this->selfMute;
+            newData.guildId = this->guildId;
             newData.userId = this->userId;
+            newData.deaf = this->deaf;
+            newData.mute = this->mute;
             return newData;
         }
     };
@@ -2710,50 +2712,6 @@ namespace  DiscordCoreInternal {
         bool mute{ false };
     };
 
-    enum class ThreadType {
-        Regular = 0,
-        Music = 1
-    };
-
-    class DiscordCoreAPI_Dll SchedulerWrapper {
-    public:
-        SchedulerWrapper(Scheduler* dataPackage) {
-            this->scheduler = dataPackage;
-        }
-        Scheduler* scheduler{ nullptr };
-    };
-
-    class DiscordCoreAPI_Dll ThreadContext {
-    public:
-        shared_ptr<SchedulerWrapper> scheduler{ nullptr };
-
-        static unique_ptr<ThreadContext> getThreadContext(ThreadType threadType = ThreadType::Regular);
-
-        Scheduler* operator*();
-
-        ThreadContext(ThreadType threadType);
-
-        ThreadContext(string);
-
-        ~ThreadContext();
-
-    protected:
-        friend class DiscordCoreAPI::DiscordCoreClient;
-
-        static vector<shared_ptr<SchedulerWrapper>> schedulers;
-
-        static vector<unique_ptr<thread>> threads;
-
-        unique_ptr<thread> threadOfExecution{ nullptr };
-
-        ThreadContext(ThreadContext& newThread);
-
-        void releaseContext();
-
-        static void cleanup();
-
-    };
-
     enum class HeaderTypes {
         Bot_Auth = 0,
         X_Audit_Log_Reason = 1
@@ -2762,12 +2720,6 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll Headers {
         HeaderTypes headerType{};
         string headerValue{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll HttpAgentResources {
-        vector<Headers> headers{};
-        string userAgent{ "" };
-        string baseURL{ "" };
     };
 
     enum class HttpWorkloadClass {

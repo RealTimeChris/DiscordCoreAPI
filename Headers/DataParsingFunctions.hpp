@@ -1001,7 +1001,7 @@ namespace DiscordCoreInternal {
                 map<string, DiscordCoreAPI::EmojiData> newMap{};
                 for (auto value : jsonObjectData["emojis"]) {
                     DiscordCoreAPI::EmojiData newData{};
-                    if (pDataStructure->roles.contains(value.at("name"))) {
+                    if (pDataStructure->emoji.contains(value.at("name"))) {
                         newData = pDataStructure->emoji.at(value.at("name"));
                     }
                     parseObject(value, &newData);
@@ -1034,7 +1034,7 @@ namespace DiscordCoreInternal {
                 map<string, DiscordCoreAPI::VoiceStateData> newMap{};
                 for (auto value : jsonObjectData["voice_states"]) {
                     DiscordCoreAPI::VoiceStateData newData{};
-                    if (pDataStructure->roles.contains(value.at("user_id"))) {
+                    if (pDataStructure->voiceStates.contains(value.at("user_id"))) {
                         newData = pDataStructure->voiceStates.at(value.at("user_id"));
                     }
                     parseObject(value, &newData);
@@ -1047,7 +1047,7 @@ namespace DiscordCoreInternal {
                 map<string, DiscordCoreAPI::GuildMemberData> newMap{};
                 for (auto value : jsonObjectData["members"]) {
                     DiscordCoreAPI::GuildMemberData newData{};
-                    if (pDataStructure->roles.contains(value.at("user").at("id"))) {
+                    if (pDataStructure->members.contains(value.at("user").at("id"))) {
                         newData = pDataStructure->members.at(value.at("user").at("id"));
                     }
                     parseObject(value, &newData);
@@ -1060,7 +1060,7 @@ namespace DiscordCoreInternal {
                 map<string, DiscordCoreAPI::ChannelData> newMap{};
                 for (auto value : jsonObjectData["channels"]) {
                     DiscordCoreAPI::ChannelData newData{};
-                    if (pDataStructure->roles.contains(value.at("id"))) {
+                    if (pDataStructure->channels.contains(value.at("id"))) {
                         newData = pDataStructure->channels.at(value.at("id"));
                     }
                     parseObject(value, &newData);
@@ -1073,8 +1073,8 @@ namespace DiscordCoreInternal {
                 map<string, DiscordCoreAPI::ChannelData> newMap{};
                 for (auto value : jsonObjectData["threads"]) {
                     DiscordCoreAPI::ChannelData newData{};
-                    if (pDataStructure->roles.contains(value.at("id"))) {
-                        newData = pDataStructure->channels.at(value.at("id"));
+                    if (pDataStructure->threads.contains(value.at("id"))) {
+                        newData = pDataStructure->threads.at(value.at("id"));
                     }
                     parseObject(value, &newData);
                     newMap.insert_or_assign(newData.id, move(newData));
@@ -1086,7 +1086,7 @@ namespace DiscordCoreInternal {
                 map<string, DiscordCoreAPI::PresenceUpdateData> newMap{};
                 for (auto value : jsonObjectData["presences"]) {
                     DiscordCoreAPI::PresenceUpdateData newData{};
-                    if (pDataStructure->roles.contains(value.at("user").at("id"))) {
+                    if (pDataStructure->presences.contains(value.at("user").at("id"))) {
                         newData = pDataStructure->presences.at(value.at("user").at("id"));
                     }
                     parseObject(value, &newData);

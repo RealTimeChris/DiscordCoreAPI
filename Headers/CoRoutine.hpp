@@ -54,6 +54,8 @@ namespace DiscordCoreAPI {
             }
         }
 
+        CoRoutine<returnType>(const CoRoutine<returnType>& other) = delete;
+
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         /// \returns void.
         void detachThread() {
@@ -172,6 +174,8 @@ namespace DiscordCoreAPI {
                 coroutineHandle.destroy();
             }
         }
+
+        CoRoutine(const CoRoutine<void>& other) = delete;
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         /// \returns void.
