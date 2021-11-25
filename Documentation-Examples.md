@@ -61,7 +61,8 @@
 - ### [Getting a Guild Prune Count](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Prune%20Count.md)
 - ### [Beginning a Guild Prune](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Beginning%20a%20Guild%20Prune.md)
 - ### [Getting Guild Voice Regions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Voice%20Regions.md)
-- ### [Getting Guild Invites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Invites.md) 
+- ### [Getting Guild Invites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Invites.md)
+- ### [Getting Guild Integrations](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Integrations.md)
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
