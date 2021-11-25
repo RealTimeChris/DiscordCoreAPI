@@ -101,26 +101,20 @@ namespace DiscordCoreAPI {
 
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
-		CoRoutine<void> theTask{ nullptr };
-		__int64 currentIteration{ 0 };
-		condition_variable condVar{};
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		BotUser currentUser{};
-		mutex iteratorMutex{};
 		string botToken{ "" };
 
-		CoRoutine<void> initialize();
+		void initialize();
 
 		static void cleanup();
 
-		void watcherLoop();
-
-		CoRoutine<string> getGateWayUrl();
+		string getGateWayUrl();
 
 		void terminate();
 
-		CoRoutine<void> run();
+		void run();
 	};
 	/**@}*/
 	/**

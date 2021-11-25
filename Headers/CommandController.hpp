@@ -67,9 +67,11 @@ namespace DiscordCoreAPI {
 
 		static void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
 
-		static CoRoutine<void> checkForAndRunCommand(CommandData commandData);
+		static void checkForAndRunCommand(CommandData commandData);
 
 	protected:
+
+		static CoRoutine<void> executeCommand(unique_ptr<BaseFunction> theFunction, unique_ptr<BaseFunctionArguments> args);
 
 		static unique_ptr<BaseFunction> createFunction(string functionName);
 
