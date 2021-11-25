@@ -38,15 +38,12 @@ namespace DiscordCoreAPI {
 		virtual CoRoutine<void> executeAsync(unique_ptr<BaseFunctionArguments> args) {
 			try {
 
-				GetGuildInvitesData dataPackage01{};
+				GetGuildWidgetData dataPackage01{};
 				dataPackage01.guildId = args->eventData.getGuildId();
 
-				auto responseData = Guilds::getGuildInvitesAsync(dataPackage01).get();
+				auto responseData = Guilds::getGuildWidgetAsync(dataPackage01).get();
 
-				for (auto value : responseData) {
-					cout << value.code << endl;
-				}			
-
+				cout << boolalpha << responseData.enabled << endl;
 				co_return;
 			}
 			catch (...) {
@@ -56,5 +53,4 @@ namespace DiscordCoreAPI {
 	};
 }
 #endif
-
 ```
