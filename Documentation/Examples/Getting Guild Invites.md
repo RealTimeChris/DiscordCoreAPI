@@ -1,4 +1,4 @@
-### **Creating Guild Invites:**
+### **Getting Guild Invites:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Guilds` class.
 - Populate a data structure of type `DiscordCoreAPI::GetGuildInvitesData`.
