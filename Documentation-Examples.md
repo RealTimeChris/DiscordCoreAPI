@@ -69,6 +69,7 @@
 - ### [Getting a Guild Widget](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Widget.md)
 - ### [Getting a Guild Vanity Invite](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Vanity%20Invite.md)
 - ### [Getting a Guild Widget Image](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Widget%20Image.md)
+- ### [Getting a Guild Welcome Screen](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Welcome%20Screen.md)
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
