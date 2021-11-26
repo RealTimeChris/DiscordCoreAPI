@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For creating a Guild. \brief For creating a Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateGuildData {
+	struct DiscordCoreAPI_Dll CreateGuildData {
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::SHORTEST };///< Afk timeout in seconds.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
@@ -31,17 +31,17 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For getting a Guild from the library's cache or a Discord server. \brief For getting a Guild from the library's cache or a Discord server.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildData {
+	struct DiscordCoreAPI_Dll GetGuildData {
 		string guildId{ "" };///< The id of the Guild to acquire.
 	};
 
 	/// For acquiring a Guild preview of a chosen Guild. \brief For acquiring a Guild preview of a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildPreviewData {
+	struct DiscordCoreAPI_Dll GetGuildPreviewData {
 		string guildId{ "" };///< The id of the Guild's preview to acquire.
 	};
 
 	/// For banning a current GuildMember. \brief For banning a current GuildMember.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateGuildBanData {
+	struct DiscordCoreAPI_Dll CreateGuildBanData {
 		__int32 deleteMessageDays{ 0 };///< The number of days of their Messages to delete.
 		string guildMemberId{ "" };///< The id of the member to be banned.
 		string guildId{ "" };///< The id of the Guild from which to ban the member.
@@ -49,34 +49,34 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For removing a previous created Ban. \brief For removing a previous created Ban.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll RemoveGuildBanData {
+	struct DiscordCoreAPI_Dll RemoveGuildBanData {
 		string guildId{ "" };///< The Guild from which to remove the Ban.
 		string userId{ "" };///< The user Id of the user who's ban to remove.
 		string reason{ "" };///< The reason for removing this Ban.
 	};
 
 	/// For geting all of the current invites from a Guild. \brief For geting all of the current invites from a Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildInvitesData {
+	struct DiscordCoreAPI_Dll GetGuildInvitesData {
 		string guildId{ "" };///< The id of the Guild you wish to acquire.
 	};
 
 	/// For geting a single invite's data from a Guild. \brief For geting a single invite's data from a Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildInviteData {
+	struct DiscordCoreAPI_Dll GetGuildInviteData {
 		string inviteId{ "" };///< The id of the invite you wish to acquire.
 	};
 
 	/// For geting the vanity invite data of a Guild. \brief For geting the vanity invite data of a Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildVanityInviteData {
+	struct DiscordCoreAPI_Dll GetGuildVanityInviteData {
 		string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
 	};
 
 	///	For deleting a Guild. \brief For deleting a Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteGuildData {
+	struct DiscordCoreAPI_Dll DeleteGuildData {
 		string guildId{ "" };///< The Guild you would like to delete.
 	};
 
 	/// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildAuditLogsData {
+	struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
 		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
 		string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
 		string userId{ "" };///< The User for whom to look for the actions of.
@@ -84,25 +84,25 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildBansData {
+	struct DiscordCoreAPI_Dll GetGuildBansData {
 		string guildId{ "" };///< The Guild from which to collect the list of bans.
 	};
 
 	/// For getting a single Guild Ban. \brief For getting a single Guild Ban.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildBanData {
+	struct DiscordCoreAPI_Dll GetGuildBanData {
 		string guildId{ "" };///< The Guild from which to collect the Ban from.
 		string userId{ "" };///< The User for whom to collect the Ban of.
 	};
 
 	/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildPruneCountData {
+	struct DiscordCoreAPI_Dll GetGuildPruneCountData {
 		vector<string> includeRoles{};///< Roles to be included in the prune.
 		string guildId{ "" };///< The Guild to be pruned.
 		__int32 days{ 0 };///< The number of days beyond which to prune the user's for inactivity.
 	};
 
 	/// For pruning a number of GuildMembers from the Guild. \brief For pruning a number of GuildMembers from the Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BeginGuildPruneData {
+	struct DiscordCoreAPI_Dll BeginGuildPruneData {
 		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
 		vector<string> includeRoles{};/// Roles to be included in the prune.
 		string guildId{ "" };///< Guild within which to perform the prune.
@@ -111,47 +111,47 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For collecting a list of Guild voice regions. \brief For collecting a list of Guild voice regions.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildVoiceRegionsData {
+	struct DiscordCoreAPI_Dll GetGuildVoiceRegionsData {
 		string guildId{ "" };///< The guild for which to collect the voice regions from.
 	};
 
 	/// For collecting a list of Guild voice integrations. \brief
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildIntegrationsData {
+	struct DiscordCoreAPI_Dll GetGuildIntegrationsData {
 		string guildId{ "" };///< The guild for which to collect the integrations from.
 	};
 
 	/// For deleting a Guild integration. \brief For deleting a Guild integration.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteGuildIntegrationData {
+	struct DiscordCoreAPI_Dll DeleteGuildIntegrationData {
 		string integrationId{ "" };///< The integration's id which we are going to delete.
 		string guildId{ "" };///< The guild from which to delete the integration from.
 		string reason{ "" };///< Reason for deleting the integration.
 	};
 
 	/// For collecting a Guild's widget settings. \brief For collecting a Guild's widget settings.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildWidgetSettingsData {
+	struct DiscordCoreAPI_Dll GetGuildWidgetSettingsData {
 		string guildId{ "" };///< The Guild from which to collect the widget from.
 	};
 
 	/// For modifying a Guild's widget. \brief For modifying a Guild's widget.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ModifyGuildWidgetData {
+	struct DiscordCoreAPI_Dll ModifyGuildWidgetData {
 		GuildWidgetData widgetData{};///< The new Guild widget data.
 		string guildId{ "" };///< The Guild for which to modify the widget of.
 		string reason{ "" };///< Reason for modifying the widget.
 	};
 
 	/// For collecting a Guild's widget. \brief For collecting a Guild's widget.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildWidgetData {
+	struct DiscordCoreAPI_Dll GetGuildWidgetData {
 		string guildId{ "" };///< The Guild from which to collect the widget from.
 	};
 
 	/// For collecting a Guild's widget image. \brief For collecting a Guild's widget image.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildWidgetImageData {
+	struct DiscordCoreAPI_Dll GetGuildWidgetImageData {
 		WidgetStyleOptions widgetStlye{};///< The style of widget image to collect.
 		string guildId{ "" };///< The Guild for which to collect the widget image from.		
 	};
 
 	/// For collecting a Guild's welcome screen. \brief For collecting a Guild's welcome screen.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildWelcomeScreenData {
+	struct DiscordCoreAPI_Dll GetGuildWelcomeScreenData {
 		string guildId{ "" };///< The Guild for which to collect the widget image from.		
 	};
 
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Guild : public GuildData {
+	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
 		
 		friend struct Concurrency::details::_ResultHolder<Guild>;
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ModifyGuildData {
+	struct DiscordCoreAPI_Dll ModifyGuildData {
 		ModifyGuildData(Guild dataPackage) {
 			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
 			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
@@ -249,8 +249,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class alignas(hardware_destructive_interference_size) for the Guild related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the Guild related Discord endpoints.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Guilds {
+	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
+	class DiscordCoreAPI_Dll Guilds {
 	public:
 
 		friend class DiscordCoreClient;

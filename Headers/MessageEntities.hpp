@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// Get Messages data. \brief Get Messages data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetMessagesData {
+	struct DiscordCoreAPI_Dll GetMessagesData {
 		string aroundThisId{ "" };///<Around this id.
 		string beforeThisId{ "" };///< Before this id.
 		string afterThisId{ "" };///< After this id.
@@ -24,14 +24,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Get Message data. \brief Get Message data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetMessageData {
+	struct DiscordCoreAPI_Dll GetMessageData {
 		string requesterId{ "" };///< The requester id.
 		string channelId{ "" };///< The Channel from which to collect the Message.
 		string id{ "" };///< The id of the Message to collect.
 	};
 
 	/// Create Message data. \brief Create Message data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateMessageData {
+	struct DiscordCoreAPI_Dll CreateMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
 		friend class InputEvents;
@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Edit Message data. \brief Edit Message data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll EditMessageData {
+	struct DiscordCoreAPI_Dll EditMessageData {
 
 		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
 		friend class InputEvents;
@@ -324,7 +324,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Delete Message data. \brief Delete Message data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteMessageData {
+	struct DiscordCoreAPI_Dll DeleteMessageData {
 	public:
 		 __int32 timeDelay{ 0 }; ///< Number of milliseconds to wait before deleting the Message.
 		MessageData messageData;///< The Message to delete.
@@ -332,39 +332,39 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Delete Messages bulk data. \brief Delete Messages bulk data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteMessagesBulkData {
+	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
 		vector<string> messageIds{}; ///< Array of Message ids to delete.
 		string channelId{ "" };///< Channel within which to delete the Messages.
 		string reason{ "" };///< The reason for deleting the Messages.
 	};
 
 	/// Crosspost Message Data. \brief Crosspost Message Data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CrosspostMessageData{
+	struct DiscordCoreAPI_Dll CrosspostMessageData{
 		string messageId{ "" };///< Id of the message to be crossposted.
 		string channelId{ "" };///< Channel within which to crosspost the Message from.
 	};
 
 	/// Get pinned Messages data. \brief Get pinned Messages data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetPinnedMessagesData {
+	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
 		string channelId{ "" };///< The Channel from which to collect pinned Messages.
 	};
 
 	/// Pin Message data. \brief Pin Message data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll PinMessageData {
+	struct DiscordCoreAPI_Dll PinMessageData {
 		string channelId{ "" };///< The Channel within which to pin the Message.
 		string messageId{ "" };///< The Message which you would like to pin.
 		string reason{ "" };///< Reason for pinning this Message.
 	};
 
 	/// Pin Message data. \brief Pin Message data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll UnpinMessageData {
+	struct DiscordCoreAPI_Dll UnpinMessageData {
 		string channelId{ "" };///< The Channel within which to unpin the Message.
 		string messageId{ "" };///< The Message which you would like to unpin.
 		string reason{ "" };///< Reason for pinning this Message.
 	};
 
 	/// Send DM data. \brief Send DM data.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SendDMData {
+	struct DiscordCoreAPI_Dll SendDMData {
 
 		friend string DiscordCoreInternal::JSONIFY(SendDMData dataPackage);
 		friend class InputEvents;
@@ -511,7 +511,7 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll MessageCollector {
+	class DiscordCoreAPI_Dll MessageCollector {
 	public:
 
 		friend class DiscordCoreClient;
@@ -548,8 +548,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class alignas(hardware_destructive_interference_size) for the Message related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the Message related Discord endpoints;
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Messages {
+	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
+	class DiscordCoreAPI_Dll Messages {
 	public:
 
 		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.

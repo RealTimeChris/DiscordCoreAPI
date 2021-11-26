@@ -23,7 +23,7 @@ DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
 
-	struct alignas(hardware_destructive_interference_size) CacheOptions {
+	struct CacheOptions {
 		bool cacheGuildMembers{ false };
 		bool cacheChannels{ false };
 		bool cacheGuilds{ false };
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DiscordCoreClient {
+	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
 		template <typename ...T>
