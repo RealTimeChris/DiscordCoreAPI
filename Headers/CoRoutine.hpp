@@ -287,5 +287,31 @@ namespace DiscordCoreAPI {
         return NewThreadAwaitable();
     }
 
+    template<>
+    DiscordCoreAPI_Dll inline auto NewThreadAwaitable<void>() {
+        class NewThreadAwaitable {
+        public:
+
+            coroutine_handle<CoRoutine<void>::promise_type>  waiterHandle{ nullptr };
+
+            NewThreadAwaitable() {}
+
+            bool await_ready() const noexcept {
+                return false;
+            }
+
+            bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
+                this->waiterHandle = handle;
+                this->waiterHandle.promise().newThread = jthread([=] { this->waiterHandle.resume(); });
+                return true;
+            }
+
+            auto await_resume() {
+                return this->waiterHandle;
+            }
+        };
+        return NewThreadAwaitable();
+    }
+
     /**@}*/
 };

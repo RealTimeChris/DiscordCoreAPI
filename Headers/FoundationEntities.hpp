@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single user.
-    struct DiscordCoreAPI_Dll UserData : public DiscordEntity{
+    struct  alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll UserData : public DiscordEntity{
         string discriminator{ "" }; ///< The # next to their User name.
         bool mfaEnabled{ false };///< MFA enabled?
         __int32 premiumType{ 0 };///< Their premium nitro status.
@@ -1207,7 +1207,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
-    struct DiscordCoreAPI_Dll GuildData : public DiscordEntity{
+    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GuildData : public DiscordEntity{
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
