@@ -229,7 +229,9 @@ namespace DiscordCoreAPI {
 
             promise_type() {};
 
-            ~promise_type() {};
+            ~promise_type() {
+                cout << "WERE HERE DESTROYING IT!" << endl;
+            };
 
             void return_void() {};
 
