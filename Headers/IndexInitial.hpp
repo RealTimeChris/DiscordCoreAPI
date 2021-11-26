@@ -24,6 +24,10 @@
 #define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #endif
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include "crtdbg.h"
