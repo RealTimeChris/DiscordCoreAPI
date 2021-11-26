@@ -110,14 +110,22 @@ namespace DiscordCoreAPI {
         mutex accessMutex{};
     };
 
+    template<typename timeType>
     class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll StopWatch {
     public:
-        StopWatch(__int64 maxNumberOfMsNew) {
+        StopWatch<timeType>(__int64 maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew;
-            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            this->startTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
         }
+
+        __int64 totalTimePassed() {
+            __int64 currentTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            __int64 elapsedTime = currentTime - this->startTime;
+            return elapsedTime;
+        }
+
         bool hasTimePassed() {
-            __int64 currentTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            __int64 currentTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
             __int64 elapsedTime = currentTime - this->startTime;
             if (elapsedTime >= this->maxNumberOfMs) {
                 return true;
@@ -127,7 +135,7 @@ namespace DiscordCoreAPI {
             }
         }
         void resetTimer() {
-            this->startTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            this->startTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
         }
     protected:
         __int64 maxNumberOfMs{ 0 };
@@ -150,7 +158,7 @@ namespace DiscordCoreAPI {
 
     template <typename T>
     bool waitForTimeToPass(concurrent_queue<T>* outBuffer, T* argOne, __int32 timeInMsNew) {
-        StopWatch stopWatch{ timeInMsNew };
+        StopWatch<chrono::milliseconds> stopWatch{ timeInMsNew };
         bool doWeBreak{ false };
         while (!outBuffer->try_pop(*argOne)) {
             wait(10);
@@ -1233,6 +1241,7 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
     struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GuildData : public DiscordEntity{
+        StopWatch<chrono::nanoseconds> theStopWatch{0};
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
