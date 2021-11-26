@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
 				returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
-				return move(returnObject);
+				return returnObject;
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
