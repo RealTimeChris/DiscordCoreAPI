@@ -58,6 +58,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
+		template <typename ...T>
+		friend CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args);
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend class ApplicationCommands;
@@ -100,7 +102,7 @@ namespace DiscordCoreAPI {
 
 		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
 		static vector<RepeatedFunctionData> functionsToExecute;
-		static vector<CoRoutine<void>> functionsToExecuteReal;
+		static vector<ThreadPoolTimer> threadPoolTimers;
 
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };

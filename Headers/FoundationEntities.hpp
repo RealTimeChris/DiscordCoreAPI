@@ -177,6 +177,7 @@ namespace DiscordCoreAPI {
                 return;
             };
             threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            DiscordCoreClient::threadPoolTimers.push_back(threadPoolTimer);
         }
         else {
             theFunction(args...);
