@@ -66,13 +66,13 @@ namespace DiscordCoreInternal {
 		Webhooks_Update = 51
 	};
 
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll WebSocketWorkload {
+	struct DiscordCoreAPI_Dll WebSocketWorkload {
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		json payLoad{};
 		~WebSocketWorkload() {};
 	};
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BaseWebSocketAgent {
+	class DiscordCoreAPI_Dll BaseWebSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 		void cleanup();
 	};
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll VoiceChannelWebSocketAgent {
+	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;

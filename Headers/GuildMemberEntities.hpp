@@ -16,27 +16,27 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For getting a GuildMember, from the library's cache or Discord server. \brief For getting a GuildMember, from the library's cache or Discord server.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildMemberData {
+	struct DiscordCoreAPI_Dll GetGuildMemberData {
 		string guildMemberId{ "" };///< The user id of the desired GuildMember.
 		string guildId{ "" };///< The id of the Guild from which you would like to acquire a member.
 	};
 
 	/// For listing the GuildMembers of a chosen Guild. \brief For listing the GuildMembers of a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ListGuildMembersData {
+	struct DiscordCoreAPI_Dll ListGuildMembersData {
 		string guildId{ "" };///< Guild from which to list the GuildMembers.
 		__int32 limit{ 0 };///< Max number of members to return (1 - 1000).
 		string after{ "" };///< The highest user id in the previous page.
 	};
 
 	/// For searching for one or more GuildMembers within a chosen Guild. \brief For searching for one or more GuildMembers within a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SearchGuildMembersData {
+	struct DiscordCoreAPI_Dll SearchGuildMembersData {
 		string guildId{ "" };///< Guild within which to search for the GuildMembers.
 		string query{ "" };///< Query string to match username(s) and nickname(s) against.
 		__int32 limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll AddGuildMemberData {
+	struct DiscordCoreAPI_Dll AddGuildMemberData {
 		string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the guild.
 		vector<string>roles{};///< Array of role ids the member is assigned.
 		string guildId{ "" };///< The Guild to add the new GuildMember to.
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ModifyGuildMemberData {
+	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
 		string newVoiceChannelId{ "" }; ///< The new voice channel to move them into.
 		string currentChannelId{ "" }; ///< The current voice channel, if applicaple.
 		string guildMemberId{ "" };	///< The user id of the desired Guild memeber.
@@ -60,21 +60,21 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the Current GuildMember's values. \brief For modifying the Current GuildMember's values.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
+	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
 		string guildId{ "" };///< The Guild within which to modify the current user's values.
 		string reason{ "" };///< A reason for modifying the current user's values.
 		string nick{ "" };///< A new nickname for the current user.
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) RemoveGuildMemberData {
+	struct RemoveGuildMemberData {
 		string guildMemberId{ "" };///< Id of the chosen GuildMember to kick.
 		string guildId{ "" };///< Guild from which to kick the chosen GuildMember.
 		string reason{ "" };///< Reason for kicking the GuildMember.
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
+	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
 
 		GuildMember(GuildMemberData dataNew) noexcept;
@@ -103,8 +103,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class alignas(hardware_destructive_interference_size) for the GuildMember related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the GuildMember related Discord endpoints.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GuildMembers {
+	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
+	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 
 		friend class DiscordCoreClient;
