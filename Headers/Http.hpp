@@ -19,8 +19,8 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			try {
-				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
-				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
+				alignas(hardware_destructive_interference_size) unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				alignas(hardware_destructive_interference_size) RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
@@ -36,8 +36,8 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
-				returnType returnObject{};
+				alignas(hardware_destructive_interference_size) HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
+				alignas(hardware_destructive_interference_size) returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
 				return returnObject;
 			}
@@ -51,8 +51,8 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
 			try {
-				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
-				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
+				alignas(hardware_destructive_interference_size) unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				alignas(hardware_destructive_interference_size) RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				auto returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
+				alignas(hardware_destructive_interference_size) auto returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
 				return;
 			}
 			catch (...) {

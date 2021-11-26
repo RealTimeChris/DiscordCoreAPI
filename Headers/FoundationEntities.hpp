@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
             if (this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") != string::npos) {
                 dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
             }
-            struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll tm newtime;
+            struct DiscordCoreAPI_Dll tm newtime;
             __time64_t ____int64ime;
             errno_t err;
             // Get time as 64-bit integer.
