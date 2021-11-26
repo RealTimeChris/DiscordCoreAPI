@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		/// The base function for the command's execute function.
 		/// \param args A unique_ptr containing a copy of BaseFunctionArguments.
 		/// \returns A CoRoutine containing void.
-		virtual CoRoutine<void> executeAsync(unique_ptr<BaseFunctionArguments>args) = 0;
+		virtual CoRoutine<void> executeAsync(BaseFunctionArguments args) = 0;
 		virtual unique_ptr<BaseFunction> create() = 0;
 		virtual ~BaseFunction() = default;
 	};
@@ -71,13 +71,13 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static CoRoutine<void> executeCommand(unique_ptr<BaseFunction> theFunction, unique_ptr<BaseFunctionArguments> args);
-
-		static unique_ptr<BaseFunction> createFunction(string functionName);
+		static CoRoutine<void> executeCommand(unique_ptr<BaseFunction> theFunction, BaseFunctionArguments args);
 
 		static unique_ptr<BaseFunction> getCommand(string commandName, CommandData commandData);
 
 		static string parseCommandName(string messageContents, CommandData commandData);
+		
+		static unique_ptr<BaseFunction> createFunction(string functionName);
 
 		static vector<string> parseArguments(string messageContents);
 

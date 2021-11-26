@@ -62,6 +62,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend class ApplicationCommands;
 		friend void ::terminateWrapper();
+		friend class CommandController;
 		friend class GuildMembers;
 		friend class Interactions;
 		friend class InputEvents;
@@ -97,10 +98,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
 		static vector<RepeatedFunctionData> functionsToExecute;
 
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
+		function<void(void)> theFunction{};
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		BotUser currentUser{};
@@ -108,10 +111,12 @@ namespace DiscordCoreAPI {
 
 		void initialize();
 
-		static void cleanup();
+		static void clearTaskVector();
 
 		string getGateWayUrl();
 
+		static void cleanup();
+		
 		void terminate();
 
 		void run();

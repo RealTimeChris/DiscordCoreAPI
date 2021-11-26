@@ -28,13 +28,13 @@ namespace DiscordCoreAPI {
 
         SongDecoder(BuildSongDecoderData dataPackage);
 
-        bool startMe();
-
         void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
 
         void updateBufferRefreshTime(__int32 newRefreshTime);
 
         bool getFrame(RawFrameData* dataPackage);
+
+        bool startMe();
 
         ~SongDecoder();
 
