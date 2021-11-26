@@ -23,8 +23,8 @@ int main()
     function01.intervalInMs = 500;
     function01.repeated = false;
     functionVector.push_back(function01);
-    DiscordCoreAPI::DiscordCoreClient::thisPointer->setup(botToken, "!", &functionVector);
-    DiscordCoreAPI::CommandController::registerFunction(vector<string>{"test"}, new DiscordCoreAPI::Test);
+    DiscordCoreAPI::DiscordCoreClient::setup(botToken, "!", functionVector, DiscordCoreAPI::CacheOptions{ .cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true });
+    DiscordCoreAPI::CommandController::registerFunction(vector<string>{"test"}, move(make_unique<DiscordCoreAPI::Test>()));
 
     DiscordCoreAPI::DiscordCoreClient::thisPointer->runBot();
     return 0;
