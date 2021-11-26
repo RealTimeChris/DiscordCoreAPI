@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    class DiscordCoreAPI_Dll InvalidState : public exception {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll InvalidState : public exception {
     public:
         explicit InvalidState(const string& message) : exception(message.c_str()) {}
     };
@@ -39,10 +39,10 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     /// \param returnType The type of parameter that is returned by the CoRoutine.
     template<typename returnType>
-    class DiscordCoreAPI_Dll CoRoutine {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CoRoutine {
     public:
 
-        class promise_type;
+        class alignas(hardware_destructive_interference_size) promise_type;
 
         CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
             return coroutineHandle.promise().result;
         }
 
-        class DiscordCoreAPI_Dll promise_type {
+        class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll promise_type {
         public:
 
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
@@ -153,10 +153,10 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
     /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
-    class CoRoutine<void> {
+    class alignas(hardware_destructive_interference_size) CoRoutine<void> {
     public:
 
-        class promise_type;
+        class alignas(hardware_destructive_interference_size) promise_type;
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        class promise_type {
+        class alignas(hardware_destructive_interference_size) promise_type {
         public:
 
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
     /// \param returnType The type returned by the containing CoRoutine.
     template<typename returnType>
     DiscordCoreAPI_Dll inline auto NewThreadAwaitable() {
-        class NewThreadAwaitable {
+        class alignas(hardware_destructive_interference_size) NewThreadAwaitable {
         public:
 
             coroutine_handle<CoRoutine<returnType>::promise_type>  waiterHandle{ nullptr };
@@ -289,7 +289,7 @@ namespace DiscordCoreAPI {
 
     template<>
     DiscordCoreAPI_Dll inline auto NewThreadAwaitable<void>() {
-        class NewThreadAwaitable {
+        class alignas(hardware_destructive_interference_size) NewThreadAwaitable {
         public:
 
             coroutine_handle<CoRoutine<void>::promise_type>  waiterHandle{ nullptr };
