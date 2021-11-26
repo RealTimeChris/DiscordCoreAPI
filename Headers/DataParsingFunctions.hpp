@@ -89,11 +89,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::User>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::User newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildWidgetImageData* pDataStructure) {
@@ -147,11 +149,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ThreadMemberData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::ThreadMemberData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ChannelData* pDataStructure) {
@@ -276,12 +280,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ChannelData>* pDataStructure) {
-
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::ChannelData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::RoleTagsData* pDataStructure) {
@@ -335,11 +340,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Role>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::Role newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildMemberData* pDataStructure) {
@@ -398,11 +405,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildMemberData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::GuildMemberData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::EmojiData* pDataStructure) {
@@ -446,11 +455,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::EmojiData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::EmojiData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildPreviewData* pDataStructure) {
@@ -831,11 +842,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::VoiceRegionData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::VoiceRegionData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildPruneCountData* pDataStructure) {
@@ -949,6 +962,7 @@ namespace DiscordCoreInternal {
                     newVector.push_back(value.get<string>());
                 }
                 pDataStructure->features = newVector;
+                pDataStructure->features.shrink_to_fit();
             }
 
             if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
@@ -1440,11 +1454,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Reaction>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::Reaction newData;
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::MessageActivityData* pDataStructure) {
@@ -1651,11 +1667,13 @@ namespace DiscordCoreInternal {
         };
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::InviteData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::InviteData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::MessageReferenceData* pDataStructure) {
@@ -2169,11 +2187,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Message>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::Message newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandOptionChoiceData* pDataStructure) {
@@ -2273,11 +2293,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ApplicationCommand>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::ApplicationCommand newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ApplicationCommandInteractionDataOption* pDataStructure) {
@@ -2431,6 +2453,7 @@ namespace DiscordCoreInternal {
                     }
                 }
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::CommandData* pDataStructure) {
@@ -2885,11 +2908,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::IntegrationData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::IntegrationData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::AuditLogData* pDataStructure) {
@@ -2985,11 +3010,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::BanData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::BanData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::ThreadListSyncData* pDataStructure) {
@@ -3186,11 +3213,13 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::GuildApplicationCommandPermissionsData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::YouTubeSong* pDataStructure) {

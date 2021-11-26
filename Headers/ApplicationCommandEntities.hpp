@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
         /// Bulk overwrites some Guild ApplicationCommands for this bot. \brief Bulk overwrites some Guild ApplicationCommands for this bot.
         /// \param dataPackage A BulkOverwriteGuildApplicationCommandsData structure.
         /// \returns A CoRoutine containing a vector of ApplicationCommand.
-        static CoRoutine<vector<ApplicationCommand>>  bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage);
+        static CoRoutine<vector<ApplicationCommand>> bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage);
 
         /// Gets Guild ApplicationCommand permissions for a single server on this bot. \brief Gets Guild ApplicationCommand permissions for a single server on this bot.
         /// \param dataPackage A GetGuildApplicationCommandPermissionsData structure.

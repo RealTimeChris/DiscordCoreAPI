@@ -1154,7 +1154,7 @@ namespace DiscordCoreAPI {
         /// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
         /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the selection.
         /// \returns A vector of SelectMenuResponseData.
-        vector<SelectMenuResponseData>  collectSelectMenuData(bool getSelectMenuDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        vector<SelectMenuResponseData> collectSelectMenuData(bool getSelectMenuDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
 
         ~SelectMenuCollector();
 
@@ -1207,7 +1207,7 @@ namespace DiscordCoreAPI {
         /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
         /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the button press.
         /// \returns A vector of ButtonResponseData.
-        vector<ButtonResponseData>  collectButtonData(bool getButtonDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
 
         ~ButtonCollector();
 

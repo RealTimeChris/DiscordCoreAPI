@@ -539,7 +539,7 @@ namespace DiscordCoreAPI {
 		__int32 elapsedTime{ 0 };
 		string userId{ "" };
 
-		CoRoutine<void>  run();
+		CoRoutine<void> run();
 
 	};
 	/**@}*/

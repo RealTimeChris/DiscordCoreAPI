@@ -294,6 +294,7 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll string getTimeAndDate();
 
     /**@}*/
+
     /**
     * \addtogroup foundation_entities
     * @{
@@ -317,6 +318,11 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreAPI {
+
+    /**
+    * \addtogroup foundation_entities
+    * @{
+    */
 
     /// Role tags data. \brief Role tags data.
     struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll RoleTagsData {
@@ -1296,11 +1302,13 @@ namespace DiscordCoreAPI {
         virtual ~GuildData() {};
     };
 
+    /// Guild's scheduled event privacy level.
     enum class GuildScheduledEventPrivacyLevel {
         PUBLIC = 1,///< The scheduled event is public and available in discovery.
         GUILD_ONLY = 2///< The scheduled event is only accessible to guild members.
     };
 
+    /// Guild scheduled event status.
     enum class GuildScheduledEventStatus {
         SCHEDULED = 1,
         ACTIVE = 2,
@@ -1308,6 +1316,7 @@ namespace DiscordCoreAPI {
         CANCELED = 4
     };
 
+    /// Guild scheduled event entity type.
     enum class GuildScheduledEventEntityType {
         NONE = 0,
         STAGE_INSTANCE = 1,
@@ -1315,10 +1324,12 @@ namespace DiscordCoreAPI {
         EXTERNAL = 3
     };
 
+    /// Guild scheduled event entity metadata.
     struct alignas(hardware_destructive_interference_size) GuildScheduledEventEntityMetadata {
         string location{ "" };
     };
 
+    /// Guild scheduled event data.
     struct alignas(hardware_destructive_interference_size) GuildScheduledEventData {
         GuildScheduledEventEntityMetadata entityMetadata{};
         GuildScheduledEventPrivacyLevel privacyLevel{};
@@ -2733,11 +2744,11 @@ namespace  DiscordCoreInternal {
     * \addtogroup foundation_entities
     * @{
     */
-    class alignas(hardware_destructive_interference_size) ApplicationCommands;
-    class alignas(hardware_destructive_interference_size) BaseWebSocketAgent;
-    class alignas(hardware_destructive_interference_size) HttpRequestAgent;
-    class alignas(hardware_destructive_interference_size) ThreadManager;
-    class alignas(hardware_destructive_interference_size) DataParser;
+    class ApplicationCommands;
+    class BaseWebSocketAgent;
+    class HttpRequestAgent;
+    class ThreadManager;
+    class DataParser;
 
     enum class ConnectionWebSocketType {
         Receive = 0,
