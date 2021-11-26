@@ -23,7 +23,7 @@ DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
 
-	struct CacheOptions {
+	struct alignas(hardware_destructive_interference_size) CacheOptions {
 		bool cacheGuildMembers{ false };
 		bool cacheChannels{ false };
 		bool cacheGuilds{ false };
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient {
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
 		template <typename ...T>
@@ -100,9 +100,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
 		static vector<RepeatedFunctionData> functionsToExecute;
 		static vector<ThreadPoolTimer> threadPoolTimers;
+		static vector<CoRoutine<void>> theTaskVector;
 
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };

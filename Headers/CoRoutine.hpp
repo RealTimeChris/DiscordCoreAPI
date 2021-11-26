@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    class DiscordCoreAPI_Dll InvalidState : public exception {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll InvalidState : public exception {
     public:
         explicit InvalidState(const string& message) : exception(message.c_str()) {}
     };
@@ -39,17 +39,17 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     /// \param returnType The type of parameter that is returned by the CoRoutine.
     template<typename returnType>
-    class DiscordCoreAPI_Dll CoRoutine {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CoRoutine {
     public:
 
-        class promise_type;
+        class alignas(hardware_destructive_interference_size) promise_type;
 
         CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine<returnType>() {}
 
         ~CoRoutine() {
-            if (coroutineHandle && coroutineHandle.done()) {
+            if (coroutineHandle) {
                 coroutineHandle.destroy();
             }
         }
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
             return coroutineHandle.promise().result;
         }
 
-        class DiscordCoreAPI_Dll promise_type {
+        class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll promise_type {
         public:
 
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
@@ -145,25 +145,25 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+        coroutine_handle<promise_type> coroutineHandle{ nullptr };
 
-        coroutine_handle<promise_type> coroutineHandle{};
+        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
     /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
-    class CoRoutine<void> {
+    class alignas(hardware_destructive_interference_size) CoRoutine<void> {
     public:
 
-        class promise_type;
+        class alignas(hardware_destructive_interference_size) promise_type;
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine() {}
 
         ~CoRoutine() {
-            if (coroutineHandle && coroutineHandle.done()) {
+            if (coroutineHandle) {
                 coroutineHandle.destroy();
             }
         }
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        class promise_type {
+        class alignas(hardware_destructive_interference_size) promise_type {
         public:
 
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
@@ -254,16 +254,16 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+        coroutine_handle<promise_type> coroutineHandle{ nullptr };
 
-        coroutine_handle<promise_type> coroutineHandle{};
+        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
     /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
     /// \param returnType The type returned by the containing CoRoutine.
-    template<class returnType>
+    template<typename returnType>
     DiscordCoreAPI_Dll inline auto NewThreadAwaitable() {
-        class NewThreadAwaitable {
+        class alignas(hardware_destructive_interference_size) NewThreadAwaitable {
         public:
 
             coroutine_handle<CoRoutine<returnType>::promise_type>  waiterHandle{ nullptr };
@@ -275,32 +275,6 @@ namespace DiscordCoreAPI {
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
-                this->waiterHandle = handle;
-                this->waiterHandle.promise().newThread = jthread([=] { this->waiterHandle.resume(); });
-                return true;
-            }
-
-            auto await_resume() {
-                return this->waiterHandle;
-            }
-        };
-        return NewThreadAwaitable();
-    }
-
-    template<>
-    DiscordCoreAPI_Dll inline auto NewThreadAwaitable<void>() {
-        class NewThreadAwaitable {
-        public:
-
-            coroutine_handle<CoRoutine<void>::promise_type>  waiterHandle{ nullptr };
-
-            NewThreadAwaitable() {}
-
-            bool await_ready() const noexcept {
-                return false;
-            }
-
-            bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
                 this->waiterHandle = handle;
                 this->waiterHandle.promise().newThread = jthread([=] { this->waiterHandle.resume(); });
                 return true;

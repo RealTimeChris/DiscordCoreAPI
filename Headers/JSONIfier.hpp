@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 	struct ModifyGuildData;
 	struct EditMessageData;
 	struct CreateGuildData;
-	struct SendDMData;	
+	struct SendDMData;
 
 };
 

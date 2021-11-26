@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll void spinLock(__int64 timeInNsToSpinLockFor);
 
     template<typename storageType>
-    class  alignas(hardware_destructive_interference_size) ObjectCache {
+    class alignas(hardware_destructive_interference_size) ObjectCache {
     public:
 
         friend class Guilds;
@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
             if (this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") != string::npos) {
                 dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
             }
-            struct DiscordCoreAPI_Dll tm newtime;
+            struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll tm newtime;
             __time64_t ____int64ime;
             errno_t err;
             // Get time as 64-bit integer.
@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single user.
-    struct  alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll UserData : public DiscordEntity{
+    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll UserData : public DiscordEntity{
         string discriminator{ "" }; ///< The # next to their User name.
         bool mfaEnabled{ false };///< MFA enabled?
         __int32 premiumType{ 0 };///< Their premium nitro status.
@@ -411,7 +411,9 @@ namespace DiscordCoreAPI {
         __int32 height{ 0 };///< The height of the attachment.
         __int32 width{ 0 };///< The width of the attachment.
         __int32 size{ 0 };///< The size of the attachment.
-        string url{ "" };///< The url for the attachment.        
+        string url{ "" };///< The url for the attachment.
+
+        virtual ~AttachmentData() {};
     };
 
     /// Sticker format type. \brief Sticker format type.
@@ -592,6 +594,8 @@ namespace DiscordCoreAPI {
         string channelId{ "" };///< Channel id for which Channel this overwrite be__int64s to.
         string allow{ "" };///< Collection of Permissions to allow.
         string deny{ "" };///< Collection of Permissions to deny.
+
+        virtual ~OverWriteData() {};
     };
 
     /// A type of Channel. \brief A type of Channel.
@@ -623,6 +627,8 @@ namespace DiscordCoreAPI {
         string joinTimestamp{ "" }; ///< The time at which the member joined this thread.
         string userId{ "" };    ///< The User's id.
         __int32 flags{ 0 }; ///< Flags.
+
+        virtual ~ThreadMemberData() {};
     };
 
     enum class ThreadType {
@@ -668,7 +674,7 @@ namespace DiscordCoreAPI {
         virtual ~ChannelData() {};
     };
 
-    struct  alignas(hardware_destructive_interference_size) VoiceData {
+    struct alignas(hardware_destructive_interference_size) VoiceData {
         string requestToSpeakTimestamp{ "" };///< The time at which the user requested to speak.
         bool selfStream{ false };///< Whether this user is streaming using "Go Live".
         bool selfVideo{ false };///< Whether this user's camera is enabled.
@@ -734,13 +740,13 @@ namespace DiscordCoreAPI {
         }
     };
 
-    struct  alignas(hardware_destructive_interference_size) ActiveThreadsData {
+    struct alignas(hardware_destructive_interference_size) ActiveThreadsData {
         vector<ThreadMemberData> members{};
         vector<ChannelData> threads{};
         bool hasMore{ false };
     };
 
-    struct  alignas(hardware_destructive_interference_size) ArchivedThreadsData : public ActiveThreadsData {};
+    struct alignas(hardware_destructive_interference_size) ArchivedThreadsData : public ActiveThreadsData {};
 
     /// ApplicationCommand option type. \brief ApplicationCommand option type.
     enum class ApplicationCommandOptionType {
@@ -766,6 +772,8 @@ namespace DiscordCoreAPI {
     struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity{
         ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role }; ///< The type of Permission.
         bool permission{ false }; ///< Whether the Permission is active or not.
+
+        virtual ~ApplicationCommandPermissionData() {}
     };
 
     /// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
@@ -773,6 +781,8 @@ namespace DiscordCoreAPI {
         vector<ApplicationCommandPermissionData> permissions{};///< The Permissions.
         string applicationId{ "" };///< The application's id.
         string guildId{ "" };///< The Guild's id.
+
+        virtual ~GuildApplicationCommandPermissionsData() {}
     };
 
     /// Data structure representing a single emoji. \brief Data structure representing a single emoji.
@@ -820,7 +830,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Structure representing Voice Region Data.
-    struct  alignas(hardware_destructive_interference_size) VoiceRegionData {
+    struct alignas(hardware_destructive_interference_size) VoiceRegionData {
         bool deprecated{ false };///< Whether this is a deprecated voice region(avoid switching to these).
         bool optimal{ false };///< True for a single server that is closest to the current user's client.
         bool custom{ false };///< Whether this is a custom voice region(used for events / etc).
@@ -883,6 +893,8 @@ namespace DiscordCoreAPI {
         vector<TeamMembersObjectData> members{};///< Array of team members object data.
         string ownerUserId{ "" };///< User id of the team owner.
         string icon{ "" };///<Icon for the team.
+
+        virtual ~TeamObjectData() {};
     };
 
     /// Application data. \brief Application data.
@@ -904,15 +916,18 @@ namespace DiscordCoreAPI {
         string name{ "" };///< Application's name.
         string icon{ "" };///< Application's icon.
         UserData owner{};///< Application's owner.
+
+        virtual ~ApplicationData() {};
     };
 
     /// Account data. \brief Account data.
     struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll AccountData : public DiscordEntity{
         string name{ "" };///< Name of the account.
+        virtual ~AccountData() {}
     };
 
     /// Guild Widget Data.
-    struct  alignas(hardware_destructive_interference_size) GuildWidgetData {
+    struct alignas(hardware_destructive_interference_size) GuildWidgetData {
         string channelId{ "" };///< The widget channel id.
         bool enabled{ false };///< Whether the widget is enabled.
     };
@@ -926,7 +941,7 @@ namespace DiscordCoreAPI {
         Banner4 = 4
     };
 
-    struct  alignas(hardware_destructive_interference_size) GuildWidgetImageData {
+    struct alignas(hardware_destructive_interference_size) GuildWidgetImageData {
         string url{ "" };
     };
 
@@ -946,6 +961,8 @@ namespace DiscordCoreAPI {
         string name{ "" };///< Name of the integration.
         string type{ "" };///< Type of integration.
         UserData user{};///< User data for the integration.
+
+        virtual ~IntegrationData() {}
     };
 
     /// Audit log event. \brief Audit log event.
@@ -996,6 +1013,8 @@ namespace DiscordCoreAPI {
         string roleName{ "" };///< Role name.
         string count{ "" };///<Count.
         string type{ "" };///< Type.
+
+        virtual ~AuditLogEntryInfoData() {}
     };
 
     /// Audit log change data. \brief Audit log change data.
@@ -1010,7 +1029,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild prune count data.
-    struct  alignas(hardware_destructive_interference_size) GuildPruneCountData {
+    struct alignas(hardware_destructive_interference_size) GuildPruneCountData {
         __int32 count{ 0 };
     };
 
@@ -1023,11 +1042,15 @@ namespace DiscordCoreAPI {
         string targetId{ "" };///< Id of the target User.
         string userId{ "" };///< Id of the executing User.
         string reason{ "" };///< The reason that was entered for the given change.
+
+        virtual ~AuditLogEntryData() {}
     };
 
     /// Party data. \brief Party data.
     struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll PartyData : public DiscordEntity{
         vector<__int32> size{ 0, 0 };///< The size of the party.
+
+        virtual ~PartyData() {}
     };
 
     /// Assets data. \brief Party data.
@@ -1159,6 +1182,8 @@ namespace DiscordCoreAPI {
         string channelId{ "" }; ///< The Channel's id.
         string guildId{ "" };   ///< The Guild id for which the Channel exists in.
         string topic{ "" }; ///< The topic of the stage instance.
+
+        virtual ~StageInstanceData() {}
     };
 
     /// Sticker type. \brief Sticker type.
@@ -1185,7 +1210,7 @@ namespace DiscordCoreAPI {
         virtual ~StickerData() {};
     };
 
-    struct  alignas(hardware_destructive_interference_size) GuildPreviewData {
+    struct alignas(hardware_destructive_interference_size) GuildPreviewData {
         __int32 approximatePresenceCount{ 0 };
         __int32 approximateMemberCount{ 0 };
         string discoverySplash{ "" };
@@ -1281,11 +1306,11 @@ namespace DiscordCoreAPI {
         EXTERNAL = 3
     };
 
-    struct  alignas(hardware_destructive_interference_size) GuildScheduledEventEntityMetadata {
+    struct alignas(hardware_destructive_interference_size) GuildScheduledEventEntityMetadata {
         string location{ "" };
     };
 
-    struct  alignas(hardware_destructive_interference_size) GuildScheduledEventData {
+    struct alignas(hardware_destructive_interference_size) GuildScheduledEventData {
         GuildScheduledEventEntityMetadata entityMetadata{};
         GuildScheduledEventPrivacyLevel privacyLevel{};
         GuildScheduledEventEntityType entityType{};
@@ -1343,13 +1368,15 @@ namespace DiscordCoreAPI {
         string name{ "" };///< Name of the webhook.
         string url{ "" };///< Url of the webhook.
         UserData user{};///< User which create the webhook.
+
+        virtual ~WebhookData() {}
     };
 
     /// Audit log data. \brief Audit log data.
     class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll AuditLogData {
     public:
         auto getAuditLogData(string userIdOfChanger, AuditLogEvent auditLogType) {
-            for (auto value : this->auditLogEntries) {
+            for (auto& value : this->auditLogEntries) {
                 if (value.id == userIdOfChanger && value.actionType == auditLogType) {
                     return value;
                 }
@@ -1357,7 +1384,7 @@ namespace DiscordCoreAPI {
             return AuditLogEntryData();
         }
         auto getAuditLogData(AuditLogEvent auditLogType, string userIdOfTarget) {
-            for (auto value : this->auditLogEntries) {
+            for (auto& value : this->auditLogEntries) {
                 if (value.targetId == userIdOfTarget && value.actionType == auditLogType) {
                     return value;
                 }
@@ -1557,6 +1584,8 @@ namespace DiscordCoreAPI {
         string guildId{ "" };///< (Where applicable) a Guild id for which to assign this ApplicationCommand to.
         string version{ "" };///< An autoincremented version.
         string name{ "" };///< Name of the current ApplicationCommand.
+
+        virtual ~ApplicationCommandData() {}
     };
 
     /// A single ApplicationCommand. \brief A single ApplicationCommand.
@@ -1573,6 +1602,8 @@ namespace DiscordCoreAPI {
         friend class CoRoutine;
         friend class ApplicationCommands;
         friend class DiscordCoreClient;
+
+        virtual ~ApplicationCommand() {};
 
     protected:
 
@@ -1593,6 +1624,8 @@ namespace DiscordCoreAPI {
         string guildId{ "" }; ///< The id of the Guild where it took place.
         string name{ "" }; ///< The name of the Channel that was mentioned.
         ChannelType type{}; ///< The type of Channel that was mentioned.
+
+        virtual ~ChannelMentionData() {}
     };
 
     /// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
@@ -1616,6 +1649,8 @@ namespace DiscordCoreAPI {
         vector<string> removedMemberIds{}; ///< Members who have been removed.
         string guildId{ "" };   ///< Guild id of the thread.
         __int32 memberCount{ 0 };///< Number of Guild-members in the thread.
+
+        virtual ~ThreadMembersUpdateData() {}
     };
 
     /// Message interaction data.
@@ -1623,6 +1658,8 @@ namespace DiscordCoreAPI {
         InteractionType type{};
         string name{ "" };
         UserData user{};
+
+        virtual ~MessageInteractionData() {}
     };
 
     /// Message type. \brief Message type.
@@ -1674,6 +1711,8 @@ namespace DiscordCoreAPI {
     struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll StickerItemData : public DiscordEntity{
         StickerItemType formatType{}; ///< Message sticker item type.
         string name{ "" }; ///< The name of the sticker.
+
+        virtual ~StickerItemData() {}
     };
 
     /// The core of a Message's data structure. \brief The core of a Message's data structure.
@@ -1728,6 +1767,8 @@ namespace DiscordCoreAPI {
 
         Message(MessageData dataNew);
 
+        virtual ~Message() {}
+
     protected:
 
         friend struct Concurrency::details::_ResultHolder<Message>;
@@ -1752,7 +1793,7 @@ namespace DiscordCoreAPI {
     };
 
     /// MessageCollectorReturn data. \brief MessageCollectorReturn data.
-    struct  alignas(hardware_destructive_interference_size) MessageCollectorReturnData {
+    struct alignas(hardware_destructive_interference_size) MessageCollectorReturnData {
         vector<Message> messages; ///< A vector of collected Messages.
     };
 
@@ -1776,6 +1817,8 @@ namespace DiscordCoreAPI {
         ApplicationCommandType type{}; ///< The type of ApplicationCommand.
         ResolvedData resolved{};///< Resolved data.
         string name{ "" };///< The name of the command.
+
+        virtual ~ApplicationCommandInteractionData() {}
     };
 
     /// Interaction data data. \brief Interaction data data.
@@ -1804,6 +1847,8 @@ namespace DiscordCoreAPI {
         InteractionData(string requesterId) {
             this->requesterId = requesterId;
         }
+
+        virtual ~InteractionData() {}
     };
 
     /**@}*/
@@ -1846,7 +1891,7 @@ namespace DiscordCoreAPI {
         SoundCloud = 1
     };
 
-    struct DiscordCoreAPI_Dll DownloadURL {
+    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DownloadURL {
         __int32 contentSize{ 0 };
         string urlPath{ "" };
     };
@@ -2367,7 +2412,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// A song from the various platforms. \brief A song from the various platforms.
-    struct Song {
+    struct alignas(hardware_destructive_interference_size) Song {
     public:
 
         friend class DiscordCoreInternal::DataParser;
@@ -2387,7 +2432,9 @@ namespace DiscordCoreAPI {
         string duration{ "" };///< The duration of the Song.
         string viewURL{ "" };///< The url for listening to this Song through a browser.
 
-        Song() {}
+        Song() {};
+
+        virtual ~Song() {};
 
     protected:
 
@@ -2475,6 +2522,8 @@ namespace DiscordCoreAPI {
 
         vector<YouTubeSong> searchForSong(string songQuery);
 
+        virtual ~YouTubeSong() {};
+
     protected:
 
         string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
@@ -2508,9 +2557,11 @@ namespace DiscordCoreAPI {
 
         vector<SoundCloudSong> searchForSong(string songQuery);
 
+        virtual ~SoundCloudSong() {}
+
     protected:
 
-        static string clientId;
+        alignas(hardware_destructive_interference_size) static string clientId;
 
         string baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
         string baseSearchURL{ "https://soundcloud.com/search?q=" };
@@ -2538,7 +2589,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// Playlist of songs and other variables. \brief Playlist of songs and other variables.
-    struct DiscordCoreAPI_Dll Playlist {
+    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Playlist {
     public:
         operator DBPlaylist();
         bool isLoopSongEnabled{ false };///< Is looping of Songs currently enabled?
@@ -2573,6 +2624,8 @@ namespace DiscordCoreAPI {
         vector<ApplicationCommandPermissionData> permissions{};
         string applicationId{ "" };
         string guildId{ "" };
+
+        virtual ~GuildApplicationCommandPermissionData() {}
     };
 
     struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll PutBatchEditApplicationCommandPermissionsData {
@@ -2671,18 +2724,18 @@ namespace  DiscordCoreInternal {
     * \addtogroup foundation_entities
     * @{
     */
-    class ApplicationCommands;
-    class BaseWebSocketAgent;
-    class HttpRequestAgent;
-    class ThreadManager;
-    class DataParser;
+    class alignas(hardware_destructive_interference_size) ApplicationCommands;
+    class alignas(hardware_destructive_interference_size) BaseWebSocketAgent;
+    class alignas(hardware_destructive_interference_size) HttpRequestAgent;
+    class alignas(hardware_destructive_interference_size) ThreadManager;
+    class alignas(hardware_destructive_interference_size) DataParser;
 
     enum class ConnectionWebSocketType {
         Receive = 0,
         Send = 1
     };
 
-    struct  alignas(hardware_destructive_interference_size) ConnectionWebSocketData {
+    struct alignas(hardware_destructive_interference_size) ConnectionWebSocketData {
         friend class DiscordCoreAPI::VoiceConnection;
         friend class VoiceChannelWebSocketAgent;
         ConnectionWebSocketType type{};
