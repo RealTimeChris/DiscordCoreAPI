@@ -73,8 +73,10 @@ namespace DiscordCoreAPI {
 
 		static unique_ptr<BaseFunction> getCommand(string commandName, CommandData commandData);
 
+		static CoRoutine<void> executeCommand(unique_ptr<BaseFunction> ptrFunction, BaseFunctionArguments args);
+
 		static string parseCommandName(string messageContents, CommandData commandData);
-		
+
 		static unique_ptr<BaseFunction> createFunction(string functionName);
 
 		static vector<string> parseArguments(string messageContents);

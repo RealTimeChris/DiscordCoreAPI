@@ -1173,8 +1173,9 @@ namespace DiscordCoreAPI {
         bool doWeQuit{ false };
         string channelId{ "" };
         string messageId{ "" };
-        CoRoutine<void> run();
         string userId{ "" };
+
+        CoRoutine<void> run();
     };
 
     /// Button response data. \brief Button response data.
@@ -1222,9 +1223,10 @@ namespace DiscordCoreAPI {
         string channelId{ "" };
         string messageId{ "" };
         bool doWeQuit{ false };
-        CoRoutine<void> run();
         string buttonId{ "" };
         string userId{ "" };
+
+        CoRoutine<void> run();
     };
     /**@}*/
 };

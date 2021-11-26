@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
         CoRoutine<returnType>() {}
 
         ~CoRoutine() {
-            if (coroutineHandle) {
+            if (coroutineHandle && coroutineHandle.done()) {
                 coroutineHandle.destroy();
             }
         }
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
         CoRoutine() {}
 
         ~CoRoutine() {
-            if (coroutineHandle) {
+            if (coroutineHandle && coroutineHandle.done()) {
                 coroutineHandle.destroy();
             }
         }
@@ -275,6 +275,32 @@ namespace DiscordCoreAPI {
             }
 
             bool await_suspend(coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+                this->waiterHandle = handle;
+                this->waiterHandle.promise().newThread = jthread([=] { this->waiterHandle.resume(); });
+                return true;
+            }
+
+            auto await_resume() {
+                return this->waiterHandle;
+            }
+        };
+        return NewThreadAwaitable();
+    }
+
+    template<>
+    DiscordCoreAPI_Dll inline auto NewThreadAwaitable<void>() {
+        class alignas(hardware_destructive_interference_size) NewThreadAwaitable {
+        public:
+
+            coroutine_handle<CoRoutine<void>::promise_type>  waiterHandle{ nullptr };
+
+            NewThreadAwaitable() {}
+
+            bool await_ready() const noexcept {
+                return false;
+            }
+
+            bool await_suspend(coroutine_handle<CoRoutine<void>::promise_type>handle) {
                 this->waiterHandle = handle;
                 this->waiterHandle.promise().newThread = jthread([=] { this->waiterHandle.resume(); });
                 return true;

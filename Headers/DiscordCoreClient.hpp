@@ -100,9 +100,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
 		static vector<RepeatedFunctionData> functionsToExecute;
 		static vector<ThreadPoolTimer> threadPoolTimers;
-		static vector<CoRoutine<void>> theTaskVector;
 
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
