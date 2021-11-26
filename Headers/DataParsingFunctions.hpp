@@ -9,7 +9,7 @@
 
 namespace DiscordCoreInternal {
 
-    class DiscordCoreAPI_Dll DataParser {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DataParser {
     public:
         static void parseObject(json jsonObjectData, DiscordCoreAPI::OverWriteData* pDataStructure) {
 

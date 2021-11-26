@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// Create Reaction data. \brief Create Reaction data.
-	struct DiscordCoreAPI_Dll CreateReactionData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateReactionData {
 		string channelId{ "" };///< The Channel for which to add the Reaction.
 		string messageId{ "" };///< The Message on which to add the Reaction.
 		string emojiName{ "" };///< The emoji name of the Reaction to add.
@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Get Reactions Data. \brief Get Reactions Data.
-	struct DiscordCoreAPI_Dll GetReactionsData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetReactionsData {
 		string channelId{ "" };///< The Channel from which to acquire the reactors.
 		string messageId{ "" };///< The Message from which to acquire the reactors.
 		string afterId{ "" };///< Get users after this user ID.
@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Delete own Reaction data. \brief Delete own Reaction data.
-	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteOwnReactionData {
 		string channelId{ "" }; ///< The Channel from which to remove the Reaction.
 		string messageId{ "" };///< The Message from which to remove the Reaction.
 		string emojiName{ "" };///< The emoji name for which to remove the emoji.
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Delete User Reaction data. \brief Delete User Reaction data.
-	struct DiscordCoreAPI_Dll DeleteUserReactionData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteUserReactionData {
 		string channelId{ "" };///< The Channel from which to remove the Reaction.
 		string messageId{ "" };///< The Message from which to remove the Reaction.
 		string emojiName{ "" };///< The name of which emoji to remove.
@@ -50,13 +50,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Delete all Reaction data. \brief Delete all Reaction data.
-	struct DiscordCoreAPI_Dll DeleteAllReactionsData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteAllReactionsData {
 		string channelId{ "" };///< The Channel from which you would like to remove the emoji.
 		string messageId{ "" };///< The Message from which you would like to remove the emoji.
 	};
 
 	/// Delete Reactions by emoji data. \brief Delete Reactions by emoji data.
-	struct DiscordCoreAPI_Dll DeleteReactionsByEmojiData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteReactionsByEmojiData {
 		string channelId{ "" };///< The Channel from which you would like to remove the emoji.
 		string messageId{ "" };///< The Message from which you would like to remove the emoji.
 		string emojiName{ "" };///< The name of which emoji to remove.
@@ -64,12 +64,12 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For collecting a list of Emoji from a Guild.
-	struct DiscordCoreAPI_Dll GetEmojiListData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetEmojiListData {
 		string guildId{ "" };///< The id of the chosen Guild.
 	};
 
 	/// For collecting a single Guild Emoji.
-	struct DiscordCoreAPI_Dll GetGuildEmojiData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildEmojiData {
 		string guildId{ "" };///< The id of the chosen Guild.
 		string emojiId{ "" };///< The id of the chosen Emoji
 	};
@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating a new Guild Emoji.
-	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateGuildEmojiData {
 		friend string DiscordCoreInternal::JSONIFY(CreateGuildEmojiData dataPackage);
 		friend class Reactions;
 
@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying a Guild Emoji.
-	struct DiscordCoreAPI_Dll ModifyGuildEmojiData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ModifyGuildEmojiData {
 		vector<string> roles{};///< Roles that can use this Emoji.
 		string guildId{ "" };///< The Guild within which to modify the Emoji.
 		string emojiId{ "" };///< The id of the Emoji to modify.
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a Guild Emoji.
-	struct DiscordCoreAPI_Dll DeleteGuildEmojiData {
+	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteGuildEmojiData {
 		string guildId{ "" };///< The Guild within which to delete the Emoji.
 		string emojiId{ "" };///< The id of the Emoji to delete.
 		string reason{ "" };///< Reason for deleting the Emoji.
@@ -117,8 +117,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the Reaction related Discord endpoints. \brief An interface class for the Reaction related Discord endpoints.
-	class DiscordCoreAPI_Dll Reactions {
+	/// An interface class alignas(hardware_destructive_interference_size) for the Reaction related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the Reaction related Discord endpoints.
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Reactions {
 	public:
 
 		/// Creates a Reaction on a Message. \brief Creates a Reaction on a Message.

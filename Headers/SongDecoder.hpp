@@ -11,7 +11,7 @@
 namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
-    struct DiscordCoreAPI_Dll BuildSongDecoderData {
+    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
 
         unsigned __int64 totalFileSize{ 0 };
@@ -19,7 +19,7 @@ namespace DiscordCoreAPI {
     };
 
 
-    class DiscordCoreAPI_Dll SongDecoder {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SongDecoder {
     public:
 
         friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
