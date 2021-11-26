@@ -15,37 +15,37 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// Get User data. For collecting a User's data from the library's cache or the Discord server. \brief Get User data. For collecting a User's data from the library's cache or the Discord server. 
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetUserData {
+	struct DiscordCoreAPI_Dll GetUserData {
 		string userId{ "" };///< The id of the desired User.
 	};
 
 	/// Leave Guild data - for leaving a particular Guild. \brief Leave Guild data - for leaving a particular Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll LeaveGuildData {
+	struct DiscordCoreAPI_Dll LeaveGuildData {
 		string guildId{ "" };///< The id of the Guild you would like the bot to leave.
 	};
 
 	/// For updating a User's presence. \brief For updating a User's presence.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll UpdatePresenceData {
+	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		vector<ActivityData> activities{};///< A vector of activities.
 		string status{ "" };///< Current status.
 		bool afk{ false };///< Are we afk?
 	};
 
 	/// Adds a user to a group DM. \brief Adds a user to a group DM.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll AddRecipientToGroupDMData {
+	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		string token{ "" };///< The user's access token.
 		string nick{ "" };///< The user's nickname.
 		string channelId{ "" };///< The channel Id of the DM.
 		string userId{ "" };///< The user's Id.
 	};
 
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
+	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
 		string channelId{ "" };///< The channel Id of the DM.
 		string userId{ "" };///< The user's Id.
 	};
 
 	/// For updating the current voice state. \brief For updating the current voice state.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll UpdateVoiceStateData {
+	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
 		string channelId{ "" };///< Id of the desired voice Channel. Leave blank to disconnect.
 		bool selfMute{ false };///< Whether or not we self-mute ourselves.
 		bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BotUser : public UserData {
+	class DiscordCoreAPI_Dll BotUser : public UserData {
 	public:
 
 		friend class DiscordCoreClient;
@@ -80,8 +80,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class alignas(hardware_destructive_interference_size) for the User related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the User related Discord endpoints.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Users {
+	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
+	class DiscordCoreAPI_Dll Users {
 	public:
 
 		friend class DiscordCoreClient;
