@@ -90,9 +90,6 @@ namespace DiscordCoreAPI {
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         /// \returns returnType The return value of the CoRoutine.
         returnType cancel() {
-            if (!coroutineHandle) {
-                throw InvalidState("CoRoutine is not initialized with a proper task.");
-            }
             if (coroutineHandle.promise().newThread.joinable()) {
                 coroutineHandle.promise().newThread.get_stop_source().request_stop();
                 coroutineHandle.promise().newThread.join();
@@ -203,9 +200,6 @@ namespace DiscordCoreAPI {
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         /// \returns void.
         void cancel() {
-            if (!coroutineHandle) {
-                throw InvalidState("CoRoutine is not initialized with a proper task.");
-            }
             if (coroutineHandle.promise().newThread.joinable()) {
                 coroutineHandle.promise().newThread.get_stop_source().request_stop();
                 coroutineHandle.promise().newThread.join();
