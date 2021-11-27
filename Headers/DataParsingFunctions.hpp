@@ -370,11 +370,15 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
+                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
                 pDataStructure->roles.reserve(jsonObjectData["roles"].size());
+                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
                 for (auto& value : jsonObjectData["roles"]) {
                     pDataStructure->roles.push_back(value.get<string>());
                 }
+                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
                 pDataStructure->roles.shrink_to_fit();
+                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
             }
 
             if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
