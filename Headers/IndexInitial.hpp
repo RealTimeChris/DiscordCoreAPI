@@ -86,6 +86,7 @@ extern "C"
 #include <ppltasks.h>
 #include <coroutine>
 #include <winbase.h>
+#include <stdint.h>
 #include <iostream>
 #include <sodium.h>
 #include <agents.h>
