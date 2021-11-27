@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
-	class DiscordCoreAPI_Dll BaseFunctionArguments {
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BaseFunctionArguments {
 	public:
 
 		vector<string> argumentsArray{};///< A vector of string arguments.
@@ -43,8 +43,8 @@ namespace DiscordCoreAPI {
 		virtual ~BaseFunctionArguments() {};
 	};
 
-	/// Base class for the command classes. \brief Base class for the command classes.
-	class DiscordCoreAPI_Dll BaseFunction {
+	/// Base class alignas(hardware_destructive_interference_size) for the command classes. \brief Base class alignas(hardware_destructive_interference_size) for the command classes.
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BaseFunction {
 	public:
 		string helpDescription{ "" };///< Description of the command for the Help command.
 		string commandName{ "" };///< Name of the command for calling purposes.
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 
-	class DiscordCoreAPI_Dll CommandController {
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CommandController {
 	public:
 		friend class DiscordCoreClient;
 

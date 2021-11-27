@@ -18,239 +18,239 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
-	struct DiscordCoreAPI_Dll OnInputEventCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnInputEventCreationData {
 		InputEventData inputEventData{};///< InputEventData representing the input-event.
 	};
 
 	/// Data that is received as part of an ApplicationCommand creation event. \brief Data that is received as part of an ApplicationCommand creation event.
-	struct DiscordCoreAPI_Dll OnApplicationCommandCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnApplicationCommandCreationData {
 		ApplicationCommand applicationCommand{}; ///< The new ApplicationCommand.
 	};
 
 	/// Data that is received as part of an ApplicationCommand update event. \brief Data that is received as part of an ApplicationCommand update event.
-	struct DiscordCoreAPI_Dll OnApplicationCommandUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnApplicationCommandUpdateData {
 		ApplicationCommand applicationCommand{}; ///< The new ApplicationCommand.
 	};
 
 	/// Data that is received as part of an ApplicationCommand deletion event. \brief Data that is received as part of an ApplicationCommand deletion event.
-	struct DiscordCoreAPI_Dll OnApplicationCommandDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnApplicationCommandDeletionData {
 		ApplicationCommand applicationCommand{}; ///< The deleted ApplicationCommand.
 	};
 
 	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
-	struct DiscordCoreAPI_Dll OnChannelCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnChannelCreationData {
 		Channel channel{}; ///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
-	struct DiscordCoreAPI_Dll OnChannelUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnChannelUpdateData {
 		Channel channelOld{}; ///< The old Channel.
 		Channel channelNew{};	///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
-	struct DiscordCoreAPI_Dll OnChannelDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnChannelDeletionData {
 		Channel channel{}; ///< The deleted Channel.
 	};
 	
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
-	struct DiscordCoreAPI_Dll OnChannelPinsUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnChannelPinsUpdateData {
 		ChannelPinsUpdateEventData dataPackage{}; ///< The Channel pins update data.
 	};
 
 	/// Data that is received as part of a thread creation event. \brief Data that is received as part of a thread creation event.
-	struct DiscordCoreAPI_Dll OnThreadCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnThreadCreationData {
 		Channel channel{}; ///< The new thread's Channel.
 	};
 
 	/// Data that is received as part of a thread update event. \brief Data that is received as part of a thread update event.
-	struct DiscordCoreAPI_Dll OnThreadUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnThreadUpdateData {
 		Channel channel{}; ///< The new thread's Channel.
 	};
 
 	/// Data that is received as part of a thread deletion event. \brief Data that is received as part of a thread deletion event.
-	struct DiscordCoreAPI_Dll OnThreadDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnThreadDeletionData {
 		Channel channel{}; ///< The deleted thread's Channel.
 	};
 
 	/// Data that is received as part of a thread list sync event. \brief Data that is received as part of a thread list sync event.
-	struct DiscordCoreAPI_Dll OnThreadListSyncData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnThreadListSyncData {
 		ThreadListSyncData threadListSyncData{}; ///< The thread list sync data.
 	};
 
 	/// Data that is received as part of a thread member update event. \brief Data that is received as part of a thread member update event.
-	struct DiscordCoreAPI_Dll OnThreadMemberUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnThreadMemberUpdateData {
 		ThreadMemberData threadMember{}; ///< Thread member update data.
 	};
 
 	/// Data that is received as part of a thread members update event. \brief Data that is received as part of a thread members update event.
-	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnThreadMembersUpdateData {
 		ThreadMembersUpdateData threadMembersUpdateData{}; ///< Thread member's update data.
 	};
 
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
-	struct DiscordCoreAPI_Dll OnGuildCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildCreationData {
 		Guild guild{}; ///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
-	struct DiscordCoreAPI_Dll OnGuildUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildUpdateData {
 		Guild guildOld{}; ///< The old Guild.
 		Guild guildNew{};	///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
-	struct DiscordCoreAPI_Dll OnGuildDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildDeletionData {
 		Guild guild{}; ///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
-	struct DiscordCoreAPI_Dll OnGuildBanAddData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildBanAddData {
 		string guildId{ "" }; ///< The Guild they were banned from.
 		User user{};	///< The user id of the person who was banned.
 	};
 
 	/// Data that is received as part of a Guild ban remove event. \brief Data that is received as part of a Guild ban add event.
-	struct DiscordCoreAPI_Dll OnGuildBanRemoveData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildBanRemoveData {
 		string guildId{ "" }; ///< The Guild they were un-banned from.
 		User user{};///< The user id of the person who was un-banned.
 	};
 
 	/// Data that is received as part of a Guild emojis update event. \brief Data that is received as part of a Guild emojis update event.
-	struct DiscordCoreAPI_Dll OnGuildEmojisUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildEmojisUpdateData {
 		GuildEmojisUpdateEventData updateData{}; ///< The Guild emoji's update data.
 	};
 
 	/// Data that is received as part of a Guild sticker update event. \brief Data that is received as part of a Guild sticker update event.
-	struct DiscordCoreAPI_Dll OnGuildStickersUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildStickersUpdateData {
 		GuildStickersUpdateEventData updateData{}; ///< The GuildStickersUpdateEventData.
 	};
 
 	/// Data that is received as part of a Guild integration update event. \brief Data that is received as part of a Guild integration update event.
-	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
 		string guildId{ "" }; ///< The id of the Guild for which the integrations were updated.
 	};
 
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
-	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildMemberAddData {
 		GuildMember guildMember{}; ///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
-	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildMemberRemoveData {
 		User user{}; ///< The User data of the removed GuildMember.
 		string guildId{ "" }; ///< The id of the Guild from which they were removed.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
-	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildMemberUpdateData {
 		GuildMember guildMemberOld{}; ///< The old GuildMember.
 		GuildMember guildMemberNew{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMembers chunk event. \brief Data that is received as part of a GuildMembers chunk event.
-	struct DiscordCoreAPI_Dll OnGuildMembersChunkData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnGuildMembersChunkData {
 		GuildMembersChunkEventData chunkEventData{}; ///< GuildMembersChunkEventData structure.
 	};
 
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
-	struct DiscordCoreAPI_Dll OnRoleCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnRoleCreationData {
 		Role role{}; ///< The new Role.
 		string guildId{ "" };///< The id of the Guild within which the Role was created.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
-	struct DiscordCoreAPI_Dll OnRoleUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnRoleUpdateData {
 		string guildId{ "" }; ///< The id of the Guild within which the Role was updated.
 		Role roleOld{}; ///< The old Role.
 		Role roleNew{};	///< The new Role.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
-	struct DiscordCoreAPI_Dll OnRoleDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnRoleDeletionData {
 		string guildId{ "" }; ///< The id of the Guild from which the Role was deleted.
 		Role roleOld{}; ///< The deleted Role.
 	};
 
 	/// Data that is received as part of an integration creation event. \brief Data that is received as part of an integration creation event.
-	struct DiscordCoreAPI_Dll OnIntegrationCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnIntegrationCreationData {
 		IntegrationData integrationData{}; ///< The new IntegrationData structure.
 		string guildId{ "" };///< The id of the Guild for which this Integration was created.
 	};
 
 	/// Data that is received as part of an integration update event. \brief Data that is received as part of an integration update event.
-	struct DiscordCoreAPI_Dll OnIntegrationUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnIntegrationUpdateData {
 		IntegrationData integrationData{}; ///< New IntegrationData structure.
 		string guildId{ "" };///< The id of the Guild for which the Integration was updated.
 	};
 
 	/// Data that is received as part of an integration deletion event. \brief Data that is received as part of an integration deletion event.
-	struct DiscordCoreAPI_Dll OnIntegrationDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnIntegrationDeletionData {
 		string applicationId{ "" }; ///< Application id of the current application.
 		string guildId{ "" };///< The id of the Guild for which the Integration was deleted.
 		string id{ "" };///< The id of the deleted Integration.
 	};
 
 	/// Data that is received as part of an invite creation event. \brief Data that is received as part of an invite creation event.
-	struct DiscordCoreAPI_Dll OnInviteCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnInviteCreationData {
 		InviteData invite{}; ///< Thew new InviteData structure.
 	};
 
 	/// Data that is received as part of an invite deletion event. \brief Data that is received as part of an invite deletion event.
-	struct DiscordCoreAPI_Dll OnInviteDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnInviteDeletionData {
 		string channelId{ "" }; ///< The id of the Channel for which the invite existed.
 		string guildId{ "" };	///< The id of the Guild for which the invite existed.
 		string code{ "" }; ///< The code of the Invite.
 	};
 
 	/// Data that is received as part of an Interaction creation event. \brief Data that is received as part of an Interaction creation event.
-	struct DiscordCoreAPI_Dll OnInteractionCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnInteractionCreationData {
 		InteractionData interactionData{};///< The InteractionData representing the Interaction.
 	};
 
 	/// Data that is received as part of a Message creation event. \brief Data that is received as part of a Message creation event.
-	struct DiscordCoreAPI_Dll OnMessageCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnMessageCreationData {
 		Message message{}; ///< The new Message.
 	};
 
 	/// Data that is received as part of a Message update event. \brief  Data that is received as part of a Message update event.
-	struct DiscordCoreAPI_Dll OnMessageUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnMessageUpdateData {
 		Message messageNew{}; ///< The new Message.
 	};
 
 	/// Data that is received as part of a Message deletion event. \brief Data that is received as part of a Message deletion event.
-	struct DiscordCoreAPI_Dll OnMessageDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnMessageDeletionData {
 		string messageId{ "" };///< The id of the Message which was deleted.
 		string channelId{ "" };///< The id of the Channel from which the Message was deleted.
 		string guildId{ "" };///< The id of the Guild from which the Message was deleted.
 	};
 
 	/// Data that is received as part of a Message delete bulk event. \brief Data that is received as part of a Message delete bulk event.
-	struct DiscordCoreAPI_Dll OnMessageDeleteBulkData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnMessageDeleteBulkData {
 		string channelId{ "" };///< The id of the Channel from which the Message was deleted.
 		string guildId{ "" };///< The id of the Guild from which the Message was deleted.
 		vector<string> ids{};///< A vector containing the list of deleted Message ids.
 	};
 
 	/// Data that is received as part of a Reaction add event. \brief Data that is received as part of a Reaction add event.
-	struct DiscordCoreAPI_Dll OnReactionAddData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnReactionAddData {
 		Reaction reaction{};///< The Reaction that was added.
 	};
 
 	/// Data that is received as part of a Reaction remove event. \brief Data that is received as part of a Reaction remove event.
-	struct DiscordCoreAPI_Dll OnReactionRemoveData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnReactionRemoveData {
 		ReactionRemoveData reactionRemoveData{}; ///< The ReactionRemoveData.
 	};
 
 	/// Data that is received as part of a Reaction remove all event. \brief Data that is received as part of a Reaction remove all event.
-	struct DiscordCoreAPI_Dll OnReactionRemoveAllData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnReactionRemoveAllData {
 		string channelId{ "" };///< The id of the Channel from which the Reactions were deleted.
 		string messageId{ "" };///< The id of the Message from which the Reactions were deleted.
 		string guildId{ "" };///< The id of the Guild from which the Reactions were deleted.
 	};
 
 	/// Data that is received as part of a Reaction remove emoji event. \brief Data that is received as part of a Reaction remove emoji event.
-	struct DiscordCoreAPI_Dll OnReactionRemoveEmojiData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnReactionRemoveEmojiData {
 		string messageId{ "" };///< The id of the Message from which the Reactions were deleted.
 		string channelId{ "" };///< The id of the Channel from which the Reactions were deleted.
 		string guildId{ "" };///< The id of the Guild from which the Reactions were deleted.
@@ -258,56 +258,56 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data that is received as part of a presence update event. \brief Data that is received as part of a presence update event.
-	struct DiscordCoreAPI_Dll OnPresenceUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnPresenceUpdateData {
 		PresenceUpdateData presenceData{}; ///< PresenceUpdateData..
 	};
 
 	/// Data that is received as part of a stage instance creation event. \brief Data that is received as part of a stage instance creation event.
-	struct DiscordCoreAPI_Dll OnStageInstanceCreationData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnStageInstanceCreationData {
 		StageInstanceData stageInstance{}; ///< The new StageInstanceData.
 	};
 
 	/// Data that is received as part of a stage instance update event. \brief Data that is received as part of a stage instance update event.
-	struct DiscordCoreAPI_Dll OnStageInstanceUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnStageInstanceUpdateData {
 		StageInstanceData stageInstance{}; ///< The new StageInstanceData.
 	};
 
 	/// Data that is received as part of a stage instance deletion event. \brief Data that is received as part of a stage instance deletion event.
-	struct DiscordCoreAPI_Dll OnStageInstanceDeletionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnStageInstanceDeletionData {
 		StageInstanceData stageInstance{}; ///< The deleted StageInstanceData.
 	};
 
 	/// Data that is received as part of a typing start event. \brief Data that is received as part of a typing start event.
-	struct DiscordCoreAPI_Dll OnTypingStartData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnTypingStartData {
 		TypingStartData typingStartData{}; ///< TypingStartData of the event.
 	};
 
 	/// Data that is received as part of a user update event. \brief Data that is received as part of a user update event.
-	struct DiscordCoreAPI_Dll OnUserUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnUserUpdateData {
 		User userOld{}; ///< The old User.
 		User userNew{};///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
-	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnVoiceStateUpdateData {
 		VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
 	};
 
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
-	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnVoiceServerUpdateData {
 		string endpoint{ "" };///< The new endpoint.
 		string guildId{ "" };///< The id of the Guild for which the server update is occurring.
 		string token{ "" };///< The token of the server update event.
 	};
 
 	/// Data that is received as part of a webhook update event. \brief Data that is received as part of a webhook update event.
-	struct DiscordCoreAPI_Dll OnWebhookUpdateData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll OnWebhookUpdateData {
 		string channelId{ "" };///< Id of the Channel for which the Webhook Update is occurring.
 		string guildId{ "" };///< Id of the Guild for which the Webhook Update is occurring.
 	};
 
 	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.
-	class DiscordCoreAPI_Dll EventManager {
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll EventManager {
 	public:
 
 		friend class DiscordCoreClient;
@@ -887,7 +887,7 @@ namespace DiscordCoreAPI {
 
 	};
 	/**@}*/
-	class DiscordCoreAPI_Dll EventHandler {
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll EventHandler {
 	public:
 		
 		static void onChannelCreation(OnChannelCreationData dataPackage);

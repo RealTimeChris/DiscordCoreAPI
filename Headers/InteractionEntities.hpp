@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// Defer component response data. \brief Defer component response data.
-    struct DiscordCoreAPI_Dll DeferComponentResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll DeferComponentResponseData {
 
         friend struct CreateInteractionResponseData;
         friend class InputEvents;
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create ephemeral Interaction response data. \brief Create ephemeral Interaction response data.
-    struct DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
     public:
 
         friend struct CreateInteractionResponseData;
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create Interaction response data. \brief Create Interaction response data.
-    struct DiscordCoreAPI_Dll CreateInteractionResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll CreateInteractionResponseData {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
@@ -360,7 +360,7 @@ namespace DiscordCoreAPI {
         CreateInteractionResponseData() {};
     };
     /// Create deferred Interaction response data. \brief Create deferred Interaction response data.
-    struct DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
         friend class Interactions;
@@ -397,7 +397,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Edit Interaction response data. \brief Edit Interaction response data.
-    struct DiscordCoreAPI_Dll EditInteractionResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll EditInteractionResponseData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
         friend class Interactions;
@@ -540,7 +540,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Delete Interaction response data. \brief Delete Interaction response data.
-    struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
         friend void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
         friend class InputEvents;
@@ -558,7 +558,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
-    struct DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
 
         friend struct CreateFollowUpMessageData;
         friend class Interactions;
@@ -703,7 +703,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create follow up Message data. \brief Create follow up Message data.
-    struct DiscordCoreAPI_Dll CreateFollowUpMessageData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll CreateFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
         friend class Interactions;
@@ -855,7 +855,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Edit follow up Message data. \brief Edit follow up Message data.
-    struct DiscordCoreAPI_Dll EditFollowUpMessageData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll EditFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
         friend class Interactions;
@@ -1001,7 +1001,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Delete follow up Message data. \brief Delete follow up Message data;
-    struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
         friend void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
         friend class InputEvents;
@@ -1020,20 +1020,20 @@ namespace DiscordCoreAPI {
     };
 
     /// Get Interaction response data. \brief Get Interaction response data.
-    struct DiscordCoreAPI_Dll GetInteractionResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll GetInteractionResponseData {
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
 
     /// Get FollowUp Message data. \brief Get FollowUp Message data.
-    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll GetFollowUpMessageData {
         string messageId{ "" };///< Message id.
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
 
     /// A single Interaction.
-    class DiscordCoreAPI_Dll Interaction : public InteractionData {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
 
         friend class DiscordCoreInternal::HttpRequestAgent;
@@ -1062,8 +1062,8 @@ namespace DiscordCoreAPI {
     * \addtogroup discord_core_client
     * @{
     */
-    /// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
-    class DiscordCoreAPI_Dll Interactions {
+    /// An interface class alignas(hardware_destructive_interference_size) for the Interaction related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the Interaction related Discord endpoints.
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Interactions {
     public:
 
         friend class DiscordCoreClient;
@@ -1126,7 +1126,7 @@ namespace DiscordCoreAPI {
     */
 
     /// Select menu response data. \brief Select menu response data.
-    struct DiscordCoreAPI_Dll SelectMenuResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll SelectMenuResponseData {
         InteractionData interactionData{};///< Interaction data.
         string selectionId{ "" };///< Selection id.
         vector<string> values{};///< A vector of the chosen values.
@@ -1136,7 +1136,7 @@ namespace DiscordCoreAPI {
     };
 
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
-    class DiscordCoreAPI_Dll SelectMenuCollector {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SelectMenuCollector {
     public:
         friend class DiscordCoreClient;
 
@@ -1179,7 +1179,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Button response data. \brief Button response data.
-    struct DiscordCoreAPI_Dll ButtonResponseData {
+    struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll ButtonResponseData {
         InteractionData interactionData{};///< Interaction data.
         string emojiName{ "" };///< The emoji name, if applicable.
         string channelId{ "" };///< The Channel id where it took place.
@@ -1189,7 +1189,7 @@ namespace DiscordCoreAPI {
     };
 
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
-    class DiscordCoreAPI_Dll ButtonCollector {
+    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ButtonCollector {
     public:
         friend class DiscordCoreClient;
 

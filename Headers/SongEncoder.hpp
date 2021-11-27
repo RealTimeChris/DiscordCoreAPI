@@ -10,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll SongEncoder {
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SongEncoder {
 	public:
 
 		SongEncoder();

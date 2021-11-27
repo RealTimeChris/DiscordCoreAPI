@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// For addin a Role to a GuildMember. \brief For addin a Role to a GuildMember.
-	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll AddGuildMemberRoleData {
 		string guildId{ "" };///< The id of the Guild within which to assign the Role.
 		string userId{ "" };///< The id of the User to whom to assign the Role.
 		string roleId{ "" };///< The id of the Role to be assigned.
@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For removing a Role from a GuildMember. \brief For removing a Role from a GuildMember.
-	struct DiscordCoreAPI_Dll RemoveGuildMemberRoleData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll RemoveGuildMemberRoleData {
 		string guildId{ "" };///< The id of the Guild within which to remove the Role.
 		string userId{ "" };///< The id of the User from whom to remove the Role.
 		string roleId{ "" };///< The id of the Role to be removed.
@@ -32,30 +32,30 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Get Guild roles data. \brief Get Guild roles data.
-	struct DiscordCoreAPI_Dll GetGuildRolesData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll GetGuildRolesData {
 		string guildId{ "" };///< Guild id for which Guild to get the roles from.
 	};
 
 	/// Get Guild member roles data. \brief Get Guild member roles data.
-	struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll GetGuildMemberRolesData {
 		GuildMember guildMember{};///< Which Guild member to collect the roles from.
 		string guildId{ "" };///< Which Guild to collect their roles from.
 	};
 
 	/// For updating the positions of the roles. \brief For updating the positions of the roles.
-	struct DiscordCoreAPI_Dll RolePositionData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll RolePositionData {
 		int32_t rolePosition{ 0 };
 		string roleId{ "" };
 	};
 
 	/// Get a Role from the library's cache, or the Discord server. \brief Get a Role from the library's cache, or the Discord server.
-	struct DiscordCoreAPI_Dll GetRoleData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll GetRoleData {
 		string guildId{ "" };///<Which Guild to collect the Role from.
 		string roleId{ "" };///< Which Role to collect.
 	};
 
 	/// Create Role data. \brief Create Role data.
-	struct DiscordCoreAPI_Dll CreateGuildRoleData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll CreateGuildRoleData {
 		string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild?
 		string permissions{ "0" };///< The base permissions to give the Role.
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Update Role position data.
-	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
 		friend string DiscordCoreInternal::JSONIFY(ModifyGuildRolePositionsData dataPackage);
 		friend class Roles;
 		int32_t newPosition{ 0 };///< The new position of the Role.
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Update Role data.
-	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll ModifyGuildRoleData {
 		string hexColorValue{ "" };///< A hex-color value between 0x00 and 0xFFFFFF.
 		string permissions{ "0" };///< Base Guild permissions for the Role.
 		bool mentionable{ false };///< Is it mentionable?
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Removes a Role from a given Guild.
-	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
+	struct alignas(hardware_destructive_interference_size)  DiscordCoreAPI_Dll RemoveGuildRoleData {
 		string guildId{ "" };///< The id of the Guild from which to remove the Role.
 		string roleId{ "" };///< The id of the Role to remove.
 		string reason{ "" };///< Reason for removing this Role.
@@ -103,8 +103,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
-	class DiscordCoreAPI_Dll Roles {
+	/// An interface class alignas(hardware_destructive_interference_size) for the Role related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the Role related Discord endpoints.
+	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Roles {
 	public:
 		
 		friend class DiscordCoreClient;
