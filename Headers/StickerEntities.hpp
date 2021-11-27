@@ -10,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Sticker : public StickerData {
+	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Sticker>;
@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 		Sticker(StickerData dataNew);
 	};
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Stickers {
+	class DiscordCoreAPI_Dll Stickers {
 	public:
 
 	};

@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// For handling User input - Messages or Interactions. \brief For handling User input - Messages or Interactions.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll InputEvents {
+	class DiscordCoreAPI_Dll InputEvents {
 	public:
 
 		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".
@@ -26,9 +26,9 @@ namespace DiscordCoreAPI {
 
 		/// Deletes a previously sent "input-event-response". \brief Deletes a previously sent "input-event-response".
 		/// \param dataPackage A InputEventData structure.
-		/// \param timeDelayNew An __int32 representing the desired delay until the message is deleted, in milliseconds.
+		/// \param timeDelayNew An int32_t representing the desired delay until the message is deleted, in milliseconds.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteInputEventResponseAsync(InputEventData dataPackage, __int32 timeDelayNew = 0);
+		static CoRoutine<void> deleteInputEventResponseAsync(InputEventData dataPackage, int32_t timeDelayNew = 0);
 		
 	protected:
 

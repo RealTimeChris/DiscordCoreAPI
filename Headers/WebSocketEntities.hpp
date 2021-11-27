@@ -66,13 +66,13 @@ namespace DiscordCoreInternal {
 		Webhooks_Update = 51
 	};
 
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll WebSocketWorkload {
+	struct DiscordCoreAPI_Dll WebSocketWorkload {
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		json payLoad{};
 		~WebSocketWorkload() {};
 	};
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BaseWebSocketAgent {
+	class DiscordCoreAPI_Dll BaseWebSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		const __int32 intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
@@ -96,17 +96,17 @@ namespace DiscordCoreInternal {
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
-		const __int32 maxReconnectTries{ 10 };
+		const int32_t maxReconnectTries{ 10 };
 		MessageWebSocket webSocket{ nullptr };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		event_token messageReceivedToken{};
-		__int32 currentReconnectTries{ 0 };
+		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		bool areWeReconnecting{ false };
-		__int32 lastNumberReceived{ 0 };
-		__int32 heartbeatInterval{ 0 };
+		int32_t lastNumberReceived{ 0 };
+		int32_t heartbeatInterval{ 0 };
 		event_token closedToken{};
 		string socketPath{ "" };
 		string sessionId{ "" };
@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 		void cleanup();
 	};
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll VoiceChannelWebSocketAgent {
+	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -136,7 +136,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(string const& text);
 
-		void sendVoiceData(vector<unsigned __int8>const& data);
+		void sendVoiceData(vector<uint8_t>const& data);
 		
 		void sendConnectionData(string const& message);
 
@@ -158,14 +158,14 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };
 		MessageWebSocket webSocket{ nullptr };
-		const __int32 maxReconnectTries{ 10 };
+		const int32_t maxReconnectTries{ 10 };
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
-		__int32 currentReconnectTries{ 0 };
+		int32_t currentReconnectTries{ 0 };
 		bool areWeReadyToConnect{ true };
 		bool areWeAuthenticated{ false };
-		__int32 lastNumberReceived{ 0 };
-		__int32 heartbeatInterval{ 0 };
+		int32_t lastNumberReceived{ 0 };
+		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
 		bool* doWeReconnect{ nullptr };

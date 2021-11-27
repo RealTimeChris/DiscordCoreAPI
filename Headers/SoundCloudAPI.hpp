@@ -11,7 +11,7 @@
 
 namespace DiscordCoreAPI {
 	
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SoundCloudAPI {
+	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
 		friend class DiscordCoreClient;
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
 		CoRoutine<void> currentlyRunningSong{};
-		const __int32 maxBufferSize{ 8192 };
+		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
 
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
-		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>& sendAudioDataBufferNew);
+		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>& sendAudioDataBufferNew);
 
 		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
 

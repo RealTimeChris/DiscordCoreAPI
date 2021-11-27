@@ -10,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SongEncoder {
+	class DiscordCoreAPI_Dll SongEncoder {
 	public:
 
 		SongEncoder();
@@ -21,9 +21,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 		OpusEncoder* encoder{ nullptr };
-		const __int32 maxBufferSize{ 1276 };
-		const __int32 sampleRate{ 48000 };
-		const __int32 nChannels{ 2 };
+		const int32_t maxBufferSize{ 1276 };
+		const int32_t sampleRate{ 48000 };
+		const int32_t nChannels{ 2 };
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
 

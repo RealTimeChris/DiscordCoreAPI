@@ -23,7 +23,7 @@ DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
 
-	struct alignas(hardware_destructive_interference_size) CacheOptions {
+	struct CacheOptions {
 		bool cacheGuildMembers{ false };
 		bool cacheChannels{ false };
 		bool cacheGuilds{ false };
@@ -55,11 +55,11 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DiscordCoreClient {
+	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
 		template <typename ...T>
-		friend CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, __int32 timeDelayInMs, bool isRepeating, T... args);
+		friend CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args);
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend class ApplicationCommands;

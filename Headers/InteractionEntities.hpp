@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// Defer component response data. \brief Defer component response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeferComponentResponseData {
+    struct DiscordCoreAPI_Dll DeferComponentResponseData {
 
         friend struct CreateInteractionResponseData;
         friend class InputEvents;
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create ephemeral Interaction response data. \brief Create ephemeral Interaction response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
+    struct DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
     public:
 
         friend struct CreateInteractionResponseData;
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
         /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create Interaction response data. \brief Create Interaction response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateInteractionResponseData {
+    struct DiscordCoreAPI_Dll CreateInteractionResponseData {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
@@ -292,7 +292,7 @@ namespace DiscordCoreAPI {
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
         /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -360,7 +360,7 @@ namespace DiscordCoreAPI {
         CreateInteractionResponseData() {};
     };
     /// Create deferred Interaction response data. \brief Create deferred Interaction response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
+    struct DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
         friend class Interactions;
@@ -397,7 +397,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Edit Interaction response data. \brief Edit Interaction response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll EditInteractionResponseData {
+    struct DiscordCoreAPI_Dll EditInteractionResponseData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
         friend class Interactions;
@@ -467,7 +467,7 @@ namespace DiscordCoreAPI {
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
         /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -540,7 +540,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Delete Interaction response data. \brief Delete Interaction response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteInteractionResponseData {
+    struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
         friend void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
         friend class InputEvents;
@@ -554,11 +554,11 @@ namespace DiscordCoreAPI {
 
     protected:
         InteractionPackageData interactionPackage{};
-        unsigned __int32 timeDelay{ 0 };
+        uint32_t timeDelay{ 0 };
     };
 
     /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
+    struct DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
 
         friend struct CreateFollowUpMessageData;
         friend class Interactions;
@@ -629,7 +629,7 @@ namespace DiscordCoreAPI {
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
         /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -703,7 +703,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create follow up Message data. \brief Create follow up Message data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateFollowUpMessageData {
+    struct DiscordCoreAPI_Dll CreateFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
         friend class Interactions;
@@ -779,7 +779,7 @@ namespace DiscordCoreAPI {
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
         /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -855,7 +855,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Edit follow up Message data. \brief Edit follow up Message data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll EditFollowUpMessageData {
+    struct DiscordCoreAPI_Dll EditFollowUpMessageData {
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
         friend class Interactions;
@@ -926,7 +926,7 @@ namespace DiscordCoreAPI {
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
         /// \returns void
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, __int32 maxValues, __int32 minValues) {
+        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -1001,7 +1001,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Delete follow up Message data. \brief Delete follow up Message data;
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteFollowUpMessageData {
+    struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
         friend void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
         friend class InputEvents;
@@ -1016,24 +1016,24 @@ namespace DiscordCoreAPI {
     protected:
         InteractionPackageData interactionPackage{};
         MessagePackageData messagePackage{};
-        unsigned __int32 timeDelay{ 0 };
+        uint32_t timeDelay{ 0 };
     };
 
     /// Get Interaction response data. \brief Get Interaction response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetInteractionResponseData {
+    struct DiscordCoreAPI_Dll GetInteractionResponseData {
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
 
     /// Get FollowUp Message data. \brief Get FollowUp Message data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetFollowUpMessageData {
+    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
         string messageId{ "" };///< Message id.
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
 
     /// A single Interaction.
-    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Interaction : public InteractionData {
+    class DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
 
         friend class DiscordCoreInternal::HttpRequestAgent;
@@ -1062,8 +1062,8 @@ namespace DiscordCoreAPI {
     * \addtogroup discord_core_client
     * @{
     */
-    /// An interface class alignas(hardware_destructive_interference_size) for the Interaction related Discord endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the Interaction related Discord endpoints.
-    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Interactions {
+    /// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
+    class DiscordCoreAPI_Dll Interactions {
     public:
 
         friend class DiscordCoreClient;
@@ -1126,7 +1126,7 @@ namespace DiscordCoreAPI {
     */
 
     /// Select menu response data. \brief Select menu response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SelectMenuResponseData {
+    struct DiscordCoreAPI_Dll SelectMenuResponseData {
         InteractionData interactionData{};///< Interaction data.
         string selectionId{ "" };///< Selection id.
         vector<string> values{};///< A vector of the chosen values.
@@ -1136,7 +1136,7 @@ namespace DiscordCoreAPI {
     };
 
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
-    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SelectMenuCollector {
+    class DiscordCoreAPI_Dll SelectMenuCollector {
     public:
         friend class DiscordCoreClient;
 
@@ -1154,7 +1154,7 @@ namespace DiscordCoreAPI {
         /// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
         /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the selection.
         /// \returns A vector of SelectMenuResponseData.
-        vector<SelectMenuResponseData> collectSelectMenuData(bool getSelectMenuDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        vector<SelectMenuResponseData> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
 
         ~SelectMenuCollector();
 
@@ -1163,11 +1163,11 @@ namespace DiscordCoreAPI {
         unique_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
         DiscordCoreAPI::InteractionData interactionData{};
         vector<SelectMenuResponseData> responseVector{};
-        __int32 currentCollectedSelectMenuCount{ 0 };
-        __int32 maxCollectedSelectMenuCount{ 0 };
+        int32_t currentCollectedSelectMenuCount{ 0 };
+        int32_t maxCollectedSelectMenuCount{ 0 };
         bool doWeSendInitialResponse{ false };
         bool getButtonDataForAll{ false };
-        unsigned __int32 maxTimeInMs{ 0 };
+        uint32_t maxTimeInMs{ 0 };
         string selectMenuId{ "" };
         vector<string> values{};
         bool doWeQuit{ false };
@@ -1179,7 +1179,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Button response data. \brief Button response data.
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ButtonResponseData {
+    struct DiscordCoreAPI_Dll ButtonResponseData {
         InteractionData interactionData{};///< Interaction data.
         string emojiName{ "" };///< The emoji name, if applicable.
         string channelId{ "" };///< The Channel id where it took place.
@@ -1189,7 +1189,7 @@ namespace DiscordCoreAPI {
     };
 
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
-    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ButtonCollector {
+    class DiscordCoreAPI_Dll ButtonCollector {
     public:
         friend class DiscordCoreClient;
 
@@ -1207,7 +1207,7 @@ namespace DiscordCoreAPI {
         /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
         /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the button press.
         /// \returns A vector of ButtonResponseData.
-        vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, __int32 maxWaitTimeInMsNew, __int32 maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
 
         ~ButtonCollector();
 
@@ -1218,8 +1218,8 @@ namespace DiscordCoreAPI {
         bool doWeSendInitialResponse{ false };
         InteractionData interactionData{};
         bool getButtonDataForAll{ false };
-        unsigned __int32 maxTimeInMs{ 0 };
-        __int32 maxNumberOfPresses{ 0 };
+        uint32_t maxTimeInMs{ 0 };
+        int32_t maxNumberOfPresses{ 0 };
         string channelId{ "" };
         string messageId{ "" };
         bool doWeQuit{ false };

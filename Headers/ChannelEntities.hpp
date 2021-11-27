@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
+	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
 		PermissionOverwritesType type{}; ///< The type of overwrite.
 		string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
 		string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
@@ -25,31 +25,31 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateChannelInviteData {
+	struct DiscordCoreAPI_Dll CreateChannelInviteData {
 		string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
 		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
 		string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
 		bool temporary{ false };///< Whether this invite only grants temporary membership	false.
 		string channelId{ "" };///< The id of the Channel to create the invite for.
 		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
-		__int32 maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
-		__int32 maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
+		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
+		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 		string reason{ "" };///< Reason for creating the invite.
 	};
 
 	/// For collecting a Channel from Discord's servers. \brief For collecting a Channel from Discord's servers.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetChannelData {
+	struct DiscordCoreAPI_Dll GetChannelData {
 		string channelId{ "" }; ///< The id of the Channel to acquire.
 	};
 
 	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteOrCloseChannelData {
+	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
 		string channelId{ "" };
 		string reason{ "" };
 	};
 
 	/// For modifying a channel's properties. \brief For modifying a channel's properties.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ModifyChannelData {
+	struct DiscordCoreAPI_Dll ModifyChannelData {
 		ModifyChannelData(ChannelData newData) {
 			this->channelData.permissionOverwrites = newData.permissionOverwrites;
 			this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
@@ -68,35 +68,35 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
+	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
 		string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
 		string channelId{ "" }; ///< The id of the Channel to modify permissions for.
 		string reason{ "" };///< Reason for deleting these permission overwrites.
 	};
 
 	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetDMChannelData {
+	struct DiscordCoreAPI_Dll GetDMChannelData {
 		string userId{ "" }; ///< The User for whom to collect the direct-messaging Channel to.
 	};
 
 	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetChannelInvitesData {
+	struct DiscordCoreAPI_Dll GetChannelInvitesData {
 		string channelId{ "" };
 	};
 
 	/// For following a news Channel. \brief For following a news Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll FollowNewsChannelData {
+	struct DiscordCoreAPI_Dll FollowNewsChannelData {
 		string targetChannelId{ "" };
 		string channelId{ "" };
 	};
 
 	/// For triggering the typing indicator in a given Channel. \brief For triggering the typing indicator in a given Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll TriggerTypingIndicatorData {
+	struct DiscordCoreAPI_Dll TriggerTypingIndicatorData {
 		string channelId{ "" };
 	};
 
 	/// For starting a Thread, based on a Message. \brief For starting a Thread, based on a Message.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll StartThreadWithMessageData {
+	struct DiscordCoreAPI_Dll StartThreadWithMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::SHORTEST };///< The duration before it is auto-archived, in minutes.
 		string threadName{ "" };///< The name of the new Thread.
 		string messageId{ "" };///< The Message Id to base the Thread off of.
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For starting a Thread, not based on a Message. \brief For starting a Thread, not based on a Message.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll StartThreadWithoutMessageData {
+	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::SHORTEST };///< The duration before it is auto-archived, in minutes.
 		ThreadType type{ ThreadType::GUILD_PUBLIC_THREAD };///< Type of Thread to create.
 		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
@@ -115,77 +115,77 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll JoinThreadData {
+	struct DiscordCoreAPI_Dll JoinThreadData {
 		string channelId{ "" };///< The id of the Thread to join.
 	};
 
 	/// Adds a chosen User to a chosen Thread. \brief Adds a chosen User to a chosen Thread.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll AddThreadMemberData {
+	struct DiscordCoreAPI_Dll AddThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to join.
 		string userId{ "" };///< The id of the User to add to the Thread.
 	};
 
 	/// For leaving a Thread. \brief For leaving a Thread.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll LeaveThreadData {
+	struct DiscordCoreAPI_Dll LeaveThreadData {
 		string channelId{ "" };///< The id of the Thread to leave.
 	};
 
 	/// For removing a chosen User from a Thread. \brief For removing a chosen User from a Thread.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll RemoveThreadMemberData {
+	struct DiscordCoreAPI_Dll RemoveThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to remove them from.
 		string userId{ "" };///< The id of the User to remove from the Thread.
 	};
 
 	/// For collecting a ThreadMember data structure for a given ThreadMember. \brief For collecting a ThreadMember data structure for a given ThreadMember.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetThreadMemberData {
+	struct DiscordCoreAPI_Dll GetThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to collect them from.
 		string userId{ "" };///< The id of the User to collect from the Thread.
 	};
 
 	/// For collecting the list of ThreadMembers from a Thread. \brief For collecting the list of ThreadMembers from a Thread.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetThreadMembersData {
+	struct DiscordCoreAPI_Dll GetThreadMembersData {
 		string channelId{ "" };///< The id of the Thread to collect them from.
 	};
 
 	/// For collecting the list of active Threads. \brief For collecting the list of active Threads.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetActiveThreadsData {
+	struct DiscordCoreAPI_Dll GetActiveThreadsData {
 		string channelId{ "" };///< The id of the Channel to collect the Threads from.
 	};
 
 	/// For collecting puiblic archived Threads from a given Channel. \brief For collecting puiblic archived Threads from a given Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetPublicArchivedThreadsData {
+	struct DiscordCoreAPI_Dll GetPublicArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
-		__int32 limit{ 0 };///< Maximum number of threads to return.
+		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting private archived Threads from a given Channel. \brief For collecting private archived Threads from a given Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
+	struct DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
-		__int32 limit{ 0 };///< Maximum number of threads to return.
+		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting joined private archived Threads from a given Channel. \brief For collecting joined private archived Threads from a given Channel.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
+	struct DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
 		string channelId{ "" };///< The Channel to acquire the Threads from.
 		string before{ "" };///< Returns threads before this timestamp.
-		__int32 limit{ 0 };///< Maximum number of threads to return.
+		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For acquiring a list of Channels from a chosen Guild. /brief For acquiring a list of Channels from a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll GetGuildChannelsData {
+	struct DiscordCoreAPI_Dll GetGuildChannelsData {
 		string guildId{ "" };///< The Guild from which to collect the Channels from.
 	};
 
 	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll CreateGuildChannelData {
+	struct DiscordCoreAPI_Dll CreateGuildChannelData {
 		vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the channel's permission overwrites.
-		__int32 rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
-		__int32 userLimit{ 0 };///< The user limit of the voice channel(voice only).
+		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
+		int32_t userLimit{ 0 };///< The user limit of the voice channel(voice only).
 		string parentId{ "" };///< Id of the parent category for a channel.
-		__int32 position{ 0 };///< Sorting position of the channel.
-		__int32 bitrate{ 0 };///< The bitrate(in bits) of the voice channel(voice only).
+		int32_t position{ 0 };///< Sorting position of the channel.
+		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice channel(voice only).
 		string guildId{ "" };///< The Guild within which to create the Channel.
 		string reason{ "" };///< Reason for creating the channel.
 		ChannelType type{};///< The type of channel.
@@ -194,27 +194,27 @@ namespace DiscordCoreAPI {
 		string name{ "" };///< The name of the Channel.
 	};
 
-	struct alignas(hardware_destructive_interference_size) ModifyGuildChannelPositionData {
+	struct ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
 		string parentId{ "" };///< The new parent ID for the channel that is moved.
-		__int32 position{ 0 };///< Sorting position of the channel.
+		int32_t position{ 0 };///< Sorting position of the channel.
 		string id{ "" };///< Channel id.
 	};
 
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
-	struct alignas(hardware_destructive_interference_size) ModifyGuildChannelPositionsData {
+	struct ModifyGuildChannelPositionsData {
 		vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's data.
 		string guildId{ "" };///< Guild within which to re-order the Channel positions.
 		string reason{ "" };///< Reason for re-ordering the Channel positions.
 	};
 
 	/// For listing the active Threads in a chosen Guild. \brief For listing the active Threads in a chosen Guild.
-	struct alignas(hardware_destructive_interference_size) ListActiveThreadsData {
+	struct ListActiveThreadsData {
 		string guildId{ "" };///< The Guild from which to list the Threads from.
 	};
 
 	/// A Channel object. \brief A Channel object.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Channel : public ChannelData {
+	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	public:
 
 		virtual ~Channel() {};
@@ -246,8 +246,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class alignas(hardware_destructive_interference_size) for the Channel related endpoints. \brief An interface class alignas(hardware_destructive_interference_size) for the Channel-related endpoints.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll Channels {
+	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
+	class DiscordCoreAPI_Dll Channels {
 	public:
 
 		friend class DiscordCoreClient;

@@ -11,14 +11,14 @@
 
 namespace DiscordCoreAPI {
 	
-	class alignas(hardware_destructive_interference_size) DiscordGuild;
+	class DiscordGuild;
 
 	/**
 	* \addtogroup voice_connection
 	* @{
 	*/
 	/// Class representing the Song APIs. \brief Class representing the Song APIs.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SongAPI {
+	class DiscordCoreAPI_Dll SongAPI {
 	public:
 
 		friend Playlist loadPlaylist(DiscordGuild guild);
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 		/// \param secondSongPosition The first Song's final position.
 		/// \param guildId The id of the desired Guild to update the Song positions in.
 		/// \returns void.
-		static void modifyQueue(__int32 firstSongPosition, __int32 secondSongPosition, string guildId);
+		static void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, string guildId);
 
 		/// Collects the currently playing Song. \brief Collects the currently playing Song.
 		/// \param guildId The id for which guild to collect the current Song of.

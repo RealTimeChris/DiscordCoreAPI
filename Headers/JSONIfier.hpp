@@ -44,9 +44,9 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	DiscordCoreAPI_Dll json JSONIFY(string botToken, __int32 intents);
+	DiscordCoreAPI_Dll json JSONIFY(string botToken, int32_t intents);
 
-	DiscordCoreAPI_Dll json JSONIFY(__int32 lastReceivedNumber);
+	DiscordCoreAPI_Dll json JSONIFY(int32_t lastReceivedNumber);
 
 	DiscordCoreAPI_Dll json JSONIFY(UpdatePresenceData dataPackage);
 
@@ -54,15 +54,15 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll json JSONIFY(string serverId, string sessionId, string token, string testString);
 
-	DiscordCoreAPI_Dll json JSONIFY(string botToken, string sessionID, __int32 lastReceivedNumber);
+	DiscordCoreAPI_Dll json JSONIFY(string botToken, string sessionID, int32_t lastReceivedNumber);
 
-	DiscordCoreAPI_Dll string JSONIFY(__int64 nonce);
+	DiscordCoreAPI_Dll string JSONIFY(int64_t nonce);
 
-	DiscordCoreAPI_Dll string JSONIFY(string localPort, string localIp, string encryptionMode, __int32 testValue);
+	DiscordCoreAPI_Dll string JSONIFY(string localPort, string localIp, string encryptionMode, int32_t testValue);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02);
 
-	DiscordCoreAPI_Dll string JSONIFY(bool isSpeaking, __int32 ssrc, __int32 delay = 0);
+	DiscordCoreAPI_Dll string JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay = 0);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage);
 
@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(string initialPayload);
 
-	DiscordCoreAPI_Dll __int32 JSONIFY(hstring initialPayload);
+	DiscordCoreAPI_Dll int32_t JSONIFY(hstring initialPayload);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage);
 

@@ -11,7 +11,7 @@
 
 namespace DiscordCoreInternal {
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll HttpRequestAgent  {
+	class DiscordCoreAPI_Dll HttpRequestAgent  {
 	public:
 
 		static void initialize(string botTokenNew);

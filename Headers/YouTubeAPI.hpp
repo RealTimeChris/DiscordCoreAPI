@@ -15,11 +15,11 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll vector<char> splitString(string stringToSplit);
 
-	DiscordCoreAPI_Dll vector<char> sliceVector(vector<char> vectorToSlice, __int32 firstElement, __int32 lastElement = 0);
+	DiscordCoreAPI_Dll vector<char> sliceVector(vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
 
 	DiscordCoreAPI_Dll vector<char> reverseString(vector<char> stringToReverse);
 
-	DiscordCoreAPI_Dll vector<char> swapHeadAndPosition(vector<char> inputVector, __int32 position);
+	DiscordCoreAPI_Dll vector<char> swapHeadAndPosition(vector<char> inputVector, int32_t position);
 
 	DiscordCoreAPI_Dll string joinString(vector<char> stringToJoin);
 
@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll YouTubeAPI {
+	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
 		friend class DiscordCoreClient;
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
 		CoRoutine<void> currentlyRunningSong{};
-		const __int32 maxBufferSize{ 8192 };
+		const int32_t maxBufferSize{ 8192 };
 		YouTubeSong theSong{};
 		string guildId{ "" };
 
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
-		void sendEmptyingFrames(unbounded_buffer<vector<unsigned __int8>>& sendAudioDataBufferNew);
+		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>& sendAudioDataBufferNew);
 		
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 

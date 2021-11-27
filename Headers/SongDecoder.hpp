@@ -10,27 +10,27 @@
 
 namespace DiscordCoreAPI {
 
-    DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
-    struct alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll BuildSongDecoderData {
+    DiscordCoreAPI_Dll int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+    struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
 
-        unsigned __int64 totalFileSize{ 0 };
-        __int32 bufferMaxSize{ 0 };
+        uint64_t totalFileSize{ 0 };
+        int32_t bufferMaxSize{ 0 };
     };
 
 
-    class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SongDecoder {
+    class DiscordCoreAPI_Dll SongDecoder {
     public:
 
-        friend DiscordCoreAPI_Dll __int32 FileStreamRead(void* opaque, unsigned __int8* buf, __int32);
+        friend DiscordCoreAPI_Dll int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
         friend class SoundCloudAPI;
         friend class YouTubeAPI;
 
         SongDecoder(BuildSongDecoderData dataPackage);
 
-        void submitDataForDecoding(vector<unsigned __int8> dataToDecode, __int32 maxBufferSize = 0);
+        void submitDataForDecoding(vector<uint8_t> dataToDecode, int32_t maxBufferSize = 0);
 
-        void updateBufferRefreshTime(__int32 newRefreshTime);
+        void updateBufferRefreshTime(int32_t newRefreshTime);
 
         bool getFrame(RawFrameData* dataPackage);
 
@@ -40,17 +40,17 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        __int32 audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        unbounded_buffer<vector<unsigned __int8>> inputDataBuffer{};
+        int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        unbounded_buffer<vector<uint8_t>> inputDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };
-        vector<unsigned __int8> currentBuffer{};
+        vector<uint8_t> currentBuffer{};
         concurrency::event readyToStartEvent {};
-        __int32 refreshTimeForBuffer{ 10000 };
+        int32_t refreshTimeForBuffer{ 10000 };
         unbounded_buffer<bool> readyBuffer{};
-        unsigned __int64 totalFileSize{ 0 };
+        uint64_t totalFileSize{ 0 };
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };
         AVStream* audioStream{ nullptr };

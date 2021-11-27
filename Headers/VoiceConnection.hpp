@@ -16,8 +16,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup voice_connection
 	* @{
 	*/
-	/// VoiceConnection class alignas(hardware_destructive_interference_size) - represents the connection to a given voice channel. \brief VoiceConnection class alignas(hardware_destructive_interference_size) - represents the connection to a given voice channel.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll VoiceConnection { 
+	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
+	class DiscordCoreAPI_Dll VoiceConnection { 
 	public:
 
 		friend class DiscordCoreClient;
@@ -70,12 +70,12 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		const __int32 maxBufferSize{ 1276 };
-		unsigned __int16 sequenceIndex{ 0 };
+		const int32_t maxBufferSize{ 1276 };
+		uint16_t sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };
-		unsigned __int32 timestamp{ 0 };
+		uint32_t timestamp{ 0 };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		bool doWeReconnect{ false };
@@ -104,9 +104,9 @@ namespace DiscordCoreAPI {
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
 
-		vector<unsigned __int8> encryptSingleAudioFrame(EncodedFrameData bufferToSend);
+		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData bufferToSend);
 
-		void sendSingleAudioFrame(vector<unsigned __int8> audioDataPacketNew);
+		void sendSingleAudioFrame(vector<uint8_t> audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 
