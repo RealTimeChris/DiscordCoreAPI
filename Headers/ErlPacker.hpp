@@ -69,11 +69,11 @@ namespace DiscordCoreInternal {
 
 		static uint64_t etfByteOrder64(uint64_t x);
 
-		static void store16Bits(void* to, uint16_t num);
+		static void store16Bits(uint8_t* to, uint16_t num);
 
-		static void store32Bits(void* to, uint32_t num);
+		static void store32Bits(uint8_t* to, uint32_t num);
 
-		static void store64Bits(void* to, uint64_t num);
+		static void store64Bits(uint8_t* to, uint64_t num);
 
 		static void singleValueJsonToETF(const json* jsonData, ErlPackBuffer* buffer);
 
@@ -101,7 +101,7 @@ namespace DiscordCoreInternal {
 
 		static void appendAtomUf8(ErlPackBuffer* buffer, const uint8_t* bytes, uint32_t size);
 
-		static void appendBinary(ErlPackBuffer* buffer, const char* bytes, uint32_t size);
+		static void appendBinary(ErlPackBuffer* buffer, const uint8_t* bytes, uint32_t size);
 
 		static void appendString(ErlPackBuffer* buffer, const uint8_t* bytes, uint32_t size);
 
