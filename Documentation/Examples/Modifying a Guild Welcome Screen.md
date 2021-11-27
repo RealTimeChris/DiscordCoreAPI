@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 				ModifyGuildWelcomeScreenData dataPackage01{};
 				dataPackage01.reason = "TESTING PURPOSES";
 				dataPackage01.guildId = args.eventData.getGuildId();
-				dataPackage01.descriptino = "THE DESCRIPTION!";
+				dataPackage01.description = "THE DESCRIPTION!";
 				dataPackage01.welcomeChannels = theVector;
 
 				auto responseData = Guilds::modifyGuildWelcomeScreenAsync(dataPackage01).get();
@@ -63,5 +63,4 @@ namespace DiscordCoreAPI {
 	};
 }
 #endif
-
 ```
