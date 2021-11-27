@@ -55,7 +55,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		unique_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ make_unique<winrt::event<delegate<SongCompletionEventData>>>() };
-		 unbounded_buffer<AudioFrameData>* audioDataBuffer{ nullptr };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		unique_ptr<concurrency::event> connectionReadyEvent{ make_unique<concurrency::event>() };
 		unique_ptr<concurrency::event> disconnectionEvent{ make_unique<concurrency::event>() };
@@ -65,23 +64,24 @@ namespace DiscordCoreAPI {
 		unique_ptr<concurrency::event> playSetEvent{ make_unique<concurrency::event>() };
 		unique_ptr<concurrency::event> stopSetEvent{ make_unique<concurrency::event>() };
 		unique_ptr<concurrency::event> pauseEvent{ make_unique<concurrency::event>() };
-		 AudioFrameData audioData {};
-		 CoRoutine<void> theTask{};
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		unbounded_buffer<AudioFrameData>* audioDataBuffer{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
-		uint16_t sequenceIndex{ 0 };
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };
-		uint32_t timestamp{ 0 };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		bool doWeReconnect{ false };
+		uint16_t sequenceIndex{ 0 };
 		bool areWeWaiting{ false };
 		bool areWePlaying{ false };
+		AudioFrameData audioData{};
+		CoRoutine<void> theTask{};
 		bool areWePaused{ false };
+		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
 		string channelId{ "" };
 		string guildId{ "" };

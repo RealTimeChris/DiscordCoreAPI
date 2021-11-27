@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 		string name{ "" };///< The name of the Channel.
 	};
 
-	struct ModifyGuildChannelPositionData {
+	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
 		string parentId{ "" };///< The new parent ID for the channel that is moved.
 		int32_t position{ 0 };///< Sorting position of the channel.
@@ -202,14 +202,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
-	struct ModifyGuildChannelPositionsData {
+	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
 		vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's data.
 		string guildId{ "" };///< Guild within which to re-order the Channel positions.
 		string reason{ "" };///< Reason for re-ordering the Channel positions.
 	};
 
 	/// For listing the active Threads in a chosen Guild. \brief For listing the active Threads in a chosen Guild.
-	struct ListActiveThreadsData {
+	struct DiscordCoreAPI_Dll ListActiveThreadsData {
 		string guildId{ "" };///< The Guild from which to list the Threads from.
 	};
 

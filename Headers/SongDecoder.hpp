@@ -11,9 +11,9 @@
 namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
-
         uint64_t totalFileSize{ 0 };
         int32_t bufferMaxSize{ 0 };
     };

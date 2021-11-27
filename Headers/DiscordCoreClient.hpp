@@ -23,14 +23,6 @@ DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
 
-	struct CacheOptions {
-		bool cacheGuildMembers{ false };
-		bool cacheChannels{ false };
-		bool cacheGuilds{ false };
-		bool cacheRoles{ false };
-		bool cacheUsers{ false };
-	};
-
 	namespace Statics {
 		namespace {
 			unique_ptr<map<string, unique_ptr<unbounded_buffer<AudioFrameData>>>> audioBuffersMap{ nullptr };

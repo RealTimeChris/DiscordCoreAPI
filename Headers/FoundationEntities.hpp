@@ -353,7 +353,6 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        friend struct Concurrency::details::_ResultHolder<Role>;
         friend class DiscordCoreInternal::HttpRequestAgent;
         friend class DiscordCoreInternal::DataParser;
         template<typename returnValueType>
@@ -754,13 +753,13 @@ namespace DiscordCoreAPI {
         }
     };
 
-    struct ActiveThreadsData {
+    struct DiscordCoreAPI_Dll ActiveThreadsData {
         vector<ThreadMemberData> members{};
         vector<ChannelData> threads{};
         bool hasMore{ false };
     };
 
-    struct ArchivedThreadsData : public ActiveThreadsData {};
+    struct DiscordCoreAPI_Dll ArchivedThreadsData : public ActiveThreadsData {};
 
     /// ApplicationCommand option type. \brief ApplicationCommand option type.
     enum class ApplicationCommandOptionType {
@@ -844,7 +843,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Structure representing Voice Region Data.
-    struct VoiceRegionData {
+    struct DiscordCoreAPI_Dll VoiceRegionData {
         bool deprecated{ false };///< Whether this is a deprecated voice region(avoid switching to these).
         bool optimal{ false };///< True for a single server that is closest to the current user's client.
         bool custom{ false };///< Whether this is a custom voice region(used for events / etc).
@@ -955,7 +954,7 @@ namespace DiscordCoreAPI {
         Banner4 = 4
     };
 
-    struct GuildWidgetImageData {
+    struct DiscordCoreAPI_Dll GuildWidgetImageData {
         string url{ "" };
     };
 
@@ -1043,7 +1042,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild prune count data.
-    struct GuildPruneCountData {
+    struct DiscordCoreAPI_Dll GuildPruneCountData {
         int32_t count{ 0 };
     };
 
@@ -1224,7 +1223,7 @@ namespace DiscordCoreAPI {
         virtual ~StickerData() {};
     };
 
-    struct GuildPreviewData {
+    struct DiscordCoreAPI_Dll GuildPreviewData {
         int32_t approximatePresenceCount{ 0 };
         int32_t approximateMemberCount{ 0 };
         string discoverySplash{ "" };
@@ -1325,12 +1324,12 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild scheduled event entity metadata.
-    struct GuildScheduledEventEntityMetadata {
+    struct DiscordCoreAPI_Dll GuildScheduledEventEntityMetadata {
         string location{ "" };
     };
 
     /// Guild scheduled event data.
-    struct GuildScheduledEventData {
+    struct DiscordCoreAPI_Dll GuildScheduledEventData {
         GuildScheduledEventEntityMetadata entityMetadata{};
         GuildScheduledEventPrivacyLevel privacyLevel{};
         GuildScheduledEventEntityType entityType{};
@@ -1813,7 +1812,7 @@ namespace DiscordCoreAPI {
     };
 
     /// MessageCollectorReturn data. \brief MessageCollectorReturn data.
-    struct MessageCollectorReturnData {
+    struct DiscordCoreAPI_Dll MessageCollectorReturnData {
         vector<Message> messages; ///< A vector of collected Messages.
     };
 
@@ -2432,7 +2431,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// A song from the various platforms. \brief A song from the various platforms.
-    struct Song {
+    struct DiscordCoreAPI_Dll Song {
     public:
 
         friend class DiscordCoreInternal::DataParser;
@@ -2526,6 +2525,14 @@ namespace DiscordCoreAPI {
         START_EMBEDDED_ACTIVITIES = 0x8000000000
     };
     /**@}*/
+
+    struct DiscordCoreAPI_Dll CacheOptions {
+        bool cacheGuildMembers{ false };
+        bool cacheChannels{ false };
+        bool cacheGuilds{ false };
+        bool cacheRoles{ false };
+        bool cacheUsers{ false };
+    };
 
     class DiscordCoreAPI_Dll YouTubeSong : public Song{
     public:
@@ -2755,7 +2762,7 @@ namespace  DiscordCoreInternal {
         Send = 1
     };
 
-    struct ConnectionWebSocketData {
+    struct DiscordCoreAPI_Dll ConnectionWebSocketData {
         friend class DiscordCoreAPI::VoiceConnection;
         friend class VoiceChannelWebSocketAgent;
         ConnectionWebSocketType type{};
