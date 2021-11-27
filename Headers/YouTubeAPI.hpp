@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll YouTubeAPI {
+	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
 		friend class DiscordCoreClient;

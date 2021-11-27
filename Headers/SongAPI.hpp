@@ -11,14 +11,14 @@
 
 namespace DiscordCoreAPI {
 	
-	class alignas(hardware_destructive_interference_size) DiscordGuild;
+	class DiscordGuild;
 
 	/**
 	* \addtogroup voice_connection
 	* @{
 	*/
 	/// Class representing the Song APIs. \brief Class representing the Song APIs.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll SongAPI {
+	class DiscordCoreAPI_Dll SongAPI {
 	public:
 
 		friend Playlist loadPlaylist(DiscordGuild guild);

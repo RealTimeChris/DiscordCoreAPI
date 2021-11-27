@@ -10,35 +10,35 @@
 
 namespace DiscordCoreAPI {
 
-	struct alignas(hardware_destructive_interference_size)  CreateDeferredInteractionResponseData;
-	struct alignas(hardware_destructive_interference_size)  EditChannelPermissionOverwritesData;
-	struct alignas(hardware_destructive_interference_size)  StartThreadWithoutMessageData;
-	struct alignas(hardware_destructive_interference_size)  CreateInteractionResponseData;
-	struct alignas(hardware_destructive_interference_size)  StartThreadWithoutMessageData;
-	struct alignas(hardware_destructive_interference_size)  ModifyGuildRolePositionsData;
-	struct alignas(hardware_destructive_interference_size)  EditInteractionResponseData;
-	struct alignas(hardware_destructive_interference_size)  StartThreadWithMessageData;
-	struct alignas(hardware_destructive_interference_size)  CreateFollowUpMessageData;
-	struct alignas(hardware_destructive_interference_size)  AddRecipientToGroupDMData;
-	struct alignas(hardware_destructive_interference_size)  EditFollowUpMessageData;
-	struct alignas(hardware_destructive_interference_size)  CreateChannelInviteData;
-	struct alignas(hardware_destructive_interference_size)  DeleteMessagesBulkData;
-	struct alignas(hardware_destructive_interference_size)  FollowNewsChannelData;
-	struct alignas(hardware_destructive_interference_size)  ModifyGuildMemberData;
-	struct alignas(hardware_destructive_interference_size)  ModifyGuildEmojiData;
-	struct alignas(hardware_destructive_interference_size)  CreateGuildEmojiData;
-	struct alignas(hardware_destructive_interference_size)  UpdateVoiceStateData;
-	struct alignas(hardware_destructive_interference_size)  CreateGuildRoleData;
-	struct alignas(hardware_destructive_interference_size)  BeginGuildPruneData;
-	struct alignas(hardware_destructive_interference_size)  ModifyGuildRoleData;
-	struct alignas(hardware_destructive_interference_size)  AddGuildMemberData;
-	struct alignas(hardware_destructive_interference_size)  CreateGuildBanData;
-	struct alignas(hardware_destructive_interference_size)  CreateMessageData;
-	struct alignas(hardware_destructive_interference_size)  ModifyChannelData;
-	struct alignas(hardware_destructive_interference_size)  ModifyGuildData;
-	struct alignas(hardware_destructive_interference_size)  EditMessageData;
-	struct alignas(hardware_destructive_interference_size)  CreateGuildData;
-	struct alignas(hardware_destructive_interference_size)  SendDMData;
+	struct CreateDeferredInteractionResponseData;
+	struct EditChannelPermissionOverwritesData;
+	struct StartThreadWithoutMessageData;
+	struct CreateInteractionResponseData;
+	struct StartThreadWithoutMessageData;
+	struct ModifyGuildRolePositionsData;
+	struct EditInteractionResponseData;
+	struct StartThreadWithMessageData;
+	struct CreateFollowUpMessageData;
+	struct AddRecipientToGroupDMData;
+	struct EditFollowUpMessageData;
+	struct CreateChannelInviteData;
+	struct DeleteMessagesBulkData;
+	struct FollowNewsChannelData;
+	struct ModifyGuildMemberData;
+	struct ModifyGuildEmojiData;
+	struct CreateGuildEmojiData;
+	struct UpdateVoiceStateData;
+	struct CreateGuildRoleData;
+	struct BeginGuildPruneData;
+	struct ModifyGuildRoleData;
+	struct AddGuildMemberData;
+	struct CreateGuildBanData;
+	struct CreateMessageData;
+	struct ModifyChannelData;
+	struct ModifyGuildData;
+	struct EditMessageData;
+	struct CreateGuildData;
+	struct SendDMData;
 
 };
 

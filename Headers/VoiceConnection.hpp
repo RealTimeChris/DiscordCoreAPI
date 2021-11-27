@@ -16,8 +16,8 @@ namespace DiscordCoreAPI {
 	* \addtogroup voice_connection
 	* @{
 	*/
-	/// VoiceConnection class alignas(hardware_destructive_interference_size) - represents the connection to a given voice channel. \brief VoiceConnection class alignas(hardware_destructive_interference_size) - represents the connection to a given voice channel.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll VoiceConnection { 
+	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
+	class DiscordCoreAPI_Dll VoiceConnection { 
 	public:
 
 		friend class DiscordCoreClient;

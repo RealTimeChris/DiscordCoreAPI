@@ -48,14 +48,14 @@ namespace DiscordCoreInternal {
 		SMALL_UTF8_ATOM = 119
 	};
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ErlPackBuffer {
+	class DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
 		vector<uint8_t> buffer{};
 
 		uint32_t offSet{};
 	};
 
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll ErlPacker {
+	class DiscordCoreAPI_Dll ErlPacker {
 
 	public:
 		static vector<uint8_t> parseJsonToEtf(json dataToParse);

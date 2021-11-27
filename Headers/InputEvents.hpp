@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// For handling User input - Messages or Interactions. \brief For handling User input - Messages or Interactions.
-	class alignas(hardware_destructive_interference_size) DiscordCoreAPI_Dll InputEvents {
+	class DiscordCoreAPI_Dll InputEvents {
 	public:
 
 		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".
