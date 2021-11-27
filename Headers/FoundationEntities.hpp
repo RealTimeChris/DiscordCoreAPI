@@ -488,6 +488,16 @@ namespace DiscordCoreAPI {
         string name{ "" };///< The title of the field.
     };
 
+    /// Embed types.
+    enum class EmbedType {
+        Rich = 0,///< Generic embed rendered from embed attributes.
+        Image = 1,///< Image embed.
+        Video = 2,///< Video embed.
+        Gifv = 3,///< Animated gif image embed rendered as a video embed.
+        Article = 4,///< Article embed.
+        link = 5///< Link embed.
+    };
+
     /// Embed data. \brief Embed data.
     struct DiscordCoreAPI_Dll EmbedData {
         string hexColorValue{ "000000" };///< Hex color value of the embed.
@@ -501,7 +511,7 @@ namespace DiscordCoreAPI {
         EmbedImageData image{};///< Embed image data.
         EmbedVideoData video{};///< Embed video data.
         string title{ "" };///< Title of the embed.
-        string type{ "" };///< Type of the embed.
+        EmbedType type{};///< Type of the embed.
         string url{ "" };///< Url for the embed.
 
         /// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.

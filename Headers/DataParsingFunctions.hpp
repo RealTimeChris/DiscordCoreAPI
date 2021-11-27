@@ -266,16 +266,12 @@ namespace DiscordCoreInternal {
                 pDataStructure->memberCount = jsonObjectData["member_count"].get<int32_t>();
             }
 
-            if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
-                pDataStructure->memberCount = jsonObjectData["member_count"].get<int32_t>();
-            }
-
             if (jsonObjectData.contains("thread_metadata") && !jsonObjectData["thread_metadata"].is_null()) {
                 parseObject(jsonObjectData["thread_metadata"], &pDataStructure->threadMetadata);
             }
 
-            if (jsonObjectData.contains("thread_metadata") && !jsonObjectData["thread_metadata"].is_null()) {
-                parseObject(jsonObjectData["thread_metadata"], &pDataStructure->member);
+            if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
+                parseObject(jsonObjectData["member"], &pDataStructure->member);
             }
         }
 
@@ -370,15 +366,11 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
                 pDataStructure->roles.reserve(jsonObjectData["roles"].size());
-                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
                 for (auto& value : jsonObjectData["roles"]) {
                     pDataStructure->roles.push_back(value.get<string>());
                 }
-                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
                 pDataStructure->roles.shrink_to_fit();
-                cout << "ROLES SIZE: " << pDataStructure->roles.size() << " ROLES CAPACITY: " << pDataStructure->roles.capacity() << endl;
             }
 
             if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
@@ -1381,7 +1373,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-                pDataStructure->type = jsonObjectData["type"].get<string>();
+                pDataStructure->type = jsonObjectData["type"].get<DiscordCoreAPI::EmbedType>();
             }
 
             if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
