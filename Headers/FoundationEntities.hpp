@@ -345,34 +345,8 @@ namespace DiscordCoreAPI {
         virtual ~RoleData() {};
     };
 
-    /// A single Role.
-    class DiscordCoreAPI_Dll Role : public RoleData{
-    public:
-
-        virtual ~Role() {};
-
-    protected:
-
-        friend class DiscordCoreInternal::HttpRequestAgent;
-        friend class DiscordCoreInternal::DataParser;
-        template<typename returnValueType>
-        friend class CoRoutine;
-        friend struct OnRoleDeletionData;
-        friend struct OnRoleCreationData;
-        friend struct OnRoleUpdateData;
-        friend class DiscordCoreClient;
-        friend class EventHandler;
-        friend class EventManager;
-        friend class Roles;
-        friend class Guild;
-
-        Role();
-
-        Role(RoleData dataNew);
-    };
-
     /// Data structure representing a single user.
-    struct DiscordCoreAPI_Dll UserData : public DiscordEntity{
+    struct DiscordCoreAPI_Dll UserData : public DiscordEntity {
         string discriminator{ "" }; ///< The # next to their User name.
         bool mfaEnabled{ false };///< MFA enabled?
         int32_t premiumType{ 0 };///< Their premium nitro status.
@@ -388,33 +362,7 @@ namespace DiscordCoreAPI {
         bool bot{ false };///< Are they a bot?
 
         virtual ~UserData() {};
-    };
-
-    /// A single User. \brief A single User.
-    class DiscordCoreAPI_Dll User : public UserData{
-    public:
-
-        friend struct Concurrency::details::_ResultHolder<User>;
-        friend class DiscordCoreInternal::HttpRequestAgent;
-        friend class DiscordCoreInternal::DataParser;
-        template<typename returnValueType>
-        friend class CoRoutine;
-        friend struct OnGuildMemberRemoveData;
-        friend struct OnGuildBanRemoveData;
-        friend struct OnGuildBanAddData;
-        friend struct OnUserUpdateData;
-        friend class DiscordCoreClient;
-        friend class Users;
-        friend class Guild;
-
-        virtual ~User() {};
-
-    protected:
-
-        User();
-
-        User(UserData dataNew);
-    };
+    };    
 
     /// Attachment data. \brief Attachment data.
     struct DiscordCoreAPI_Dll AttachmentData : public DiscordEntity{
@@ -511,7 +459,7 @@ namespace DiscordCoreAPI {
         EmbedImageData image{};///< Embed image data.
         EmbedVideoData video{};///< Embed video data.
         string title{ "" };///< Title of the embed.
-        EmbedType type{};///< Type of the embed.
+        string type{ "" };///< Type of the embed.
         string url{ "" };///< Url for the embed.
 
         /// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
@@ -859,28 +807,6 @@ namespace DiscordCoreAPI {
         bool custom{ false };///< Whether this is a custom voice region(used for events / etc).
         string name{ "" };///< Name of the region.
         string id{ "" };///< Unique ID for the region.
-    };
-
-    /// A single Reaction. \brief A single Reaction.
-    class DiscordCoreAPI_Dll Reaction : public ReactionData{
-    public:
-
-        virtual ~Reaction() {};
-
-    protected:
-
-        friend struct Concurrency::details::_ResultHolder<Reaction>;
-        friend class DiscordCoreInternal::HttpRequestAgent;
-        template<typename returnValueType>
-        friend class CoRoutine;
-        friend class DiscordCoreInternal::DataParser;
-        friend struct OnReactionAddData;
-        friend class DiscordCoreClient;
-
-        Reaction();
-
-        Reaction(ReactionData dataNew);
-
     };
 
     enum class MessageActivityType {
@@ -1255,8 +1181,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
-    struct DiscordCoreAPI_Dll GuildData : public DiscordEntity{
-        StopWatch<chrono::milliseconds> theStopWatch{0};
+    struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
@@ -1326,7 +1251,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild scheduled event entity type.
-    enum class GuildScheduledEventEntityType {
+    enum class GuildScheduledEventEntityTypes {
         NONE = 0,
         STAGE_INSTANCE = 1,
         VOICE = 2,
@@ -1334,27 +1259,29 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild scheduled event entity metadata.
-    struct DiscordCoreAPI_Dll GuildScheduledEventEntityMetadata {
+    struct DiscordCoreAPI_Dll GuildScheduledEventMetadata {
         string location{ "" };
     };
 
-    /// Guild scheduled event data.
-    struct DiscordCoreAPI_Dll GuildScheduledEventData {
-        GuildScheduledEventEntityMetadata entityMetadata{};
-        GuildScheduledEventPrivacyLevel privacyLevel{};
-        GuildScheduledEventEntityType entityType{};
-        GuildScheduledEventStatus status{};
-        string scheduledStartTime{ "" };
-        string scheduledEndTime{ "" };
-        string description{ "" };
-        int32_t userCount{ 0 };
-        string channelId{ "" };
-        string creatorId{ "" };
-        string entityId{ "" };
-        string guildId{ "" };
-        UserData creator{};
-        string name{ "" };
-        string id{ "" };
+    /// Data representing a Guild Scheduled Event. \brief Data representing a Guild Scheduled Event.
+    struct DiscordCoreAPI_Dll GuildScheduledEventData : public DiscordEntity {
+        GuildScheduledEventPrivacyLevel privacyLevel{};///< The privacy level of the scheduled event.
+        GuildScheduledEventMetadata entityMetadata{};///< Additional metadata for the guild scheduled event.
+        GuildScheduledEventEntityTypes entityType{};///< The type of the scheduled event.
+        GuildScheduledEventStatus status{};///< The status of the scheduled event.
+        string scheduledStartTime{ "" };///< The time the scheduled event will start.
+        string scheduledEndTime{ "" };///< The time the scheduled event will end, required if entity_type is EXTERNAL.
+        uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
+        string description{ "" };///< The description of the scheduled event(1 - 1000 characters).
+        string channelId{ "" };///< The channel id in which the scheduled event will be hosted, or null if scheduled entity type is EXTERNAL.
+        string creatorId{ "" };///< The id of the user that created the scheduled event *.
+        string entityId{ "" };///< The id of an entity associated with a guild scheduled event.
+        string guildId{ "" };///< The guild id which the scheduled event belongs to.
+        UserData creator{};///< The user that created the scheduled event.
+        string name{ "" };///< The name of the scheduled event(1 - 100 characters).
+        string id{ "" };///< Tthe id of the scheduled event.
+
+        virtual ~GuildScheduledEventData() {};
     };
 
     /// Invite data. \brief Invite data.
@@ -2933,6 +2860,7 @@ namespace  DiscordCoreInternal {
         GET_VANITY_INVITE = 106,
         GET_GUILD_WIDGET_IMAGE = 107,
         GET_GUILD_WELCOME_SCREEN = 108,
+        PATCH_GUILD_WELCOME_SCREEN = 109,
 
         GET_USER,
         GET_USER_SELF,

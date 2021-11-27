@@ -88,10 +88,10 @@ namespace DiscordCoreInternal {
 
         }
 
-        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::User>* pDataStructure) {
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::UserData>* pDataStructure) {
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
-                DiscordCoreAPI::User newData{};
+                DiscordCoreAPI::UserData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
@@ -335,10 +335,10 @@ namespace DiscordCoreInternal {
             }
         }
 
-        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Role>* pDataStructure) {
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::RoleData>* pDataStructure) {
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
-                DiscordCoreAPI::Role newData{};
+                DiscordCoreAPI::RoleData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }
@@ -1175,9 +1175,6 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
             }
-
-            cout << "TIME UNTIL PARSED: " << to_string(pDataStructure->theStopWatch.totalTimePassed()) << endl;
-            pDataStructure->theStopWatch.resetTimer();
         };
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildWidgetData* pDataStructure) {
@@ -1373,7 +1370,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-                pDataStructure->type = jsonObjectData["type"].get<DiscordCoreAPI::EmbedType>();
+                pDataStructure->type = jsonObjectData["type"].get<string>();
             }
 
             if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
@@ -1466,10 +1463,10 @@ namespace DiscordCoreInternal {
             }
         }
 
-        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Reaction>* pDataStructure) {
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ReactionData>* pDataStructure) {
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
-                DiscordCoreAPI::Reaction newData;
+                DiscordCoreAPI::ReactionData newData;
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }
@@ -1615,6 +1612,76 @@ namespace DiscordCoreInternal {
             }
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildScheduledEventMetadata* pDataStructure) {
+
+            if (jsonObjectData.contains("location") && !jsonObjectData["location"].is_null()) {
+                pDataStructure->location = jsonObjectData.at("location").get<string>();
+            }
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildScheduledEventData* pDataStructure) {
+
+            if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
+                pDataStructure->privacyLevel = jsonObjectData.at("privacy_level").get<DiscordCoreAPI::GuildScheduledEventPrivacyLevel>();
+            }
+
+            if (jsonObjectData.contains("entity_type") && !jsonObjectData["entity_type"].is_null()) {
+                pDataStructure->entityType = jsonObjectData.at("entity_type").get<DiscordCoreAPI::GuildScheduledEventEntityTypes>();
+            }
+
+            if (jsonObjectData.contains("status") && !jsonObjectData["status"].is_null()) {
+                pDataStructure->status = jsonObjectData.at("status").get<DiscordCoreAPI::GuildScheduledEventStatus>();
+            }
+
+            if (jsonObjectData.contains("entity_metadata") && !jsonObjectData["entity_metadata"].is_null()) {
+                parseObject(jsonObjectData.at("entity_metadata"), &pDataStructure->entityMetadata);
+            }
+
+            if (jsonObjectData.contains("scheduled_start_time") && !jsonObjectData["scheduled_start_time"].is_null()) {
+                pDataStructure->scheduledStartTime = jsonObjectData.at("scheduled_start_time").get<string>();
+            }
+
+            if (jsonObjectData.contains("scheduled_end_time") && !jsonObjectData["scheduled_end_time"].is_null()) {
+                pDataStructure->scheduledEndTime = jsonObjectData.at("scheduled_end_time").get<string>();
+            }
+
+            if (jsonObjectData.contains("user_count") && !jsonObjectData["user_count"].is_null()) {
+                pDataStructure->userCount = jsonObjectData.at("user_count").get<uint32_t>();
+            }
+
+            if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+                pDataStructure->description = jsonObjectData.at("description").get<string>();
+            }
+
+            if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+                pDataStructure->channelId = jsonObjectData.at("channel_id").get<string>();
+            }
+           
+            if (jsonObjectData.contains("creator_id") && !jsonObjectData["creator_id"].is_null()) {
+                pDataStructure->creatorId = jsonObjectData.at("creator_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("entity_id") && !jsonObjectData["entity_id"].is_null()) {
+                pDataStructure->entityId = jsonObjectData.at("entity_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+                pDataStructure->guildId = jsonObjectData.at("guild_id").get<string>();
+            }
+
+            if (jsonObjectData.contains("creator") && !jsonObjectData["creator"].is_null()) {
+                parseObject(jsonObjectData.at("creator"), &pDataStructure->creator);
+            }
+
+            if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+                pDataStructure->name = jsonObjectData.at("name").get<string>();
+            }
+
+            if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+                pDataStructure->id = jsonObjectData.at("id").get<string>();
+            }
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::InviteData* pDataStructure) {
 
             if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].type() == nlohmann::detail::value_t::string) {
@@ -1662,6 +1729,10 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("stage_instance") && !jsonObjectData["stage_instance"].is_null()) {
                 parseObject(jsonObjectData["stage_instance"], &pDataStructure->stageInstance);
+            }
+
+            if (jsonObjectData.contains("guild_scheduled_event") && !jsonObjectData["guild_scheduled_event"].is_null()) {
+                parseObject(jsonObjectData["guild_scheduled_event"], &pDataStructure->guildScheduledEvent);
             }
 
             if (jsonObjectData.contains("uses") && !jsonObjectData["uses"].is_null()) {

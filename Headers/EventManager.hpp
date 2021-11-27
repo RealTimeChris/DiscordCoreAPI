@@ -10,6 +10,9 @@
 #include "ChannelEntities.hpp"
 #include "GuildEntities.hpp"
 #include "GuildMemberEntities.hpp"
+#include "UserEntities.hpp"
+#include "RoleEntities.hpp"
+#include "ReactionEntities.hpp"
 
 namespace DiscordCoreAPI {
 

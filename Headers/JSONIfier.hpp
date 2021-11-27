@@ -15,6 +15,7 @@ namespace DiscordCoreAPI {
 	struct StartThreadWithoutMessageData;
 	struct CreateInteractionResponseData;
 	struct StartThreadWithoutMessageData;
+	struct ModifyGuildWelcomeScreenData;
 	struct ModifyGuildRolePositionsData;
 	struct EditInteractionResponseData;
 	struct StartThreadWithMessageData;
@@ -135,4 +136,6 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::AddGuildMemberData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::BeginGuildPruneData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildWelcomeScreenData dataPackage);
 }

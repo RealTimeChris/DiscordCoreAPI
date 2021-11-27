@@ -52,6 +52,33 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
 	};
 
+	/// A single User. \brief A single User.
+	class DiscordCoreAPI_Dll User : public UserData {
+	public:
+
+		friend struct Concurrency::details::_ResultHolder<User>;
+		friend class DiscordCoreInternal::HttpRequestAgent;
+		friend class DiscordCoreInternal::DataParser;
+		template<typename returnValueType>
+		friend class CoRoutine;
+		friend struct OnGuildMemberRemoveData;
+		friend struct OnGuildBanRemoveData;
+		friend struct OnGuildBanAddData;
+		friend struct OnUserUpdateData;
+		friend class DiscordCoreClient;
+		friend class Reactions;
+		friend class Users;
+		friend class Guild;
+
+		virtual ~User() {};
+
+	protected:
+
+		User();
+
+		User(UserData dataNew);
+	};
+
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
 	class DiscordCoreAPI_Dll BotUser : public UserData {
 	public:

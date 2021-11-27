@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "UserEntities.hpp"
 #include "JSONIfier.hpp"
 
 namespace DiscordCoreAPI {
@@ -111,6 +112,27 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< Reason for deleting the Emoji.
 	};
 
+	/// A single Reaction. \brief A single Reaction.
+	class DiscordCoreAPI_Dll Reaction : public ReactionData {
+	public:
+
+		virtual ~Reaction() {};
+
+	protected:
+
+		friend struct Concurrency::details::_ResultHolder<Reaction>;
+		friend class DiscordCoreInternal::HttpRequestAgent;
+		template<typename returnValueType>
+		friend class CoRoutine;
+		friend class DiscordCoreInternal::DataParser;
+		friend struct OnReactionAddData;
+		friend class DiscordCoreClient;
+
+		Reaction();
+
+		Reaction(ReactionData dataNew);
+	};
+
 	/**@}*/
 
 	/**
@@ -129,7 +151,7 @@ namespace DiscordCoreAPI {
 		/// Get a list of users that reacted with this emoji. Returns an array of user objects on success. \brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
 		/// \param dataPackage A GetReactionsData structure.
 		/// \returns A CoRoutine containing a vector of Users.
-		static CoRoutine<vector<User>> getReactionsAsync(GetReactionsData dataPackage);
+		static CoRoutine<vector<DiscordCoreAPI::User>> getReactionsAsync(GetReactionsData dataPackage);
 
 		/// Deletes all of the Reactions from a given Message. \brief Deletes all of the Reactions from a given Message.
 		/// \param dataPackage A DeleteAllReactionsData structure.

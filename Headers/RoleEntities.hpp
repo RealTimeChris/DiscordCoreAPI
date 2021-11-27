@@ -97,6 +97,32 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< Reason for removing this Role.
 	};
 
+	/// A single Role.
+	class DiscordCoreAPI_Dll Role : public RoleData {
+	public:
+
+		virtual ~Role() {};
+
+	protected:
+
+		friend class DiscordCoreInternal::HttpRequestAgent;
+		friend class DiscordCoreInternal::DataParser;
+		template<typename returnValueType>
+		friend class CoRoutine;
+		friend struct OnRoleDeletionData;
+		friend struct OnRoleCreationData;
+		friend struct OnRoleUpdateData;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class EventManager;
+		friend class Roles;
+		friend class Guild;
+
+		Role();
+
+		Role(RoleData dataNew);
+	};
+
 	/**@}*/
 
 	/**
