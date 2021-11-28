@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
 
 		SongEncoder();
 
-		concurrent_vector<AudioFrameData> encodeFrames(concurrent_vector<RawFrameData> rawFrames);
+		vector<AudioFrameData> encodeFrames(vector<RawFrameData> rawFrames);
 
 		~SongEncoder();
 
