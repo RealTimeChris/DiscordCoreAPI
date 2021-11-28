@@ -212,6 +212,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
             this->data.data.components = dataPackage.data.data.components;
+            this->requesterId = dataPackage.requesterId;
             this->data.type = dataPackage.data.type;
             this->data = dataPackage.data;
             this->data.data.flags = 64;

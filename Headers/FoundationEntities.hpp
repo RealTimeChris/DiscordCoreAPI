@@ -2172,6 +2172,7 @@ namespace DiscordCoreAPI {
         RespondToInputEventData(InteractionData dataPackage) {
             this->type = InputEventResponseType::DeferredResponse;
             this->applicationId = dataPackage.applicationId;
+            this->requesterId = dataPackage.requesterId;
             this->interactionToken = dataPackage.token;
             this->messageId = dataPackage.message.id;
             this->channelId = dataPackage.channelId;

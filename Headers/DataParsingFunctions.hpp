@@ -2185,6 +2185,7 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("author") && !jsonObjectData["author"].is_null()) {
                 parseObject(jsonObjectData["author"], &pDataStructure->author);
+                pDataStructure->requesterId = pDataStructure->author.id;
             }
 
             if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
