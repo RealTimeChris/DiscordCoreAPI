@@ -38,11 +38,11 @@ namespace DiscordCoreAPI {
 		virtual CoRoutine<void> executeAsync(BaseFunctionArguments args) {
 			try {
 
-				GetGuildScheduledEventData dataPackage{};
+				GetGuildScheduledEventsData dataPackage{};
 				dataPackage.guildId = args.eventData.getGuildId();
-				dataPackage.withUserCounts = true;
+				dataPackage.withUserCount = true;
 
-				auto responseData = GuildScheduledEvents::geteGuildScheduledEventsAsync(dataPackage).get();
+				auto responseData = GuildScheduledEvents::getGuildScheduledEventsAsync(dataPackage).get();
 
 				for (auto& value : responseData) {
 					cout << "THE NAME: " << value.name << endl;
@@ -57,5 +57,4 @@ namespace DiscordCoreAPI {
 	};
 }
 #endif
-
 ```
