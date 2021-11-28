@@ -1386,7 +1386,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
-                int32_t colorValInt = (int32_t)jsonObjectData["color"].get<int32_t>();
+                int32_t colorValInt = jsonObjectData["color"].get<int32_t>();
                 stringstream stream;
                 stream << setbase(16) << colorValInt;
                 pDataStructure->hexColorValue = stream.str();
