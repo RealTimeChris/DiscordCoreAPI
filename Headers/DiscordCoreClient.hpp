@@ -9,6 +9,7 @@
 #include "FoundationEntities.hpp"
 #include "EventManager.hpp"
 #include "WebSocketEntities.hpp"
+#include "GuildScheduledEventEntities.hpp"
 #include "CoRoutine.hpp"
 #include "VoiceConnection.hpp"
 #include "SoundCloudAPI.hpp"

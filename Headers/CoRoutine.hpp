@@ -12,6 +12,7 @@
 #include "GuildMemberEntities.hpp"
 #include "InteractionEntities.hpp"
 #include "MessageEntities.hpp"
+#include "GuildScheduledEventEntities.hpp"
 #include "ReactionEntities.hpp"
 #include "RoleEntities.hpp"
 #include "UserEntities.hpp"

@@ -502,13 +502,42 @@ namespace DiscordCoreAPI {
 		string userId{ "" };
 		int32_t nonce{ 0 };
 		bool tts{ false };		
-	};;
+	};
+
+	/// A single Message. \brief A single Message.
+	class DiscordCoreAPI_Dll Message : public MessageData {
+	public:
+		Message();
+
+		Message(MessageData dataNew);
+
+		virtual ~Message() {}
+
+	protected:
+
+		friend struct Concurrency::details::_ResultHolder<Message>;
+		friend class DiscordCoreInternal::HttpRequestAgent;
+		friend class DiscordCoreInternal::DataParser;
+		template<typename returnValueType>
+		friend class CoRoutine;
+		friend struct OnMessageCreationData;
+		friend struct OnMessageUpdateData;
+		friend class DiscordCoreClient;
+		friend class MessageCollector;
+		friend class InputEvents;
+	};
+
 	/**@}*/
 
 	/**
 	* \addtogroup utilities
 	* @{
 	*/
+
+	/// MessageCollectorReturn data. \brief MessageCollectorReturn data.
+	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
+		vector<Message> messages{}; ///< A vector of collected Messages.
+	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
 	class DiscordCoreAPI_Dll MessageCollector {

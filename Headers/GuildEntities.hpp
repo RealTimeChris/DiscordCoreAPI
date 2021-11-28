@@ -164,16 +164,10 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< The reason for modifying the welcome screen.
 	};
 
-	/**@}*/
-
-	/**
-	* \addtogroup voice_connection
-	* @{
-	*/
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
-		
+
 		friend struct Concurrency::details::_ResultHolder<Guild>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
@@ -210,6 +204,13 @@ namespace DiscordCoreAPI {
 
 		void initialize();
 	};
+
+	/**@}*/
+
+	/**
+	* \addtogroup voice_connection
+	* @{
+	*/
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildData {

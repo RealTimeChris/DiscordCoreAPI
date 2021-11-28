@@ -52,6 +52,21 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
 	};
 
+	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
+	struct ModifyCurrentUserVoiceStateData {
+		string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
+		string channelId{ "" };///< The id of the channel the user is currently in.
+		bool suppress{ false };///< Toggles the user's suppress state.
+		string guildId{ "" };///< The guild within which to update the bot's voice state.
+	};
+
+	struct ModifyUserVoiceStateData {
+		string channelId{ "" };///< The id of the channel the user is currently in.
+		bool suppress{ false };///< Toggles the user's suppress state.
+		string guildId{ "" };///< The Guild within which you would like to modify their voice state.
+		string userId{ "" };///< The user for which you would like to modify the voice state of.
+	};	
+
 	/// A single User. \brief A single User.
 	class DiscordCoreAPI_Dll User : public UserData {
 	public:
@@ -120,6 +135,16 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
+
+		/// Sets the bot's current voice state. \brief Sets the bot's current voice state.
+		/// \param dataPackage A ModifyCurrentUserVoiceStateData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage);
+
+		/// Sets another user's current voice state. \brief Sets another user's current voice state.
+		/// \param dataPackage A ModifyUserVoiceStateData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
 
 		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.

@@ -253,12 +253,12 @@ namespace DiscordCoreAPI {
                 dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
             }
             struct DiscordCoreAPI_Dll tm newtime;
-            __time64_t ____int64ime;
+            __time64_t __int64_time;
             errno_t err;
             // Get time as 64-bit integer.
-            _time64(&____int64ime);
+            _time64(&__int64_time);
             // Convert to local time.
-            err = _localtime64_s(&newtime, &____int64ime);
+            err = _localtime64_s(&newtime, &__int64_time);
             if (err)
             {
                 printf("Invalid argument to _localtime64_s.");
@@ -562,7 +562,7 @@ namespace DiscordCoreAPI {
     /// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
     struct DiscordCoreAPI_Dll OverWriteData : public DiscordEntity{
         PermissionOverwritesType type{};   ///< Role or User type.
-        string channelId{ "" };///< Channel id for which Channel this overwrite be__int64s to.
+        string channelId{ "" };///< Channel id for which Channel this overwrite beint64_ts to.
         string allow{ "" };///< Collection of Permissions to allow.
         string deny{ "" };///< Collection of Permissions to deny.
 
@@ -1716,29 +1716,6 @@ namespace DiscordCoreAPI {
         virtual ~MessageData() {};
     };
 
-    /// A single Message. \brief A single Message.
-    class DiscordCoreAPI_Dll Message : public MessageData{
-    public:
-        Message();
-
-        Message(MessageData dataNew);
-
-        virtual ~Message() {}
-
-    protected:
-
-        friend struct Concurrency::details::_ResultHolder<Message>;
-        friend class DiscordCoreInternal::HttpRequestAgent;
-        friend class DiscordCoreInternal::DataParser;
-        template<typename returnValueType>
-        friend class CoRoutine;
-        friend struct OnMessageCreationData;
-        friend struct OnMessageUpdateData;
-        friend class DiscordCoreClient;
-        friend class MessageCollector;
-        friend class InputEvents;
-    };
-
     /// Resolved data.
     struct DiscordCoreAPI_Dll ResolvedData {
         map<string, GuildMemberData> members{}; ///< Map full of GuildMemeberData.
@@ -1746,11 +1723,6 @@ namespace DiscordCoreAPI {
         map<string, ChannelData> channels{};///< Map full of ChannelData.
         map<string, UserData> users{};///< Map full of UserData.
         map<string, RoleData> roles{};///< Map full of RoleData.
-    };
-
-    /// MessageCollectorReturn data. \brief MessageCollectorReturn data.
-    struct DiscordCoreAPI_Dll MessageCollectorReturnData {
-        vector<Message> messages; ///< A vector of collected Messages.
     };
 
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption;
@@ -2861,6 +2833,9 @@ namespace  DiscordCoreInternal {
         GET_GUILD_WIDGET_IMAGE = 107,
         GET_GUILD_WELCOME_SCREEN = 108,
         PATCH_GUILD_WELCOME_SCREEN = 109,
+        PATCH_CURRENT_USER_VOICE_STATE = 110,
+        PATCH_USER_VOICE_STATE = 111,
+        GET_GUILD_SCHEDULED_EVENTS = 112,
 
         GET_USER,
         GET_USER_SELF,

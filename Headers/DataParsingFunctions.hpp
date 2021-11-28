@@ -1682,6 +1682,16 @@ namespace DiscordCoreInternal {
             }
         }
 
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildScheduledEventData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
+            for (auto& value : jsonObjectData) {
+                DiscordCoreAPI::GuildScheduledEventData newData;
+                parseObject(value, &newData);
+                pDataStructure->push_back(newData);
+            }
+            pDataStructure->shrink_to_fit();
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::InviteData* pDataStructure) {
 
             if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].type() == nlohmann::detail::value_t::string) {
@@ -1921,9 +1931,9 @@ namespace DiscordCoreInternal {
 
                     if (value.contains("options") && !value["options"].is_null()) {
                         newData.options.reserve(value["options"].size());
-                        for (auto& value : value["options"]) {
+                        for (auto& value02 : value["options"]) {
                             DiscordCoreAPI::SelectOptionData newerData{};
-                            parseObject(value, &newerData);
+                            parseObject(value02, &newerData);
                             newData.options.push_back(newerData);
                         }
                         newData.options.shrink_to_fit();
@@ -2321,10 +2331,10 @@ namespace DiscordCoreInternal {
             }
         }
 
-        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::Message>* pDataStructure) {
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::MessageData>* pDataStructure) {
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
-                DiscordCoreAPI::Message newData{};
+                DiscordCoreAPI::MessageData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }

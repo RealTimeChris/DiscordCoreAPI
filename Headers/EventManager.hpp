@@ -13,6 +13,7 @@
 #include "UserEntities.hpp"
 #include "RoleEntities.hpp"
 #include "ReactionEntities.hpp"
+#include "MessageEntities.hpp"
 
 namespace DiscordCoreAPI {
 
