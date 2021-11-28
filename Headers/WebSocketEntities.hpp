@@ -108,6 +108,7 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		event_token closedToken{};
+		mutex sendMessageMutex{};
 		string socketPath{ "" };
 		string sessionId{ "" };
 		string botToken{ "" };

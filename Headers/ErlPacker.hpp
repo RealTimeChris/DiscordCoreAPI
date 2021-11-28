@@ -91,9 +91,9 @@ namespace DiscordCoreInternal {
 
 		static void appendInteger(ErlPackBuffer* buffer, int32_t value);
 
-		static void appendUnsignedLongLong(ErlPackBuffer* buffer, unsigned long long value);
+		static void appendUnsignedLongLong(ErlPackBuffer* buffer, uint64_t value);
 
-		static void appendLongLong(ErlPackBuffer* buffer, long long value);
+		static void appendLongLong(ErlPackBuffer* buffer, int64_t value);
 
 		static void appendDouble(ErlPackBuffer* buffer, double value);
 
