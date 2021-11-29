@@ -74,7 +74,7 @@
 - 
 ## Guild Scheduled Events:
 - ### [Getting a List of Guild Scheduled Events](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Guild%20Scheduled%20Events.md)
-- ### [Creating a Guild Scheduled Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Scheduled%20Event.md)
+- ### [Creating a Guild Scheduled Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Scheduled%20Event.md)
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
