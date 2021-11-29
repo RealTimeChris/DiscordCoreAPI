@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.description = "TEST DESCRIPTION";
-				dataPackage.entityType = GuildScheduledEventEntityTypes::VOICE;
+				dataPackage.entityType = GuildScheduledEventEntityType::VOICE;
 				dataPackage.name = "TEST EVENT";
 				dataPackage.scheduledStartTime = getISO8601TimeStamp("2021", "11", "30", "12", "10", "0");
 				dataPackage.scheduledEndTime = getISO8601TimeStamp("2021", "11", "30", "14", "10", "0");
