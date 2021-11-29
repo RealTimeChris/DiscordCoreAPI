@@ -85,11 +85,11 @@ namespace DiscordCoreAPI {
 		friend class Users;
 		friend class Guild;
 
+		User();
+
 		virtual ~User() {};
 
 	protected:
-
-		User();
 
 		User(UserData dataNew);
 	};

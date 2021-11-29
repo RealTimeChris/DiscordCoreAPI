@@ -180,6 +180,8 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guilds;
 
+		Guild();
+
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
 		/// \param connectionData A ConnectionWebSocketDatam structure.
@@ -194,13 +196,13 @@ namespace DiscordCoreAPI {
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
 
-		Guild();
-
-		Guild(GuildData dataNew);
+		virtual ~Guild() {};
 
 	protected:
 
 		bool areWeConnectedBool{ false };
+
+		Guild(GuildData dataNew);
 
 		void initialize();
 	};

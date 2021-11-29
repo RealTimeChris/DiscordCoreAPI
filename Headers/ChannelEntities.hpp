@@ -217,10 +217,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	public:
 
-		virtual ~Channel() {};
-
-	protected:
-
 		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
@@ -237,6 +233,10 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		Channel();
+
+		virtual ~Channel() {};
+
+	protected:
 
 		Channel(ChannelData dataNew);
 	};

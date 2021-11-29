@@ -44,13 +44,13 @@ namespace DiscordCoreAPI {
 		friend class CoRoutine;
 		friend class GuildScheduledEvents;
 
+		GuildScheduledEvent();
+
 		virtual ~GuildScheduledEvent() {};
 
 	protected:
+
 		GuildScheduledEvent(GuildScheduledEventData dataPackage);
-
-		GuildScheduledEvent();
-
 	};
 
 	/**@}*/

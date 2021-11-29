@@ -77,12 +77,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
 
-		GuildMember(GuildMemberData dataNew) noexcept;
-
-		virtual ~GuildMember() {};
-
-	protected:
-
 		friend struct Concurrency::details::_ResultHolder<GuildMember>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template <typename returnVal>
@@ -95,7 +89,13 @@ namespace DiscordCoreAPI {
 		friend class GuildMembers;
 		friend class Guild;
 
-		GuildMember() noexcept;
+		GuildMember();
+
+		virtual ~GuildMember() {};
+
+	protected:
+
+		GuildMember(GuildMemberData dataNew);
 	};
 	/**@}*/
 

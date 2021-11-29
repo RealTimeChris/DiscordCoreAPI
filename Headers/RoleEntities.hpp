@@ -101,10 +101,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Role : public RoleData {
 	public:
 
-		virtual ~Role() {};
-
-	protected:
-
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		friend class DiscordCoreInternal::DataParser;
 		template<typename returnValueType>
@@ -119,6 +115,10 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		Role();
+
+		virtual ~Role() {};
+
+	protected:
 
 		Role(RoleData dataNew);
 	};

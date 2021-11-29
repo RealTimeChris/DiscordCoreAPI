@@ -2446,10 +2446,10 @@ namespace DiscordCoreInternal {
 
         }
 
-        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ApplicationCommand>* pDataStructure) {
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ApplicationCommandData>* pDataStructure) {
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
-                DiscordCoreAPI::ApplicationCommand newData{};
+                DiscordCoreAPI::ApplicationCommandData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(newData);
             }

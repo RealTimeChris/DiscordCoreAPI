@@ -14,6 +14,7 @@
 #include "RoleEntities.hpp"
 #include "ReactionEntities.hpp"
 #include "MessageEntities.hpp"
+#include "ApplicationCommandEntities.hpp"
 
 namespace DiscordCoreAPI {
 

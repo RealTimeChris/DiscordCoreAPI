@@ -507,13 +507,6 @@ namespace DiscordCoreAPI {
 	/// A single Message. \brief A single Message.
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	public:
-		Message();
-
-		Message(MessageData dataNew);
-
-		virtual ~Message() {}
-
-	protected:
 
 		friend struct Concurrency::details::_ResultHolder<Message>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
@@ -525,6 +518,15 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class MessageCollector;
 		friend class InputEvents;
+		friend class Messages;
+
+		Message();
+
+		virtual ~Message() {}
+
+	protected:
+
+		Message(MessageData dataNew);
 	};
 
 	/**@}*/

@@ -40,7 +40,6 @@ namespace DiscordCoreAPI {
     class SelectMenuCollector;
     class ApplicationCommands;
     class DiscordCoreClient;
-    class InputEvents;
     class ButtonCollector;
     class VoiceConnection;
     class SoundCloudSong;
@@ -49,6 +48,8 @@ namespace DiscordCoreAPI {
     class EventHandler;
     class GuildMembers;
     class YouTubeSong;
+    class GuildMember;
+    class InputEvents;
     class SelectMenu;
     class YouTubeAPI;
     class Reactions;
@@ -1546,30 +1547,6 @@ namespace DiscordCoreAPI {
         virtual ~ApplicationCommandData() {}
     };
 
-    /// A single ApplicationCommand. \brief A single ApplicationCommand.
-    class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData{
-    public:
-
-        friend struct Concurrency::details::_ResultHolder<ApplicationCommand>;
-        friend class DiscordCoreInternal::HttpRequestAgent;
-        friend struct OnApplicationCommandDeletionData;
-        friend struct OnApplicationCommandCreationData;
-        friend struct OnApplicationCommandUpdateData;
-        friend class DiscordCoreInternal::DataParser;
-        template<typename returnValueType>
-        friend class CoRoutine;
-        friend class ApplicationCommands;
-        friend class DiscordCoreClient;
-
-        virtual ~ApplicationCommand() {};
-
-    protected:
-
-        ApplicationCommand();
-
-        ApplicationCommand(ApplicationCommandData dataNew);
-    };
-
     /// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
     struct DiscordCoreAPI_Dll RepeatedFunctionData {
         function<void()> function{ nullptr };///< The function pointer to be loaded.
@@ -2621,21 +2598,21 @@ namespace DiscordCoreAPI {
         /// \param guildMember The GuildMember who's Permissions to analyze.
         /// \param channel The channel withint which to check for Permissions.
         /// \returns A string containing the final Permission's value for a given channel.
-        static string getAllOfMyPerrmissions(GuildMemberData guildMember, ChannelData channel);
+        static string getAllOfMyPerrmissions(GuildMember guildMember, ChannelData channel);
 
         /// Checks for a given Permission in a chosen channel, for a specific user. \brief Checks for a given Permission in a chosen channel, for a specific user.
         /// \param guildMember The GuildMember who to check the Permissions of.
         /// \param channel The Channel within which to check for the Permission's presence.
         /// \param permission A Permission to check the current Channel for.
         /// \returns A bool suggesting the presence of the chosen Permission.
-        static bool checkForPermission(GuildMemberData guildMember, ChannelData channel, Permissions permission);
+        static bool checkForPermission(GuildMember guildMember, ChannelData channel, Permissions permission);
 
     protected:
-        static string computeBasePermissions(GuildMemberData guildMember);
+        static string computeBasePermissions(GuildMember guildMember);
 
-        static string  computeOverwrites(string basePermissions, GuildMemberData guildMember, ChannelData channel);
+        static string  computeOverwrites(string basePermissions, GuildMember guildMember, ChannelData channel);
 
-        static string computePermissions(GuildMemberData guildMember, ChannelData channel);
+        static string computePermissions(GuildMember guildMember, ChannelData channel);
     };
 
     /// Returns from an execution of recurseThroughMessagePages(). \brief Returns from an execution of recurseThroughMessagePages().

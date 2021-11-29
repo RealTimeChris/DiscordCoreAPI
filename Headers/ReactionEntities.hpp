@@ -116,10 +116,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reaction : public ReactionData {
 	public:
 
-		virtual ~Reaction() {};
-
-	protected:
-
 		friend struct Concurrency::details::_ResultHolder<Reaction>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
@@ -129,6 +125,10 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 
 		Reaction();
+
+		virtual ~Reaction() {};
+
+	protected:
 
 		Reaction(ReactionData dataNew);
 	};
