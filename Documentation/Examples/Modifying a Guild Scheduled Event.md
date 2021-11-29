@@ -41,11 +41,12 @@ namespace DiscordCoreAPI {
 				ModifyGuildScheduledEventData dataPackage{};
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.guildScheduledEventId = "914726482365009931";
+				dataPackage.channelId = "914726178022101052";
 				dataPackage.name = "TEST EVENT02";
 				dataPackage.description = "ANOTHER TEST EVENT!";
 				dataPackage.scheduledStartTime = getISO8601TimeStamp("2021", "11", "30", "18", "15", "0");
 				dataPackage.scheduledEndTime = getISO8601TimeStamp("2021", "11", "30", "18", "45", "0");
-				dataPackage.entityType = GuildScheduledEventEntityType::EXTERNAL;
+				dataPackage.entityType = GuildScheduledEventEntityType::STAGE_INSTANCE;
 				dataPackage.entityMetadata.location = "HERE OR THERE!";
 
 				auto responseData = GuildScheduledEvents::modifyGuildScheduledEventAsync(dataPackage).get();
