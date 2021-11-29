@@ -56,19 +56,19 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ make_unique<winrt::event<delegate<SongCompletionEventData>>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		unique_ptr<concurrency::event> connectionReadyEvent{ make_unique<concurrency::event>() };
-		unique_ptr<concurrency::event> disconnectionEvent{ make_unique<concurrency::event>() };
 		unique_ptr<concurrency::event> reconnectionEvent{ make_unique<concurrency::event>() };
-		unique_ptr<concurrency::event> playWaitEvent{ make_unique<concurrency::event>() };
-		unique_ptr<concurrency::event> stopWaitEvent{ make_unique<concurrency::event>() };
-		unique_ptr<concurrency::event> playSetEvent{ make_unique<concurrency::event>() };
-		unique_ptr<concurrency::event> stopSetEvent{ make_unique<concurrency::event>() };
-		unique_ptr<concurrency::event> pauseEvent{ make_unique<concurrency::event>() };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		unbounded_buffer<AudioFrameData>* audioDataBuffer{ nullptr };
+		concurrency::event connectionReadyEvent {};
+		concurrency::event disconnectionEvent {};
 		const int32_t maxBufferSize{ 1276 };
+		concurrency::event playWaitEvent {};
+		concurrency::event stopWaitEvent {};
+		concurrency::event playSetEvent {};
+		concurrency::event stopSetEvent {};
+		concurrency::event pauseEvent {};
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };

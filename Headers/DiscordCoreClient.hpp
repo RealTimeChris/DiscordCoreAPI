@@ -26,11 +26,11 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			unique_ptr<map<string, unique_ptr<unbounded_buffer<AudioFrameData>>>> audioBuffersMap{ nullptr };
-			unique_ptr<map<string, unique_ptr<VoiceConnection>>> voiceConnectionMap{ nullptr };
-			unique_ptr<map<string, unique_ptr<SoundCloudAPI>>> soundCloudAPIMap{ nullptr };
-			unique_ptr<map<string, unique_ptr<YouTubeAPI>>> youtubeAPIMap{ nullptr };
-			unique_ptr<map<string, unique_ptr<SongAPI>>> songAPIMap{ nullptr };
+			map<string, unique_ptr<unbounded_buffer<AudioFrameData>>> audioBuffersMap{};
+			map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
+			map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
+			map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
+			map<string, unique_ptr<SongAPI>> songAPIMap{};
 		}
 	}
 

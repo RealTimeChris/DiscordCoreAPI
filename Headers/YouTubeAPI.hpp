@@ -50,9 +50,9 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<SongDecoder> songDecoder{ nullptr };
 		unique_ptr<SongEncoder> songEncoder{ nullptr };
+		unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		concurrency::event readyToQuitEventOut {};
 		concurrency::event readyToQuitEventIn {};
-		CoRoutine<void> currentlyRunningSong{};
 		const int32_t maxBufferSize{ 8192 };
 		YouTubeSong theSong{};
 		string guildId{ "" };
