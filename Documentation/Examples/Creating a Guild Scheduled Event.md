@@ -40,12 +40,13 @@ namespace DiscordCoreAPI {
 
 				CreateGuildScheduledEventData dataPackage{};
 				dataPackage.guildId = args.eventData.getGuildId();
-				dataPackage.channelId = args.eventData.getChannelId();
+				dataPackage.channelId = "914726178022101052";
 				dataPackage.description = "TEST DESCRIPTION";
-				dataPackage.entityType = GuildScheduledEventEntityType::VOICE;
+				dataPackage.entityType = GuildScheduledEventEntityType::STAGE_INSTANCE;
 				dataPackage.name = "TEST EVENT";
 				dataPackage.scheduledStartTime = getISO8601TimeStamp("2021", "11", "30", "12", "10", "0");
 				dataPackage.scheduledEndTime = getISO8601TimeStamp("2021", "11", "30", "14", "10", "0");
+				dataPackage.entityMetadata.location = "HERE OR SOMEWHERE ELSE!";
 
 				auto responseData = GuildScheduledEvents::createGuildScheduledEventAsync(dataPackage).get();
 
