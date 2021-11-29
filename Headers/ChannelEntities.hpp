@@ -245,7 +245,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Channel related endpoints. \brief An interface class DiscordCoreAPI_Dll for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	public:
 

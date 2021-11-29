@@ -10,8 +10,6 @@
 #include "GuildMemberEntities.hpp"
 
 namespace DiscordCoreAPI {
-	
-	class DiscordGuild;
 
 	/**
 	* \addtogroup voice_connection
@@ -21,11 +19,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SongAPI {
 	public:
 
-		friend Playlist loadPlaylist(DiscordGuild guild);
-		friend void savePlaylist(DiscordGuild guild);
 		friend class DiscordCoreClient;
 		friend class VoiceConnection;
 		friend class Guild;
+
+		Playlist playlist{};
 
 		SongAPI(string guildId);
 
@@ -130,7 +128,6 @@ namespace DiscordCoreAPI {
 	protected:
 
 		string guildId{ "" };
-		Playlist playlist{};
 
 		bool sendNextSong();
 	};

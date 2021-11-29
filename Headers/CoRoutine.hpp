@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CoRoutine {
     public:
 
-        class promise_type;
+        class DiscordCoreAPI_Dll promise_type;
 
         CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -153,10 +153,10 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
     /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
-    class CoRoutine<void> {
+    class DiscordCoreAPI_Dll CoRoutine<void> {
     public:
 
-        class promise_type;
+        class DiscordCoreAPI_Dll promise_type;
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-        class promise_type {
+        class DiscordCoreAPI_Dll promise_type {
         public:
 
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
     /// \param returnType The type returned by the containing CoRoutine.
     template<typename returnType>
     DiscordCoreAPI_Dll inline auto NewThreadAwaitable() {
-        class NewThreadAwaitable {
+        class DiscordCoreAPI_Dll NewThreadAwaitable {
         public:
 
             coroutine_handle<CoRoutine<returnType>::promise_type> waiterHandle{ nullptr };

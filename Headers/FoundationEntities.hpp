@@ -13,10 +13,8 @@
 
 namespace  DiscordCoreInternal {
 
-    class ApplicationCommands;
     class BaseWebSocketAgent;
     class HttpRequestAgent;
-    class ThreadManager;
     class DataParser;
 };
 
@@ -306,7 +304,7 @@ namespace DiscordCoreAPI {
     /// Snowflake, which is a time-based identifier for any/all of the Discord entities. \brief Snowflake, which is a time-based identifier for any/all of the Discord entities.
     typedef string Snowflake;
 
-    /// Base class for all Discord entities. \brief Base class for all Discord entities.
+    /// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
     public:
         Snowflake id{ "" };///< The identifier "snowflake" of the given entity.
@@ -648,7 +646,7 @@ namespace DiscordCoreAPI {
         virtual ~ChannelData() {};
     };
 
-    struct VoiceData {
+    struct DiscordCoreAPI_Dll VoiceData {
         string requestToSpeakTimestamp{ "" };///< The time at which the user requested to speak.
         bool selfStream{ false };///< Whether this user is streaming using "Go Live".
         bool selfVideo{ false };///< Whether this user's camera is enabled.
@@ -879,7 +877,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild Widget Data.
-    struct GuildWidgetData {
+    struct DiscordCoreAPI_Dll GuildWidgetData {
         string channelId{ "" };///< The widget channel id.
         bool enabled{ false };///< Whether the widget is enabled.
     };
@@ -1288,6 +1286,13 @@ namespace DiscordCoreAPI {
         virtual ~GuildScheduledEventData() {};
     };
 
+    /// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
+    struct DiscordCoreAPI_Dll GuildScheduledEventUserData {
+        string guildScheduledEventId{ "" };///< The scheduled event id which the user subscribed to/
+        GuildMemberData member{};///< Guild member data for this user for the guild which this event belongs to, if any.
+        UserData user{};///< User which subscribed to an event.
+    };    
+
     /// Invite data. \brief Invite data.
     struct DiscordCoreAPI_Dll InviteData {
         GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
@@ -1307,6 +1312,21 @@ namespace DiscordCoreAPI {
         string code{ "" };///< Unique invite code.
         GuildData guild{};///< Guild data of the Channel that the invite is for.
         int32_t uses{ 0 };///< Maximum nunmber of uses.
+    };
+
+    /// Represents a Guild Template. \brief Represents a Guild Template.
+    struct DiscordCoreAPI_Dll GuildTemplateData {
+        GuildData serializedSourceGuild{};///< The guild snapshot this template contains.
+        string sourceGuildId{ "" };///< The ID of the guild this template is based on.
+        string description{ "" };///< The description for the template.
+        uint32_t usageCount{ 0 };///< Number of times this template has been used.
+        string creatorId{ "" };///< The ID of the user who created the template.
+        string createdAt{ "" };///< When this template was created.
+        string updatedAt{ "" };///< When this template was last synced to the source guild.
+        UserData creator{};///< The user who created the template.
+        bool isDirty{ false };///< Whether the template has unsynced changes.
+        string code{ "" };///< The template code(unique ID).
+        string name{ "" };///< Template name.
     };
 
     /// Represents the type of a given invite target. \brief Represents the type of a given invite target.
@@ -2641,11 +2661,11 @@ namespace  DiscordCoreInternal {
     * \addtogroup foundation_entities
     * @{
     */
-    class ApplicationCommands;
-    class BaseWebSocketAgent;
-    class HttpRequestAgent;
-    class ThreadManager;
-    class DataParser;
+    class DiscordCoreAPI_Dll ApplicationCommands;
+    class DiscordCoreAPI_Dll BaseWebSocketAgent;
+    class DiscordCoreAPI_Dll HttpRequestAgent;
+    class DiscordCoreAPI_Dll ThreadManager;
+    class DiscordCoreAPI_Dll DataParser;
 
     enum class ConnectionWebSocketType {
         Receive = 0,
@@ -2820,6 +2840,13 @@ namespace  DiscordCoreInternal {
         POST_GUILD_SCHEDULED_EVENT = 113,
         GET_GUILD_SCHEDULED_EVENT = 114,
         PATCH_GUILD_SCHEDULED_EVENT = 115,
+        DELETE_GUILD_SCHEDULED_EVENT = 116,
+        GET_GUILD_SCHEDULED_EVENT_USERS = 117,
+        GET_GUILD_TEMPLATE = 118,
+        POST_GUILD_FROM_GUILD_TEMPLATE = 119,
+        GET_GUILD_TEMPLATES = 120,
+        POST_GUILD_TEMPLATE = 121,
+        PUT_GUILD_TEMPLATE = 122,
 
         GET_USER,
         GET_USER_SELF,

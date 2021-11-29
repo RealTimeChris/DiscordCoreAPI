@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup voice_connection
 	* @{
 	*/
-	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
+	/// VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice channel. \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice channel.
 	class DiscordCoreAPI_Dll VoiceConnection { 
 	public:
 

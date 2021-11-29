@@ -53,14 +53,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
-	struct ModifyCurrentUserVoiceStateData {
+	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
 		string channelId{ "" };///< The id of the channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
 		string guildId{ "" };///< The guild within which to update the bot's voice state.
 	};
 
-	struct ModifyUserVoiceStateData {
+	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
 		string channelId{ "" };///< The id of the channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
 		string guildId{ "" };///< The Guild within which you would like to modify their voice state.
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the User related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	public:
 

@@ -62,7 +62,9 @@ namespace DiscordCoreAPI {
 
 	/// For geting a single invite's data from a Guild. \brief For geting a single invite's data from a Guild.
 	struct DiscordCoreAPI_Dll GetGuildInviteData {
-		string inviteId{ "" };///< The id of the invite you wish to acquire.
+		bool withExpiration{ false };///< Collect expiration time/date?
+		bool withCount{ false };///< Collect usage etc counts?
+		string inviteId{ "" };///< The id of the invite you wish to acquire.		
 	};
 
 	/// For geting the vanity invite data of a Guild. \brief For geting the vanity invite data of a Guild.
@@ -156,12 +158,42 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying a Guild's welcome screen. \brief For modifying a Guild's welcome screen.
-	struct ModifyGuildWelcomeScreenData {
+	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData {
 		vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
 		bool enabled{ false };///< Is it enabled?
 		string description{ "" };///< The description of the welcome screen.
 		string guildId{ "" };///< The Guild for which to modify the welcome screen of.
 		string reason{ "" };///< The reason for modifying the welcome screen.
+	};
+
+	/// For collecting a Guild's template. \brief For collecting a Guild's template.
+	struct DiscordCoreAPI_Dll GetGuildTemplateData {
+		string templateCode{ "" };///< Code for the desired Template.
+	};
+
+	/// Creates a Guild from a Guild template. \brief Creates a Guild from a Guild template.
+	struct CreateGuildFromGuildTemplateData {
+		string templateCode{ "" };///< Code for the desired Template to use.
+		string name{ "" };///< Desired name of the Guild.
+		vector<uint8_t> imageData{};///< base64 128x128 image for the Guild icon.
+	};
+
+	/// For collecting a list of Guild Templates from a chosen Guild. \brief For collecting a list of Guild Templates from a chosen Guild.
+	struct GetGuildTemplatesData {
+		string guildId{ "" };///< Guild from which you would like to collect the Templates from.
+	};
+
+	/// For creating a Guild Template. \brief For creating a Guild Template.
+	struct CreateGuildTemplateData {
+		string description{ "" };///< Description for the template (0 - 120 characters).
+		string guildId{ "" };///< Guild within which you wuold like to create the template.
+		string name{ "" };///< Name of the template (1 - 100 characters).
+	};
+
+	/// For syncing a Guild Template. \brief For syncing a Guild Template.
+	struct SyncGuildTemplateData {
+		string templateCode{ "" };///< Template code for which template you would like to sync.
+		string guildId{ "" };///< Guild for which you would like to sync the template of.
 	};
 
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
@@ -260,7 +292,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	public:
 
@@ -395,6 +427,32 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetVanityInviteData structure.
 		/// \returns A CoRoutine containing InviteData.
 		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);
+
+		/// Gets the Guild Template from a particular server. \brief Gets the Guild Template from a particular server.
+		/// \param dataPackage A GetGuildTemplateData structure.
+		/// \returns A CoRoutine containing GuildTemplateData.
+		static CoRoutine<GuildTemplateData> getGuildTemplateAsync(GetGuildTemplateData dataPackage);
+
+		/// Creates a Guild from the Guild Template. \brief Creates a Guild from the Guild Template.
+		/// \param dataPackage A CreateGuildFromGuildTemplateData structure.
+		/// \returns A CoRoutine containing a Guild.
+		static CoRoutine<Guild> createGuildFromGuildTemplateAsync(CreateGuildFromGuildTemplateData dataPackage);
+		
+		/// Collects a list of Guild Templates from a chosen Guild. \brief Collects a list of Guild Templates from a chosen Guild.
+		/// \param dataPackage A GetGuildTemplatesData structure.
+		/// \returns A CoRoutine containing a vector<GuiildTemplateData>.
+		static CoRoutine<vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
+
+		/// Creates a Guild Template. \brief Creates a Guild Template.
+		/// \param dataPackage A CreateGuildTemplateData structure.
+		/// \returns A CoRoutine containing a GuiildTemplateData.
+		static CoRoutine<GuildTemplateData> createGuildTemplateAsync(CreateGuildTemplateData dataPackage);
+		
+		/// Syncs a Guild Template. \brief Syncs a Guild Template.
+		/// \param dataPackage A SyncGuildTemplateData structure.
+		/// \returns A CoRoutine containing a GuiildTemplateData.
+		static CoRoutine<GuildTemplateData> syncGuildTemplateAsync(SyncGuildTemplateData dataPackage);
+		
 
 	protected:
 		static ObjectCache<Guild> cache;

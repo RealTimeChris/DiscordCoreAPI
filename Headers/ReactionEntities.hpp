@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the Reaction related Discord endpoints. \brief An interface class for the Reaction related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Reaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Reaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Reactions {
 	public:
 

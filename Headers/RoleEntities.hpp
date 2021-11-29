@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Role related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	public:
 		

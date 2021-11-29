@@ -578,7 +578,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
+	/// An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	public:
 
