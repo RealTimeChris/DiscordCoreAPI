@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
     template<typename storageType>
-    class ObjectCache {
+    class DiscordCoreAPI_Dll ObjectCache {
     public:
 
         friend class Guilds;
@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
     /// Snowflake, which is a time-based identifier for any/all of the Discord entities. \brief Snowflake, which is a time-based identifier for any/all of the Discord entities.
     typedef string Snowflake;
 
-    /// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
+    /// Base class for all Discord entities. \brief Base class for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
     public:
         Snowflake id{ "" };///< The identifier "snowflake" of the given entity.
@@ -1143,7 +1143,7 @@ namespace DiscordCoreAPI {
         GUILD = 2///< Guild
     };
 
-    /// Sticker data. \brief Sticker data.
+    /// Data representing a single Sticker. \brief Data representing a single Sticker.
     struct DiscordCoreAPI_Dll StickerData : public DiscordEntity{
         StickerFormatType formatType{}; ///< Format type.
         string description{ "" };   ///< Description of the sticker.
@@ -1161,6 +1161,7 @@ namespace DiscordCoreAPI {
         virtual ~StickerData() {};
     };
 
+    /// Data representing a single Guild preview. \brief Data representing a single Guild preview.
     struct DiscordCoreAPI_Dll GuildPreviewData {
         int32_t approximatePresenceCount{ 0 };
         int32_t approximateMemberCount{ 0 };
@@ -1182,7 +1183,7 @@ namespace DiscordCoreAPI {
         LONGEST = 3600
     };
 
-    /// Data structure representing a single guiild. \brief Data structure representing a single guiild.
+    /// Data structure representing a single Guild. \brief Data structure representing a single Guild.
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
@@ -1238,13 +1239,13 @@ namespace DiscordCoreAPI {
         virtual ~GuildData() {};
     };
 
-    /// Guild's scheduled event privacy level.
+    /// Guild's scheduled event privacy level. \brief Guild's scheduled event privacy level.
     enum class GuildScheduledEventPrivacyLevel {
         PUBLIC = 1,///< The scheduled event is public and available in discovery.
         GUILD_ONLY = 2///< The scheduled event is only accessible to guild members.
     };
 
-    /// Guild scheduled event status.
+    /// Guild scheduled event status. \brief Guild scheduled event status.
     enum class GuildScheduledEventStatus {
         SCHEDULED = 1,
         ACTIVE = 2,
@@ -1252,7 +1253,7 @@ namespace DiscordCoreAPI {
         CANCELED = 4
     };
 
-    /// Guild scheduled event entity type.
+    /// Guild scheduled event entity type. \brief Guild scheduled event entity type.
     enum class GuildScheduledEventEntityType {
         NONE = 0,
         STAGE_INSTANCE = 1,
@@ -1260,7 +1261,7 @@ namespace DiscordCoreAPI {
         EXTERNAL = 3
     };
 
-    /// Guild scheduled event entity metadata.
+    /// Guild scheduled event entity metadata. \brief Guild scheduled event entity metadata.
     struct DiscordCoreAPI_Dll GuildScheduledEventMetadata {
         string location{ "" };
     };
