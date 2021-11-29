@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 				dataPackage.guildScheduledEventId = "914726482365009931";
 				dataPackage.name = "TEST EVENT02";
 				dataPackage.description = "ANOTHER TEST EVENT!";
-				dataPackage.scheduledEndTime = getISO8601TimeStamp("2021", "11", "30", "18", "15", "0");
+				dataPackage.scheduledStartTime = getISO8601TimeStamp("2021", "11", "30", "18", "15", "0");
 				dataPackage.scheduledEndTime = getISO8601TimeStamp("2021", "11", "30", "18", "45", "0");
 				dataPackage.entityType = GuildScheduledEventEntityType::EXTERNAL;
 				dataPackage.entityMetadata.location = "HERE OR THERE!";
