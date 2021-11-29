@@ -217,7 +217,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	public:
 
-		friend struct Concurrency::details::_ResultHolder<Channel>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
 		friend class CoRoutine;

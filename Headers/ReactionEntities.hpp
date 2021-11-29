@@ -116,7 +116,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reaction : public ReactionData {
 	public:
 
-		friend struct Concurrency::details::_ResultHolder<Reaction>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template<typename returnValueType>
 		friend class CoRoutine;

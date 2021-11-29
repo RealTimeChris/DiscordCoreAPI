@@ -77,7 +77,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
 
-		friend struct Concurrency::details::_ResultHolder<GuildMember>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		template <typename returnVal>
 		friend class CoRoutine;

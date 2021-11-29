@@ -508,7 +508,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	public:
 
-		friend struct Concurrency::details::_ResultHolder<Message>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		friend class DiscordCoreInternal::DataParser;
 		template<typename returnValueType>

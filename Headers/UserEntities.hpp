@@ -71,7 +71,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll User : public UserData {
 	public:
 
-		friend struct Concurrency::details::_ResultHolder<User>;
 		friend class DiscordCoreInternal::HttpRequestAgent;
 		friend class DiscordCoreInternal::DataParser;
 		template<typename returnValueType>
