@@ -35,6 +35,28 @@ namespace DiscordCoreAPI {
 		string name{ "" };///< The name of the scheduled event.
 	};
 	
+	/// For collecting a single Guild scheduled event. \brief For collecting a single Guild scheduled event.
+	struct DiscordCoreAPI_Dll GetGuildScheduledEventData {
+		string guildScheduledEventId{ "" };///< The id of the desired scheduled event.
+		bool withUserCount{ false };///< Do we collect the user counts?
+		string guildId{ "" };///< Guild from which we would like to collect the events.
+	};
+
+	/// For modifying a single Guild Scheduled Event. \brief For modifying a single Guild Scheduled Event.
+	struct ModifyGuildScheduledEventData {
+		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::GUILD_ONLY };///< The privacy level of the scheduled event.
+		GuildScheduledEventStatus status{ GuildScheduledEventStatus::ACTIVE };///< The status of the scheduled event.
+		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
+		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
+		string guildScheduledEventId{ "" };///< The id of the event to modify.
+		string scheduledStartTime{ "" };///< The time to schedule the scheduled event.
+		string scheduledEndTime{ "" };///< The time when the scheduled event is scheduled to end.
+		string description{ "" };///< The description of the scheduled event.
+		string channelId{ "" };///< The channel id of the scheduled event, set to null if changing entity type to EXTERNAL.
+		string guildId{ "" };///< The Guild within which to modify the event.
+		string name{ "" };///< The name of the scheduled event.
+	};
+
 	/// A single GuildScheduledEvent data structure. \brief A single GuildScheduledEvent data structure.
 	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
 	public:
@@ -72,6 +94,17 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateGuildScheduledEventData structure.
 		/// \returns A CoRoutine containing GuildScheduledEvent.
 		static CoRoutine<GuildScheduledEvent> createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage);
+
+		/// Collects a single GuildScheduledEvent. \brief Collects a single GuildScheduledEvent.
+		/// \param dataPackage A GetGuildScheduledEventData structure.
+		/// \returns A CoRoutine containing GuildScheduledEvent.
+		static CoRoutine<GuildScheduledEvent> getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage);
+
+		/// Modifies a single GuildScheduledEvent. \brief Modifies a single GuildScheduledEvent.
+		/// \param dataPackage A ModifyGuildScheduledEventData structure.
+		/// \returns A CoRoutine containing GuildScheduledEvent.
+		static CoRoutine<GuildScheduledEvent> modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage);
+
 	};
 	/**@}*/
 }
