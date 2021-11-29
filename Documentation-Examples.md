@@ -73,6 +73,7 @@
 - ### [Modifying a Guild Welcome Screen](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Welcome%20Screen.md)
 - ### [Getting a Guild Template](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Template.md)
 - ### [Creating a Guild From a Guild Template](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20From%20a%20Guild%20Template.md)
+- ### [Getting Guild Templates](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Templates.md)
 
 ## Guild Scheduled Events:
 - ### [Getting a List of Guild Scheduled Events](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Guild%20Scheduled%20Events.md)
