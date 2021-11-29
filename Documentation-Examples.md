@@ -78,7 +78,7 @@
 - ### [Getting a Guild Scheduled Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Scheduled%20Event.md)
 - ### [Modifying a Guild Scheduled Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Scheduled%20Event.md)
 - ### [Deleting a Guild Scheduled Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Scheduled%20Event.md)
-- ### [Getting Guild Scheduled Event Users](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20Guild%20Scheduled%20Event%20Users.md)
+- ### [Getting Guild Scheduled Event Users](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Scheduled%20Event%20Users.md)
 
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
