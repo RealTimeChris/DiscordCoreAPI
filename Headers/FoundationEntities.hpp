@@ -1186,6 +1186,7 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single Guild. \brief Data structure representing a single Guild.
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
+        StopWatch<chrono::milliseconds> stopWatch{ 0 };
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
