@@ -1626,7 +1626,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("entity_type") && !jsonObjectData["entity_type"].is_null()) {
-                pDataStructure->entityType = jsonObjectData.at("entity_type").get<DiscordCoreAPI::GuildScheduledEventEntityTypes>();
+                pDataStructure->entityType = jsonObjectData.at("entity_type").get<DiscordCoreAPI::GuildScheduledEventEntityType>();
             }
 
             if (jsonObjectData.contains("status") && !jsonObjectData["status"].is_null()) {

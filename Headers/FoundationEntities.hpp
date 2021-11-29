@@ -293,6 +293,8 @@ namespace DiscordCoreAPI {
     /// \returns A string containing the time/date-stamp.
     DiscordCoreAPI_Dll string getTimeAndDate();
 
+    DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
+
     /**@}*/
 
     /**
@@ -1251,7 +1253,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild scheduled event entity type.
-    enum class GuildScheduledEventEntityTypes {
+    enum class GuildScheduledEventEntityType {
         NONE = 0,
         STAGE_INSTANCE = 1,
         VOICE = 2,
@@ -1267,19 +1269,18 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll GuildScheduledEventData : public DiscordEntity {
         GuildScheduledEventPrivacyLevel privacyLevel{};///< The privacy level of the scheduled event.
         GuildScheduledEventMetadata entityMetadata{};///< Additional metadata for the guild scheduled event.
-        GuildScheduledEventEntityTypes entityType{};///< The type of the scheduled event.
+        GuildScheduledEventEntityType entityType{};///< The type of the scheduled event.
         GuildScheduledEventStatus status{};///< The status of the scheduled event.
         string scheduledStartTime{ "" };///< The time the scheduled event will start.
         string scheduledEndTime{ "" };///< The time the scheduled event will end, required if entity_type is EXTERNAL.
-        uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
         string description{ "" };///< The description of the scheduled event(1 - 1000 characters).
+        uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
         string channelId{ "" };///< The channel id in which the scheduled event will be hosted, or null if scheduled entity type is EXTERNAL.
         string creatorId{ "" };///< The id of the user that created the scheduled event *.
         string entityId{ "" };///< The id of an entity associated with a guild scheduled event.
         string guildId{ "" };///< The guild id which the scheduled event belongs to.
         UserData creator{};///< The user that created the scheduled event.
         string name{ "" };///< The name of the scheduled event(1 - 100 characters).
-        string id{ "" };///< Tthe id of the scheduled event.
 
         virtual ~GuildScheduledEventData() {};
     };
@@ -2837,6 +2838,7 @@ namespace  DiscordCoreInternal {
         PATCH_CURRENT_USER_VOICE_STATE = 110,
         PATCH_USER_VOICE_STATE = 111,
         GET_GUILD_SCHEDULED_EVENTS = 112,
+        POST_GUILD_SCHEDULED_EVENT = 113,
 
         GET_USER,
         GET_USER_SELF,
