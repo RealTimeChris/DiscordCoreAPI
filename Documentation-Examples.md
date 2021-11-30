@@ -21,6 +21,8 @@
 - ### [Deleting Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20Permission%20Overwrites.md)
 - ### [Following a News Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Following%20a%20News%20Channel.md)
 - ### [Triggering the Typing Indicator](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Triggering%20the%20Typing%20Indicator.md)
+
+## Thread Stuff:
 - ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
 - ### [Starting a Thread without a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20without%20a%20Message.md)
 - ### [Joining a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Joining%20a%20Thread.md)
