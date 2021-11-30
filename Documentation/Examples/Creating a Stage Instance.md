@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = StageInstances::createStageInstanceAsync(dataPackage).get();
 
-				cout << "THE NAME: " << responseData.name << endl;
+				cout << "THE NAME: " << responseData.topic << endl;
 
 				co_return;
 			}
