@@ -1649,6 +1649,18 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions);
 
+    /// Represents a Sticker pack. \brief Represents a Sticker pack.
+    struct StickerPackData {
+        vector<StickerData> stickers{};///< Array of sticker objects	the stickers in the pack.
+        string coverStickerId{ "" };///< Id of a sticker in the pack which is shown as the pack's icon.
+        string bannerAssetId{ "" };///< Id of the sticker pack's banner image.
+        string description{ "" };///< Description of the sticker pack.
+        string skuId{ "" };///< Id of the pack's SKU.
+        string name{ "" };///< Name of the sticker pack.
+        string Id{ "" };///< Id of the sticker pack.
+    };
+    
+
     /// ApplicationCommand interaction data option. \brief ApplicationCommand interaction data option.
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
         vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand interaction data options.

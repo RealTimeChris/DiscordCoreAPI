@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
         /** CoRoutineStatus
         *  The current status of the associated CoRoutine.
         */
-        enum CoRoutineStatus {
+        enum class CoRoutineStatus {
             Idle = 0,///< Idle.
             Running = 1,///< Running.
             Complete = 2,///< Complete.
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
         /** CoRoutineStatus
         *  The current status of the associated CoRoutine.
         */
-        enum CoRoutineStatus {
+        enum class CoRoutineStatus {
             Idle = 0,///< Idle.
             Running = 1,///< Running.
             Complete = 2,///< Complete.
