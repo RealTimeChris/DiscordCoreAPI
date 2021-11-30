@@ -21,6 +21,9 @@
 - ### [Deleting Permission Overwrites](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Delete%20Permission%20Overwrites.md)
 - ### [Following a News Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Following%20a%20News%20Channel.md)
 - ### [Triggering the Typing Indicator](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Triggering%20the%20Typing%20Indicator.md)
+- ### [Getting Guild Channels](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Channels.md)
+- ### [Creating a Guild Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Channel.md)
+- ### [Modifying Guild Channel Positions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Guild%20Channel%20Positions.md)
 
 ## Thread Stuff:
 - ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
@@ -34,9 +37,6 @@
 - ### [Getting Public Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Public%20Archived%20Threads.md)
 - ### [Getting Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Private%20Archived%20Threads.md)
 - ### [Getting Joined Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Joined%20Private%20Archived%20Threads.md)
-- ### [Getting Guild Channels](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Channels.md)
-- ### [Creating a Guild Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Channel.md)
-- ### [Modifying Guild Channel Positions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Guild%20Channel%20Positions.md)
 - ### [Listing Active Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listing%20Active%20Threads.md)
 
 ## GuildMember Stuff:
