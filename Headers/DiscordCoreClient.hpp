@@ -13,6 +13,7 @@
 #include "CoRoutine.hpp"
 #include "VoiceConnection.hpp"
 #include "SoundCloudAPI.hpp"
+#include "StageInstanceEntities.hpp"
 #include "YouTubeAPI.hpp"
 #include "SongAPI.hpp"
 

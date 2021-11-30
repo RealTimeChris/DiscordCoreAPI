@@ -2762,6 +2762,7 @@ namespace  DiscordCoreInternal {
         GET_INVITE = 126,
         DELETE_INVITE = 127,
         POST_STAGE_INSTANCE = 128,
+        GET_STAGE_INSTANCE = 129,
 
         GET_USER,
         GET_USER_SELF,

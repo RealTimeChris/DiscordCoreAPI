@@ -18,6 +18,11 @@ namespace DiscordCoreAPI {
 		string topic{ "" };///< The topic of the Stage instance(1 - 120 characters).
 	};
 	
+	/// For collecting a single StageInstance. \brief For collecting a single StageInstance.
+	struct DiscordCoreAPI_Dll GetStageInstanceData {
+		string channelId{ "" };///< The channel id from which you would like to collect the StageInstance.
+	};
+
 	/// A single StageInstance. \brief A single StageInstance.
 	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
 	public:
@@ -27,8 +32,7 @@ namespace DiscordCoreAPI {
 		template<typename returnValueType>
 		friend class CoRoutine;
 		friend class DiscordCoreClient;
-		friend class Reactions;
-		friend class Users;
+		friend class StageInstances;
 		friend class Guild;
 
 		StageInstance();
@@ -53,6 +57,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateStageInstanceData structure.
 		/// \returns A CoRoutine containing a StageInstance.
 		static CoRoutine<StageInstance> createStageInstanceAsync(CreateStageInstanceData dataPackage);
+
+		/// Collects a StageInstance. \brief Collects a StageInstance.
+		/// \param dataPackage A GetStageInstanceData structure.
+		/// \returns A CoRoutine containing a StageInstance.
+		static CoRoutine<StageInstance> getStageInstanceAsync(GetStageInstanceData dataPackage);
 	};
 
 	/**@}*/
