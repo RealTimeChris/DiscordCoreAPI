@@ -162,6 +162,7 @@
 
 ## Sticker Stuff:
 - ### [Getting a Sticker](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Sticker.md)
+- ### [Getting Nitro Sticker Packs](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Nitro%20Sticker%20Packs.md)
 
 ## Thread Stuff:
 - ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
