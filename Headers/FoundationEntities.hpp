@@ -19,8 +19,6 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-    template<typename returnType>
-    class CoRoutine;
     class DiscordCoreClient;
     class VoiceConnection;
     class GuildMember;
@@ -134,13 +132,12 @@ namespace DiscordCoreAPI {
     }
 
     template <typename ...T>
-    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
-        co_await NewThreadAwaitable<void>();
+    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0 && !isRepeating) {
             wait(timeDelayInMs);
             theFunction(args...);
-            co_return;
+            return;
         }
         else if (timeDelayInMs > 0 && isRepeating) {
             auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
@@ -153,7 +150,7 @@ namespace DiscordCoreAPI {
         else {
             theFunction(args...);
         }
-        co_return;
+        return;
     }
 
     class DiscordCoreAPI_Dll TimeStamp : public string{
@@ -1118,7 +1115,6 @@ namespace DiscordCoreAPI {
 
     /// Data structure representing a single Guild. \brief Data structure representing a single Guild.
     struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
-        StopWatch<chrono::milliseconds> stopWatch{ 0 };
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
@@ -1237,6 +1233,7 @@ namespace DiscordCoreAPI {
         string expiresAt{ "" };///< When the invite expires.
         UserData targetUser{};///< Target User of the invite.
         ChannelData channel{};///< Channel data of the Channel that the invite is for.
+        string guildId{ "" };///< The guild this invite is for.
         int32_t maxUses{ 0 };///< Max number of uses.
         int32_t maxAge{ 0 };///< Maximum age of the invite.
         UserData inviter{};///< The User who created the invite.

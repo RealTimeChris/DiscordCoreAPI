@@ -82,6 +82,7 @@ extern "C"
 #include <dispatcherqueue.h>
 #include <glib-2.0/glib.h>
 #include <winrt/base.h>
+#include <nanobench.h>
 #include <opus/opus.h>
 #include <ppltasks.h>
 #include <coroutine>

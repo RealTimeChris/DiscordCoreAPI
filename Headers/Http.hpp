@@ -14,7 +14,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpRequestAgent  {
 	public:
 
-		static void initialize(string botTokenNew);
+		static void initialize(string);
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {

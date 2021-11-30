@@ -53,25 +53,13 @@ namespace DiscordCoreAPI {
 	public:
 
 		template <typename ...T>
-		friend CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args);
-		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD dwCtrlType);
+		friend void executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
+		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
-		friend class ApplicationCommands;
 		friend void ::terminateWrapper();
-		friend class CommandController;
-		friend class GuildMembers;
-		friend class Interactions;
-		friend class InputEvents;
-		friend class Reactions;
-		friend class Messages;
-		friend class Stickers;
-		friend class Channels;
-		friend class Guilds;
-		friend class Roles;
-		friend class Users;
 		friend class Guild;
-		friend class Test;
 
+		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
 		static unique_ptr<DiscordCoreClient> thisPointer;
 		static string commandPrefix;
 
@@ -82,19 +70,18 @@ namespace DiscordCoreAPI {
 		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
 		/// \param functionVector A pointer to a vector of function pointers to be run on timers.
 		/// \returns void
-		static void setup(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionVector = vector<RepeatedFunctionData>(), CacheOptions cacheOptions = CacheOptions());
+		static void setup(string, string, vector<RepeatedFunctionData> = vector<RepeatedFunctionData>(), CacheOptions = CacheOptions());
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		/// \returns void
 		static void runBot();
 
-		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew);
+		DiscordCoreClient(string, string, vector<RepeatedFunctionData>);
 
 		~DiscordCoreClient();
 
 	protected:
 
-		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
 		static vector<RepeatedFunctionData> functionsToExecute;
 		static vector<ThreadPoolTimer> threadPoolTimers;
 

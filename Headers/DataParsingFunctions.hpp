@@ -346,6 +346,14 @@ namespace DiscordCoreInternal {
             pDataStructure->shrink_to_fit();
         }
 
+        static void parseObject(json jsonObjectData, vector<string>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
+            for (auto& value: jsonObjectData) {
+                pDataStructure->push_back(value);
+            }
+            pDataStructure->shrink_to_fit();
+        }
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildMemberData* pDataStructure) {
             if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
                 parseObject(jsonObjectData["user"], &pDataStructure->user);
@@ -366,12 +374,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-                vector<string> newVector{};
-                newVector.resize(jsonObjectData["roles"].size());
-                for (uint32_t x = 0; x < jsonObjectData["roles"].size(); x += 1) {
-                    newVector[x] = jsonObjectData["roles"][x];
-                }
-                pDataStructure->roles = newVector;
+                parseObject(jsonObjectData["roles"], &pDataStructure->roles);
             }
 
             if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
@@ -424,13 +427,14 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
                 vector<DiscordCoreAPI::RoleData> newVector{};
-                newVector.resize(jsonObjectData["roles"].size());
-                for (uint32_t x = 0; x < jsonObjectData["roles"].size(); x += 1) {
+                newVector.reserve(jsonObjectData["roles"].size());
+                for (auto& value:jsonObjectData["roles"]) {
                     DiscordCoreAPI::RoleData newData{};
-                    parseObject(jsonObjectData["roles"][x], &newData);
-                    newVector[x] = newData;
+                    parseObject(value, &newData);
+                    newVector.push_back(newData);
                 }
-                pDataStructure->roles = newVector;
+                newVector.shrink_to_fit();
+                pDataStructure->roles = move(newVector);
             }
 
             if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
@@ -479,22 +483,24 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("emojis") && !jsonObjectData["emojis"].is_null()) {
                 vector<DiscordCoreAPI::EmojiData> newVector{};
-                newVector.resize(jsonObjectData["emojis"].size());
-                for (uint32_t x = 0; x < jsonObjectData["emojis"].size(); x += 1) {
+                newVector.reserve(jsonObjectData["emojis"].size());
+                for (auto& value:jsonObjectData["emojis"]) {
                     DiscordCoreAPI::EmojiData newData{};
-                    parseObject(jsonObjectData["emojis"][x], &newData);
-                    newVector[x] = newData;
+                    parseObject(value, &newData);
+                    newVector.push_back(newData);
                 }
-                pDataStructure->emojis = newVector;
+                newVector.shrink_to_fit();
+                pDataStructure->emojis = move(newVector);
             }
 
             if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
                 vector<string> newVector{};
-                newVector.resize(jsonObjectData["features"].size());
-                for (uint32_t x = 0; x < jsonObjectData["features"].size(); x += 1) {
-                    newVector[x] = jsonObjectData["features"][x];
+                newVector.reserve(jsonObjectData["features"].size());
+                for (auto& value:jsonObjectData["features"]) {
+                    newVector.push_back(value);
                 }
-                pDataStructure->features = newVector;
+                newVector.shrink_to_fit();
+                pDataStructure->features = move(newVector);
             }
 
             if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
@@ -691,13 +697,15 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("activities") && !jsonObjectData["activities"].is_null()) {
-                pDataStructure->activities.reserve(jsonObjectData["activities"].size());
+                vector<DiscordCoreAPI::ActivityData> newVector{};
+                newVector.reserve(jsonObjectData["activities"].size());
                 for (auto& value : jsonObjectData["activities"]) {
                     DiscordCoreAPI::ActivityData newData{};
                     parseObject(value, &newData);
-                    pDataStructure->activities.push_back(move(newData));
+                    newVector.push_back(move(newData));
                 }
-                pDataStructure->activities.shrink_to_fit();
+                newVector.shrink_to_fit();
+                pDataStructure->activities = move(newVector);
             }
 
             if (jsonObjectData.contains("client_status") && !jsonObjectData["client_status"].is_null()) {
@@ -947,13 +955,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
-                vector<string> newVector{};
-                pDataStructure->features.reserve(jsonObjectData["features"].size());
-                for (auto& value : jsonObjectData["features"]) {
-                    newVector.push_back(value.get<string>());
-                }
-                pDataStructure->features = newVector;
-                pDataStructure->features.shrink_to_fit();
+                parseObject(jsonObjectData["features"], &pDataStructure->features);
             }
 
             if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
@@ -1146,7 +1148,7 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("stage_instances") && !jsonObjectData["stage_instances"].is_null()) {
                 pDataStructure->stageInstances.reserve(jsonObjectData["stage_instances"].size());
-                for (auto& value : jsonObjectData["stage_instances"]) {
+                for (auto& value:jsonObjectData["stage_instances"]) {
                     DiscordCoreAPI::StageInstanceData newData{};
                     parseObject(value, &newData);
                     pDataStructure->stageInstances.push_back(move(newData));
@@ -1157,7 +1159,6 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
             }
-            cout << "TIME UNTIL PARSED: " << pDataStructure->stopWatch.totalTimePassed() << endl;
         };
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildWidgetData* pDataStructure) {
@@ -1772,6 +1773,10 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("approximate_member_count") && !jsonObjectData["approximate_member_count"].is_null()) {
                 pDataStructure->approximateMemberCount = jsonObjectData["approximate_member_count"].get<int32_t>();
+            }
+
+            if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+                pDataStructure->guildId = jsonObjectData["guild_id"].get<string>();
             }
 
             if (jsonObjectData.contains("expires_at") && !jsonObjectData["expires_at"].is_null()) {
