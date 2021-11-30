@@ -14,8 +14,8 @@
 ```
 - Create a new class, within the `DiscordCoreAPI` namespace, derived from the `BaseFunction` class.
 - Set the `commandName` and `helpDescription` members of the class.
-- Add a `create()` function, where the return value is a pointer to the class type of the current command.
-- Add a `virtual CoRoutine<void> execute()` function with an argument of type `shared_ptr<DiscordCoreAPI::BaseFunctionArguments>`.
+- Add a `create()` function, where the return value is a `unique_ptr` to the class type of the current command.
+- Add a `virtual CoRoutine<void> execute()` function with an argument of type `DiscordCoreAPI::BaseFunctionArguments`.
 - CONTINUED FURTHER DOWN.
 
 ```cpp
@@ -38,11 +38,11 @@ namespace DiscordCoreAPI {
 			this->helpDescription = "__**Test:**__ Enter !test or /test to run this command!";
 		}
 
-		Test* create() {
-			return new Test;
+		unique_ptr<BaseFunction> create() {
+			return make_unique<Test>();
 		}
 
-		virtual CoRoutine<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual CoRoutine<void> execute(BaseFunctionArguments args) {
 			try {
 			if(args->argumentsArray[0] == "test"){
 			
@@ -93,7 +93,7 @@ int main()
     init_apartment();
     string botToken = "ODYwMTA1MDY3MzYwMjg4ODA5.YN2ZRA.U8G-Y78hLhFzBfL-VH8v0-zHhzI";
     DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
-    DiscordCoreAPI::CommandCenter::registerFunction("test", new DiscordCoreAPI::Test);
+    DiscordCoreAPI::CommandController::registerFunction(vector<string>{"test"}, move(make_unique<DiscordCoreAPI::Test>()));
     DiscordCoreAPI::DiscordCoreClient::runBot();
 }
 ```
