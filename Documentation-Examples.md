@@ -10,6 +10,35 @@
 - ### [Listening for a Discord Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listening%20for%20a%20Discord%20Event.md)
 - ### [Using a Message Collector](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Using%20a%20Message%20Collector.md)
 
+## Button Stuff:
+- ### [Instantiating/Creating a Button](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Button.md)
+- ### [Collecting Button Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Button%20Input.md)
+
+## Select-Menu Stuff:
+- ### [Instantiating/Creating a Select-Menu](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Select-Menu.md)
+- ### [Collecting Select-Menu Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Select-Menu%20Input.md)
+
+## Voice Connection Stuff:
+- ### [Connecting To/Disconnecting From a Voice Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Conneting%20To-Disconnnecting%20From%20a%20Voice%20Channel.md)
+
+## Application-Command Stuff:
+- ### [Getting Global Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Global%20Application%20Commands.md)
+- ### [Creating a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Global%20Application%20Command.md)
+- ### [Getting a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Global%20Application%20Command.md)
+- ### [Editing a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Global%20Application%20Command.md)
+- ### [Deleting a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Global%20Application%20Command.md)
+- ### [Bulk Overwriting Global Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Overwriting%20Global%20Application%20Commands.md)
+- ### [Getting Guild Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Application%20Commands.md)
+- ### [Creating a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Application%20Command.md)
+- ### [Getting a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Application%20Command.md)
+- ### [Editing a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Guild%20Application%20Command.md)
+- ### [Deleting a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Application%20Command.md)
+- ### [Bulk Overwriting Guild Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Overwriting%20Guild%20Application%20Commands.md)
+- ### [Getting Guild Application Command Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Application%20Command%20Permissions.md)
+- ### [Getting a Single Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Single%20Guild%20Application%20Command's%20Permissions.md)
+- ### [Editing a Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Guild%20Application%20Command's%20Permissions.md)
+- ### [Batch Editing Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Batch%20Editing%20Guild%20Application%20Command's%20Permissions.md)
+
 ## Channel Stuff:
 - ### [Getting a Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Channel.md)
 - ### [Modifying a Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Channel.md)
@@ -24,20 +53,6 @@
 - ### [Getting Guild Channels](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Channels.md)
 - ### [Creating a Guild Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Channel.md)
 - ### [Modifying Guild Channel Positions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Guild%20Channel%20Positions.md)
-
-## Thread Stuff:
-- ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
-- ### [Starting a Thread without a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20without%20a%20Message.md)
-- ### [Joining a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Joining%20a%20Thread.md)
-- ### [Adding a User to a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20User%20to%20a%20Thread.md)
-- ### [Removing a User from a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20User%20from%20a%20Thread.md)
-- ### [Getting a Thread Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Thread%20Member.md)
-- ### [Getting a List of Thread Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Thread%20Members.md)
-- ### [Getting a List of Active Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Active%20Threads.md)
-- ### [Getting Public Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Public%20Archived%20Threads.md)
-- ### [Getting Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Private%20Archived%20Threads.md)
-- ### [Getting Joined Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Joined%20Private%20Archived%20Threads.md)
-- ### [Listing Active Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listing%20Active%20Threads.md)
 
 ## GuildMember Stuff:
 - ### [Getting a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Member.md)
@@ -90,6 +105,21 @@
 - ### [Deleting a Guild Scheduled Event](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Scheduled%20Event.md)
 - ### [Getting Guild Scheduled Event Users](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Scheduled%20Event%20Users.md)
 
+## Input-Event Stuff:
+- ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
+- ### [Editing an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20an%20Interaction%20Response.md)
+- ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
+
+## Interaction Stuff:
+- ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
+- ### [Getting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20an%20Interaction%20Response.md)
+- ### [Editing an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20an%20Interaction%20Response.md)
+- ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
+- ### [Creating a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Follow-Up%20Message.md)
+- ### [Getting a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Follow-Up%20Message.md)
+- ### [Editing a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Follow-Up%20Message.md)
+- ### [Deleting a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Follow-Up%20Message.md)
+
 ## Message Stuff:
 - ### [Getting Channel Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20Messages.md)
 - ### [Getting a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Message.md)
@@ -101,14 +131,6 @@
 - ### [Getting Pinned Messages](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Pinned%20Messages.md)
 - ### [Pinning a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Pinning%20a%20Message.md)
 - ### [Unpinning a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Unpinning%20a%20Message.md)
-
-## User Stuff:
-- ### [Adding a Recipient to a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Recipient%20to%20a%20Group%20DM.md)
-- ### [Removing a Recipient from a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Recipient%20From%20a%20Group%20DM.md)
-- ### [Modifying Current User's Voice State](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Current%20User's%20Voice%20State.md)
-- ### [Modifying a User's Voice State](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20User's%20Voice%20State.md)
-
-## Sticker Stuff:
 
 ## Reaction Stuff:
 - ### [Creating a Reaction](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Reaction.md)
@@ -132,46 +154,24 @@
 - ### [Modifying a Guild Role](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Role.md)
 - ### [Removing a Guild Role](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Guild%20Role.md)
 
-## Input-Event Stuff:
-- ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
-- ### [Editing an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20an%20Interaction%20Response.md)
-- ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
+## Sticker Stuff:
 
-## Application-Command Stuff:
-- ### [Getting Global Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Global%20Application%20Commands.md)
-- ### [Creating a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Global%20Application%20Command.md)
-- ### [Getting a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Global%20Application%20Command.md)
-- ### [Editing a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Global%20Application%20Command.md)
-- ### [Deleting a Global Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Global%20Application%20Command.md)
-- ### [Bulk Overwriting Global Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Overwriting%20Global%20Application%20Commands.md)
-- ### [Getting Guild Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Application%20Commands.md)
-- ### [Creating a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Application%20Command.md)
-- ### [Getting a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Application%20Command.md)
-- ### [Editing a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Guild%20Application%20Command.md)
-- ### [Deleting a Guild Application Command](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Application%20Command.md)
-- ### [Bulk Overwriting Guild Application Commands](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Bulk%20Overwriting%20Guild%20Application%20Commands.md)
-- ### [Getting Guild Application Command Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20Application%20Command%20Permissions.md)
-- ### [Getting a Single Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Single%20Guild%20Application%20Command's%20Permissions.md)
-- ### [Editing a Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Guild%20Application%20Command's%20Permissions.md)
-- ### [Batch Editing Guild Application Command's Permissions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Batch%20Editing%20Guild%20Application%20Command's%20Permissions.md)
+## Thread Stuff:
+- ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
+- ### [Starting a Thread without a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20without%20a%20Message.md)
+- ### [Joining a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Joining%20a%20Thread.md)
+- ### [Adding a User to a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20User%20to%20a%20Thread.md)
+- ### [Removing a User from a Thread](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20User%20from%20a%20Thread.md)
+- ### [Getting a Thread Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Thread%20Member.md)
+- ### [Getting a List of Thread Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Thread%20Members.md)
+- ### [Getting a List of Active Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Active%20Threads.md)
+- ### [Getting Public Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Public%20Archived%20Threads.md)
+- ### [Getting Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Private%20Archived%20Threads.md)
+- ### [Getting Joined Private Archived Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Joined%20Private%20Archived%20Threads.md)
+- ### [Listing Active Threads](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listing%20Active%20Threads.md)
 
-## Interaction Stuff:
-- ### [Creating an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20an%20Interaction%20Response.md)
-- ### [Getting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20an%20Interaction%20Response.md)
-- ### [Editing an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20an%20Interaction%20Response.md)
-- ### [Deleting an Interaction Response](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20an%20Interaction%20Response.md)
-- ### [Creating a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Follow-Up%20Message.md)
-- ### [Getting a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Follow-Up%20Message.md)
-- ### [Editing a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20Follow-Up%20Message.md)
-- ### [Deleting a Follow-Up Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Follow-Up%20Message.md)
-
-## Button Stuff:
-- ### [Instantiating/Creating a Button](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Button.md)
-- ### [Collecting Button Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Button%20Input.md)
-
-## Select-Menu Stuff:
-- ### [Instantiating/Creating a Select-Menu](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Select-Menu.md)
-- ### [Collecting Select-Menu Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Select-Menu%20Input.md)
-
-## Voice Connection Stuff:
-- ### [Connecting To/Disconnecting From a Voice Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Conneting%20To-Disconnnecting%20From%20a%20Voice%20Channel.md)
+## User Stuff:
+- ### [Adding a Recipient to a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Recipient%20to%20a%20Group%20DM.md)
+- ### [Removing a Recipient from a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Recipient%20From%20a%20Group%20DM.md)
+- ### [Modifying Current User's Voice State](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Current%20User's%20Voice%20State.md)
+- ### [Modifying a User's Voice State](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20User's%20Voice%20State.md)
