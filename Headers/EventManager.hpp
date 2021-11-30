@@ -15,6 +15,7 @@
 #include "ReactionEntities.hpp"
 #include "MessageEntities.hpp"
 #include "ApplicationCommandEntities.hpp"
+#include "ThreadEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -65,17 +66,17 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a thread creation event. \brief Data that is received as part of a thread creation event.
 	struct DiscordCoreAPI_Dll OnThreadCreationData {
-		Channel channel{}; ///< The new thread's Channel.
+		Thread thread{}; ///< The new thread's Channel.
 	};
 
 	/// Data that is received as part of a thread update event. \brief Data that is received as part of a thread update event.
 	struct DiscordCoreAPI_Dll OnThreadUpdateData {
-		Channel channel{}; ///< The new thread's Channel.
+		Thread thread{}; ///< The new thread's Channel.
 	};
 
 	/// Data that is received as part of a thread deletion event. \brief Data that is received as part of a thread deletion event.
 	struct DiscordCoreAPI_Dll OnThreadDeletionData {
-		Channel channel{}; ///< The deleted thread's Channel.
+		Thread thread{}; ///< The deleted thread's Channel.
 	};
 
 	/// Data that is received as part of a thread list sync event. \brief Data that is received as part of a thread list sync event.

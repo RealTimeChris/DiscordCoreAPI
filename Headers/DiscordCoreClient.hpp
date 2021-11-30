@@ -118,13 +118,6 @@ namespace DiscordCoreAPI {
 		void run();
 	};
 	/**@}*/
-	/**
-	* \addtogroup utilities
-	* @{
-	*/
 
-	/// Returns the bot's User data. \brief Returns the bot's User data.
-	/// \returns A BotUser which is a type of User.
 	DiscordCoreAPI_Dll BotUser getBotUser();
-	/**@}*/
 }

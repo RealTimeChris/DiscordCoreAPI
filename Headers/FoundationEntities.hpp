@@ -11,55 +11,19 @@
 #undef DELETE
 #endif
 
-namespace  DiscordCoreInternal {
+namespace DiscordCoreInternal {
 
-    class BaseWebSocketAgent;
-    class HttpRequestAgent;
     class DataParser;
+
 };
 
 namespace DiscordCoreAPI {
 
-    struct SongCompletionEventData;
-    struct ButtonInteractionData;
-    struct ClientStatusData;
-    struct GuildMemberData;
-    struct AudioFrameData;
-    struct ActivityData;
-    struct CommandData;
-    struct UserData;
-    struct Song;
-
     template<typename returnType>
     class CoRoutine;
-    class RespondToInputEventData;
-    class DatabaseManagerAgent;
-    class PermissionsConverter;
-    class SelectMenuCollector;
-    class ApplicationCommands;
     class DiscordCoreClient;
-    class ButtonCollector;
     class VoiceConnection;
-    class SoundCloudSong;
-    class SoundCloudAPI;
-    class Interactions;
-    class EventHandler;
-    class GuildMembers;
-    class YouTubeSong;
     class GuildMember;
-    class InputEvents;
-    class SelectMenu;
-    class YouTubeAPI;
-    class Reactions;
-    class Messages;
-    class Channels;
-    class BotUser;
-    class SongAPI;
-    class Message;
-    class Guilds;
-    class Roles;
-    class Users;
-    class Guild;
 
     DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
@@ -283,26 +247,16 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll string convertMsToDurationString(int32_t durationInMs);
 
-    /**
-    * \addtogroup utilities
-    * @{
-    */
-
-    /// Acquires a time and date stamp that is compatible with Discord Messages. \brief Acquires a time and date stamp that is compatible with Discord Messages.
-    /// \returns A string containing the time/date-stamp.
     DiscordCoreAPI_Dll string getTimeAndDate();
 
     DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
 
-    /**@}*/
+    typedef string Snowflake;
 
     /**
     * \addtogroup foundation_entities
     * @{
     */
-
-    /// Snowflake, which is a time-based identifier for any/all of the Discord entities. \brief Snowflake, which is a time-based identifier for any/all of the Discord entities.
-    typedef string Snowflake;
 
     /// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
@@ -314,16 +268,6 @@ namespace DiscordCoreAPI {
 
         virtual ~DiscordEntity() {};
     };
-
-    /**@}*/
-};
-
-namespace DiscordCoreAPI {
-
-    /**
-    * \addtogroup foundation_entities
-    * @{
-    */
 
     /// Role tags data. \brief Role tags data.
     struct DiscordCoreAPI_Dll RoleTagsData {
@@ -378,11 +322,10 @@ namespace DiscordCoreAPI {
         virtual ~AttachmentData() {};
     };
 
-    /// Sticker format type. \brief Sticker format type.
     enum class StickerFormatType {
-        PNG = 1,///< PNG
-        APNG = 2,///< APNG
-        LOTTIE = 3///< Lottie
+        PNG = 1,
+        APNG = 2,
+        LOTTIE = 3
     };
 
     /// Embed footer data. \brief Embed footer data.
@@ -437,14 +380,13 @@ namespace DiscordCoreAPI {
         string name{ "" };///< The title of the field.
     };
 
-    /// Embed types.
     enum class EmbedType {
-        Rich = 0,///< Generic embed rendered from embed attributes.
-        Image = 1,///< Image embed.
-        Video = 2,///< Video embed.
-        Gifv = 3,///< Animated gif image embed rendered as a video embed.
-        Article = 4,///< Article embed.
-        link = 5///< Link embed.
+        Rich = 0,
+        Image = 1,
+        Video = 2,
+        Gifv = 3,
+        Article = 4,
+        link = 5
     };
 
     /// Embed data. \brief Embed data.
@@ -554,10 +496,9 @@ namespace DiscordCoreAPI {
         string guildId{ "" };///< Id of the Guild that the referenced Message was sent in.
     };
 
-    /// Edit Channel Permission overwrites type. \brief Edit Channel Permission overwrites type.
     enum class PermissionOverwritesType {
-        Role = 0,///<Role
-        User = 1///<User
+        Role = 0,
+        User = 1
     };
 
     /// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
@@ -570,19 +511,18 @@ namespace DiscordCoreAPI {
         virtual ~OverWriteData() {};
     };
 
-    /// A type of Channel. \brief A type of Channel.
     enum class ChannelType {
-        GUILD_TEXT = 0, ///< Guild Text
-        DM = 1, ///< Direct Message
-        GUILD_VOICE = 2, ///< Guild Voice
-        GROUP_DM = 3,///< Group Direct Message
-        GUILD_CATEGORY = 4,///< Guild Category
-        GUILD_NEWS = 5,///< Guild News
-        GUILD_STORE = 6,///< Guild Store
-        GUILD_NEWS_THREAD = 10,///< Guild News Thread
-        GUILD_PUBLIC_THREAD = 11,///< Guild Public Thread
-        GUILD_PRIVATE_THREAD = 12,///< Guild Private Thread
-        GUILD_STAGE_VOICE = 13///< Guild Stage Voice
+        GUILD_TEXT = 0,
+        DM = 1,
+        GUILD_VOICE = 2,
+        GROUP_DM = 3,
+        GUILD_CATEGORY = 4,
+        GUILD_NEWS = 5,
+        GUILD_STORE = 6,
+        GUILD_NEWS_THREAD = 10,
+        GUILD_PUBLIC_THREAD = 11,
+        GUILD_PRIVATE_THREAD = 12,
+        GUILD_STAGE_VOICE = 13
     };
 
     /// Meta data for a thread type of Channel. \brief Meta data for a thread type of Channel.
@@ -720,24 +660,22 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll ArchivedThreadsData : public ActiveThreadsData {};
 
-    /// ApplicationCommand option type. \brief ApplicationCommand option type.
     enum class ApplicationCommandOptionType {
-        SUB_COMMAND = 1,///< Sub Command
-        SUB_COMMAND_GROUP = 2,///< Sub Command Group
-        STRING = 3,///< String
-        INTEGER = 4,///< Integer
-        BOOLEAN = 5,///< Boolean
-        USER = 6,///< User
-        CHANNEL = 7,///< Channel
-        ROLE = 8,///< Role
-        MENTIONABLE = 9,///< Mentionable
-        NUMBER = 10///< Number
+        SUB_COMMAND = 1,
+        SUB_COMMAND_GROUP = 2,
+        STRING = 3,
+        INTEGER = 4,
+        BOOLEAN = 5,
+        USER = 6,
+        CHANNEL = 7,
+        ROLE = 8,
+        MENTIONABLE = 9,
+        NUMBER = 10
     };
 
-    /// ApplicationCommand Permission type. \brief ApplicationCommand Permission type.
     enum class ApplicationCommandPermissionType {
-        Role = 1,///< Role type.
-        User = 2///< User type.
+        Role = 1,
+        User = 2
     };
 
     /// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
@@ -882,7 +820,6 @@ namespace DiscordCoreAPI {
         bool enabled{ false };///< Whether the widget is enabled.
     };
 
-    /// Widget Style Options.
     enum class WidgetStyleOptions {
         Shield = 0,
         Banner1 = 1,
@@ -915,43 +852,42 @@ namespace DiscordCoreAPI {
         virtual ~IntegrationData() {}
     };
 
-    /// Audit log event. \brief Audit log event.
     enum class AuditLogEvent {
-        GUILD_UPDATE = 1,///< Guild Update
-        CHANNEL_CREATE = 10,///<Channel Create
-        CHANNEL_UPDATE = 11,///<Channel Update
-        CHANNEL_DELETE = 12,///< Channel Delete
-        CHANNEL_OVERWRITE_CREATE = 13,///< Channel Overwrite Create
-        CHANNEL_OVERWRITE_UPDATE = 14,///< Channel Overwrite Update
-        CHANNEL_OVERWRITE_DELETE = 15,///< Channel Overwrite Delete
-        MEMBER_KICK = 20,///< Member Kick
-        MEMBER_PRUNE = 21,///< Member Prune
-        MEMBER_BAN_ADD = 22,///< Member Ban Add
-        MEMBER_BAN_REMOVE = 23,///< Member Ban Remove
-        MEMBER_UPDATE = 24,///< Member Update
-        MEMBER_ROLE_UPDATE = 25,///< Member Role Update
-        MEMBER_MOVE = 26,///< Member Move
-        MEMBER_DISCONNECT = 27,///< Member Disconnect
-        BOT_ADD = 28,///< Bot Add
-        ROLE_CREATE = 30,///< Role Create
-        ROLE_UPDATE = 31,///< Role Update
-        ROLE_DELETE = 32,///< Role Delete
-        INVITE_CREATE = 40,///< Invite Create
-        INVITE_UPDATE = 41,///< Invite Update
-        INVITE_DELETE = 42,///< Invite Delete
-        WEBHOOK_CREATE = 50,///<Webhook Create
-        WEBHOOK_UPDATE = 51,///<Webhook Update
-        WEBHOOK_DELETE = 52,///<Webhook Delete
-        EMOJI_CREATE = 60,///<Emoji Create
-        EMOJI_UPDATE = 61,///<Emoji Update
-        EMOJI_DELETE = 62,///<Emoji Delete
-        MESSAGE_DELETE = 72,///<Message Delete
-        MESSAGE_BULK_DELETE = 73,///<Message Bulk Delete
-        MESSAGE_PIN = 74,///<Message Pin
-        MESSAGE_UNPIN = 75,///<Message Unpin
-        INTEGRATION_CREATE = 80,///<Integration Create
-        INTEGRATION_UPDATE = 81,///<Integration Update
-        INTEGRATION_DELETE = 82///<Integration Delete
+        GUILD_UPDATE = 1,
+        CHANNEL_CREATE = 10,
+        CHANNEL_UPDATE = 11,
+        CHANNEL_DELETE = 12,
+        CHANNEL_OVERWRITE_CREATE = 13,
+        CHANNEL_OVERWRITE_UPDATE = 14,
+        CHANNEL_OVERWRITE_DELETE = 15,
+        MEMBER_KICK = 20,
+        MEMBER_PRUNE = 21,
+        MEMBER_BAN_ADD = 22,
+        MEMBER_BAN_REMOVE = 23,
+        MEMBER_UPDATE = 24,
+        MEMBER_ROLE_UPDATE = 25,
+        MEMBER_MOVE = 26,
+        MEMBER_DISCONNECT = 27,
+        BOT_ADD = 28,
+        ROLE_CREATE = 30,
+        ROLE_UPDATE = 31,
+        ROLE_DELETE = 32,
+        INVITE_CREATE = 40,
+        INVITE_UPDATE = 41,
+        INVITE_DELETE = 42,
+        WEBHOOK_CREATE = 50,
+        WEBHOOK_UPDATE = 51,
+        WEBHOOK_DELETE = 52,
+        EMOJI_CREATE = 60,
+        EMOJI_UPDATE = 61,
+        EMOJI_DELETE = 62,
+        MESSAGE_DELETE = 72,
+        MESSAGE_BULK_DELETE = 73,
+        MESSAGE_PIN = 74,
+        MESSAGE_UNPIN = 75,
+        INTEGRATION_CREATE = 80,
+        INTEGRATION_UPDATE = 81,
+        INTEGRATION_DELETE = 82
     };
 
     /// Audit log entry info data \brief Audit log entry info data.
@@ -1030,14 +966,13 @@ namespace DiscordCoreAPI {
         string url{ "" };   ///< URL to display on the button.
     };
 
-    /// Activity type. \brief Activity type.
     enum class ActivityType {
-        Game = 0,///< Gaming
-        Streaming = 1,///< Streaming
-        Listening = 2,///< Listening
-        Watching = 3,///< Watching
-        Custom = 4,///< Custom
-        Competing = 5///< Competing
+        Game = 0,
+        Streaming = 1,
+        Listening = 2,
+        Watching = 3,
+        Custom = 4,
+        Competing = 5
     };
 
     /// Activity data. \brief Activity data.
@@ -1066,40 +1001,35 @@ namespace DiscordCoreAPI {
         string web{ "" };///< Web link.
     };
 
-    /// Describes the server's boost level. \brief Describes the server's boost level.
     enum class PremiumTier {
-        NONE = 0,   ///< The Guild has not unlocked any Server Boost perks.
-        TIER_1 = 1, ///< The Guild has unlocked Server Boost level 1 perks.
-        TIER_2 = 2, ///< The Guild has unlocked Server Boost level 2 perks
-        TIER_3 = 3 ///< The Guild has unlocked Server Boost level 3 perks.
+        NONE = 0,
+        TIER_1 = 1,
+        TIER_2 = 2,
+        TIER_3 = 3
     };
 
-    /// Default Message notification level. \brief Default Message notification level.
     enum class DefaultMessageNotificationLevel {
-        ALL_MESSAGES = 0,///< All Messages
-        ONLY_MENTIONS = 1///< Only Mentions
+        ALL_MESSAGES = 0,
+        ONLY_MENTIONS = 1
     };
 
-    /// Explicit content filtering level, by default. \brief Explicit content filtering level, by default.
     enum class ExplicitContentFilterLevel {
-        DISABLED = 0, ///< Disabled
-        MEMBERS_WITHOUT_ROLES = 1,///<Members Without Roles
-        ALL_MEMBERS = 2///< All Members
+        DISABLED = 0,
+        MEMBERS_WITHOUT_ROLES = 1,
+        ALL_MEMBERS = 2
     };
 
-    ///  MFA level. \brief MFA level.
     enum class MFALevel {
-        NONE = 0,///< None
-        ELEVATED = 1///< Elevated
+        NONE = 0,
+        ELEVATED = 1
     };
 
-    /// Verification level required. \brief Verification level required.
     enum class VerificationLevel {
-        NONE = 0,///< None
-        LOW = 1,///< Low
-        MEDIUM = 2,///< Medium
-        HIGH = 3,///< High
-        VERY_HIGH = 4///< Very High
+        NONE = 0,
+        LOW = 1,
+        MEDIUM = 2,
+        HIGH = 3,
+        VERY_HIGH = 4
     };
 
     /// Welcome screen Channel data. \brief Welcome screen Channel data.
@@ -1125,10 +1055,15 @@ namespace DiscordCoreAPI {
         UserData user{};    ///< User data for the current presence.
     };
 
+    enum class StageInstancePrivacyLevel {
+        PUBLIC = 1,
+        GUILD_ONLY = 2
+    };
+
     /// Stage instance data. \brief Stage instance data.
     struct DiscordCoreAPI_Dll StageInstanceData : public DiscordEntity{
+        StageInstancePrivacyLevel privacyLevel{ 0 };  ///< Privacy level of the Channel.
         bool discoverableDisabled{ false }; ///< Is it discoverable?
-        int32_t privacyLevel{ 0 };  ///< Privacy level of the Channel.
         string channelId{ "" }; ///< The Channel's id.
         string guildId{ "" };   ///< The Guild id for which the Channel exists in.
         string topic{ "" }; ///< The topic of the stage instance.
@@ -1136,10 +1071,9 @@ namespace DiscordCoreAPI {
         virtual ~StageInstanceData() {}
     };
 
-    /// Sticker type. \brief Sticker type.
     enum class StickerType {
-        STANDARD = 1,///< Standard
-        GUILD = 2///< Guild
+        STANDARD = 1,
+        GUILD = 2
     };
 
     /// Data representing a single Sticker. \brief Data representing a single Sticker.
@@ -1239,13 +1173,11 @@ namespace DiscordCoreAPI {
         virtual ~GuildData() {};
     };
 
-    /// Guild's scheduled event privacy level. \brief Guild's scheduled event privacy level.
     enum class GuildScheduledEventPrivacyLevel {
-        PUBLIC = 1,///< The scheduled event is public and available in discovery.
-        GUILD_ONLY = 2///< The scheduled event is only accessible to guild members.
+        PUBLIC = 1,
+        GUILD_ONLY = 2
     };
 
-    /// Guild scheduled event status. \brief Guild scheduled event status.
     enum class GuildScheduledEventStatus {
         SCHEDULED = 1,
         ACTIVE = 2,
@@ -1253,7 +1185,6 @@ namespace DiscordCoreAPI {
         CANCELED = 4
     };
 
-    /// Guild scheduled event entity type. \brief Guild scheduled event entity type.
     enum class GuildScheduledEventEntityType {
         NONE = 0,
         STAGE_INSTANCE = 1,
@@ -1329,7 +1260,6 @@ namespace DiscordCoreAPI {
         string name{ "" };///< Template name.
     };
 
-    /// Represents the type of a given invite target. \brief Represents the type of a given invite target.
     enum class InviteTargetTypes {
         STREAM = 1,
         EMBEDDED_APPLICATION = 2
@@ -1443,11 +1373,10 @@ namespace DiscordCoreAPI {
         int32_t fps{ 0 };
     };
 
-    /// ApplicationCommand type. \brief ApplicationCommand type.
     enum class ApplicationCommandType {
-        CHAT_INPUT = 1,///< Chat-Input
-        USER = 2,///< User
-        MESSAGE = 3///< Message
+        CHAT_INPUT = 1,
+        USER = 2,
+        MESSAGE = 3
     };
 
     /// User command interaction data. \brief User command interaction data.
@@ -1477,11 +1406,10 @@ namespace DiscordCoreAPI {
         vector<string> users{}; ///<Array of user_ids to mention (Max size of 100)
     };
 
-    /// Interaction type. \brief Interaction type.
     enum class InteractionType {
-        PING = 1,///< Ping type.
-        APPLICATION_COMMAND = 2,///< ApplicationCommand type.
-        MESSAGE_COMPONENT = 3///<Message component type.
+        PING = 1,
+        APPLICATION_COMMAND = 2,
+        MESSAGE_COMPONENT = 3
     };
 
     /// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
@@ -1493,20 +1421,18 @@ namespace DiscordCoreAPI {
         EmojiData emoji{};///< An optional emoji to put on it.
     };
 
-    /// The type of a given component. \brief The type of a given component.
     enum class ComponentType {
-        ActionRow = 1, ///< Action row component type.
-        Button = 2, ///< Button component type.
-        SelectMenu = 3  ///< Select-menu component type.
+        ActionRow = 1,
+        Button = 2,
+        SelectMenu = 3
     };
 
-    /// The style of a given button. \brief The style of a given button.
     enum class ButtonStyle {
-        Primary = 1, ///< Primary button style.
-        Success = 3,///< Success button style.
-        Secondary = 2,///< Secondary button style.
-        Danger = 4,///< Danger button style.
-        Link = 5    ///< Link button style, for URLs.
+        Primary = 1,
+        Success = 3,
+        Secondary = 2,
+        Danger = 4,
+        Link = 5
     };
 
     /// Represents a single Message-component. \brief Represents a single Message-component.
@@ -1529,13 +1455,12 @@ namespace DiscordCoreAPI {
         vector<ComponentData> components{}; ///< Array of components to make up the action-row.
     };
 
-    /// Interaction callback type. \brief Interaction callback type.
     enum class InteractionCallbackType {
-        Pong = 1,///< Pong.
-        ChannelMessageWithSource = 4,///< Sending a Channel Message with source.
-        DeferredChannelMessageWithSource = 5,///< Deferred Channel Message with source.
-        DeferredUpdateMessage = 6,///< Deferred update Message.
-        UpdateMessage = 7///< Update Message.
+        Pong = 1,
+        ChannelMessageWithSource = 4,
+        DeferredChannelMessageWithSource = 5,
+        DeferredUpdateMessage = 6,
+        UpdateMessage = 7
     };
 
     /// Interaction ApplicationCommand callback data. \brief Interaction ApplicationCommand callback data.
@@ -1618,31 +1543,30 @@ namespace DiscordCoreAPI {
         virtual ~MessageInteractionData() {}
     };
 
-    /// Message type. \brief Message type.
     enum class MessageType {
-        DEFAULT = 0,///< Default
-        RECIPIENT_ADD = 1,///< Recipient Add
-        RECIPIENT_REMOVE = 2,///< Recipient Remove
-        CALL = 3,///< Call
-        CHANNEL_NAME_CHANGE = 4,///< Channel Name Change
-        CHANNEL_ICON_CHANGE = 5,///< Channel Icon Change
-        CHANNEL_PINNED_MESSAGE = 6,///< Channel Pinned Message
-        GUILD_MEMBER_JOIN = 7,///< Guild Member Join
-        USER_PREMIUM_GUILD_SUBSCRIPTION = 8,///< User Premium Guild Subscription
-        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1 = 9,///< User Premium Guild Subscription Tier 1
-        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2 = 10,///< User Premium Guild Subscription tier 2
-        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3 = 11,///< User Premium Guild Subscription Tier 3
-        CHANNEL_FOLLOW_ADD = 12,///< Channel Follow Add
-        GUILD_DISCOVERY_DISQUALIFIED = 14,///< Guild Discovery Disqualified
-        GUILD_DISCOVERY_REQUALIFIED = 15,///< Guild Discovery Requalified
-        GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING = 16,///< Guild Discovery Grace Period Initial Warning
-        GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING = 17,///< Guild Discovery Grace Period Final Warning
-        THREAD_CREATED = 18,///< Thread Created
-        REPLY = 19,///< Reply
-        CHAT_INPUT_COMMAND = 20,///< Chat Input Command
-        THREAD_STARTER_MESSAGE = 21,///< Thread Starter Message
-        GUILD_INVITE_REMINDER = 22,///< Guild Invite Reminder
-        CONTEXT_MENU_COMMAND = 23///< Context Menu Command
+        DEFAULT = 0,
+        RECIPIENT_ADD = 1,
+        RECIPIENT_REMOVE = 2,
+        CALL = 3,
+        CHANNEL_NAME_CHANGE = 4,
+        CHANNEL_ICON_CHANGE = 5,
+        CHANNEL_PINNED_MESSAGE = 6,
+        GUILD_MEMBER_JOIN = 7,
+        USER_PREMIUM_GUILD_SUBSCRIPTION = 8,
+        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1 = 9,
+        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2 = 10,
+        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3 = 11,
+        CHANNEL_FOLLOW_ADD = 12,
+        GUILD_DISCOVERY_DISQUALIFIED = 14,
+        GUILD_DISCOVERY_REQUALIFIED = 15,
+        GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING = 16,
+        GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING = 17,
+        THREAD_CREATED = 18,
+        REPLY = 19,
+        CHAT_INPUT_COMMAND = 20,
+        THREAD_STARTER_MESSAGE = 21,
+        GUILD_INVITE_REMINDER = 22,
+        CONTEXT_MENU_COMMAND = 23
     };
 
     enum class MessageFlags {
@@ -1656,11 +1580,10 @@ namespace DiscordCoreAPI {
         LOADING = 1ull << 7
     };
 
-    /// Message sticker item type. \brief Message sticker item type.
     enum class StickerItemType {
-        PNG = 1,///< PNG
-        APNG = 2,///< APNG
-        LOTTIE = 3///< Lottie
+        PNG = 1,
+        APNG = 2,
+        LOTTIE = 3
     };
 
     /// Message sticker item data. \brief Message sticker item data.
@@ -1798,12 +1721,11 @@ namespace DiscordCoreAPI {
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
     };
 
-    /// Audio frame type. \brief Audio frame type.
     enum class AudioFrameType {
-        Unset = 0,///< Unset
-        Encoded = 1,///< Encoded
-        RawPCM = 2,///< Raw PCM
-        Cancel = 3///< Cancel
+        Unset = 0,
+        Encoded = 1,
+        RawPCM = 2,
+        Cancel = 3
     };
 
     /// Represents a single frame of audio data. \brief Represents a single frame of audio data.
@@ -1814,6 +1736,7 @@ namespace DiscordCoreAPI {
     };
 
     /**@}*/
+
     enum class SongType {
         YouTube = 0,
         SoundCloud = 1
@@ -1828,29 +1751,28 @@ namespace DiscordCoreAPI {
     * \addtogroup foundation_entities
     * @{
     */
-    /// Input-event response type. \brief Input-event response type.
+
     enum class InputEventResponseType {
-        Unset = 0,///< Unset
-        DeferredResponse = 1,///<Deferred Response
-        InteractionResponse = 2,///<Interaction Response
-        InteractionResponseEdit = 3,///<Interaction Response Edit
-        EphemeralInteractionResponse = 4,///<Ephemeral Interaction Response
-        RegularMessage = 5,///< Regular Message
-        RegularMessageEdit = 6,///< Regular Message Edit
-        FollowUpMessage = 7,///< Follow Up Message
-        FollowUpMessageEdit = 8,///< Follow Up Message Edit
-        EphemeralFollowUpMessage = 9,///< Ephemeral Follow Up Message
-        SendDM = 10///< Send Direct-Message
+        Unset = 0,
+        DeferredResponse = 1,
+        InteractionResponse = 2,
+        InteractionResponseEdit = 3,
+        EphemeralInteractionResponse = 4,
+        RegularMessage = 5,
+        RegularMessageEdit = 6,
+        FollowUpMessage = 7,
+        FollowUpMessageEdit = 8,
+        EphemeralFollowUpMessage = 9,
+        SendDM = 10
     };
 
-    /// Input-event type. \brief Input-event type.
     enum class InputEventType {
-        SLASH_COMMAND_INTERACTION = 1, ///< A chat-ApplicationCommand
-        BUTTON_INTERACTION = 2, ///< A button interaction
-        REGULAR_MESSAGE = 3, ///< A regular Message
-        SELECT_MENU_INTERACTION = 4, ///< Select-menu input
-        MESSAGE_COMMAND_INTERACTION = 5, ///<Message-command-interaction
-        USER_COMMAND_INTERACTION = 6 ///<User-command-interaction.
+        SLASH_COMMAND_INTERACTION = 1,
+        BUTTON_INTERACTION = 2,
+        REGULAR_MESSAGE = 3,
+        SELECT_MENU_INTERACTION = 4,
+        MESSAGE_COMMAND_INTERACTION = 5,
+        USER_COMMAND_INTERACTION = 6
     };
 
     struct DiscordCoreAPI_Dll GuildEmojisUpdateEventData {
@@ -2392,7 +2314,7 @@ namespace DiscordCoreAPI {
     * \addtogroup foundation_entities
     * @{
     */
-    /// Permissions. \brief Permissions.
+
     enum class Permissions : int64_t {
         CREATE_INSTANT_INVITE = 0x0000000001,
         KICK_MEMBERS = 0x0000000002,
@@ -2636,36 +2558,23 @@ namespace DiscordCoreAPI {
         static string computePermissions(GuildMember guildMember, ChannelData channel);
     };
 
-    /// Returns from an execution of recurseThroughMessagePages(). \brief Returns from an execution of recurseThroughMessagePages().
     struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData {
-        InputEventData inputEventData{};///< The latest InputEventData that was returned by updating the message.
-        uint32_t currentPageIndex{};//< The current page index, within the number of submitted pages to turn through.
-        string buttonId{};///< The id of the last button that was pressed.
+        InputEventData inputEventData{};
+        uint32_t currentPageIndex{};
+        string buttonId{};
     };
 
-    /// Recurses through a succession of messages. \brief Recurses through a succession of messages.
-    /// \param userID A user's id to check for the responses of to the buttons.
-    /// \param originalEvent The original InputEventData structure.
-    /// \param currentPageIndex The current page within the stack of pages to recurse through.
-    /// \param messageEmbeds A vector full of EmbedData to recurse through.
-    /// \param deleteAfter A bool determining whether or not the message will be deleted upon timeout/exiting.
-    /// \param waitForMaxMs Maximum number of milliseconds to wait for a button response.
-    /// \param returnResult Whether or not to accept a request to return the result.
-    /// \returns A RecurseThroughMessagePageData structure.
     DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, uint32_t currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
     /**@}*/
 };
 
 namespace  DiscordCoreInternal {
-    /**
-    * \addtogroup foundation_entities
-    * @{
-    */
-    class DiscordCoreAPI_Dll ApplicationCommands;
-    class DiscordCoreAPI_Dll BaseWebSocketAgent;
-    class DiscordCoreAPI_Dll HttpRequestAgent;
-    class DiscordCoreAPI_Dll ThreadManager;
-    class DiscordCoreAPI_Dll DataParser;
+
+    class ApplicationCommands;
+    class BaseWebSocketAgent;
+    class HttpRequestAgent;
+    class ThreadManager;
+    class DataParser;
 
     enum class ConnectionWebSocketType {
         Receive = 0,
@@ -2808,45 +2717,51 @@ namespace  DiscordCoreInternal {
         GET_GUILD_MEMBERS = 81,
         GET_SEARCH_GUILD_MEMBERS = 82,
         PUT_GUILD_MEMBER = 83,
-        PATCH_CURRENT_GUILD_MEMBER = 84,
-        PUT_GUILD_MEMBER_ROLE = 85,
-        DELETE_GUILD_MEMBER_ROLE = 86,
-        DELETE_GUILD_MEMBER = 87,
-        GET_GUILD_BANS = 88,
-        GET_GUILD_BAN = 89,
-        PUT_GUILD_BAN = 90,
-        DELETE_GUILD_BAN = 91,
-        GET_GUILD_ROLES = 92,
-        POST_GUILD_ROLE = 93,
-        PATCH_GUILD_ROLE_POSITIONS = 94,
-        PATCH_GUILD_ROLE = 95,
-        DELETE_GUILD_ROLE = 96,
-        GET_GUILD_PRUNE_COUNT = 97,
-        POST_GUILD_PRUNE = 98,
-        GET_GUILD_VOICE_REGIONS = 99,
-        GET_GUILD_INVITES = 100,
-        GET_GUILD_INTEGRATIONS = 101,
-        DELETE_GUILD_INTEGRATION = 102,
-        GET_GUILD_WIDGET_SETTINGS = 103,
-        MODIFY_GUILD_WIDGET = 104,
-        GET_GUILD_WIDGET = 105,
-        GET_VANITY_INVITE = 106,
-        GET_GUILD_WIDGET_IMAGE = 107,
-        GET_GUILD_WELCOME_SCREEN = 108,
-        PATCH_GUILD_WELCOME_SCREEN = 109,
-        PATCH_CURRENT_USER_VOICE_STATE = 110,
-        PATCH_USER_VOICE_STATE = 111,
-        GET_GUILD_SCHEDULED_EVENTS = 112,
-        POST_GUILD_SCHEDULED_EVENT = 113,
-        GET_GUILD_SCHEDULED_EVENT = 114,
-        PATCH_GUILD_SCHEDULED_EVENT = 115,
-        DELETE_GUILD_SCHEDULED_EVENT = 116,
-        GET_GUILD_SCHEDULED_EVENT_USERS = 117,
-        GET_GUILD_TEMPLATE = 118,
-        POST_GUILD_FROM_GUILD_TEMPLATE = 119,
-        GET_GUILD_TEMPLATES = 120,
-        POST_GUILD_TEMPLATE = 121,
-        PUT_GUILD_TEMPLATE = 122,
+        PATCH_GUILD_MEMBER = 84,
+        PATCH_CURRENT_GUILD_MEMBER = 85,
+        PUT_GUILD_MEMBER_ROLE = 86,
+        DELETE_GUILD_MEMBER_ROLE = 87,
+        DELETE_GUILD_MEMBER = 88,
+        GET_GUILD_BANS = 89,
+        GET_GUILD_BAN = 90,
+        PUT_GUILD_BAN = 91,
+        DELETE_GUILD_BAN = 92,
+        GET_GUILD_ROLES = 93,
+        POST_GUILD_ROLE = 94,
+        PATCH_GUILD_ROLE_POSITIONS = 95,
+        PATCH_GUILD_ROLE = 96,
+        DELETE_GUILD_ROLE = 97,
+        GET_GUILD_PRUNE_COUNT = 98,
+        POST_GUILD_PRUNE = 99,
+        GET_GUILD_VOICE_REGIONS = 100,
+        GET_GUILD_INVITES = 101,
+        GET_GUILD_INTEGRATIONS = 102,
+        DELETE_GUILD_INTEGRATION = 103,
+        GET_GUILD_WIDGET_SETTINGS = 104,
+        MODIFY_GUILD_WIDGET = 105,
+        GET_GUILD_WIDGET = 106,
+        GET_VANITY_INVITE = 107,
+        GET_GUILD_WIDGET_IMAGE = 108,
+        GET_GUILD_WELCOME_SCREEN = 109,
+        PATCH_GUILD_WELCOME_SCREEN = 110,
+        PATCH_CURRENT_USER_VOICE_STATE = 111,
+        PATCH_USER_VOICE_STATE = 112,
+        GET_GUILD_SCHEDULED_EVENTS = 113,
+        POST_GUILD_SCHEDULED_EVENT = 114,
+        GET_GUILD_SCHEDULED_EVENT = 115,
+        PATCH_GUILD_SCHEDULED_EVENT = 116,
+        DELETE_GUILD_SCHEDULED_EVENT = 117,
+        GET_GUILD_SCHEDULED_EVENT_USERS = 118,
+        GET_GUILD_TEMPLATE = 119,
+        POST_GUILD_FROM_GUILD_TEMPLATE = 120,
+        GET_GUILD_TEMPLATES = 121,
+        POST_GUILD_TEMPLATE = 122,
+        PUT_GUILD_TEMPLATE = 123,
+        PATCH_GUILD_TEMPLATE = 124,
+        DELETE_GUILD_TEMPLATE = 125,
+        GET_INVITE = 126,
+        DELETE_INVITE = 127,
+        POST_STAGE_INSTANCE = 128,
 
         GET_USER,
         GET_USER_SELF,
@@ -2857,8 +2772,6 @@ namespace  DiscordCoreInternal {
         GET_SOCKET_PATH,
         YOUTUBE_SEARCH,
         YOUTUBE_VIDEO_QUERY,
-        PATCH_GUILD_MEMBER,
-        GET_INVITE,
         DELETE_LEAVE_GUILD,
         SOUNDCLOUD_SEARCH,
         SOUNDCLOUD_AUTH,

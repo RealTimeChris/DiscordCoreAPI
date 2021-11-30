@@ -29,12 +29,14 @@ namespace DiscordCoreAPI {
         explicit InvalidState(const string & message) : exception(message.c_str()) {}
     };
 
-    /// The current status of the CoRoutine. \brief The current status of the CoRoutine.
+    /** CoRoutineStatus
+     *  The current status of the associated CoRoutine.
+     */
     enum class CoRoutineStatus {
-        Idle = 0,
-        Running = 1,
-        Complete = 2,
-        Cancelled = 3
+        Idle = 0,///< Idle.
+        Running = 1,///< Running.
+        Complete = 2,///< Complete.
+        Cancelled = 3///< Cancelled.
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
@@ -258,8 +260,6 @@ namespace DiscordCoreAPI {
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
-    /// Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle. \brief Used to set the CoRoutine into executing on a new thread, relative to the thread of the caller, as well as acquire the CoRoutine handle.
-    /// \param returnType The type returned by the containing CoRoutine.
     template<typename returnType>
     DiscordCoreAPI_Dll inline auto NewThreadAwaitable() {
         class DiscordCoreAPI_Dll NewThreadAwaitable {

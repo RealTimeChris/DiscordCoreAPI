@@ -757,7 +757,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
-                pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<int32_t>();
+                pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<DiscordCoreAPI::StageInstancePrivacyLevel>();
             }
 
             if (jsonObjectData.contains("discoverable_disabled") && !jsonObjectData["discoverable_disabled"].is_null()) {

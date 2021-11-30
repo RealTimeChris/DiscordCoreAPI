@@ -15,18 +15,26 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 
+	/// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
+	struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
+		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
+		string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
+		string userId{ "" };///< The User for whom to look for the actions of.
+		int32_t limit{ 0 };///< The maximum number of actions to acquire from the log.
+	};
+
 	/// For creating a Guild. \brief For creating a Guild.
 	struct DiscordCoreAPI_Dll CreateGuildData {
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::SHORTEST };///< Afk timeout in seconds.
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		int32_t systemChannelFlags{ 0 };///< System channel flags.
 		vector<ChannelData> channels{};///< Array of partial channel objects.
 		int32_t verificationLevel{ 0 };///< Verification level.
-		vector<uint8_t> icon{};///< base64 128x128 image for the guild icon.
 		string systemChannelId{ "" };///< The id of the channel where guild notices such as welcome messages and boost events are posted.
 		string afkChannelId{ "" };///< Id for afk channel.
 		vector<RoleData> roles{};///< Array of role objects.
+		vector<uint8_t> icon{};///< base64 128x128 image for the guild icon.
 		string name{ "" };///< The name of the new Guild.
 	};
 
@@ -38,6 +46,63 @@ namespace DiscordCoreAPI {
 	/// For acquiring a Guild preview of a chosen Guild. \brief For acquiring a Guild preview of a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildPreviewData {
 		string guildId{ "" };///< The id of the Guild's preview to acquire.
+	};
+
+	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
+	struct DiscordCoreAPI_Dll ModifyGuildData {
+		ModifyGuildData(GuildData dataPackage) {
+			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
+			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
+			this->explicitContentFilter = dataPackage.explicitContentFilter;
+			this->systemChannelFlags = dataPackage.systemChannelFlags;
+			this->verificationLevel = dataPackage.verificationLevel;
+			this->preferredLocale = dataPackage.preferredLocale;
+			this->systemChannelId = dataPackage.systemChannelId;
+			this->rulesChannelId = dataPackage.rulesChannelId;
+			this->afkChannelId = dataPackage.afkChannelId;
+			this->description = dataPackage.description;
+			this->afkTimeout = dataPackage.afkTimeOut;
+			this->features = dataPackage.features;
+			this->ownerId = dataPackage.ownerId;
+			this->guildId = dataPackage.id;
+			this->name = dataPackage.name;
+		}
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
+		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
+		vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the guild discovery splash(when the server has the DISCOVERABLE feature).
+		VerificationLevel verificationLevel{};///< Verification level.
+		string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
+		vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the guild splash(when the server has the INVITE_SPLASH feature).
+		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
+		vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the guild banner(when the server has the BANNER feature).
+		int32_t systemChannelFlags{ 0 };///< System channel flags.
+		vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
+		string preferredLocale{ "" };///< The preferred locale of a Community guild used in server discovery and notices from Discord; defaults to "en-US".
+		string systemChannelId{ "" };///< The id of the channel where guild notices such as welcome messages and boost events are posted.
+		string rulesChannelId{ "" };///< The id of the channel where Community guilds display rules and /or guidelines.
+		string afkChannelId{ "" };///< Id for afk channels.
+		vector<string> features{};///< Array of guild feature strings enabled guild features.
+		string description{ "" };///< The description for the guild, if the guild is discoverable.
+		string ownerId{ "" };///< User id to transfer guild ownership to(must be owner).
+		string guildId{ "" };///< Id of the chosen Guild to modify.
+		string reason{ "" };///< Reason for modifying the Guild.
+		string name{ "" };///< Desired name of the Guild.		
+	};
+
+	///	For deleting a Guild. \brief For deleting a Guild.
+	struct DiscordCoreAPI_Dll DeleteGuildData {
+		string guildId{ "" };///< The Guild you would like to delete.
+	};
+
+	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
+	struct DiscordCoreAPI_Dll GetGuildBansData {
+		string guildId{ "" };///< The Guild from which to collect the list of bans.
+	};
+
+	/// For getting a single Guild Ban. \brief For getting a single Guild Ban.
+	struct DiscordCoreAPI_Dll GetGuildBanData {
+		string guildId{ "" };///< The Guild from which to collect the Ban from.
+		string userId{ "" };///< The User for whom to collect the Ban of.
 	};
 
 	/// For banning a current GuildMember. \brief For banning a current GuildMember.
@@ -53,47 +118,6 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The Guild from which to remove the Ban.
 		string userId{ "" };///< The user Id of the user who's ban to remove.
 		string reason{ "" };///< The reason for removing this Ban.
-	};
-
-	/// For geting all of the current invites from a Guild. \brief For geting all of the current invites from a Guild.
-	struct DiscordCoreAPI_Dll GetGuildInvitesData {
-		string guildId{ "" };///< The id of the Guild you wish to acquire.
-	};
-
-	/// For geting a single invite's data from a Guild. \brief For geting a single invite's data from a Guild.
-	struct DiscordCoreAPI_Dll GetGuildInviteData {
-		bool withExpiration{ false };///< Collect expiration time/date?
-		bool withCount{ false };///< Collect usage etc counts?
-		string inviteId{ "" };///< The id of the invite you wish to acquire.		
-	};
-
-	/// For geting the vanity invite data of a Guild. \brief For geting the vanity invite data of a Guild.
-	struct DiscordCoreAPI_Dll GetGuildVanityInviteData {
-		string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
-	};
-
-	///	For deleting a Guild. \brief For deleting a Guild.
-	struct DiscordCoreAPI_Dll DeleteGuildData {
-		string guildId{ "" };///< The Guild you would like to delete.
-	};
-
-	/// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
-	struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
-		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
-		string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
-		string userId{ "" };///< The User for whom to look for the actions of.
-		int32_t limit{ 0 };///< The maximum number of actions to acquire from the log.
-	};
-
-	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
-	struct DiscordCoreAPI_Dll GetGuildBansData {
-		string guildId{ "" };///< The Guild from which to collect the list of bans.
-	};
-
-	/// For getting a single Guild Ban. \brief For getting a single Guild Ban.
-	struct DiscordCoreAPI_Dll GetGuildBanData {
-		string guildId{ "" };///< The Guild from which to collect the Ban from.
-		string userId{ "" };///< The User for whom to collect the Ban of.
 	};
 
 	/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
@@ -115,6 +139,11 @@ namespace DiscordCoreAPI {
 	/// For collecting a list of Guild voice regions. \brief For collecting a list of Guild voice regions.
 	struct DiscordCoreAPI_Dll GetGuildVoiceRegionsData {
 		string guildId{ "" };///< The guild for which to collect the voice regions from.
+	};
+
+	/// For geting all of the current invites from a Guild. \brief For geting all of the current invites from a Guild.
+	struct DiscordCoreAPI_Dll GetGuildInvitesData {
+		string guildId{ "" };///< The id of the Guild you wish to acquire.
 	};
 
 	/// For collecting a list of Guild voice integrations. \brief
@@ -146,12 +175,17 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The Guild from which to collect the widget from.
 	};
 
+	/// For geting the vanity invite data of a Guild. \brief For geting the vanity invite data of a Guild.
+	struct DiscordCoreAPI_Dll GetGuildVanityInviteData {
+		string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
+	};
+	
 	/// For collecting a Guild's widget image. \brief For collecting a Guild's widget image.
 	struct DiscordCoreAPI_Dll GetGuildWidgetImageData {
 		WidgetStyleOptions widgetStlye{};///< The style of widget image to collect.
 		string guildId{ "" };///< The Guild for which to collect the widget image from.		
 	};
-
+	
 	/// For collecting a Guild's welcome screen. \brief For collecting a Guild's welcome screen.
 	struct DiscordCoreAPI_Dll GetGuildWelcomeScreenData {
 		string guildId{ "" };///< The Guild for which to collect the widget image from.		
@@ -160,8 +194,8 @@ namespace DiscordCoreAPI {
 	/// For modifying a Guild's welcome screen. \brief For modifying a Guild's welcome screen.
 	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData {
 		vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
-		bool enabled{ false };///< Is it enabled?
 		string description{ "" };///< The description of the welcome screen.
+		bool enabled{ false };///< Is it enabled?
 		string guildId{ "" };///< The Guild for which to modify the welcome screen of.
 		string reason{ "" };///< The reason for modifying the welcome screen.
 	};
@@ -172,28 +206,56 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Creates a Guild from a Guild template. \brief Creates a Guild from a Guild template.
-	struct CreateGuildFromGuildTemplateData {
+	struct DiscordCoreAPI_Dll CreateGuildFromGuildTemplateData {
 		string templateCode{ "" };///< Code for the desired Template to use.
 		string name{ "" };///< Desired name of the Guild.
 		vector<uint8_t> imageData{};///< base64 128x128 image for the Guild icon.
 	};
 
 	/// For collecting a list of Guild Templates from a chosen Guild. \brief For collecting a list of Guild Templates from a chosen Guild.
-	struct GetGuildTemplatesData {
+	struct DiscordCoreAPI_Dll GetGuildTemplatesData {
 		string guildId{ "" };///< Guild from which you would like to collect the Templates from.
 	};
 
 	/// For creating a Guild Template. \brief For creating a Guild Template.
-	struct CreateGuildTemplateData {
+	struct DiscordCoreAPI_Dll CreateGuildTemplateData {
 		string description{ "" };///< Description for the template (0 - 120 characters).
 		string guildId{ "" };///< Guild within which you wuold like to create the template.
 		string name{ "" };///< Name of the template (1 - 100 characters).
 	};
 
 	/// For syncing a Guild Template. \brief For syncing a Guild Template.
-	struct SyncGuildTemplateData {
+	struct DiscordCoreAPI_Dll SyncGuildTemplateData {
 		string templateCode{ "" };///< Template code for which template you would like to sync.
 		string guildId{ "" };///< Guild for which you would like to sync the template of.
+	};
+
+	/// For modifying a Guild Template. \brief For modifying a Guild Template.
+	struct DiscordCoreAPI_Dll ModifyGuildTemplateData {
+		string templateCode{ "" };/// Template which you would like to modify.
+		string description{ "" };///< Description for the template (0 - 120 characters).
+		string guildId{ "" };///< Guild within which you would like to modify the Template.
+		string name{ "" };///< Name of the template (1 - 100 characters).
+	};
+
+	/// For deleting a Guild Template. \brief For deleting a Guild Template.
+	struct DiscordCoreAPI_Dll DeleteGuildTemplateData {
+		string templateCode{ "" };///< The template which you would like to delete.
+		string guildId{ "" };///< The Guild within which you would like to delete the Template.	
+	};
+
+	/// For geting a single invite's data from a Guild. \brief For geting a single invite's data from a Guild.
+	struct DiscordCoreAPI_Dll GetInviteData {
+		string guildScheduledEventId{ "" };///< The guild scheduled event to include with the invite.
+		bool withExpiration{ false };///< Collect expiration time/date?
+		bool withCount{ false };///< Collect usage etc counts?
+		string inviteId{ "" };///< The id of the invite you wish to acquire.		
+	};
+
+	/// For deleting a single Guild Invite. \brief For deleting a single Guild Invite.
+	struct DiscordCoreAPI_Dll DeleteInviteData {
+		string inviteId{ "" };///< The Invite which you would like to delete.
+		string reason{ "" };///< Reason for deleting the Invite.		
 	};
 
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
@@ -241,58 +303,10 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 	/**
-	* \addtogroup voice_connection
-	* @{
-	*/
-
-	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
-	struct DiscordCoreAPI_Dll ModifyGuildData {
-		ModifyGuildData(Guild dataPackage) {
-			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
-			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
-			this->explicitContentFilter = dataPackage.explicitContentFilter;
-			this->systemChannelFlags = dataPackage.systemChannelFlags;
-			this->verificationLevel = dataPackage.verificationLevel;
-			this->preferredLocale = dataPackage.preferredLocale;
-			this->systemChannelId = dataPackage.systemChannelId;
-			this->rulesChannelId = dataPackage.rulesChannelId;
-			this->afkChannelId = dataPackage.afkChannelId;
-			this->description = dataPackage.description;
-			this->afkTimeout = dataPackage.afkTimeOut;
-			this->features = dataPackage.features;
-			this->ownerId = dataPackage.ownerId;
-			this->guildId = dataPackage.id;
-			this->name = dataPackage.name;
-		}
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
-		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the guild discovery splash(when the server has the DISCOVERABLE feature).
-		VerificationLevel verificationLevel{};///< Verification level.
-		string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
-		vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the guild splash(when the server has the INVITE_SPLASH feature).
-		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the guild banner(when the server has the BANNER feature).
-		int32_t systemChannelFlags{ 0 };///< System channel flags.
-		vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
-		string preferredLocale{ "" };///< The preferred locale of a Community guild used in server discovery and notices from Discord; defaults to "en-US".
-		string systemChannelId{ "" };///< The id of the channel where guild notices such as welcome messages and boost events are posted.
-		string rulesChannelId{ "" };///< The id of the channel where Community guilds display rules and /or guidelines.
-		string afkChannelId{ "" };///< Id for afk channels.
-		vector<string> features{};///< Array of guild feature strings enabled guild features.
-		string description{ "" };///< The description for the guild, if the guild is discoverable.
-		string ownerId{ "" };///< User id to transfer guild ownership to(must be owner).
-		string guildId{ "" };///< Id of the chosen Guild to modify.
-		string reason{ "" };///< Reason for modifying the Guild.
-		string name{ "" };///< Desired name of the Guild.		
-	};
-
-	/**@}*/
-
-	/**
 	* \addtogroup discord_core_client
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints.
+	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	public:
 
@@ -309,10 +323,9 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> createGuildAsync(CreateGuildData dataPackage);
 
-		/// Acquires the preview Data of a chosen Guild. \brief Acquires the preview Data of a chosen Guild.
-		/// \param dataPackage A GetGuildPreviewData structure.
-		/// \returns A CoRoutine containing a GuildPreviewData.
-		static CoRoutine<GuildPreviewData> getGuildPreviewAsync(GetGuildPreviewData dataPackage);
+		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
+		/// \returns A CoRoutine containing a vector of Guild.
+		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 
 		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
 		/// \param dataPackage A GetGuildData structure.
@@ -323,6 +336,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> getGuildAsync(GetGuildData dataPackage);
+
+		/// Acquires the preview Data of a chosen Guild. \brief Acquires the preview Data of a chosen Guild.
+		/// \param dataPackage A GetGuildPreviewData structure.
+		/// \returns A CoRoutine containing a GuildPreviewData.
+		static CoRoutine<GuildPreviewData> getGuildPreviewAsync(GetGuildPreviewData dataPackage);
 
 		/// Modifies a chosen Guild's properties. \brief Modifies a chosen Guild's properties.
 		/// \param dataPackage A ModifyGuildData structure.
@@ -353,10 +371,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A RemoveGuildBanData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeGuildBanAsync(RemoveGuildBanData dataPackage);
-
-		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
-		/// \returns A CoRoutine containing a vector of Guild.
-		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 		
 		/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
 		/// \param dataPackage A GetGuildPruneCountData structure.
@@ -372,6 +386,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetGuildVoiceRegionsData structure.
 		/// \returns A CoRoutine containing a vector of VoiceRegionData.
 		static CoRoutine<vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
+
+		/// Gets multiple invites from the Discord servers. \brief Gets multiple invites from the Discord servers.
+		/// \param dataPackage A GetInvitesData structure.
+		/// \returns A CoRoutine containing a vector of InviteData.
+		static CoRoutine<vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
 
 		/// Gets the list of Guild integrations for a particular server. \brief Gets the list of Guild integrations for a particular server.
 		/// \param dataPackage A GetGuildIntegrationsData structure.
@@ -398,6 +417,11 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a GuildWidgetData.
 		static CoRoutine<GuildWidgetData> getGuildWidgetAsync(GetGuildWidgetData dataPackage);
 
+		/// Gets the vanity invite data from a particular server. \brief Gets the vanity invite data from a particular server.
+		/// \param dataPackage A GetVanityInviteData structure.
+		/// \returns A CoRoutine containing InviteData.
+		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);
+
 		/// Gets the Guild widget image for a particular server. \brief Gets the Guild widget image for a particular server.
 		/// \param dataPackage A GetGuildWidgetImageData structure.
 		/// \returns A CoRoutine containing a GuildWidgetImageData.
@@ -412,21 +436,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A ModifyGuildWelcomeScreenData structure.
 		/// \returns A CoRoutine containing a WelcomeScreenData.
 		static CoRoutine<WelcomeScreenData> modifyGuildWelcomeScreenAsync(ModifyGuildWelcomeScreenData dataPackage);
-
-		/// Gets an invite from the Discord servers. \brief Gets an invite from the Discord servers.
-		/// \param dataPackage A GetInviteData structure.
-		/// \returns A CoRoutine containing InviteData.
-		static CoRoutine<InviteData> getGuildInviteAsync(GetGuildInviteData dataPackage);
-
-		/// Gets multiple invites from the Discord servers. \brief Gets multiple invites from the Discord servers.
-		/// \param dataPackage A GetInvitesData structure.
-		/// \returns A CoRoutine containing a vector of InviteData.
-		static CoRoutine<vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
-
-		/// Gets the vanity invite data from a particular server. \brief Gets the vanity invite data from a particular server.
-		/// \param dataPackage A GetVanityInviteData structure.
-		/// \returns A CoRoutine containing InviteData.
-		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);
 
 		/// Gets the Guild Template from a particular server. \brief Gets the Guild Template from a particular server.
 		/// \param dataPackage A GetGuildTemplateData structure.
@@ -452,7 +461,26 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A SyncGuildTemplateData structure.
 		/// \returns A CoRoutine containing a GuiildTemplateData.
 		static CoRoutine<GuildTemplateData> syncGuildTemplateAsync(SyncGuildTemplateData dataPackage);
-		
+
+		/// Modifies a Guild Template. \brief Modifies a Guild Template.
+		/// \param dataPackage A ModifyGuildTemplateData structure.
+		/// \returns A CoRoutine containing a GuiildTemplateData.
+		static CoRoutine<GuildTemplateData> modifyGuildTemplateAsync(ModifyGuildTemplateData dataPackage);
+
+		/// Deletes a Guild Template. \brief Deletes a Guild Template.
+		/// \param dataPackage A DeleteGuildTemplateData structure.
+		/// \returns A CoRoutine containing a void.
+		static CoRoutine<void> deleteGuildTemplateAsync(DeleteGuildTemplateData dataPackage);
+
+		/// Gets an invite from the Discord servers. \brief Gets an invite from the Discord servers.
+		/// \param dataPackage A GetInviteData structure.
+		/// \returns A CoRoutine containing InviteData.
+		static CoRoutine<InviteData> getInviteAsync(GetInviteData dataPackage);
+
+		/// Deletes an invite from the Discord servers. \brief Deletes an invite from the Discord servers.
+		/// \param dataPackage A DeleteInviteData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteInviteAsync(DeleteInviteData dataPackage);
 
 	protected:
 		static ObjectCache<Guild> cache;
