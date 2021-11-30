@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
             ~promise_type() {}
 
             void return_value(returnType returnValue) {
-                this->result = move(returnValue);
+                this->result = returnValue;
             }
 
             auto get_return_object() {

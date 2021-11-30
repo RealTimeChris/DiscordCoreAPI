@@ -11,12 +11,17 @@
 namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll Sticker : public StickerData {
-	protected:
-
+	public:
 		friend struct Concurrency::details::_ResultHolder<Sticker>;
 		friend class Guild;
 
 		Sticker();
+
+		virtual ~Sticker() {};
+
+	protected:
+
+		
 
 		Sticker(StickerData dataNew);
 	};

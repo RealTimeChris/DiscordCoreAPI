@@ -38,37 +38,43 @@ namespace DiscordCoreAPI {
         ~ObjectCache() {}
 
         storageType returnValue(string valueId) {
-            lock_guard<mutex> returnLock{ this->accessMutex };
+            lock_guard<recursive_mutex> returnLock{ this->accessMutex };
             return this->cache.at(valueId);
         }
 
         storageType* returnPointer(string valueId) {
-            lock_guard<mutex> returnLock{ this->accessMutex };
+            lock_guard<recursive_mutex> returnLock{ this->accessMutex };
             return &(this->cache).at(valueId);
         }
 
         bool contains(string valueId) {
-            lock_guard<mutex> containLock{ this->accessMutex };
-            return this->cache.contains(valueId);
+            lock_guard<recursive_mutex> containLock{ this->accessMutex };
+            if (!this->cache.contains(valueId)) {
+                return false;
+            }
+            else {
+                cout << "GETTING THE ID: " << valueId << endl;
+                return true;
+            }
         }
 
         void erase(string valueId) {
-            lock_guard<mutex> eraseLock{ this->accessMutex };
+            lock_guard<recursive_mutex> eraseLock{ this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
         }
 
         void storeValue(string valueId, storageType storageValue) {
-            lock_guard<mutex> storeLock{ this->accessMutex };
-            this->cache.insert_or_assign(valueId, move(storageValue));
+            lock_guard<recursive_mutex> storeLock{ this->accessMutex };
+            this->cache.insert_or_assign(valueId, storageValue);
         }
 
     protected:
 
         map<string, storageType> cache{};
 
-        mutex accessMutex{};
+        recursive_mutex accessMutex{};
     };
 
     template<typename timeType>
