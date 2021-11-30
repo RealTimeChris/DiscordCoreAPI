@@ -182,7 +182,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->permissionOverwrites.at(to_string(value.at("id")));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.id, move(newData));
+                    string overWriteId = newData.id;
+                    newMap.insert_or_assign(overWriteId, move(newData));
                 }
                 pDataStructure->permissionOverwrites = newMap;
             }
@@ -223,7 +224,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->recipients.at(to_string(value.at("id")));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.id, move(newData));
+                    string userId = newData.id;
+                    newMap.insert_or_assign(userId, move(newData));
                 }
                 pDataStructure->recipients = newMap;
             }
@@ -970,7 +972,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->stickers.at(value.at("id"));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.id, move(newData));
+                    string stickerId = newData.id;
+                    newMap.insert_or_assign(stickerId, move(newData));
                 }
                 pDataStructure->stickers = newMap;
             }
@@ -983,7 +986,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->roles.at(to_string(value.at("id")));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.id, move(newData));
+                    string roleId = newData.id;
+                    newMap.insert_or_assign(roleId, move(newData));
                 }
                 pDataStructure->roles = newMap;
             }
@@ -1020,7 +1024,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->emoji.at(value.at("name"));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.name, move(newData));
+                    string emojiId = newData.name;
+                    newMap.insert_or_assign(emojiId, move(newData));
                 }
                 pDataStructure->emoji = newMap;
             }
@@ -1053,7 +1058,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->voiceStates.at(value.at("user_id"));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.userId, move(newData));
+                    string userId = newData.userId;
+                    newMap.insert_or_assign(userId, move(newData));
                 }
                 pDataStructure->voiceStates = newMap;
             }
@@ -1066,7 +1072,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->members.at(value.at("user").at("id"));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.user.id, move(newData));
+                    string userId = newData.user.id;
+                    newMap.insert_or_assign(userId, move(newData));
                 }
                 pDataStructure->members = newMap;
             }
@@ -1079,7 +1086,9 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->channels.at(to_string(value.at("id")));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.id, move(newData));
+                    string channelId = newData.id;
+                    newMap.insert_or_assign(channelId, move(newData));
+                    cout << "CHANNEL NAME: " << newData.name << " CHANNEL ID: " << newData.id << endl;
                 }
                 pDataStructure->channels = newMap;
             }
@@ -1092,7 +1101,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->threads.at(value.at("id"));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.id, move(newData));
+                    string threadId = newData.id;
+                    newMap.insert_or_assign(threadId, move(newData));
                 }
                 pDataStructure->threads = newMap;
             }
@@ -1105,7 +1115,8 @@ namespace DiscordCoreInternal {
                         newData = pDataStructure->presences.at(value.at("user").at("id"));
                     }
                     parseObject(value, &newData);
-                    newMap.insert_or_assign(newData.user.id, move(newData));
+                    string presenceId = newData.user.id;
+                    newMap.insert_or_assign(presenceId, move(newData));
                 }
                 pDataStructure->presences = newMap;
             }
