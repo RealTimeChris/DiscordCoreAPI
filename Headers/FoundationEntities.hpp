@@ -49,13 +49,7 @@ namespace DiscordCoreAPI {
 
         bool contains(string valueId) {
             lock_guard<recursive_mutex> containLock{ this->accessMutex };
-            if (!this->cache.contains(valueId)) {
-                return false;
-            }
-            else {
-                cout << "GETTING THE ID: " << valueId << endl;
-                return true;
-            }
+            return this->cache.contains(valueId);
         }
 
         void erase(string valueId) {
@@ -67,7 +61,7 @@ namespace DiscordCoreAPI {
 
         void storeValue(string valueId, storageType storageValue) {
             lock_guard<recursive_mutex> storeLock{ this->accessMutex };
-            this->cache.insert_or_assign(valueId, storageValue);
+            this->cache.insert_or_assign(valueId, move(storageValue));
         }
 
     protected:
