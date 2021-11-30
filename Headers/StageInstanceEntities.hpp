@@ -23,6 +23,20 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };///< The channel id from which you would like to collect the StageInstance.
 	};
 
+	/// For modifying a single StageInstance. \brief For modifying a single StageInstance.
+	struct DiscordCoreAPI_Dll ModifyStageInstanceData {
+		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance.
+		string channelId{ "" };///< The channel Id of the StageInstance.
+		string reason{ "" };///< Reason for modifying the StageInstance.
+		string topic{ "" };///< The topic of the Stage instance(1 - 120 characters).
+	};
+
+	/// For deleting a single StageInstance. \brief For deleting a single StageInstance.
+	struct DeleteStageInstanceData {
+		string channelId{ "" };///< The channel Id of the StageInstance.
+		string reason{ "" };///< Reason for deleting the StageInstance.
+	};
+
 	/// A single StageInstance. \brief A single StageInstance.
 	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
 	public:
@@ -62,6 +76,17 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A GetStageInstanceData structure.
 		/// \returns A CoRoutine containing a StageInstance.
 		static CoRoutine<StageInstance> getStageInstanceAsync(GetStageInstanceData dataPackage);
+
+		/// Modifies a StageInstance. \brief Modifies a StageInstance.
+		/// \param dataPackage A ModifyStageInstanceData structure.
+		/// \returns A CoRoutine containing a StageInstance.
+		static CoRoutine<StageInstance> modifyStageInstanceAsync(ModifyStageInstanceData dataPackage);
+		
+		/// Deletes a StageInstance. \brief Deletes a StageInstance.
+		/// \param dataPackage A DeleteStageInstanceData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteStageInstanceAsync(DeleteStageInstanceData dataPackage);
+
 	};
 
 	/**@}*/

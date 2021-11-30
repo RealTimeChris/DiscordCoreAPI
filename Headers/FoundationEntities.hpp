@@ -2763,6 +2763,8 @@ namespace  DiscordCoreInternal {
         DELETE_INVITE = 127,
         POST_STAGE_INSTANCE = 128,
         GET_STAGE_INSTANCE = 129,
+        PATCH_STAGE_INSTANCE = 130,
+        DELETE_STAGE_INSTANCE = 131,
 
         GET_USER,
         GET_USER_SELF,

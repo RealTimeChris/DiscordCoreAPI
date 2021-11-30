@@ -1157,6 +1157,7 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
             }
+            cout << "TIME UNTIL PARSED: " << pDataStructure->stopWatch.totalTimePassed() << endl;
         };
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildWidgetData* pDataStructure) {
