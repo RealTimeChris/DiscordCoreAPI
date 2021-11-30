@@ -1,7 +1,7 @@
 ### **Getting Nitro Sticker Packs:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Stickers` class.
-- Select, from the `Stickers` class, the `getNitroStickerPacksAsync()` function and execute it, with a return value of type `auto` or `vector<StickerPackData>`, while passing it the created data structure.
+- Select, from the `Stickers` class, the `getNitroStickerPacksAsync()` function and execute it, with a return value of type `auto` or `vector<StickerPackData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
