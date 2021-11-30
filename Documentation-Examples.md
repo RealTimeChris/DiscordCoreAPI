@@ -157,6 +157,7 @@
 ## Stage Instance Stuff:
 - ### [Creating a Stage Instance](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Stage%20Instance.md)
 - ### [Getting a Stage Instance](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Stage%20Instance.md)
+- ### [Modifying a Stage Instance](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Stage%20Instance.md)
 
 ## Sticker Stuff:
 
