@@ -36,10 +36,10 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
+				HttpData returnData = move(HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true));
 				returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
-				return returnObject;
+				return move(returnObject);
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
@@ -97,8 +97,8 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
-				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, false);
-				return returnData;
+				HttpData returnData = move(HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, false));
+				return move(returnData);
 			}
 			catch (...) {
 				DiscordCoreAPI::rethrowException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");

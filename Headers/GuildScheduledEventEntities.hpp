@@ -126,7 +126,6 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage);
 		
-
 		/// Collects a list of Users for a given GuildScheduledEvent. \brief Collects a list of Users for a given GuildScheduledEvent.
 		/// \param dataPackage A GetGuildScheduledEventUsersData structure.
 		/// \returns A CoRoutine containing vector<GuildScheduledEventUser>.
