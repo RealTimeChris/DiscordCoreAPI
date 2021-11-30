@@ -161,6 +161,7 @@
 - ### [Deleting a Stage Instance](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Stage%20Instance.md)
 
 ## Sticker Stuff:
+- ### [Getting a Sticker](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Sticker.md)
 
 ## Thread Stuff:
 - ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
