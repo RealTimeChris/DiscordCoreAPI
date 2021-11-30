@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "ApplicationCommandEntities.hpp"
 #include "ChannelEntities.hpp"
+#include "StageInstanceEntities.hpp"
 #include "GuildEntities.hpp"
 #include "GuildMemberEntities.hpp"
 #include "InteractionEntities.hpp"
@@ -29,21 +30,21 @@ namespace DiscordCoreAPI {
         explicit InvalidState(const string & message) : exception(message.c_str()) {}
     };
 
-    /** CoRoutineStatus
-     *  The current status of the associated CoRoutine.
-     */
-    enum class CoRoutineStatus {
-        Idle = 0,///< Idle.
-        Running = 1,///< Running.
-        Complete = 2,///< Complete.
-        Cancelled = 3///< Cancelled.
-    };
-
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     /// \param returnType The type of parameter that is returned by the CoRoutine.
     template<typename returnType>
     class DiscordCoreAPI_Dll CoRoutine {
     public:
+
+        /** CoRoutineStatus
+        *  The current status of the associated CoRoutine.
+        */
+        enum CoRoutineStatus {
+            Idle = 0,///< Idle.
+            Running = 1,///< Running.
+            Complete = 2,///< Complete.
+            Cancelled = 3///< Cancelled.
+        };
 
         class DiscordCoreAPI_Dll promise_type;
 
@@ -159,6 +160,16 @@ namespace DiscordCoreAPI {
     public:
 
         class DiscordCoreAPI_Dll promise_type;
+
+        /** CoRoutineStatus
+        *  The current status of the associated CoRoutine.
+        */
+        enum CoRoutineStatus {
+            Idle = 0,///< Idle.
+            Running = 1,///< Running.
+            Complete = 2,///< Complete.
+            Cancelled = 3///< Cancelled.
+        };
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
