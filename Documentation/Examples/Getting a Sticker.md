@@ -40,7 +40,9 @@ namespace DiscordCoreAPI {
 				GetStickerData dataPackage{};
 				dataPackage.stickerId = "YOUR_STICKER_ID_HERE";
 
-				Stickers::getStickerAsync(dataPackage).get();
+				auto responseData = Stickers::getStickerAsync(dataPackage).get();
+
+				cout << "THE NAME: " << responseData.name << endl;
 
 				co_return;
 			}
