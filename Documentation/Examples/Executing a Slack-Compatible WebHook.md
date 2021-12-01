@@ -40,8 +40,13 @@ namespace DiscordCoreAPI {
  
 				auto newWebHooks = WebHooks::getGuildWebHooksAsync(dataPackage).get();
 
+				EmbedData dataPackage02{};
+				dataPackage02.setColor("Fefefe");
+				dataPackage02.setDescription("TEST DESCRIPTION");
+
 				ExecuteWebHookData dataPackage01{ newWebHooks[0] };
 				dataPackage01.addContent("TEST CONTENT");
+				dataPackage01.addMessageEmbed(dataPackage02);
 				dataPackage01.wait = true;
 
 				auto newMessage = WebHooks::executeSlackCompatibleWebHookAsync(dataPackage01).get();
