@@ -1,7 +1,7 @@
 ### **Getting Current User Authorization Info:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Users` class.
-- Select, from the `Users` class, the `getCurrentUserAuthorizationInfoAsync()` function and execute it, with a return value of type `AuthorizationInfoData`, while passing it the created data structure.
+- Select, from the `Users` class, the `getCurrentUserAuthorizationInfoAsync()` function and execute it, with a return value of type `auto` or `AuthorizationInfoData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
