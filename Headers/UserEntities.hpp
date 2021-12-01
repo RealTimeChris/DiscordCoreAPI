@@ -161,9 +161,12 @@ namespace DiscordCoreAPI {
 		static CoRoutine<vector<ConnectionData>> getUserConnections();
 
 		/// Collects the Application data associated with the current Bot. \brief Collects the Application data associated with the current Bot.
-		/// \returns A CoRoutine containing an Application.
-		static CoRoutine<ApplicationData> getApplicationDataAsync();
+		/// \returns A CoRoutine containing an ApplicationData.
+		static CoRoutine<ApplicationData> getCurrentUserApplicationInfoAsync();
 
+		/// Collects the Authorization info associated with the current Bot. \brief Collects the Authorization info associated with the current Bot.
+		/// \returns A CoRoutine containing an AuthorizationInfoData.
+		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
 
 	protected:

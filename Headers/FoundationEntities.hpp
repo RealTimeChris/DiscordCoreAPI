@@ -808,6 +808,14 @@ namespace DiscordCoreAPI {
         virtual ~ApplicationData() {};
     };
 
+    /// Authorization info structure. \brief Authorization info structure.
+    struct AuthorizationInfoData {
+        ApplicationData application{};///< Partial application object the current application.
+        vector<string> scopes{};///< Array of strings - the scopes the user has authorized the application for.
+        string expires{ "" };///< When the access token expires.
+        UserData user{};/// The user who has authorized, if the user has authorized with the identify scope.
+    };
+
     /// Account data. \brief Account data.
     struct DiscordCoreAPI_Dll AccountData : public DiscordEntity{
         string name{ "" };///< Name of the account.
@@ -2806,23 +2814,23 @@ namespace  DiscordCoreInternal {
         DELETE_LEAVE_GUILD = 142,
         POST_CREATE_USER_DM = 143,
         GET_USER_CONNECTIONS = 144,
-        POST_WEBHOOK = 145,
-        GET_CHANNEL_WEBHOOKS = 146,
-        GET_GUILD_WEBHOOKS = 147,
-        GET_WEBHOOK = 148,
-        GET_WEBHOOK_WITH_TOKEN = 149,
-        PATCH_WEBHOOK = 150,
-        PATCH_WEBHOOK_WITH_TOKEN = 150,
-        DELETE_WEBHOOK = 151,
-        DELETE_WEBHOOK_WITH_TOKEN = 152,
-        POST_EXECUTE_WEBHOOK = 153,
-        GET_WEBHOOK_MESSAGE = 154,
-        PATCH_WEBHOOK_MESSAGE = 155,
-        DELETE_WEBHOOK_MESSAGE = 156,
-
-        GET_APPLICATION,
-        GET_SOCKET_PATH,
-
+        GET_VOICE_REGIONS = 145,
+        POST_WEBHOOK = 146,
+        GET_CHANNEL_WEBHOOKS = 147,
+        GET_GUILD_WEBHOOKS = 148,
+        GET_WEBHOOK = 149,
+        GET_WEBHOOK_WITH_TOKEN = 150,
+        PATCH_WEBHOOK = 151,
+        PATCH_WEBHOOK_WITH_TOKEN = 152,
+        DELETE_WEBHOOK = 153,
+        DELETE_WEBHOOK_WITH_TOKEN = 154,
+        POST_EXECUTE_WEBHOOK = 155,
+        GET_WEBHOOK_MESSAGE = 156,
+        PATCH_WEBHOOK_MESSAGE = 157,
+        DELETE_WEBHOOK_MESSAGE = 158,
+        GET_APPLICATION_INFO = 159,
+        GET_AUTHORIZATION_INFO = 160,
+        GET_SOCKET_PATH = 161,
         GET_YOUTUBE_SEARCH = 200,
         GET_SOUNDCLOUD_SEARCH = 201,
         GET_SOUNDCLOUD_AUTH = 202,

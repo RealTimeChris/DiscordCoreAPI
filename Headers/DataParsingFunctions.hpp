@@ -868,6 +868,25 @@ namespace DiscordCoreInternal {
             pDataStructure->shrink_to_fit();
         }
 
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::AuthorizationInfoData* pDataStructure) {
+
+            if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
+                parseObject(jsonObjectData["application"], &pDataStructure->application);
+            }
+
+            if (jsonObjectData.contains("scopes") && !jsonObjectData["scopes"].is_null()) {
+                parseObject(jsonObjectData["scopes"], &pDataStructure->scopes);
+            }
+
+            if (jsonObjectData.contains("expires") && !jsonObjectData["expires"].is_null()) {
+                pDataStructure->expires = jsonObjectData["expires"];
+            }
+
+            if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+                parseObject(jsonObjectData["user"], &pDataStructure->user);
+            }
+        };
+
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildPruneCountData* pDataStructure) {
             if (jsonObjectData.contains("pruned") && !jsonObjectData.at("pruned").is_null()) {
                 pDataStructure->count = jsonObjectData.at("pruned").get<int32_t>();
