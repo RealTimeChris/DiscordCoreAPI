@@ -1265,21 +1265,27 @@ namespace DiscordCoreAPI {
         EMBEDDED_APPLICATION = 2
     };
 
-    /// Webhook data. \brief Webhook data.
-    struct DiscordCoreAPI_Dll WebhookData : public DiscordEntity{
+    enum class WebHookType {
+        Incoming = 1,
+        Channel_Follower = 2,
+        Application = 3
+    };
+
+    /// WebHook data. \brief WebHook data.
+    struct DiscordCoreAPI_Dll WebHookData : public DiscordEntity {
         ChannelData sourceChannel{};///< Channel for which the webhook was issued.
         string applicationId{ "" };///< Application id.
         GuildData sourceGuild{};///< Source Guild id.
         string channelId{ "" };///< Channel id for which the webhook was issued.
+        WebHookType type{ 0 };///< Type of webhook.
         string guildId{ "" };///< Guild id for which the webhook was issued.
         string avatar{ "" };///< Avatar of the webhook.
         string token{ "" };///< Token of the webhook.
-        int32_t type{ 0 };///< Type of webhook.
         string name{ "" };///< Name of the webhook.
         string url{ "" };///< Url of the webhook.
         UserData user{};///< User which create the webhook.
 
-        virtual ~WebhookData() {}
+        virtual ~WebHookData() {};
     };
 
     /// Audit log data. \brief Audit log data.
@@ -1303,7 +1309,7 @@ namespace DiscordCoreAPI {
         }
         vector<AuditLogEntryData> auditLogEntries{};///< Array of audit log entries.
         vector<IntegrationData> integrations{};///< Integration data.
-        vector<WebhookData> webhooks{};///<Array of webhook data.
+        vector<WebHookData> webhooks{};///<Array of WebHook data.
         vector<ChannelData> threads{};///< Array of Channel data.
         vector<UserData> users{};///< Array of u
     };
@@ -2800,6 +2806,9 @@ namespace  DiscordCoreInternal {
         DELETE_LEAVE_GUILD = 142,
         POST_CREATE_USER_DM = 143,
         GET_USER_CONNECTIONS = 144,
+        POST_WEBHOOK = 145,
+        GET_CHANNEL_WEBHOOKS = 146,
+        GET_GUILD_WEBHOOKS = 147,
 
         GET_APPLICATION,
         GET_SOCKET_PATH,

@@ -8,16 +8,17 @@
 #include "IndexInitial.hpp"
 #include "ApplicationCommandEntities.hpp"
 #include "ChannelEntities.hpp"
-#include "StageInstanceEntities.hpp"
 #include "GuildEntities.hpp"
 #include "GuildMemberEntities.hpp"
+#include "GuildScheduledEventEntities.hpp"
 #include "InteractionEntities.hpp"
 #include "MessageEntities.hpp"
-#include "GuildScheduledEventEntities.hpp"
 #include "ReactionEntities.hpp"
 #include "RoleEntities.hpp"
+#include "StageInstanceEntities.hpp"
 #include "StickerEntities.hpp"
 #include "UserEntities.hpp"
+#include "WebHookEntities.hpp"
 
 namespace DiscordCoreAPI {
 

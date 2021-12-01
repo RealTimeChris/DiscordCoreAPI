@@ -2975,13 +2975,13 @@ namespace DiscordCoreInternal {
             }
         }
 
-        static void parseObject(json jsonObjectData, DiscordCoreAPI::WebhookData* pDataStructure) {
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::WebHookData* pDataStructure) {
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->id = jsonObjectData["id"].get<string>();
             }
 
             if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-                pDataStructure->type = jsonObjectData["id"].get< int32_t>();
+                pDataStructure->type = jsonObjectData["type"].get<DiscordCoreAPI::WebHookType>();
             }
 
             if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
@@ -2992,7 +2992,7 @@ namespace DiscordCoreInternal {
                 pDataStructure->channelId = jsonObjectData["channel_id"].get<string>();
             }
 
-            if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+            if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
                 parseObject(jsonObjectData["user"], &pDataStructure->user);
             }
 
@@ -3023,6 +3023,16 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
                 pDataStructure->url = jsonObjectData["url"].get<string>();
             }
+        }
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::WebHookData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
+            for (auto& value : jsonObjectData) {
+                DiscordCoreAPI::WebHookData newData{};
+                parseObject(move(value), &newData);
+                pDataStructure->push_back(move(newData));
+            }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::AuditLogChangeData* pDataStructure) {
@@ -3269,7 +3279,7 @@ namespace DiscordCoreInternal {
                 pDataStructure->webhooks.clear();
                 pDataStructure->webhooks.reserve(jsonObjectData.at("webhooks").size());
                 for (auto& value : jsonObjectData["webhooks"]) {
-                    DiscordCoreAPI::WebhookData newData{};
+                    DiscordCoreAPI::WebHookData newData{};
                     parseObject(move(value), &newData);
                     pDataStructure->webhooks.push_back(move(newData));
                 }
