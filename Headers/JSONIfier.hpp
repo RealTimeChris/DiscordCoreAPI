@@ -34,6 +34,7 @@ namespace DiscordCoreAPI {
 	struct CreateGuildRoleData;
 	struct BeginGuildPruneData;
 	struct ModifyGuildRoleData;
+	struct ExecuteWebHookData;
 	struct AddGuildMemberData;
 	struct CreateGuildBanData;
 	struct CreateMessageData;
@@ -141,4 +142,6 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildScheduledEventData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildScheduledEventData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage);
 }
