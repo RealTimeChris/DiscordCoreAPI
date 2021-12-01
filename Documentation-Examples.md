@@ -166,6 +166,7 @@
 - ### [Getting a List of Guild Stickers](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Guild%20Stickers.md)
 - ### [Creating a Guild Sticker](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild%20Sticker.md)
 - ### [Modifying a Guild Sticker](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Sticker.md)
+- ### [Deleting a Guild Sticker](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Sticker.md)
 
 ## Thread Stuff:
 - ### [Starting a Thread with a Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Starting%20a%20Thread%20with%20a%20Message.md)
