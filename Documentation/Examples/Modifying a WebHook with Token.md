@@ -11,9 +11,6 @@
 
 #pragma once
 
-#ifndef _TEST_
-#define _TEST_
-
 #include "Index.hpp"
 
 namespace DiscordCoreAPI {
@@ -47,6 +44,7 @@ namespace DiscordCoreAPI {
 				dataPackage01.webhookToken = newWebHooks[0].token;
 				dataPackage01.webhookId = newWebHooks[0].id;
 				dataPackage01.name = "NEW TEST NAME";
+				dataPackage01.channelId = args.eventData.getChannelId();
 
 				auto newWebHook = WebHooks::modifyWebHookWithTokenAsync(dataPackage01).get();
 
@@ -60,5 +58,4 @@ namespace DiscordCoreAPI {
 		virtual ~Test() {};
 	};
 }
-#endif
 ```
