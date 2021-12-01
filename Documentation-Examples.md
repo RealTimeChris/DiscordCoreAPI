@@ -191,3 +191,4 @@
 - ### [Getting the Current User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20the%20Current%20User.md)
 - ### [Getting a User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20User.md)
 - ### [Modifying the Current User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20the%20Current%20User.md)
+- ### [Getting Current User's Guilds](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Current%20User's%20Guilds.md)
