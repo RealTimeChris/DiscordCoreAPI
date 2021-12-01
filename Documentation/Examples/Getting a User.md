@@ -2,7 +2,7 @@
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Users` class.
 - Populate a data structure of type `DiscordCoreAPI::GetUserData`.
-- Select, from the `Users` class, the `getUserAsync()`(To get the user from the Discord servers), OR, `getCachedUserAsync()`(To get the user from the library's cache), function and execute it, with a return value of type `auto` or `User`, while passing it the created data structure.
+- Select, from the `Users` class, the `getCachedUserAsync()` (which collects it from the cache), or `getUserAsync()` (which collects it from the Discord servers) function, while passing to it the completed data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
