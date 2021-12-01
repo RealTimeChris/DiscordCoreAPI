@@ -42,11 +42,10 @@ namespace DiscordCoreAPI {
 
 				ExecuteWebHookData dataPackage01{ newWebHooks[0] };
 				dataPackage01.addContent("TEST CONTENT");
-				dataPackage01.addMessageEmbed(dataPackage02);
 				dataPackage01.wait = true;
 
 				auto newMessage = WebHooks::executeWebHookAsync(dataPackage01).get();
-
+				
 				GetWebHookMessageData dataPackage02{};
 				dataPackage02.webhookId = newWebHooks[0].id;
 				dataPackage02.webhookToken = newWebHooks[0].token;
@@ -55,7 +54,7 @@ namespace DiscordCoreAPI {
 				auto newMessage02 = WebHooks::getWebHookMessageAsync(dataPackage02).get();
 
 				cout << "MESSAGE ID: " << newMessage02.id << endl;
-
+				
 				co_return;
 			}
 			catch (...) {
