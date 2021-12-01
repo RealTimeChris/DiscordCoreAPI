@@ -41,7 +41,6 @@ namespace DiscordCoreAPI {
 	struct ModifyGuildData;
 	struct EditMessageData;
 	struct CreateGuildData;
-	struct SendDMData;
 
 };
 
@@ -80,8 +79,6 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI_Dll int32_t JSONIFY(hstring initialPayload);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage);
-
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::SendDMData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditMessageData dataPackage);
 

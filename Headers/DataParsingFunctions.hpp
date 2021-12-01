@@ -189,9 +189,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->permissionOverwrites.clear();
                 for (auto& value : jsonObjectData["permission_overwrites"]) {
                     DiscordCoreAPI::OverWriteData newData{};
-                    if (pDataStructure->permissionOverwrites.contains(value.at("id"))) {
-                        newData = pDataStructure->permissionOverwrites.at(value.at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string overWriteId = newData.id;
                     pDataStructure->permissionOverwrites.insert_or_assign(overWriteId, move(newData));
@@ -230,9 +227,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->recipients.clear();
                 for (auto& value : jsonObjectData["recipients"]) {
                     DiscordCoreAPI::UserData newData{};
-                    if (pDataStructure->recipients.contains(value.at("id"))) {
-                        newData = pDataStructure->recipients.at(value.at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string userId = newData.id;
                     pDataStructure->recipients.insert_or_assign(userId, move(newData));
@@ -989,9 +983,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->stickers.clear();
                 for (auto& value : jsonObjectData["stickers"]) {
                     DiscordCoreAPI::StickerData newData{};
-                    if (pDataStructure->stickers.contains(value.at("id"))) {
-                        newData = pDataStructure->stickers.at(value.at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string stickerId = newData.id;
                     pDataStructure->stickers.insert_or_assign(stickerId, move(newData));
@@ -1002,9 +993,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->roles.clear();
                 for (auto& value : jsonObjectData["roles"]) {
                     DiscordCoreAPI::RoleData newData{};
-                    if (pDataStructure->roles.contains(value.at("id"))) {
-                        newData = pDataStructure->roles.at(value.at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string roleId = newData.id;
                     pDataStructure->roles.insert_or_assign(roleId, move(newData));
@@ -1039,9 +1027,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->emoji.clear();
                 for (auto& value : jsonObjectData["emojis"]) {
                     DiscordCoreAPI::EmojiData newData{};
-                    if (pDataStructure->emoji.contains(value.at("name"))) {
-                        newData = pDataStructure->emoji.at(value.at("name"));
-                    }
                     parseObject(move(value), &newData);
                     string emojiId = newData.name;
                     pDataStructure->emoji.insert_or_assign(emojiId, move(newData));
@@ -1072,9 +1057,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->voiceStates.clear();
                 for (auto& value : jsonObjectData["voice_states"]) {
                     DiscordCoreAPI::VoiceStateData newData{};
-                    if (pDataStructure->voiceStates.contains(value.at("user_id"))) {
-                        newData = pDataStructure->voiceStates.at(value.at("user_id"));
-                    }
                     parseObject(move(value), &newData);
                     string userId = newData.userId;
                     pDataStructure->voiceStates.insert_or_assign(userId, move(newData));
@@ -1085,9 +1067,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->members.clear();
                 for (auto& value : jsonObjectData["members"]) {
                     DiscordCoreAPI::GuildMemberData newData{};
-                    if (pDataStructure->members.contains(value.at("user").at("id"))) {
-                        newData = pDataStructure->members.at(value.at("user").at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string userId = newData.user.id;
                     pDataStructure->members.insert_or_assign(userId, move(newData));
@@ -1098,9 +1077,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->channels.clear();
                 for (auto& value : jsonObjectData["channels"]) {
                     DiscordCoreAPI::ChannelData newData{};
-                    if (pDataStructure->channels.contains(value.at("id"))) {
-                        newData = pDataStructure->channels.at(value.at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string channelId = newData.id;
                     pDataStructure->channels.insert_or_assign(channelId, move(newData));
@@ -1111,9 +1087,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->threads.clear();
                 for (auto& value : jsonObjectData["threads"]) {
                     DiscordCoreAPI::ChannelData newData{};
-                    if (pDataStructure->threads.contains(value.at("id"))) {
-                        newData = pDataStructure->threads.at(value.at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string threadId = newData.id;
                     pDataStructure->threads.insert_or_assign(threadId, move(newData));
@@ -1124,9 +1097,6 @@ namespace DiscordCoreInternal {
                 pDataStructure->presences.clear();
                 for (auto& value : jsonObjectData["presences"]) {
                     DiscordCoreAPI::PresenceUpdateData newData{};
-                    if (pDataStructure->presences.contains(value.at("user").at("id"))) {
-                        newData = pDataStructure->presences.at(value.at("user").at("id"));
-                    }
                     parseObject(move(value), &newData);
                     string presenceId = newData.user.id;
                     pDataStructure->presences.insert_or_assign(presenceId, move(newData));
@@ -1184,6 +1154,16 @@ namespace DiscordCoreInternal {
                 pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
             }
         };
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
+            for (auto& value : jsonObjectData) {
+                DiscordCoreAPI::GuildData newData{};
+                parseObject(move(value), &newData);
+                pDataStructure->push_back(move(newData));
+            }
+            pDataStructure->shrink_to_fit();
+        }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildWidgetData* pDataStructure) {
             if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
@@ -3155,6 +3135,61 @@ namespace DiscordCoreInternal {
             if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
                 pDataStructure->name = jsonObjectData["name"].get<string>();
             }
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::ConnectionData* pDataStructure) {
+            if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+                pDataStructure->name = jsonObjectData["name"].get<string>();
+            }
+
+            if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+                pDataStructure->id = jsonObjectData["id"].get<string>();
+            }
+
+            if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+                pDataStructure->type = jsonObjectData["type"].get<string>();
+            }
+
+            if (jsonObjectData.contains("show_activity") && !jsonObjectData["show_activity"].is_null()) {
+                pDataStructure->showActivity = jsonObjectData["show_activity"].get<bool>();
+            }
+
+            if (jsonObjectData.contains("friend_sync") && !jsonObjectData["friend_sync"].is_null()) {
+                pDataStructure->friendSync = jsonObjectData["friend_sync"].get<bool>();
+            }
+
+            if (jsonObjectData.contains("revoked") && !jsonObjectData["revoked"].is_null()) {
+                pDataStructure->revoked = jsonObjectData["revoked"].get<bool>();
+            }
+
+            if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
+                pDataStructure->verified= jsonObjectData["verified"].get<bool>();
+            }
+
+            if (jsonObjectData.contains("visibility") && !jsonObjectData["visibility"].is_null()) {
+                pDataStructure->visibility = jsonObjectData["visibility"].get<DiscordCoreAPI::ConnectionVisibilityTypes>();
+            }
+
+            if (jsonObjectData.contains("integrations") && !jsonObjectData["integrations"].is_null()) {
+                pDataStructure->integrations.clear();
+                pDataStructure->integrations.reserve(jsonObjectData.at("integrations").size());
+                for (auto& value : jsonObjectData["integrations"]) {
+                    DiscordCoreAPI::IntegrationData newData{};
+                    parseObject(move(value), &newData);
+                    pDataStructure->integrations.push_back(move(newData));
+                }
+                pDataStructure->integrations.shrink_to_fit();
+            }
+        }
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::ConnectionData>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
+            for (auto& value : jsonObjectData) {
+                DiscordCoreAPI::ConnectionData newData{};
+                parseObject(move(value), &newData);
+                pDataStructure->push_back(move(newData));
+            }
+            pDataStructure->shrink_to_fit();
         }
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::IntegrationData* pDataStructure) {

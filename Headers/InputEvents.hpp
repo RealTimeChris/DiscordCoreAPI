@@ -50,8 +50,6 @@ namespace DiscordCoreAPI {
 
 		static InputEventData respondToEvent(EditMessageData dataPackage);
 
-		static InputEventData respondToEvent(SendDMData dataPackage);
-
 		static void respondToEvent(DeferComponentResponseData dataPackage);
 	};
 	/**@}*/

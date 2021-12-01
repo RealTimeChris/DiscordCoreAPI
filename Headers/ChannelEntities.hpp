@@ -74,11 +74,6 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< Reason for deleting these permission overwrites.
 	};
 
-	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
-	struct DiscordCoreAPI_Dll GetDMChannelData {
-		string userId{ "" }; ///< The User for whom to collect the direct-messaging Channel to.
-	};
-
 	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
 	struct DiscordCoreAPI_Dll GetChannelInvitesData {
 		string channelId{ "" };
@@ -128,6 +123,11 @@ namespace DiscordCoreAPI {
 		vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's data.
 		string guildId{ "" };///< Guild within which to re-order the Channel positions.
 		string reason{ "" };///< Reason for re-ordering the Channel positions.
+	};
+
+	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
+	struct DiscordCoreAPI_Dll CreateDMChannelData {
+		string userId{ "" }; ///< The User for whom to collect the direct-messaging Channel to.
 	};
 
 	/// A Channel object. \brief A Channel object.
@@ -185,11 +185,6 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
 
-		/// Collect a direct-Message Channel between the bot and the User. \brief Collect a direct-Message Channel between the bot and the User.
-		/// \param dataPackage A GetDMChannelData structure.
-		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<Channel> getDMChannelAsync(GetDMChannelData dataPackage);
-
 		/// Collects a vector of the invites to a given Channel. \brief Collects a vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
 		/// \returns A CoRoutine containing a vector of InviteData.
@@ -224,6 +219,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A ModifyGuildChannelPositionsData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage);
+
+		/// Collect a direct-Message Channel between the bot and the User. \brief Collect a direct-Message Channel between the bot and the User.
+		/// \param dataPackage A CreateDMChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> createDMChannelAsync(CreateDMChannelData dataPackage);
 
 	protected:
 		static ObjectCache<Channel> cache;

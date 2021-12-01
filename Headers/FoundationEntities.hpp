@@ -1663,6 +1663,24 @@ namespace DiscordCoreAPI {
         string Id{ "" };///< Id of the sticker pack.
     };
     
+    enum class ConnectionVisibilityTypes {
+        None = 0,
+        Everyone = 1
+    };
+
+    /// Represents a single User Connection. \brief Represents a single User Connection.
+    struct ConnectionData {
+        vector<IntegrationData> integrations{};///< An array of partial server integrations.
+        ConnectionVisibilityTypes visibility{};///< Visibility of this connection.
+        bool showActivity{ false };///< Whether activities related to this connection will be shown in presence updates.
+        bool friendSync{ false };///< Whether friend sync is enabled for this connection.
+        bool verified{ false };///< Whether the connection is verified.
+        bool revoked{ false };///< Whether the connection is revoked.
+        string name{ "" };///< The username of the connection account.
+        string type{ "" };///< The service of the connection(twitch, youtube)
+        string id{ "" };///< Id of the connection account.
+    };
+
     /// ApplicationCommand interaction data option. \brief ApplicationCommand interaction data option.
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
         vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand interaction data options.
@@ -2092,7 +2110,6 @@ namespace DiscordCoreAPI {
         friend struct EditFollowUpMessageData;
         friend struct CreateMessageData;
         friend struct EditMessageData;
-        friend struct SendDMData;
         friend class InputEvents;
 
         InputEventResponseType type{}; ///< The type of response to make.
@@ -2779,18 +2796,18 @@ namespace  DiscordCoreInternal {
         GET_CURRENT_USER = 138,
         GET_USER = 139,
         PATCH_CURRENT_USER = 140,
+        GET_CURRENT_USER_GUILDS = 141,
+        DELETE_LEAVE_GUILD = 142,
+        POST_CREATE_USER_DM = 143,
+        GET_USER_CONNECTIONS = 144,
 
-        GET_USER_GUILDS,
-        POST_USER_DM,
-        POST_CREATE_USER_DM,
         GET_APPLICATION,
         GET_SOCKET_PATH,
-        YOUTUBE_SEARCH,
-        YOUTUBE_VIDEO_QUERY,
-        DELETE_LEAVE_GUILD,
-        SOUNDCLOUD_SEARCH,
-        SOUNDCLOUD_AUTH,
-        SOUNDCLOUD_SONG_GET
+
+        GET_YOUTUBE_SEARCH = 200,
+        GET_SOUNDCLOUD_SEARCH = 201,
+        GET_SOUNDCLOUD_AUTH = 202,
+        GET_SOUNDCLOUD_SONG = 203
     };
 
     struct DiscordCoreAPI_Dll HttpData {

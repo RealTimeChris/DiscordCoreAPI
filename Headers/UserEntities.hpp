@@ -63,11 +63,6 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The id of the desired User.
 	};
 
-	/// Leave Guild data - for leaving a particular Guild. \brief Leave Guild data - for leaving a particular Guild.
-	struct DiscordCoreAPI_Dll LeaveGuildData {
-		string guildId{ "" };///< The id of the Guild you would like the bot to leave.
-	};
-
 	/// For modifying the Bot's User data. \brief For modifying the Bot's User data.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
 		vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
@@ -159,16 +154,17 @@ namespace DiscordCoreAPI {
 		/// Modifies the Bot's User data. \brief Modifies the Bot's User data.
 		/// \param dataPackage A ModifyCurrentUserData structure.
 		/// \returns A CoRoutine containing a User.
-		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);		
+		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
 
-		/// Removes the bot from a chosen Guild. \brief Removes the bot from a chosen Guild.
-		/// \param dataPackage A LeaveGuildData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
+		/// Collects the User's Connections. \brief Collects the User's Connections.
+		/// \returns A CoRoutine containing an vector<ConnectionData>.
+		static CoRoutine<vector<ConnectionData>> getUserConnections();
 
 		/// Collects the Application data associated with the current Bot. \brief Collects the Application data associated with the current Bot.
 		/// \returns A CoRoutine containing an Application.
 		static CoRoutine<ApplicationData> getApplicationDataAsync();
+
+
 
 	protected:
 		static ObjectCache<User> cache;

@@ -258,6 +258,18 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< Reason for deleting the Invite.		
 	};
 
+	/// For collecting a list of Guild's that the Bot is in. \brief For collecting a list of Guild's that the Bot is in.
+	struct DiscordCoreAPI_Dll GetCurrentUserGuildsData {
+		string before{ "" };///< Get guilds before this guild ID.
+		string after{ "" };///< Get guilds after this guild ID.
+		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
+	};
+
+	/// Leave Guild data - for leaving a particular Guild. \brief Leave Guild data - for leaving a particular Guild.
+	struct DiscordCoreAPI_Dll LeaveGuildData {
+		string guildId{ "" };///< The id of the Guild you would like the bot to leave.
+	};
+
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
@@ -472,6 +484,16 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A DeleteInviteData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteInviteAsync(DeleteInviteData dataPackage);
+
+		/// Collects a list of Guilds that the Bot is in. \brief Collects a list of Guilds that the Bot is in.
+		/// \param dataPackage A GetCurrentUserGuildsData  structure.
+		/// \returns A CoRoutine containing a vector<Guild>.
+		static CoRoutine<vector<Guild>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
+
+		/// Removes the bot from a chosen Guild. \brief Removes the bot from a chosen Guild.
+		/// \param dataPackage A LeaveGuildData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	protected:
 		static ObjectCache<Guild> cache;
