@@ -187,3 +187,4 @@
 - ### [Removing a Recipient from a Group DM](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Recipient%20From%20a%20Group%20DM.md)
 - ### [Modifying Current User's Voice State](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Current%20User's%20Voice%20State.md)
 - ### [Modifying a User's Voice State](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20User's%20Voice%20State.md)
+- ### [Getting the Current User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20the%20Current%20User.md)
