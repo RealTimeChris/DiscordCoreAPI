@@ -97,6 +97,7 @@
 - ### [Deleting a Guild Template](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20Guild%20Template.md)
 - ### [Getting an Invite](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20an%20Invite.md)
 - ### [Getting Current User's Guilds](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Current%20User's%20Guilds.md)
+- ### [Leaving a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Leaving%20a%20Guild.md)
 
 ## Guild Scheduled Event Stuff:
 - ### [Getting a List of Guild Scheduled Events](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Guild%20Scheduled%20Events.md)
