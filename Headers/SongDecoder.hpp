@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 
         SongDecoder(BuildSongDecoderData dataPackage);
 
-        void submitDataForDecoding(vector<uint8_t> dataToDecode, int32_t maxBufferSize = 0);
+        void submitDataForDecoding(vector<uint8_t> dataToDecode);
 
         void updateBufferRefreshTime(int32_t newRefreshTime);
 
