@@ -13,12 +13,15 @@
 
 namespace DiscordCoreInternal {
 
-    class DataParser;
-
-};
+    class BaseWebSocketAgent;
+    class HttpRequestAgent;
+    class DataParser;    
+}
 
 namespace DiscordCoreAPI {
 
+    template<typename returnType>
+    class CoRoutine;
     class DiscordCoreClient;
     class VoiceConnection;
     class GuildMember;
@@ -1650,7 +1653,7 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(vector<ApplicationCommandInteractionDataOption> originalOptions);
 
     /// Represents a Sticker pack. \brief Represents a Sticker pack.
-    struct StickerPackData {
+    struct DiscordCoreAPI_Dll StickerPackData {
         vector<StickerData> stickers{};///< Array of sticker objects	the stickers in the pack.
         string coverStickerId{ "" };///< Id of a sticker in the pack which is shown as the pack's icon.
         string bannerAssetId{ "" };///< Id of the sticker pack's banner image.
@@ -1660,7 +1663,6 @@ namespace DiscordCoreAPI {
         string Id{ "" };///< Id of the sticker pack.
     };
     
-
     /// ApplicationCommand interaction data option. \brief ApplicationCommand interaction data option.
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
         vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand interaction data options.
@@ -2579,12 +2581,6 @@ namespace DiscordCoreAPI {
 
 namespace  DiscordCoreInternal {
 
-    class ApplicationCommands;
-    class BaseWebSocketAgent;
-    class HttpRequestAgent;
-    class ThreadManager;
-    class DataParser;
-
     enum class ConnectionWebSocketType {
         Receive = 0,
         Send = 1
@@ -2774,6 +2770,11 @@ namespace  DiscordCoreInternal {
         GET_STAGE_INSTANCE = 129,
         PATCH_STAGE_INSTANCE = 130,
         DELETE_STAGE_INSTANCE = 131,
+        GET_STICKER = 132,
+        GET_NITRO_STICKER_PACKS = 133,
+        GET_GUILD_STICKERS = 134,
+        POST_GUILD_STICKER = 135,
+
 
         GET_USER,
         GET_USER_SELF,

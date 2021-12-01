@@ -77,24 +77,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		template <typename returnVal>
-		friend class CoRoutine;
-		friend struct GetGuildMemberRolesData;
-		friend struct OnGuildMemberUpdateData;
-		friend struct OnGuildMemberAddData;
-		friend class DiscordCoreClient;
-		friend class EventHandler;
-		friend class GuildMembers;
-		friend class Guild;
-
 		GuildMember();
 
-		virtual ~GuildMember() {};
-
-	protected:
-
 		GuildMember(GuildMemberData dataNew);
+
+		virtual ~GuildMember() {};
 	};
 	/**@}*/
 

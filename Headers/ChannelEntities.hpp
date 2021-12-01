@@ -134,25 +134,13 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		template<typename returnValueType>
-		friend class CoRoutine;
-		friend class DiscordCoreInternal::DataParser;
-		friend struct OnChannelDeletionData;
-		friend struct OnChannelCreationData;
-		friend struct OnChannelUpdateData;
-		friend class DiscordCoreClient;
-		friend class Channels;
-		friend class Guild;
-
 		Channel();
 
-		virtual ~Channel() {};
-
-	protected:
-
 		Channel(ChannelData dataNew);
+
+		virtual ~Channel() {};
 	};
+
 	/**@}*/
 
 	/**

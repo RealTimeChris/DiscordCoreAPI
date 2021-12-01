@@ -118,22 +118,11 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
     public:
 
-        friend class DiscordCoreInternal::HttpRequestAgent;
-        friend struct OnApplicationCommandDeletionData;
-        friend struct OnApplicationCommandCreationData;
-        friend struct OnApplicationCommandUpdateData;
-        template<typename returnValueType>
-        friend class CoRoutine;
-        friend class ApplicationCommands;
-        friend class DiscordCoreClient;
-
         ApplicationCommand();
 
-        virtual ~ApplicationCommand() {};
-
-    protected:
-
         ApplicationCommand(ApplicationCommandData dataNew);
+
+        virtual ~ApplicationCommand() {};
     };
 
 

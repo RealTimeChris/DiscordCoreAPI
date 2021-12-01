@@ -116,20 +116,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reaction : public ReactionData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		template<typename returnValueType>
-		friend class CoRoutine;
-		friend class DiscordCoreInternal::DataParser;
-		friend struct OnReactionAddData;
-		friend class DiscordCoreClient;
-
 		Reaction();
 
-		virtual ~Reaction() {};
-
-	protected:
-
 		Reaction(ReactionData dataNew);
+
+		virtual ~Reaction() {};
 	};
 
 	/**@}*/

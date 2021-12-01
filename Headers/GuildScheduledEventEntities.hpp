@@ -77,18 +77,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		template<typename returnValueType>
-		friend class CoRoutine;
-		friend class GuildScheduledEvents;
-
 		GuildScheduledEvent();
 
-		virtual ~GuildScheduledEvent() {};
-
-	protected:
-
 		GuildScheduledEvent(GuildScheduledEventData dataPackage);
+
+		virtual ~GuildScheduledEvent() {};		
 	};
 
 	/**@}*/

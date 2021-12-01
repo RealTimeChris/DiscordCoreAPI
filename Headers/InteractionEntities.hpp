@@ -1036,10 +1036,6 @@ namespace DiscordCoreAPI {
     /// A single Interaction.
     class DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
-
-        friend class DiscordCoreInternal::HttpRequestAgent;
-        template<typename returnValueType>
-        friend class DiscordCoreAPI::CoRoutine;
         
         Interaction(InteractionData dataPackage) {
             this->applicationId = dataPackage.applicationId;

@@ -262,18 +262,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		template<typename returnValueType>
-		friend class CoRoutine;
-		friend struct OnGuildCreationData;
-		friend struct OnGuildDeletionData;
-		friend struct OnGuildUpdateData;
-		friend class DiscordCoreClient;
-		friend class EventManager;
-		friend class EventHandler;
 		friend class Guilds;
 
 		Guild();
+
+		Guild(GuildData dataNew);
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
@@ -295,8 +288,6 @@ namespace DiscordCoreAPI {
 
 		bool areWeConnectedBool{ false };
 
-		Guild(GuildData dataNew);
-
 		void initialize();
 	};
 
@@ -313,7 +304,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class EventHandler;
 
-		/// Getes an audit log from the Discord servers. \brief Getes an audit log from the Discord servers.
+		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.
 		/// \returns A CoRoutine containing AuditLogData.
 		static CoRoutine<AuditLogData> getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage);
@@ -382,7 +373,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildPruneCountData.
 		static CoRoutine<GuildPruneCountData> beginGuildPruneAsync(BeginGuildPruneData dataPackage);
 
-		/// Getes the list of voice regions for a particular server. \brief Getes the list of voice regions for a particular server.
+		/// Gets the list of voice regions for a particular server. \brief Gets the list of voice regions for a particular server.
 		/// \param dataPackage A GetGuildVoiceRegionsData structure.
 		/// \returns A CoRoutine containing a vector of VoiceRegionData.
 		static CoRoutine<vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);

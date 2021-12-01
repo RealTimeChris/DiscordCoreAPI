@@ -71,26 +71,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll User : public UserData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		friend class DiscordCoreInternal::DataParser;
-		template<typename returnValueType>
-		friend class CoRoutine;
-		friend struct OnGuildMemberRemoveData;
-		friend struct OnGuildBanRemoveData;
-		friend struct OnGuildBanAddData;
-		friend struct OnUserUpdateData;
-		friend class DiscordCoreClient;
-		friend class Reactions;
-		friend class Users;
-		friend class Guild;
-
 		User();
 
-		virtual ~User() {};
-
-	protected:
-
 		User(UserData dataNew);
+
+		virtual ~User() {};
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.

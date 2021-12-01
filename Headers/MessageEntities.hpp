@@ -508,24 +508,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		friend class DiscordCoreInternal::DataParser;
-		template<typename returnValueType>
-		friend class CoRoutine;
-		friend struct OnMessageCreationData;
-		friend struct OnMessageUpdateData;
-		friend class DiscordCoreClient;
-		friend class MessageCollector;
-		friend class InputEvents;
-		friend class Messages;
-
 		Message();
 
-		virtual ~Message() {}
-
-	protected:
-
 		Message(MessageData dataNew);
+
+		virtual ~Message() {};
 	};
 
 	/**@}*/
