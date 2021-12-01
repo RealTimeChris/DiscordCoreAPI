@@ -1,7 +1,7 @@
 ### **Getting the Current User:**
 ---
 - Access within the `DiscordCoreAPI` namespace, the `Users` class.
-- Select, from the `Users` class, the `getCurrentUserAsync()` function and execute it, with a return value of type `auto` or `User`, while passing it the created data structure.
+- Select, from the `Users` class, the `getCurrentUserAsync()` function and execute it, with a return value of type `auto` or `User`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
