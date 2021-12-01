@@ -2774,6 +2774,8 @@ namespace  DiscordCoreInternal {
         GET_NITRO_STICKER_PACKS = 133,
         GET_GUILD_STICKERS = 134,
         POST_GUILD_STICKER = 135,
+        PATCH_GUILD_STICKER = 136,
+        DELETE_GUILD_STICKER = 137,
 
 
         GET_USER,

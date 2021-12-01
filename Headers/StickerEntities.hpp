@@ -35,6 +35,23 @@ namespace DiscordCoreAPI {
 		string tags{ "" };///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
+	/// For modifying a single Sticker. \brief For modifying a single Sticker.
+	struct DiscordCoreAPI_Dll ModifyGuildStickerData {
+		string description{ "" };///< Description of the Sticker.
+		string stickerId{ "" };///< The Sticker you wish to modify.
+		string guildId{ "" };///< The Guild within which to modify the Sticker.
+		string reason{ "" };///< The reason for modifying the Sticker.
+		string name{ "" };///< Name of the Sticker.
+		string tags{ "" };///< Autocomplete / suggestion tags for the sticker(max 200 characters).
+	};
+
+	/// For deleting a single Sticker. \brief For deleting a single Sticker.
+	struct DiscordCoreAPI_Dll DeleteGuildStickerData {
+		string stickerId{ "" };///< The Sticker you wish to delete.
+		string guildId{ "" };///< The Guild within which to delete the Sticker.
+		string reason{ "" };///< The reason for deleting the Sticker.
+	};
+
 	/// A single Sticker. \brief A single Sticker.
 	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	public:
@@ -74,6 +91,17 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateGuildStickerData structure.
 		/// \returns A CoRoutine containing a Sticker.
 		static CoRoutine<Sticker> createGuildStickerAsync(CreateGuildStickerData dataPackage);
+
+		/// Modifies a Sticker within a chosen Guild. \brief Modifies a Sticker within a chosen Guild.
+		/// \param dataPackage A ModifyGuildStickerData structure.
+		/// \returns A CoRoutine containing a Sticker.
+		static CoRoutine<Sticker> modifyGuildStickerAsync(ModifyGuildStickerData dataPackage);
+
+		/// Deletes a Sticker within a chosen Guild. \brief Deletes a Sticker within a chosen Guild.
+		/// \param dataPackage A DeleteGuildStickerData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteGuildStickerAsync(DeleteGuildStickerData dataPackage);
+		
 	};
 	/**@}*/
 };
