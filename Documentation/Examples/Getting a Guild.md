@@ -1,7 +1,8 @@
 ### **Getting a Guild:**
 ---
 - Access the `Guilds` class of the `DiscordCoreAPI` namespace.
-- Select, from the `Guilds` class, the `getCachedGuildAsync()` (which collects it from the cache), or `getGuildAsync()` (which collects it from the Discord servers) function, while passing to it a completed data structure `DiscordCoreAPI::GetGuildData`.
+- Populate a data structure of type `DiscordCoreAPI::GetGuildData`.
+- Select, from the `Guilds` class, the `getCachedGuildAsync()` (which collects it from the cache), or `getGuildAsync()` (which collects it from the Discord servers) function, while passing to it the completed data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
