@@ -2,7 +2,7 @@
 ---
 - Access within the `DiscordCoreAPI` namespace, the `WebHooks` class.
 - Populate a data structure of type `DiscordCoreAPI::CreateWebHookData`.
-- Select, from the `Stickers` class, the `createWebHookAsync()` function and execute it, with a return value of type `auto` or `WebHook`, while passing it the created data structure.
+- Select, from the `WebHooks` class, the `createWebHookAsync()` function and execute it, with a return value of type `auto` or `WebHook`, while passing it the created data structure.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
