@@ -2000,7 +2000,6 @@ namespace DiscordCoreInternal {
                     }
 
                     if (value.contains("options") && !value["options"].is_null()) {
-                        newData.options.clear();
                         newData.options.reserve(value["options"].size());
                         for (auto& value02 : value["options"]) {
                             DiscordCoreAPI::SelectOptionData newerData{};
@@ -2466,7 +2465,6 @@ namespace DiscordCoreInternal {
 
             if (pDataStructure->type == DiscordCoreAPI::ApplicationCommandOptionType::SUB_COMMAND_GROUP || pDataStructure->type == DiscordCoreAPI::ApplicationCommandOptionType::SUB_COMMAND) {
                 if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-                    pDataStructure->options.clear();
                     pDataStructure->options.reserve(jsonObjectData.at("options").size());
                     for (auto& value : jsonObjectData["options"]) {
                         DiscordCoreAPI::ApplicationCommandOptionData newData{};
@@ -2478,7 +2476,6 @@ namespace DiscordCoreInternal {
             }
             else {
                 if (jsonObjectData.contains("choices") && !jsonObjectData["choices"].is_null()) {
-                    pDataStructure->choices.clear();
                     pDataStructure->choices.reserve(jsonObjectData.at("choices").size());
                     for (auto& value : jsonObjectData["choices"]) {
                         DiscordCoreAPI::ApplicationCommandOptionChoiceData newData{};
@@ -2517,7 +2514,6 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-                pDataStructure->options.clear();
                 pDataStructure->options.reserve(jsonObjectData.at("options").size());
                 for (auto& value : jsonObjectData["options"]) {
                     DiscordCoreAPI::ApplicationCommandOptionData newData{};
@@ -2560,7 +2556,6 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-                pDataStructure->options.clear();
                 pDataStructure->options.reserve(jsonObjectData.at("options").size());
                 for (auto& value : jsonObjectData["options"]) {
                     DiscordCoreAPI::ApplicationCommandInteractionDataOption newData{};
@@ -2727,7 +2722,6 @@ namespace DiscordCoreInternal {
 
         static void parseObject(json jsonObjectData, DiscordCoreAPI::CommandData* pDataStructure) {
             if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-                pDataStructure->optionsArgs.clear();
                 pDataStructure->optionsArgs.reserve(jsonObjectData.at("options").size());
                 for (auto& value : jsonObjectData["options"]) {
                     if (value.contains("type") && value["type"] == 1) {
@@ -2770,7 +2764,6 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-                pDataStructure->options.clear();
                 pDataStructure->options.reserve(jsonObjectData.at("options").size());
                 for (auto& value : jsonObjectData["options"]) {
                     DiscordCoreAPI::ApplicationCommandInteractionDataOption newData{};
