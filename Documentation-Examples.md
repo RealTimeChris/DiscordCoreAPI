@@ -196,6 +196,7 @@
 - ### [Getting a User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20User.md)
 - ### [Modifying the Current User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20the%20Current%20User.md)
 - ### [Getting User Connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20User%20Connections.md)
+- ### [Getting Current User Application Info](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Current%20User%20Application%20Info.md)
 
 ## WebHook Stuff:
 - ### [Creating a WebHook](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20WebHook.md)
