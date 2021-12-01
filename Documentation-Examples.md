@@ -55,15 +55,6 @@
 - ### [Modifying Guild Channel Positions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20Guild%20Channel%20Positions.md)
 - ### [Creating a Direct-Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Direct-Message.md)
 
-## GuildMember Stuff:
-- ### [Getting a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Member.md)
-- ### [Listing Guild Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listing%20Guild%20Members.md)
-- ### [Searching Guild Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Searching%20Guild%20Members.md)
-- ### [Adding a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Guild%20Member.md)
-- ### [Modifying a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Member.md)
-- ### [Modifying the Current Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20the%20Current%20Guild%20Member.md)
-- ### [Removing a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Guild%20Member.md)
-
 ## Guild Stuff:
 - ### [Getting Audit Logs](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Audit%20Logs.md)
 - ### [Creating a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Creating%20a%20Guild.md)
@@ -99,6 +90,15 @@
 - ### [Getting an Invite](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20an%20Invite.md)
 - ### [Getting Current User's Guilds](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Current%20User's%20Guilds.md)
 - ### [Leaving a Guild](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Leaving%20a%20Guild.md)
+
+## GuildMember Stuff:
+- ### [Getting a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20Guild%20Member.md)
+- ### [Listing Guild Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Listing%20Guild%20Members.md)
+- ### [Searching Guild Members](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Searching%20Guild%20Members.md)
+- ### [Adding a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Adding%20a%20Guild%20Member.md)
+- ### [Modifying a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20Guild%20Member.md)
+- ### [Modifying the Current Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20the%20Current%20Guild%20Member.md)
+- ### [Removing a Guild Member](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Removing%20a%20Guild%20Member.md)
 
 ## Guild Scheduled Event Stuff:
 - ### [Getting a List of Guild Scheduled Events](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20List%20of%20Guild%20Scheduled%20Events.md)
