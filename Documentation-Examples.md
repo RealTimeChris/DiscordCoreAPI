@@ -201,3 +201,4 @@
 - ### [Getting Channel WebHooks](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Channel%20WebHooks.md)
 - ### [Getting Guild WebHooks](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20Guild%20WebHooks.md)
 - ### [Getting a WebHook](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20WebHook.md)
+- ### [Getting a WebHook with Token](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20WebHook%20with%20Token.md)
