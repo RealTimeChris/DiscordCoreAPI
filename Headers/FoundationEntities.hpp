@@ -2776,10 +2776,10 @@ namespace  DiscordCoreInternal {
         POST_GUILD_STICKER = 135,
         PATCH_GUILD_STICKER = 136,
         DELETE_GUILD_STICKER = 137,
+        GET_CURRENT_USER = 138,
+        GET_USER = 139,
+        PATCH_CURRENT_USER = 140,
 
-
-        GET_USER,
-        GET_USER_SELF,
         GET_USER_GUILDS,
         POST_USER_DM,
         POST_CREATE_USER_DM,
@@ -2790,8 +2790,7 @@ namespace  DiscordCoreInternal {
         DELETE_LEAVE_GUILD,
         SOUNDCLOUD_SEARCH,
         SOUNDCLOUD_AUTH,
-        SOUNDCLOUD_SONG_GET,
-        GET_CURRENT_USER
+        SOUNDCLOUD_SONG_GET
     };
 
     struct DiscordCoreAPI_Dll HttpData {

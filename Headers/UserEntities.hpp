@@ -14,21 +14,20 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
-	/// Get User data. For collecting a User's data from the library's cache or the Discord server. \brief Get User data. For collecting a User's data from the library's cache or the Discord server. 
-	struct DiscordCoreAPI_Dll GetUserData {
-		string userId{ "" };///< The id of the desired User.
-	};
-
-	/// Leave Guild data - for leaving a particular Guild. \brief Leave Guild data - for leaving a particular Guild.
-	struct DiscordCoreAPI_Dll LeaveGuildData {
-		string guildId{ "" };///< The id of the Guild you would like the bot to leave.
-	};
 
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		vector<ActivityData> activities{};///< A vector of activities.
 		string status{ "" };///< Current status.
 		bool afk{ false };///< Are we afk?
+	};
+
+	/// For updating the current voice state. \brief For updating the current voice state.
+	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
+		string channelId{ "" };///< Id of the desired voice Channel. Leave blank to disconnect.
+		bool selfMute{ false };///< Whether or not we self-mute ourselves.
+		bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
+		string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
 	};
 
 	/// Adds a user to a group DM. \brief Adds a user to a group DM.
@@ -44,14 +43,6 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The user's Id.
 	};
 
-	/// For updating the current voice state. \brief For updating the current voice state.
-	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
-		string channelId{ "" };///< Id of the desired voice Channel. Leave blank to disconnect.
-		bool selfMute{ false };///< Whether or not we self-mute ourselves.
-		bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
-		string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
-	};
-
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
@@ -65,8 +56,24 @@ namespace DiscordCoreAPI {
 		bool suppress{ false };///< Toggles the user's suppress state.
 		string guildId{ "" };///< The Guild within which you would like to modify their voice state.
 		string userId{ "" };///< The user for which you would like to modify the voice state of.
-	};	
+	};
 
+	/// Get User data. For collecting a User's data from the library's cache or the Discord server. \brief Get User data. For collecting a User's data from the library's cache or the Discord server. 
+	struct DiscordCoreAPI_Dll GetUserData {
+		string userId{ "" };///< The id of the desired User.
+	};
+
+	/// Leave Guild data - for leaving a particular Guild. \brief Leave Guild data - for leaving a particular Guild.
+	struct DiscordCoreAPI_Dll LeaveGuildData {
+		string guildId{ "" };///< The id of the Guild you would like the bot to leave.
+	};
+
+	/// For modifying the Bot's User data. \brief For modifying the Bot's User data.
+	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
+		vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
+		string username{ "" };///< User's username, if changed may cause the user's discriminator to be randomized.
+	};
+	
 	/// A single User. \brief A single User.
 	class DiscordCoreAPI_Dll User : public UserData {
 	public:
@@ -114,26 +121,6 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Users;
 		friend class Guild;
-		
-		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
-		/// \param dataPackage A GetUserData structure.
-		/// \returns A CoRoutine containing a User.
-		static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
-
-		/// Sets the bot's current voice state. \brief Sets the bot's current voice state.
-		/// \param dataPackage A ModifyCurrentUserVoiceStateData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage);
-
-		/// Sets another user's current voice state. \brief Sets another user's current voice state.
-		/// \param dataPackage A ModifyUserVoiceStateData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
-
-		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
-		/// \param dataPackage A GetUserData structure.
-		/// \returns A CoRoutine containing a User.
-		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
 
 		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
 		/// \param dataPackage A AddRecipientToGroupDMData structure.
@@ -145,9 +132,34 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
 
+		/// Sets the bot's current voice state. \brief Sets the bot's current voice state.
+		/// \param dataPackage A ModifyCurrentUserVoiceStateData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage);
+
+		/// Sets another user's current voice state. \brief Sets another user's current voice state.
+		/// \param dataPackage A ModifyUserVoiceStateData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
+
 		/// Collects the Bot's current User data. \brief Collects the Bot's current User data.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> getCurrentUserAsync();
+
+		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
+		/// \param dataPackage A GetUserData structure.
+		/// \returns A CoRoutine containing a User.
+		static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
+
+		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
+		/// \param dataPackage A GetUserData structure.
+		/// \returns A CoRoutine containing a User.
+		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
+
+		/// Modifies the Bot's User data. \brief Modifies the Bot's User data.
+		/// \param dataPackage A ModifyCurrentUserData structure.
+		/// \returns A CoRoutine containing a User.
+		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);		
 
 		/// Removes the bot from a chosen Guild. \brief Removes the bot from a chosen Guild.
 		/// \param dataPackage A LeaveGuildData structure.
