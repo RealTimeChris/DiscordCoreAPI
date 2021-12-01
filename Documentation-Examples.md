@@ -209,5 +209,6 @@
 - ### [Executing a WebHook](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Executing%20a%20WebHook.md)
 - ### [Getting a WebHook Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20WebHook%20Message.md)
 - ### [Editing a WebHook Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Editing%20a%20WebHook%20Message.md)
+- ### [Deleting a WebHook Message](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Deleting%20a%20WebHook%20Message.md)
 
 
