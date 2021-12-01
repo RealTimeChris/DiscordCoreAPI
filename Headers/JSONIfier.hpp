@@ -25,6 +25,7 @@ namespace DiscordCoreAPI {
 	struct AddRecipientToGroupDMData;
 	struct EditFollowUpMessageData;
 	struct CreateChannelInviteData;
+	struct EditWebHookMessageData;
 	struct DeleteMessagesBulkData;
 	struct FollowNewsChannelData;
 	struct ModifyGuildMemberData;
@@ -144,4 +145,6 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildScheduledEventData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage);
 }

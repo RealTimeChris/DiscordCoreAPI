@@ -76,8 +76,11 @@ namespace DiscordCoreAPI {
 	/// For executing a WebHook. \brief For executing a WebHook.
 	struct DiscordCoreAPI_Dll ExecuteWebHookData {
 		
-		friend string DiscordCoreInternal::JSONIFY(ExecuteWebHookData);
+		friend string DiscordCoreInternal::JSONIFY(ExecuteWebHookData dataPackage);
 		friend class WebHooks;
+
+		string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body(defaults to false; when false a message that is not saved does not return an error).
 
 		ExecuteWebHookData(WebHookData dataNew) {
 			this->webhookToken = dataNew.token;
@@ -193,12 +196,145 @@ namespace DiscordCoreAPI {
 		vector<EmbedData>embeds{};///< Array of up to 10 embed objects.
 		string webhookToken{ "" };///< The WebHook token you would like to execute.
 		string avatarUrl{ "" };///< The default avatar of the webhook.
-		string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
 		string webhookId{ "" };///< The WebHook you would like to execute.
 		string username{ "" };///< The default username of the webhook.
-		string content{ "" };///< The message contents(up to 2000 chara
+		string content{ "" };///< The message contents (up to 2000 characters).
+		bool tts{ false };///< True if this is a TTS message.
+	};
+
+	/// For getting a WebHook Message. \brief For getting a WebHook Message.
+	struct DiscordCoreAPI_Dll GetWebHookMessageData {
+		string webhookToken{ "" };///< The WebHook token you would like to collect.
+		string webhookId{ "" };///< The WebHook you would like to collect.
+		string messageId{ "" };///< The Message Id to collect.
+		string threadId{ "" };///< The thread that the Message is in.
+	};
+
+	struct DiscordCoreAPI_Dll EditWebHookMessageData {
+
+		friend string DiscordCoreInternal::JSONIFY(EditWebHookMessageData dataPackage);
+		friend class WebHooks;
+
+		string messageId{ "" };///< The Message Id to collect.
+		string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body(defaults to false; when false a message that is not saved does not return an error).
-		bool tts{ false };///< .True if this is a TTS message.
+
+		EditWebHookMessageData(WebHookData dataNew) {
+			this->webhookToken = dataNew.token;
+			this->webhookId = dataNew.id;
+		}
+
+		/// Adds a button to the response Message. \brief Adds a button to the response Message.
+		/// \param disabled Whether the button is active or not.
+		/// \param customId A custom id to give for identifying the button.
+		/// \param buttonLabel A visible label for the button.
+		/// \param buttonStyle The style of the button.
+		/// \param emojiName An emoji name, if desired.        
+		/// \param emojiId An emoji id, if desired.
+		/// \param url A url, if applicable.
+		/// \returns void
+		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components.at(this->components.size() - 1).components.size() < 5) {
+					ComponentData component;
+					component.type = ComponentType::Button;
+					component.emoji.name = emojiName;
+					component.label = buttonLabel;
+					component.style = buttonStyle;
+					component.customId = customId;
+					component.disabled = disabled;
+					component.emoji.id = emojiId;
+					component.url = url;
+					this->components.at(this->components.size() - 1).components.push_back(component);
+				}
+				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+			}
+		}
+
+		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
+		/// \param disabled Whether the select-menu is active or not.
+		/// \param customId A custom id to give for identifying the select-menu.
+		/// \param options A vector of select-menu-options to offer.
+		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
+		/// \param maxValues Maximum number of selections that are possible.
+		/// \param minValues Minimum required number of selections that are required.
+		/// \returns void
+		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components.at(this->components.size() - 1).components.size() < 5) {
+					ComponentData componentData;
+					componentData.type = ComponentType::SelectMenu;
+					componentData.placeholder = placeholder;
+					componentData.maxValues = maxValues;
+					componentData.minValues = minValues;
+					componentData.disabled = disabled;
+					componentData.customId = customId;
+					componentData.options = options;
+					this->components.at(this->components.size() - 1).components.push_back(componentData);
+				}
+				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+
+			}
+		}
+
+		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
+		/// \param dataPackage An AllowedMentionsData structure.
+		/// \returns void
+		void addAllowedMentions(AllowedMentionsData dataPackage) {
+			this->allowedMentions = dataPackage;
+		}
+
+		/// For setting the components in a response. \brief For setting the components in a response. 
+		/// \param dataPackage An ActionRowData structure.
+		/// \returns void
+		void addComponentRow(ActionRowData dataPackage) {
+			this->components.push_back(dataPackage);
+		}
+
+		/// For setting the embeds in a response. \brief For setting the embeds in a response.
+		/// \param dataPackage An EmbedData structure.
+		/// \returns void
+		void addMessageEmbed(EmbedData dataPackage) {
+			this->embeds.push_back(dataPackage);
+		}
+
+		/// For setting the Message content in a response. \brief For setting the Message content in a response.
+		/// \param dataPackage A string, containing the content.
+		/// \returns void
+		void addContent(string dataPackage) {
+			this->content = dataPackage;
+		}
+
+	protected:
+
+		AllowedMentionsData allowedMentions{};///< Allowed mention object.
+		vector<ActionRowData>components{};///< Array of message component.
+		vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
+		string webhookToken{ "" };///< The WebHook token you would like to collect.
+		string webhookId{ "" };///< The WebHook you would like to collect.
+		string content{ "" };///< The message contents(up to 2000 characters).
+	};
+
+	/// For deleting a WebHook Message. \brief For deleting a WebHook Message.
+	struct DiscordCoreAPI_Dll DeleteWebHookMessageData {
+		string webhookToken{ "" };///< The WebHook token you would like to collect.
+		string webhookId{ "" };///< The WebHook you would like to collect.
+		string messageId{ "" };///< The Message Id to collect.
+		string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
 	};
 
 	/// A single WebHook. \brief A single WebHook.
@@ -268,8 +404,23 @@ namespace DiscordCoreAPI {
 		/// Executes a single WebHook. \brief Executes a single WebHook.
 		/// \param dataPackage An ExecuteWebHookData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<void> executeWebHookAsync(ExecuteWebHookData dataPackage);
+		static CoRoutine<Message> executeWebHookAsync(ExecuteWebHookData dataPackage);
 		
+		/// Collects a WebHook Message. \brief Collects a WebHook Message.
+		/// \param dataPackage An GetWebHookMessageData structure.
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<Message> getWebHookMessageAsync(GetWebHookMessageData dataPackage);
+
+		/// Edits a WebHook Message. \brief Edits a WebHook Message.
+		/// \param dataPackage An EditWebHookMessageData structure.
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<Message> editWebHookMessageAsync(EditWebHookMessageData dataPackage);
+
+		/// Deletes a WebHook Message. \brief Deletes a WebHook Message.
+		/// \param dataPackage An DeleteWebHookMessageData structure.
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<void> deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage);
+
 	};
 	/**@}*/
 	
