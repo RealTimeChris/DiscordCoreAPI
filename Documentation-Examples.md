@@ -190,3 +190,4 @@
 - ### [Modifying a User's Voice State](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20a%20User's%20Voice%20State.md)
 - ### [Getting the Current User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20the%20Current%20User.md)
 - ### [Getting a User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Getting%20a%20User.md)
+- ### [Modifying the Current User](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Modifying%20the%20Current%20User.md)
