@@ -1703,6 +1703,7 @@ namespace DiscordCoreAPI {
         bool valueBool{ false };///< the value if it's a bool.
         string name{ "" };///< The name of the current option.
         int32_t valueInt{ 0 };///< The value if it's an int32_t.
+        bool focused{ false };///< 	True if this option is the currently focused option for autocomplete
     };
 
     /// ApplicationCommand interaction data.

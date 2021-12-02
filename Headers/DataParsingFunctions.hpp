@@ -2476,6 +2476,7 @@ namespace DiscordCoreInternal {
             }
             else {
                 if (jsonObjectData.contains("choices") && !jsonObjectData["choices"].is_null()) {
+                    pDataStructure->choices.clear();
                     pDataStructure->choices.reserve(jsonObjectData.at("choices").size());
                     for (auto& value : jsonObjectData["choices"]) {
                         DiscordCoreAPI::ApplicationCommandOptionChoiceData newData{};
@@ -2541,6 +2542,10 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
                 pDataStructure->type = jsonObjectData["type"].get<DiscordCoreAPI::ApplicationCommandOptionType>();
+            }
+
+            if (jsonObjectData.contains("focused") && !jsonObjectData["focused"].is_null()) {
+                pDataStructure->focused = jsonObjectData["focused"].get<bool>();
             }
 
             if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null()) {
