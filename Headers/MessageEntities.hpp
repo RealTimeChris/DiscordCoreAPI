@@ -372,7 +372,7 @@ namespace DiscordCoreAPI {
 
 		Message(MessageData dataNew);
 
-		virtual ~Message() {};
+		virtual ~Message();
 	};
 
 	/**@}*/

@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 
 		Reaction(ReactionData dataNew);
 
-		virtual ~Reaction() {};
+		virtual ~Reaction();
 	};
 
 	/**@}*/

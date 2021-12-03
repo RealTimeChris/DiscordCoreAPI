@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEvent(GuildScheduledEventData dataNew);
 
-		virtual ~GuildScheduledEvent() {};		
+		virtual ~GuildScheduledEvent();
 	};
 
 	/**@}*/

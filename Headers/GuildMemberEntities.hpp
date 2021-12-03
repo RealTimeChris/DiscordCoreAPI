@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 
 		GuildMember(GuildMemberData dataNew);
 
-		virtual ~GuildMember() {};
+		virtual ~GuildMember();
 	};
 	/**@}*/
 

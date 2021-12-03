@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 
 		Thread();
 
-		virtual ~Thread() {};
+		virtual ~Thread();
 
 	protected:
 

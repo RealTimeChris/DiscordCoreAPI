@@ -112,6 +112,7 @@ namespace DiscordCoreAPI {
 		string name{ "" };///< The name of the Channel.
 	};
 
+	/// For modifying the Channel position data of a single Channel. \brief For modifying the Channel position data of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
 		string parentId{ "" };///< The new parent ID for the channel that is moved.
@@ -139,7 +140,7 @@ namespace DiscordCoreAPI {
 
 		Channel(ChannelData dataNew);
 
-		virtual ~Channel() {};
+		virtual ~Channel();
 	};
 
 	/**@}*/

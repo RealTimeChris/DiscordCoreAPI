@@ -51,8 +51,8 @@ namespace DiscordCoreAPI {
 
 	/// For updating the positions of the roles. \brief For updating the positions of the roles.
 	struct DiscordCoreAPI_Dll RolePositionData {
-		int32_t rolePosition{ 0 };
-		string roleId{ "" };
+		int32_t rolePosition{ 0 };///< The new Role position.
+		string roleId{ "" };///< The Role to update.
 	};
 
 	/// Update Role position data.
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 
 		Role(RoleData dataNew);
 
-		virtual ~Role() {};
+		virtual ~Role();
 	};
 
 	/**@}*/
