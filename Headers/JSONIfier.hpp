@@ -60,13 +60,13 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll json JSONIFY(string botToken, string sessionID, int32_t lastReceivedNumber);
 
-	DiscordCoreAPI_Dll string JSONIFY(int64_t nonce);
+	DiscordCoreAPI_Dll vector<uint8_t> JSONIFY(int64_t nonce);
 
-	DiscordCoreAPI_Dll string JSONIFY(string localPort, string localIp, string encryptionMode, int32_t testValue);
+	DiscordCoreAPI_Dll vector<uint8_t> JSONIFY(string localPort, string localIp, string encryptionMode, int32_t testValue);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02);
+	DiscordCoreAPI_Dll vector<uint8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02);
 
-	DiscordCoreAPI_Dll string JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay = 0);
+	DiscordCoreAPI_Dll vector<uint8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay = 0);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage);
 

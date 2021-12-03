@@ -137,11 +137,11 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event* reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
-		void sendMessage(string& text);
+		void sendMessage(vector<uint8_t> text);
 
-		void sendVoiceData(vector<uint8_t>& data);
+		void sendVoiceData(vector<uint8_t> data);
 		
-		void sendConnectionData(string& message);
+		void sendConnectionData(vector<uint8_t>& message);
 
 		void otherAgentConnect(ConnectionWebSocketData* connectionData);
 
