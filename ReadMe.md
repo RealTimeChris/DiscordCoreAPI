@@ -4,7 +4,7 @@
 </p>
  
  
-## A bot library for Discord, written in C++ using WinRT and a few other useful libraries. Features explicit multithreading. through the usage of custom, asynchronous C++ CoRoutines.
+## A bot library for Discord, written in C++ using WinRT and a few other useful libraries. Features explicit multithreading, through the usage of custom, asynchronous C++ CoRoutines.
 
 ## [Build Instructions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Build%20Instructions.md)
 
