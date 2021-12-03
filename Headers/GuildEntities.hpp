@@ -330,15 +330,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a vector of Guild.
 		static CoRoutine<vector<Guild>> getAllGuildsAsync();
 
-		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
-		/// \param dataPackage A GetGuildData structure.
-		/// \returns A CoRoutine containing a Guild.
-		static CoRoutine<Guild> getCachedGuildAsync(GetGuildData dataPackage);
-
 		/// Collects a Guild from the Discord servers. \brief Collects a Guild from the Discord servers.
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> getGuildAsync(GetGuildData dataPackage);
+
+		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
+		/// \param dataPackage A GetGuildData structure.
+		/// \returns A CoRoutine containing a Guild.
+		static CoRoutine<Guild> getCachedGuildAsync(GetGuildData dataPackage);
 
 		/// Acquires the preview Data of a chosen Guild. \brief Acquires the preview Data of a chosen Guild.
 		/// \param dataPackage A GetGuildPreviewData structure.

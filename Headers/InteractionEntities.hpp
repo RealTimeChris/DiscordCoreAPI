@@ -360,6 +360,7 @@ namespace DiscordCoreAPI {
 
         CreateInteractionResponseData() {};
     };
+
     /// Create deferred Interaction response data. \brief Create deferred Interaction response data.
     struct DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
 
@@ -395,6 +396,12 @@ namespace DiscordCoreAPI {
         InteractionResponseData data{};
         string requesterId{ "" };
         string channelId{ "" };
+    };
+
+    /// Get Interaction response data. \brief Get Interaction response data.
+    struct DiscordCoreAPI_Dll GetInteractionResponseData {
+        string interactionToken{ "" }; ///< Interaction token.
+        string applicationId{ "" }; ///< application id.
     };
 
     /// Edit Interaction response data. \brief Edit Interaction response data.
@@ -855,6 +862,13 @@ namespace DiscordCoreAPI {
         CreateFollowUpMessageData() {};
     };
 
+    /// Get FollowUp Message data. \brief Get FollowUp Message data.
+    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
+        string messageId{ "" };///< Message id.
+        string interactionToken{ "" }; ///< Interaction token.
+        string applicationId{ "" }; ///< application id.
+    };
+
     /// Edit follow up Message data. \brief Edit follow up Message data.
     struct DiscordCoreAPI_Dll EditFollowUpMessageData {
 
@@ -1020,38 +1034,13 @@ namespace DiscordCoreAPI {
         uint32_t timeDelay{ 0 };
     };
 
-    /// Get Interaction response data. \brief Get Interaction response data.
-    struct DiscordCoreAPI_Dll GetInteractionResponseData {
-        string interactionToken{ "" }; ///< Interaction token.
-        string applicationId{ "" }; ///< application id.
-    };
-
-    /// Get FollowUp Message data. \brief Get FollowUp Message data.
-    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
-        string messageId{ "" };///< Message id.
-        string interactionToken{ "" }; ///< Interaction token.
-        string applicationId{ "" }; ///< application id.
-    };
-
     /// A single Interaction.
     class DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
         
-        Interaction(InteractionData dataPackage) {
-            this->applicationId = dataPackage.applicationId;
-            this->requesterId = dataPackage.requesterId;
-            this->channelId = dataPackage.channelId;
-            this->guildId = dataPackage.guildId;
-            this->message = dataPackage.message;
-            this->rawData = dataPackage.rawData;
-            this->version = dataPackage.version;
-            this->member = dataPackage.member;
-            this->token = dataPackage.token;
-            this->data = dataPackage.data;
-            this->type = dataPackage.type;
-            this->user = dataPackage.user;
-            this->id = dataPackage.id;
-        }
+        Interaction(InteractionData dataPackage);
+
+        virtual ~Interaction() {};
     };
     /**@}*/
 

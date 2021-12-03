@@ -14,6 +14,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
+
 	/// Get Messages data. \brief Get Messages data.
 	struct DiscordCoreAPI_Dll GetMessagesData {
 		string aroundThisId{ "" };///<Around this id.
@@ -177,6 +178,12 @@ namespace DiscordCoreAPI {
 		CreateMessageData() {};
 	};
 
+	/// Crosspost Message Data. \brief Crosspost Message Data.
+	struct DiscordCoreAPI_Dll CrosspostMessageData {
+		string messageId{ "" };///< Id of the message to be crossposted.
+		string channelId{ "" };///< Channel within which to crosspost the Message from.
+	};
+
 	/// Edit Message data. \brief Edit Message data.
 	struct DiscordCoreAPI_Dll EditMessageData {
 
@@ -338,12 +345,6 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< The reason for deleting the Messages.
 	};
 
-	/// Crosspost Message Data. \brief Crosspost Message Data.
-	struct DiscordCoreAPI_Dll CrosspostMessageData{
-		string messageId{ "" };///< Id of the message to be crossposted.
-		string channelId{ "" };///< Channel within which to crosspost the Message from.
-	};
-
 	/// Get pinned Messages data. \brief Get pinned Messages data.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
 		string channelId{ "" };///< The Channel from which to collect pinned Messages.
@@ -428,6 +429,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Messages {
 	public:
 
+		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
+		/// \param dataPackage A GetMessagesData structure.
+		/// \returns A CoRoutine containing an optional vector of Message.
+		static CoRoutine<vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
+
 		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
 		/// \param dataPackage A GetMessageData structure.
 		/// \returns A CoRoutine containing a Message.
@@ -437,16 +443,6 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateMessageData structure.
 		/// \returns A CoRoutine containing a Message.
 		static CoRoutine<Message> createMessageAsync(CreateMessageData dataPackage);
-
-		/// Deletes a Message. \brief Deletes a Message.
-		/// \param dataPackage A DeleteMessageData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteMessageAsync(DeleteMessageData dataPackage);
-
-		/// Deletes a collection of Messages. \brief Deletes a collection of Messages.
-		/// \param dataPackage A DeleteMessagesBulkData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
 
 		/// Crossposts a message from a News Channel to the following Channels. \brief Crossposts a message from a News Channel to the following Channels.
 		/// \param dataPackage A CrosspostMessageData structure.
@@ -458,10 +454,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Message.
 		static CoRoutine<Message> editMessageAsync(EditMessageData dataPackage);
 
-		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
-		/// \param dataPackage A GetMessagesData structure.
-		/// \returns A CoRoutine containing an optional vector of Message.
-		static CoRoutine<vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
+		/// Deletes a Message. \brief Deletes a Message.
+		/// \param dataPackage A DeleteMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteMessageAsync(DeleteMessageData dataPackage);
+
+		/// Deletes a collection of Messages. \brief Deletes a collection of Messages.
+		/// \param dataPackage A DeleteMessagesBulkData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);		
 
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.

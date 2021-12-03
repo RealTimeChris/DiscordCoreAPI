@@ -15,6 +15,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
+
 	/// For addin a Role to a GuildMember. \brief For addin a Role to a GuildMember.
 	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
 		string guildId{ "" };///< The id of the Guild within which to assign the Role.
@@ -36,24 +37,6 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< Guild id for which Guild to get the roles from.
 	};
 
-	/// Get Guild member roles data. \brief Get Guild member roles data.
-	struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
-		GuildMember guildMember{};///< Which Guild member to collect the roles from.
-		string guildId{ "" };///< Which Guild to collect their roles from.
-	};
-
-	/// For updating the positions of the roles. \brief For updating the positions of the roles.
-	struct DiscordCoreAPI_Dll RolePositionData {
-		int32_t rolePosition{ 0 };
-		string roleId{ "" };
-	};
-
-	/// Get a Role from the library's cache, or the Discord server. \brief Get a Role from the library's cache, or the Discord server.
-	struct DiscordCoreAPI_Dll GetRoleData {
-		string guildId{ "" };///<Which Guild to collect the Role from.
-		string roleId{ "" };///< Which Role to collect.
-	};
-
 	/// Create Role data. \brief Create Role data.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
@@ -64,6 +47,12 @@ namespace DiscordCoreAPI {
 		bool hoist{ false };///< Is this Role hoisted above the rest of them?
 		string reason{ "" };///< Reason for creating the Role.
 		string name{ "" };///< The name of the Role.
+	};
+
+	/// For updating the positions of the roles. \brief For updating the positions of the roles.
+	struct DiscordCoreAPI_Dll RolePositionData {
+		int32_t rolePosition{ 0 };
+		string roleId{ "" };
 	};
 
 	/// Update Role position data.
@@ -95,6 +84,18 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild from which to remove the Role.
 		string roleId{ "" };///< The id of the Role to remove.
 		string reason{ "" };///< Reason for removing this Role.
+	};
+
+	/// Get Guild member roles data. \brief Get Guild member roles data.
+	struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
+		GuildMember guildMember{};///< Which Guild member to collect the roles from.
+		string guildId{ "" };///< Which Guild to collect their roles from.
+	};
+
+	/// Get a Role from the library's cache, or the Discord server. \brief Get a Role from the library's cache, or the Discord server.
+	struct DiscordCoreAPI_Dll GetRoleData {
+		string guildId{ "" };///<Which Guild to collect the Role from.
+		string roleId{ "" };///< Which Role to collect.
 	};
 
 	/// A single Role.
@@ -132,45 +133,45 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage);
 
-		/// Collects a given Role from the library's cache. \brief Collects a given Role from the library's cache.
-		/// \param dataPackage A GetRoleData structure.
-		/// \returns A CoRoutine containing a Role.
-		static CoRoutine<Role> getCachedRoleAsync(GetRoleData dataPackage);
+		/// Collects the Roles that a Guild has. \brief Collects the Roles that a Guild has.
+		/// \param dataPackage A GetGuildRolesData structure.
+		/// \returns A CoRoutine containing a vector of Roles.
+		static CoRoutine<vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
 		/// \param dataPackage A CreateRoleData structure.
 		/// \returns A Role.
 		static CoRoutine<Role> createGuildRoleAsync(CreateGuildRoleData dataPackage);
 
-		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
-		/// \param dataPackage A GetRoleData structure.
-		/// \returns A Role.
-		static CoRoutine<Role> getRoleAsync(GetRoleData dataPackage);
-
-		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
-		/// \param dataPackage A GetGuildMemberRolesData structure.
-		/// \returns A vector of Roles.
-		static CoRoutine<vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
-
-		/// Collects the Roles that a Guild has. \brief Collects the Roles that a Guild has.
-		/// \param dataPackage A GetGuildRolesData structure.
-		/// \returns A CoRoutine containing a vector of Roles.
-		static CoRoutine<vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
-
-		/// Removes a given Role from a Guild. \brief Removes a given Role from a Guild.
-		/// \param dataPackage A RemoveGuildRoleData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> removeGuildRoleAsync(RemoveGuildRoleData dataPackage);
+		/// Updates a Role's positions. \brief Updates a Role's positions.
+		/// \param dataPackage A ModifyGuildRolePositionsData structure.
+		/// \returns A vector containing Roles.
+		static CoRoutine<vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// Updates a given Role's properties. \brief Updates a given Role's properties.
 		/// \param dataPackage A ModifyGuildRoleData structure.
 		/// \returns A CoRoutine containing a Role.
 		static CoRoutine<Role> modifyGuildRoleAsync(ModifyGuildRoleData dataPackage);
 
-		/// Updates a Role's positions. \brief Updates a Role's positions.
-		/// \param dataPackage A ModifyGuildRolePositionsData structure.
-		/// \returns A vector containing Roles.
-		static CoRoutine<vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
+		/// Removes a given Role from a Guild. \brief Removes a given Role from a Guild.
+		/// \param dataPackage A RemoveGuildRoleData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeGuildRoleAsync(RemoveGuildRoleData dataPackage);
+
+		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
+		/// \param dataPackage A GetGuildMemberRolesData structure.
+		/// \returns A vector of Roles.
+		static CoRoutine<vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
+
+		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
+		/// \param dataPackage A GetRoleData structure.
+		/// \returns A Role.
+		static CoRoutine<Role> getRoleAsync(GetRoleData dataPackage);
+
+		/// Collects a given Role from the library's cache. \brief Collects a given Role from the library's cache.
+		/// \param dataPackage A GetRoleData structure.
+		/// \returns A CoRoutine containing a Role.
+		static CoRoutine<Role> getCachedRoleAsync(GetRoleData dataPackage);
 
 	protected:
 

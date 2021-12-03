@@ -46,6 +46,13 @@ namespace DiscordCoreAPI {
 		bool deaf{};///< Whether the user is deafened in voice channels.
 	};
 
+	/// For modifying the Current GuildMember's values. \brief For modifying the Current GuildMember's values.
+	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
+		string guildId{ "" };///< The Guild within which to modify the current user's values.
+		string reason{ "" };///< A reason for modifying the current user's values.
+		string nick{ "" };///< A new nickname for the current user.
+	};
+
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
 		string newVoiceChannelId{ "" }; ///< The new voice channel to move them into.
@@ -57,13 +64,6 @@ namespace DiscordCoreAPI {
 		bool mute{ false }; ///< Whether or not to mute them in voice.
 		bool deaf{ false };	///< Whether or not to deafen them, in voice.
 		string nick{ "" };	///< Their new display/nick name.
-	};
-
-	/// For modifying the Current GuildMember's values. \brief For modifying the Current GuildMember's values.
-	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
-		string guildId{ "" };///< The Guild within which to modify the current user's values.
-		string reason{ "" };///< A reason for modifying the current user's values.
-		string nick{ "" };///< A new nickname for the current user.
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.
@@ -97,15 +97,15 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
-		/// Collects a GuildMember from the library's cache. \brief Collects a GuildMember from the library's cache.
-		/// \param dataPackage A GetGuildMemberData structure.
-		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMember> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
-
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
 		/// \returns A CoRoutine containing a GuildMember.
 		static CoRoutine<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage);
+
+		/// Collects a GuildMember from the library's cache. \brief Collects a GuildMember from the library's cache.
+		/// \param dataPackage A GetGuildMemberData structure.
+		/// \returns A CoRoutine containing a GuildMember.
+		static CoRoutine<GuildMember> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
 
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.

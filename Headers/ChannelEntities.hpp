@@ -14,38 +14,10 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
-	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
-	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
-		PermissionOverwritesType type{}; ///< The type of overwrite.
-		string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
-		string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
-		string allow{ "" };	///< The permissions to list as "allowed".
-		string deny{ "" };	///< The permissions to list as "deny".
-		string reason{ "" };///< Reason for editing the permission overwrites.
-	};
-
-	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
-	struct DiscordCoreAPI_Dll CreateChannelInviteData {
-		string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
-		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
-		string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
-		bool temporary{ false };///< Whether this invite only grants temporary membership	false.
-		string channelId{ "" };///< The id of the Channel to create the invite for.
-		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
-		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
-		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
-		string reason{ "" };///< Reason for creating the invite.
-	};
 
 	/// For collecting a Channel from Discord's servers. \brief For collecting a Channel from Discord's servers.
 	struct DiscordCoreAPI_Dll GetChannelData {
 		string channelId{ "" }; ///< The id of the Channel to acquire.
-	};
-
-	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
-	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
-		string channelId{ "" };
-		string reason{ "" };
 	};
 
 	/// For modifying a channel's properties. \brief For modifying a channel's properties.
@@ -67,16 +39,45 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< A reason for modifying the Channel.
 	};
 
-	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
-	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
-		string channelId{ "" }; ///< The id of the Channel to modify permissions for.
-		string reason{ "" };///< Reason for deleting these permission overwrites.
+	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
+	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
+		string channelId{ "" };
+		string reason{ "" };
+	};
+
+	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
+	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
+		PermissionOverwritesType type{}; ///< The type of overwrite.
+		string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
+		string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
+		string allow{ "" };	///< The permissions to list as "allowed".
+		string deny{ "" };	///< The permissions to list as "deny".
+		string reason{ "" };///< Reason for editing the permission overwrites.
 	};
 
 	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
 	struct DiscordCoreAPI_Dll GetChannelInvitesData {
 		string channelId{ "" };
+	};
+
+	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
+	struct DiscordCoreAPI_Dll CreateChannelInviteData {
+		string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
+		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
+		string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
+		bool temporary{ false };///< Whether this invite only grants temporary membership	false.
+		string channelId{ "" };///< The id of the Channel to create the invite for.
+		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
+		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
+		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
+		string reason{ "" };///< Reason for creating the invite.
+	};
+
+	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
+	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
+		string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
+		string channelId{ "" }; ///< The id of the Channel to modify permissions for.
+		string reason{ "" };///< Reason for deleting these permission overwrites.
 	};
 
 	/// For following a news Channel. \brief For following a news Channel.
@@ -155,15 +156,15 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
-		/// Collects a Channel from the library's cache. \brief Collects a Channel from the library's cache.		
-		/// \param dataPackage A GetChannelData structure.
-		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<Channel> getCachedChannelAsync(GetChannelData dataPackage);
-
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> getChannelAsync(GetChannelData dataPackage);
+
+		/// Collects a Channel from the library's cache. \brief Collects a Channel from the library's cache.		
+		/// \param dataPackage A GetChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Channel> getCachedChannelAsync(GetChannelData dataPackage);		
 
 		/// Modifies a Channel's properties. \brief Modifies a Channel's properties.
 		/// \param dataPackage A ModifyChannelData structure.
@@ -180,11 +181,6 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
-		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
-		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
-
 		/// Collects a vector of the invites to a given Channel. \brief Collects a vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
 		/// \returns A CoRoutine containing a vector of InviteData.
@@ -194,6 +190,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateChannelInviteData structure.
 		/// \returns A CoRoutine containing an InviteData structure.
 		static CoRoutine<InviteData> createChannelInviteAsync(CreateChannelInviteData dataPackage);
+
+		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
+		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);		
 
 		/// Follows a given new Channel with another Channel. \brief Follows a given new Channel with another Channel.
 		/// \param dataPackage A FollowNewsChannelData structure.

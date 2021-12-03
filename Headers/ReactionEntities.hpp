@@ -24,15 +24,6 @@ namespace DiscordCoreAPI {
 		string emojiId{ "" };///< The emoji id of the Reaction to add.
 	};
 
-	/// Get Reactions Data. \brief Get Reactions Data.
-	struct DiscordCoreAPI_Dll GetReactionsData {
-		string channelId{ "" };///< The Channel from which to acquire the reactors.
-		string messageId{ "" };///< The Message from which to acquire the reactors.
-		string afterId{ "" };///< Get users after this user ID.
-		string emoji{ "" };///< The emoji name for which to acquire the reactors.
-		int32_t limit{ 0 };///< The maximum number of reactors to collect.		
-	};
-
 	/// Delete own Reaction data. \brief Delete own Reaction data.
 	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
 		string channelId{ "" }; ///< The Channel from which to remove the Reaction.
@@ -50,6 +41,15 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The User id for whom to remove their emoji.
 	};
 
+	/// Get Reactions Data. \brief Get Reactions Data.
+	struct DiscordCoreAPI_Dll GetReactionsData {
+		string channelId{ "" };///< The Channel from which to acquire the reactors.
+		string messageId{ "" };///< The Message from which to acquire the reactors.
+		string afterId{ "" };///< Get users after this user ID.
+		string emoji{ "" };///< The emoji name for which to acquire the reactors.
+		int32_t limit{ 0 };///< The maximum number of reactors to collect.		
+	};
+	
 	/// Delete all Reaction data. \brief Delete all Reaction data.
 	struct DiscordCoreAPI_Dll DeleteAllReactionsData {
 		string channelId{ "" };///< The Channel from which you would like to remove the emoji.
@@ -138,6 +138,16 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Reaction.
 		static CoRoutine<Reaction> createReactionAsync(CreateReactionData dataPackage);
 
+		/// Deletes your own Reactions from a given Message. \brief Deletes your own Reactions from a given Message.
+		/// \param dataPackage A DeleteOwnReactionData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage);
+
+		/// Deletes all of the Reactions by a specific User from a given Message. \brief Deletes all of the Reactions by a specific User from a given Message. 
+		/// \param dataPackage A DeleteUserReactionData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage);
+
 		/// Get a list of users that reacted with this emoji. Returns an array of user objects on success. \brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
 		/// \param dataPackage A GetReactionsData structure.
 		/// \returns A CoRoutine containing a vector of Users.
@@ -148,20 +158,10 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage);
 
-		/// Deletes your own Reactions from a given Message. \brief Deletes your own Reactions from a given Message.
-		/// \param dataPackage A DeleteOwnReactionData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage);
-
 		/// Deletes all of the Reactions by a specific emoji from a given Message. \brief Deletes all of the Reactions by a specific emoji from a given Message. 
 		/// \param dataPackage A DeleteReactionsByEmojiData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage);
-
-		/// Deletes all of the Reactions by a specific User from a given Message. \brief Deletes all of the Reactions by a specific User from a given Message. 
-		/// \param dataPackage A DeleteUserReactionData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage);
+		static CoRoutine<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage);		
 
 		/// Collects a list of Guild Emoji from a chosen Guild. \brief Collects a list of Guild Emoji from a chosen Guild.
 		/// \param dataPackage A GetEmojiListData structure.

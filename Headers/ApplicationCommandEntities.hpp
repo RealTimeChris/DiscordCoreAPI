@@ -113,7 +113,6 @@ namespace DiscordCoreAPI {
         string guildId{ "" };///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
     };
 
-
     /// A single ApplicationCommand. \brief A single ApplicationCommand.
     class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
     public:
@@ -124,7 +123,6 @@ namespace DiscordCoreAPI {
 
         virtual ~ApplicationCommand() {};
     };
-
 
     /**@}*/
 
