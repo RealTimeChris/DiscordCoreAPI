@@ -96,6 +96,7 @@ namespace DiscordCoreInternal {
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
+		bool haveWeReceivedHeartbeatAck{ true };
 		const int32_t maxReconnectTries{ 10 };
 		MessageWebSocket webSocket{ nullptr };
 		bool serverUpdateCollected{ false };
@@ -105,13 +106,14 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		bool areWeReconnecting{ false };
+		recursive_mutex accessorMutex{};
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		event_token closedToken{};
-		mutex sendMessageMutex{};
 		string socketPath{ "" };
 		string sessionId{ "" };
 		string botToken{ "" };
+		
 
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs args);
 
@@ -119,7 +121,7 @@ namespace DiscordCoreInternal {
 
 		void getVoiceConnectionData(VoiceConnectInitData doWeCollect);
 
-		void sendMessage(json const& text);
+		void sendMessage(json& text);
 
 		void sendHeartBeat();
 
@@ -135,11 +137,11 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event* reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
-		void sendMessage(string const& text);
+		void sendMessage(string& text);
 
-		void sendVoiceData(vector<uint8_t>const& data);
+		void sendVoiceData(vector<uint8_t>& data);
 		
-		void sendConnectionData(string const& message);
+		void sendConnectionData(string& message);
 
 		void otherAgentConnect(ConnectionWebSocketData* connectionData);
 
