@@ -80,9 +80,9 @@ namespace DiscordCoreInternal {
 
 		static void store64Bits(vector<uint8_t>*, uint64_t, uint32_t);
 
-		static void singleValueJsonToETF(json, ErlPackBuffer*);
+		static void singleValueJsonToETF(ErlPackBuffer*, json&);
 
-		static void writeToBuffer(ErlPackBuffer*, vector<uint8_t>);
+		static void writeToBuffer(ErlPackBuffer*, vector<uint8_t>&);
 
 		static void appendVersion(ErlPackBuffer*);
 
@@ -102,13 +102,13 @@ namespace DiscordCoreInternal {
 
 		static void appendDouble(ErlPackBuffer*, double);
 
-		static void appendAtom(ErlPackBuffer*, vector<uint8_t>, uint32_t);
+		static void appendAtom(ErlPackBuffer*, vector<uint8_t>&, uint32_t);
 
-		static void appendAtomUf8(ErlPackBuffer*, vector<uint8_t>, uint32_t);
+		static void appendAtomUf8(ErlPackBuffer*, vector<uint8_t>&, uint32_t);
 
-		static void appendBinary(ErlPackBuffer*, vector<uint8_t>, uint32_t);
+		static void appendBinary(ErlPackBuffer*, vector<uint8_t>&, uint32_t);
 
-		static void appendString(ErlPackBuffer*, vector<uint8_t>, uint32_t);
+		static void appendString(ErlPackBuffer*, vector<uint8_t>&, uint32_t);
 
 		static void appendTupleHeader(ErlPackBuffer*, uint32_t);
 
