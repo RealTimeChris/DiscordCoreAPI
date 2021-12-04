@@ -60,19 +60,16 @@ newEmbed.setTimeStamp(getTimeAndDate());
 newEmbed.setTitle("__**Playing Issue:**__");
 newEmbed.setColor(discordGuild.data.borderColor);
 embedsFromSearch.push_back(newEmbed);
+RespondToInputEventData dataPackage(args->eventData);
+dataPackage.addMessageEmbed(newEmbed);
 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-	RespondToInputEventData dataPackage(args->eventData);
 	dataPackage.type = DesiredInputEventResponseType::RegularMessage;
-	dataPackage.addMessageEmbed(newEmbed);
-	newEvent = InputEvents::respondToEvent(dataPackage);
-	InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 }
 else {
-	RespondToInputEventData dataPackage(args->eventData);
 	dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
-	dataPackage.addMessageEmbed(newEmbed);
-	newEvent = InputEvents::respondToEvent(dataPackage);
 }
+newEvent = InputEvents::respondToEvent(dataPackage);
+InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 ## Dependencies
 - [WinRT](https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/intro-to-using-cpp-with-winrt)
