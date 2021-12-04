@@ -113,13 +113,13 @@ namespace DiscordCoreInternal {
 
 		static void appendMapHeader(ErlPackBuffer*, uint32_t);
 
-		static void read8Bits(ErlPackBuffer*, uint8_t*);
+		static uint8_t read8Bits(ErlPackBuffer*);
 
-		static void read16Bits(ErlPackBuffer*, uint16_t*);
+		static uint16_t read16Bits(ErlPackBuffer*);
 
-		static void read32Bits(ErlPackBuffer*, uint32_t*);
+		static uint32_t read32Bits(ErlPackBuffer*);
 
-		static void read64Bits(ErlPackBuffer*, uint64_t*);
+		static uint64_t read64Bits(ErlPackBuffer*);
 
 		static vector<char> readString(ErlPackBuffer*, uint32_t);
 
