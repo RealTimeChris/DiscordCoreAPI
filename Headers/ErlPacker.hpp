@@ -51,31 +51,36 @@ namespace DiscordCoreInternal {
 		vector<uint8_t>buffer{};
 
 		uint32_t offSet{};
+
+		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
+
+		ErlPackBuffer();
+
+		ErlPackBuffer(ErlPackBuffer&&) noexcept;
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
-
 	public:
+
 		static vector<uint8_t> parseJsonToEtf(json);
 
 		static json parseEtfToJson(vector<uint8_t>);
 
 	protected:
+
 		static uint16_t etfByteOrder16(uint16_t);
 
 		static uint32_t etfByteOrder32(uint32_t);
 
 		static uint64_t etfByteOrder64(uint64_t);
 
-		static void store16Bits(vector<uint8_t>*, uint32_t, uint16_t);
+		static void store16Bits(vector<uint8_t>*, uint16_t, uint32_t);
 
 		static void store32Bits(vector<uint8_t>*, uint32_t, uint32_t);
 
-		static void store64Bits(vector<uint8_t>*, uint32_t, uint64_t);
+		static void store64Bits(vector<uint8_t>*, uint64_t, uint32_t);
 
 		static void singleValueJsonToETF(json, ErlPackBuffer*);
-
-		static void writeToBuffer(ErlPackBuffer*, uint8_t*, uint32_t);
 
 		static void writeToBuffer(ErlPackBuffer*, vector<uint8_t>);
 
@@ -166,5 +171,4 @@ namespace DiscordCoreInternal {
 		static json parseLargeTuple(ErlPackBuffer*);
 
 	};
-
 }
