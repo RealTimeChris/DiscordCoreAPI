@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 
 		static vector<uint8_t> parseJsonToEtf(json&);
 
-		static json parseEtfToJson(vector<uint8_t>&);
+		static json parseEtfToJson(vector<uint8_t>);
 
 	protected:
 
