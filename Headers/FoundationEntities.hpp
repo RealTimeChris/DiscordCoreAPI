@@ -1174,6 +1174,8 @@ namespace DiscordCoreAPI {
         string icon{ "" };  ///< URL to the Guild's icon.
         string name{ "" };  ///< The Guild's name.
 
+        GuildData() {};
+
         virtual ~GuildData() {};
     };
 
