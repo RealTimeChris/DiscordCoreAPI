@@ -14,7 +14,7 @@
 
 ## [Raw DLL Source](https://github.com/RealTimeChris/DiscordCoreAPI-DLL)
 
-## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/KRef5CdytH)
+## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/8B9yyuyv5e)
 
 ## [Example "Music" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-MusicHouse-Cpp)
 
