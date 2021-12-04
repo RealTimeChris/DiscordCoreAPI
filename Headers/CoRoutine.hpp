@@ -218,16 +218,18 @@ namespace DiscordCoreAPI {
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         /// \returns void.
         void cancel() {
-            if (coroutineHandle) {
-                if (coroutineHandle.promise().newThread.joinable()) {
-                    coroutineHandle.promise().newThread.get_stop_source().request_stop();
-                    coroutineHandle.promise().newThread.join();
+            if (this != nullptr) {
+                if (coroutineHandle) {
+                    if (coroutineHandle.promise().newThread.joinable()) {
+                        coroutineHandle.promise().newThread.get_stop_source().request_stop();
+                        coroutineHandle.promise().newThread.join();
+                    }
+                    exception_ptr exceptionPtr{};
+                    while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
+                        rethrow_exception(exceptionPtr);
+                    }
+                    coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
                 }
-                exception_ptr exceptionPtr{};
-                while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
-                    rethrow_exception(exceptionPtr);
-                }
-                coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
             }
             return;
         }
