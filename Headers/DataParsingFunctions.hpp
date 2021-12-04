@@ -896,6 +896,7 @@ namespace DiscordCoreInternal {
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildData* pDataStructure) {
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->id = jsonObjectData["id"].get<string>();
+                pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
             }
 
             if (jsonObjectData.contains("afk_channel_id") && !jsonObjectData["afk_channel_id"].is_null()) {
@@ -1087,6 +1088,7 @@ namespace DiscordCoreInternal {
                 for (auto& value : jsonObjectData["members"]) {
                     DiscordCoreAPI::GuildMemberData newData{};
                     parseObject(move(value), &newData);
+                    newData.guildId = pDataStructure->id;
                     string userId = newData.user.id;
                     pDataStructure->members.insert_or_assign(userId, move(newData));
                 }
@@ -1097,6 +1099,7 @@ namespace DiscordCoreInternal {
                 for (auto& value : jsonObjectData["channels"]) {
                     DiscordCoreAPI::ChannelData newData{};
                     parseObject(move(value), &newData);
+                    newData.guildId = pDataStructure->id;
                     string channelId = newData.id;
                     pDataStructure->channels.insert_or_assign(channelId, move(newData));
                 }
@@ -1168,11 +1171,39 @@ namespace DiscordCoreInternal {
                 }
                 pDataStructure->stageInstances.shrink_to_fit();
             }
-
-            if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-                pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
-            }
         };
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::SessionStartData* pDataStructure) {
+            if (jsonObjectData.contains("max_concurrency") && !jsonObjectData["max_concurrency"].is_null()) {
+                pDataStructure->maxConcurrency = jsonObjectData["max_concurrency"].get<uint32_t>();
+            }
+
+            if (jsonObjectData.contains("remaining") && !jsonObjectData["remaining"].is_null()) {
+                pDataStructure->remaining = jsonObjectData["remaining"].get<uint32_t>();
+            }
+
+            if (jsonObjectData.contains("reset_after") && !jsonObjectData["reset_after"].is_null()) {
+                pDataStructure->resetAfter = jsonObjectData["reset_after"].get<uint32_t>();
+            }
+
+            if (jsonObjectData.contains("total") && !jsonObjectData["total"].is_null()) {
+                pDataStructure->total = jsonObjectData["total"].get<uint32_t>();
+            }
+        }
+
+        static void parseObject(json jsonObjectData, DiscordCoreAPI::GatewayBotData* pDataStructure) {
+            if (jsonObjectData.contains("session_start_limit") && !jsonObjectData["session_start_limit"].is_null()) {
+                parseObject(jsonObjectData["session_start_limit"], &pDataStructure->sessionStartLimit);
+            }
+
+            if (jsonObjectData.contains("shards") && !jsonObjectData["shards"].is_null()) {
+                pDataStructure->shards = jsonObjectData["shards"].get<uint32_t>();
+            }
+
+            if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+                pDataStructure->url = jsonObjectData["url"].get<string>();
+            }
+        }
 
         static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::GuildData>* pDataStructure) {
             pDataStructure->reserve(jsonObjectData.size());

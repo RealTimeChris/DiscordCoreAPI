@@ -8,14 +8,12 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 
-#ifdef max
-#undef max
-#endif
-#ifdef min
-#undef min
-#endif
-
 namespace DiscordCoreInternal {
+
+	class DiscordCoreAPI_Dll ErlPackError : public exception {
+	public:
+		explicit ErlPackError(const string& message) : exception(message.c_str()) {}
+	};
 
 	constexpr uint8_t FORMAT_VERSION{ 131 };
 
@@ -77,7 +75,7 @@ namespace DiscordCoreInternal {
 
 		static void singleValueJsonToETF(const json*, ErlPackBuffer*);
 
-		static void writeToBuffer(ErlPackBuffer*, const uint8_t*, uint32_t);
+		static void writeToBuffer(ErlPackBuffer*, uint8_t*, uint32_t);
 
 		static void appendVersion(ErlPackBuffer*);
 
@@ -97,13 +95,13 @@ namespace DiscordCoreInternal {
 
 		static void appendDouble(ErlPackBuffer*, double);
 
-		static void appendAtom(ErlPackBuffer*, const uint8_t*, uint32_t);
+		static void appendAtom(ErlPackBuffer*, uint8_t*, uint32_t);
 
-		static void appendAtomUf8(ErlPackBuffer*, const uint8_t*, uint32_t);
+		static void appendAtomUf8(ErlPackBuffer*, uint8_t*, uint32_t);
 
-		static void appendBinary(ErlPackBuffer*, const uint8_t*, uint32_t);
+		static void appendBinary(ErlPackBuffer*, uint8_t*, uint32_t);
 
-		static void appendString(ErlPackBuffer*, const uint8_t*, uint32_t);
+		static void appendString(ErlPackBuffer*, uint8_t*, uint32_t);
 
 		static void appendTupleHeader(ErlPackBuffer*, uint64_t);
 

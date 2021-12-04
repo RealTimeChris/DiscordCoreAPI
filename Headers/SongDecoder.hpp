@@ -46,18 +46,18 @@ namespace DiscordCoreAPI {
         unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };
-        vector<uint8_t> currentBuffer{};
         concurrency::event readyToStartEvent {};
+        unique_ptr<CoRoutine<void>> theTask{};
         int32_t refreshTimeForBuffer{ 10000 };
         unbounded_buffer<bool> readyBuffer{};
-        uint64_t totalFileSize{ 0 };
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };
         AVStream* audioStream{ nullptr };
+        vector<uint8_t> currentBuffer{};
         AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
+        uint64_t totalFileSize{ 0 };
         bool haveWeBooted{ false };
-        CoRoutine<void> theTask{};
         AVCodec* codec{ nullptr };        
 
         CoRoutine<void> run();

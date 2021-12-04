@@ -86,6 +86,7 @@ extern "C"
 #include <opus/opus.h>
 #include <ppltasks.h>
 #include <coroutine>
+#include <atltime.h>
 #include <winbase.h>
 #include <stdint.h>
 #include <iostream>
@@ -95,6 +96,7 @@ extern "C"
 #include <utility>
 #include <stdio.h>
 #include <fstream>
+#include <string>
 #include <future>
 #include <bitset>
 #include <memory>
@@ -102,9 +104,6 @@ extern "C"
 #include <ios>
 #define CURL_STATICLIB
 #include <curl\curl.h>
-#include <string>
-#include <atltime.h>
-#include <limits>
 
 using namespace winrt::Windows::Networking::Sockets;
 using namespace winrt::Windows::Web::Http::Headers;
@@ -123,6 +122,18 @@ using namespace std;
 #ifdef _DEBUG
 #define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef DELETE
+#undef DELETE
 #endif
 
 #pragma intrinsic(__ll_lshift)

@@ -7,10 +7,6 @@
 
 #include "IndexInitial.hpp"
 
-#ifdef DELETE
-#undef DELETE
-#endif
-
 namespace DiscordCoreInternal {
 
     class BaseWebSocketAgent;
@@ -1747,6 +1743,21 @@ namespace DiscordCoreAPI {
         virtual ~InteractionData() {}
     };
 
+    /// Data from the SessionStart info. \brief Data from the SessionStart info.
+    struct SessionStartData {
+        uint32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
+        uint32_t resetAfter{ 0 };///< The number of milliseconds after which the limit resets.
+        uint32_t remaining{ 0 };///< The remaining number of session starts the current user is allowed.
+        uint32_t total{ 0 };///< The total number of session starts the current user is allowed.
+    };
+
+    /// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
+    struct GatewayBotData {
+        SessionStartData sessionStartLimit{};///< Information on the current session start limit.
+        uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
+        string url{ "" };///< The WSS URL that can be used for connecting to the gateway.       
+    };
+
     /**@}*/
 
     /**
@@ -2832,7 +2843,7 @@ namespace  DiscordCoreInternal {
         DELETE_WEBHOOK_MESSAGE = 158,
         GET_APPLICATION_INFO = 159,
         GET_AUTHORIZATION_INFO = 160,
-        GET_SOCKET_PATH = 161,
+        GET_GATEWAY_BOT = 161,
         GET_YOUTUBE_SEARCH = 200,
         GET_SOUNDCLOUD_SEARCH = 201,
         GET_SOUNDCLOUD_AUTH = 202,
