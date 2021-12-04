@@ -77,6 +77,8 @@ namespace DiscordCoreInternal {
 
 		static void writeToBuffer(ErlPackBuffer*, uint8_t*, uint32_t);
 
+		static void writeToBuffer(ErlPackBuffer*, vector<uint8_t>);
+
 		static void appendVersion(ErlPackBuffer*);
 
 		static void appendNil(ErlPackBuffer*);
@@ -95,21 +97,21 @@ namespace DiscordCoreInternal {
 
 		static void appendDouble(ErlPackBuffer*, double);
 
-		static void appendAtom(ErlPackBuffer*, uint8_t*, uint32_t);
+		static void appendAtom(ErlPackBuffer*, vector<uint8_t>, uint32_t);
 
-		static void appendAtomUf8(ErlPackBuffer*, uint8_t*, uint32_t);
+		static void appendAtomUf8(ErlPackBuffer*, vector<uint8_t>, uint32_t);
 
-		static void appendBinary(ErlPackBuffer*, uint8_t*, uint32_t);
+		static void appendBinary(ErlPackBuffer*, vector<uint8_t>, uint32_t);
 
-		static void appendString(ErlPackBuffer*, uint8_t*, uint32_t);
+		static void appendString(ErlPackBuffer*, vector<uint8_t>, uint32_t);
 
 		static void appendTupleHeader(ErlPackBuffer*, uint32_t);
 
 		static void appendNilExt(ErlPackBuffer*);
 
-		static void appendListHeader(ErlPackBuffer*, uint64_t);
+		static void appendListHeader(ErlPackBuffer*, uint32_t);
 
-		static void appendMapHeader(ErlPackBuffer*, uint64_t);
+		static void appendMapHeader(ErlPackBuffer*, uint32_t);
 
 		static void read8Bits(ErlPackBuffer*, uint8_t*);
 
