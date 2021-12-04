@@ -54,6 +54,10 @@ namespace DiscordCoreInternal {
 
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
+		ErlPackBuffer operator=(ErlPackBuffer&);
+
+		ErlPackBuffer(ErlPackBuffer&);
+
 		ErlPackBuffer();
 
 		ErlPackBuffer(ErlPackBuffer&&) noexcept;
@@ -74,13 +78,13 @@ namespace DiscordCoreInternal {
 
 		static uint64_t etfByteOrder64(uint64_t);
 
-		static void store16Bits(vector<uint8_t>*, uint16_t, uint32_t);
+		static void store16Bits(vector<uint8_t>*, uint16_t&, uint32_t);
 
-		static void store32Bits(vector<uint8_t>*, uint32_t, uint32_t);
+		static void store32Bits(vector<uint8_t>*, uint32_t&, uint32_t);
 
-		static void store64Bits(vector<uint8_t>*, uint64_t, uint32_t);
+		static void store64Bits(vector<uint8_t>*, uint64_t&, uint32_t);
 
-		static void singleValueJsonToETF(json, ErlPackBuffer*);
+		static ErlPackBuffer& singleValueJsonToETF(json&, ErlPackBuffer&);
 
 		static void writeToBuffer(ErlPackBuffer*, vector<uint8_t>);
 
@@ -94,7 +98,7 @@ namespace DiscordCoreInternal {
 
 		static void appendSmallInteger(ErlPackBuffer*, uint8_t);
 
-		static void appendInteger(ErlPackBuffer*, int32_t);
+		static void appendInteger(ErlPackBuffer*, uint32_t);
 
 		static void appendUnsignedLongLong(ErlPackBuffer*, uint64_t);
 
@@ -102,13 +106,7 @@ namespace DiscordCoreInternal {
 
 		static void appendDouble(ErlPackBuffer*, double);
 
-		static void appendAtom(ErlPackBuffer*, vector<uint8_t>, uint32_t);
-
-		static void appendAtomUf8(ErlPackBuffer*, vector<uint8_t>, uint32_t);
-
 		static void appendBinary(ErlPackBuffer*, vector<uint8_t>, uint32_t);
-
-		static void appendString(ErlPackBuffer*, vector<uint8_t>, uint32_t);
 
 		static void appendTupleHeader(ErlPackBuffer*, uint32_t);
 
