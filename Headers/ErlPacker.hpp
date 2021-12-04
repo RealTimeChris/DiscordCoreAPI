@@ -54,9 +54,9 @@ namespace DiscordCoreInternal {
 
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
-		ErlPackBuffer operator=(ErlPackBuffer&);
+		ErlPackBuffer& operator=(ErlPackBuffer&) noexcept;
 
-		ErlPackBuffer(ErlPackBuffer&);
+		ErlPackBuffer(ErlPackBuffer&) = delete;
 
 		ErlPackBuffer();
 
@@ -84,89 +84,89 @@ namespace DiscordCoreInternal {
 
 		static void store64Bits(vector<uint8_t>*, uint64_t&, uint32_t);
 
-		static ErlPackBuffer& singleValueJsonToETF(json&, ErlPackBuffer&);
+		static void singleValueJsonToETF(json&, ErlPackBuffer&);
 
-		static void writeToBuffer(ErlPackBuffer*, vector<uint8_t>);
+		static void writeToBuffer(ErlPackBuffer&, vector<uint8_t>);
 
-		static void appendVersion(ErlPackBuffer*);
+		static void appendVersion(ErlPackBuffer&);
 
-		static void appendNil(ErlPackBuffer*);
+		static void appendNil(ErlPackBuffer&);
 
-		static void appendFalse(ErlPackBuffer*);
+		static void appendFalse(ErlPackBuffer&);
 
-		static void appendTrue(ErlPackBuffer*);
+		static void appendTrue(ErlPackBuffer&);
 
-		static void appendSmallInteger(ErlPackBuffer*, uint8_t);
+		static void appendSmallInteger(ErlPackBuffer&, uint8_t);
 
-		static void appendInteger(ErlPackBuffer*, uint32_t);
+		static void appendInteger(ErlPackBuffer&, uint32_t);
 
-		static void appendUnsignedLongLong(ErlPackBuffer*, uint64_t);
+		static void appendUnsignedLongLong(ErlPackBuffer&, uint64_t);
 
-		static void appendLongLong(ErlPackBuffer*, int64_t);
+		static void appendLongLong(ErlPackBuffer&, int64_t);
 
-		static void appendDouble(ErlPackBuffer*, double);
+		static void appendDouble(ErlPackBuffer&, double);
 
-		static void appendBinary(ErlPackBuffer*, vector<uint8_t>, uint32_t);
+		static void appendBinary(ErlPackBuffer&, vector<uint8_t>&, uint32_t);
 
-		static void appendTupleHeader(ErlPackBuffer*, uint32_t);
+		static void appendTupleHeader(ErlPackBuffer&, uint32_t);
 
-		static void appendNilExt(ErlPackBuffer*);
+		static void appendNilExt(ErlPackBuffer&);
 
-		static void appendListHeader(ErlPackBuffer*, uint32_t);
+		static void appendListHeader(ErlPackBuffer&, uint32_t);
 
-		static void appendMapHeader(ErlPackBuffer*, uint32_t);
+		static void appendMapHeader(ErlPackBuffer&, uint32_t);
 
-		static uint8_t read8Bits(ErlPackBuffer*);
+		static uint8_t read8Bits(ErlPackBuffer&);
 
-		static uint16_t read16Bits(ErlPackBuffer*);
+		static uint16_t read16Bits(ErlPackBuffer&);
 
-		static uint32_t read32Bits(ErlPackBuffer*);
+		static uint32_t read32Bits(ErlPackBuffer&);
 
-		static uint64_t read64Bits(ErlPackBuffer*);
+		static uint64_t read64Bits(ErlPackBuffer&);
 
-		static vector<char> readString(ErlPackBuffer*, uint32_t);
+		static vector<char> readString(ErlPackBuffer&, uint32_t);
 
-		static json singleValueETFToJson(ErlPackBuffer*);
+		static json singleValueETFToJson(ErlPackBuffer&);
 
-		static json processAtom(ErlPackBuffer*, vector<char>, uint16_t);
+		static json processAtom(ErlPackBuffer&, vector<char>, uint16_t);
 
-		static json parseAtom(ErlPackBuffer*);
+		static json parseAtom(ErlPackBuffer&);
 
-		static json parseSmallAtom(ErlPackBuffer*);
+		static json parseSmallAtom(ErlPackBuffer&);
 
-		static json parseSmallInteger(ErlPackBuffer*);
+		static json parseSmallInteger(ErlPackBuffer&);
 
-		static json parseInteger(ErlPackBuffer*);
+		static json parseInteger(ErlPackBuffer&);
 
-		static json parseArray(ErlPackBuffer*, uint32_t);
+		static json parseArray(ErlPackBuffer&, uint32_t);
 
-		static json parseList(ErlPackBuffer*);
+		static json parseList(ErlPackBuffer&);
 
-		static json parseTuple(ErlPackBuffer*, uint32_t);
+		static json parseTuple(ErlPackBuffer&, uint32_t);
 
-		static json parseNil(ErlPackBuffer*);
+		static json parseNil(ErlPackBuffer&);
 
-		static json parseMap(ErlPackBuffer*);
+		static json parseMap(ErlPackBuffer&);
 
-		static json parseFloat(ErlPackBuffer*);
+		static json parseFloat(ErlPackBuffer&);
 
-		static json parseNewFloat(ErlPackBuffer*);
+		static json parseNewFloat(ErlPackBuffer&);
 
-		static json parseBigint(ErlPackBuffer*, uint32_t);
+		static json parseBigint(ErlPackBuffer&, uint32_t);
 
-		static json parseSmallBigint(ErlPackBuffer*);
+		static json parseSmallBigint(ErlPackBuffer&);
 
-		static json parseLargeBigint(ErlPackBuffer*);
+		static json parseLargeBigint(ErlPackBuffer&);
 
-		static json parseBinary(ErlPackBuffer*);
+		static json parseBinary(ErlPackBuffer&);
 
-		static json parseString(ErlPackBuffer*);
+		static json parseString(ErlPackBuffer&);
 
-		static json parseStringAsList(ErlPackBuffer*);
+		static json parseStringAsList(ErlPackBuffer&);
 
-		static json parseSmallTuple(ErlPackBuffer*);
+		static json parseSmallTuple(ErlPackBuffer&);
 
-		static json parseLargeTuple(ErlPackBuffer*);
+		static json parseLargeTuple(ErlPackBuffer&);
 
-	};
+	}; 
 }
