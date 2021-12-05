@@ -19,13 +19,15 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			try {
-				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				unique_ptr<RateLimitData> rateLimitDataNew{ make_unique<RateLimitData>() };
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
+				string tempBucket{};
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.find(rateLimitDataNew->bucket) != end(HttpRequestAgent::rateLimitData)) {
 						rateLimitDataRaw = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).get();
+						cout << "BUCKET VALUE: " << rateLimitDataRaw->bucket << endl;
 					}
 					else {
 						HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
@@ -33,10 +35,19 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					rateLimitDataNew->bucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					tempBucket = rateLimitDataNew->bucket;
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
 				HttpData returnData = move(HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true));
+				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
+					HttpRequestAgent::rateLimitDataBucketValues.unsafe_erase(workload.workloadType);
+				}
+				HttpRequestAgent::rateLimitDataBucketValues[workload.workloadType] = rateLimitDataRaw->bucket;
+				if (HttpRequestAgent::rateLimitData.find(tempBucket) != end(HttpRequestAgent::rateLimitData)) {
+					HttpRequestAgent::rateLimitData.unsafe_erase(tempBucket);
+				}
+				HttpRequestAgent::rateLimitData[rateLimitDataRaw->bucket] = make_unique<RateLimitData>(*rateLimitDataRaw);
 				returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
 				return returnObject;
@@ -51,9 +62,10 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
 			try {
-				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				unique_ptr<RateLimitData> rateLimitDataNew{ make_unique<RateLimitData>() };
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
+				string tempBucket{};
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.find(rateLimitDataNew->bucket) != end(HttpRequestAgent::rateLimitData)) {
@@ -65,10 +77,19 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					rateLimitDataNew->bucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					tempBucket = rateLimitDataNew->bucket;
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
 				auto returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
+				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
+					HttpRequestAgent::rateLimitDataBucketValues.unsafe_erase(workload.workloadType);
+				}
+				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataRaw->bucket));
+				if (HttpRequestAgent::rateLimitData.find(tempBucket) != end(HttpRequestAgent::rateLimitData)) {
+					HttpRequestAgent::rateLimitData.unsafe_erase(tempBucket);
+				}
+				HttpRequestAgent::rateLimitData[rateLimitDataRaw->bucket] = make_unique<RateLimitData>(*rateLimitDataRaw);
 				return;
 			}
 			catch (...) {
@@ -80,9 +101,10 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
 			try {
-				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
+				unique_ptr<RateLimitData> rateLimitDataNew{ make_unique<RateLimitData>() };
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
+				string tempBucket{};
 				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
 					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.find(rateLimitDataNew->bucket) != end(HttpRequestAgent::rateLimitData)) {
@@ -94,10 +116,19 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					rateLimitDataNew->bucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					tempBucket = rateLimitDataNew->bucket;
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataNew->bucket, move(rateLimitDataNew)));
 				}
 				HttpData returnData = move(HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, false));
+				if (HttpRequestAgent::rateLimitDataBucketValues.find(workload.workloadType) != end(HttpRequestAgent::rateLimitDataBucketValues)) {
+					HttpRequestAgent::rateLimitDataBucketValues.unsafe_erase(workload.workloadType);
+				}
+				HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataRaw->bucket));
+				if (HttpRequestAgent::rateLimitData.find(tempBucket) != end(HttpRequestAgent::rateLimitData)) {
+					HttpRequestAgent::rateLimitData.unsafe_erase(tempBucket);
+				}
+				HttpRequestAgent::rateLimitData[rateLimitDataRaw->bucket] = make_unique<RateLimitData>(*rateLimitDataRaw);
 				return returnData;
 			}
 			catch (...) {
