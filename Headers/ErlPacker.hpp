@@ -48,13 +48,16 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
-		vector<uint8_t> buffer;
+
+		vector<uint8_t> bufferReal{};
+
+		vector<uint8_t>& buffer;
 
 		uint32_t offSet{};
 
 		ErlPackBuffer();
 
-		ErlPackBuffer(vector<uint8_t>&&);
+		ErlPackBuffer(vector<uint8_t>&);
 
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
@@ -70,21 +73,21 @@ namespace DiscordCoreInternal {
 
 		static vector<uint8_t> parseJsonToEtf(json&);
 
-		static json parseEtfToJson(vector<uint8_t>);
+		static json parseEtfToJson(vector<uint8_t>&);
 
 	protected:
 
-		static uint16_t etfByteOrder16(uint16_t);
+		static uint16_t etfByteOrder16(uint16_t&);
 
-		static uint32_t etfByteOrder32(uint32_t);
+		static uint32_t etfByteOrder32(uint32_t&);
 
-		static uint64_t etfByteOrder64(uint64_t);
+		static uint64_t etfByteOrder64(uint64_t&);
 
-		static void store16Bits(vector<uint8_t>&, uint16_t&, uint32_t);
+		static void store16Bits(vector<uint8_t>&, uint16_t&, uint32_t&);
 
-		static void store32Bits(vector<uint8_t>&, uint32_t&, uint32_t);
+		static void store32Bits(vector<uint8_t>&, uint32_t&, uint32_t&);
 
-		static void store64Bits(vector<uint8_t>&, uint64_t&, uint32_t);
+		static void store64Bits(vector<uint8_t>&, uint64_t&, uint32_t&);
 
 		static void singleValueJsonToETF(json&, ErlPackBuffer&);
 
@@ -98,25 +101,25 @@ namespace DiscordCoreInternal {
 
 		static void appendTrue(ErlPackBuffer&);
 
-		static void appendSmallInteger(ErlPackBuffer&, uint8_t);
+		static void appendSmallInteger(ErlPackBuffer&, uint8_t&);
 
-		static void appendInteger(ErlPackBuffer&, uint32_t);
+		static void appendInteger(ErlPackBuffer&, uint32_t&);
 
-		static void appendUnsignedLongLong(ErlPackBuffer&, uint64_t);
+		static void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
-		static void appendLongLong(ErlPackBuffer&, int64_t);
+		static void appendLongLong(ErlPackBuffer&, int64_t&);
 
-		static void appendDouble(ErlPackBuffer&, double);
+		static void appendDouble(ErlPackBuffer&, double&);
 
-		static void appendBinary(ErlPackBuffer&, vector<uint8_t>&, uint32_t);
+		static void appendBinary(ErlPackBuffer&, vector<uint8_t>&, uint32_t&);
 
-		static void appendTupleHeader(ErlPackBuffer&, uint32_t);
+		static void appendTupleHeader(ErlPackBuffer&, uint32_t&);
 
 		static void appendNilExt(ErlPackBuffer&);
 
-		static void appendListHeader(ErlPackBuffer&, uint32_t);
+		static void appendListHeader(ErlPackBuffer&, uint32_t&);
 
-		static void appendMapHeader(ErlPackBuffer&, uint32_t);
+		static void appendMapHeader(ErlPackBuffer&, uint32_t&);
 
 		static uint8_t read8Bits(ErlPackBuffer&);
 
@@ -126,11 +129,11 @@ namespace DiscordCoreInternal {
 
 		static uint64_t read64Bits(ErlPackBuffer&);
 
-		static vector<char> readString(ErlPackBuffer&, uint32_t);
+		static vector<char> readString(ErlPackBuffer&, uint32_t&);
 
 		static json singleValueETFToJson(ErlPackBuffer&);
 
-		static json processAtom(ErlPackBuffer&, vector<char>, uint16_t);
+		static json processAtom(ErlPackBuffer&, vector<char>&, uint32_t&);
 
 		static json parseAtom(ErlPackBuffer&);
 
@@ -140,11 +143,11 @@ namespace DiscordCoreInternal {
 
 		static json parseInteger(ErlPackBuffer&);
 
-		static json parseArray(ErlPackBuffer&, uint32_t);
+		static json parseArray(ErlPackBuffer&, uint32_t&);
 
 		static json parseList(ErlPackBuffer&);
 
-		static json parseTuple(ErlPackBuffer&, uint32_t);
+		static json parseTuple(ErlPackBuffer&, uint32_t&);
 
 		static json parseNil(ErlPackBuffer&);
 
@@ -154,7 +157,7 @@ namespace DiscordCoreInternal {
 
 		static json parseNewFloat(ErlPackBuffer&);
 
-		static json parseBigint(ErlPackBuffer&, uint32_t);
+		static json parseBigint(ErlPackBuffer&, uint32_t&);
 
 		static json parseSmallBigint(ErlPackBuffer&);
 
