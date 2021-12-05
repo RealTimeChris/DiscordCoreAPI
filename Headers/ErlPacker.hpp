@@ -52,15 +52,15 @@ namespace DiscordCoreInternal {
 
 		uint32_t offSet{};
 
+		ErlPackBuffer();
+
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
+
+		ErlPackBuffer(ErlPackBuffer&&) noexcept;
 
 		ErlPackBuffer& operator=(ErlPackBuffer&) noexcept;
 
 		ErlPackBuffer(ErlPackBuffer&) = delete;
-
-		ErlPackBuffer();
-
-		ErlPackBuffer(ErlPackBuffer&&) noexcept;
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
