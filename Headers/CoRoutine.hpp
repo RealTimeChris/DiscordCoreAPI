@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    class DiscordCoreAPI_Dll InvalidState : public exception{
+    class DiscordCoreAPI_Dll InvalidState : public exception {
     public:
         explicit InvalidState(const string & message) : exception(message.c_str()) {}
     };
@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation. \brief For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation.
-    /// \returns A orocutine_handle<CoRoutine<returnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
+    /// \returns A coroutine_handle<CoRoutine<returnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
     template<typename returnType>
     DiscordCoreAPI_Dll inline auto NewThreadAwaitable() {
         class DiscordCoreAPI_Dll NewThreadAwaitable {
