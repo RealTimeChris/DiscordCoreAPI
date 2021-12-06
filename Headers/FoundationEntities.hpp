@@ -1770,13 +1770,13 @@ namespace DiscordCoreAPI {
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
         RawFrameData() {};
         RawFrameData& operator=(const RawFrameData& other) {
-            auto newValue = const_cast<RawFrameData&>(other);
+            RawFrameData newValue = const_cast<RawFrameData&>(other);
             this->sampleCount = newValue.sampleCount;
             this->data = move(newValue.data);
             return *this;
         }
         RawFrameData(const RawFrameData& other)  {
-            auto newValue = const_cast<RawFrameData&>(other);
+            RawFrameData newValue = const_cast<RawFrameData&>(other);
             *this = move(newValue);
         }
         RawFrameData& operator=(RawFrameData& other) {
