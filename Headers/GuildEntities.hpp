@@ -278,14 +278,6 @@ namespace DiscordCoreAPI {
 
 		Guild();
 
-		Guild& operator=(Guild&& other) noexcept;
-
-		Guild(Guild&&) noexcept;
-
-		Guild operator=(const Guild& other);
-
-		Guild(const Guild&);
-
 		Guild(GuildData dataNew);
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.

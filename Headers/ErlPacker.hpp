@@ -49,23 +49,23 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
 
-		vector<uint8_t> bufferReal{};
-
-		vector<uint8_t>& buffer;
+		unique_ptr<vector<uint8_t>> buffer{ make_unique<vector<uint8_t>>() };
 
 		uint32_t offSet{};
 
 		ErlPackBuffer();
 
-		ErlPackBuffer(vector<uint8_t>&);
+		ErlPackBuffer(unique_ptr<vector<uint8_t>>);
 
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
 		ErlPackBuffer(ErlPackBuffer&&) noexcept;
 
-		ErlPackBuffer& operator=(ErlPackBuffer&) noexcept;
+		ErlPackBuffer& operator=(ErlPackBuffer&) = delete;
 
 		ErlPackBuffer(ErlPackBuffer&) = delete;
+
+		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 
 		static vector<uint8_t> parseJsonToEtf(json&);
 
-		static json parseEtfToJson(vector<uint8_t>&);
+		static json parseEtfToJson(unique_ptr<vector<uint8_t>>);
 
 	protected:
 
@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 
 		static void store64Bits(vector<uint8_t>&, uint64_t&, uint32_t&);
 
-		static void singleValueJsonToETF(json&, ErlPackBuffer&);
+		static void singleValueJsonToETF(ErlPackBuffer& ,json&);
 
 		static void writeToBuffer(ErlPackBuffer&, vector<uint8_t>&);
 

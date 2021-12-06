@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "JSONIFier.hpp"
+#include "MessageEntities.hpp"
 
 namespace DiscordCoreAPI {
     /**
@@ -1064,7 +1065,7 @@ namespace DiscordCoreAPI {
         /// Creates a response to an input Interaction. \brief Creates a response to an input Interaction.
         /// \param dataPackage A CreateInteractionResponseData structure.
         /// \returns A CoRoutine containing a MessageData.
-        static CoRoutine<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
+        static CoRoutine<Message> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
 
         /// Collects an Interaction response. \brief Collects an Interaction response.
         /// \param dataPackage A GetInteractionResponseData structure.
@@ -1074,7 +1075,7 @@ namespace DiscordCoreAPI {
         /// Edits an Interaction response. \brief Edits an Interaction response.
         /// \param dataPackage A EditInteractionResponseData structure.
         /// \returns A CoRoutine containing a MessageData.
-        static CoRoutine<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
+        static CoRoutine<Message> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
 
         /// Deletes an Interaction respnose. \brief Deletes an Interaction respnose.
         /// \param dataPackage A DeleteInteractionResponseData structure.
@@ -1084,17 +1085,17 @@ namespace DiscordCoreAPI {
         /// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
         /// \param dataPackage A CreateFollowUpMessageData structure.
         /// \returns A CoRoutine containing a MessageData.
-        static CoRoutine<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
+        static CoRoutine<Message> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
 
         /// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
         /// \param dataPackage A CreateFollowUpMessageData structure.
         /// \returns A CoRoutine containing a MessageData.
-        static CoRoutine<MessageData> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
+        static CoRoutine<Message> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
 
         /// Edits a follow up Message. \brief Edits a follow up Message.
         /// \param dataPackage A EditFollowUpMessageData structure.
         /// \returns A CoRoutine containing a MessageData.
-        static CoRoutine<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
+        static CoRoutine<Message> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
 
         /// Deletes a follow up Message. \brief Deletes a follow up Message.
         /// \param dataPackage A DeleteFollowUpMessageData structure.

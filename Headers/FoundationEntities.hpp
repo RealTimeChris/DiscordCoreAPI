@@ -26,50 +26,6 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
-    template<typename storageType>
-    class DiscordCoreAPI_Dll ObjectCache {
-    public:
-
-        friend class Guilds;
-
-        ObjectCache() {}
-
-        ~ObjectCache() {}
-
-        storageType returnValue(string valueId) {
-            lock_guard<recursive_mutex> returnLock{ this->accessMutex };
-            return this->cache.at(valueId);
-        }
-
-        storageType* returnPointer(string valueId) {
-            lock_guard<recursive_mutex> returnLock{ this->accessMutex };
-            return &(this->cache).at(valueId);
-        }
-
-        bool contains(string valueId) {
-            lock_guard<recursive_mutex> containLock{ this->accessMutex };
-            return this->cache.contains(valueId);
-        }
-
-        void erase(string valueId) {
-            lock_guard<recursive_mutex> eraseLock{ this->accessMutex };
-            if (this->cache.contains(valueId)) {
-                this->cache.erase(valueId);
-            }
-        }
-
-        void storeValue(string valueId, storageType storageValue) {
-            lock_guard<recursive_mutex> storeLock{ this->accessMutex };
-            this->cache.insert_or_assign(valueId, move(storageValue));
-        }
-
-    protected:
-
-        map<string, storageType> cache{};
-
-        recursive_mutex accessMutex{};
-    };
-
     template<typename timeType>
     class DiscordCoreAPI_Dll StopWatch {
     public:
@@ -318,6 +274,7 @@ namespace DiscordCoreAPI {
         virtual ~AttachmentData() {};
     };
 
+    /// Sticker format types. \brief Sticker format types.
     enum class StickerFormatType {
         PNG = 1,
         APNG = 2,
@@ -376,6 +333,7 @@ namespace DiscordCoreAPI {
         string name{ "" };///< The title of the field.
     };
 
+    /// Embed types. \brief Embed types.
     enum class EmbedType {
         Rich = 0,
         Image = 1,
@@ -492,6 +450,7 @@ namespace DiscordCoreAPI {
         string guildId{ "" };///< Id of the Guild that the referenced Message was sent in.
     };
 
+    /// Permission overwrites types. \brief Permission overwrites types.
     enum class PermissionOverwritesType {
         Role = 0,
         User = 1
@@ -507,6 +466,7 @@ namespace DiscordCoreAPI {
         virtual ~OverWriteData() {};
     };
 
+    /// Channel types. \brief Channel types.
     enum class ChannelType {
         GUILD_TEXT = 0,
         DM = 1,
@@ -521,30 +481,32 @@ namespace DiscordCoreAPI {
         GUILD_STAGE_VOICE = 13
     };
 
-    /// Meta data for a thread type of Channel. \brief Meta data for a thread type of Channel.
+    /// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
     struct DiscordCoreAPI_Dll ThreadMetadataData {
-        int32_t autoArchiveDuration{ 0 }; ///< How int64_t before archiving this thread.
-        string archiveTimestamp{ "" }; ///< (Where applicable) the time at which this thread was archived.
-        bool invitable{ false }; ///< The id of the individual who archived this thread.
-        bool archived{ false }; ///< Whether or not this thread is currently archived.
-        bool locked{ false }; ///< Whether or not this thread is currently locked.
+        int32_t autoArchiveDuration{ 0 }; ///< How int64_t before archiving this Thread.
+        string archiveTimestamp{ "" }; ///< (Where applicable) the time at which this Thread was archived.
+        bool invitable{ false }; ///< The id of the individual who archived this Thread.
+        bool archived{ false }; ///< Whether or not this Thread is currently archived.
+        bool locked{ false }; ///< Whether or not this Thread is currently locked.
     };
 
-    /// Data for a single member of a thread. \brief Data for a single member of a thread.
+    /// Data for a single member of a Thread. \brief Data for a single member of a Thread.
     struct DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
-        string joinTimestamp{ "" }; ///< The time at which the member joined this thread.
+        string joinTimestamp{ "" }; ///< The time at which the member joined this Thread.
         string userId{ "" };    ///< The User's id.
         int32_t flags{ 0 }; ///< Flags.
 
         virtual ~ThreadMemberData() {};
     };
 
+    /// Thread types. \brief Thread types.
     enum class ThreadType {
         GUILD_NEWS_THREAD = 10,
         GUILD_PUBLIC_THREAD = 11,
         GUILD_PRIVATE_THREAD = 12,
     };
 
+    /// Automatic Thread archiving durations. \brief Automatic Thread archiving durations.
     enum class ThreadAutoArchiveDuration :int32_t {
         SHORTEST = 60,
         SHORT = 1440,
@@ -556,7 +518,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
         map<string, OverWriteData> permissionOverwrites{}; ///< Permission overwrites for the given Channel.
         int32_t defaultAutoArchiveDuration{ 0 };
-        ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a thread.
+        ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a Thread.
         ChannelType type{ ChannelType::DM };    ///< The type of the Channel.
         map<string, UserData> recipients{};  ///< Recipients, in the case of a group DM or DM.
         int32_t videoQualityMode{ 0 };  ///< Video quality mode.
@@ -564,8 +526,8 @@ namespace DiscordCoreAPI {
         string lastPinTimestamp{ "" };  ///< Timestamp of the last pinned Message.
         string lastMessageId{ "" }; ///< Id of the last Message.
         string applicationId{ "" }; ///< Application id of the current application.
-        ThreadMemberData member{}; ///< Thread member object for the current User, if they have joined the thread.
-        int32_t messageCount{ 0 }; ///< An approximate count of Messages in a thread, stops counting at 50.
+        ThreadMemberData member{}; ///< Thread member object for the current User, if they have joined the Thread.
+        int32_t messageCount{ 0 }; ///< An approximate count of Messages in a Thread, stops counting at 50.
         int32_t memberCount{ 0 };   ///< Count of members active in the Channel.
         string rtcRegion{ "" }; ///< Real-time clock region.
         int32_t userLimit{ 0 }; ///< User limit, in the case of voice channels.
@@ -582,6 +544,7 @@ namespace DiscordCoreAPI {
         virtual ~ChannelData() {};
     };
 
+    /// Voice data for a given GuildMember. \brief Voice data for a given GuildMember.
     struct DiscordCoreAPI_Dll VoiceData {
         string requestToSpeakTimestamp{ "" };///< The time at which the user requested to speak.
         bool selfStream{ false };///< Whether this user is streaming using "Go Live".
@@ -648,14 +611,17 @@ namespace DiscordCoreAPI {
         }
     };
 
+    /// Data representing an active Thread. \brief Data representing an active Thread.
     struct DiscordCoreAPI_Dll ActiveThreadsData {
         vector<ThreadMemberData> members{};
         vector<ChannelData> threads{};
         bool hasMore{ false };
     };
 
+    /// Data representing an archived Thread. \brief Data representing an archived Thread.
     struct DiscordCoreAPI_Dll ArchivedThreadsData : public ActiveThreadsData {};
 
+    /// Application command-option types. \brief Application command-option types.
     enum class ApplicationCommandOptionType {
         SUB_COMMAND = 1,
         SUB_COMMAND_GROUP = 2,
@@ -669,6 +635,7 @@ namespace DiscordCoreAPI {
         NUMBER = 10
     };
 
+    /// Application command permission-types. \brief Application command permission-types.
     enum class ApplicationCommandPermissionType {
         Role = 1,
         User = 2
@@ -744,6 +711,7 @@ namespace DiscordCoreAPI {
         string id{ "" };///< Unique ID for the region.
     };
 
+    /// Message activity types. \brief Message activity types.
     enum class MessageActivityType {
         JOIN = 1,
         SPECTATE = 2,
@@ -824,12 +792,13 @@ namespace DiscordCoreAPI {
         bool enabled{ false };///< Whether the widget is enabled.
     };
 
+    /// Widget style options. \brief Widget style options.
     enum class WidgetStyleOptions {
-        Shield = 0,
-        Banner1 = 1,
-        Banner2 = 2,
-        Banner3 = 3,
-        Banner4 = 4
+        Shield = 0,///< Shield
+        Banner1 = 1,///< Banner1
+        Banner2 = 2,///< Banner2
+        Banner3 = 3,///< Banner3
+        Banner4 = 4///< Banner4
     };
 
     /// Guild widget image data. \brief Guild widget image data.
@@ -857,6 +826,7 @@ namespace DiscordCoreAPI {
         virtual ~IntegrationData() {}
     };
 
+    /// Audit log events. \brief Audit log events.
     enum class AuditLogEvent {
         GUILD_UPDATE = 1,
         CHANNEL_CREATE = 10,
@@ -971,6 +941,7 @@ namespace DiscordCoreAPI {
         string url{ "" };   ///< URL to display on the button.
     };
 
+    /// Activity types. \brief Activity types.
     enum class ActivityType {
         Game = 0,
         Streaming = 1,
@@ -1006,6 +977,7 @@ namespace DiscordCoreAPI {
         string web{ "" };///< Web link.
     };
 
+    /// Premium tier levels. \brief Premium tier levels.
     enum class PremiumTier {
         NONE = 0,
         TIER_1 = 1,
@@ -1013,22 +985,26 @@ namespace DiscordCoreAPI {
         TIER_3 = 3
     };
 
+    /// Default message notification levels. \brief Default message notification levels.
     enum class DefaultMessageNotificationLevel {
         ALL_MESSAGES = 0,
         ONLY_MENTIONS = 1
     };
 
+    /// Explicit content filter levels. \brief Explicit content filter levels.
     enum class ExplicitContentFilterLevel {
         DISABLED = 0,
         MEMBERS_WITHOUT_ROLES = 1,
         ALL_MEMBERS = 2
     };
 
+    /// MFA levels. \brief MFA levels.
     enum class MFALevel {
         NONE = 0,
         ELEVATED = 1
     };
 
+    /// Verification levels. \brief /// Verification levels.
     enum class VerificationLevel {
         NONE = 0,
         LOW = 1,
@@ -1060,6 +1036,7 @@ namespace DiscordCoreAPI {
         UserData user{};    ///< User data for the current presence.
     };
 
+    /// Stage instance privacy levels. \brief Stage instance privacy levels.
     enum class StageInstancePrivacyLevel {
         PUBLIC = 1,
         GUILD_ONLY = 2
@@ -1113,6 +1090,7 @@ namespace DiscordCoreAPI {
         string id{ "" };
     };
 
+    /// Afk timeout durations. \brief Afk timeout durations.
     enum class AfkTimeOutDurations {
         SHORTEST = 60,
         SHORT = 300,
@@ -1179,11 +1157,13 @@ namespace DiscordCoreAPI {
         virtual ~GuildData() {};
     };
 
+    /// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
     enum class GuildScheduledEventPrivacyLevel {
         PUBLIC = 1,
         GUILD_ONLY = 2
     };
 
+    /// GuildScheduledEventStatus. \brief GuildScheduledEventStatus.
     enum class GuildScheduledEventStatus {
         SCHEDULED = 1,
         ACTIVE = 2,
@@ -1191,6 +1171,7 @@ namespace DiscordCoreAPI {
         CANCELED = 4
     };
 
+    /// Guild scheduled event entity types. /brief Guild scheduled event entity types.
     enum class GuildScheduledEventEntityType {
         NONE = 0,
         STAGE_INSTANCE = 1,
@@ -1267,11 +1248,13 @@ namespace DiscordCoreAPI {
         string name{ "" };///< Template name.
     };
 
+    /// Invite target types. \brief Invite target types.
     enum class InviteTargetTypes {
         STREAM = 1,
         EMBEDDED_APPLICATION = 2
     };
 
+    /// WebHook types. \brief WebHook types.
     enum class WebHookType {
         Incoming = 1,
         Channel_Follower = 2,
@@ -1321,6 +1304,7 @@ namespace DiscordCoreAPI {
         vector<UserData> users{};///< Array of u
     };
 
+    /// For removing a reaction. \brief For removing a reaction.
     struct DiscordCoreAPI_Dll ReactionRemoveData {
         string channelId{ "" };
         string messageId{ "" };
@@ -1329,12 +1313,14 @@ namespace DiscordCoreAPI {
         EmojiData emoji{};
     };
 
+    /// For storing key-interaction-related values. \brief For storing key-interaction-related values.
     struct DiscordCoreAPI_Dll InteractionPackageData {
         string interactionToken{ "" };
         string applicationId{ "" };
         string interactionId{ "" };
     };
 
+    /// For storing key-message-related values. \brief For storing key-message-related values.
     struct DiscordCoreAPI_Dll MessagePackageData {
         string channelId{ "" };
         string messageId{ "" };
@@ -1359,6 +1345,7 @@ namespace DiscordCoreAPI {
         string name{ "" };///< Name of the current ApplicationCommand option.
     };
 
+    /// Representing "TypingStart" data. \brief Representing "TypingStart" data.
     struct DiscordCoreAPI_Dll TypingStartData {
         GuildMemberData member{};
         int32_t timestamp{ 0 };
@@ -1367,6 +1354,7 @@ namespace DiscordCoreAPI {
         string userId{ "" };
     };
 
+    /// YouTube format data. \brief YouTube format data.
     struct DiscordCoreAPI_Dll YouTubeFormat {
         string signatureCipher{ "" };
         string audioSampleRate{ "" };
@@ -1386,6 +1374,7 @@ namespace DiscordCoreAPI {
         int32_t fps{ 0 };
     };
 
+    /// Application command types. \brief Application command types.
     enum class ApplicationCommandType {
         CHAT_INPUT = 1,
         USER = 2,
@@ -1419,6 +1408,7 @@ namespace DiscordCoreAPI {
         vector<string> users{}; ///<Array of user_ids to mention (Max size of 100)
     };
 
+    /// Interaction types. \brief Interaction types.
     enum class InteractionType {
         PING = 1,
         APPLICATION_COMMAND = 2,
@@ -1434,12 +1424,14 @@ namespace DiscordCoreAPI {
         EmojiData emoji{};///< An optional emoji to put on it.
     };
 
+    /// Component types. \brief Component types.
     enum class ComponentType {
         ActionRow = 1,
         Button = 2,
         SelectMenu = 3
     };
 
+    /// Button styles. \brief Button styles.
     enum class ButtonStyle {
         Primary = 1,
         Success = 3,
@@ -1468,6 +1460,7 @@ namespace DiscordCoreAPI {
         vector<ComponentData> components{}; ///< Array of components to make up the action-row.
     };
 
+    /// Interaction callback types. \brief Interaction callback types.
     enum class InteractionCallbackType {
         Pong = 1,
         ChannelMessageWithSource = 4,
@@ -1531,18 +1524,18 @@ namespace DiscordCoreAPI {
 
     /// Data for when threads are synced. \brief Data for when threads are synced.
     struct DiscordCoreAPI_Dll ThreadListSyncData {
-        vector<ThreadMemberData> members{}; ///< Array of members that are a part of the thread.
+        vector<ThreadMemberData> members{}; ///< Array of members that are a part of the Thread.
         vector<ChannelData> threads{};  ///< All active threads in the given channels that the current User can access.
         vector<string> channelIds{};    ///< The parent Channel ids whose threads are being synced. If omitted, then threads were synced for the entire Guild. This array may contain channel_ids that have no active threads as well, so you know to clear that data.
         string guildId{ "" };   ///< The id of the Guild for which the threads are being synced.
     };
 
-    /// Represents a thread-members-update. \brief Represents a thread-members-update.
+    /// Represents a Thread-members-update. \brief Represents a Thread-members-update.
     struct DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity {
-        vector<ThreadMemberData> addedMembers{}; ///< New members added to the thread.
+        vector<ThreadMemberData> addedMembers{}; ///< New members added to the Thread.
         vector<string> removedMemberIds{}; ///< Members who have been removed.
-        string guildId{ "" };   ///< Guild id of the thread.
-        int32_t memberCount{ 0 };///< Number of Guild-members in the thread.
+        string guildId{ "" };   ///< Guild id of the Thread.
+        int32_t memberCount{ 0 };///< Number of Guild-members in the Thread.
 
         virtual ~ThreadMembersUpdateData() {}
     };
@@ -1556,6 +1549,7 @@ namespace DiscordCoreAPI {
         virtual ~MessageInteractionData() {}
     };
 
+    /// Message types. \brief Message types.
     enum class MessageType {
         DEFAULT = 0,
         RECIPIENT_ADD = 1,
@@ -1582,6 +1576,7 @@ namespace DiscordCoreAPI {
         CONTEXT_MENU_COMMAND = 23
     };
 
+    /// Message flags. \brief Message flags.
     enum class MessageFlags {
         CROSSPOSTED = 1ull << 0,
         IS_CROSSPOST = 1ull << 1,
@@ -1593,6 +1588,7 @@ namespace DiscordCoreAPI {
         LOADING = 1ull << 7
     };
 
+    /// Sticker item types. \brief Sticker item types.
     enum class StickerItemType {
         PNG = 1,
         APNG = 2,
@@ -1633,7 +1629,7 @@ namespace DiscordCoreAPI {
         string guildId{ "" };///< The id of the Guild the Message was sent in.
         bool pinned{ false };///< Is it pinned?
         string content{ "" };///< The Message's content.
-        ChannelData thread{};///< The thread that the Message was sent in, if applicable.
+        ChannelData thread{};///< The Thread that the Message was sent in, if applicable.
         string nonce{ "" };///< Nonce.
         MessageType type{};///< Message type.
         UserData author{};///< The author's User data.
@@ -1676,6 +1672,7 @@ namespace DiscordCoreAPI {
         string Id{ "" };///< Id of the sticker pack.
     };
     
+    /// Connection visibility types. \brief Connection visibility types.
     enum class ConnectionVisibilityTypes {
         None = 0,
         Everyone = 1
@@ -1771,14 +1768,59 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll RawFrameData {
         vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
+        RawFrameData() {};
+        RawFrameData& operator=(const RawFrameData& other) {
+            auto newValue = const_cast<RawFrameData&>(other);
+            this->sampleCount = newValue.sampleCount;
+            this->data = move(newValue.data);
+            return *this;
+        }
+        RawFrameData(const RawFrameData& other)  {
+            auto newValue = const_cast<RawFrameData&>(other);
+            *this = move(newValue);
+        }
+        RawFrameData& operator=(RawFrameData& other) {
+            this->sampleCount = other.sampleCount;
+            this->data = move(other.data);
+            return *this;
+        }
+        RawFrameData(RawFrameData& other) {
+            *this = move(other);
+        }
+        RawFrameData& operator=(RawFrameData&& other) noexcept {
+            this->sampleCount = other.sampleCount;
+            this->data = move(other.data);
+            return *this;
+        }
+        RawFrameData(RawFrameData&& other) noexcept {
+            *this = move(other);
+        }
     };
 
     /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
     struct DiscordCoreAPI_Dll EncodedFrameData {
         vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
+        EncodedFrameData() {}
+        EncodedFrameData& operator=(EncodedFrameData& other) {
+            this->sampleCount = other.sampleCount;
+            this->data = move(other.data);            
+            return *this;
+        }
+        EncodedFrameData(EncodedFrameData& other)  {
+            *this = move(other);
+        }
+        EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
+            this->sampleCount = other.sampleCount;
+            this->data = move(other.data);
+            return *this;
+        }
+        EncodedFrameData(EncodedFrameData&& other) noexcept {
+            *this = move(other);
+        }
     };
 
+    /// Audio frame types. \brief Audio frame types.
     enum class AudioFrameType {
         Unset = 0,
         Encoded = 1,
@@ -1791,15 +1833,47 @@ namespace DiscordCoreAPI {
         AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
         EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
         RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
+        AudioFrameData() {};
+        AudioFrameData& operator=(const AudioFrameData& other) {
+            this->encodedFrameData = move(const_cast<EncodedFrameData&>(other.encodedFrameData));
+            this->rawFrameData = move(const_cast<RawFrameData&>(other.rawFrameData));
+            this->type = other.type;
+            return *this;
+        }
+        AudioFrameData(const AudioFrameData& other) {
+            this->encodedFrameData = move(const_cast<EncodedFrameData&>(other.encodedFrameData));
+            this->rawFrameData = move(const_cast<RawFrameData&>(other.rawFrameData));
+            this->type = other.type;
+        }
+        AudioFrameData& operator=(AudioFrameData& other) {
+            this->encodedFrameData = move(other.encodedFrameData);
+            this->rawFrameData = move(other.rawFrameData);
+            this->type = other.type;
+            return *this;
+        }
+        AudioFrameData(AudioFrameData& other) {
+            *this = move(other);
+        }
+        AudioFrameData& operator=(AudioFrameData&& other) noexcept {
+            this->encodedFrameData = move(other.encodedFrameData);
+            this->rawFrameData = move(other.rawFrameData);
+            this->type = other.type;
+            return *this;
+        }
+        AudioFrameData(AudioFrameData&& other) noexcept {
+            *this = move(other);
+        }
     };
 
     /**@}*/
 
+    /// Song types. \brief Song types.
     enum class SongType {
         YouTube = 0,
         SoundCloud = 1
     };
 
+    /// Represents a download URL. \brief Represents a download URL.
     struct DiscordCoreAPI_Dll DownloadURL {
         int32_t contentSize{ 0 };
         string urlPath{ "" };
@@ -1810,6 +1884,7 @@ namespace DiscordCoreAPI {
     * @{
     */
 
+    /// Input event response types. \brief Input event response types.
     enum class InputEventResponseType {
         Unset = 0,
         DeferredResponse = 1,
@@ -1824,6 +1899,7 @@ namespace DiscordCoreAPI {
         SendDM = 10
     };
 
+    /// Input event types. \brief Input event types.
     enum class InputEventType {
         SLASH_COMMAND_INTERACTION = 1,
         BUTTON_INTERACTION = 2,
@@ -1833,11 +1909,13 @@ namespace DiscordCoreAPI {
         USER_COMMAND_INTERACTION = 6
     };
 
+    /// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
     struct DiscordCoreAPI_Dll GuildEmojisUpdateEventData {
         vector<EmojiData> emojis{};
         string guildId{ "" };
     };
 
+    /// Data representing a Guild Sticker Update event. \brief Data representing a Guild Stickers Update event.
     struct DiscordCoreAPI_Dll GuildStickersUpdateEventData {
         vector<StickerData> stickers{};
         string guildId{ "" };
@@ -2372,6 +2450,7 @@ namespace DiscordCoreAPI {
     * @{
     */
 
+    /// Permissions values, for a given Channel. \brief Permissions values, for a given Channel.
     enum class Permissions : int64_t {
         CREATE_INSTANT_INVITE = 0x0000000001,
         KICK_MEMBERS = 0x0000000002,
@@ -2563,6 +2642,61 @@ namespace DiscordCoreAPI {
     * \addtogroup utilities
     * @{
     */
+
+    /// A Thread-safe cache for storing objects of any kind. \brief A Thread-safe cache for storing objects of any kind.
+    /// \param storageType The type of item to be stored.
+    template<typename storageType>
+    class DiscordCoreAPI_Dll ObjectCache {
+    public:
+
+        friend class Guilds;
+
+        ObjectCache() {}
+
+        ~ObjectCache() {}
+
+        /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
+        /// \param valueId The chosen item's key.
+        /// \returns storageType The typed item that is stored.
+        storageType returnValue(string valueId) {
+            lock_guard<recursive_mutex> returnLock{ this->accessMutex };
+            return this->cache.at(valueId);
+        }
+
+        /// Checks if an item exists as a chosen item-id. \brief Checks if an item exists as a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns bool Whether or not the item is present at the given key.
+        bool contains(string valueId) {
+            lock_guard<recursive_mutex> containLock{ this->accessMutex };
+            return this->cache.contains(valueId);
+        }
+
+        /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns void.
+        void erase(string valueId) {
+            lock_guard<recursive_mutex> eraseLock{ this->accessMutex };
+            if (this->cache.contains(valueId)) {
+                this->cache.erase(valueId);
+            }
+        }
+
+        /// Stores an item in the cache. \brief Stores an item in the cache.
+        /// \param valueId The item's id to store it at.
+        /// \param storageValue The item to store in the object-cache.
+        /// \returns void.
+        void storeValue(string valueId, storageType storageValue) {
+            lock_guard<recursive_mutex> storeLock{ this->accessMutex };
+            this->cache.insert_or_assign(valueId, move(storageValue));
+        }
+
+    protected:
+
+        map<string, storageType> cache{};
+
+        recursive_mutex accessMutex{};
+    };
+
     /// PermissionsConverter class, for manipulating Permission values. \brief PermissionsConverter class, for manipulating Permission values.
     class DiscordCoreAPI_Dll PermissionsConverter {
     public:

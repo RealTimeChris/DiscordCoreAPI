@@ -32,23 +32,35 @@ namespace DiscordCoreAPI {
         explicit InvalidState(const string & message) : exception(message.c_str()) {}
     };
 
+    /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
+    enum class CoRoutineStatus {
+        Idle = 0,///< Idle.
+        Running = 1,///< Running.
+        Complete = 2,///< Complete.
+        Cancelled = 3///< Cancelled.
+    };
+
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     /// \param returnType The type of parameter that is returned by the CoRoutine.
     template<typename returnType>
     class DiscordCoreAPI_Dll CoRoutine {
     public:
 
-        /** CoRoutineStatus
-        *  The current status of the associated CoRoutine.
-        */
-        enum class CoRoutineStatus {
-            Idle = 0,///< Idle.
-            Running = 1,///< Running.
-            Complete = 2,///< Complete.
-            Cancelled = 3///< Cancelled.
-        };
-
         class DiscordCoreAPI_Dll promise_type;
+
+        CoRoutine& operator=(CoRoutine<returnType>&& other) noexcept {
+            this->coroutineHandle = move(other.coroutineHandle);
+            this->currentStatus = other.currentStatus;
+            return *this;
+        }
+
+        CoRoutine(CoRoutine<returnType>&& other) noexcept {
+            *this = move(other);
+        }
+
+        CoRoutine& operator=(const CoRoutine<void>&) = delete;
+
+        CoRoutine(const CoRoutine<void>&) = delete;
 
         CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -166,15 +178,19 @@ namespace DiscordCoreAPI {
 
         class DiscordCoreAPI_Dll promise_type;
 
-        /** CoRoutineStatus
-        *  The current status of the associated CoRoutine.
-        */
-        enum class CoRoutineStatus {
-            Idle = 0,///< Idle.
-            Running = 1,///< Running.
-            Complete = 2,///< Complete.
-            Cancelled = 3///< Cancelled.
-        };
+        CoRoutine& operator=(CoRoutine<void>&& other) noexcept {
+            this->coroutineHandle = move(other.coroutineHandle);
+            this->currentStatus = other.currentStatus;
+            return *this;
+        }
+
+        CoRoutine(CoRoutine<void>&& other) noexcept {
+            *this = move(other);
+        }
+
+        CoRoutine& operator=(const CoRoutine<void>&) = delete;
+
+        CoRoutine(const CoRoutine<void>&) = delete;
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
