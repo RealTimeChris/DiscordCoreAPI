@@ -47,7 +47,6 @@ namespace DiscordCoreAPI {
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };
         concurrency::event readyToStartEvent {};
-        unique_ptr<CoRoutine<void>> theTask{};
         int32_t refreshTimeForBuffer{ 10000 };
         unbounded_buffer<bool> readyBuffer{};
         SwrContext* swrContext{ nullptr };
@@ -58,7 +57,8 @@ namespace DiscordCoreAPI {
         bool areWeQuitting{ false };
         uint64_t totalFileSize{ 0 };
         bool haveWeBooted{ false };
-        AVCodec* codec{ nullptr };        
+        AVCodec* codec{ nullptr };
+        CoRoutine<void> theTask{};
 
         CoRoutine<void> run();
 

@@ -178,6 +178,30 @@ namespace DiscordCoreAPI {
 		CreateMessageData() {};
 	};
 
+	struct SendDMData : public CreateMessageData {
+
+		friend class InputEvents;
+
+		SendDMData(RespondToInputEventData dataPackage) {
+			this->targetUserId = dataPackage.targetUserId;
+			this->addAllowedMentions(dataPackage.allowedMentions);
+			this->requesterId = dataPackage.requesterId;
+			for (auto& value : dataPackage.components) {
+				this->components.push_back(value);
+			}
+			this->addContent(dataPackage.content);
+			for (auto& value : dataPackage.embeds) {
+				this->embeds.push_back(value);
+			}
+			this->tts = dataPackage.tts;
+		}
+
+	protected:
+
+		string targetUserId{ "" };
+
+	};
+
 	/// Crosspost Message Data. \brief Crosspost Message Data.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
 		string messageId{ "" };///< Id of the message to be crossposted.

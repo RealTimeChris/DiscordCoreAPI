@@ -58,9 +58,9 @@ namespace DiscordCoreAPI {
             *this = move(other);
         }
 
-        CoRoutine& operator=(const CoRoutine<void>&) = delete;
+        CoRoutine& operator=(const CoRoutine<returnType>&) = delete;
 
-        CoRoutine(const CoRoutine<void>&) = delete;
+        CoRoutine(const CoRoutine<returnType>&) = delete;
 
         CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
                 coroutineHandle.promise().newThread.join();
             }
             exception_ptr exceptionPtr{};
-            while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
+            while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
                 rethrow_exception(exceptionPtr);
             }
             coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
                         coroutineHandle.promise().newThread.join();
                     }
                     exception_ptr exceptionPtr{};
-                    while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
+                    while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
                     coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-            unbounded_buffer<exception_ptr> exceptionBuffer{};
+            concurrent_queue<exception_ptr> exceptionBuffer{};
 
             jthread newThread{};
 
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
             }
 
             void unhandled_exception() {
-                send(this->exceptionBuffer, current_exception());
+                this->exceptionBuffer.push(current_exception());
             }
         };
 
@@ -228,7 +228,7 @@ namespace DiscordCoreAPI {
                 coroutineHandle.promise().newThread.join();
             }
             exception_ptr exceptionPtr{};
-            while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
+            while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
                 rethrow_exception(exceptionPtr);
             }
             coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
                         coroutineHandle.promise().newThread.join();
                     }
                     exception_ptr exceptionPtr{};
-                    while (try_receive(coroutineHandle.promise().exceptionBuffer, exceptionPtr)) {
+                    while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
                     coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
 
             CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
-            unbounded_buffer<exception_ptr> exceptionBuffer{};
+            concurrent_queue<exception_ptr> exceptionBuffer{};
 
             jthread newThread{};
 
@@ -283,7 +283,7 @@ namespace DiscordCoreAPI {
             }
 
             void unhandled_exception() {
-                send(this->exceptionBuffer, current_exception());
+                this->exceptionBuffer.push(current_exception());
             }
         };
 

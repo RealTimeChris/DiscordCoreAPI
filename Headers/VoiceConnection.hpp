@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		unbounded_buffer<AudioFrameData>* audioDataBuffer{ nullptr };
-		unique_ptr<CoRoutine<void>> theTask{ nullptr };
+		CoRoutine<void> theTask{ nullptr };
 		concurrency::event connectionReadyEvent {};
 		concurrency::event disconnectionEvent {};
 		const int32_t maxBufferSize{ 1276 };

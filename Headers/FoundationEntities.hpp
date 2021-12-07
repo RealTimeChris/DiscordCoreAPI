@@ -1770,22 +1770,12 @@ namespace DiscordCoreAPI {
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
         RawFrameData() {};
         RawFrameData& operator=(const RawFrameData& other) {
-            RawFrameData newValue = const_cast<RawFrameData&>(other);
-            this->sampleCount = newValue.sampleCount;
-            this->data = move(newValue.data);
-            return *this;
-        }
-        RawFrameData(const RawFrameData& other)  {
-            RawFrameData newValue = const_cast<RawFrameData&>(other);
-            *this = move(newValue);
-        }
-        RawFrameData& operator=(RawFrameData& other) {
             this->sampleCount = other.sampleCount;
-            this->data = move(other.data);
+            this->data = other.data;
             return *this;
         }
-        RawFrameData(RawFrameData& other) {
-            *this = move(other);
+        RawFrameData(const RawFrameData& other) {
+            *this = other;
         }
         RawFrameData& operator=(RawFrameData&& other) noexcept {
             this->sampleCount = other.sampleCount;
@@ -1802,13 +1792,13 @@ namespace DiscordCoreAPI {
         vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
         EncodedFrameData() {}
-        EncodedFrameData& operator=(EncodedFrameData& other) {
+        EncodedFrameData& operator=(const EncodedFrameData& other) {
             this->sampleCount = other.sampleCount;
-            this->data = move(other.data);            
+            this->data = other.data;
             return *this;
         }
-        EncodedFrameData(EncodedFrameData& other)  {
-            *this = move(other);
+        EncodedFrameData(const EncodedFrameData& other) {
+            *this = other;
         }
         EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
             this->sampleCount = other.sampleCount;
@@ -1835,24 +1825,13 @@ namespace DiscordCoreAPI {
         RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
         AudioFrameData() {};
         AudioFrameData& operator=(const AudioFrameData& other) {
-            this->encodedFrameData = move(const_cast<EncodedFrameData&>(other.encodedFrameData));
-            this->rawFrameData = move(const_cast<RawFrameData&>(other.rawFrameData));
+            this->encodedFrameData = other.encodedFrameData;
+            this->rawFrameData = other.rawFrameData;
             this->type = other.type;
             return *this;
         }
         AudioFrameData(const AudioFrameData& other) {
-            this->encodedFrameData = move(const_cast<EncodedFrameData&>(other.encodedFrameData));
-            this->rawFrameData = move(const_cast<RawFrameData&>(other.rawFrameData));
-            this->type = other.type;
-        }
-        AudioFrameData& operator=(AudioFrameData& other) {
-            this->encodedFrameData = move(other.encodedFrameData);
-            this->rawFrameData = move(other.rawFrameData);
-            this->type = other.type;
-            return *this;
-        }
-        AudioFrameData(AudioFrameData& other) {
-            *this = move(other);
+            *this = other;
         }
         AudioFrameData& operator=(AudioFrameData&& other) noexcept {
             this->encodedFrameData = move(other.encodedFrameData);
@@ -2218,6 +2197,7 @@ namespace DiscordCoreAPI {
         friend struct CreateMessageData;
         friend struct EditMessageData;
         friend class InputEvents;
+        friend struct SendDMData;
 
         InputEventResponseType type{}; ///< The type of response to make.
 

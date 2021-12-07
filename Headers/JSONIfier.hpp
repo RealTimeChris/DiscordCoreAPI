@@ -48,6 +48,8 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
+	DiscordCoreAPI_Dll int32_t JSONIFY(hstring initialPayload);
+
 	DiscordCoreAPI_Dll json JSONIFY(string botToken, int32_t intents);
 
 	DiscordCoreAPI_Dll json JSONIFY(int32_t lastReceivedNumber);
@@ -76,15 +78,9 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::ModifyGuildRoleData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(string initialPayload);
-
-	DiscordCoreAPI_Dll int32_t JSONIFY(hstring initialPayload);
-
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditMessageData dataPackage);
-
-	DiscordCoreAPI_Dll void JSONIFY(DiscordCoreAPI::ApplicationCommandOptionData dataPackage, json* pJSONData);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PutEditApplicationCommandPermissionsData dataPackage);
 
