@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 		string scheduledEndTime{ "" };///< The time when the scheduled event is scheduled to end.
 		string description{ "" };///< The description of the scheduled event.
 		string channelId{ "" };///< The channel id of the scheduled event.
-		string guildId{ "" };///< The guild within which to create the event.
+		string guildId{ "" };///< The Guild within which to create the event.
 		string name{ "" };///< The name of the scheduled event.
 	};
 	
@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 	/// For collecting a list of Guild Scheduled Event Users. \brief For collecting a list of Guild Scheduled Event Users.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
 		string guildScheduledEventId{ "" };///< The id of the event to modify.
-		bool withMember{ false };///< Include guild member data if it exists.
+		bool withMember{ false };///< Include Guild member data if it exists.
 		string guildId{ "" };///< The Guild within which to modify the event.
 		uint32_t limit{ 0 };///< How many users to receive from the event.
 		string before{ "" };///< Consider only users before given user id.

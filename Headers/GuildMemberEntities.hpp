@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
-		string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the guild.
+		string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the Guild.
 		vector<string>roles{};///< Array of role ids the member is assigned.
 		string guildId{ "" };///< The Guild to add the new GuildMember to.
 		string userId{ "" };///< The User id of the user you wish to add.

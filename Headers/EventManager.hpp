@@ -308,11 +308,11 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a webhook update event. \brief Data that is received as part of a webhook update event.
 	struct DiscordCoreAPI_Dll OnWebhookUpdateData {
-		string channelId{ "" };///< Id of the Channel for which the Webhook Update is occurring.
-		string guildId{ "" };///< Id of the Guild for which the Webhook Update is occurring.
+		string channelId{ "" };///< Id of the Channel for which the WebHook Update is occurring.
+		string guildId{ "" };///< Id of the Guild for which the WebHook Update is occurring.
 	};
 
-	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.
+	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int
 	class DiscordCoreAPI_Dll EventManager {
 	public:
 

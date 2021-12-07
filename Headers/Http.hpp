@@ -36,8 +36,8 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert(make_pair(workload.workloadType, rateLimitDataNew->bucket));
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataRaw->bucket, move(rateLimitDataNew)));
 				}
-				HttpData returnData = move(HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true));
-				returnType returnObject{};
+				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
+				returnType returnObject{};				
 				DataParser::parseObject(returnData.data, &returnObject);
 				return returnObject;
 			}

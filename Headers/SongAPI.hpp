@@ -85,25 +85,25 @@ namespace DiscordCoreAPI {
 		/// \returns void.
 		static void setPlaylist(Playlist playlistNew, string guildId);
 
-		/// Returns the current loop-all status of the current guild's Playlist. \brief Returns the current loop-all status of the current guild's Playlist.
+		/// Returns the current loop-all status of the current Guild's Playlist. \brief Returns the current loop-all status of the current Guild's Playlist.
 		/// \param guildId The id of the Guild for which you would like to check the loop-all status of.
 		/// \returns A bool representing the current loop-all status.
 		static bool isLoopAllEnabled(string guildId);
 
 		/// Enables or disables the loop-all status of the playlist. \brief Enables or disables the loop-all status of the playlist.
 		/// \param enabled A bool representing whether or not to enable the loop-all status.
-		/// \param guildId The guild id for which guild to update this status in.
+		/// \param guildId The Guild id for which Guild to update this status in.
 		/// \returns void
 		static void setLoopAllStatus(bool enabled, string guildId);
 
-		/// Returns the current loop-song of the current guild's Playlist. \brief Returns the current loop-song of the current guild's Playlist.
+		/// Returns the current loop-song of the current Guild's Playlist. \brief Returns the current loop-song of the current Guild's Playlist.
 		/// \param guildId The id of the Guild for which you would like to check the loop-song status of.
 		/// \returns A bool representing the current loop-song status.
 		static bool isLoopSongEnabled(string guildId);
 
 		/// Enables or disables the loop-song status of the playlist. \brief Enables or disables the loop-song status of the playlist.
 		/// \param enabled A bool representing whether or not to enable the loop-song status.
-		/// \param guildId The guild id for which guild to update this status in.
+		/// \param guildId The Guild id for which Guild to update this status in.
 		/// \returns void
 		static void setLoopSongStatus(bool enabled, string guildId);		
 
@@ -115,13 +115,13 @@ namespace DiscordCoreAPI {
 		static void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, string guildId);
 
 		/// Collects the currently playing Song. \brief Collects the currently playing Song.
-		/// \param guildId The id for which guild to collect the current Song of.
+		/// \param guildId The id for which Guild to collect the current Song of.
 		/// \returns The current Song for the given Guild.
 		static Song getCurrentSong(string guildId);
 
 		/// Sets the currently playing Song. \brief Sets the currently playing Song.
 		/// \param song The Song to set as the currently playing Song.
-		/// \param guildId The id for which guild to set the current Song of.
+		/// \param guildId The id for which Guild to set the current Song of.
 		/// \returns void
 		static void setCurrentSong(Song song, string guildId);
 

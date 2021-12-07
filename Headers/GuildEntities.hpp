@@ -31,10 +31,10 @@ namespace DiscordCoreAPI {
 		int32_t systemChannelFlags{ 0 };///< System channel flags.
 		vector<ChannelData> channels{};///< Array of partial channel objects.
 		int32_t verificationLevel{ 0 };///< Verification level.
-		string systemChannelId{ "" };///< The id of the channel where guild notices such as welcome messages and boost events are posted.
+		string systemChannelId{ "" };///< The id of the channel where Guild notices such as welcome messages and boost events are posted.
 		string afkChannelId{ "" };///< Id for afk channel.
 		vector<RoleData> roles{};///< Array of role objects.
-		vector<uint8_t> icon{};///< base64 128x128 image for the guild icon.
+		vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
 		string name{ "" };///< The name of the new Guild.
 	};
 
@@ -69,21 +69,21 @@ namespace DiscordCoreAPI {
 		}
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the guild discovery splash(when the server has the DISCOVERABLE feature).
+		vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
-		vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the guild splash(when the server has the INVITE_SPLASH feature).
+		vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash(when the server has the INVITE_SPLASH feature).
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the guild banner(when the server has the BANNER feature).
+		vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner(when the server has the BANNER feature).
 		int32_t systemChannelFlags{ 0 };///< System channel flags.
-		vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
-		string preferredLocale{ "" };///< The preferred locale of a Community guild used in server discovery and notices from Discord; defaults to "en-US".
-		string systemChannelId{ "" };///< The id of the channel where guild notices such as welcome messages and boost events are posted.
+		vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
+		string preferredLocale{ "" };///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
+		string systemChannelId{ "" };///< The id of the channel where Guild notices such as welcome messages and boost events are posted.
 		string rulesChannelId{ "" };///< The id of the channel where Community guilds display rules and /or guidelines.
 		string afkChannelId{ "" };///< Id for afk channels.
-		vector<string> features{};///< Array of guild feature strings enabled guild features.
-		string description{ "" };///< The description for the guild, if the guild is discoverable.
-		string ownerId{ "" };///< User id to transfer guild ownership to(must be owner).
+		vector<string> features{};///< Array of Guild feature strings enabled Guild features.
+		string description{ "" };///< The description for the Guild, if the Guild is discoverable.
+		string ownerId{ "" };///< User id to transfer Guild ownership to(must be owner).
 		string guildId{ "" };///< Id of the chosen Guild to modify.
 		string reason{ "" };///< Reason for modifying the Guild.
 		string name{ "" };///< Desired name of the Guild.		
@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a list of Guild voice regions. \brief For collecting a list of Guild voice regions.
 	struct DiscordCoreAPI_Dll GetGuildVoiceRegionsData {
-		string guildId{ "" };///< The guild for which to collect the voice regions from.
+		string guildId{ "" };///< The Guild for which to collect the voice regions from.
 	};
 
 	/// For geting all of the current invites from a Guild. \brief For geting all of the current invites from a Guild.
@@ -148,13 +148,13 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a list of Guild voice integrations. \brief
 	struct DiscordCoreAPI_Dll GetGuildIntegrationsData {
-		string guildId{ "" };///< The guild for which to collect the integrations from.
+		string guildId{ "" };///< The Guild for which to collect the integrations from.
 	};
 
 	/// For deleting a Guild integration. \brief For deleting a Guild integration.
 	struct DiscordCoreAPI_Dll DeleteGuildIntegrationData {
 		string integrationId{ "" };///< The integration's id which we are going to delete.
-		string guildId{ "" };///< The guild from which to delete the integration from.
+		string guildId{ "" };///< The Guild from which to delete the integration from.
 		string reason{ "" };///< Reason for deleting the integration.
 	};
 
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 
 	/// For geting a single invite's data from a Guild. \brief For geting a single invite's data from a Guild.
 	struct DiscordCoreAPI_Dll GetInviteData {
-		string guildScheduledEventId{ "" };///< The guild scheduled event to include with the invite.
+		string guildScheduledEventId{ "" };///< The Guild scheduled event to include with the invite.
 		bool withExpiration{ false };///< Collect expiration time/date?
 		bool withCount{ false };///< Collect usage etc counts?
 		string inviteId{ "" };///< The id of the invite you wish to acquire.		
@@ -260,8 +260,8 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a list of Guild's that the Bot is in. \brief For collecting a list of Guild's that the Bot is in.
 	struct DiscordCoreAPI_Dll GetCurrentUserGuildsData {
-		string before{ "" };///< Get guilds before this guild ID.
-		string after{ "" };///< Get guilds after this guild ID.
+		string before{ "" };///< Get guilds before this Guild ID.
+		string after{ "" };///< Get guilds after this Guild ID.
 		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
 	};
 

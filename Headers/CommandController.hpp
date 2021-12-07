@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	public:
 		string helpDescription{ "" };///< Description of the command for the Help command.
 		string commandName{ "" };///< Name of the command for calling purposes.
-		EmbedData helpEmbed{};///< A message embed for displaying the command via the Help command.
+		EmbedData helpEmbed{};///< A Message embed for displaying the command via the Help command.
 
 		/// The base function for the command's execute function.
 		/// \param args A unique_ptr containing a copy of BaseFunctionArguments.

@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
 		string channelId{ "" };///< The id of the channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
-		string guildId{ "" };///< The guild within which to update the bot's voice state.
+		string guildId{ "" };///< The Guild within which to update the bot's voice state.
 	};
 
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
