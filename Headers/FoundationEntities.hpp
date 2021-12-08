@@ -207,8 +207,6 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
 
-    
-
     /**
     * \addtogroup foundation_entities
     * @{
@@ -576,7 +574,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-    class DiscordCoreAPI_Dll GuildMemberData : DiscordEntity {
+    class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
     public:
         string premiumSince{ "" };///< If applicable, when they first boosted the server.
         string permissions{ "" };///< Their base-level Permissions in the Guild.
@@ -1799,112 +1797,6 @@ namespace DiscordCoreAPI {
         string url{ "" };///< The WSS URL that can be used for connecting to the gateway.       
     };
 
-    /**@}*/
-
-    /**
-    * \addtogroup voice_connection
-    * @{
-    */
-
-    /// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
-    struct DiscordCoreAPI_Dll RawFrameData {
-        vector<uint8_t> data{};///< The audio data.
-        int32_t sampleCount{ -1 };///< The number of samples per this frame.
-        RawFrameData() {};
-        RawFrameData& operator=(const RawFrameData& other) {
-            this->sampleCount = other.sampleCount;
-            this->data = other.data;
-            return *this;
-        }
-        RawFrameData(const RawFrameData& other) {
-            *this = other;
-        }
-        RawFrameData& operator=(RawFrameData&& other) noexcept {
-            this->sampleCount = other.sampleCount;
-            this->data = move(other.data);
-            return *this;
-        }
-        RawFrameData(RawFrameData&& other) noexcept {
-            *this = move(other);
-        }
-    };
-
-    /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
-    struct DiscordCoreAPI_Dll EncodedFrameData {
-        vector<uint8_t> data{};///< The audio data.
-        int32_t sampleCount{ -1 };///< The number of samples per this frame.
-        EncodedFrameData() {}
-        EncodedFrameData& operator=(const EncodedFrameData& other) {
-            this->sampleCount = other.sampleCount;
-            this->data = other.data;
-            return *this;
-        }
-        EncodedFrameData(const EncodedFrameData& other) {
-            *this = other;
-        }
-        EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
-            this->sampleCount = other.sampleCount;
-            this->data = move(other.data);
-            return *this;
-        }
-        EncodedFrameData(EncodedFrameData&& other) noexcept {
-            *this = move(other);
-        }
-    };
-
-    /// Audio frame types. \brief Audio frame types.
-    enum class AudioFrameType {
-        Unset = 0,///< Unset.
-        Encoded = 1,///< Encoded.
-        RawPCM = 2,///< Raw PCM.
-        Cancel = 3///< Cancel.
-    };
-
-    /// Represents a single frame of audio data. \brief Represents a single frame of audio data.
-    struct DiscordCoreAPI_Dll AudioFrameData {
-        AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-        EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
-        RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
-        AudioFrameData() {};
-        AudioFrameData& operator=(const AudioFrameData& other) {
-            this->encodedFrameData = other.encodedFrameData;
-            this->rawFrameData = other.rawFrameData;
-            this->type = other.type;
-            return *this;
-        }
-        AudioFrameData(const AudioFrameData& other) {
-            *this = other;
-        }
-        AudioFrameData& operator=(AudioFrameData&& other) noexcept {
-            this->encodedFrameData = move(other.encodedFrameData);
-            this->rawFrameData = move(other.rawFrameData);
-            this->type = other.type;
-            return *this;
-        }
-        AudioFrameData(AudioFrameData&& other) noexcept {
-            *this = move(other);
-        }
-    };
-
-    /**@}*/
-
-    /// Song types. \brief Song types.
-    enum class SongType {
-        YouTube = 0,///< YouTube.
-        SoundCloud = 1///< SoundCloud.
-    };
-
-    /// Represents a download URL. \brief Represents a download URL.
-    struct DiscordCoreAPI_Dll DownloadURL {
-        int32_t contentSize{ 0 };
-        string urlPath{ "" };
-    };
-
-    /**
-    * \addtogroup foundation_entities
-    * @{
-    */
-
     /// Input event response types. \brief Input event response types.
     enum class InputEventResponseType {
         Unset = 0,///< Unset.
@@ -2414,12 +2306,169 @@ namespace DiscordCoreAPI {
             }
         }
     };
+
+    /// Permissions values, for a given Channel. \brief Permissions values, for a given Channel.
+    enum class Permissions : int64_t {
+        CREATE_INSTANT_INVITE = 0x0000000001,///< Create instant invite.
+        KICK_MEMBERS = 0x0000000002,///< Kick members.
+        BAN_MEMBERS = 0x0000000004,///< Ban members.
+        ADMINISTRATOR = 0x0000000008,///< Administrator.
+        MANAGE_CHANNELS = 0x0000000010,///< Manage Channels.
+        MANAGE_GUILD = 0x0000000020,///< Manage Guild.
+        ADD_REACTIONS = 0x0000000040,///< Add Reactions.
+        VIEW_AUDIT_LOG = 0x0000000080,///< View audit log.
+        PRIORITY_SPEAKER = 0x0000000100,///< Priority speaker.
+        STREAM = 0x0000000200,///< Stream.
+        VIEW_CHANNEL = 0x0000000400,///< View Channel.
+        SEND_MESSAGES = 0x0000000800,///< Send Messages.
+        SEND_TTS_MESSAGES = 0x0000001000,///< Send TTS Messages.
+        MANAGE_MESSAGES = 0x0000002000,///< Manage Messages.
+        EMBED_LINKS = 0x0000004000,///< Embed links.
+        ATTACH_FILES = 0x0000008000,///< Attach files.
+        READ_MESSAGE_HISTORY = 0x0000010000,///< Read Message history.
+        MENTION_EVERYONE = 0x0000020000,///< Mention everyone.
+        USE_EXTERNAL_EMOJIS = 0x0000040000,///< Use external Emojis.
+        VIEW_GUILD_INSIGHTS = 0x0000080000,///< View Guild insights.
+        CONNECT = 0x0000100000,///< Connect.
+        SPEAK = 0x0000200000,///< Speak.
+        MUTE_MEMBERS = 0x0000400000,///< Mute members.
+        DEAFEN_MEMBERS = 0x0000800000,///< Deafen members.
+        MOVE_MEMBERS = 0x0001000000,///< Move members.
+        USE_VAD = 0x0002000000,///< Use VAD.
+        CHANGE_NICKNAME = 0x0004000000,///< Change nickname.
+        MANAGE_NICKNAMES = 0x0008000000,///< Manage nicknames.
+        MANAGE_ROLES = 0x0010000000,///< Manage Roles.
+        MANAGE_WEBHOOKS = 0x0020000000,///< Manage WebHooks.
+        MANAGE_EMOJIS_AND_STICKERS = 0x0040000000,///< Manage Emojis and Stickers.
+        USE_APPLICATION_COMMANDS = 0x0080000000,///< Use ApplicationCommands.
+        REQUEST_TO_SPEAK = 0x0100000000,///< Request to speak.
+        MANAGE_THREADS = 0x0400000000,///< Manage Threads.
+        CREATE_PUBLIC_THREADS = 0x0800000000,///< Create public Threads.
+        CREATE_PRIVATE_THREADS = 0x1000000000,///< Create private Threads.
+        USE_EXTERNAL_STICKERS = 0x2000000000,///< Use external Stickers.
+        SEND_MESSAGES_IN_THREADS = 0x4000000000,///< Send Messages in Threads.
+        START_EMBEDDED_ACTIVITIES = 0x8000000000///< Start embedded activities.
+    };
+
+    /// For selecting the caching style of the library. \brief For selecting the caching style of the library.
+    struct DiscordCoreAPI_Dll CacheOptions {
+        bool cacheGuildMembers{ false };///< Do we cache GuildMembers?
+        bool cacheChannels{ false };///< Do we cache Channels?
+        bool cacheGuilds{ false };///< Do we cache Guilds?
+        bool cacheRoles{ false };///< Do we cache Roles?
+        bool cacheUsers{ false };///< Do we cache Users?
+    };
+
+    /// Guild application command permissions data. \brief /// Guild application command permissions data.
+    class DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordEntity {
+    public:
+        vector<ApplicationCommandPermissionData> permissions{};
+        string applicationId{ "" };
+        string guildId{ "" };
+
+        virtual ~GuildApplicationCommandPermissionData() {}
+    };
+
     /**@}*/
+
+
+    /// Song types. \brief Song types.
+    enum class SongType {
+        YouTube = 0,///< YouTube.
+        SoundCloud = 1///< SoundCloud.
+    };
+
+    /// Represents a download URL. \brief Represents a download URL.
+    struct DiscordCoreAPI_Dll DownloadURL {
+        int32_t contentSize{ 0 };
+        string urlPath{ "" };
+    };
 
     /**
     * \addtogroup voice_connection
     * @{
     */
+
+    /// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
+    struct DiscordCoreAPI_Dll RawFrameData {
+        vector<uint8_t> data{};///< The audio data.
+        int32_t sampleCount{ -1 };///< The number of samples per this frame.
+        RawFrameData() {};
+        RawFrameData& operator=(const RawFrameData& other) {
+            this->sampleCount = other.sampleCount;
+            this->data = other.data;
+            return *this;
+        }
+        RawFrameData(const RawFrameData& other) {
+            *this = other;
+        }
+        RawFrameData& operator=(RawFrameData&& other) noexcept {
+            this->sampleCount = other.sampleCount;
+            this->data = move(other.data);
+            return *this;
+        }
+        RawFrameData(RawFrameData&& other) noexcept {
+            *this = move(other);
+        }
+    };
+
+    /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
+    struct DiscordCoreAPI_Dll EncodedFrameData {
+        vector<uint8_t> data{};///< The audio data.
+        int32_t sampleCount{ -1 };///< The number of samples per this frame.
+        EncodedFrameData() {}
+        EncodedFrameData& operator=(const EncodedFrameData& other) {
+            this->sampleCount = other.sampleCount;
+            this->data = other.data;
+            return *this;
+        }
+        EncodedFrameData(const EncodedFrameData& other) {
+            *this = other;
+        }
+        EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
+            this->sampleCount = other.sampleCount;
+            this->data = move(other.data);
+            return *this;
+        }
+        EncodedFrameData(EncodedFrameData&& other) noexcept {
+            *this = move(other);
+        }
+    };
+
+    /// Audio frame types. \brief Audio frame types.
+    enum class AudioFrameType {
+        Unset = 0,///< Unset.
+        Encoded = 1,///< Encoded.
+        RawPCM = 2,///< Raw PCM.
+        Cancel = 3///< Cancel.
+    };
+
+    /// Represents a single frame of audio data. \brief Represents a single frame of audio data.
+    struct DiscordCoreAPI_Dll AudioFrameData {
+        AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
+        EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
+        RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
+        AudioFrameData() {};
+        AudioFrameData& operator=(const AudioFrameData& other) {
+            this->encodedFrameData = other.encodedFrameData;
+            this->rawFrameData = other.rawFrameData;
+            this->type = other.type;
+            return *this;
+        }
+        AudioFrameData(const AudioFrameData& other) {
+            *this = other;
+        }
+        AudioFrameData& operator=(AudioFrameData&& other) noexcept {
+            this->encodedFrameData = move(other.encodedFrameData);
+            this->rawFrameData = move(other.rawFrameData);
+            this->type = other.type;
+            return *this;
+        }
+        AudioFrameData(AudioFrameData&& other) noexcept {
+            *this = move(other);
+        }
+    };
+
     /// A song from the various platforms. \brief A song from the various platforms.
     struct DiscordCoreAPI_Dll Song {
     public:
@@ -2466,64 +2515,16 @@ namespace DiscordCoreAPI {
         Song previousSong{};///< The previously played Song.
     };
 
-    /**@}*/
-
-    /**
-    * \addtogroup foundation_entities
-    * @{
-    */
-
-    /// Permissions values, for a given Channel. \brief Permissions values, for a given Channel.
-    enum class Permissions : int64_t {
-        CREATE_INSTANT_INVITE = 0x0000000001,///< Create instant invite.
-        KICK_MEMBERS = 0x0000000002,///< Kick members.
-        BAN_MEMBERS = 0x0000000004,///< Ban members.
-        ADMINISTRATOR = 0x0000000008,///< Administrator.
-        MANAGE_CHANNELS = 0x0000000010,///< Manage Channels.
-        MANAGE_GUILD = 0x0000000020,///< Manage Guild.
-        ADD_REACTIONS = 0x0000000040,///< Add Reactions.
-        VIEW_AUDIT_LOG = 0x0000000080,///< View audit log.
-        PRIORITY_SPEAKER = 0x0000000100,///< Priority speaker.
-        STREAM = 0x0000000200,///< Stream.
-        VIEW_CHANNEL = 0x0000000400,///< View Channel.
-        SEND_MESSAGES = 0x0000000800,///< Send Messages.
-        SEND_TTS_MESSAGES = 0x0000001000,///< Send TTS Messages.
-        MANAGE_MESSAGES = 0x0000002000,///< Manage Messages.
-        EMBED_LINKS = 0x0000004000,///< Embed links.
-        ATTACH_FILES = 0x0000008000,///< Attach files.
-        READ_MESSAGE_HISTORY = 0x0000010000,///< Read Message history.
-        MENTION_EVERYONE = 0x0000020000,///< Mention everyone.
-        USE_EXTERNAL_EMOJIS = 0x0000040000,///< Use external Emojis.
-        VIEW_GUILD_INSIGHTS = 0x0000080000,///< View Guild insights.
-        CONNECT = 0x0000100000,///< Connect.
-        SPEAK = 0x0000200000,///< Speak.
-        MUTE_MEMBERS = 0x0000400000,///< Mute members.
-        DEAFEN_MEMBERS = 0x0000800000,///< Deafen members.
-        MOVE_MEMBERS = 0x0001000000,///< Move members.
-        USE_VAD = 0x0002000000,///< Use VAD.
-        CHANGE_NICKNAME = 0x0004000000,///< Change nickname.
-        MANAGE_NICKNAMES = 0x0008000000,///< Manage nicknames.
-        MANAGE_ROLES = 0x0010000000,///< Manage Roles.
-        MANAGE_WEBHOOKS = 0x0020000000,///< Manage WebHooks.
-        MANAGE_EMOJIS_AND_STICKERS = 0x0040000000,///< Manage Emojis and Stickers.
-        USE_APPLICATION_COMMANDS = 0x0080000000,///< Use ApplicationCommands.
-        REQUEST_TO_SPEAK = 0x0100000000,///< Request to speak.
-        MANAGE_THREADS = 0x0400000000,///< Manage Threads.
-        CREATE_PUBLIC_THREADS = 0x0800000000,///< Create public Threads.
-        CREATE_PRIVATE_THREADS = 0x1000000000,///< Create private Threads.
-        USE_EXTERNAL_STICKERS = 0x2000000000,///< Use external Stickers.
-        SEND_MESSAGES_IN_THREADS = 0x4000000000,///< Send Messages in Threads.
-        START_EMBEDDED_ACTIVITIES = 0x8000000000///< Start embedded activities.
+    /// Playlist of songs and other variables. \brief Playlist of songs and other variables.
+    struct DiscordCoreAPI_Dll Playlist {
+    public:
+        bool isLoopSongEnabled{ false };///< Is looping of Songs currently enabled?
+        bool isLoopAllEnabled{ false };///< Is looping of the entire Playlist currently enabled?
+        vector<Song> songQueue{};///< The list of Songs that are stored to be played.
+        Song currentSong{};///< The current Song that is playing.
     };
-    /**@}*/
 
-    struct DiscordCoreAPI_Dll CacheOptions {
-        bool cacheGuildMembers{ false };
-        bool cacheChannels{ false };
-        bool cacheGuilds{ false };
-        bool cacheRoles{ false };
-        bool cacheUsers{ false };
-    };
+    /**@}*/
 
     class DiscordCoreAPI_Dll YouTubeSong : public Song{
     public:
@@ -2559,7 +2560,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    class DiscordCoreAPI_Dll SoundCloudSong : public Song{
+    class DiscordCoreAPI_Dll SoundCloudSong : public Song {
     public:
 
         friend class DiscordCoreInternal::DataParser;
@@ -2588,7 +2589,7 @@ namespace DiscordCoreAPI {
         HttpClient httpClientForGettingSecondURL{ HttpClient() };
         HttpClient httpClientForGettingFinalURLs{ HttpClient() };
         HttpRequestHeaderCollection headerCollectionForSecondURL{ httpClientForGettingSecondURL.DefaultRequestHeaders() };
-        HttpRequestHeaderCollection headerCollectionForFinalURLs{ httpClientForGettingSecondURL.DefaultRequestHeaders() };
+        HttpRequestHeaderCollection headerCollectionForFinalURLs{ httpClientForGettingFinalURLs.DefaultRequestHeaders() };
         string trackAuthorization{ "" };
 
         SoundCloudSong() noexcept;
@@ -2599,67 +2600,6 @@ namespace DiscordCoreAPI {
 
         SoundCloudSong findFinalDownloadURLs(SoundCloudSong newSong);
     };
-
-    struct DiscordCoreAPI_Dll DBPlaylist;
-
-    /**
-    * \addtogroup voice_connection
-    * @{
-    */
-    /// Playlist of songs and other variables. \brief Playlist of songs and other variables.
-    struct DiscordCoreAPI_Dll Playlist {
-    public:
-        operator DBPlaylist();
-        bool isLoopSongEnabled{ false };///< Is looping of Songs currently enabled?
-        bool isLoopAllEnabled{ false };///< Is looping of the entire Playlist currently enabled?
-        vector<Song> songQueue{};///< The list of Songs that are stored to be played.
-        Song currentSong{};///< The current Song that is playing.
-    };
-
-    struct DiscordCoreAPI_Dll PatchApplicationCommandData {
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-        string description{ "" };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PostApplicationCommandData {
-        vector<ApplicationCommandOptionData> options{};
-        bool defaultPermission{ true };
-        ApplicationCommandType type{};
-        string applicationId{ "" };
-        string description{ "" };
-        string name{ "" };
-    };
-
-    struct DiscordCoreAPI_Dll PutEditApplicationCommandPermissionsData {
-        vector<ApplicationCommandPermissionData> permissions{};
-        string commandName{ "" };
-        string guildId{ "" };
-    };
-
-    class DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordEntity {
-    public:
-        vector<ApplicationCommandPermissionData> permissions{};
-        string applicationId{ "" };
-        string guildId{ "" };
-
-        virtual ~GuildApplicationCommandPermissionData() {}
-    };
-
-    struct DiscordCoreAPI_Dll PutBatchEditApplicationCommandPermissionsData {
-        vector<GuildApplicationCommandPermissionData> permissions{};
-        string guildId{ "" };
-    };
-    
-    struct DiscordCoreAPI_Dll DBPlaylist {
-        operator Playlist();
-        bool isLoopSongEnabled{ false };///< Is looping of Songs currently enabled?
-        bool isLoopAllEnabled{ false };///< Is looping of the entire Playlist currently enabled?
-        vector<Song> songList{};///< The list of Songs that are stored to be played.
-        Song currentSong{};///< The current Song that is playing.
-    };
-    /**@}*/
 
     /**
     * \addtogroup utilities

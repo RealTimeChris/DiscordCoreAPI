@@ -24,6 +24,7 @@ namespace DiscordCoreAPI {
         vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
         bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild
         ApplicationCommandType type{}; ///< The type of ApplicationCommand.
+        string applicationId{ "" };///< Application id.
         string description{ "" };   ///< A description of the command.
         string name{ "" }; ///< A name for the new command.
     };
@@ -56,6 +57,7 @@ namespace DiscordCoreAPI {
         vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
         bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild.
         ApplicationCommandType type{}; ///< The type of ApplicationCommand.
+        string applicationId{ "" };///< Application Id.
         string description{ "" };   ///< A description of the command.
         string guildId{ "" }; ///< The id of the Guild which you would like to add the new command to.
         string name{ "" }; ///< A name for the new command.
@@ -109,7 +111,7 @@ namespace DiscordCoreAPI {
 
     /// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
     struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
-        vector<EditGuildApplicationCommandPermissionsData> permissions{}; ///< A vector of edit-Guild-application-permissions data to edit.
+        vector<GuildApplicationCommandPermissionsData> permissions{}; ///< A vector of edit-Guild-application-permissions data to edit.
         string guildId{ "" };///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
     };
 

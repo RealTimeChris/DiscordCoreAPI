@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
         string requesterId{ "" };
     };
 
-    /// Defer component response data. \brief Defer component response data.
+    /// For deferring a component response. \brief For deferring a component response.
     class DiscordCoreAPI_Dll DeferComponentResponseData : public InteractionResponse {
     public:
 
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    /// Create ephemeral Interaction response data. \brief Create ephemeral Interaction response data.
+    /// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
     class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
     public:
 
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    /// Create Interaction response data. \brief Create Interaction response data.
+    /// For creating an Interaction response. \brief For creating an Interaction response.
     class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
     public:
 
@@ -271,7 +271,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    /// Create deferred Interaction response data. \brief Create deferred Interaction response data.
+    /// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
     class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
     public:
 
@@ -309,13 +309,13 @@ namespace DiscordCoreAPI {
         string channelId{ "" };
     };
 
-    /// Get Interaction response data. \brief Get Interaction response data.
+    /// For getting an Interaction response. \brief For getting an Interaction response.
     struct DiscordCoreAPI_Dll GetInteractionResponseData {
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
 
-    /// Edit Interaction response data. \brief Edit Interaction response data.
+    /// For editing an Interaction response. \brief For editing an Interaction response.
     class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
     public:
 
@@ -349,7 +349,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    /// Delete Interaction response data. \brief Delete Interaction response data.
+    /// For deleting an Interaction response. \brief For deleting an Interaction response.
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
         friend void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
@@ -367,7 +367,7 @@ namespace DiscordCoreAPI {
         uint32_t timeDelay{ 0 };
     };
 
-    /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
+    /// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
     class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public InteractionResponse {
     public:
 
@@ -401,7 +401,7 @@ namespace DiscordCoreAPI {
         virtual ~CreateEphemeralFollowUpMessageData() {};
     };
 
-    /// Create follow up Message data. \brief Create follow up Message data.
+    /// For creating a follow up Message. \brief For creating a follow up Message.
     class DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
     public:
 
@@ -441,14 +441,14 @@ namespace DiscordCoreAPI {
 
     };
 
-    /// Get FollowUp Message data. \brief Get FollowUp Message data.
+    /// For getting a follow-up Message. \brief For getting a follow-up Message.
     struct DiscordCoreAPI_Dll GetFollowUpMessageData {
         string messageId{ "" };///< Message id.
         string interactionToken{ "" }; ///< Interaction token.
         string applicationId{ "" }; ///< application id.
     };
 
-    /// Edit follow up Message data. \brief Edit follow up Message data.
+    /// For editing a follow up Message. \brief For editing a follow up Message.
     class DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
     public:
 
@@ -482,7 +482,7 @@ namespace DiscordCoreAPI {
         virtual ~EditFollowUpMessageData() {};
     };
 
-    /// Delete follow up Message data. \brief Delete follow up Message data;
+    /// For deleting a follow up Message. \brief For deleting a follow up Message.
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
         friend void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);

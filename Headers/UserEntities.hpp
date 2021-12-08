@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
 	};
 
-	/// Adds a user to a group DM. \brief Adds a user to a group DM.
+	/// For adding a user to a group DM. \brief For adding a user to a group DM.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		string token{ "" };///< The user's access token.
 		string nick{ "" };///< The user's nickname.
@@ -38,6 +38,7 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The user's Id.
 	};
 
+	/// For removing a User from a group DM. \brief For removing a User from a group DM.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
 		string channelId{ "" };///< The channel Id of the DM.
 		string userId{ "" };///< The user's Id.
@@ -51,6 +52,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The Guild within which to update the bot's voice state.
 	};
 
+	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
 		string channelId{ "" };///< The id of the channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
@@ -58,7 +60,7 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The user for which you would like to modify the voice state of.
 	};
 
-	/// Get User data. For collecting a User's data from the library's cache or the Discord server. \brief Get User data. For collecting a User's data from the library's cache or the Discord server. 
+	/// For getting User data from the library's cache or the Discord server. \brief For getting User data from the library's cache or the Discord server.
 	struct DiscordCoreAPI_Dll GetUserData {
 		string userId{ "" };///< The id of the desired User.
 	};

@@ -10,8 +10,14 @@
 
 namespace DiscordCoreAPI {
 
+	struct BatchEditGuildApplicationCommandPermissionsData;
+	struct EditGuildApplicationCommandPermissionsData;
 	class CreateDeferredInteractionResponseData;
 	struct EditChannelPermissionOverwritesData;
+	struct CreateGlobalApplicationCommandData;
+	struct CreateGuildApplicationCommandData;
+	struct EditGlobalApplicationCommandData;
+	struct EditGuildApplicationCommandData;
 	struct StartThreadWithoutMessageData;
 	struct CreateGuildScheduledEventData;
 	struct ModifyGuildScheduledEventData;
@@ -19,6 +25,7 @@ namespace DiscordCoreAPI {
 	class CreateInteractionResponseData;
 	struct ModifyGuildWelcomeScreenData;
 	struct ModifyGuildRolePositionsData;
+	struct EditApplicationCommandData;
 	class EditInteractionResponseData;
 	struct StartThreadWithMessageData;
 	struct AddRecipientToGroupDMData;
@@ -42,8 +49,7 @@ namespace DiscordCoreAPI {
 	class CreateMessageData;
 	struct ModifyGuildData;
 	struct CreateGuildData;
-	class EditMessageData;
-	
+	class EditMessageData;	
 
 };
 
@@ -83,13 +89,17 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditMessageData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PutEditApplicationCommandPermissionsData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PutBatchEditApplicationCommandPermissionsData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PostApplicationCommandData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGlobalApplicationCommandData dataPackage);
 
-	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::PatchApplicationCommandData dataPackage);
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::CreateGuildApplicationCommandData dataPackage);
+
+	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage);
 
 	DiscordCoreAPI_Dll string JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
 

@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
-	/// Create Reaction data. \brief Create Reaction data.
+	/// For creating a single Reaction. \brief For creating a single Reaction.
 	struct DiscordCoreAPI_Dll CreateReactionData {
 		string channelId{ "" };///< The Channel for which to add the Reaction.
 		string messageId{ "" };///< The Message on which to add the Reaction.
@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 		string emojiId{ "" };///< The emoji id of the Reaction to add.
 	};
 
-	/// Delete own Reaction data. \brief Delete own Reaction data.
+	/// For deleting one's own Reaction. \brief For deleting one's own Reaction.
 	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
 		string channelId{ "" }; ///< The Channel from which to remove the Reaction.
 		string messageId{ "" };///< The Message from which to remove the Reaction.
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 		string emojiId{ "" };///< The emoji id for which to remove the emoji.
 	};
 
-	/// Delete User Reaction data. \brief Delete User Reaction data.
+	/// For deleting a reaction, by User. \brief For deleting a reaction, by User.
 	struct DiscordCoreAPI_Dll DeleteUserReactionData {
 		string channelId{ "" };///< The Channel from which to remove the Reaction.
 		string messageId{ "" };///< The Message from which to remove the Reaction.
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The User id for whom to remove their emoji.
 	};
 
-	/// Get Reactions Data. \brief Get Reactions Data.
+	/// For getting all of the Reactions. \brief For getting all of the Reactions.
 	struct DiscordCoreAPI_Dll GetReactionsData {
 		string channelId{ "" };///< The Channel from which to acquire the reactors.
 		string messageId{ "" };///< The Message from which to acquire the reactors.
@@ -50,13 +50,13 @@ namespace DiscordCoreAPI {
 		int32_t limit{ 0 };///< The maximum number of reactors to collect.		
 	};
 	
-	/// Delete all Reaction data. \brief Delete all Reaction data.
+	/// For deleting all of the Reactions on a particular Message. \brief For deleting all of the Reactions on a particular Message.
 	struct DiscordCoreAPI_Dll DeleteAllReactionsData {
 		string channelId{ "" };///< The Channel from which you would like to remove the emoji.
 		string messageId{ "" };///< The Message from which you would like to remove the emoji.
 	};
 
-	/// Delete Reactions by emoji data. \brief Delete Reactions by emoji data.
+	/// For deleting all of the Reactions of a particular Emoji. \brief For deleting all of the Reactions of a particular Emoji.
 	struct DiscordCoreAPI_Dll DeleteReactionsByEmojiData {
 		string channelId{ "" };///< The Channel from which you would like to remove the emoji.
 		string messageId{ "" };///< The Message from which you would like to remove the emoji.

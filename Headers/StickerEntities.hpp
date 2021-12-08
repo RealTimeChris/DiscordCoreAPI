@@ -15,17 +15,17 @@ namespace DiscordCoreAPI {
 	* \addtogroup foundation_entities
 	* @{
 	*/
-	/// Returns a sticker object for the given sticker ID. \brief Returns a sticker object for the given sticker ID.
+	/// For getting a Sticker object for the given sticker ID. \brief For getting a Sticker object for the given sticker ID.
 	struct DiscordCoreAPI_Dll GetStickerData {
 		string stickerId{ "" };///< The chosen Sticker's Id.
 	};
 
-	/// Collects a list of Stickers from a chosen Guild. \brief Collects a list of Stickers from a chosen Guild.
+	/// For collecting a list of Stickers from a chosen Guild. \brief For collecting a list of Stickers from a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildStickersData {
 		string guildId{ "" };///< The chosen Guild from which you would like to collect the Stickers from.
 	};
 
-	/// Creates a single Sticker. \brief Creates a single Sticker.
+	/// For creating a single Sticker. \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
 		string description{ "" };///< Description of the Sticker.
 		vector<uint8_t> file{};///< The sticker file to upload, must be a PNG, APNG, or Lottie JSON file, max 500 KB

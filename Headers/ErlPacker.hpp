@@ -77,11 +77,11 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static uint16_t etfByteOrder16(uint16_t&);
+		static void etfByteOrder16(uint16_t&);
 
-		static uint32_t etfByteOrder32(uint32_t&);
+		static void etfByteOrder32(uint32_t&);
 
-		static uint64_t etfByteOrder64(uint64_t&);
+		static void etfByteOrder64(uint64_t&);
 
 		static void store16Bits(vector<uint8_t>&, uint16_t&, uint32_t&);
 
@@ -121,15 +121,15 @@ namespace DiscordCoreInternal {
 
 		static void appendMapHeader(ErlPackBuffer&, uint32_t&);
 
-		static uint8_t read8Bits(ErlPackBuffer&);
+		static void read8Bits(ErlPackBuffer&, uint8_t&);
 
-		static uint16_t read16Bits(ErlPackBuffer&);
+		static void read16Bits(ErlPackBuffer&, uint16_t&);
 
-		static uint32_t read32Bits(ErlPackBuffer&);
+		static void read32Bits(ErlPackBuffer&, uint32_t&);
 
-		static uint64_t read64Bits(ErlPackBuffer&);
+		static void read64Bits(ErlPackBuffer&, uint64_t&);
 
-		static vector<char> readString(ErlPackBuffer&, uint32_t&);
+		static void readString(ErlPackBuffer&, uint32_t&, vector<char>&);
 
 		static json singleValueETFToJson(ErlPackBuffer&);
 

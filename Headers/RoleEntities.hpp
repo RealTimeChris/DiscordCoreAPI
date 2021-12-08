@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		string roleId{ "" };///< The Role to update.
 	};
 
-	/// Update Role position data.
+	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
 		friend string DiscordCoreInternal::JSONIFY(ModifyGuildRolePositionsData dataPackage);
 		friend class Roles;
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< Which Guild to collect their roles from.
 	};
 
-	/// Get a Role from the library's cache, or the Discord server. \brief Get a Role from the library's cache, or the Discord server.
+	/// For getting a Role from the library's cache, or the Discord server. \brief For getting a Role from the library's cache, or the Discord server.
 	struct DiscordCoreAPI_Dll GetRoleData {
 		string guildId{ "" };///<Which Guild to collect the Role from.
 		string roleId{ "" };///< Which Role to collect.

@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };///< The id of the Thread to join.
 	};
 
-	/// Adds a chosen User to a chosen Thread. \brief Adds a chosen User to a chosen Thread.
+	/// For adding a chosen User to a chosen Thread. \brief For adding a chosen User to a chosen Thread.
 	struct DiscordCoreAPI_Dll AddThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to join.
 		string userId{ "" };///< The id of the User to add to the Thread.

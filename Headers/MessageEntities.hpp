@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 
-	/// Get Messages data. \brief Get Messages data.
+	/// For getting a collection of Messages. \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
 		string aroundThisId{ "" };///<Around this id.
 		string beforeThisId{ "" };///< Before this id.
@@ -24,14 +24,14 @@ namespace DiscordCoreAPI {
 		 int32_t limit{ 0 };///< Limit of Messages to collect.		
 	};
 
-	/// Get Message data. \brief Get Message data.
+	/// For getting a Message. \brief For getting a Message.
 	struct DiscordCoreAPI_Dll GetMessageData {
 		string requesterId{ "" };///< The requester id.
 		string channelId{ "" };///< The Channel from which to collect the Message.
 		string id{ "" };///< The id of the Message to collect.
 	};
 
-	/// Create Message data. \brief Create Message data.
+	/// For creating a Message. \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData {
 	public:
 
@@ -179,6 +179,7 @@ namespace DiscordCoreAPI {
 		CreateMessageData() {};
 	};
 
+	/// For sending a direct-message. \brief For sending a direct-message.
 	class SendDMData : public CreateMessageData {
 	public:
 		friend class InputEvents;
@@ -203,13 +204,13 @@ namespace DiscordCoreAPI {
 
 	};
 
-	/// Crosspost Message Data. \brief Crosspost Message Data.
+	/// For crossposting a Message. \brief For crossposting a Message.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
 		string messageId{ "" };///< Id of the message to be crossposted.
 		string channelId{ "" };///< Channel within which to crosspost the Message from.
 	};
 
-	/// Edit Message data. \brief Edit Message data.
+	/// For editing a Message. \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData {
 	public:
 
@@ -356,7 +357,7 @@ namespace DiscordCoreAPI {
 
 	};
 
-	/// Delete Message data. \brief Delete Message data.
+	/// For deleting a Message. \brief For deleting a Message.
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	public:
 		 int32_t timeDelay{ 0 }; ///< Number of milliseconds to wait before deleting the Message.
@@ -364,26 +365,26 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< The reason for deleting the Message.
 	};
 
-	/// Delete Messages bulk data. \brief Delete Messages bulk data.
+	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
 		vector<string> messageIds{}; ///< Array of Message ids to delete.
 		string channelId{ "" };///< Channel within which to delete the Messages.
 		string reason{ "" };///< The reason for deleting the Messages.
 	};
 
-	/// Get pinned Messages data. \brief Get pinned Messages data.
+	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
 		string channelId{ "" };///< The Channel from which to collect pinned Messages.
 	};
 
-	/// Pin Message data. \brief Pin Message data.
+	/// For pinning a single Message. \brief For pinning a single Message.
 	struct DiscordCoreAPI_Dll PinMessageData {
 		string channelId{ "" };///< The Channel within which to pin the Message.
 		string messageId{ "" };///< The Message which you would like to pin.
 		string reason{ "" };///< Reason for pinning this Message.
 	};
 
-	/// Pin Message data. \brief Pin Message data.
+	/// For unpinning a single Message. \brief For unpinning a single Message.
 	struct DiscordCoreAPI_Dll UnpinMessageData {
 		string channelId{ "" };///< The Channel within which to unpin the Message.
 		string messageId{ "" };///< The Message which you would like to unpin.

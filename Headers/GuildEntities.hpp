@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 		string templateCode{ "" };///< Code for the desired Template.
 	};
 
-	/// Creates a Guild from a Guild template. \brief Creates a Guild from a Guild template.
+	/// For creating a Guild from a Guild template. \brief For creating a Guild from a Guild template.
 	struct DiscordCoreAPI_Dll CreateGuildFromGuildTemplateData {
 		string templateCode{ "" };///< Code for the desired Template to use.
 		string name{ "" };///< Desired name of the Guild.
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
 	};
 
-	/// Leave Guild data - for leaving a particular Guild. \brief Leave Guild data - for leaving a particular Guild.
+	/// For leaving a particular Guild. \brief For leaving a particular Guild.
 	struct DiscordCoreAPI_Dll LeaveGuildData {
 		string guildId{ "" };///< The id of the Guild you would like the bot to leave.
 	};
