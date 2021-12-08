@@ -75,8 +75,9 @@ namespace DiscordCoreAPI {
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         /// \returns void.
         void detachThread() {
-            coroutineHandle.promise().newThread.detach();
-            return;
+            if (coroutineHandle) {
+                coroutineHandle.promise().newThread.detach();
+            }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
@@ -94,15 +95,18 @@ namespace DiscordCoreAPI {
             if (!coroutineHandle) {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
-            if (coroutineHandle.promise().newThread.joinable()) {
-                coroutineHandle.promise().newThread.join();
+            else {
+                if (coroutineHandle.promise().newThread.joinable()) {
+                    coroutineHandle.promise().newThread.join();
+                }
+                exception_ptr exceptionPtr{};
+                while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
+                    rethrow_exception(exceptionPtr);
+                }
+                coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+                return coroutineHandle.promise().result;
             }
-            exception_ptr exceptionPtr{};
-            while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
-                rethrow_exception(exceptionPtr);
-            }
-            coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
-            return coroutineHandle.promise().result;
+            return returnType{};
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
@@ -119,8 +123,8 @@ namespace DiscordCoreAPI {
                         rethrow_exception(exceptionPtr);
                     }
                     coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
+                    return coroutineHandle.promise().result;
                 }
-                return coroutineHandle.promise().result;
             }
             return returnType{};
         }
@@ -205,8 +209,9 @@ namespace DiscordCoreAPI {
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         /// \returns void.
         void detachThread() {
-            coroutineHandle.promise().newThread.detach();
-            return;
+            if (coroutineHandle) {
+                coroutineHandle.promise().newThread.detach();
+            }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
@@ -224,14 +229,16 @@ namespace DiscordCoreAPI {
             if (!coroutineHandle) {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
-            if (coroutineHandle.promise().newThread.joinable()) {
-                coroutineHandle.promise().newThread.join();
+            else {
+                if (coroutineHandle.promise().newThread.joinable()) {
+                    coroutineHandle.promise().newThread.join();
+                }
+                exception_ptr exceptionPtr{};
+                while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
+                    rethrow_exception(exceptionPtr);
+                }
+                coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
             }
-            exception_ptr exceptionPtr{};
-            while (coroutineHandle.promise().exceptionBuffer.try_pop(exceptionPtr)) {
-                rethrow_exception(exceptionPtr);
-            }
-            coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
@@ -250,7 +257,6 @@ namespace DiscordCoreAPI {
                     coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
                 }
             }
-            return;
         }
 
         class DiscordCoreAPI_Dll promise_type {
