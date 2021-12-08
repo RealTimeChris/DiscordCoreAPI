@@ -2775,8 +2775,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll VoiceStateData {
-        string requestToSpeakTimestamp{ "" };
         DiscordCoreAPI::GuildMemberData guildMember{};
+        string requestToSpeakTimestamp{ "" };
         bool selfStream{ false };
         bool selfVideo{ false };
         string channelId{ "" };
@@ -2788,16 +2788,6 @@ namespace  DiscordCoreInternal {
         string userId{ "" };
         bool deaf{ false };
         bool mute{ false };
-    };
-
-    enum class HeaderTypes {
-        Bot_Auth = 0,
-        X_Audit_Log_Reason = 1
-    };
-
-    struct DiscordCoreAPI_Dll Headers {
-        HeaderTypes headerType{};
-        string headerValue{ "" };
     };
 
     enum class HttpWorkloadClass {
@@ -2977,8 +2967,6 @@ namespace  DiscordCoreInternal {
         GET_SOUNDCLOUD_SONG = 203
     };
 
-    struct DiscordCoreAPI_Dll RateLimitData;
-
     struct DiscordCoreAPI_Dll HttpData {
         vector<string> responseHeaderValues{};
         string returnMessage{ "" };
@@ -3005,6 +2993,7 @@ namespace  DiscordCoreInternal {
             this->timeStartedAt = other.timeStartedAt;
             this->workloadType = other.workloadType;
             this->isItMarked = other.isItMarked;
+            this->tempBucket = other.tempBucket;
             this->theMutex.swap(other.theMutex);
             this->totalGets = other.totalGets;
             this->msRemain = other.msRemain;
