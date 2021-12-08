@@ -12,7 +12,7 @@
 namespace DiscordCoreAPI {
 
 	/**
-	* \addtogroup discord_core_client
+	* \addtogroup main_endpoints
 	* @{
 	*/
 	/// For handling User input - Messages or Interactions. \brief For handling User input - Messages or Interactions.

@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll map<string, unique_ptr<SongAPI>>* getSongAPIMap();
 
 	/**
-	* \addtogroup discord_core_client
+	* \addtogroup main_endpoints
 	* @{
 	*/
 	class DiscordCoreAPI_Dll DiscordCoreClient {

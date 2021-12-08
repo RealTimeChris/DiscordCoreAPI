@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 	/**
-	* \addtogroup discord_core_client
+	* \addtogroup main_endpoints
 	* @{
 	*/
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.

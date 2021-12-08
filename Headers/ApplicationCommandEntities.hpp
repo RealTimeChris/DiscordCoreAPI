@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
     /**@}*/
 
     /**
-    * \addtogroup discord_core_client
+    * \addtogroup main_endpoints
     * @{
     */
     /// An interface class for the ApplicationCommand related Discord endpoints. \brief An interface class for the ApplicationCommand related Discord endpoints.

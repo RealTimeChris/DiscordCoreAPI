@@ -9,12 +9,40 @@
 
 namespace DiscordCoreInternal {
 
+    using namespace winrt::Windows::Networking::Sockets;
+    using namespace winrt::Windows::Web::Http::Headers;
+    using namespace winrt::Windows::System::Threading;
+    using namespace winrt::Windows::Storage::Streams;
+    using namespace winrt::Windows::Web::Http;
+    using namespace winrt::Windows::Storage;
+    using namespace winrt::Windows::System;
+    using namespace concurrency::details;
+    using namespace winrt::Windows::Web;
+    using namespace concurrency;
+    using namespace nlohmann;
+    using namespace winrt;
+    using namespace std;
+
     class BaseWebSocketAgent;
     class HttpRequestAgent;
     class DataParser;    
 }
 
 namespace DiscordCoreAPI {
+
+    using namespace winrt::Windows::Networking::Sockets;
+    using namespace winrt::Windows::Web::Http::Headers;
+    using namespace winrt::Windows::System::Threading;
+    using namespace winrt::Windows::Storage::Streams;
+    using namespace winrt::Windows::Web::Http;
+    using namespace winrt::Windows::Storage;
+    using namespace winrt::Windows::System;
+    using namespace concurrency::details;
+    using namespace winrt::Windows::Web;
+    using namespace concurrency;
+    using namespace nlohmann;
+    using namespace winrt;
+    using namespace std;
 
     template<typename returnType>
     class CoRoutine;
@@ -2949,6 +2977,8 @@ namespace  DiscordCoreInternal {
         GET_SOUNDCLOUD_SONG = 203
     };
 
+    struct DiscordCoreAPI_Dll RateLimitData;
+
     struct DiscordCoreAPI_Dll HttpData {
         vector<string> responseHeaderValues{};
         string returnMessage{ "" };
@@ -2987,6 +3017,7 @@ namespace  DiscordCoreInternal {
         int64_t timeStartedAt{ 0 };
         int32_t getsRemaining{ 0 };
         bool isItMarked{ false };
+        string tempBucket{ "" };
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };
         string bucket{ "" };

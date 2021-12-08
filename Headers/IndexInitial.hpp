@@ -38,7 +38,6 @@
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
 
-#include <memorybuffer.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Networking.Sockets.h>
 #include <winrt/Windows.System.Threading.h>
@@ -47,8 +46,6 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <concurrent_unordered_map.h>
 #include <winrt/Windows.Devices.h>
-#include <concurrent_vector.h>
-#include <ppltaskscheduler.h>
 
 extern "C"
 {
@@ -79,7 +76,6 @@ extern "C"
 #include <libavutil/opt.h>
 }
 #include <nlohmann/json.hpp>
-#include <dispatcherqueue.h>
 #include <glib-2.0/glib.h>
 #include <winrt/base.h>
 #include <nanobench.h>
@@ -87,37 +83,14 @@ extern "C"
 #include <ppltasks.h>
 #include <coroutine>
 #include <atltime.h>
-#include <winbase.h>
-#include <stdint.h>
 #include <iostream>
 #include <sodium.h>
 #include <agents.h>
-#include <xiosbase>
-#include <utility>
 #include <stdio.h>
-#include <fstream>
 #include <string>
-#include <future>
-#include <bitset>
-#include <memory>
 #include <regex>
-#include <ios>
 #define CURL_STATICLIB
 #include <curl\curl.h>
-
-using namespace winrt::Windows::Networking::Sockets;
-using namespace winrt::Windows::Web::Http::Headers;
-using namespace winrt::Windows::System::Threading;
-using namespace winrt::Windows::Storage::Streams;
-using namespace winrt::Windows::Web::Http;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::System;
-using namespace concurrency::details;
-using namespace winrt::Windows::Web;
-using namespace concurrency;
-using namespace nlohmann;
-using namespace winrt;
-using namespace std;
 
 #ifdef _DEBUG
 #define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
@@ -139,8 +112,8 @@ using namespace std;
 #pragma intrinsic(__ll_lshift)
 
 /**
-* \defgroup discord_core_client DiscordCoreClient
-* \brief For all of the main endpoints.
+* \defgroup main_endpoints Main Endpoints
+* \brief For all of the Discord API's endpoints.
 */
 
 /**
@@ -150,7 +123,7 @@ using namespace std;
 
 /**
 * \defgroup discord_events Discord Events
-* \brief For all of the possible events that could be sent by the Discord API.
+* \brief For all of the events that could be sent by the Discord API.
 */
 
 /**
@@ -159,7 +132,6 @@ using namespace std;
 */
 
 /**
-* \defgroup foundation_entities FoundationEntities
+* \defgroup foundation_entities Foundation Entities
 * \brief For all of the building blocks of the main endpoints.
 */
-
