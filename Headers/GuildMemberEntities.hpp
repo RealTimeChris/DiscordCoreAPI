@@ -109,17 +109,17 @@ namespace DiscordCoreAPI {
 
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
-		/// \returns A CoRoutine containing a vector of GuildMembers.
+		/// \returns A CoRoutine containing a vector<GuildMembers>.
 		static CoRoutine<vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// Searches for a list of GuildMembers of a chosen Guild. \brief Searches for a list of GuildMembers of a chosen Guild.
-		/// \param dataPackage A ListGuildMembersData structure.
-		/// \returns A CoRoutine containing a vector of GuildMembers.
+		/// \param dataPackage A SearchGuildMembersData structure.
+		/// \returns A CoRoutine containing a vector<GuildMembers>.
 		static CoRoutine<vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// Adds a GuildMember to a chosen Guild. \brief Adds a GuildMember to a chosen Guild.
-		/// \param dataPackage A AddGuildMemberData structure.
-		/// \returns A CoRoutine containing a vector of GuildMembers.
+		/// \param dataPackage An AddGuildMemberData structure.
+		/// \returns A CoRoutine containing a vector<GuildMembers>.
 		static CoRoutine<GuildMember> addGuildMemberAsync(AddGuildMemberData dataPackage);
 
 		/// Modifies a GuildMember's properties. \brief Modifies a GuildMember's properties.

@@ -140,23 +140,23 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> joinThreadAsync(JoinThreadData dataPackage);
 
 		/// Adds a new User to a chosen Thread. \brief Adds a new User to a chosen Thread.
-		/// \param dataPackage A AddThreadMemberData structure.
+		/// \param dataPackage An AddThreadMemberData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> addThreadMemberAsync(AddThreadMemberData dataPackage);
 
 		/// Leaves a Thread. \brief Leaves a Thread.
-		/// \param dataPackage A LeaveThreadData structure.
+		/// \param dataPackage A LeaveThreadData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> leaveThreadAsync(LeaveThreadData dataPackage);
 
 		/// Removes a User from a chosen Thread. \brief Removes a User from a chosen Thread.
-		/// \param dataPackage A RemoveThreadMemberData structure.
+		/// \param dataPackage A RemoveThreadMemberData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeThreadMemberAsync(RemoveThreadMemberData dataPackage);
 
 		/// Collects a ThreadMember if they exist. \brief Collects a ThreadMember if they exist.
 		/// \param dataPackage A GetThreadMemberData structure.
-		/// \returns A CoRoutine containing ThreadMemberData.
+		/// \returns A CoRoutine containing a ThreadMemberData.
 		static CoRoutine<ThreadMemberData> getThreadMemberAsync(GetThreadMemberData dataPackage);
 
 		/// Collects a list of ThreadMembers if they exist. \brief Collects a list of ThreadMembers if they exist.
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 
 		/// Lists all of the active Threads of a chosen Guild. \brief Lists all of the active Threads of a chosen Guild.
 		/// \param dataPackage A ListActiveThreadsData structure.
-		/// \returns A CoRoutine containing a vector of Channels.
+		/// \returns A CoRoutine containing a vector<Channel>.
 		static CoRoutine<ActiveThreadsData> getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage);
 	};
 	/**@}*/

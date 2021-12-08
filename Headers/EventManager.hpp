@@ -64,32 +64,32 @@ namespace DiscordCoreAPI {
 		ChannelPinsUpdateEventData dataPackage{}; ///< The Channel pins update data.
 	};
 
-	/// Data that is received as part of a thread creation event. \brief Data that is received as part of a thread creation event.
+	/// Data that is received as part of a Thread creation event. \brief Data that is received as part of a Thread creation event.
 	struct DiscordCoreAPI_Dll OnThreadCreationData {
-		Thread thread{}; ///< The new thread's Channel.
+		Thread thread{}; ///< The new Thread's Channel.
 	};
 
-	/// Data that is received as part of a thread update event. \brief Data that is received as part of a thread update event.
+	/// Data that is received as part of a Thread update event. \brief Data that is received as part of a Thread update event.
 	struct DiscordCoreAPI_Dll OnThreadUpdateData {
-		Thread thread{}; ///< The new thread's Channel.
+		Thread thread{}; ///< The new Thread's Channel.
 	};
 
-	/// Data that is received as part of a thread deletion event. \brief Data that is received as part of a thread deletion event.
+	/// Data that is received as part of a Thread deletion event. \brief Data that is received as part of a Thread deletion event.
 	struct DiscordCoreAPI_Dll OnThreadDeletionData {
-		Thread thread{}; ///< The deleted thread's Channel.
+		Thread thread{}; ///< The deleted Thread's Channel.
 	};
 
-	/// Data that is received as part of a thread list sync event. \brief Data that is received as part of a thread list sync event.
+	/// Data that is received as part of a Thread list sync event. \brief Data that is received as part of a Thread list sync event.
 	struct DiscordCoreAPI_Dll OnThreadListSyncData {
-		ThreadListSyncData threadListSyncData{}; ///< The thread list sync data.
+		ThreadListSyncData threadListSyncData{}; ///< The Thread list sync data.
 	};
 
-	/// Data that is received as part of a thread member update event. \brief Data that is received as part of a thread member update event.
+	/// Data that is received as part of a Thread member update event. \brief Data that is received as part of a Thread member update event.
 	struct DiscordCoreAPI_Dll OnThreadMemberUpdateData {
 		ThreadMemberData threadMember{}; ///< Thread member update data.
 	};
 
-	/// Data that is received as part of a thread members update event. \brief Data that is received as part of a thread members update event.
+	/// Data that is received as part of a Thread members update event. \brief Data that is received as part of a Thread members update event.
 	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData {
 		ThreadMembersUpdateData threadMembersUpdateData{}; ///< Thread member's update data.
 	};
@@ -113,13 +113,13 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanAddData {
 		string guildId{ "" }; ///< The Guild they were banned from.
-		User user{};	///< The user id of the person who was banned.
+		User user{};	///< The User id of the person who was banned.
 	};
 
 	/// Data that is received as part of a Guild ban remove event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanRemoveData {
 		string guildId{ "" }; ///< The Guild they were un-banned from.
-		User user{};///< The user id of the person who was un-banned.
+		User user{};///< The User id of the person who was un-banned.
 	};
 
 	/// Data that is received as part of a Guild emojis update event. \brief Data that is received as part of a Guild emojis update event.
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 		GuildStickersUpdateEventData updateData{}; ///< The GuildStickersUpdateEventData.
 	};
 
-	/// Data that is received as part of a Guild integration update event. \brief Data that is received as part of a Guild integration update event.
+	/// Data that is received as part of a Guild Integration update event. \brief Data that is received as part of a Guild Integration update event.
 	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
 		string guildId{ "" }; ///< The id of the Guild for which the integrations were updated.
 	};
@@ -178,34 +178,34 @@ namespace DiscordCoreAPI {
 		Role roleOld{}; ///< The deleted Role.
 	};
 
-	/// Data that is received as part of an integration creation event. \brief Data that is received as part of an integration creation event.
+	/// Data that is received as part of an Integration creation event. \brief Data that is received as part of an Integration creation event.
 	struct DiscordCoreAPI_Dll OnIntegrationCreationData {
 		IntegrationData integrationData{}; ///< The new IntegrationData structure.
 		string guildId{ "" };///< The id of the Guild for which this Integration was created.
 	};
 
-	/// Data that is received as part of an integration update event. \brief Data that is received as part of an integration update event.
+	/// Data that is received as part of an Integration update event. \brief Data that is received as part of an Integration update event.
 	struct DiscordCoreAPI_Dll OnIntegrationUpdateData {
 		IntegrationData integrationData{}; ///< New IntegrationData structure.
 		string guildId{ "" };///< The id of the Guild for which the Integration was updated.
 	};
 
-	/// Data that is received as part of an integration deletion event. \brief Data that is received as part of an integration deletion event.
+	/// Data that is received as part of an Integration deletion event. \brief Data that is received as part of an Integration deletion event.
 	struct DiscordCoreAPI_Dll OnIntegrationDeletionData {
 		string applicationId{ "" }; ///< Application id of the current application.
 		string guildId{ "" };///< The id of the Guild for which the Integration was deleted.
 		string id{ "" };///< The id of the deleted Integration.
 	};
 
-	/// Data that is received as part of an invite creation event. \brief Data that is received as part of an invite creation event.
+	/// Data that is received as part of an Invite creation event. \brief Data that is received as part of an Invite creation event.
 	struct DiscordCoreAPI_Dll OnInviteCreationData {
 		InviteData invite{}; ///< Thew new InviteData structure.
 	};
 
-	/// Data that is received as part of an invite deletion event. \brief Data that is received as part of an invite deletion event.
+	/// Data that is received as part of an Invite deletion event. \brief Data that is received as part of an Invite deletion event.
 	struct DiscordCoreAPI_Dll OnInviteDeletionData {
-		string channelId{ "" }; ///< The id of the Channel for which the invite existed.
-		string guildId{ "" };	///< The id of the Guild for which the invite existed.
+		string channelId{ "" }; ///< The id of the Channel for which the Invite existed.
+		string guildId{ "" };	///< The id of the Guild for which the Invite existed.
 		string code{ "" }; ///< The code of the Invite.
 	};
 
@@ -268,17 +268,17 @@ namespace DiscordCoreAPI {
 		PresenceUpdateData presenceData{}; ///< PresenceUpdateData..
 	};
 
-	/// Data that is received as part of a stage instance creation event. \brief Data that is received as part of a stage instance creation event.
+	/// Data that is received as part of a StageInstance creation event. \brief Data that is received as part of a StageInstance creation event.
 	struct DiscordCoreAPI_Dll OnStageInstanceCreationData {
 		StageInstanceData stageInstance{}; ///< The new StageInstanceData.
 	};
 
-	/// Data that is received as part of a stage instance update event. \brief Data that is received as part of a stage instance update event.
+	/// Data that is received as part of a StageInstance update event. \brief Data that is received as part of a StageInstance update event.
 	struct DiscordCoreAPI_Dll OnStageInstanceUpdateData {
 		StageInstanceData stageInstance{}; ///< The new StageInstanceData.
 	};
 
-	/// Data that is received as part of a stage instance deletion event. \brief Data that is received as part of a stage instance deletion event.
+	/// Data that is received as part of a StageInstance deletion event. \brief Data that is received as part of a StageInstance deletion event.
 	struct DiscordCoreAPI_Dll OnStageInstanceDeletionData {
 		StageInstanceData stageInstance{}; ///< The deleted StageInstanceData.
 	};
@@ -288,7 +288,7 @@ namespace DiscordCoreAPI {
 		TypingStartData typingStartData{}; ///< TypingStartData of the event.
 	};
 
-	/// Data that is received as part of a user update event. \brief Data that is received as part of a user update event.
+	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
 		User userOld{}; ///< The old User.
 		User userNew{};///< The new User.
@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 		string token{ "" };///< The token of the server update event.
 	};
 
-	/// Data that is received as part of a webhook update event. \brief Data that is received as part of a webhook update event.
+	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.
 	struct DiscordCoreAPI_Dll OnWebhookUpdateData {
 		string channelId{ "" };///< Id of the Channel for which the WebHook Update is occurring.
 		string guildId{ "" };///< Id of the Guild for which the WebHook Update is occurring.

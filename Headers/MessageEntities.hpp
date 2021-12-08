@@ -455,7 +455,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
 		/// \param dataPackage A GetMessagesData structure.
-		/// \returns A CoRoutine containing an optional vector of Message.
+		/// \returns A CoRoutine containing a vector<Message>.
 		static CoRoutine<vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
@@ -474,7 +474,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<Message> crosspostMessageAsync(CrosspostMessageData dataPackage);
 
 		/// Edit a Message. \brief Edit a Message.
-		/// \param dataPackage A EditMessageData structure.
+		/// \param dataPackage An EditMessageData structure.
 		/// \returns A CoRoutine containing a Message.
 		static CoRoutine<Message> editMessageAsync(EditMessageData dataPackage);
 
@@ -490,7 +490,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
-		/// \returns A CoRoutine containing a vector of Message.
+		/// \returns A CoRoutine containing a vector<Message>.
 		static CoRoutine<vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.
@@ -499,7 +499,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
 
 		/// Unpins a Message from a given Channel. \brief Unpins a Message from a given Channel.
-		/// \param dataPackage A UnpinMessageData structure.
+		/// \param dataPackage An UnpinMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
 	};

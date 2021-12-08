@@ -95,23 +95,23 @@ namespace DiscordCoreAPI {
 	public:
 
 		/// Gets a list of a given Guild's scheduled events. \brief Gets a list of a given Guild's scheduled events.
-		/// \param dataPackage A GetGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing vector<GuildScheduledEvent>.
+		/// \param dataPackage A GetGuildScheduledEventsDatastructure.
+		/// \returns A CoRoutine containing a vector<GuildScheduledEvent>.
 		static CoRoutine<vector<GuildScheduledEvent>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
 
 		/// Creates a new GuildScheduledEvent within a chosen Guild. \brief Creates a new GuildScheduledEvent within a chosen Guild.
 		/// \param dataPackage A CreateGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing GuildScheduledEvent.
+		/// \returns A CoRoutine containing a GuildScheduledEvent.
 		static CoRoutine<GuildScheduledEvent> createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage);
 
 		/// Collects a single GuildScheduledEvent. \brief Collects a single GuildScheduledEvent.
 		/// \param dataPackage A GetGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing GuildScheduledEvent.
+		/// \returns A CoRoutine containing a GuildScheduledEvent.
 		static CoRoutine<GuildScheduledEvent> getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage);
 
 		/// Modifies a single GuildScheduledEvent. \brief Modifies a single GuildScheduledEvent.
 		/// \param dataPackage A ModifyGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing GuildScheduledEvent.
+		/// \returns A CoRoutine containing a GuildScheduledEvent.
 		static CoRoutine<GuildScheduledEvent> modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage);
 
 		/// Deletes a single GuildScheduledEvent. \brief Deletes a single GuildScheduledEvent.
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 		
 		/// Collects a list of Users for a given GuildScheduledEvent. \brief Collects a list of Users for a given GuildScheduledEvent.
 		/// \param dataPackage A GetGuildScheduledEventUsersData structure.
-		/// \returns A CoRoutine containing vector<GuildScheduledEventUser>.
+		/// \returns A CoRoutine containing a vector<GuildScheduledEventUser>.
 		static CoRoutine<vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
 	};
 	/**@}*/

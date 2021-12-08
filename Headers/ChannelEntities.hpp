@@ -173,33 +173,33 @@ namespace DiscordCoreAPI {
 		static CoRoutine<Channel> modifyChannelAsync(ModifyChannelData dataPackage);
 
 		/// Delete a channel, or close a private message. \brief Delete a channel, or close a private message.
-		/// \param dataPackage A DeleteChannelData structure.
+		/// \param dataPackage A DeleteOrCloseChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);
 
 		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
-		/// \param dataPackage A EditChannelPermissionOverwritesData structure.
+		/// \param dataPackage An EditChannelPermissionOverwritesData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
 		/// Collects a vector of the invites to a given Channel. \brief Collects a vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
-		/// \returns A CoRoutine containing a vector of InviteData.
+		/// \returns A CoRoutine containing a vector<InviteData>.
 		static CoRoutine<vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
 		/// Creates an invite to a selected Channel. \brief Creates an invite to a selected Channel.
 		/// \param dataPackage A CreateChannelInviteData structure.
-		/// \returns A CoRoutine containing an InviteData structure.
+		/// \returns A CoRoutine containing an InviteData.
 		static CoRoutine<InviteData> createChannelInviteAsync(CreateChannelInviteData dataPackage);
 
 		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
-		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure.
+		/// \param dataPackage A DeleteChannelPermissionOverwritesData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);		
 
 		/// Follows a given new Channel with another Channel. \brief Follows a given new Channel with another Channel.
 		/// \param dataPackage A FollowNewsChannelData structure.
-		/// \returns A CoRoutine containing a Channel structure.
+		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> followNewsChannelAsync(FollowNewsChannelData dataPackage);
 
 		/// Triggers the typing indicator for the bot in the given Channel. \brief Triggers the typing indicator for the bot in the given Channel.
@@ -209,16 +209,16 @@ namespace DiscordCoreAPI {
 
 		/// Collects a list of Channels from a chosen Guild. \brief Collects a list of Channels from a chosen Guild.
 		/// \param dataPackage A GetGuildChannelsData structure.
-		/// \returns A CoRoutine containing a vector of Channels.
+		/// \returns A CoRoutine containing a vector<Channel>.
 		static CoRoutine<vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// Creates a new Channel within a chosen Guild. \brief Creates a new Channel within a chosen Guild.
-		/// \param dataPackage A GetGuildChannelsData structure.
-		/// \returns A CoRoutine containing a vector of Channels.
+		/// \param dataPackage A CreateGuildChannelData structure.
+		/// \returns A CoRoutine containing a vector<Channel>.
 		static CoRoutine<Channel> createGuildChannelAsync(CreateGuildChannelData dataPackage);
 
 		/// Re-orders the Channel positions, within a chosen Guild. \brief Re-orders the Channel positions, within a chosen Guild.
-		/// \param dataPackage A ModifyGuildChannelPositionsData structure.
+		/// \param dataPackage A ModifyGuildChannelPositionsData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage);
 

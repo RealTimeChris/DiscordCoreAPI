@@ -120,22 +120,22 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
-		/// \param dataPackage A AddRecipientToGroupDMData structure.
+		/// \param dataPackage An AddRecipientToGroupDMData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage);
 
 		/// Removes a chosen recipient from a group DM. \brief Removes a chosen recipient from a group DM.
-		/// \param dataPackage A RemoveRecipientFromGroupDMData structure.
+		/// \param dataPackage A RemoveRecipientFromGroupDMData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
 
 		/// Sets the bot's current voice state. \brief Sets the bot's current voice state.
-		/// \param dataPackage A ModifyCurrentUserVoiceStateData structure.
+		/// \param dataPackage A ModifyCurrentUserVoiceStateData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage);
 
 		/// Sets another user's current voice state. \brief Sets another user's current voice state.
-		/// \param dataPackage A ModifyUserVoiceStateData structure.
+		/// \param dataPackage A ModifyUserVoiceStateData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
 
@@ -154,12 +154,12 @@ namespace DiscordCoreAPI {
 		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
 
 		/// Modifies the Bot's User data. \brief Modifies the Bot's User data.
-		/// \param dataPackage A ModifyCurrentUserData structure.
+		/// \param dataPackage A ModifyCurrentUserData  structure.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
 
 		/// Collects the User's Connections. \brief Collects the User's Connections.
-		/// \returns A CoRoutine containing an vector<ConnectionData>.
+		/// \returns A CoRoutine containing a vector<ConnectionData>.
 		static CoRoutine<vector<ConnectionData>> getUserConnections();
 
 		/// Collects the Application data associated with the current Bot. \brief Collects the Application data associated with the current Bot.

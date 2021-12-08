@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
-		/// \param dataPackage A AddRoleToGuildMemberData structure.
+		/// \param dataPackage An AddGuildMemberRoleData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage);
 
@@ -135,17 +135,17 @@ namespace DiscordCoreAPI {
 
 		/// Collects the Roles that a Guild has. \brief Collects the Roles that a Guild has.
 		/// \param dataPackage A GetGuildRolesData structure.
-		/// \returns A CoRoutine containing a vector of Roles.
+		/// \returns A CoRoutine containing a vector<Role>.
 		static CoRoutine<vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
-		/// \param dataPackage A CreateRoleData structure.
-		/// \returns A Role.
+		/// \param dataPackage A CreateGuildRoleData structure.
+		/// \returns A CoRoutine containing a Role.
 		static CoRoutine<Role> createGuildRoleAsync(CreateGuildRoleData dataPackage);
 
 		/// Updates a Role's positions. \brief Updates a Role's positions.
 		/// \param dataPackage A ModifyGuildRolePositionsData structure.
-		/// \returns A vector containing Roles.
+		/// \returns A CoRoutine containing a vector<Role>.
 		static CoRoutine<vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// Updates a given Role's properties. \brief Updates a given Role's properties.
@@ -160,12 +160,12 @@ namespace DiscordCoreAPI {
 
 		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
 		/// \param dataPackage A GetGuildMemberRolesData structure.
-		/// \returns A vector of Roles.
+		/// \returns A CoRoutine containing a vector<Role>.
 		static CoRoutine<vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
-		/// \returns A Role.
+		/// \returns A CoRoutine containing a Role.
 		static CoRoutine<Role> getRoleAsync(GetRoleData dataPackage);
 
 		/// Collects a given Role from the library's cache. \brief Collects a given Role from the library's cache.

@@ -134,11 +134,11 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ApplicationCommands {
     public:
         /// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.
-        /// \returns A CoRoutine containing a vector of ApplicationCommands.
+        /// \returns A CoRoutine containing a vector<ApplicationCommand>.
         static CoRoutine<vector<ApplicationCommand>> getGlobalApplicationCommandsAsync();
 
         /// Create a global ApplicationCommand for this bot. \brief Create a global ApplicationCommand for this bot.
-        /// \param dataPackage A CreateGlobalApplicationCommandData  structure.
+        /// \param dataPackage A CreateGlobalApplicationCommandData structure.
         /// \returns A CoRoutine containing an ApplicationCommand.
         static CoRoutine<ApplicationCommand> createGlobalApplicationCommandAsync(CreateGlobalApplicationCommandData dataPackage);
 
@@ -148,23 +148,23 @@ namespace DiscordCoreAPI {
         static CoRoutine<ApplicationCommand> getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage);
 
         /// Edit a global ApplicationCommand for this bot. \brief Edit a global ApplicationCommand for this bot.
-        /// \param dataPackage A EditGlobalApplicationCommandData structure.
+        /// \param dataPackage An EditGlobalApplicationCommandData structure.
         /// \returns A CoRoutine containing an ApplicationCommand.
         static CoRoutine<ApplicationCommand> editGlobalApplicationCommandAsync(EditGlobalApplicationCommandData dataPackage);
 
         /// Delete a global ApplicationCommand for this bot. \brief Delete a global ApplicationCommand for this bot.
         /// \param dataPackage A DeleteGlobalApplicationCommandData structure.
-        /// \returns void
+        /// \returns A CoRoutine containing void.
         static CoRoutine<void> deleteGlobalApplicationCommandAsync(DeleteGlobalApplicationCommandData dataPackage);
 
         /// Bulk overwrites a collection of global ApplicationCommands. \brief Bulk overwrites a collection of global ApplicationCommands.
         /// \param dataPackage A BulkOverwriteGlobalApplicationCommandsData structure.
-        /// \returns A CoRoutine containing a vector of ApplicationCommand.
+        /// \returns A CoRoutine containing a vector<ApplicationCommand>.
         static CoRoutine<vector<ApplicationCommand>> bulkOverwriteGlobalApplicationCommandsAsync(BulkOverwriteGlobalApplicationCommandsData dataPackage);
 
         /// Get all of the Guild ApplicationCommands for a single Guild for this bot. \brief Get all of the Guild ApplicationCommands for a single Guild for this bot.
         /// \param dataPackage A GetGuildApplicationCommandsData structure.
-        /// \returns A CoRoutine containing a vector of ApplicationCommand.
+        /// \returns A CoRoutine containing a vector<ApplicationCommand>.
         static CoRoutine<vector<ApplicationCommand>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage);
 
         /// Create a Guild ApplicationCommand for a single server for this bot. \brief Create a Guild ApplicationCommand for a single server for this bot.
@@ -178,38 +178,38 @@ namespace DiscordCoreAPI {
         static CoRoutine<ApplicationCommand> getGuildApplicationCommandAsync(GetGuildApplicationCommandData dataPackage);
 
         /// Edit a single Guild ApplicationCommand for a single server for this bot. \brief Edit a single Guild ApplicationCommand for a single server for this bot.
-        /// \param dataPackage A EditGuildApplicationCommandData structure.
+        /// \param dataPackage An EditGuildApplicationCommandData structure.
         /// \returns A CoRoutine containing an ApplicationCommand.
         static CoRoutine<ApplicationCommand> editGuildApplicationCommandAsync(EditGuildApplicationCommandData dataPackage);
 
         /// Delete a single Guild ApplicationCommand for a single server for this bot. \brief Delete a single Guild ApplicationCommand for a single server for this bot.
         /// \param dataPackage A DeleteGuildApplicationCommandData structure.
-        /// \returns void
+        /// \returns A CoRoutine containing void.
         static CoRoutine<void> deleteGuildApplicationCommandAsync(DeleteGuildApplicationCommandData dataPackage);
 
         /// Bulk overwrites some Guild ApplicationCommands for this bot. \brief Bulk overwrites some Guild ApplicationCommands for this bot.
         /// \param dataPackage A BulkOverwriteGuildApplicationCommandsData structure.
-        /// \returns A CoRoutine containing a vector of ApplicationCommand.
+        /// \returns A CoRoutine containing a vector<ApplicationCommand>.
         static CoRoutine<vector<ApplicationCommand>> bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage);
 
         /// Gets Guild ApplicationCommand permissions for a single server on this bot. \brief Gets Guild ApplicationCommand permissions for a single server on this bot.
         /// \param dataPackage A GetGuildApplicationCommandPermissionsData structure.
-        /// \returns A CoRoutine containing a vector of GuildApplicationCommandPermissionsData.
+        /// \returns A CoRoutine containing a vector<GuildApplicationCommandPermissionsData>.
         static CoRoutine<vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(GetGuildApplicationCommandPermissionsData dataPackage);
 
         /// Get ApplicationCommand permissions for a single command on this bot. \brief Get ApplicationCommand permissions for a single command on this bot.
         /// \param dataPackage A GetApplicationCommandPermissionsData structure.
-        /// \returns A GuildApplicationCommandPermissionsData structure.
+        /// \returns A CoRoutine containing a GuildApplicationCommandPermissionsData.
         static CoRoutine<GuildApplicationCommandPermissionsData> getApplicationCommandPermissionsAsync(GetApplicationCommandPermissionsData dataPackage);
 
         /// Edit Guild ApplicationCommand permissions for a server on this bot. \brief Edit Guild ApplicationCommand permissions for a server on this bot.
-        /// \param dataPackage A EditGuildApplicationCommandPermissionsData structure.
-        /// \returns A GuildApplicationCommandPermissionsData structure.
+        /// \param dataPackage An EditGuildApplicationCommandPermissionsData structure.
+        /// \returns A CoRoutine containing a GuildApplicationCommandPermissionsData.
         static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(EditGuildApplicationCommandPermissionsData dataPackage);
 
         /// Batch edit Guild ApplicationCommand permissions for a single server on this bot. \brief Batch edit Guild ApplicationCommand permissions for a single server on this bot.
         /// \param dataPackage A BatchEditGuildApplicationCommandPermissionsData structure.
-        /// \returns A vector of GuildApplicationCommandPermissionsData.
+        /// \returns A CoRoutine containing a vector<GuildApplicationCommandPermissionsData>.
         static CoRoutine<vector<GuildApplicationCommandPermissionsData>> batchEditGuildApplicationCommandPermissionsAsync(BatchEditGuildApplicationCommandPermissionsData dataPackage);
     };
     /**@}*/

@@ -29,19 +29,20 @@ namespace DiscordCoreAPI {
     template<typename timeType>
     class DiscordCoreAPI_Dll StopWatch {
     public:
+
         StopWatch<timeType>(int64_t maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew;
-            this->startTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            this->startTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
         }
 
         int64_t totalTimePassed() {
-            int64_t currentTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            int64_t currentTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
             int64_t elapsedTime = currentTime - this->startTime;
             return elapsedTime;
         }
 
         bool hasTimePassed() {
-            int64_t currentTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            int64_t currentTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
             int64_t elapsedTime = currentTime - this->startTime;
             if (elapsedTime >= this->maxNumberOfMs) {
                 return true;
@@ -50,10 +51,13 @@ namespace DiscordCoreAPI {
                 return false;
             }
         }
+
         void resetTimer() {
-            this->startTime = chrono::duration_cast<timeType>(chrono::high_resolution_clock::now().time_since_epoch()).count();
+            this->startTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
         }
+
     protected:
+
         int64_t maxNumberOfMs{ 0 };
         int64_t startTime{ 0 };
     };
@@ -203,12 +207,15 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
 
-    typedef string Snowflake;
+    
 
     /**
     * \addtogroup foundation_entities
     * @{
     */
+
+    /// For ids of DiscordEntities. \brief For ids of DiscordEntities.
+    typedef string Snowflake;
 
     /// Base class for all Discord entities. \brief Base class for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
@@ -242,7 +249,7 @@ namespace DiscordCoreAPI {
         virtual ~RoleData() {};
     };
 
-    /// Data structure representing a single user. \brief Data structure representing a single user.
+    /// Data structure representing a single User. \brief Data structure representing a single User.
     struct DiscordCoreAPI_Dll UserData : public DiscordEntity {
         string discriminator{ "" }; ///< The # next to their User name.
         bool mfaEnabled{ false };///< MFA enabled?
@@ -546,18 +553,18 @@ namespace DiscordCoreAPI {
 
     /// Voice data for a given GuildMember. \brief Voice data for a given GuildMember.
     struct DiscordCoreAPI_Dll VoiceData {
-        string requestToSpeakTimestamp{ "" };///< The time at which the user requested to speak.
-        bool selfStream{ false };///< Whether this user is streaming using "Go Live".
-        bool selfVideo{ false };///< Whether this user's camera is enabled.
-        bool selfDeaf{ false };///< Whether this user is locally deafened.
-        bool selfMute{ false };///< Whether this user is locally muted.
-        string channelId{ "" };///< The channel id this user is connected to.
+        string requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
+        bool selfStream{ false };///< Whether this User is streaming using "Go Live".
+        bool selfVideo{ false };///< Whether this User's camera is enabled.
+        bool selfDeaf{ false };///< Whether this User is locally deafened.
+        bool selfMute{ false };///< Whether this User is locally muted.
+        string channelId{ "" };///< The Channel id this User is connected to.
         string sessionId{ "" };///< The session id for this voice state.
-        bool suppress{ false };///< Whether this user is muted by the current user.
+        bool suppress{ false };///< Whether this User is muted by the current User.
         string guildId{ "" };///< The Guild id this voice state is for.
-        string userId{ "" };///< The user id this voice state is for.
-        bool deaf{ false };///< Whether this user is deafened by the server.
-        bool mute{ false };///< Whether this user is muted by the server.
+        string userId{ "" };///< The User id this voice state is for.
+        bool deaf{ false };///< Whether this User is deafened by the server.
+        bool mute{ false };///< Whether this User is muted by the server.
     };
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
@@ -580,19 +587,19 @@ namespace DiscordCoreAPI {
 
     /// Voice state data. \brief Voice state data.
     struct DiscordCoreAPI_Dll VoiceStateData {
-        string requestToSpeakTimestamp{ "" };///< The time at which the user requested to speak.
+        string requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
         GuildMemberData member{};///< The Guild member this voice state is for.
-        bool selfStream{ false };///< Whether this user is streaming using "Go Live".
-        bool selfVideo{ false };///< Whether this user's camera is enabled.
-        bool selfDeaf{ false };///< Whether this user is locally deafened.
-        bool selfMute{ false };///< Whether this user is locally muted.
-        string channelId{ "" };///< The channel id this user is connected to.
+        bool selfStream{ false };///< Whether this User is streaming using "Go Live".
+        bool selfVideo{ false };///< Whether this User's camera is enabled.
+        bool selfDeaf{ false };///< Whether this User is locally deafened.
+        bool selfMute{ false };///< Whether this User is locally muted.
+        string channelId{ "" };///< The Channel id this User is connected to.
         string sessionId{ "" };///< The session id for this voice state.
-        bool suppress{ false };///< Whether this user is muted by the current user.
+        bool suppress{ false };///< Whether this User is muted by the current User.
         string guildId{ "" };///< The Guild id this voice state is for.
-        string userId{ "" };///< The user id this voice state is for.
-        bool deaf{ false };///< Whether this user is deafened by the server.
-        bool mute{ false };///< Whether this user is muted by the server.
+        string userId{ "" };///< The User id this voice state is for.
+        bool deaf{ false };///< Whether this User is deafened by the server.
+        bool mute{ false };///< Whether this User is muted by the server.
         operator VoiceData() {
             VoiceData newData{};
             newData.requestToSpeakTimestamp = this->requestToSpeakTimestamp;
@@ -705,7 +712,7 @@ namespace DiscordCoreAPI {
     /// Structure representing Voice Region Data. \brief Structure representing Voice Region Data.
     struct DiscordCoreAPI_Dll VoiceRegionData {
         bool deprecated{ false };///< Whether this is a deprecated voice region(avoid switching to these).
-        bool optimal{ false };///< True for a single server that is closest to the current user's client.
+        bool optimal{ false };///< True for a single server that is closest to the current User's client.
         bool custom{ false };///< Whether this is a custom voice region(used for events / etc).
         string name{ "" };///< Name of the region.
         string id{ "" };///< Unique ID for the region.
@@ -773,11 +780,11 @@ namespace DiscordCoreAPI {
     };
 
     /// Authorization info structure. \brief Authorization info structure.
-    struct AuthorizationInfoData {
+    struct DiscordCoreAPI_Dll AuthorizationInfoData {
         ApplicationData application{};///< Partial application object the current application.
-        vector<string> scopes{};///< Array of strings - the scopes the user has authorized the application for.
+        vector<string> scopes{};///< Array of strings - the scopes the User has authorized the application for.
         string expires{ "" };///< When the access token expires.
-        UserData user{};/// The user who has authorized, if the user has authorized with the identify scope.
+        UserData user{};/// The User who has authorized, if the User has authorized with the identify scope.
     };
 
     /// Account data. \brief Account data.
@@ -788,7 +795,7 @@ namespace DiscordCoreAPI {
 
     /// Guild Widget Data. \brief Guild Widget Data.
     struct DiscordCoreAPI_Dll GuildWidgetData {
-        string channelId{ "" };///< The widget channel id.
+        string channelId{ "" };///< The widget Channel id.
         bool enabled{ false };///< Whether the widget is enabled.
     };
 
@@ -1048,7 +1055,7 @@ namespace DiscordCoreAPI {
         bool discoverableDisabled{ false }; ///< Is it discoverable?
         string channelId{ "" }; ///< The Channel's id.
         string guildId{ "" };   ///< The Guild id for which the Channel exists in.
-        string topic{ "" }; ///< The topic of the stage instance.
+        string topic{ "" }; ///< The topic of the StageInstance.
 
         virtual ~StageInstanceData() {}
     };
@@ -1061,17 +1068,17 @@ namespace DiscordCoreAPI {
     /// Data representing a single Sticker. \brief Data representing a single Sticker.
     struct DiscordCoreAPI_Dll StickerData : public DiscordEntity {
         StickerFormatType formatType{}; ///< Format type.
-        string description{ "" };   ///< Description of the sticker.
+        string description{ "" };   ///< Description of the Sticker.
         bool available{ false };    ///< Is it available for use?
         int32_t nsfwLevel{ 0 }; ///< NSFW warning level.
         int32_t sortValue{ 0 };///< Where in the stack of stickers it resides.
-        string guildId{ "" };   ///< The Guild id for which the sticker exists in.
-        string packId{ "" };    ///< Pack id of the sticker.    
-        string asset{ "" }; ///< Asset value for the sticker.
-        StickerType type{}; ///< The type of sticker.
-        string name{ "" }; ///< The sticker's name.
-        string tags{ "" };  ///< Tags for the sticker to use.
-        UserData user{};    ///< The user that uploaded the Guild sticker.
+        string guildId{ "" };   ///< The Guild id for which the Sticker exists in.
+        string packId{ "" };    ///< Pack id of the Sticker.    
+        string asset{ "" }; ///< Asset value for the Sticker.
+        StickerType type{}; ///< The type of Sticker.
+        string name{ "" }; ///< The Sticker's name.
+        string tags{ "" };  ///< Tags for the Sticker to use.
+        UserData user{};    ///< The User that uploaded the Guild Sticker.
 
         virtual ~StickerData() {};
     };
@@ -1194,11 +1201,11 @@ namespace DiscordCoreAPI {
         string scheduledEndTime{ "" };///< The time the scheduled event will end, required if entity_type is EXTERNAL.
         string description{ "" };///< The description of the scheduled event(1 - 1000 characters).
         uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
-        string channelId{ "" };///< The channel id in which the scheduled event will be hosted, or null if scheduled entity type is EXTERNAL.
-        string creatorId{ "" };///< The id of the user that created the scheduled event *.
+        string channelId{ "" };///< The Channel id in which the scheduled event will be hosted, or null if scheduled entity type is EXTERNAL.
+        string creatorId{ "" };///< The id of the User that created the scheduled event *.
         string entityId{ "" };///< The id of an entity associated with a Guild scheduled event.
         string guildId{ "" };///< The Guild id which the scheduled event belongs to.
-        UserData creator{};///< The user that created the scheduled event.
+        UserData creator{};///< The User that created the scheduled event.
         string name{ "" };///< The name of the scheduled event(1 - 100 characters).
 
         virtual ~GuildScheduledEventData() {};
@@ -1206,8 +1213,8 @@ namespace DiscordCoreAPI {
 
     /// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
     struct DiscordCoreAPI_Dll GuildScheduledEventUserData {
-        string guildScheduledEventId{ "" };///< The scheduled event id which the user subscribed to/
-        GuildMemberData member{};///< Guild member data for this user for the Guild which this event belongs to, if any.
+        string guildScheduledEventId{ "" };///< The scheduled event id which the User subscribed to/
+        GuildMemberData member{};///< Guild member data for this User for the Guild which this event belongs to, if any.
         UserData user{};///< User which subscribed to an event.
     };    
 
@@ -1239,10 +1246,10 @@ namespace DiscordCoreAPI {
         string sourceGuildId{ "" };///< The ID of the Guild this template is based on.
         string description{ "" };///< The description for the template.
         uint32_t usageCount{ 0 };///< Number of times this template has been used.
-        string creatorId{ "" };///< The ID of the user who created the template.
+        string creatorId{ "" };///< The ID of the User who created the template.
         string createdAt{ "" };///< When this template was created.
         string updatedAt{ "" };///< When this template was last synced to the source Guild.
-        UserData creator{};///< The user who created the template.
+        UserData creator{};///< The User who created the template.
         bool isDirty{ false };///< Whether the template has unsynced changes.
         string code{ "" };///< The template code(unique ID).
         string name{ "" };///< Template name.
@@ -1263,17 +1270,17 @@ namespace DiscordCoreAPI {
 
     /// WebHook data. \brief WebHook data.
     struct DiscordCoreAPI_Dll WebHookData : public DiscordEntity {
-        ChannelData sourceChannel{};///< Channel for which the webhook was issued.
+        ChannelData sourceChannel{};///< Channel for which the WebHook was issued.
         string applicationId{ "" };///< Application id.
         GuildData sourceGuild{};///< Source Guild id.
-        string channelId{ "" };///< Channel id for which the webhook was issued.
-        WebHookType type{ 0 };///< Type of webhook.
-        string guildId{ "" };///< Guild id for which the webhook was issued.
-        string avatar{ "" };///< Avatar of the webhook.
-        string token{ "" };///< Token of the webhook.
-        string name{ "" };///< Name of the webhook.
-        string url{ "" };///< Url of the webhook.
-        UserData user{};///< User which create the webhook.
+        string channelId{ "" };///< Channel id for which the WebHook was issued.
+        WebHookType type{ 0 };///< Type of WebHook.
+        string guildId{ "" };///< Guild id for which the WebHook was issued.
+        string avatar{ "" };///< Avatar of the WebHook.
+        string token{ "" };///< Token of the WebHook.
+        string name{ "" };///< Name of the WebHook.
+        string url{ "" };///< Url of the WebHook.
+        UserData user{};///< User which create the WebHook.
 
         virtual ~WebHookData() {};
     };
@@ -1464,7 +1471,7 @@ namespace DiscordCoreAPI {
     enum class InteractionCallbackType {
         Pong = 1,///< Pong.
         ChannelMessageWithSource = 4,///< Channel Message with source.
-        DeferredChannelMessageWithSource = 5,///< Deferred channel Message with source.
+        DeferredChannelMessageWithSource = 5,///< Deferred Channel Message with source.
         DeferredUpdateMessage = 6,///< Deferred update Message.
         UpdateMessage = 7///< Update Message.
     };
@@ -1595,10 +1602,10 @@ namespace DiscordCoreAPI {
         LOTTIE = 3///< Lottie.
     };
 
-    /// Message sticker item data. \brief Message sticker item data.
+    /// Message Sticker item data. \brief Message Sticker item data.
     struct DiscordCoreAPI_Dll StickerItemData : public DiscordEntity {
-        StickerItemType formatType{}; ///< Message sticker item type.
-        string name{ "" }; ///< The name of the sticker.
+        StickerItemType formatType{}; ///< Message Sticker item type.
+        string name{ "" }; ///< The name of the Sticker.
 
         virtual ~StickerItemData() {}
     };
@@ -1607,12 +1614,12 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
         vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
         MessageReferenceData messageReference{};///< Message reference data.
-        vector<StickerItemData> stickerItems{};///< Array of Message sticker item data.
+        vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
         vector<AttachmentData> attachments{};///< Array of attachment data.
         MessageInteractionData interaction{};///< Message Interaction data.
         vector<ActionRowData> components{};///< Array of action row data.
         vector<ReactionData> reactions{};//< Array of reaction data.
-        vector<StickerData> stickers{};///< Array of Message sticker data.
+        vector<StickerData> stickers{};///< Array of Message Sticker data.
         MessageActivityData activity{};///< Message activity data.
         ApplicationData application{};///< Application data.
         vector<string> mentionRoles{};///< Vector of "mention roles" ids.
@@ -1663,13 +1670,13 @@ namespace DiscordCoreAPI {
 
     /// Represents a Sticker pack. \brief Represents a Sticker pack.
     struct DiscordCoreAPI_Dll StickerPackData {
-        vector<StickerData> stickers{};///< Array of sticker objects	the stickers in the pack.
-        string coverStickerId{ "" };///< Id of a sticker in the pack which is shown as the pack's icon.
-        string bannerAssetId{ "" };///< Id of the sticker pack's banner image.
-        string description{ "" };///< Description of the sticker pack.
+        vector<StickerData> stickers{};///< Array of Sticker objects	the stickers in the pack.
+        string coverStickerId{ "" };///< Id of a Sticker in the pack which is shown as the pack's icon.
+        string bannerAssetId{ "" };///< Id of the Sticker pack's banner image.
+        string description{ "" };///< Description of the Sticker pack.
         string skuId{ "" };///< Id of the pack's SKU.
-        string name{ "" };///< Name of the sticker pack.
-        string Id{ "" };///< Id of the sticker pack.
+        string name{ "" };///< Name of the Sticker pack.
+        string Id{ "" };///< Id of the Sticker pack.
     };
     
     /// Connection visibility types. \brief Connection visibility types.
@@ -1679,7 +1686,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Represents a single User Connection. \brief Represents a single User Connection.
-    struct ConnectionData {
+    struct DiscordCoreAPI_Dll ConnectionData {
         vector<IntegrationData> integrations{};///< An array of partial server integrations.
         ConnectionVisibilityTypes visibility{};///< Visibility of this connection.
         bool showActivity{ false };///< Whether activities related to this connection will be shown in presence updates.
@@ -1732,7 +1739,7 @@ namespace DiscordCoreAPI {
         int32_t version{ 0 };///< The Interaction version.
         string guildId{ "" };///< The Guild id of the Guild it was sent in.
         string token{ "" };///< The Interaction token.
-        UserData user{};///< The user data of the sender of the Interaction.
+        UserData user{};///< The User data of the sender of the Interaction.
         json rawData{};///< The Interaction's raw data.
         InteractionData() {};
         InteractionData(string requesterId) {
@@ -1743,15 +1750,15 @@ namespace DiscordCoreAPI {
     };
 
     /// Data from the SessionStart info. \brief Data from the SessionStart info.
-    struct SessionStartData {
+    struct DiscordCoreAPI_Dll SessionStartData {
         uint32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
         uint32_t resetAfter{ 0 };///< The number of milliseconds after which the limit resets.
-        uint32_t remaining{ 0 };///< The remaining number of session starts the current user is allowed.
-        uint32_t total{ 0 };///< The total number of session starts the current user is allowed.
+        uint32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
+        uint32_t total{ 0 };///< The total number of session starts the current User is allowed.
     };
 
     /// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
-    struct GatewayBotData {
+    struct DiscordCoreAPI_Dll GatewayBotData {
         SessionStartData sessionStartLimit{};///< Information on the current session start limit.
         uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
         string url{ "" };///< The WSS URL that can be used for connecting to the gateway.       
@@ -2391,8 +2398,8 @@ namespace DiscordCoreAPI {
         friend class SongAPI;
 
         SongType type{ SongType::SoundCloud };///< The type of song.
-        string addedByUserName{ "" };///< The user name of the individual who added this Song to the playlist.
-        string addedByUserId{ "" };///< The user id of the individual who added this Song to the playlist.
+        string addedByUserName{ "" };///< The User name of the individual who added this Song to the playlist.
+        string addedByUserId{ "" };///< The User id of the individual who added this Song to the playlist.
         string thumbnailURL{ "" };///< The Url of the thumbnail image of this Song.
         string description{ "" };///< A description of the Song.
         string songTitle{ "" };///< The title of the Song.
@@ -2709,15 +2716,15 @@ namespace DiscordCoreAPI {
         /// \returns A string containing all of the possible Permissions.
         static string getAllPermissions();
 
-        /// Returns a string containing all of a given user's Permissions for a given channel. \brief Returns a string containing all of a given user's Permissions for a given channel.
+        /// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
         /// \param guildMember The GuildMember who's Permissions to analyze.
-        /// \param channel The channel withint which to check for Permissions.
-        /// \returns A string containing the final Permission's value for a given channel.
+        /// \param Channel The Channel withint which to check for Permissions.
+        /// \returns A string containing the final Permission's value for a given Channel.
         static string getAllOfMyPerrmissions(GuildMember guildMember, ChannelData channel);
 
-        /// Checks for a given Permission in a chosen channel, for a specific user. \brief Checks for a given Permission in a chosen channel, for a specific user.
+        /// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
         /// \param guildMember The GuildMember who to check the Permissions of.
-        /// \param channel The Channel within which to check for the Permission's presence.
+        /// \param Channel The Channel within which to check for the Permission's presence.
         /// \param permission A Permission to check the current Channel for.
         /// \returns A bool suggesting the presence of the chosen Permission.
         static bool checkForPermission(GuildMember guildMember, ChannelData channel, Permissions permission);

@@ -150,8 +150,8 @@ namespace DiscordCoreAPI {
 
 		/// Get a list of users that reacted with this emoji. Returns an array of user objects on success. \brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
 		/// \param dataPackage A GetReactionsData structure.
-		/// \returns A CoRoutine containing a vector of Users.
-		static CoRoutine<vector<DiscordCoreAPI::User>> getReactionsAsync(GetReactionsData dataPackage);
+		/// \returns A CoRoutine containing a vector<User>.
+		static CoRoutine<vector<User>> getReactionsAsync(GetReactionsData dataPackage);
 
 		/// Deletes all of the Reactions from a given Message. \brief Deletes all of the Reactions from a given Message.
 		/// \param dataPackage A DeleteAllReactionsData structure.
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects a list of Guild Emoji from a chosen Guild. \brief Collects a list of Guild Emoji from a chosen Guild.
 		/// \param dataPackage A GetEmojiListData structure.
-		/// \returns A CoRoutine containing a vector of EmojiData.
+		/// \returns A CoRoutine containing a vector<EmojiData>.
 		static CoRoutine<vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
 
 		/// Collects a single Guild Emoji from a chosen Guild. \brief Collects a single Guild Emoji from a chosen Guild.
