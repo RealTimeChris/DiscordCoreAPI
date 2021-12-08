@@ -236,7 +236,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single Role. \brief Data structure representing a single Role.
-    struct DiscordCoreAPI_Dll RoleData : public DiscordEntity {
+    class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
+    public:
         bool mentionable{ false }; ///< Is ths Role mentionable?
         string permissions{ "" }; ///< The Role's base Guild Permissions.
         int32_t position{ 0 }; ///< Its position amongst the rest of the Guild's roles.
@@ -250,7 +251,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single User. \brief Data structure representing a single User.
-    struct DiscordCoreAPI_Dll UserData : public DiscordEntity {
+    class DiscordCoreAPI_Dll UserData : public DiscordEntity {
+    public:
         string discriminator{ "" }; ///< The # next to their User name.
         bool mfaEnabled{ false };///< MFA enabled?
         int32_t premiumType{ 0 };///< Their premium nitro status.
@@ -269,7 +271,8 @@ namespace DiscordCoreAPI {
     };    
 
     /// Attachment data. \brief Attachment data.
-    struct DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
+    class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
+    public:
         string contentType{ "" }; ///< Type of content for the attachment.
         string filename{ "" };///< The file name of the attachment.
         string proxyUrl{ "" };///< The proxy url for the attachment.
@@ -351,7 +354,9 @@ namespace DiscordCoreAPI {
     };
 
     /// Embed data. \brief Embed data.
-    struct DiscordCoreAPI_Dll EmbedData {
+    class DiscordCoreAPI_Dll EmbedData {
+    public:
+
         string hexColorValue{ "000000" };///< Hex color value of the embed.
         vector<EmbedFieldData> fields{};///< Array of embed fields.
         EmbedThumbnailData thumbnail{};///< Embed thumbnail data.
@@ -464,7 +469,8 @@ namespace DiscordCoreAPI {
     };
 
     /// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
-    struct DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
+    class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
+    public:
         PermissionOverwritesType type{};   ///< Role or User type.
         string channelId{ "" };///< Channel id for which Channel this overwrite beint64_ts to.
         string allow{ "" };///< Collection of Permissions to allow.
@@ -498,7 +504,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data for a single member of a Thread. \brief Data for a single member of a Thread.
-    struct DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
+    public:
         string joinTimestamp{ "" }; ///< The time at which the member joined this Thread.
         string userId{ "" };    ///< The User's id.
         int32_t flags{ 0 }; ///< Flags.
@@ -522,7 +529,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single Channel. \brief Data structure representing a single Channel.
-    struct DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
+    public:
         map<string, OverWriteData> permissionOverwrites{}; ///< Permission overwrites for the given Channel.
         int32_t defaultAutoArchiveDuration{ 0 };
         ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a Thread.
@@ -568,7 +576,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-    struct DiscordCoreAPI_Dll GuildMemberData : DiscordEntity {
+    class DiscordCoreAPI_Dll GuildMemberData : DiscordEntity {
+    public:
         string premiumSince{ "" };///< If applicable, when they first boosted the server.
         string permissions{ "" };///< Their base-level Permissions in the Guild.
         string userMention{ "" };///< What to enter to get them mentioned in a Message.
@@ -649,7 +658,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
-    struct DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity {
+    public:
         ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role }; ///< The type of Permission.
         bool permission{ false }; ///< Whether the Permission is active or not.
 
@@ -657,7 +667,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
-    struct DiscordCoreAPI_Dll GuildApplicationCommandPermissionsData : public DiscordEntity {
+    class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsData : public DiscordEntity {
+    public:
         vector<ApplicationCommandPermissionData> permissions{};///< The Permissions.
         string applicationId{ "" };///< The application's id.
         string guildId{ "" };///< The Guild's id.
@@ -666,7 +677,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single emoji. \brief Data structure representing a single emoji.
-    struct DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
+    class DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
+    public:
         bool requireColons{ false };///< Require colons to render it?
         vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
         bool available{ true };///< Is it available to be used?
@@ -696,7 +708,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single reaction. \brief /// Data structure representing a single reaction.
-    struct DiscordCoreAPI_Dll ReactionData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ReactionData : public DiscordEntity {
+    public:
         GuildMemberData member{}; ///< The GuildMember who placed the reaction.
         string channelId{ "" }; ///< The id of the Channel where it was placed.
         string messageId{ "" }; ///< The id of the Message upon which it was placed.
@@ -748,7 +761,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Team object data. \brief Team object data.
-    struct DiscordCoreAPI_Dll TeamObjectData : public DiscordEntity {
+    class DiscordCoreAPI_Dll TeamObjectData : public DiscordEntity {
+    public:
         vector<TeamMembersObjectData> members{};///< Array of team members object data.
         string ownerUserId{ "" };///< User id of the team owner.
         string icon{ "" };///<Icon for the team.
@@ -757,7 +771,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Application data. \brief Application data.
-    struct DiscordCoreAPI_Dll ApplicationData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ApplicationData : public DiscordEntity {
+    public:
         bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
         string termsOfServiceUrl{ "" };///< Terms of service URL.
         string privacyPolicyUrl{ "" };///< Privacy policy URL.
@@ -788,7 +803,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Account data. \brief Account data.
-    struct DiscordCoreAPI_Dll AccountData : public DiscordEntity {
+    class DiscordCoreAPI_Dll AccountData : public DiscordEntity {
+    public:
         string name{ "" };///< Name of the account.
         virtual ~AccountData() {}
     };
@@ -814,7 +830,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Integration data. \brief Integration data.
-    struct DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
+    class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
+    public:
         int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
         int32_t subscriberCount{ 0 };///< Number of current subscribers.
         ApplicationData application{};///<Application data.
@@ -873,7 +890,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Audit log entry info data \brief Audit log entry info data.
-    struct DiscordCoreAPI_Dll AuditLogEntryInfoData : public DiscordEntity {
+    class DiscordCoreAPI_Dll AuditLogEntryInfoData : public DiscordEntity {
+    public:
         string deleteMemberDays{ "" };///<Number of days for which the member's Messages were deleted.
         string membersRemoved{ "" };///< Number of members that were removed upon a prune.
         string channelId{ "" };///< Channel Id.
@@ -896,13 +914,14 @@ namespace DiscordCoreAPI {
         string key{ "" };///< The key of the audit log change.
     };
 
-    /// Guild prune count data.
+    /// Guild prune count data. \brief Guild prune count data.
     struct DiscordCoreAPI_Dll GuildPruneCountData {
         int32_t count{ 0 };
     };
 
     /// Audit log entry data. \brief Audit log entry data.
-    struct DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
+    class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
+    public:
         vector<AuditLogChangeData> changes{};///< Array of audit log change data.
         TimeStamp createdTimeStamp{ "" };///< Time at which this entry was created.
         AuditLogEntryInfoData options{};///< Audit log entry info data.
@@ -915,7 +934,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Party data. \brief Party data.
-    struct DiscordCoreAPI_Dll PartyData : public DiscordEntity {
+    class DiscordCoreAPI_Dll PartyData : public DiscordEntity {
+    public:
         vector<int32_t> size{ 0, 0 };///< The size of the party.
 
         virtual ~PartyData() {}
@@ -1050,7 +1070,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Stage instance data. \brief Stage instance data.
-    struct DiscordCoreAPI_Dll StageInstanceData : public DiscordEntity {
+    class DiscordCoreAPI_Dll StageInstanceData : public DiscordEntity {
+    public:
         StageInstancePrivacyLevel privacyLevel{ 0 };  ///< Privacy level of the Channel.
         bool discoverableDisabled{ false }; ///< Is it discoverable?
         string channelId{ "" }; ///< The Channel's id.
@@ -1060,13 +1081,15 @@ namespace DiscordCoreAPI {
         virtual ~StageInstanceData() {}
     };
 
+    /// Sticker types. \brief Sticker types.
     enum class StickerType {
         STANDARD = 1,///< Standard.
         GUILD = 2///< Guild.
     };
 
     /// Data representing a single Sticker. \brief Data representing a single Sticker.
-    struct DiscordCoreAPI_Dll StickerData : public DiscordEntity {
+    class DiscordCoreAPI_Dll StickerData : public DiscordEntity {
+    public:
         StickerFormatType formatType{}; ///< Format type.
         string description{ "" };   ///< Description of the Sticker.
         bool available{ false };    ///< Is it available for use?
@@ -1107,7 +1130,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-    struct DiscordCoreAPI_Dll GuildData : public DiscordEntity {
+    class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
+    public:
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
         map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
@@ -1192,7 +1216,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data representing a Guild Scheduled Event. \brief Data representing a Guild Scheduled Event.
-    struct DiscordCoreAPI_Dll GuildScheduledEventData : public DiscordEntity {
+    class DiscordCoreAPI_Dll GuildScheduledEventData : public DiscordEntity {
+    public:
         GuildScheduledEventPrivacyLevel privacyLevel{};///< The privacy level of the scheduled event.
         GuildScheduledEventMetadata entityMetadata{};///< Additional metadata for the Guild scheduled event.
         GuildScheduledEventEntityType entityType{};///< The type of the scheduled event.
@@ -1269,7 +1294,8 @@ namespace DiscordCoreAPI {
     };
 
     /// WebHook data. \brief WebHook data.
-    struct DiscordCoreAPI_Dll WebHookData : public DiscordEntity {
+    class DiscordCoreAPI_Dll WebHookData : public DiscordEntity {
+    public:
         ChannelData sourceChannel{};///< Channel for which the WebHook was issued.
         string applicationId{ "" };///< Application id.
         GuildData sourceGuild{};///< Source Guild id.
@@ -1493,7 +1519,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
-    struct DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
+    public:
         vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
         bool defaultPermission{ false };///< Whether or not the default Permission in the Guild is to have access to this command or not.
         ApplicationCommandType type{};///< The type of ApplicationCommand.
@@ -1514,7 +1541,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Channel mention data. \brief Channel mention data.
-    struct DiscordCoreAPI_Dll ChannelMentionData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ChannelMentionData : public DiscordEntity {
+    public:
         string guildId{ "" }; ///< The id of the Guild where it took place.
         string name{ "" }; ///< The name of the Channel that was mentioned.
         ChannelType type{}; ///< The type of Channel that was mentioned.
@@ -1538,7 +1566,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Represents a Thread-members-update. \brief Represents a Thread-members-update.
-    struct DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity {
+    public:
         vector<ThreadMemberData> addedMembers{}; ///< New members added to the Thread.
         vector<string> removedMemberIds{}; ///< Members who have been removed.
         string guildId{ "" };   ///< Guild id of the Thread.
@@ -1547,8 +1576,9 @@ namespace DiscordCoreAPI {
         virtual ~ThreadMembersUpdateData() {}
     };
 
-    /// Message Interaction data.
-    struct DiscordCoreAPI_Dll MessageInteractionData : public DiscordEntity {
+    /// Message Interaction data. \brief Message Interaction data.
+    class DiscordCoreAPI_Dll MessageInteractionData : public DiscordEntity {
+    public:
         InteractionType type{};
         string name{ "" };
         UserData user{};
@@ -1603,7 +1633,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Message Sticker item data. \brief Message Sticker item data.
-    struct DiscordCoreAPI_Dll StickerItemData : public DiscordEntity {
+    class DiscordCoreAPI_Dll StickerItemData : public DiscordEntity {
+    public:
         StickerItemType formatType{}; ///< Message Sticker item type.
         string name{ "" }; ///< The name of the Sticker.
 
@@ -1611,7 +1642,8 @@ namespace DiscordCoreAPI {
     };
 
     /// The core of a Message's data structure. \brief The core of a Message's data structure.
-    struct DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
+    class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
+    public:
         vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
         MessageReferenceData messageReference{};///< Message reference data.
         vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
@@ -1648,14 +1680,15 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single Message. \brief Data structure representing a single Message.
-    struct DiscordCoreAPI_Dll MessageData : public MessageDataOld{
+    class DiscordCoreAPI_Dll MessageData : public MessageDataOld{
+    public:
         MessageDataOld referencedMessage{}; ///< The referenced Message, to reply to.
         string requesterId{ "" }; ///< Requester's id, of who sent this Message.
 
         virtual ~MessageData() {};
     };
 
-    /// Resolved data.
+    /// Resolved data. \brief Resolved data.
     struct DiscordCoreAPI_Dll ResolvedData {
         map<string, GuildMemberData> members{}; ///< Map full of GuildMemeberData.
         map<string, MessageData> messages{};///< Map full of MessageData.
@@ -1710,7 +1743,8 @@ namespace DiscordCoreAPI {
     };
 
     /// ApplicationCommand Interaction data.
-    struct DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
+    class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
+    public:
         vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
         ApplicationCommandType type{}; ///< The type of ApplicationCommand.
         ResolvedData resolved{};///< Resolved data.
@@ -1728,7 +1762,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Interaction data. \brief Interaction data.
-    struct DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
+    class DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
+    public:
         InteractionDataData data{};///< The Interaction's data.
         string applicationId{ "" };///< The application's id.
         GuildMemberData member{};///< The data of the Guild member who sent the Interaction, if applicable.
@@ -1925,7 +1960,7 @@ namespace DiscordCoreAPI {
         friend struct RecurseThroughMessagePagesData;
         friend struct OnInteractionCreationData;
         friend class RespondToInputEventData;
-        friend class BaseFunctionArguments;
+        friend struct BaseFunctionArguments;
         friend class DiscordCoreClient;
         friend struct CommandData;
         friend class EventHandler;
@@ -2194,18 +2229,18 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll RespondToInputEventData {
     public:
 
-        friend struct CreateEphemeralInteractionResponseData;
-        friend struct CreateDeferredInteractionResponseData;
-        friend struct CreateEphemeralFollowUpMessageData;
-        friend struct CreateInteractionResponseData;
-        friend struct EditInteractionResponseData;
-        friend struct DeferComponentResponseData;
-        friend struct CreateFollowUpMessageData;
-        friend struct EditFollowUpMessageData;
-        friend struct CreateMessageData;
-        friend struct EditMessageData;
+        friend class CreateEphemeralInteractionResponseData;
+        friend class CreateDeferredInteractionResponseData;
+        friend class CreateEphemeralFollowUpMessageData;
+        friend class CreateInteractionResponseData;
+        friend class EditInteractionResponseData;
+        friend class DeferComponentResponseData;
+        friend class CreateFollowUpMessageData;
+        friend class EditFollowUpMessageData;
+        friend class CreateMessageData;
+        friend class EditMessageData;
         friend class InputEvents;
-        friend struct SendDMData;
+        friend class SendDMData;
 
         InputEventResponseType type{}; ///< The type of response to make.
 
@@ -2603,7 +2638,8 @@ namespace DiscordCoreAPI {
         string guildId{ "" };
     };
 
-    struct DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordEntity {
+    class DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordEntity {
+    public:
         vector<ApplicationCommandPermissionData> permissions{};
         string applicationId{ "" };
         string guildId{ "" };
@@ -2617,7 +2653,6 @@ namespace DiscordCoreAPI {
     };
     
     struct DiscordCoreAPI_Dll DBPlaylist {
-    public:
         operator Playlist();
         bool isLoopSongEnabled{ false };///< Is looping of Songs currently enabled?
         bool isLoopAllEnabled{ false };///< Is looping of the entire Playlist currently enabled?

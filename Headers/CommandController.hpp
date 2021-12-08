@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
-	class DiscordCoreAPI_Dll BaseFunctionArguments {
+	struct DiscordCoreAPI_Dll BaseFunctionArguments {
 	public:
 
 		vector<string> argumentsArray{};///< A vector of string arguments.

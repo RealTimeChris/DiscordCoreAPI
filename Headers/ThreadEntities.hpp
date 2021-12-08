@@ -98,20 +98,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a single Thread. \brief Represents a single Thread.
-	class Thread :public ChannelData {
+	class Thread : public ChannelData {
 	public:
-		friend struct OnThreadCreationData;
-		friend struct OnThreadDeletionData;
-		friend struct OnThreadUpdateData;
-		friend class Threads;
 
 		Thread();
 
-		virtual ~Thread();
-
-	protected:
-
 		Thread(ChannelData dataNew);
+
+		virtual ~Thread();
 	};
 
 	/**@}*/

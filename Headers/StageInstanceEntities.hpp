@@ -41,21 +41,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
 	public:
 
-		friend class DiscordCoreInternal::HttpRequestAgent;
-		friend class DiscordCoreInternal::DataParser;
-		template<typename returnValueType>
-		friend class CoRoutine;
-		friend class DiscordCoreClient;
-		friend class StageInstances;
-		friend class Guild;
-
 		StageInstance();
 
-		virtual ~StageInstance() {};
-
-	protected:
-
 		StageInstance(StageInstanceData dataNew);
+
+		virtual ~StageInstance() {};
 
 	};
 	

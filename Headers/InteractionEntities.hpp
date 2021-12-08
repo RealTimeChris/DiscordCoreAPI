@@ -16,7 +16,9 @@ namespace DiscordCoreAPI {
     * @{
     */
 
-    struct DiscordCoreAPI_Dll InteractionResponse {
+    class DiscordCoreAPI_Dll InteractionResponse {
+    public:
+
         /// Adds a button to the response Message. \brief Adds a button to the response Message.
         /// \param disabled Whether the button is active or not.
         /// \param customId A custom id to give for identifying the button.
@@ -137,9 +139,10 @@ namespace DiscordCoreAPI {
     };
 
     /// Defer component response data. \brief Defer component response data.
-    struct DiscordCoreAPI_Dll DeferComponentResponseData : public InteractionResponse {
+    class DiscordCoreAPI_Dll DeferComponentResponseData : public InteractionResponse {
+    public:
 
-        friend struct CreateInteractionResponseData;
+        friend class CreateInteractionResponseData;
         friend class InputEvents;
 
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
@@ -168,10 +171,10 @@ namespace DiscordCoreAPI {
     };
 
     /// Create ephemeral Interaction response data. \brief Create ephemeral Interaction response data.
-    struct DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
+    class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
     public:
 
-        friend struct CreateInteractionResponseData;
+        friend class CreateInteractionResponseData;
         friend class Interactions;
         friend class InputEvents;
 
@@ -203,7 +206,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Create Interaction response data. \brief Create Interaction response data.
-    struct DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
+    class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
@@ -269,7 +272,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Create deferred Interaction response data. \brief Create deferred Interaction response data.
-    struct DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
+    class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
+    public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
         friend class Interactions;
@@ -312,7 +316,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Edit Interaction response data. \brief Edit Interaction response data.
-    struct DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
+    class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
+    public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
         friend class Interactions;
@@ -363,9 +368,10 @@ namespace DiscordCoreAPI {
     };
 
     /// Create ephemeral follow up Message data. \brief Create ephemeral follow up Message data.
-    struct DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public InteractionResponse {
+    class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public InteractionResponse {
+    public:
 
-        friend struct CreateFollowUpMessageData;
+        friend class CreateFollowUpMessageData;
         friend class Interactions;
         friend class InputEvents;
 
@@ -396,7 +402,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Create follow up Message data. \brief Create follow up Message data.
-    struct DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
+    class DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
+    public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
         friend class Interactions;
@@ -442,7 +449,8 @@ namespace DiscordCoreAPI {
     };
 
     /// Edit follow up Message data. \brief Edit follow up Message data.
-    struct DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
+    class DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
+    public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
         friend class Interactions;
@@ -494,7 +502,7 @@ namespace DiscordCoreAPI {
     };
 
     /// A single Interaction.
-    class DiscordCoreAPI_Dll Interaction : public InteractionData {
+    struct DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
         
         Interaction(InteractionData dataPackage);

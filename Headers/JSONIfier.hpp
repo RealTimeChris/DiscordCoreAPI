@@ -10,23 +10,23 @@
 
 namespace DiscordCoreAPI {
 
-	struct CreateDeferredInteractionResponseData;
+	class CreateDeferredInteractionResponseData;
 	struct EditChannelPermissionOverwritesData;
 	struct StartThreadWithoutMessageData;
-	struct CreateInteractionResponseData;
 	struct CreateGuildScheduledEventData;
 	struct ModifyGuildScheduledEventData;
 	struct StartThreadWithoutMessageData;
+	class CreateInteractionResponseData;
 	struct ModifyGuildWelcomeScreenData;
 	struct ModifyGuildRolePositionsData;
-	struct EditInteractionResponseData;
+	class EditInteractionResponseData;
 	struct StartThreadWithMessageData;
-	struct CreateFollowUpMessageData;
 	struct AddRecipientToGroupDMData;
-	struct EditFollowUpMessageData;
+	class CreateFollowUpMessageData;
 	struct CreateChannelInviteData;
-	struct EditWebHookMessageData;
 	struct DeleteMessagesBulkData;
+	class EditFollowUpMessageData;
+	class EditWebHookMessageData;
 	struct FollowNewsChannelData;
 	struct ModifyGuildMemberData;
 	struct ModifyGuildEmojiData;
@@ -35,14 +35,15 @@ namespace DiscordCoreAPI {
 	struct CreateGuildRoleData;
 	struct BeginGuildPruneData;
 	struct ModifyGuildRoleData;
-	struct ExecuteWebHookData;
 	struct AddGuildMemberData;
 	struct CreateGuildBanData;
-	struct CreateMessageData;
+	class ExecuteWebHookData;
 	struct ModifyChannelData;
+	class CreateMessageData;
 	struct ModifyGuildData;
-	struct EditMessageData;
 	struct CreateGuildData;
+	class EditMessageData;
+	
 
 };
 

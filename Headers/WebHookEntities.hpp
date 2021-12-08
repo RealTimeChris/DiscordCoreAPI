@@ -74,7 +74,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For executing a WebHook. \brief For executing a WebHook.
-	struct DiscordCoreAPI_Dll ExecuteWebHookData {
+	class DiscordCoreAPI_Dll ExecuteWebHookData {
+	public:
 		
 		friend string DiscordCoreInternal::JSONIFY(ExecuteWebHookData dataPackage);
 		friend class WebHooks;
@@ -210,8 +211,9 @@ namespace DiscordCoreAPI {
 		string threadId{ "" };///< The thread that the Message is in.
 	};
 
-	struct DiscordCoreAPI_Dll EditWebHookMessageData {
-
+	class DiscordCoreAPI_Dll EditWebHookMessageData {
+	public:
+		 
 		friend string DiscordCoreInternal::JSONIFY(EditWebHookMessageData dataPackage);
 		friend class WebHooks;
 
@@ -338,7 +340,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single WebHook. \brief A single WebHook.
-	class DiscordCoreAPI_Dll WebHook :public WebHookData {
+	struct DiscordCoreAPI_Dll WebHook : public WebHookData {
 	public:
 		WebHook();
 

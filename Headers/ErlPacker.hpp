@@ -10,7 +10,7 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll ErlPackError : public exception {
+	struct DiscordCoreAPI_Dll ErlPackError : public exception {
 	public:
 		explicit ErlPackError(const string& message) : exception(message.c_str()) {}
 	};
@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 		SMALL_UTF8_ATOM = 119
 	};
 
-	class DiscordCoreAPI_Dll ErlPackBuffer {
+	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
 
 		unique_ptr<vector<uint8_t>> buffer{ make_unique<vector<uint8_t>>() };

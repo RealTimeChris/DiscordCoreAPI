@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Reaction. \brief A single Reaction.
-	class DiscordCoreAPI_Dll Reaction : public ReactionData {
+	class Reaction : public ReactionData {
 	public:
 
 		Reaction();

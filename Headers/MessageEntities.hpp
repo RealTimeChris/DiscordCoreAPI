@@ -32,7 +32,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Create Message data. \brief Create Message data.
-	struct DiscordCoreAPI_Dll CreateMessageData {
+	class DiscordCoreAPI_Dll CreateMessageData {
+	public:
 
 		friend string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
 		friend class InputEvents;
@@ -178,8 +179,8 @@ namespace DiscordCoreAPI {
 		CreateMessageData() {};
 	};
 
-	struct SendDMData : public CreateMessageData {
-
+	class SendDMData : public CreateMessageData {
+	public:
 		friend class InputEvents;
 
 		SendDMData(RespondToInputEventData dataPackage) {
@@ -209,7 +210,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Edit Message data. \brief Edit Message data.
-	struct DiscordCoreAPI_Dll EditMessageData {
+	class DiscordCoreAPI_Dll EditMessageData {
+	public:
 
 		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
 		friend class InputEvents;

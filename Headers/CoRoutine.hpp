@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    class DiscordCoreAPI_Dll InvalidState : public exception {
+    struct DiscordCoreAPI_Dll InvalidState : public exception {
     public:
         explicit InvalidState(const string & message) : exception(message.c_str()) {}
     };

@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 
-	/// For addin a Role to a GuildMember. \brief For addin a Role to a GuildMember.
+	/// For adding a Role to a GuildMember. \brief For addin a Role to a GuildMember.
 	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
 		string guildId{ "" };///< The id of the Guild within which to assign the Role.
 		string userId{ "" };///< The id of the User to whom to assign the Role.
@@ -32,12 +32,12 @@ namespace DiscordCoreAPI {
 		string reason{ "" };///< Reason for removing the GuildMember's Role.
 	};
 
-	/// Get Guild roles data. \brief Get Guild roles data.
+	/// For getting a chosen Guild's Roles. \brief For getting a chosen Guild's Roles.
 	struct DiscordCoreAPI_Dll GetGuildRolesData {
 		string guildId{ "" };///< Guild id for which Guild to get the roles from.
 	};
 
-	/// Create Role data. \brief Create Role data.
+	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild?
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 		vector<RolePositionData> rolePositions;
 	};
 
-	/// Update Role data.
+	/// For updating a Role's options within a chosen Guild. \brief For updating a Role's options within a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		string hexColorValue{ "" };///< A hex-color value between 0x00 and 0xFFFFFF.
 		string permissions{ "0" };///< Base Guild permissions for the Role.
@@ -79,14 +79,14 @@ namespace DiscordCoreAPI {
 		string name{ "" };///< What the name of the Role is going to be.
 	};
 
-	/// Removes a Role from a given Guild.
+	/// For removing a Role from a chosen Guild. \brief For removing a Role from a chosen Guild.
 	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
 		string guildId{ "" };///< The id of the Guild from which to remove the Role.
 		string roleId{ "" };///< The id of the Role to remove.
 		string reason{ "" };///< Reason for removing this Role.
 	};
 
-	/// Get Guild member roles data. \brief Get Guild member roles data.
+	/// For getting a chosen GuildMember's Roles. \brief For getting a chosen GuildMember's Roles.
 	struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
 		GuildMember guildMember{};///< Which Guild member to collect the roles from.
 		string guildId{ "" };///< Which Guild to collect their roles from.
