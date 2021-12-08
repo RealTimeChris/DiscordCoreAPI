@@ -2651,7 +2651,7 @@ namespace DiscordCoreAPI {
             return this->cache.at(valueId);
         }
 
-        /// Checks if an item exists as a chosen item-id. \brief Checks if an item exists as a chosen item-id.
+        /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(string valueId) {
@@ -2718,13 +2718,13 @@ namespace DiscordCoreAPI {
 
         /// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
         /// \param guildMember The GuildMember who's Permissions to analyze.
-        /// \param Channel The Channel withint which to check for Permissions.
+        /// \param channel The Channel withint which to check for Permissions.
         /// \returns A string containing the final Permission's value for a given Channel.
         static string getAllOfMyPerrmissions(GuildMember guildMember, ChannelData channel);
 
         /// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
         /// \param guildMember The GuildMember who to check the Permissions of.
-        /// \param Channel The Channel within which to check for the Permission's presence.
+        /// \param channel The Channel within which to check for the Permission's presence.
         /// \param permission A Permission to check the current Channel for.
         /// \returns A bool suggesting the presence of the chosen Permission.
         static bool checkForPermission(GuildMember guildMember, ChannelData channel, Permissions permission);
