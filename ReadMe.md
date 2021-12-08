@@ -48,6 +48,12 @@
  	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(120).png?raw=true"  width="700">
 </p>
 
+### Message Commands
+----
+<p align="left">
+ 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(109).png?raw=true"  width="700">
+</p>
+
 ### A Unified "Input-Event" System
 ----
 - Both user messages and user interactions are accepted via the `onInputEventCreation` event.
