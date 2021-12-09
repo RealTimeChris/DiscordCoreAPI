@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
+		void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
 			try {
 				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
@@ -76,7 +76,7 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
+		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
 			try {
 				unique_ptr<RateLimitData> rateLimitDataNew = make_unique<RateLimitData>();
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();

@@ -173,98 +173,52 @@ namespace DiscordCoreAPI {
         return;
     }
 
-    class DiscordCoreAPI_Dll TimeStamp : public string{
-    public:
-        string getOldSchoolTimeStamp() {
-            string dayVal{ "00" };
-            string monthVal{ "" };
-            string hourVal{ "" };
-            string minuteVal{ "" };
-            string secondVal{ "00" };
-            string millisecondVal{ "00" };
-            if (this->find(" ") != string::npos) {
-                if (this->substr(this->find_first_of(" ") + 1, 3) == "Jan") {
-                    monthVal = "01";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Feb") {
-                    monthVal = "02";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Mar") {
-                    monthVal = "03";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Apr") {
-                    monthVal = "04";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "May") {
-                    monthVal = "05";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Jun") {
-                    monthVal = "06";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Jul") {
-                    monthVal = "07";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Aug") {
-                    monthVal = "08";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Sep") {
-                    monthVal = "09";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Oct") {
-                    monthVal = "10";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Nov") {
-                    monthVal = "11";
-                }
-                else if (this->substr(this->find_first_of(" ") + 1, 3) == "Dec") {
-                    monthVal = "12";
-                }
-            }
-            if (this->find(":") != string::npos) {
-                hourVal = this->substr(this->find_first_of(":") - 2, 2);
-            }
-            if (this->find_last_of(":") != string::npos) {
-                minuteVal = this->substr(this->find_last_of(":") - 2, 2);
-            }
-            if (this->find_last_of(":") != string::npos) {
-                secondVal = this->substr(this->find_last_of(":") + 1, 2);
-            }
-            if (this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") != string::npos) {
-                dayVal = this->substr(this->find_first_not_of("abcdefghijklmnopqrstuvwxyz ") + 8, 2);
-            }
-            struct DiscordCoreAPI_Dll tm newtime;
-            __time64_t __int64_time;
-            errno_t err;
-            // Get time as 64-bit integer.
-            _time64(&__int64_time);
-            // Convert to local time.
-            err = _localtime64_s(&newtime, &__int64_time);
-            if (err)
-            {
-                printf("Invalid argument to _localtime64_s.");
-                return "";
-            }
-            string finalValue{};
-            finalValue = to_string(newtime.tm_year + 1900) + "-" + monthVal + "-" + dayVal + "T" + hourVal + ":" + minuteVal + ":" + secondVal;
-            return finalValue;
-        }
+    enum class TimeFormat {
+        LongDate = 'D',		/// "20 April 2021" - Long Date
+        LongDateTime = 'F',		/// "Tuesday, 20 April 2021 16:20" - Long Date/Time
+        LongTime = 'T',		/// "16:20:30" - Long Time
+        ShortDate = 'd',		/// "20/04/2021" - Short Date
+        ShortDateTime = 'f',		/// "20 April 2021 16:20" - Short Date/Time
+        ShortTime = 't',		/// "16:20" - Short Time
     };
 
-    DiscordCoreAPI_Dll string convertTimeInMsToDateTimeString(int64_t timeInMs);
+    DiscordCoreAPI_Dll string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat);
 
     DiscordCoreAPI_Dll int64_t convertTimestampToInteger(string timeStamp);
 
-    DiscordCoreAPI_Dll string convertTimeStampToNewOne(string timeStamp);
+    class DiscordCoreAPI_Dll TimeStamp {
+    public:
 
+        TimeStamp(string originalTimeStampNew) {
+            this->originalTimeStamp = originalTimeStampNew;
+        }
+
+        string getDateTimeStamp(TimeFormat timeFormat) {
+            this->timeStampInMs = convertTimestampToInteger(this->originalTimeStamp);
+            return convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
+        }
+
+        string getOriginalTimeStamp() {
+            return this->originalTimeStamp;
+        }
+
+    protected:
+
+        string originalTimeStamp{ "" };
+
+        int64_t timeStampInMs{ 0 };
+
+    };
+
+    DiscordCoreAPI_Dll string convertMsToDurationString(int32_t durationInMs);
+    
     DiscordCoreAPI_Dll void rethrowException(string stackTrace, UnboundedMessageBlock<exception>* sendBuffer = nullptr, bool rethrow = false);
 
     DiscordCoreAPI_Dll string convertToLowerCase(string stringToConvert);
 
     DiscordCoreAPI_Dll bool hasTimeElapsed(string timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
 
-    DiscordCoreAPI_Dll string convertMsToDurationString(int32_t durationInMs);
-
-    DiscordCoreAPI_Dll string getTimeAndDate();
+    DiscordCoreAPI_Dll string getTimeAndDate(TimeFormat timeFormat);
 
     DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
 
@@ -282,7 +236,7 @@ namespace DiscordCoreAPI {
         Snowflake id{ "" };///< The identifier "snowflake" of the given entity.
         /// Converts the snowflake-id into a time and date stamp. \brief Converts the snowflake-id into a time and date stamp.
         /// \returns string A string containing the timestamp.
-        string getCreatedAtTimestamp();
+        string getCreatedAtTimestamp(TimeFormat timeFormat);
 
         virtual ~DiscordEntity() {};
     };
@@ -423,9 +377,9 @@ namespace DiscordCoreAPI {
         string description{ "" };///< Description of the embed.
         EmbedFooterData footer{};///< Embed footer data.
         EmbedAuthorData author{};///< Embed author data.
-        string timestamp{ "" };///< Timestamp to be placed on the embed.
         EmbedImageData image{};///< Embed image data.
         EmbedVideoData video{};///< Embed video data.
+        string timestamp{ "" };///< Timestamp to be placed on the embed.
         string title{ "" };///< Title of the embed.
         string type{ "" };///< Type of the embed.
         string url{ "" };///< Url for the embed.
@@ -556,7 +510,7 @@ namespace DiscordCoreAPI {
     /// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
     struct DiscordCoreAPI_Dll ThreadMetadataData {
         int32_t autoArchiveDuration{ 0 }; ///< How int64_t before archiving this Thread.
-        string archiveTimestamp{ "" }; ///< (Where applicable) the time at which this Thread was archived.
+        TimeStamp archiveTimestamp{ "" }; ///< (Where applicable) the time at which this Thread was archived.
         bool invitable{ false }; ///< The id of the individual who archived this Thread.
         bool archived{ false }; ///< Whether or not this Thread is currently archived.
         bool locked{ false }; ///< Whether or not this Thread is currently locked.
@@ -565,7 +519,7 @@ namespace DiscordCoreAPI {
     /// Data for a single member of a Thread. \brief Data for a single member of a Thread.
     class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
     public:
-        string joinTimestamp{ "" }; ///< The time at which the member joined this Thread.
+        TimeStamp joinTimestamp{ "" }; ///< The time at which the member joined this Thread.
         string userId{ "" };    ///< The User's id.
         int32_t flags{ 0 }; ///< Flags.
 
@@ -595,9 +549,9 @@ namespace DiscordCoreAPI {
         ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a Thread.
         ChannelType type{ ChannelType::DM };    ///< The type of the Channel.
         map<string, UserData> recipients{};  ///< Recipients, in the case of a group DM or DM.
+        TimeStamp lastPinTimestamp{ "" };  ///< Timestamp of the last pinned Message.
         int32_t videoQualityMode{ 0 };  ///< Video quality mode.
         int32_t rateLimitPerUser{ 0 };  ///< Amount of seconds a User has to wait before sending another Message.
-        string lastPinTimestamp{ "" };  ///< Timestamp of the last pinned Message.
         string lastMessageId{ "" }; ///< Id of the last Message.
         string applicationId{ "" }; ///< Application id of the current application.
         ThreadMemberData member{}; ///< Thread member object for the current User, if they have joined the Thread.
@@ -620,7 +574,7 @@ namespace DiscordCoreAPI {
 
     /// Voice data for a given GuildMember. \brief Voice data for a given GuildMember.
     struct DiscordCoreAPI_Dll VoiceData {
-        string requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
+        TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
         bool selfStream{ false };///< Whether this User is streaming using "Go Live".
         bool selfVideo{ false };///< Whether this User's camera is enabled.
         bool selfDeaf{ false };///< Whether this User is locally deafened.
@@ -641,7 +595,7 @@ namespace DiscordCoreAPI {
         string permissions{ "" };///< Their base-level Permissions in the Guild.
         string userMention{ "" };///< What to enter to get them mentioned in a Message.
         vector<string> roles{}; ///< The Guild roles that they have.
-        string joinedAt{ "" };///< When they joined the Guild.
+        TimeStamp joinedAt{ "" };///< When they joined the Guild.
         bool pending{ false };///< Are they waiting at the entry screen?
         VoiceData voiceData{};///< Info about this GuildMember's voice state.
         string guildId{ "" };///< The current Guild's id.
@@ -655,7 +609,7 @@ namespace DiscordCoreAPI {
 
     /// Voice state data. \brief Voice state data.
     struct DiscordCoreAPI_Dll VoiceStateData {
-        string requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
+        TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
         GuildMemberData member{};///< The Guild member this voice state is for.
         bool selfStream{ false };///< Whether this User is streaming using "Go Live".
         bool selfVideo{ false };///< Whether this User's camera is enabled.
@@ -896,10 +850,10 @@ namespace DiscordCoreAPI {
         ApplicationData application{};///<Application data.
         bool enableEmoticons{ true };///<Emoticons enabled?
         int32_t expireBehavior{ 0 };///< What to do upon expiry.
+        TimeStamp syncedAt{ "" };///< Time it was last synced at.
         bool enabled{ false };///< Enabled?
         bool syncing{ false };///< Is it syncing?
         AccountData account{};///< Account data.
-        string syncedAt{ "" };///< Time it was last synced at.
         bool revoked{ false };///< Has it been revoked?
         string roleId{ "" };///< Role Id.
         string name{ "" };///< Name of the integration.
@@ -982,8 +936,8 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
     public:
         vector<AuditLogChangeData> changes{};///< Array of audit log change data.
-        TimeStamp createdTimeStamp{ "" };///< Time at which this entry was created.
         AuditLogEntryInfoData options{};///< Audit log entry info data.
+        string createdTimeStamp{ "" };///< Time at which this entry was created.
         AuditLogEvent actionType{};///< Audit log action type.
         string targetId{ "" };///< Id of the target User.
         string userId{ "" };///< Id of the executing User.
@@ -1224,6 +1178,7 @@ namespace DiscordCoreAPI {
         vector<string> features{};  ///< List of Guild features.
         bool unavailable{ false };  ///< Is the Guild currently available to the bot?
         PremiumTier premiumTier{};  ///< What is the premium tier?
+        TimeStamp joinedAt{ "" };  ///< When the bot joined this Guild.
         string permissions{ "" };   ///< Current Permissions for the bot in the Guild.
         string description{ "" };   ///< Description of the Guild.
         int32_t memberCount{ 0 };   ///< Member count.
@@ -1231,7 +1186,6 @@ namespace DiscordCoreAPI {
         int32_t nsfwLevel{ 0 }; ///< NSFW warning level.
         string createdAt{ "" }; ///< When was the Guild created?
         string iconHash{ "" };      ///< Url to the Guild's icon.
-        string joinedAt{ "" };  ///< When the bot joined this Guild.
         string ownerId{ "" };   ///< User id of the Guild's owner.
         string region{ "" };    ///< Region of the world where the Guild's servers are.
         bool owner{ false };    ///< Is the bot the owner?        
@@ -1308,11 +1262,11 @@ namespace DiscordCoreAPI {
         int32_t approximatePresenceCount{ 0 };///< Approximate presence count.
         int32_t approximateMemberCount{ 0 };///< Approximate member count.
         ApplicationData targetApplication{};///< Application data.
-        StageInstanceData stageInstance{};///< Stage instance data.        
+        StageInstanceData stageInstance{};///< Stage instance data.
+        TimeStamp createdAt{ "" };///< Time it was created at.
+        TimeStamp expiresAt{ "" };///< When the invite expires.
         int32_t targetType{ 0 };///< Target type.
         bool temporary{ false };///< Is it temporary?
-        string createdAt{ "" };///< Time it was created at.
-        string expiresAt{ "" };///< When the invite expires.
         UserData targetUser{};///< Target User of the invite.
         ChannelData channel{};///< Channel data of the Channel that the invite is for.
         string guildId{ "" };///< The Guild this invite is for.
@@ -1333,8 +1287,8 @@ namespace DiscordCoreAPI {
         string creatorId{ "" };///< The ID of the User who created the template.
         string createdAt{ "" };///< When this template was created.
         string updatedAt{ "" };///< When this template was last synced to the source Guild.
-        UserData creator{};///< The User who created the template.
         bool isDirty{ false };///< Whether the template has unsynced changes.
+        UserData creator{};///< The User who created the template.
         string code{ "" };///< The template code(unique ID).
         string name{ "" };///< Template name.
     };
@@ -1611,7 +1565,7 @@ namespace DiscordCoreAPI {
 
     /// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
     struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData {
-        string lastPinTimestamp{ "" }; ///< The time of the last pinned Message.
+        TimeStamp lastPinTimestamp{ "" }; ///< The time of the last pinned Message.
         string channelId{ "" };     ///< The id of the Channel within which the Message was pinned.
         string guildId{ "" };   ///< The id of the Guild within which the Message was pinned.
     };
@@ -1710,19 +1664,18 @@ namespace DiscordCoreAPI {
         MessageInteractionData interaction{};///< Message Interaction data.
         vector<ActionRowData> components{};///< Array of action row data.
         vector<ReactionData> reactions{};//< Array of reaction data.
+        TimeStamp editedTimestamp{ "" };///< The time at which it was edited.
         vector<StickerData> stickers{};///< Array of Message Sticker data.
         MessageActivityData activity{};///< Message activity data.
         ApplicationData application{};///< Application data.
         vector<string> mentionRoles{};///< Vector of "mention roles" ids.
         bool mentionEveryone{ false };///< Does the Message mention everyone?
-        string editedTimestamp{ "" };///< The time at which it was edited.
         vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
         vector<EmbedData> embeds{};///< Array of Message embeds.
         string applicationId{ "" };///< Application id.
-        string timestampRaw{ "" };///< The raw timestamp of when the Message was created.
+        TimeStamp timestamp{ "" };///< The timestamp of when the Message was created.
         GuildMemberData member{};///< The author's Guild member data.
         string channelId{ "" };///< The Channel it was sent in.
-        string timestamp{ "" };///< The timestamp of when the Message was created.
         string webhookId{ "" };///< WebHook id of the Message, if applicable.
         string guildId{ "" };///< The id of the Guild the Message was sent in.
         bool pinned{ false };///< Is it pinned?
@@ -2808,8 +2761,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll VoiceStateData {
+        DiscordCoreAPI::TimeStamp requestToSpeakTimestamp{ "" };
         DiscordCoreAPI::GuildMemberData guildMember{};
-        string requestToSpeakTimestamp{ "" };
         bool selfStream{ false };
         bool selfVideo{ false };
         string channelId{ "" };

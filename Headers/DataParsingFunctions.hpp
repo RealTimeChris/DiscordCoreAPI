@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
                 else {
                     pDataStructure->id = to_string(jsonObjectData["id"]);
                 }
-                pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
+                pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp(DiscordCoreAPI::TimeFormat::LongDateTime);
             }
 
             if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
@@ -127,7 +127,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("archive_timestamp") && !jsonObjectData["archive_timestamp"].is_null()) {
-                pDataStructure->archiveTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["archive_timestamp"].get<string>());
+                pDataStructure->archiveTimestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["archive_timestamp"].get<string>());
             }
 
             if (jsonObjectData.contains("locked") && !jsonObjectData["locked"].is_null()) {
@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("join_timestamp") && !jsonObjectData["join_timestamp"].is_null()) {
-                pDataStructure->joinTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["join_timestamp"].get<string>());
+                pDataStructure->joinTimestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["join_timestamp"].get<string>());
             }
 
             if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
@@ -255,7 +255,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("last_pin_timestamp") && !jsonObjectData["last_pin_timestamp"].is_null()) {
-                pDataStructure->lastPinTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["last_pin_timestamp"].get<string>());
+                pDataStructure->lastPinTimestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["last_pin_timestamp"].get<string>());
             }
 
             if (jsonObjectData.contains("rtc_region") && !jsonObjectData["rtc_region"].is_null()) {
@@ -389,7 +389,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
-                pDataStructure->joinedAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["joined_at"].get<string>());
+                pDataStructure->joinedAt = DiscordCoreAPI::TimeStamp(jsonObjectData["joined_at"].get<string>());
             }
 
             if (jsonObjectData.contains("premium_since") && !jsonObjectData["premium_since"].is_null()) {
@@ -582,7 +582,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("request_to_speak_timestamp") && !jsonObjectData["request_to_speak_timestamp"].is_null()) {
-                pDataStructure->requestToSpeakTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["request_to_speak_timestamp"].get<string>());
+                pDataStructure->requestToSpeakTimestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["request_to_speak_timestamp"].get<string>());
             }
         }
 
@@ -897,7 +897,7 @@ namespace DiscordCoreInternal {
         static void parseObject(json jsonObjectData, DiscordCoreAPI::GuildData* pDataStructure) {
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->id = jsonObjectData["id"].get<string>();
-                pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp();
+                pDataStructure->createdAt = pDataStructure->getCreatedAtTimestamp(DiscordCoreAPI::TimeFormat::LongDateTime);
             }
 
             if (jsonObjectData.contains("afk_channel_id") && !jsonObjectData["afk_channel_id"].is_null()) {
@@ -969,7 +969,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
-                pDataStructure->joinedAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["joined_at"].get<string>());
+                pDataStructure->joinedAt = DiscordCoreAPI::TimeStamp(jsonObjectData["joined_at"].get<string>());
             }
 
             if (jsonObjectData.contains("widget_channel_id") && !jsonObjectData["widget_channel_id"].is_null()) {
@@ -1839,7 +1839,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("expires_at") && !jsonObjectData["expires_at"].is_null()) {
-                pDataStructure->expiresAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["expires_at"].get<string>());
+                pDataStructure->expiresAt = DiscordCoreAPI::TimeStamp(jsonObjectData["expires_at"].get<string>());
             }
 
             if (jsonObjectData.contains("stage_instance") && !jsonObjectData["stage_instance"].is_null()) {
@@ -1867,7 +1867,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("created_at") && !jsonObjectData["created_at"].is_null()) {
-                pDataStructure->createdAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["created_at"].get<string>());
+                pDataStructure->createdAt = DiscordCoreAPI::TimeStamp(jsonObjectData["created_at"].get<string>());
             }
         }
 
@@ -2113,12 +2113,11 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("timestamp") && !jsonObjectData["timestamp"].is_null()) {
-                pDataStructure->timestampRaw = jsonObjectData["timestamp"].get<string>();
-                pDataStructure->timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["timestamp"].get<string>());
+                pDataStructure->timestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["timestamp"].get<string>());
             }
 
             if (jsonObjectData.contains("edited_timestamp") && !jsonObjectData["edited_timestamp"].is_null()) {
-                pDataStructure->editedTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["edited_timestamp"].get<string>());
+                pDataStructure->editedTimestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["edited_timestamp"].get<string>());
             }
 
             if (jsonObjectData.contains("tts") && !jsonObjectData["tts"].is_null()) {
@@ -2298,12 +2297,11 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("timestamp") && !jsonObjectData["timestamp"].is_null()) {
-                pDataStructure->timestampRaw = jsonObjectData["timestamp"].get<string>();
-                pDataStructure->timestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["timestamp"].get<string>());
+                pDataStructure->timestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["timestamp"].get<string>());
             }
 
             if (jsonObjectData.contains("edited_timestamp") && !jsonObjectData["edited_timestamp"].is_null()) {
-                pDataStructure->editedTimestamp = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["edited_timestamp"].get<string>());
+                pDataStructure->editedTimestamp = DiscordCoreAPI::TimeStamp(jsonObjectData["edited_timestamp"].get<string>());
             }
 
             if (jsonObjectData.contains("tts") && !jsonObjectData["tts"].is_null()) {
@@ -3170,7 +3168,7 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
                 pDataStructure->id = jsonObjectData["id"].get<string>();
-                pDataStructure->createdTimeStamp = (DiscordCoreAPI::TimeStamp)pDataStructure->getCreatedAtTimestamp();
+                pDataStructure->createdTimeStamp = pDataStructure->getCreatedAtTimestamp(DiscordCoreAPI::TimeFormat::LongDateTime);
             }
 
             if (jsonObjectData.contains("action_type") && !jsonObjectData["action_type"].is_null()) {
@@ -3297,7 +3295,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("synced_at") && !jsonObjectData["synced_at"].is_null()) {
-                pDataStructure->syncedAt = DiscordCoreAPI::convertTimeStampToNewOne(jsonObjectData["synced_at"].get<string>());
+                pDataStructure->syncedAt = DiscordCoreAPI::TimeStamp(jsonObjectData["synced_at"].get<string>());
             }
 
             if (jsonObjectData.contains("subscriber_count") && !jsonObjectData["subscriber_count"].is_null()) {
