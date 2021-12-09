@@ -11,11 +11,9 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll HttpRequestAgent  {
+	class DiscordCoreAPI_Dll HttpRequestAgent {
 	public:
-
 		static void initialize(string);
-
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			try {
@@ -37,7 +35,7 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitData.insert(make_pair(rateLimitDataRaw->tempBucket, move(rateLimitDataNew)));
 				}
 				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
-				returnType returnObject{};				
+				returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
 				return returnObject;
 			}
@@ -113,17 +111,23 @@ namespace DiscordCoreInternal {
 		static string botToken;
 		static string baseURL;
 
+		static HttpRequestHeaderCollection deleteHeaders;
+		static HttpRequestHeaderCollection patchHeaders;
+		static HttpRequestHeaderCollection postHeaders;
+		static HttpRequestHeaderCollection putHeaders;
+		static HttpRequestHeaderCollection getHeaders;
+		static HttpClient deleteHttpClient;
+		static HttpClient patchHttpClient;
+		static HttpClient postHttpClient;
+		static HttpClient putHttpClient;
+		static HttpClient getHttpClient;
+
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);
 
 		static HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-
 		static HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-
 		static HttpData httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-
 		static HttpData httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-
 		static HttpData httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-
 	};
 }
