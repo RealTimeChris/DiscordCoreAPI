@@ -58,10 +58,9 @@ namespace DiscordCoreAPI {
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		unique_ptr<concurrency::event> reconnectionEvent{ make_unique<concurrency::event>() };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
+		UnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		unbounded_buffer<AudioFrameData>* audioDataBuffer{ nullptr };
-		CoRoutine<void> theTask{ nullptr };
 		concurrency::event connectionReadyEvent {};
 		concurrency::event disconnectionEvent {};
 		const int32_t maxBufferSize{ 1276 };
@@ -69,10 +68,11 @@ namespace DiscordCoreAPI {
 		concurrency::event stopWaitEvent {};
 		concurrency::event playSetEvent {};
 		concurrency::event stopSetEvent {};
+		CoRoutine<void> theTask{ nullptr };
 		concurrency::event pauseEvent {};
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
-		bool areWeInstantiated{ false };
+		bool areWeInstantiated{ false };		
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		bool doWeReconnect{ false };

@@ -99,7 +99,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceChannelWebSocketAgent;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseWebSocketAgent(string botTokenNew, string socketPathBase, unbounded_buffer<WebSocketWorkload>* workloadBufferNew);
+		BaseWebSocketAgent(string botTokenNew, string socketPathBase, DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadBufferNew);
 
 		void connect();
 
@@ -108,8 +108,8 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
-		unbounded_buffer<VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
+		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		ThreadPoolTimer heartbeatTimer{ nullptr };
@@ -168,7 +168,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unbounded_buffer<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
+		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
 		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };

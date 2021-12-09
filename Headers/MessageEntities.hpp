@@ -433,8 +433,8 @@ namespace DiscordCoreAPI {
 		~MessageCollector();
 
 	protected:
-		static map<string, unbounded_buffer<Message>*> messagesBufferMap;
-		unique_ptr<unbounded_buffer<Message>> messagesBuffer{ nullptr };
+		static map<string, UnboundedMessageBlock<Message>*> messagesBufferMap;
+		unique_ptr<UnboundedMessageBlock<Message>> messagesBuffer{ nullptr };
 		function<bool(Message)> filteringFunction{ nullptr };
 		MessageCollectorReturnData messageReturnData{};
 		int32_t quantityOfMessageToCollect{ 0 };

@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
-		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>& sendAudioDataBufferNew);
+		void sendEmptyingFrames(UnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
 
 		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
 

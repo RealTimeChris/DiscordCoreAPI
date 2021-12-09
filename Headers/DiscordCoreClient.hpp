@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			map<string, unique_ptr<unbounded_buffer<AudioFrameData>>> audioBuffersMap{};
+			map<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>> audioBuffersMap{};
 			map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
 			map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
 			map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<unbounded_buffer<AudioFrameData>>>* getAudioBuffersMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>>* getAudioBuffersMap();
 
 	DiscordCoreAPI_Dll map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 		static vector<RepeatedFunctionData> functionsToExecute;
 		static vector<ThreadPoolTimer> threadPoolTimers;
 
-		unbounded_buffer<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
+		UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		function<void(void)> theFunction{};
 		CacheOptions cacheOptions{};

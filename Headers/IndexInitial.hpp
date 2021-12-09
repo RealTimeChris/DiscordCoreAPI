@@ -46,7 +46,7 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <concurrent_unordered_map.h>
 #include <winrt/Windows.Devices.h>
-
+#include <concurrent_queue.h>
 extern "C"
 {
 #include <libavutil/mastering_display_metadata.h>
@@ -80,15 +80,14 @@ extern "C"
 #include <winrt/base.h>
 #include <nanobench.h>
 #include <opus/opus.h>
-#include <ppltasks.h>
 #include <coroutine>
 #include <atltime.h>
 #include <iostream>
 #include <sodium.h>
-#include <agents.h>
 #include <stdio.h>
 #include <string>
 #include <regex>
+#include <mutex>
 #define CURL_STATICLIB
 #include <curl\curl.h>
 

@@ -54,6 +54,39 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
+    /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
+    /// \param objectType The type of object that will be sent over the message block.
+    template<typename objectType>
+    class UnboundedMessageBlock {
+    public:
+        UnboundedMessageBlock() {};
+
+        ~UnboundedMessageBlock() {};
+
+        void send(objectType theObject) {
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            this->theArray.push_back(theObject);
+        }
+
+        bool try_receive(objectType& theObject) {
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            if (this->theArray.size() == 0) {
+                return false;
+            }
+            else {
+                theObject = this->theArray[0];
+                this->theArray.erase(this->theArray.begin());
+                return true;
+            }
+        }
+
+    protected:
+        vector<objectType> theArray{};
+
+        mutex accessMutex{};
+
+    };
+
     template<typename timeType>
     class DiscordCoreAPI_Dll StopWatch {
     public:
@@ -91,10 +124,10 @@ namespace DiscordCoreAPI {
     };
 
     template <typename T>
-    bool waitForTimeToPass(unbounded_buffer<T>* outBuffer, T* argOne, int32_t timeInMsNew) {
-        StopWatch stopWatch(timeInMsNew);
+    bool waitForTimeToPass(UnboundedMessageBlock<T>* outBuffer, T* argOne, int32_t timeInMsNew) {
+        StopWatch<chrono::milliseconds> stopWatch(timeInMsNew);
         bool doWeBreak{ false };
-        while (!try_receive(outBuffer, *argOne)) {
+        while (!outBuffer->try_receive(*argOne)) {
             concurrency::wait(10);
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
@@ -223,7 +256,7 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll string convertTimeStampToNewOne(string timeStamp);
 
-    DiscordCoreAPI_Dll void rethrowException(string stackTrace, unbounded_buffer<exception>* sendBuffer = nullptr, bool rethrow = false);
+    DiscordCoreAPI_Dll void rethrowException(string stackTrace, UnboundedMessageBlock<exception>* sendBuffer = nullptr, bool rethrow = false);
 
     DiscordCoreAPI_Dll string convertToLowerCase(string stringToConvert);
 
@@ -2764,7 +2797,7 @@ namespace  DiscordCoreInternal {
         string endpoint{ "" };
         string port{ "" };
     protected:
-        unbounded_buffer<DiscordCoreAPI::AudioFrameData>* audioDataBuffer{ nullptr };
+        DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::AudioFrameData>* audioDataBuffer{ nullptr };
     };
 
     struct DiscordCoreAPI_Dll UpdatePresenceData {

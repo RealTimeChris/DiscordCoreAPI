@@ -41,14 +41,14 @@ namespace DiscordCoreAPI {
     protected:
 
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        unbounded_buffer<vector<uint8_t>> inputDataBuffer{};
+        UnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
+        UnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
-        unbounded_buffer<RawFrameData> outDataBuffer{};
         AVCodecContext* audioDecodeContext{ nullptr };
+        UnboundedMessageBlock<bool> readyBuffer{};
         AVFormatContext* formatContext{ nullptr };
         concurrency::event readyToStartEvent {};
         int32_t refreshTimeForBuffer{ 10000 };
-        unbounded_buffer<bool> readyBuffer{};
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };
         AVStream* audioStream{ nullptr };

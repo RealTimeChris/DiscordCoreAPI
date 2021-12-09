@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
-		void sendEmptyingFrames(unbounded_buffer<vector<uint8_t>>& sendAudioDataBufferNew);
+		void sendEmptyingFrames(UnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
 		
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 
