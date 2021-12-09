@@ -78,9 +78,9 @@ newEvent = InputEvents::respondToEvent(dataPackage);
 InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 ## Dependencies
-- [WinRT](https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/intro-to-using-cpp-with-winrt)
+- [WinRT](https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/intro-to-using-cpp-with-winrt) (SOON TO BE PHASED OUT)
 
-- [Visual C++ Redistributable](https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-160)
+- [Visual C++ Redistributable](https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-160) (SOON TO BE PHASED OUT)
 
 - [C++ REST SDK](https://github.com/microsoft/cpprestsdk)
 
