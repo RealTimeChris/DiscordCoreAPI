@@ -113,17 +113,6 @@ namespace DiscordCoreInternal {
 		static string botToken;
 		static string baseURL;
 
-		static HttpRequestHeaderCollection deleteHeaders;
-		static HttpRequestHeaderCollection patchHeaders;
-		static HttpRequestHeaderCollection postHeaders;
-		static HttpRequestHeaderCollection putHeaders;
-		static HttpRequestHeaderCollection getHeaders;
-		static HttpClient deleteHttpClient;
-		static HttpClient patchHttpClient;
-		static HttpClient postHttpClient;
-		static HttpClient putHttpClient;
-		static HttpClient getHttpClient;
-
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);
 
 		static HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);

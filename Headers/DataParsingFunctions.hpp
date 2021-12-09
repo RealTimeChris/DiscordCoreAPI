@@ -357,6 +357,7 @@ namespace DiscordCoreInternal {
         }
 
         static void parseObject(json jsonObjectData, vector<string>* pDataStructure) {
+            pDataStructure->clear();
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value: jsonObjectData) {
                 pDataStructure->push_back(move(value));

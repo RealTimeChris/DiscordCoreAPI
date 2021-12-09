@@ -75,6 +75,7 @@ extern "C"
 #include <libavutil/lzo.h>
 #include <libavutil/opt.h>
 }
+#include <cpprest/http_client.h>
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
 #include <winrt/base.h>
@@ -88,6 +89,7 @@ extern "C"
 #include <string>
 #include <regex>
 #include <mutex>
+#include <queue>
 #define CURL_STATICLIB
 #include <curl\curl.h>
 

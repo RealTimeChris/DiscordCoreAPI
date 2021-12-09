@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 
         void send(objectType theObject) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            this->theArray.push_back(theObject);
+            this->theArray.push(theObject);
         }
 
         bool try_receive(objectType& theObject) {
@@ -74,14 +74,14 @@ namespace DiscordCoreAPI {
                 return false;
             }
             else {
-                theObject = this->theArray[0];
-                this->theArray.erase(this->theArray.begin());
+                theObject = this->theArray.front();
+                this->theArray.pop();
                 return true;
             }
         }
 
     protected:
-        vector<objectType> theArray{};
+        queue<objectType> theArray{};
 
         mutex accessMutex{};
 

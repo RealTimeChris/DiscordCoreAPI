@@ -33,10 +33,10 @@ namespace DiscordCoreAPI {
 		/// \returns A vector of Song objects representing the search results.
 		static vector<Song> searchForSong(string searchQuery, string guildId);
 
-		/// Adds a Song to the current Playlist's queue. \brief Adds a Song to the current Playlist's queue.
-		/// \param guildMember The GuildMember that is adding the Song to the queue.
-		/// \param song The Song to be added to the queue.
-		/// \returns The Song that was added to the queue.
+		/// Adds a Song to the current Playlist's UnboundedMessageBlock. \brief Adds a Song to the current Playlist's UnboundedMessageBlock.
+		/// \param guildMember The GuildMember that is adding the Song to the UnboundedMessageBlock.
+		/// \param song The Song to be added to the UnboundedMessageBlock.
+		/// \returns The Song that was added to the UnboundedMessageBlock.
 		static Song addSongToQueue(GuildMember guildMember, Song song);
 
 		/// Checks to see if there are any playable Songs in the current Playlist. \brief Checks to see if there are any playable Songs in the current Playlist.
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 		/// \returns A bool suggesting the success or failure of the play command.
 		static bool play(string guildId);
 
-		/// Skips to the next Song in the queue, if applicable. \brief Skips to the next Song in the queue, if applicable.
+		/// Skips to the next Song in the UnboundedMessageBlock, if applicable. \brief Skips to the next Song in the UnboundedMessageBlock, if applicable.
 		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
 		/// \returns A bool suggesting the success or failure of the skip command.
 		static bool skip(GuildMember guildMember);
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 		/// \returns void
 		static void setLoopSongStatus(bool enabled, string guildId);		
 
-		/// Sets the position of a Song in the current Playlist's song queue. \brief Sets the position of a Song in the current Playlist's song queue.
+		/// Sets the position of a Song in the current Playlist's song UnboundedMessageBlock. \brief Sets the position of a Song in the current Playlist's song UnboundedMessageBlock.
 		/// \param firstSongPosition The first Song's initial position.
 		/// \param secondSongPosition The first Song's final position.
 		/// \param guildId The id of the desired Guild to update the Song positions in.
