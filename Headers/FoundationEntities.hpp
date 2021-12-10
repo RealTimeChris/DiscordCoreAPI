@@ -2632,7 +2632,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
         storageType returnValue(string valueId) {
-            lock_guard<recursive_mutex> returnLock{ this->accessMutex };
+            lock_guard<mutex> returnLock{ this->accessMutex };
             return this->cache.at(valueId);
         }
 
@@ -2640,7 +2640,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(string valueId) {
-            lock_guard<recursive_mutex> containLock{ this->accessMutex };
+            lock_guard<mutex> containLock{ this->accessMutex };
             return this->cache.contains(valueId);
         }
 
@@ -2648,7 +2648,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns void.
         void erase(string valueId) {
-            lock_guard<recursive_mutex> eraseLock{ this->accessMutex };
+            lock_guard<mutex> eraseLock{ this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -2659,7 +2659,7 @@ namespace DiscordCoreAPI {
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
         void storeValue(string valueId, storageType storageValue) {
-            lock_guard<recursive_mutex> storeLock{ this->accessMutex };
+            lock_guard<mutex> storeLock{ this->accessMutex };
             this->cache.insert_or_assign(valueId, move(storageValue));
         }
 
@@ -2667,7 +2667,7 @@ namespace DiscordCoreAPI {
 
         map<string, storageType> cache{};
 
-        recursive_mutex accessMutex{};
+        mutex accessMutex{};
     };
 
     /// PermissionsConverter class, for manipulating Permission values. \brief PermissionsConverter class, for manipulating Permission values.

@@ -124,11 +124,11 @@ namespace DiscordCoreInternal {
 		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
-		bool areWeReconnecting{ false };
-		recursive_mutex accessorMutex{};
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		event_token closedToken{};
+		mutex accessorMutex02{};
+		mutex accessorMutex01{};
 		string socketPath{ "" };
 		string sessionId{ "" };
 		string botToken{ "" };
