@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll bool hasTimeElapsed(string timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
 
-    DiscordCoreAPI_Dll string getTimeAndDate(TimeFormat timeFormat);
+    DiscordCoreAPI_Dll string getTimeAndDate();
 
     DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
 
@@ -2627,10 +2627,6 @@ namespace DiscordCoreAPI {
     public:
 
         friend class Guilds;
-
-        ObjectCache() {}
-
-        ~ObjectCache() {}
 
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
