@@ -6,9 +6,20 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 
+#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
+
 #pragma comment(lib, "mbedtls")
 #pragma comment(lib, "mbedx509")
 #pragma comment(lib, "mbedcrypto")
+
+#ifdef _WIN32
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <io.h>
+#pragma comment(lib,"ws2_32")
+#endif
 
 #include <mbedtls/debug.h>
 #include <mbedtls/platform.h>
@@ -30,9 +41,10 @@ namespace DiscordCoreInternal {
 
 	protected:
         uint32_t returnCode{ 0 };
-        uint32_t exit_code = MBEDTLS_EXIT_FAILURE;
+        uint32_t exitCode = MBEDTLS_EXIT_FAILURE;
         mbedtls_net_context serverFd{};
         uint32_t flags{ 0 };
+        string path{ "/?v=9&encoding=etf" };
         unsigned char buffer[1024];
         const char* pers = "ssl_client1";
 
