@@ -86,8 +86,6 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
  
 - [Nlohmann Json](https://github.com/nlohmann/json) (.\vcpkg install nlohmann-json:x64-windows)
 
-- [MongoDB](https://docs.mongodb.com/manual/installation/) (.\vcpkg install mongo-cxx-driver:x64-windows)
-
 - [LibCurl](https://github.com/curl/curl) (.\vcpkg install curl:x64-windows)
 
 - [LibSodium](https://github.com/jedisct1/libsodium) (.\vcpkg install libsodium:x64-windows)
