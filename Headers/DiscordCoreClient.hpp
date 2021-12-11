@@ -16,6 +16,7 @@
 #include "StageInstanceEntities.hpp"
 #include "YouTubeAPI.hpp"
 #include "StickerEntities.hpp"
+#include "SSLClient.hpp"
 #include "WebHookEntities.hpp"
 #include "SongAPI.hpp"
 

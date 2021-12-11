@@ -77,6 +77,7 @@ extern "C"
 }
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
+#include <mbedtls/ssl.h>
 #include <winrt/base.h>
 #include <nanobench.h>
 #include <opus/opus.h>
