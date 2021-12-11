@@ -81,6 +81,8 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreClient(string, string, vector<RepeatedFunctionData>);
 
+		static string getGateWayUrl();
+
 		~DiscordCoreClient();
 
 	protected:
@@ -99,8 +101,6 @@ namespace DiscordCoreAPI {
 		void initialize();
 
 		static void clearTaskVector();
-
-		string getGateWayUrl();
 
 		static void cleanup();
 		
