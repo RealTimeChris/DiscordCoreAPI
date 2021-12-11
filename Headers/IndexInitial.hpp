@@ -90,7 +90,6 @@ extern "C"
 #include <sodium.h>
 #include <stdio.h>
 #include <string>
-#include <thread>
 #include <regex>
 #include <mutex>
 #include <queue>

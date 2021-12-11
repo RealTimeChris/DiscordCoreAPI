@@ -37,10 +37,10 @@ namespace DiscordCoreInternal {
 		~SSLClient();
 
 	protected:
+		unique_ptr<SSLContext> ssl{ make_unique<SSLContext>() };
 		uint32_t sfd{ static_cast<uint32_t>(~0) };
 		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
-		SSLContext* ssl{ nullptr };
 		bool nonblocking{ false };
 		uint64_t bytesOut{ 0 };
 		uint64_t lastTime{ 0 };
