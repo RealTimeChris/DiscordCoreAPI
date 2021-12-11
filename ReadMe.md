@@ -82,6 +82,8 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 
 - [Visual C++ Redistributable](https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-160)
 
+- [OpenSSL (Installed from pre-built binaries)](https://slproweb.com/products/Win32OpenSSL.html)
+
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
  
 - [Nlohmann Json](https://github.com/nlohmann/json) (.\vcpkg install nlohmann-json:x64-windows)
