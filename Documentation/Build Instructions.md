@@ -8,5 +8,5 @@
 - ### Remove pch.h and pch.cpp from the project/solution.
 - ### Under Properties -> User Macros, set the value of VcPkgFolder to wherever your vcpkg installed x64 windows folder is, for example in my case it is set to `C:\vcpkg\installed\x64-windows\`.
 - ### Set the configuration in Visual Studio to x64.
-- ### Set up a main.cpp like [this one](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Main.cpp).
+- ### Set up a main.cpp like [this one](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/main.cpp).
 - ### BUILD!
