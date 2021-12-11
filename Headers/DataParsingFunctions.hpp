@@ -15,6 +15,7 @@
 #include "ApplicationCommandEntities.hpp"
 #include "RoleEntities.hpp"
 #include "UserEntities.hpp"
+#include "WebHookEntities.hpp"
 
 namespace DiscordCoreInternal {
 
@@ -3175,6 +3176,16 @@ namespace DiscordCoreInternal {
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
                 DiscordCoreAPI::WebHookData newData{};
+                parseObject(move(value), &newData);
+                pDataStructure->push_back(move(newData));
+            }
+            pDataStructure->shrink_to_fit();
+        }
+
+        static void parseObject(json jsonObjectData, vector<DiscordCoreAPI::WebHook>* pDataStructure) {
+            pDataStructure->reserve(jsonObjectData.size());
+            for (auto& value : jsonObjectData) {
+                DiscordCoreAPI::WebHook newData{};
                 parseObject(move(value), &newData);
                 pDataStructure->push_back(move(newData));
             }
