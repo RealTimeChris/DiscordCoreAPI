@@ -43,19 +43,17 @@
 		  Ren "vcruntime140_1.dll" "vcruntime140_1_app.dll"
 		  )
 		  if $(ConfigurationName) == Debug (
-		  xcopy "$(VcPkgFolder)bin\libcurl.dll" "$(SolutionDir)$(Platform)\$(Configuration)\"
-		  xcopy "$(VcPkgFolder)bin\zlib1.dll" "$(SolutionDir)$(Platform)\$(Configuration)\"
 		  xcopy "$(VCToolsRedistInstallDir)debug_nonredist\x64\Microsoft.VC143.DebugCRT\concrt140d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  cd $(SolutionDir)$(Platform)\$(Configuration)
-		  Ren "concrt143d.dll" "concrt143d_app.dll"
+		  Ren "concrt140d.dll" "concrt140d_app.dll"
 		  xcopy "$(VCToolsRedistInstallDir)debug_nonredist\x64\Microsoft.VC143.DebugCRT\msvcp140d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
-		  Ren "msvcp143.dll" "msvcp143d_app.dll"
+		  Ren "msvcp140.dll" "msvcp140d_app.dll"
 		  xcopy "$(VCToolsRedistInstallDir)debug_nonredist\x64\Microsoft.VC143.DebugCRT\msvcp140d_atomic_wait.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
-		  Ren "msvcp143_atomic_wait.dll" "msvcp143d_atomic_wait_app.dll"
+		  Ren "msvcp140_atomic_wait.dll" "msvcp140d_atomic_wait_app.dll"
 		  xcopy "$(VCToolsRedistInstallDir)debug_nonredist\x64\Microsoft.VC143.DebugCRT\vcruntime140d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
-		  Ren "vcruntime143d.dll" "vcruntime143d_app.dll"
+		  Ren "vcruntime140d.dll" "vcruntime140d_app.dll"
 		  xcopy "$(VCToolsRedistInstallDir)debug_nonredist\x64\Microsoft.VC143.DebugCRT\vcruntime140_1d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
-		  Ren "vcruntime143_1d.dll" "vcruntime143_1d_app.dll"
+		  Ren "vcruntime140_1d.dll" "vcruntime140_1d_app.dll"
 		  )
 	  </Command>
     </PostBuildEvent>
