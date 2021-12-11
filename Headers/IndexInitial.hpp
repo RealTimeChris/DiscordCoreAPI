@@ -12,16 +12,17 @@
 #define DiscordCoreAPI_Dll __declspec(dllimport)
 #endif
 
-#ifndef WINRT_LEAN_AND_MEAN
-#define WINRT_LEAN_AND_MEAN
-#endif
-
 #ifndef _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING 
 #define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING 
 #endif
 
+#ifdef _WIN32
+#ifndef WINRT_LEAN_AND_MEAN
+#define WINRT_LEAN_AND_MEAN
+#endif
 #ifndef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
+#endif
 #endif
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -77,7 +78,6 @@ extern "C"
 }
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
-#include <mbedtls/ssl.h>
 #include <winrt/base.h>
 #include <nanobench.h>
 #include <opus/opus.h>
