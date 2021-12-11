@@ -82,7 +82,7 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 
 - [Visual C++ Redistributable](https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-160)
 
-- [OpenSSL][(Installed from pre-built binaries)](https://slproweb.com/products/Win32OpenSSL.html)
+- [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html)(Installed from pre-built binaries)
 
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
  
