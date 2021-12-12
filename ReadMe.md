@@ -24,17 +24,20 @@
 <p align="left">
 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(53).png?raw=true"  width="700">
 </p>
+
 ### Select Menus
 ----
 <p align="left">
  	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(83).png?raw=true"  width="700">
 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(84).png?raw=true"  width="700">
 </p>
+
 ### User Commands
 ----
 <p align="left">
  	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(120).png?raw=true"  width="700">
 </p>
+
 ### Message Commands
 ----
 <p align="left">
