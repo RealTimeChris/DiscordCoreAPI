@@ -7,7 +7,6 @@
 
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
-#pragma comment(lib, "libcurl")
 #else
 #define DiscordCoreAPI_Dll __declspec(dllimport)
 #endif
@@ -37,6 +36,7 @@
 #include "crtdbg.h"
 #endif
 
+#pragma comment(lib, "libcurl")
 #pragma comment(lib, "windowsapp")
 
 #pragma warning(push)
@@ -90,7 +90,6 @@ extern "C"
 #include <sodium.h>
 #include <stdio.h>
 #include <string>
-#include <thread>
 #include <regex>
 #include <mutex>
 #include <queue>
