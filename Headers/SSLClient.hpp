@@ -31,20 +31,36 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
 	public:
+
+		function<uint32_t()> writeableCallBack{};
+		function<void()> writeableNotification{};
+		function<uint32_t()> readableCallBack{};
+		function<void()> readableNotification{};
+
 		MsgWebSocketSSLClient(string, string);
+
+		void writeData(vector<uint8_t>&);
+
+		void readData(vector<uint8_t>&);
+
+		uint64_t getBytesOut();
+
+		uint64_t getBytesIn();
 
 		~MsgWebSocketSSLClient();
 
 	protected:
-		uint32_t sfd{ static_cast<uint32_t>(~0) };
+				
+		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
+		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
 		MsgWebSocketSSLContext ssl{};
-		bool nonblocking{ false };
 		uint64_t bytesOut{ 0 };
 		uint64_t lastTime{ 0 };
 		uint64_t bytesIn{ 0 };
 		string hostname{ "" };
+		bool blocking{ true };
 		string cipher{ "" };
 		string port{ "" };
 	};
