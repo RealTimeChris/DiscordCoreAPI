@@ -106,6 +106,7 @@ namespace DiscordCoreAPI {
                 coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
                 return coroutineHandle.promise().result;
             }
+            return returnType{};
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.

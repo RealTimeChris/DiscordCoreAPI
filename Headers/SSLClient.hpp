@@ -21,7 +21,8 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll MsgWebSocketSSLContext {
+	class SSLContext {
+	public:
 
 		SSL_CTX* context{ nullptr };
 
@@ -29,17 +30,17 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
+	class DiscordCoreAPI_Dll SSLClient {
 	public:
-		MsgWebSocketSSLClient(string, string);
+		SSLClient(string, string);
 
-		~MsgWebSocketSSLClient();
+		~SSLClient();
 
 	protected:
 		uint32_t sfd{ static_cast<uint32_t>(~0) };
 		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
-		MsgWebSocketSSLContext ssl{};
+		SSLContext* ssl{ nullptr };
 		bool nonblocking{ false };
 		uint64_t bytesOut{ 0 };
 		uint64_t lastTime{ 0 };
