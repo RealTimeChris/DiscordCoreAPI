@@ -8,7 +8,7 @@
     <ExternalIncludePath>$(VcPkgFolder)\lib\glib-2.0\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>$(ProjectDir)\Headers;C:\Program Files\OpenSSL-Win64\include;$(IncludePath)</IncludePath>
-	  <LibraryDirectory>"C:\Program Files\OpenSSL-Win64\lib"</LibraryDirectory>
+    <LibraryDirectory>"C:\Program Files\OpenSSL-Win64\lib"</LibraryDirectory>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -27,9 +27,7 @@
 			</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>
-
-		  cd $(SolutionDir)$(Platform)\$(Configuration)
+      <Command>cd $(SolutionDir)$(Platform)\$(Configuration)
 		  xcopy "$(VCToolsRedistInstallDir)x64\Microsoft.VC143.CRT\concrt140.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  cd $(SolutionDir)$(Platform)\$(Configuration)
 		  Ren "concrt140.dll" "concrt140_app.dll"
@@ -40,10 +38,10 @@
 		  xcopy "$(VCToolsRedistInstallDir)x64\Microsoft.VC143.CRT\vcruntime140.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  Ren "vcruntime140.dll" "vcruntime140_app.dll"
 		  xcopy "$(VCToolsRedistInstallDir)x64\Microsoft.VC143.CRT\vcruntime140_1.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
-		  Ren "vcruntime140_1.dll" "vcruntime140_1_app.dll"
 		  )
+		  Ren "vcruntime140_1.dll" "vcruntime140_1_app.dll"
 		  if $(ConfigurationName) == Debug (
-		  copy "$(VcPkgFolder)bin\libcurl.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  xcopy "$(VcPkgFolder)bin\libcurl.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  xcopy "$(VcPkgFolder)bin\zlib1.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  xcopy "$(VCToolsRedistInstallDir)debug_nonredist\x64\Microsoft.VC143.DebugCRT\concrt140d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  cd $(SolutionDir)$(Platform)\$(Configuration)
@@ -56,8 +54,7 @@
 		  Ren "vcruntime140d.dll" "vcruntime140d_app.dll"
 		  xcopy "$(VCToolsRedistInstallDir)debug_nonredist\x64\Microsoft.VC143.DebugCRT\vcruntime140_1d.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  Ren "vcruntime140_1d.dll" "vcruntime140_1d_app.dll"
-		  )
-	  </Command>
+		  )</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
