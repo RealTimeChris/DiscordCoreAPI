@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend class EventHandlerTwo;
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.
@@ -496,7 +496,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	protected:
-		static ObjectCache<Guild> cache;
+		static ObjectCache<string, Guild> cache;
 
 		static void insertGuild(Guild Guild);
 

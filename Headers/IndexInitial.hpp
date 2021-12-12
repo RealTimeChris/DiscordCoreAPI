@@ -38,9 +38,18 @@
 
 #pragma comment(lib, "libcurl")
 #pragma comment(lib, "windowsapp")
+#pragma comment(lib, "openssl")
+#pragma comment(lib, "libssl")
 
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
+
+#ifdef _WIN32
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <io.h>
+#pragma comment(lib,"ws2_32")
+#endif
 
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Networking.Sockets.h>
@@ -48,9 +57,7 @@
 #include <winrt/Windows.Web.Http.Headers.h>
 #include <winrt/Windows.Web.Http.Filters.h>
 #include <winrt/Windows.Storage.Streams.h>
-#include <concurrent_unordered_map.h>
 #include <winrt/Windows.Devices.h>
-#include <concurrent_queue.h>
 extern "C"
 {
 #include <libavutil/mastering_display_metadata.h>
@@ -81,6 +88,8 @@ extern "C"
 }
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #include <winrt/base.h>
 #include <nanobench.h>
 #include <opus/opus.h>

@@ -3,21 +3,10 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
+#pragma once
+
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-
-#ifdef _WIN32
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#include <io.h>
-#pragma comment(lib,"ws2_32")
-#endif
-
-#pragma comment(lib, "openssl")
-#pragma comment(lib, "libssl")
-
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 
 namespace DiscordCoreInternal {
 
@@ -32,14 +21,16 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
 	public:
 
+		friend class MsgWebSocketAgent;
+
+		function<void(vector<uint8_t>)> readableNotification{};
 		function<uint32_t()> writeableCallBack{};
 		function<void()> writeableNotification{};
 		function<uint32_t()> readableCallBack{};
-		function<void()> readableNotification{};
 
 		MsgWebSocketSSLClient(string, string);
 
-		void writeData(vector<uint8_t>&);
+		void writeData(const vector<uint8_t>&);
 
 		void readData(vector<uint8_t>&);
 

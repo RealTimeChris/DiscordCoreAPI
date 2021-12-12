@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend class EventHandlerTwo;
 		friend class Guild;
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
 	protected:
-		static ObjectCache<GuildMember> cache;
+		static ObjectCache<string, GuildMember> cache;
 
 		static void insertGuildMember(GuildMember dataPackage);
 

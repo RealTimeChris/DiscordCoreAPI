@@ -316,584 +316,588 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EventManager {
 	public:
 
+		event_token onChannelCreationTwo(delegate<OnChannelCreationData>  handler);
+
 		friend class DiscordCoreClient;
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnInputEventCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onInputEventCreation(delegate<OnInputEventCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnInputEventCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onInputEventCreation(EventHandler<OnInputEventCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onInputEventCreation(event_token const& token);
+		void onInputEventCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnApplicationCommandCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onApplicationCommandCreation(delegate<OnApplicationCommandCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnApplicationCommandCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onApplicationCommandCreation(EventHandler<OnApplicationCommandCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onApplicationCommandCreation(event_token const& token);
+		void onApplicationCommandCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnApplicationCommandUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onApplicationCommandUpdate(delegate<OnApplicationCommandUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnApplicationCommandUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onApplicationCommandUpdate(EventHandler<OnApplicationCommandUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onApplicationCommandUpdate(event_token const& token);
+		void onApplicationCommandUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnApplicationCommandDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onApplicationCommandDeletion(delegate<OnApplicationCommandDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnApplicationCommandDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onApplicationCommandDeletion(EventHandler<OnApplicationCommandDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onApplicationCommandDeletion(event_token const& token);
+		void onApplicationCommandDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnChannelCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onChannelCreation(delegate<OnChannelCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnChannelCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onChannelCreation(EventHandler<OnChannelCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onChannelCreation(event_token const& token);
+		void onChannelCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnChannelUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onChannelUpdate(delegate<OnChannelUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnChannelUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onChannelUpdate(EventHandler<OnChannelUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onChannelUpdate(event_token const& token);
+		void onChannelUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnChannelDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onChannelDeletion(delegate<OnChannelDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnChannelDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onChannelDeletion(EventHandler<OnChannelDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onChannelDeletion(event_token const& token);
+		void onChannelDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnChannelPinsUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onChannelPinsUpdate(delegate<OnChannelPinsUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnChannelPinsUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onChannelPinsUpdate(EventHandler<OnChannelPinsUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onChannelPinsUpdate(event_token const& token);
+		void onChannelPinsUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnThreadCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onThreadCreation(delegate<OnThreadCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnThreadCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onThreadCreation(EventHandler<OnThreadCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onThreadCreation(event_token const& token);
+		void onThreadCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnThreadUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onThreadUpdate(delegate<OnThreadUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnThreadUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onThreadUpdate(EventHandler<OnThreadUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onThreadUpdate(event_token const& token);
+		void onThreadUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnThreadDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onThreadDeletion(delegate<OnThreadDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnThreadDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onThreadDeletion(EventHandler<OnThreadDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onThreadDeletion(event_token const& token);
+		void onThreadDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnThreadListSyncData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onThreadListSync(delegate<OnThreadListSyncData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnThreadListSyncData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onThreadListSync(EventHandler<OnThreadListSyncData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onThreadListSync(event_token const& token);
+		void onThreadListSync(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnThreadMemberUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onThreadMemberUpdate(delegate<OnThreadMemberUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnThreadMemberUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onThreadMemberUpdate(EventHandler<OnThreadMemberUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onThreadMemberUpdate(event_token const& token);
+		void onThreadMemberUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnThreadMembersUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onThreadMembersUpdate(delegate<OnThreadMembersUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnThreadMembersUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onThreadMembersUpdate(EventHandler<OnThreadMembersUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onThreadMembersUpdate(event_token const& token);
+		void onThreadMembersUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildCreation(delegate<OnGuildCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildCreation(EventHandler<OnGuildCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildCreation(event_token const& token);
+		void onGuildCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildUpdate(delegate<OnGuildUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildUpdate(EventHandler<OnGuildUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildUpdate(event_token const& token);
+		void onGuildUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildDeletion(delegate<OnGuildDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildDeletion(EventHandler<OnGuildDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildDeletion(event_token const& token);
+		void onGuildDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildBanAddData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildBanAdd(delegate<OnGuildBanAddData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildBanAddData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildBanAdd(EventHandler<OnGuildBanAddData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildBanAdd(event_token const& token);
+		void onGuildBanAdd(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildBanRemoveData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildBanRemove(delegate<OnGuildBanRemoveData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildBanRemoveData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildBanRemove(EventHandler<OnGuildBanRemoveData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token event_token const& from the original event registration.
+		/// \param token EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildBanRemove(event_token const& token);
+		void onGuildBanRemove(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildEmojisUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildEmojisUpdate(delegate<OnGuildEmojisUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildEmojisUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildEmojisUpdate(EventHandler<OnGuildEmojisUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildEmojisUpdate(event_token const& token);
+		void onGuildEmojisUpdate(EventToken token);
 		
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildStickersUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildStickersUpdate(delegate<OnGuildStickersUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildStickersUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildStickersUpdate(EventHandler<OnGuildStickersUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildStickersUpdate(event_token const& token);
+		void onGuildStickersUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildIntegrationsUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildIntegrationsUpdate(delegate<OnGuildIntegrationsUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildIntegrationsUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildIntegrationsUpdate(EventHandler<OnGuildIntegrationsUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildIntegrationsUpdate(event_token const& token);
+		void onGuildIntegrationsUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildMembersChunkData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildMembersChunk(delegate<OnGuildMembersChunkData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildMembersChunkData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildMembersChunk(EventHandler<OnGuildMembersChunkData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildMembersChunk(event_token const& token);
+		void onGuildMembersChunk(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildMemberAddData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildMemberAdd(delegate<OnGuildMemberAddData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildMemberAddData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildMemberAdd(EventHandler<OnGuildMemberAddData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildMemberAdd(event_token const& token);
+		void onGuildMemberAdd(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildMemberRemoveData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildMemberRemove(delegate<OnGuildMemberRemoveData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildMemberRemoveData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildMemberRemove(EventHandler<OnGuildMemberRemoveData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildMemberRemove(event_token const& token);
+		void onGuildMemberRemove(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnGuildMemberUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onGuildMemberUpdate(delegate<OnGuildMemberUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnGuildMemberUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onGuildMemberUpdate(EventHandler<OnGuildMemberUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onGuildMemberUpdate(event_token const& token);
+		void onGuildMemberUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnRoleCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onRoleCreation(delegate<OnRoleCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnRoleCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onRoleCreation(EventHandler<OnRoleCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onRoleCreation(event_token const& token);
+		void onRoleCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnRoleUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onRoleUpdate(delegate<OnRoleUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnRoleUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onRoleUpdate(EventHandler<OnRoleUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onRoleUpdate(event_token const& token);
+		void onRoleUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnRoleDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onRoleDeletion(delegate<OnRoleDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnRoleDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onRoleDeletion(EventHandler<OnRoleDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onRoleDeletion(event_token const& token);
+		void onRoleDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnIntegrationCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onIntegrationCreation(delegate<OnIntegrationCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnIntegrationCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onIntegrationCreation(EventHandler<OnIntegrationCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onIntegrationCreation(event_token const& token);
+		void onIntegrationCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnIntegrationUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onIntegrationUpdate(delegate<OnIntegrationUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnIntegrationUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onIntegrationUpdate(EventHandler<OnIntegrationUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onIntegrationUpdate(event_token const& token);
+		void onIntegrationUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnIntegrationDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onIntegrationDeletion(delegate<OnIntegrationDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnIntegrationDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onIntegrationDeletion(EventHandler<OnIntegrationDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onIntegrationDeletion(event_token const& token);
+		void onIntegrationDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnInteractionCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onInteractionCreation(delegate<OnInteractionCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnInteractionCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onInteractionCreation(EventHandler<OnInteractionCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onInteractionCreation(event_token const& token);
+		void onInteractionCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnInviteCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onInviteCreation(delegate<OnInviteCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnInviteCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onInviteCreation(EventHandler<OnInviteCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onInviteCreation(event_token const& token);
+		void onInviteCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnInviteDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onInviteDeletion(delegate<OnInviteDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnInviteDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onInviteDeletion(EventHandler<OnInviteDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onInviteDeletion(event_token const& token);
+		void onInviteDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnMessageCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onMessageCreation(delegate<OnMessageCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnMessageCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onMessageCreation(EventHandler<OnMessageCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onMessageCreation(event_token const& token);
+		void onMessageCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnMessageUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onMessageUpdate(delegate<OnMessageUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnMessageUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onMessageUpdate(EventHandler<OnMessageUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onMessageUpdate(event_token const& token);
+		void onMessageUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnMessageDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onMessageDeletion(delegate<OnMessageDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnMessageDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onMessageDeletion(EventHandler<OnMessageDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onMessageDeletion(event_token const& token);
+		void onMessageDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnMessageDeleteBulkData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onMessageDeleteBulk(delegate<OnMessageDeleteBulkData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnMessageDeleteBulkData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onMessageDeleteBulk(EventHandler<OnMessageDeleteBulkData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onMessageDeleteBulk(event_token const& token);
+		void onMessageDeleteBulk(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnReactionAddData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onReactionAdd(delegate<OnReactionAddData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnReactionAddData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onReactionAdd(EventHandler<OnReactionAddData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onReactionAdd(event_token const& token);
+		void onReactionAdd(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnReactionRemoveData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onReactionRemove(delegate<OnReactionRemoveData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnReactionRemoveData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onReactionRemove(EventHandler<OnReactionRemoveData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onReactionRemove(event_token const& token);
+		void onReactionRemove(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnReactionRemoveAllData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onReactionRemoveAll(delegate<OnReactionRemoveAllData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnReactionRemoveAllData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onReactionRemoveAll(EventHandler<OnReactionRemoveAllData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onReactionRemoveAll(event_token const& token);
+		void onReactionRemoveAll(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnReactionRemoveEmojiData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onReactionRemoveEmoji(delegate<OnReactionRemoveEmojiData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnReactionRemoveEmojiData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onReactionRemoveEmoji(EventHandler<OnReactionRemoveEmojiData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onReactionRemoveEmoji(event_token const& token);
+		void onReactionRemoveEmoji(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnPresenceUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onPresenceUpdate(delegate<OnPresenceUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnPresenceUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onPresenceUpdate(EventHandler<OnPresenceUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onPresenceUpdate(event_token const& token);
+		void onPresenceUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnStageInstanceCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onStageInstanceCreation(delegate<OnStageInstanceCreationData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnStageInstanceCreationData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onStageInstanceCreation(EventHandler<OnStageInstanceCreationData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onStageInstanceCreation(event_token const& token);
+		void onStageInstanceCreation(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnStageInstanceUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onStageInstanceUpdate(delegate<OnStageInstanceUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnStageInstanceUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onStageInstanceUpdate(EventHandler<OnStageInstanceUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onStageInstanceUpdate(event_token const& token);
+		void onStageInstanceUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnStageInstanceDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onStageInstanceDeletion(delegate<OnStageInstanceDeletionData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnStageInstanceDeletionData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onStageInstanceDeletion(EventHandler<OnStageInstanceDeletionData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onStageInstanceDeletion(event_token const& token);
+		void onStageInstanceDeletion(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnTypingStartData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onTypingStart(delegate<OnTypingStartData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnTypingStartData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onTypingStart(EventHandler<OnTypingStartData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onTypingStart(event_token const& token);
+		void onTypingStart(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnUserUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onUserUpdate(delegate<OnUserUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnUserUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onUserUpdate(EventHandler<OnUserUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onUserUpdate(event_token const& token);
+		void onUserUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnVoiceStateUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onVoiceStateUpdate(delegate<OnVoiceStateUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnVoiceStateUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onVoiceStateUpdate(EventHandler<OnVoiceStateUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onVoiceStateUpdate(event_token const& token);
+		void onVoiceStateUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnVoiceServerUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onVoiceServerUpdate(delegate<OnVoiceServerUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnVoiceServerUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onVoiceServerUpdate(EventHandler<OnVoiceServerUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onVoiceServerUpdate(event_token const& token);
+		void onVoiceServerUpdate(EventToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnWebhookUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		event_token onWebhookUpdate(delegate<OnWebhookUpdateData> const& handler);
+		/// \param handler An EventHandlerNew taking an OnWebhookUpdateData structure as an argument.
+		/// \returns An EventToken for later de-registering the event.
+		EventToken onWebhookUpdate(EventHandler<OnWebhookUpdateData>::EventHandlerNew handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An event_token const& from the original event registration.
+		/// \param token An EventToken const& from the original event registration.
 		/// \returns void
-		void onWebhookUpdate(event_token const& token);
+		void onWebhookUpdate(EventToken token);
 
 	protected:
 
-		winrt::event<delegate<OnInputEventCreationData>> onInputEventCreationEvent;
+		winrt::event<delegate<OnChannelCreationData>> onChannelCreationEventTwo {};
 
-		winrt::event<delegate<OnApplicationCommandCreationData>> onApplicationCommandCreationEvent;
+		Event<EventHandler<OnInputEventCreationData>> onInputEventCreationEvent{};
 
-		winrt::event<delegate<OnApplicationCommandUpdateData>> onApplicationCommandUpdateEvent;
+		Event<EventHandler<OnApplicationCommandCreationData>> onApplicationCommandCreationEvent{};
 
-		winrt::event<delegate<OnApplicationCommandDeletionData>> onApplicationCommandDeletionEvent;
+		Event<EventHandler<OnApplicationCommandUpdateData>> onApplicationCommandUpdateEvent{};
 
-		winrt::event<delegate<OnChannelCreationData>> onChannelCreationEvent;
+		Event<EventHandler<OnApplicationCommandDeletionData>> onApplicationCommandDeletionEvent{};
 
-		winrt::event<delegate<OnChannelUpdateData>> onChannelUpdateEvent;
+		Event<EventHandler<OnChannelCreationData>> onChannelCreationEvent{};
 
-		winrt::event<delegate<OnChannelDeletionData>> onChannelDeletionEvent;
+		Event<EventHandler<OnChannelUpdateData>> onChannelUpdateEvent{};
 
-		winrt::event<delegate<OnChannelPinsUpdateData>> onChannelPinsUpdateEvent;
+		Event<EventHandler<OnChannelDeletionData>> onChannelDeletionEvent{};
 
-		winrt::event<delegate<OnThreadCreationData>> onThreadCreationEvent;
+		Event<EventHandler<OnChannelPinsUpdateData>> onChannelPinsUpdateEvent{};
 
-		winrt::event<delegate<OnThreadUpdateData>> onThreadUpdateEvent;
+		Event<EventHandler<OnThreadCreationData>> onThreadCreationEvent{};
 
-		winrt::event<delegate<OnThreadDeletionData>> onThreadDeletionEvent;
+		Event<EventHandler<OnThreadUpdateData>> onThreadUpdateEvent{};
 
-		winrt::event<delegate<OnThreadListSyncData>> onThreadListSyncEvent;
+		Event<EventHandler<OnThreadDeletionData>> onThreadDeletionEvent{};
 
-		winrt::event<delegate<OnThreadMemberUpdateData>> onThreadMemberUpdateEvent;
+		Event<EventHandler<OnThreadListSyncData>> onThreadListSyncEvent{};
 
-		winrt::event<delegate<OnThreadMembersUpdateData>> onThreadMembersUpdateEvent;
+		Event<EventHandler<OnThreadMemberUpdateData>> onThreadMemberUpdateEvent{};
 
-		winrt::event<delegate<OnGuildCreationData>> onGuildCreationEvent;
+		Event<EventHandler<OnThreadMembersUpdateData>> onThreadMembersUpdateEvent{};
 
-		winrt::event<delegate<OnGuildUpdateData>> onGuildUpdateEvent;
+		Event<EventHandler<OnGuildCreationData>> onGuildCreationEvent{};
 
-		winrt::event<delegate<OnGuildDeletionData>> onGuildDeletionEvent;
+		Event<EventHandler<OnGuildUpdateData>> onGuildUpdateEvent{};
 
-		winrt::event<delegate<OnGuildBanAddData>> onGuildBanAddEvent;
+		Event<EventHandler<OnGuildDeletionData>> onGuildDeletionEvent{};
 
-		winrt::event<delegate<OnGuildBanRemoveData>> onGuildBanRemoveEvent;
+		Event<EventHandler<OnGuildBanAddData>> onGuildBanAddEvent{};
 
-		winrt::event<delegate<OnGuildEmojisUpdateData>> onGuildEmojisUpdateEvent;
+		Event<EventHandler<OnGuildBanRemoveData>> onGuildBanRemoveEvent{};
 
-		winrt::event<delegate<OnGuildStickersUpdateData>> onGuildStickersUpdateEvent;
+		Event<EventHandler<OnGuildEmojisUpdateData>> onGuildEmojisUpdateEvent{};
 
-		winrt::event<delegate<OnGuildIntegrationsUpdateData>> onGuildIntegrationsUpdateEvent;
+		Event<EventHandler<OnGuildStickersUpdateData>> onGuildStickersUpdateEvent{};
 
-		winrt::event<delegate<OnGuildMemberAddData>> onGuildMemberAddEvent;
+		Event<EventHandler<OnGuildIntegrationsUpdateData>> onGuildIntegrationsUpdateEvent{};
 
-		winrt::event<delegate<OnGuildMemberRemoveData>> onGuildMemberRemoveEvent;
+		Event<EventHandler<OnGuildMemberAddData>> onGuildMemberAddEvent{};
 
-		winrt::event<delegate<OnGuildMemberUpdateData>> onGuildMemberUpdateEvent;
+		Event<EventHandler<OnGuildMemberRemoveData>> onGuildMemberRemoveEvent{};
 
-		winrt::event<delegate<OnGuildMembersChunkData>> onGuildMembersChunkEvent;
+		Event<EventHandler<OnGuildMemberUpdateData>> onGuildMemberUpdateEvent{};
 
-		winrt::event<delegate<OnRoleCreationData>> onRoleCreationEvent;
+		Event<EventHandler<OnGuildMembersChunkData>> onGuildMembersChunkEvent{};
 
-		winrt::event<delegate<OnRoleUpdateData>> onRoleUpdateEvent;
+		Event<EventHandler<OnRoleCreationData>> onRoleCreationEvent{};
 
-		winrt::event<delegate<OnRoleDeletionData>> onRoleDeletionEvent;
+		Event<EventHandler<OnRoleUpdateData>> onRoleUpdateEvent{};
 
-		winrt::event<delegate<OnIntegrationCreationData>> onIntegrationCreationEvent;
+		Event<EventHandler<OnRoleDeletionData>> onRoleDeletionEvent{};
 
-		winrt::event<delegate<OnIntegrationUpdateData>> onIntegrationUpdateEvent;
+		Event<EventHandler<OnIntegrationCreationData>> onIntegrationCreationEvent{};
 
-		winrt::event<delegate<OnIntegrationDeletionData>> onIntegrationDeletionEvent;
+		Event<EventHandler<OnIntegrationUpdateData>> onIntegrationUpdateEvent{};
 
-		winrt::event<delegate<OnInteractionCreationData>> onInteractionCreationEvent;
+		Event<EventHandler<OnIntegrationDeletionData>> onIntegrationDeletionEvent{};
 
-		winrt::event<delegate<OnInviteCreationData>> onInviteCreationEvent;
+		Event<EventHandler<OnInteractionCreationData>> onInteractionCreationEvent{};
 
-		winrt::event<delegate<OnInviteDeletionData>> onInviteDeletionEvent;
+		Event<EventHandler<OnInviteCreationData>> onInviteCreationEvent{};
 
-		winrt::event<delegate<OnMessageCreationData>> onMessageCreationEvent;
+		Event<EventHandler<OnInviteDeletionData>> onInviteDeletionEvent{};
 
-		winrt::event<delegate<OnMessageUpdateData>> onMessageUpdateEvent;
+		Event<EventHandler<OnMessageCreationData>> onMessageCreationEvent{};
 
-		winrt::event<delegate<OnMessageDeletionData>> onMessageDeletionEvent;
+		Event<EventHandler<OnMessageUpdateData>> onMessageUpdateEvent{};
 
-		winrt::event<delegate<OnMessageDeleteBulkData>>onMessageDeleteBulkEvent;
+		Event<EventHandler<OnMessageDeletionData>> onMessageDeletionEvent{};
 
-		winrt::event<delegate<OnReactionAddData>> onReactionAddEvent;
+		Event<EventHandler<OnMessageDeleteBulkData>> onMessageDeleteBulkEvent{};
 
-		winrt::event<delegate<OnReactionRemoveData>> onReactionRemoveEvent;
+		Event<EventHandler<OnReactionAddData>> onReactionAddEvent{};
 
-		winrt::event<delegate<OnReactionRemoveAllData>> onReactionRemoveAllEvent;
+		Event<EventHandler<OnReactionRemoveData>> onReactionRemoveEvent{};
 
-		winrt::event<delegate<OnReactionRemoveEmojiData>> onReactionRemoveEmojiEvent;
+		Event<EventHandler<OnReactionRemoveAllData>> onReactionRemoveAllEvent{};
 
-		winrt::event<delegate<OnPresenceUpdateData>> onPresenceUpdateEvent;
+		Event<EventHandler<OnReactionRemoveEmojiData>> onReactionRemoveEmojiEvent{};
 
-		winrt::event<delegate<OnStageInstanceCreationData>> onStageInstanceCreationEvent;
+		Event<EventHandler<OnPresenceUpdateData>> onPresenceUpdateEvent{};
 
-		winrt::event<delegate<OnStageInstanceUpdateData>> onStageInstanceUpdateEvent;
+		Event<EventHandler<OnStageInstanceCreationData>> onStageInstanceCreationEvent{};
 
-		winrt::event<delegate<OnStageInstanceDeletionData>> onStageInstanceDeletionEvent;
+		Event<EventHandler<OnStageInstanceUpdateData>> onStageInstanceUpdateEvent{};
 
-		winrt::event<delegate<OnTypingStartData>> onTypingStartEvent;
+		Event<EventHandler<OnStageInstanceDeletionData>> onStageInstanceDeletionEvent{};
 
-		winrt::event<delegate<OnUserUpdateData>> onUserUpdateEvent;
+		Event<EventHandler<OnTypingStartData>> onTypingStartEvent{};
 
-		winrt::event<delegate<OnVoiceStateUpdateData>> onVoiceStateUpdateEvent;
+		Event<EventHandler<OnUserUpdateData>> onUserUpdateEvent{};
 
-		winrt::event<delegate<OnVoiceServerUpdateData>> onVoiceServerUpdateEvent;
+		Event<EventHandler<OnVoiceStateUpdateData>> onVoiceStateUpdateEvent{};
 
-		winrt::event<delegate<OnWebhookUpdateData>> onWebhookUpdateEvent;
+		Event<EventHandler<OnVoiceServerUpdateData>> onVoiceServerUpdateEvent{};
+
+		Event<EventHandler<OnWebhookUpdateData>> onWebhookUpdateEvent{};
 
 	};
 	/**@}*/
-	class DiscordCoreAPI_Dll EventHandler {
+	class DiscordCoreAPI_Dll EventHandlerTwo {
 	public:
 		
 		static void onChannelCreation(OnChannelCreationData dataPackage);

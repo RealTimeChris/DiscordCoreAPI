@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend class EventHandlerTwo;
 		friend class Users;
 		friend class Guild;
 
@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 
 
 	protected:
-		static ObjectCache<User> cache;
+		static ObjectCache<string, User> cache;
 
 		static void insertUser(User user);
 	};

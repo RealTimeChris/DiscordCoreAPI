@@ -16,9 +16,7 @@ namespace DiscordCoreInternal {
     using namespace winrt::Windows::Web::Http;
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
-    using namespace concurrency::details;
     using namespace winrt::Windows::Web;
-    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -37,9 +35,7 @@ namespace DiscordCoreAPI {
     using namespace winrt::Windows::Web::Http;
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
-    using namespace concurrency::details;
     using namespace winrt::Windows::Web;
-    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -128,21 +124,7 @@ namespace DiscordCoreAPI {
         StopWatch<chrono::milliseconds> stopWatch(timeInMsNew);
         bool doWeBreak{ false };
         while (!outBuffer->try_receive(*argOne)) {
-            concurrency::wait(10);
-            if (stopWatch.hasTimePassed()) {
-                doWeBreak = true;
-                break;
-            }
-        };
-        return doWeBreak;
-    }
-
-    template <typename T>
-    bool waitForTimeToPass(concurrent_queue<T>* outBuffer, T* argOne, int32_t timeInMsNew) {
-        StopWatch<chrono::milliseconds> stopWatch{ timeInMsNew };
-        bool doWeBreak{ false };
-        while (!outBuffer->try_pop(*argOne)) {
-            wait(10);
+            this_thread::sleep_for(chrono::milliseconds(10));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;
@@ -155,7 +137,7 @@ namespace DiscordCoreAPI {
     void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0 && !isRepeating) {
-            wait(timeDelayInMs);
+            this_thread::sleep_for(chrono::milliseconds(timeDelayInMs));
             theFunction(args...);
             return;
         }
@@ -1868,8 +1850,8 @@ namespace DiscordCoreAPI {
         friend class RespondToInputEventData;
         friend struct BaseFunctionArguments;
         friend class DiscordCoreClient;
+        friend class EventHandlerTwo;
         friend struct CommandData;
-        friend class EventHandler;
         friend class InputEvents;
 
         InputEventResponseType inputEventResponseType{}; ///< The type of event response that is represented by this structure.
@@ -2622,33 +2604,61 @@ namespace DiscordCoreAPI {
 
     /// A Thread-safe cache for storing objects of any kind. \brief A Thread-safe cache for storing objects of any kind.
     /// \param storageType The type of item to be stored.
-    template<typename storageType>
+    template<typename keyType, typename storageType>
     class DiscordCoreAPI_Dll ObjectCache {
     public:
 
         friend class Guilds;
 
+        ObjectCache() = default;
+
+        auto end() {
+            lock_guard<mutex> returnLock{ *this->accessMutex };
+            return this->cache.end();
+        }
+
+        auto begin() {
+            lock_guard<mutex> returnLock{ *this->accessMutex };
+            return this->cache.begin();
+        }
+
+        ObjectCache& operator=(const ObjectCache& other) {
+            this->accessMutex = make_unique<mutex>();
+            this->cache = other.cache;
+            return *this;
+        }
+
+        ObjectCache& operator=(ObjectCache& other) {
+            this->accessMutex = move(other.accessMutex);
+            this->cache = other.cache;
+            return *this;
+        }
+
+        ObjectCache(ObjectCache& other) {
+            *this = other;
+        }
+
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
-        storageType returnValue(string valueId) {
-            lock_guard<mutex> returnLock{ this->accessMutex };
-            return this->cache.at(valueId);
+        storageType returnValue(keyType valueId) {
+            lock_guard<mutex> returnLock{ *this->accessMutex };
+            return move(*&this->cache.at(valueId));
         }
 
         /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
-        bool contains(string valueId) {
-            lock_guard<mutex> containLock{ this->accessMutex };
+        bool contains(keyType valueId) {
+            lock_guard<mutex> containLock{ *this->accessMutex };
             return this->cache.contains(valueId);
         }
 
         /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns void.
-        void erase(string valueId) {
-            lock_guard<mutex> eraseLock{ this->accessMutex };
+        void erase(keyType valueId) {
+            lock_guard<mutex> eraseLock{ *this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -2658,16 +2668,16 @@ namespace DiscordCoreAPI {
         /// \param valueId The item's id to store it at.
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
-        void storeValue(string valueId, storageType storageValue) {
-            lock_guard<mutex> storeLock{ this->accessMutex };
+        void storeValue(keyType valueId, storageType storageValue) {
+            lock_guard<mutex> storeLock{ *this->accessMutex };
             this->cache.insert_or_assign(valueId, move(storageValue));
         }
 
     protected:
 
-        map<string, storageType> cache{};
+        map<keyType, storageType> cache{};
 
-        mutex accessMutex{};
+        unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
     };
 
     /// PermissionsConverter class, for manipulating Permission values. \brief PermissionsConverter class, for manipulating Permission values.

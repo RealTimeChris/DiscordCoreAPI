@@ -8,8 +8,17 @@
 #include "IndexInitial.hpp"
 #include "SongDecoder.hpp"
 #include "ErlPacker.hpp"
+#include "SSLClient.hpp"
 
 namespace DiscordCoreInternal {
+
+	constexpr uint8_t WebSocketMaskBit = (1u << 7u);
+	constexpr uint8_t WebSocketFinishBit = (1u << 7u);
+	constexpr uint8_t WebSocketPayloadLengthMagicLarge = 126;
+	constexpr uint8_t WebSocketPayloadLengthMagicHuge = 127;
+	constexpr uint64_t WebSocketMaxPayloadLengthSmall = 125;
+	constexpr uint64_t WebSocketMaxPayloadLengthLarge = 65535;
+	constexpr uint64_t MaxHeaderSize = sizeof(uint64_t) + 2;
 
 	enum class WebSocketEventType {
 		Unset = 0,
@@ -66,6 +75,21 @@ namespace DiscordCoreInternal {
 		Webhooks_Update = 51
 	};
 
+	enum class WebSocketState : uint8_t {
+
+		Initializing = 0,
+		 Connected = 1
+	};
+
+	enum class WebSocketOpCodes : uint8_t {
+		WS_OP_CONTINUATION = 0x00,
+		WS_OP_TEXT = 0x01,
+		WS_OP_BINARY = 0x02,
+		WS_OP_CLOSE = 0x08,
+		WS_OP_PING = 0x09,
+		WS_OP_PONG = 0x0a
+	};
+
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		json payLoad{};
@@ -91,6 +115,68 @@ namespace DiscordCoreInternal {
 		~WebSocketWorkload() {};
 	};
 
+	class DiscordCoreAPI_Dll MsgWebSocketAgent {
+	public:
+
+		MsgWebSocketAgent(string& hostname, const string& port = "443", const string& urlpath = "", WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+
+		void sendMessage(json& data);
+
+		void close();
+
+		~MsgWebSocketAgent();
+
+	protected:
+
+		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
+		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
+		unique_ptr<MsgWebSocketSSLClient> sslClient{ nullptr };
+		shared_ptr<ThreadPoolTimer> heartbeatTimer{ nullptr };
+		DiscordCoreAPI::Event<void> disconnectionEvent{};
+		map<string, bool*> areWeReadyToConnectPtrs{};
+		VoiceConnectInitData voiceConnectInitData{};
+		DiscordCoreAPI::CoRoutine<void> theTask{};
+		VoiceConnectionData voiceConnectionData{};
+		bool haveWeReceivedHeartbeatAck{ true };
+		const int32_t maxReconnectTries{ 10 };
+		bool serverUpdateCollected{ false };
+		bool stateUpdateCollected{ false };
+		int32_t currentReconnectTries{ 0 };
+		map<string, string> HttpHeaders{};
+		bool areWeCollectingData{ false };
+		bool areWeAuthenticated{ false };
+		int32_t lastNumberReceived{ 0 };
+		int32_t heartbeatInterval{ 0 };
+		WebSocketOpCodes dataOpcode{};
+		string connectionPath{ "" };
+		mutex accessorMutex02{};
+		mutex accessorMutex01{};
+		string socketPath{ "" };
+		uint32_t errorCode{ 0 };
+		bool doWeQuit{ false };
+		WebSocketState state{};
+		string sessionId{ "" };
+		string botToken{ "" };
+		string authKey{ "" };
+
+		uint64_t fillHeader(vector<uint8_t>&, uint64_t, WebSocketOpCodes);
+		
+		void tokenize(const string&, vector<string>&, string = "\r\n");
+
+		void onMessageReceived(vector<uint8_t>&);
+
+		bool handleBuffer(vector<uint8_t>& buffer);
+		
+		DiscordCoreAPI::CoRoutine<void> run();
+
+		bool parseHeader(vector<uint8_t>&);
+
+		void sendHeartBeat();
+
+		void connect();
+	};
+
 	class DiscordCoreAPI_Dll BaseWebSocketAgent {
 	public:
 
@@ -112,10 +198,10 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		shared_ptr<ThreadPoolTimer> heartbeatTimer{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
+		DiscordCoreAPI::Event<void> disconnectionEvent{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
-		concurrency::event disconnectionEvent {};
 		bool haveWeReceivedHeartbeatAck{ true };
 		const int32_t maxReconnectTries{ 10 };
 		bool serverUpdateCollected{ false };
@@ -154,7 +240,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event* reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
+		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void>* readyEventNew, DiscordCoreAPI::Event<void>* reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
 		void sendMessage(vector<uint8_t> text);
 
@@ -169,13 +255,13 @@ namespace DiscordCoreInternal {
 	protected:
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
+		DiscordCoreAPI::Event<void>* reconnectionEvent{ nullptr };
+		DiscordCoreAPI::Event<void>* readyEvent{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
 		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };
-		concurrency::event* reconnectionEvent { nullptr };
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
-		concurrency::event* readyEvent { nullptr };
 		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };

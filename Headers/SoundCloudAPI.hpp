@@ -29,16 +29,18 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<SongDecoder> songDecoder{ nullptr };
 		unique_ptr<SongEncoder> songEncoder{ nullptr };
-		concurrency::event readyToQuitEventOut {};
-		concurrency::event readyToQuitEventIn {};
+		unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		const int32_t maxBufferSize{ 8192 };
-		CoRoutine<void> theTask{ nullptr };
+		Event<void> readyToQuitEventOut{};
+		Event<void> readyToQuitEventIn{};
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
 
 		bool stop();
 
 		void sendNextSong(Song newSong);
+
+		void cancelCurrentSong();
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 

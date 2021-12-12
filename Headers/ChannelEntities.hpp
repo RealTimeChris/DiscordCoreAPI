@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend class EventHandlerTwo;
 		friend class Guild;
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
@@ -232,7 +232,8 @@ namespace DiscordCoreAPI {
 		static CoRoutine<vector<VoiceRegionData>> getVoiceRegionsAsync();
 
 	protected:
-		static ObjectCache<Channel> cache;
+
+		static ObjectCache<string, Channel> cache;
 
 		static void insertChannel(Channel dataPackage);
 

@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 	public:
 		
 		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend class EventHandlerTwo;
 		friend class Guild;
 
 		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static ObjectCache<Role> cache;
+		static ObjectCache<string, Role> cache;
 
 		static void insertRole(Role dataPackage);
 

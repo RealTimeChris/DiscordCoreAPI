@@ -520,8 +520,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreClient;
-        friend class EventManager;
-        friend class EventHandler;
+        friend class EventHandlerTwo;
+        friend class EventManager;        
 
         /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.
         /// \param dataPackage A CreateDeferredInteractionResponseData structure.
@@ -569,7 +569,7 @@ namespace DiscordCoreAPI {
         static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
     protected:
-        static map<string, unique_ptr<concurrent_queue<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
+        static map<string, unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
     };
     /**@}*/
 
@@ -593,7 +593,7 @@ namespace DiscordCoreAPI {
     public:
         friend class DiscordCoreClient;
 
-        static map<string, concurrent_queue<InteractionData>*>selectMenuInteractionBufferMap;
+        static map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -613,7 +613,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        unique_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
+        unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
         DiscordCoreAPI::InteractionData interactionData{};
         vector<SelectMenuResponseData> responseVector{};
         int32_t currentCollectedSelectMenuCount{ 0 };
@@ -646,7 +646,7 @@ namespace DiscordCoreAPI {
     public:
         friend class DiscordCoreClient;
 
-        static map<string, concurrent_queue<InteractionData>*> buttonInteractionBufferMap;
+        static map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -666,7 +666,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        unique_ptr<concurrent_queue<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
+        unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};
         bool doWeSendInitialResponse{ false };
         InteractionData interactionData{};
