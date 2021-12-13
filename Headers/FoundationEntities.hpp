@@ -157,6 +157,7 @@ namespace DiscordCoreAPI {
         return;
     }
 
+    /// Time formatting methods. \brief Time formatting methods.
     enum class TimeFormat {
         LongDate = 'D',		/// "20 April 2021" - Long Date
         LongDateTime = 'F',		/// "Tuesday, 20 April 2021 16:20" - Long Date/Time

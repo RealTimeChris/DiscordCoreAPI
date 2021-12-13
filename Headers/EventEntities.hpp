@@ -18,11 +18,12 @@ namespace DiscordCoreAPI {
         template<typename EventHandler >
         friend class EventDelegate;
 
+        EventToken() = default;
+
     protected:
         string handlerId{ "" };
         string eventId{ "" };
-
-        EventToken() = default;
+        
     };
 
     template<typename ArgOne>
@@ -38,13 +39,17 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        EventDelegate(EventDelegate<ArgOne>&& other) {
+        EventDelegate<ArgOne>(EventDelegate<ArgOne>&& other) {
             *this = move(other);
         }
 
         EventDelegate<ArgOne>& operator=(EventDelegate<ArgOne>&) = delete;
 
         EventDelegate<ArgOne>(EventDelegate<ArgOne>&) = delete;
+
+        EventDelegate<ArgOne>(function<void(ArgOne)> theFunctionNew) {
+            this->theFunction = theFunctionNew;
+        }
 
         EventDelegate<ArgOne>(void(*theFunctionNew)(ArgOne)) {
             this->theFunction = static_cast<function<void(ArgOne)>>(theFunctionNew);
