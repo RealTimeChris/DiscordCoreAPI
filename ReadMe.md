@@ -81,5 +81,6 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 - [LibSodium](https://github.com/jedisct1/libsodium) (.\vcpkg install libsodium:x64-windows)
 - [FFMPEG](http://ffmpeg.org/) (.\vcpkg install ffmpeg:x64-windows)
 - [Glib](https://github.com/GNOME/glib) (.\vcpkg install glib:x64-windows)
+- [Cpp-Bas64](https://github.com/ReneNyffenegger/cpp-base64) (.\vcpkg install cpp-base64:x64-windows)
 ## Roadmap
 I am currently working on getting this thing to be used by people like you! So, if you have any suggestions for the library that would make it more usable - don't hesitate to let me know! I can be easily found on the Discord server that is linked to above! Cheers and thanks for your time!
