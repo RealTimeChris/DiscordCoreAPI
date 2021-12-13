@@ -17,6 +17,7 @@ namespace DiscordCoreInternal {
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
+    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -36,6 +37,7 @@ namespace DiscordCoreAPI {
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
+    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -1850,7 +1852,7 @@ namespace DiscordCoreAPI {
         friend class RespondToInputEventData;
         friend struct BaseFunctionArguments;
         friend class DiscordCoreClient;
-        friend class EventHandlerTwo;
+        friend class EventHandler;
         friend struct CommandData;
         friend class InputEvents;
 
@@ -2641,9 +2643,9 @@ namespace DiscordCoreAPI {
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
-        storageType returnValue(keyType valueId) {
+        storageType& returnValue(keyType valueId) {
             lock_guard<mutex> returnLock{ *this->accessMutex };
-            return move(*&this->cache.at(valueId));
+            return this->cache.at(valueId);
         }
 
         /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.

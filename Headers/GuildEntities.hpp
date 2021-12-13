@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClient;
-		friend class EventHandlerTwo;
+		friend class EventHandler;
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.

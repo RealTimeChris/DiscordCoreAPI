@@ -2,6 +2,7 @@
 // Jun 30, 2021
 // Chris M.
 // https://github.com/RealTimeChris
+
 #pragma once
 
 #include "IndexInitial.hpp"
@@ -10,7 +11,7 @@
 #include "SongDecoder.hpp"
 
 namespace DiscordCoreAPI {
-	
+
 	DiscordCoreAPI_Dll string between(string body, string left, string right);
 
 	DiscordCoreAPI_Dll vector<char> splitString(string stringToSplit);
@@ -51,24 +52,23 @@ namespace DiscordCoreAPI {
 		unique_ptr<SongDecoder> songDecoder{ nullptr };
 		unique_ptr<SongEncoder> songEncoder{ nullptr };
 		unique_ptr<CoRoutine<void>> theTask{ nullptr };
+		concurrency::event readyToQuitEventOut {};
+		concurrency::event readyToQuitEventIn {};
 		const int32_t maxBufferSize{ 8192 };
-		Event<void> readyToQuitEventOut{};
-		Event<void> readyToQuitEventIn{};
 		YouTubeSong theSong{};
 		string guildId{ "" };
 
-		bool stop();
-
-		void cancelCurrentSong();
-
-		void sendNextSong(Song newSong);
+		void sendEmptyingFrames(UnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
-		void sendEmptyingFrames(UnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
-		
 		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 
+		void sendNextSong(Song newSong);
+
+		void cancelCurrentSong();
+		
+		bool stop();
 	};
-	
+
 };

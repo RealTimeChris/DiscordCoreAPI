@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClient;
-		friend class EventHandlerTwo;
+		friend class EventHandler;
 		friend class Guild;
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.

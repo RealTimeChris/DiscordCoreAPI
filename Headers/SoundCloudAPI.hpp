@@ -2,6 +2,7 @@
 // Aug 25, 2021
 // Chris M.
 // https://github.com/RealTimeChris
+
 #pragma once
 
 #include "IndexInitial.hpp"
@@ -10,7 +11,7 @@
 #include "SongDecoder.hpp"
 
 namespace DiscordCoreAPI {
-	
+
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
@@ -30,24 +31,23 @@ namespace DiscordCoreAPI {
 		unique_ptr<SongDecoder> songDecoder{ nullptr };
 		unique_ptr<SongEncoder> songEncoder{ nullptr };
 		unique_ptr<CoRoutine<void>> theTask{ nullptr };
+		concurrency::event readyToQuitEventOut {};
+		concurrency::event readyToQuitEventIn {};
 		const int32_t maxBufferSize{ 8192 };
-		Event<void> readyToQuitEventOut{};
-		Event<void> readyToQuitEventIn{};
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
 
-		bool stop();
+		void sendEmptyingFrames(UnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
+
+		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
+
+		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
 
 		void sendNextSong(Song newSong);
 
 		void cancelCurrentSong();
 
-		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
-
-		void sendEmptyingFrames(UnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
-
-		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
-
+		bool stop();
 	};
-	
+
 };

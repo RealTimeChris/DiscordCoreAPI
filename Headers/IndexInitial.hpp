@@ -96,6 +96,7 @@ extern "C"
 #include <coroutine>
 #include <atltime.h>
 #include <iostream>
+#include <concrt.h>
 #include <sodium.h>
 #include <stdio.h>
 #include <string>

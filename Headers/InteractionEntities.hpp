@@ -520,7 +520,7 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreClient;
-        friend class EventHandlerTwo;
+        friend class EventHandler;
         friend class EventManager;        
 
         /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.

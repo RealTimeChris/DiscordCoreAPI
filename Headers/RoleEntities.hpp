@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 	public:
 		
 		friend class DiscordCoreClient;
-		friend class EventHandlerTwo;
+		friend class EventHandler;
 		friend class Guild;
 
 		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.

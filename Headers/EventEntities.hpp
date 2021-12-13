@@ -9,7 +9,7 @@
 #include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
-
+    /*
     struct EventToken {
 
         template<typename EventHander>
@@ -312,7 +312,7 @@ namespace DiscordCoreAPI {
         StopWatch<chrono::milliseconds> timerWatch{ 0 };
         string eventId{ "" };
     };
-    */
+    
 	template<>
 	class Event<void> {
 	public:
@@ -335,7 +335,7 @@ namespace DiscordCoreAPI {
 		static ObjectCache<string, bool> currentStates;
 		string eventId{ "" };
 	};
-
+    */
 
 	//template<typename EventHandler>
 	//ObjectCache<string, bool> Event<EventHandler>::currentStates{};

@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend class DiscordCoreClient;
-		friend class EventHandlerTwo;
+		friend class EventHandler;
 		friend class Users;
 		friend class Guild;
 
