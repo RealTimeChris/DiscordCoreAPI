@@ -32,7 +32,21 @@ namespace DiscordCoreAPI {
         template<typename A>
         friend class Event;
 
-        EventDelegate(void(*theFunctionNew)(ArgOne)) {
+        EventDelegate<ArgOne>& operator=(EventDelegate<ArgOne>&&other) {
+            this->theFunction = move(other.theFunction);
+            this->eventToken = move(other.eventToken);
+            return *this;
+        }
+
+        EventDelegate(EventDelegate<ArgOne>&& other) {
+            *this = move(other);
+        }
+
+        EventDelegate<ArgOne>& operator=(EventDelegate<ArgOne>&) = delete;
+
+        EventDelegate<ArgOne>(EventDelegate<ArgOne>&) = delete;
+
+        EventDelegate<ArgOne>(void(*theFunctionNew)(ArgOne)) {
             this->theFunction = static_cast<function<void(ArgOne)>>(theFunctionNew);
         }
 
@@ -50,12 +64,13 @@ namespace DiscordCoreAPI {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
-        EventDelegate<ArgOne> add(EventDelegate<ArgOne> eventDelegate) {
+        EventToken add(EventDelegate<ArgOne> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            eventDelegate.eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            eventDelegate.eventToken.eventId = this->eventId;
-            this->theFunctions.storeValue(eventDelegate.eventToken.handlerId, eventDelegate);
-            return eventDelegate;
+            EventToken eventToken = eventDelegate.eventToken;
+            eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventToken.eventId = this->eventId;
+            this->theFunctions.storeValue(eventDelegate.eventToken.handlerId, move(eventDelegate));
+            return eventToken;
         }
 
         void remove(EventToken  eventToken) {

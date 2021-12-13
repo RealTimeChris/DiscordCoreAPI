@@ -39,12 +39,12 @@ namespace DiscordCoreAPI {
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song.
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
 		/// \returns An event_token for later de-registering the event. 
-		event_token onSongCompletion(delegate<SongCompletionEventData> const& handler);
+		DiscordCoreAPI::EventToken onSongCompletion(DiscordCoreAPI::EventDelegate<SongCompletionEventData> handler);
 
 		/// For de-registering the event-handler function that was previously registered. \brief For de-registering the event-handler function that was previously registered.
 		/// \param token The event_token that was returned from the registration function.
 		/// \returns void.
-		void onSongCompletion(event_token const& token);
+		void onSongCompletion(DiscordCoreAPI::EventToken token);
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns A string containing the Channel's id. 
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unique_ptr<winrt::event<delegate<SongCompletionEventData>>> onSongCompletionEvent{ make_unique<winrt::event<delegate<SongCompletionEventData>>>() };
+		unique_ptr<DiscordCoreAPI::Event<SongCompletionEventData>> onSongCompletionEvent{ make_unique <DiscordCoreAPI::Event<SongCompletionEventData>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		unique_ptr<concurrency::event> reconnectionEvent{ make_unique<concurrency::event>() };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
