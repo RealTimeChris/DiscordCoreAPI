@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		static vector<ThreadPoolTimer> threadPoolTimers;
 
 		UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
-		unique_ptr<DiscordCoreInternal::MsgWebSocketAgent> baseWebSocketAgent{ nullptr };
+		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
 		function<void(void)> theFunction{};
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
