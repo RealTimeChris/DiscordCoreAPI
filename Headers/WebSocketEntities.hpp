@@ -133,11 +133,11 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
+		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		unique_ptr<MsgWebSocketSSLClient> sslClient{ nullptr };
 		shared_ptr<ThreadPoolTimer> heartbeatTimer{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
-		VoiceConnectInitData voiceConnectInitData{};
-		DiscordCoreAPI::CoRoutine<void> theTask{};
+		VoiceConnectInitData voiceConnectInitData{};		
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
 		bool haveWeReceivedHeartbeatAck{ true };

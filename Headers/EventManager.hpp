@@ -446,11 +446,11 @@ namespace DiscordCoreAPI {
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
-		event_token onGuildCreation(delegate<OnGuildCreationData> const& handler);
+		EventDelegate<OnGuildCreationData> onGuildCreation(EventDelegate<OnGuildCreationData>  handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
-		void onGuildCreation(event_token const& token);
+		void onGuildCreation(EventToken& token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildUpdateData structure as an argument.
@@ -815,7 +815,7 @@ namespace DiscordCoreAPI {
 
 		winrt::event<delegate<OnThreadMembersUpdateData>> onThreadMembersUpdateEvent;
 
-		winrt::event<delegate<OnGuildCreationData>> onGuildCreationEvent;
+		Event<OnGuildCreationData> onGuildCreationEvent{};
 
 		winrt::event<delegate<OnGuildUpdateData>> onGuildUpdateEvent;
 

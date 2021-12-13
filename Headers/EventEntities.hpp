@@ -12,133 +12,69 @@ namespace DiscordCoreAPI {
     
     struct EventToken {
 
-        template<typename EventHander>
-        friend struct Event;
+        template<typename EventHandler>
+        friend class Event;
 
-        EventToken() = default;
-        EventToken(string handlerIdNew, string eventIdNew) :handlerId(handlerId), eventId(eventIdNew) {};
+        template<typename EventHandler >
+        friend class EventDelegate;
 
     protected:
-        string handlerId{};
-        string eventId{};
+        string handlerId{ "" };
+        string eventId{ "" };
+
+        EventToken() = default;
     };
 
-   
+    template<typename ArgOne>
+    class EventDelegate {
+    public:
 
-    template <typename... Args>
-    struct EventHandlerSmall {
+        template<typename A>
+        friend class Event;
 
-        function<void(Args...)> theFunction{};
-        EventToken idToken{};
+        EventDelegate(void(*theFunctionNew)(ArgOne)) {
+            this->theFunction = static_cast<function<void(ArgOne)>>(theFunctionNew);
+        }
 
-        EventHandlerSmall(void(*function)(Args...)) {
-            this->theFunction = function;
-        };
-        
-        typedef  void(*EventHandlerNew)(Args...);        
+        EventToken eventToken{};
+
+    protected:
+        function<void(ArgOne)> theFunction{};
     };
 
-    template <typename... Args>
-    struct EventHandlerSmall<void(Args...)> {
+    template<typename ArgOne>
+    class Event {
+    public:
 
-        function<void(Args...)> theFunction{};
-        EventToken idToken{};
-
-        EventHandlerSmall(void(*function)(Args...)) {
-            this->theFunction = function;
-        };
-        
-        typedef  void(*EventHandlerNew)(Args...);
-    };
-
-    template <typename ArgType>
-    struct Event
-    {
         Event() {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
-        ;
-        Event(Event<ArgType> const&other) {
-            *this = other;
-        }
-        Event<ArgType>& operator =(Event<ArgType> const&other) {
-            this->currentHandlers = other.currentHandlers;
-            this->currentStates = other.currentStates;
-            this->timerWatch = other.timerWatch;
-            this->targets = move(other.targets);
-            this->eventId = other.eventId;
-        };
 
-        explicit operator bool() const noexcept
-        {
-            return this->targets != nullptr;
-        }
-        template<typename ArgType>
-        EventToken add(EventHandlerSmall<ArgType> delegateNew) {
-            lock_guard<mutex> change_guard{ changeMutex };
-            EventToken idToken = createToken();
-            delegateNew.idToken = idToken;
-            this->currentHandlers.storeValue(idToken.handlerId, delegateNew);
-            return idToken;
+        EventDelegate<ArgOne> add(EventDelegate<ArgOne> eventDelegate) {
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            eventDelegate.eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventDelegate.eventToken.eventId = this->eventId;
+            this->theFunctions.storeValue(eventDelegate.eventToken.handlerId, eventDelegate);
+            return eventDelegate;
         }
 
-        void remove(EventToken const token)
-        {
-
-            lock_guard<mutex> change_guard{ changeMutex };
-            this->currentHandlers.erase(token.handlerId);
-        }
-
-        template<typename...Arg>
-        void operator()(Arg... args)
-        {
-            lock_guard<mutex> swap_guard{ swapMutex };
-            for (auto[key, value]: this->currentHandlers)
-            {
-                value.theFunction(args...);
+        void remove(EventToken  eventToken) {
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            if (this->theFunctions.contains(eventToken.handlerId)) {
+                this->theFunctions.erase(eventToken.handlerId);
             }
         }
 
-    private:
+        void operator()(ArgOne arg) {
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            for (auto& [key, value] : this->theFunctions) {
+                value.theFunction(arg);
+            }
+        }
 
-        static ObjectCache<string, bool> currentStates;
-
-        ObjectCache<string, ArgType> currentHandlers{};
-        StopWatch<chrono::milliseconds> timerWatch{ 0 };
+    protected:
+        ObjectCache<string, EventDelegate<ArgOne>> theFunctions{};
         string eventId{ "" };
-        mutex changeMutex{};
-        mutex swapMutex{};
-
-        EventToken createToken() const noexcept
-        {
-            return EventToken{ to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()), eventId };
-        }        
+        mutex accessMutex{};
     };
-    
-	template<>
-	class Event<void> {
-	public:
-		Event() {};
-
-		uint32_t wait(uint64_t milliseconds = 0) {
-
-		}
-
-		void set() {
-
-		}
-
-		void reset() {
-
-		}
-
-	protected:
-
-		static ObjectCache<string, bool> currentStates;
-		string eventId{ "" };
-	};
-    
-
-	//template<typename EventHandlerSmall>
-	//ObjectCache<string, bool> Event<EventHandlerSmall>::currentStates{};
 }

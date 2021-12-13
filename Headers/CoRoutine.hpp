@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
         class DiscordCoreAPI_Dll promise_type;
 
-        CoRoutine& operator=(CoRoutine<returnType>&& other) noexcept {
+        CoRoutine<returnType>& operator=(CoRoutine<returnType>&& other) noexcept {
             this->coroutineHandle = move(other.coroutineHandle);
             this->currentStatus = other.currentStatus;
             return *this;
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
             *this = move(other);
         }
 
-        CoRoutine& operator=(const CoRoutine<returnType>&) = delete;
+        CoRoutine<returnType>& operator=(const CoRoutine<returnType>&) = delete;
 
         CoRoutine(const CoRoutine<returnType>&) = delete;
 
@@ -162,7 +162,6 @@ namespace DiscordCoreAPI {
             }
 
             suspend_always final_suspend() noexcept {
-                this->currentStatus = CoRoutineStatus::Complete;
                 return{};
             }
 
@@ -186,7 +185,7 @@ namespace DiscordCoreAPI {
 
         class DiscordCoreAPI_Dll promise_type;
 
-        CoRoutine& operator=(CoRoutine<void>&& other) noexcept {
+        CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
             this->coroutineHandle = move(other.coroutineHandle);
             this->currentStatus = other.currentStatus;
             return *this;
@@ -196,19 +195,18 @@ namespace DiscordCoreAPI {
             *this = move(other);
         }
 
-        CoRoutine& operator=(const CoRoutine<void>&) = delete;
+        CoRoutine<void>& operator=(const CoRoutine<void>&) = delete;
 
         CoRoutine(const CoRoutine<void>&) = delete;
 
-        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine<void>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine() {}
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
-                if (coroutineHandle.promise().newThread.joinable()) {
-                    coroutineHandle.promise().newThread.get_stop_source().request_stop();
-                    coroutineHandle.promise().newThread.join();
+                if (this->coroutineHandle.promise().newThread.joinable()) {
+                    this->coroutineHandle.promise().newThread.join();
                 }
                 coroutineHandle.destroy();
             }
@@ -292,7 +290,6 @@ namespace DiscordCoreAPI {
             }
 
             suspend_always final_suspend() noexcept {
-                this->currentStatus = CoRoutineStatus::Complete;
                 return{};
             }
 
