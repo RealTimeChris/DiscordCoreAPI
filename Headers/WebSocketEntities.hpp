@@ -12,13 +12,13 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr uint8_t WebSocketMaskBit = (1u << 7u);
-	constexpr uint8_t WebSocketFinishBit = (1u << 7u);
+	constexpr uint64_t WebSocketMaxPayloadLengthLarge = 65535;
 	constexpr uint8_t WebSocketPayloadLengthMagicLarge = 126;
 	constexpr uint8_t WebSocketPayloadLengthMagicHuge = 127;
 	constexpr uint64_t WebSocketMaxPayloadLengthSmall = 125;
-	constexpr uint64_t WebSocketMaxPayloadLengthLarge = 65535;
 	constexpr uint64_t MaxHeaderSize = sizeof(uint64_t) + 2;
+	constexpr uint8_t WebSocketFinishBit = (1u << 7u);
+	constexpr uint8_t WebSocketMaskBit = (1u << 7u);
 
 	enum class WebSocketEventType {
 		Unset = 0,
@@ -164,9 +164,9 @@ namespace DiscordCoreInternal {
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
 
-		void onMessageReceived(vector<uint8_t>&);
-
 		bool handleBuffer(vector<uint8_t>& buffer);
+
+		void onMessageReceived(vector<uint8_t>&);
 
 		DiscordCoreAPI::CoRoutine<void> run();
 
@@ -242,13 +242,13 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event * reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
-		void sendMessage(vector<uint8_t> text);
-
-		void sendVoiceData(vector<uint8_t> data);
+		void otherAgentConnect(ConnectionWebSocketData* connectionData);
 
 		void sendConnectionData(vector<uint8_t>& message);
 
-		void otherAgentConnect(ConnectionWebSocketData* connectionData);
+		void sendVoiceData(vector<uint8_t> data);
+
+		void sendMessage(vector<uint8_t> text);
 
 		~VoiceChannelWebSocketAgent();
 
@@ -279,23 +279,22 @@ namespace DiscordCoreInternal {
 		bool* doWeReconnect{ nullptr };
 		event_token closedToken{};
 
-		void connect();
-
-		void voiceConnect();
-
-		void collectExternalIP();
-
-		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
-
-		void sendHeartBeat();
-
+		void onConnectionDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
+		
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args);
 
 		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
 
-		void onConnectionDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
+		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
+
+		void collectExternalIP();
+
+		void sendHeartBeat();
+
+		void voiceConnect();
 
 		void cleanup();
-	};
 
+		void connect();		
+	};
 }

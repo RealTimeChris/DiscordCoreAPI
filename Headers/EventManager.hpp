@@ -2,7 +2,9 @@
 // Apr 26, 2021
 // Chris M.
 // https://github.com/RealTimeChris
+
 #pragma once
+
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "ChannelEntities.hpp"
@@ -14,7 +16,9 @@
 #include "MessageEntities.hpp"
 #include "ApplicationCommandEntities.hpp"
 #include "ThreadEntities.hpp"
+
 namespace DiscordCoreAPI {
+
 	/**
 	* \addtogroup discord_events
 	* @{
@@ -23,32 +27,38 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
 		InputEventData inputEventData{};///< InputEventData representing the input-event.
 	};
+
 	/// Data that is received as part of an ApplicationCommand creation event. \brief Data that is received as part of an ApplicationCommand creation event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandCreationData {
 		ApplicationCommand applicationCommand{}; ///< The new ApplicationCommand.
 	};
+
 	/// Data that is received as part of an ApplicationCommand update event. \brief Data that is received as part of an ApplicationCommand update event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandUpdateData {
 		ApplicationCommand applicationCommand{}; ///< The new ApplicationCommand.
 	};
+
 	/// Data that is received as part of an ApplicationCommand deletion event. \brief Data that is received as part of an ApplicationCommand deletion event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandDeletionData {
 		ApplicationCommand applicationCommand{}; ///< The deleted ApplicationCommand.
 	};
+
 	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
 	struct DiscordCoreAPI_Dll OnChannelCreationData {
 		Channel channel{}; ///< The new Channel.
 	};
+
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData {
 		Channel channelOld{}; ///< The old Channel.
 		Channel channelNew{};	///< The new Channel.
 	};
+
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
 	struct DiscordCoreAPI_Dll OnChannelDeletionData {
 		Channel channel{}; ///< The deleted Channel.
 	};
-
+	
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
 	struct DiscordCoreAPI_Dll OnChannelPinsUpdateData {
 		ChannelPinsUpdateEventData dataPackage{}; ///< The Channel pins update data.
@@ -83,19 +93,23 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData {
 		ThreadMembersUpdateData threadMembersUpdateData{}; ///< Thread member's update data.
 	};
+
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData {
 		Guild guild{}; ///< The new Guild.
 	};
+
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
 		Guild guildOld{}; ///< The old Guild.
 		Guild guildNew{};	///< The new, updated Guild.
 	};
+
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
 		Guild guild{}; ///< The deleted Guild.
 	};
+
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanAddData {
 		string guildId{ "" }; ///< The Guild they were banned from.
@@ -112,6 +126,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnGuildEmojisUpdateData {
 		GuildEmojisUpdateEventData updateData{}; ///< The Guild emoji's update data.
 	};
+
 	/// Data that is received as part of a Guild sticker update event. \brief Data that is received as part of a Guild sticker update event.
 	struct DiscordCoreAPI_Dll OnGuildStickersUpdateData {
 		GuildStickersUpdateEventData updateData{}; ///< The GuildStickersUpdateEventData.
@@ -121,35 +136,42 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
 		string guildId{ "" }; ///< The id of the Guild for which the integrations were updated.
 	};
+
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
 		GuildMember guildMember{}; ///< The new GuildMember.
 	};
+
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
 		User user{}; ///< The User data of the removed GuildMember.
 		string guildId{ "" }; ///< The id of the Guild from which they were removed.
 	};
+
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
 	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData {
 		GuildMember guildMemberOld{}; ///< The old GuildMember.
 		GuildMember guildMemberNew{};///< The new GuildMember.
 	};
+
 	/// Data that is received as part of a GuildMembers chunk event. \brief Data that is received as part of a GuildMembers chunk event.
 	struct DiscordCoreAPI_Dll OnGuildMembersChunkData {
 		GuildMembersChunkEventData chunkEventData{}; ///< GuildMembersChunkEventData structure.
 	};
+
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
 		Role role{}; ///< The new Role.
 		string guildId{ "" };///< The id of the Guild within which the Role was created.
 	};
+
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
 		string guildId{ "" }; ///< The id of the Guild within which the Role was updated.
 		Role roleOld{}; ///< The old Role.
 		Role roleNew{};	///< The new Role.
 	};
+
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
 	struct DiscordCoreAPI_Dll OnRoleDeletionData {
 		string guildId{ "" }; ///< The id of the Guild from which the Role was deleted.
@@ -191,40 +213,48 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnInteractionCreationData {
 		InteractionData interactionData{};///< The InteractionData representing the Interaction.
 	};
+
 	/// Data that is received as part of a Message creation event. \brief Data that is received as part of a Message creation event.
 	struct DiscordCoreAPI_Dll OnMessageCreationData {
 		Message message{}; ///< The new Message.
 	};
+
 	/// Data that is received as part of a Message update event. \brief  Data that is received as part of a Message update event.
 	struct DiscordCoreAPI_Dll OnMessageUpdateData {
 		Message messageNew{}; ///< The new Message.
 	};
+
 	/// Data that is received as part of a Message deletion event. \brief Data that is received as part of a Message deletion event.
 	struct DiscordCoreAPI_Dll OnMessageDeletionData {
 		string messageId{ "" };///< The id of the Message which was deleted.
 		string channelId{ "" };///< The id of the Channel from which the Message was deleted.
 		string guildId{ "" };///< The id of the Guild from which the Message was deleted.
 	};
+
 	/// Data that is received as part of a Message delete bulk event. \brief Data that is received as part of a Message delete bulk event.
 	struct DiscordCoreAPI_Dll OnMessageDeleteBulkData {
 		string channelId{ "" };///< The id of the Channel from which the Message was deleted.
 		string guildId{ "" };///< The id of the Guild from which the Message was deleted.
 		vector<string> ids{};///< A vector containing the list of deleted Message ids.
 	};
+
 	/// Data that is received as part of a Reaction add event. \brief Data that is received as part of a Reaction add event.
 	struct DiscordCoreAPI_Dll OnReactionAddData {
 		Reaction reaction{};///< The Reaction that was added.
 	};
+
 	/// Data that is received as part of a Reaction remove event. \brief Data that is received as part of a Reaction remove event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveData {
 		ReactionRemoveData reactionRemoveData{}; ///< The ReactionRemoveData.
 	};
+
 	/// Data that is received as part of a Reaction remove all event. \brief Data that is received as part of a Reaction remove all event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveAllData {
 		string channelId{ "" };///< The id of the Channel from which the Reactions were deleted.
 		string messageId{ "" };///< The id of the Message from which the Reactions were deleted.
 		string guildId{ "" };///< The id of the Guild from which the Reactions were deleted.
 	};
+
 	/// Data that is received as part of a Reaction remove emoji event. \brief Data that is received as part of a Reaction remove emoji event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveEmojiData {
 		string messageId{ "" };///< The id of the Message from which the Reactions were deleted.
@@ -232,6 +262,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The id of the Guild from which the Reactions were deleted.
 		EmojiData emoji{};///< The id of the Emoji which was removed from the Message.
 	};
+
 	/// Data that is received as part of a presence update event. \brief Data that is received as part of a presence update event.
 	struct DiscordCoreAPI_Dll OnPresenceUpdateData {
 		PresenceUpdateData presenceData{}; ///< PresenceUpdateData..
@@ -251,6 +282,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnStageInstanceDeletionData {
 		StageInstanceData stageInstance{}; ///< The deleted StageInstanceData.
 	};
+
 	/// Data that is received as part of a typing start event. \brief Data that is received as part of a typing start event.
 	struct DiscordCoreAPI_Dll OnTypingStartData {
 		TypingStartData typingStartData{}; ///< TypingStartData of the event.
@@ -261,10 +293,12 @@ namespace DiscordCoreAPI {
 		User userOld{}; ///< The old User.
 		User userNew{};///< The new User.
 	};
+
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
 		VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
 	};
+
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
 		string endpoint{ "" };///< The new endpoint.
@@ -277,9 +311,11 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };///< Id of the Channel for which the WebHook Update is occurring.
 		string guildId{ "" };///< Id of the Guild for which the WebHook Update is occurring.
 	};
+
 	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int
 	class DiscordCoreAPI_Dll EventManager {
 	public:
+
 		friend class DiscordCoreClient;
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnInputEventCreationData structure as an argument.
@@ -289,6 +325,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onInputEventCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnApplicationCommandCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -297,6 +334,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onApplicationCommandCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnApplicationCommandUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -305,6 +343,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onApplicationCommandUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnApplicationCommandDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -313,6 +352,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onApplicationCommandDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnChannelCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -321,6 +361,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onChannelCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnChannelUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -329,6 +370,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onChannelUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnChannelDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -337,6 +379,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onChannelDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnChannelPinsUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -345,6 +388,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onChannelPinsUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnThreadCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -353,6 +397,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onThreadCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnThreadUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -361,6 +406,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onThreadUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnThreadDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -369,6 +415,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onThreadDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnThreadListSyncData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -377,6 +424,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onThreadListSync(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnThreadMemberUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -385,6 +433,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onThreadMemberUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnThreadMembersUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -393,6 +442,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onThreadMembersUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -401,6 +451,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -409,6 +460,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -417,6 +469,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildBanAddData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -425,6 +478,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildBanAdd(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildBanRemoveData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -433,6 +487,7 @@ namespace DiscordCoreAPI {
 		/// \param token event_token const& from the original event registration.
 		/// \returns void
 		void onGuildBanRemove(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildEmojisUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -441,7 +496,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildEmojisUpdate(event_token const& token);
-
+		
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildStickersUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -450,6 +505,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildStickersUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildIntegrationsUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -458,6 +514,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildIntegrationsUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildMembersChunkData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -466,6 +523,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildMembersChunk(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildMemberAddData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -474,6 +532,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildMemberAdd(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildMemberRemoveData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -482,6 +541,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildMemberRemove(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildMemberUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -490,6 +550,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onGuildMemberUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnRoleCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -498,6 +559,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onRoleCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnRoleUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -506,6 +568,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onRoleUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnRoleDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -514,6 +577,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onRoleDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnIntegrationCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -522,6 +586,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onIntegrationCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnIntegrationUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -530,6 +595,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onIntegrationUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnIntegrationDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -538,6 +604,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onIntegrationDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnInteractionCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -546,6 +613,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onInteractionCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnInviteCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -554,6 +622,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onInviteCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnInviteDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -562,6 +631,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onInviteDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnMessageCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -570,6 +640,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onMessageCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnMessageUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -578,6 +649,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onMessageUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnMessageDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -586,6 +658,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onMessageDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnMessageDeleteBulkData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -594,6 +667,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onMessageDeleteBulk(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnReactionAddData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -602,6 +676,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onReactionAdd(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnReactionRemoveData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -610,6 +685,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onReactionRemove(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnReactionRemoveAllData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -618,6 +694,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onReactionRemoveAll(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnReactionRemoveEmojiData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -626,6 +703,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onReactionRemoveEmoji(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnPresenceUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -634,6 +712,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onPresenceUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnStageInstanceCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -642,6 +721,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onStageInstanceCreation(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnStageInstanceUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -650,6 +730,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onStageInstanceUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnStageInstanceDeletionData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -658,6 +739,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onStageInstanceDeletion(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnTypingStartData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -666,6 +748,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onTypingStart(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnUserUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -674,6 +757,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onUserUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnVoiceStateUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -682,6 +766,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onVoiceStateUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnVoiceServerUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -690,6 +775,7 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onVoiceServerUpdate(event_token const& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnWebhookUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -698,78 +784,143 @@ namespace DiscordCoreAPI {
 		/// \param token An event_token const& from the original event registration.
 		/// \returns void
 		void onWebhookUpdate(event_token const& token);
+
 	protected:
+
 		winrt::event<delegate<OnInputEventCreationData>> onInputEventCreationEvent;
+
 		winrt::event<delegate<OnApplicationCommandCreationData>> onApplicationCommandCreationEvent;
+
 		winrt::event<delegate<OnApplicationCommandUpdateData>> onApplicationCommandUpdateEvent;
+
 		winrt::event<delegate<OnApplicationCommandDeletionData>> onApplicationCommandDeletionEvent;
+
 		winrt::event<delegate<OnChannelCreationData>> onChannelCreationEvent;
+
 		winrt::event<delegate<OnChannelUpdateData>> onChannelUpdateEvent;
+
 		winrt::event<delegate<OnChannelDeletionData>> onChannelDeletionEvent;
+
 		winrt::event<delegate<OnChannelPinsUpdateData>> onChannelPinsUpdateEvent;
+
 		winrt::event<delegate<OnThreadCreationData>> onThreadCreationEvent;
+
 		winrt::event<delegate<OnThreadUpdateData>> onThreadUpdateEvent;
+
 		winrt::event<delegate<OnThreadDeletionData>> onThreadDeletionEvent;
+
 		winrt::event<delegate<OnThreadListSyncData>> onThreadListSyncEvent;
+
 		winrt::event<delegate<OnThreadMemberUpdateData>> onThreadMemberUpdateEvent;
+
 		winrt::event<delegate<OnThreadMembersUpdateData>> onThreadMembersUpdateEvent;
+
 		winrt::event<delegate<OnGuildCreationData>> onGuildCreationEvent;
+
 		winrt::event<delegate<OnGuildUpdateData>> onGuildUpdateEvent;
+
 		winrt::event<delegate<OnGuildDeletionData>> onGuildDeletionEvent;
+
 		winrt::event<delegate<OnGuildBanAddData>> onGuildBanAddEvent;
+
 		winrt::event<delegate<OnGuildBanRemoveData>> onGuildBanRemoveEvent;
+
 		winrt::event<delegate<OnGuildEmojisUpdateData>> onGuildEmojisUpdateEvent;
+
 		winrt::event<delegate<OnGuildStickersUpdateData>> onGuildStickersUpdateEvent;
+
 		winrt::event<delegate<OnGuildIntegrationsUpdateData>> onGuildIntegrationsUpdateEvent;
+
 		winrt::event<delegate<OnGuildMemberAddData>> onGuildMemberAddEvent;
+
 		winrt::event<delegate<OnGuildMemberRemoveData>> onGuildMemberRemoveEvent;
+
 		winrt::event<delegate<OnGuildMemberUpdateData>> onGuildMemberUpdateEvent;
+
 		winrt::event<delegate<OnGuildMembersChunkData>> onGuildMembersChunkEvent;
+
 		winrt::event<delegate<OnRoleCreationData>> onRoleCreationEvent;
+
 		winrt::event<delegate<OnRoleUpdateData>> onRoleUpdateEvent;
+
 		winrt::event<delegate<OnRoleDeletionData>> onRoleDeletionEvent;
+
 		winrt::event<delegate<OnIntegrationCreationData>> onIntegrationCreationEvent;
+
 		winrt::event<delegate<OnIntegrationUpdateData>> onIntegrationUpdateEvent;
+
 		winrt::event<delegate<OnIntegrationDeletionData>> onIntegrationDeletionEvent;
+
 		winrt::event<delegate<OnInteractionCreationData>> onInteractionCreationEvent;
+
 		winrt::event<delegate<OnInviteCreationData>> onInviteCreationEvent;
+
 		winrt::event<delegate<OnInviteDeletionData>> onInviteDeletionEvent;
+
 		winrt::event<delegate<OnMessageCreationData>> onMessageCreationEvent;
+
 		winrt::event<delegate<OnMessageUpdateData>> onMessageUpdateEvent;
+
 		winrt::event<delegate<OnMessageDeletionData>> onMessageDeletionEvent;
+
 		winrt::event<delegate<OnMessageDeleteBulkData>>onMessageDeleteBulkEvent;
+
 		winrt::event<delegate<OnReactionAddData>> onReactionAddEvent;
+
 		winrt::event<delegate<OnReactionRemoveData>> onReactionRemoveEvent;
+
 		winrt::event<delegate<OnReactionRemoveAllData>> onReactionRemoveAllEvent;
+
 		winrt::event<delegate<OnReactionRemoveEmojiData>> onReactionRemoveEmojiEvent;
+
 		winrt::event<delegate<OnPresenceUpdateData>> onPresenceUpdateEvent;
+
 		winrt::event<delegate<OnStageInstanceCreationData>> onStageInstanceCreationEvent;
+
 		winrt::event<delegate<OnStageInstanceUpdateData>> onStageInstanceUpdateEvent;
+
 		winrt::event<delegate<OnStageInstanceDeletionData>> onStageInstanceDeletionEvent;
+
 		winrt::event<delegate<OnTypingStartData>> onTypingStartEvent;
+
 		winrt::event<delegate<OnUserUpdateData>> onUserUpdateEvent;
+
 		winrt::event<delegate<OnVoiceStateUpdateData>> onVoiceStateUpdateEvent;
+
 		winrt::event<delegate<OnVoiceServerUpdateData>> onVoiceServerUpdateEvent;
+
 		winrt::event<delegate<OnWebhookUpdateData>> onWebhookUpdateEvent;
+
 	};
 	/**@}*/
 	class DiscordCoreAPI_Dll EventHandler {
 	public:
-
+		
 		static void onChannelCreation(OnChannelCreationData dataPackage);
+
 		static void onChannelUpdate(OnChannelUpdateData dataPackage);
+
 		static void onChannelDeletion(OnChannelDeletionData dataPackage);
+
 		static void onGuildCreation(OnGuildCreationData dataPackage);
+
 		static void onGuildUpdate(OnGuildUpdateData dataPackage);
+
 		static void onGuildDeletion(OnGuildDeletionData dataPackage);
+
 		static void onGuildMemberAdd(OnGuildMemberAddData dataPackage);
+
 		static void onGuildMemberRemove(OnGuildMemberRemoveData dataPackage);
+
 		static void onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage);
+
 		static void onRoleCreation(OnRoleCreationData dataPackage);
+
 		static void onRoleUpdate(OnRoleUpdateData dataPackage);
+
 		static void onRoleDeletion(OnRoleDeletionData dataPackage);
-
+		
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
-
+		
 	};
 }
