@@ -2,28 +2,42 @@
 // Jul 29, 2021
 // Chris M.
 // https://github.com/RealTimeChris
+
 #pragma once
+
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
+
 namespace DiscordCoreAPI {
+
     DiscordCoreAPI_Dll int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
         uint64_t totalFileSize{ 0 };
         int32_t bufferMaxSize{ 0 };
     };
+
     class DiscordCoreAPI_Dll SongDecoder {
     public:
+
         friend DiscordCoreAPI_Dll int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
         friend class SoundCloudAPI;
         friend class YouTubeAPI;
+
         SongDecoder(BuildSongDecoderData dataPackage);
+
         void submitDataForDecoding(vector<uint8_t> dataToDecode);
+
         void updateBufferRefreshTime(int32_t newRefreshTime);
+
         bool getFrame(RawFrameData* dataPackage);
+
         bool startMe();
+
         ~SongDecoder();
+
     protected:
 
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };

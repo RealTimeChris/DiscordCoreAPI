@@ -6,6 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
+#include "CoRoutine.hpp"
 #include "SongDecoder.hpp"
 #include "ErlPacker.hpp"
 #include "SSLClient.hpp"
@@ -118,7 +119,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketAgent {
 	public:
 
-		MsgWebSocketAgent(string hostname, string port = "443", string urlpath = "", WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+		friend class VoiceChannelWebSocketAgent;
+
+		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTarget = nullptr, WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
 
 		void sendMessage(string& dataToSend);
 
@@ -165,6 +168,8 @@ namespace DiscordCoreInternal {
 		uint64_t fillHeader(vector<uint8_t>&, uint64_t, WebSocketOpCodes);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
+
+		void getVoiceConnectionData(VoiceConnectInitData doWeCollect);
 
 		bool handleBuffer(vector<uint8_t>& buffer);
 
@@ -242,7 +247,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event * reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event * reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
 		void otherAgentConnect(ConnectionWebSocketData* connectionData);
 
@@ -259,8 +264,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
-		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };
 		concurrency::event* reconnectionEvent { nullptr };
+		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
 		concurrency::event* readyEvent { nullptr };
