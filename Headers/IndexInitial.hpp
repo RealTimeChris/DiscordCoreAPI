@@ -86,6 +86,7 @@ extern "C"
 #include <libavutil/lzo.h>
 #include <libavutil/opt.h>
 }
+#include <cpp-base64/base64.h>
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
 #include <openssl/ssl.h>

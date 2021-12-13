@@ -118,7 +118,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketAgent {
 	public:
 
-		MsgWebSocketAgent(string& hostname, const string& port = "443", const string& urlpath = "", WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+		MsgWebSocketAgent(string hostname, string port = "443", string urlpath = "", WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+
+		void sendMessage(string& dataToSend);
 
 		void sendMessage(json& data);
 

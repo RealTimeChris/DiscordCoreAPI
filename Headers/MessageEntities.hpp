@@ -427,7 +427,7 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of milliseconds to wait for Messages before returning the results.
 		/// \param userIdNew User id to set for possible comparison.
 		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
-		/// \returns A CoRoutine containing MessageCollectorReturnData.
+		/// \returns A MessageCollectorReturnData structure.
 		MessageCollectorReturnData  collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew);
 
 		~MessageCollector();
