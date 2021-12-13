@@ -69,6 +69,10 @@ namespace DiscordCoreAPI {
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
+                if (coroutineHandle.promise().newThread.joinable()) {
+                    coroutineHandle.promise().newThread.get_stop_source().request_stop();
+                    coroutineHandle.promise().newThread.join();
+                }
                 coroutineHandle.destroy();
             }
         }
@@ -202,6 +206,10 @@ namespace DiscordCoreAPI {
 
         ~CoRoutine() {
             if (coroutineHandle && coroutineHandle.done()) {
+                if (coroutineHandle.promise().newThread.joinable()) {
+                    coroutineHandle.promise().newThread.get_stop_source().request_stop();
+                    coroutineHandle.promise().newThread.join();
+                }
                 coroutineHandle.destroy();
             }
         }
