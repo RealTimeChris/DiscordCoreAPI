@@ -12,10 +12,10 @@ namespace DiscordCoreAPI {
     
     struct EventToken {
 
-        template<typename EventHandler>
+        template<typename...args>
         friend class Event;
 
-        template<typename EventHandler >
+        template<typename... args>
         friend class EventDelegate;
 
         EventToken() = default;
@@ -26,42 +26,43 @@ namespace DiscordCoreAPI {
         
     };
 
-    template<typename ArgOne>
+    
+    template<typename...Args>
     class EventDelegate {
     public:
 
-        template<typename A>
+        template<typename ...A>
         friend class Event;
 
-        EventDelegate<ArgOne>& operator=(EventDelegate<ArgOne>&&other) {
+        EventDelegate<Args...>& operator=(EventDelegate<Args...>&&other) {
             this->theFunction = move(other.theFunction);
             this->eventToken = move(other.eventToken);
             return *this;
         }
 
-        EventDelegate<ArgOne>(EventDelegate<ArgOne>&& other) {
+        EventDelegate(EventDelegate<Args...>&& other) {
             *this = move(other);
         }
 
-        EventDelegate<ArgOne>& operator=(EventDelegate<ArgOne>&) = delete;
+        EventDelegate& operator=(EventDelegate<Args...>&) = delete;
 
-        EventDelegate<ArgOne>(EventDelegate<ArgOne>&) = delete;
+        EventDelegate(EventDelegate<Args...>&) = delete;
 
-        EventDelegate<ArgOne>(function<void(ArgOne)> theFunctionNew) {
+        EventDelegate(function<void(Args...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
         }
 
-        EventDelegate<ArgOne>(void(*theFunctionNew)(ArgOne)) {
-            this->theFunction = static_cast<function<void(ArgOne)>>(theFunctionNew);
+        EventDelegate(void(*theFunctionNew)(Args...)) {
+            this->theFunction = static_cast<function<void(Args...)>>(theFunctionNew);
         }
 
         EventToken eventToken{};
 
     protected:
-        function<void(ArgOne)> theFunction{};
+        function<void(Args...)> theFunction{};
     };
 
-    template<typename ArgOne>
+    template<typename... Args>
     class Event {
     public:
 
@@ -69,7 +70,7 @@ namespace DiscordCoreAPI {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
-        EventToken add(EventDelegate<ArgOne> eventDelegate) {
+        EventToken add(EventDelegate<Args...> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
             EventToken eventToken = eventDelegate.eventToken;
             eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
@@ -85,15 +86,15 @@ namespace DiscordCoreAPI {
             }
         }
 
-        void operator()(ArgOne arg) {
+        void operator()(Args...args) {
             lock_guard<mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : this->theFunctions) {
-                value.theFunction(arg);
+                value.theFunction(args...);
             }
         }
 
     protected:
-        ObjectCache<string, EventDelegate<ArgOne>> theFunctions{};
+        ObjectCache<string, EventDelegate<Args...>> theFunctions{};
         string eventId{ "" };
         mutex accessMutex{};
     };
