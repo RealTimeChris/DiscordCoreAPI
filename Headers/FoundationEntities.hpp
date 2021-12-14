@@ -2673,6 +2673,84 @@ namespace DiscordCoreAPI {
         /// \returns void.
         void storeValue(keyType valueId, storageType storageValue) {
             lock_guard<mutex> storeLock{ *this->accessMutex };
+            this->cache.insert_or_assign(valueId, storageValue);
+        }
+
+    protected:
+
+        map<keyType, storageType> cache{};
+
+        unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
+    };
+
+    /// A Thread-safe cache for storing objects of any kind. \brief A Thread-safe cache for storing objects of any kind.
+    /// \param storageType The type of item to be stored.
+    template<typename keyType, typename storageType>
+    class DiscordCoreAPI_Dll ObjectCacheWithMove {
+    public:
+
+        friend class Guilds;
+
+        ObjectCacheWithMove() = default;
+
+        auto end() {
+            lock_guard<mutex> returnLock{ *this->accessMutex };
+            return this->cache.end();
+        }
+
+        auto begin() {
+            lock_guard<mutex> returnLock{ *this->accessMutex };
+            return this->cache.begin();
+        }
+
+        ObjectCacheWithMove& operator=(const ObjectCacheWithMove& other) {
+            this->accessMutex = make_unique<mutex>();
+            this->cache = other.cache;
+            return *this;
+        }
+
+        ObjectCacheWithMove& operator=(ObjectCacheWithMove& other) {
+            this->accessMutex = move(other.accessMutex);
+            this->cache = other.cache;
+            return *this;
+        }
+
+        ObjectCacheWithMove(ObjectCacheWithMove& other) {
+            *this = other;
+        }
+
+        /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
+        /// \param valueId The chosen item's key.
+        /// \returns storageType The typed item that is stored.
+        storageType& returnValue(keyType valueId) {
+            lock_guard<mutex> returnLock{ *this->accessMutex };
+            return this->cache.at(valueId);
+        }
+
+        /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns bool Whether or not the item is present at the given key.
+        bool contains(keyType valueId) {
+            lock_guard<mutex> containLock{ *this->accessMutex };
+            return this->cache.contains(valueId);
+        }
+
+        /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns void.
+        void erase(keyType valueId) {
+            lock_guard<mutex> eraseLock{ *this->accessMutex };
+            if (this->cache.contains(valueId)) {
+                this->cache.erase(valueId);
+            }
+        }
+
+        /// Stores an item in the cache. \brief Stores an item in the cache.
+        /// \param valueId The item's id to store it at.
+        /// \param storageValue The item to store in the object-cache.
+        /// \returns void.
+        void storeValue(keyType valueId, storageType storageValue) {
+            lock_guard<mutex> storeLock{ *this->accessMutex };
             this->cache.insert_or_assign(valueId, move(storageValue));
         }
 

@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		static DiscordCoreAPI::ObjectCache<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static DiscordCoreAPI::ObjectCache<string, unique_ptr<RateLimitData>> rateLimitData;
+		static DiscordCoreAPI::ObjectCacheWithMove<string, unique_ptr<RateLimitData>> rateLimitData;
 		static string botToken;
 		static string baseURL;
 
