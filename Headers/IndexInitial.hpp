@@ -40,6 +40,7 @@
 #pragma comment(lib, "windowsapp")
 #pragma comment(lib, "openssl")
 #pragma comment(lib, "libssl")
+#pragma comment(lib, "libcrypto_static")
 
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
@@ -88,6 +89,7 @@ extern "C"
 }
 #include <cpp-base64/base64.h>
 #include <nlohmann/json.hpp>
+#include <openssl/crypto.h>
 #include <glib-2.0/glib.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>

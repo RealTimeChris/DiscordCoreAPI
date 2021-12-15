@@ -48,16 +48,16 @@ namespace DiscordCoreAPI {
     class VoiceConnection;
     class GuildMember;
 
-    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
-
-    DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
-
     /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
     /// \param objectType The type of object that will be sent over the message block.
     template<typename objectType>
     class UnboundedMessageBlock {
     public:
-        UnboundedMessageBlock() {};
+        UnboundedMessageBlock() = default;
+
+        UnboundedMessageBlock<objectType>& operator=(UnboundedMessageBlock<objectType>&) = delete;
+
+        UnboundedMessageBlock(UnboundedMessageBlock<objectType>&) = delete;
 
         void send(objectType theObject) {
             lock_guard<mutex> accessLock{ this->accessMutex };
@@ -172,9 +172,29 @@ namespace DiscordCoreAPI {
         ShortTime = 't',		/// "16:20" - Short Time
     };
 
+    DiscordCoreAPI_Dll string convertMsToDurationString(int32_t durationInMs);
+
+    DiscordCoreAPI_Dll void rethrowException(string stackTrace, UnboundedMessageBlock<exception>* sendBuffer = nullptr, bool rethrow = false);
+
+    DiscordCoreAPI_Dll string convertToLowerCase(string stringToConvert);
+
+    DiscordCoreAPI_Dll bool hasTimeElapsed(string timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
+
+    DiscordCoreAPI_Dll string getTimeAndDate();
+
+    DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
+
     DiscordCoreAPI_Dll string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat);
 
     DiscordCoreAPI_Dll int64_t convertTimestampToInteger(string timeStamp);
+
+    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
+
+    DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
+
+    DiscordCoreAPI_Dll string urlDecode(string inputString);
+
+    DiscordCoreAPI_Dll string urlEncode(string inputString);
 
     class DiscordCoreAPI_Dll TimeStamp {
     public:
@@ -199,18 +219,6 @@ namespace DiscordCoreAPI {
         int64_t timeStampInMs{ 0 };
 
     };
-
-    DiscordCoreAPI_Dll string convertMsToDurationString(int32_t durationInMs);
-    
-    DiscordCoreAPI_Dll void rethrowException(string stackTrace, UnboundedMessageBlock<exception>* sendBuffer = nullptr, bool rethrow = false);
-
-    DiscordCoreAPI_Dll string convertToLowerCase(string stringToConvert);
-
-    DiscordCoreAPI_Dll bool hasTimeElapsed(string timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
-
-    DiscordCoreAPI_Dll string getTimeAndDate();
-
-    DiscordCoreAPI_Dll string getISO8601TimeStamp(string year, string month, string day, string hour, string minute, string second);
 
     /**
     * \addtogroup foundation_entities
@@ -2620,6 +2628,10 @@ namespace DiscordCoreAPI {
 
         ObjectCache() = default;
 
+        ObjectCache& operator=(ObjectCache&) = delete;
+
+        ObjectCache(ObjectCache&) = delete;
+
         auto end() {
             lock_guard<mutex> returnLock{ *this->accessMutex };
             return this->cache.end();
@@ -2628,22 +2640,6 @@ namespace DiscordCoreAPI {
         auto begin() {
             lock_guard<mutex> returnLock{ *this->accessMutex };
             return this->cache.begin();
-        }
-
-        ObjectCache& operator=(const ObjectCache& other) {
-            this->accessMutex = make_unique<mutex>();
-            this->cache = other.cache;
-            return *this;
-        }
-
-        ObjectCache& operator=(ObjectCache& other) {
-            this->accessMutex = move(other.accessMutex);
-            this->cache = other.cache;
-            return *this;
-        }
-
-        ObjectCache(ObjectCache& other) {
-            *this = other;
         }
 
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
