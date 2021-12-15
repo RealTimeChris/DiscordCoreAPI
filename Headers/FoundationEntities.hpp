@@ -59,8 +59,6 @@ namespace DiscordCoreAPI {
     public:
         UnboundedMessageBlock() {};
 
-        ~UnboundedMessageBlock() {};
-
         void send(objectType theObject) {
             lock_guard<mutex> accessLock{ this->accessMutex };
             this->theArray.push(theObject);
@@ -77,6 +75,8 @@ namespace DiscordCoreAPI {
                 return true;
             }
         }
+
+        ~UnboundedMessageBlock() {};
 
     protected:
         queue<objectType> theArray{};
@@ -136,13 +136,17 @@ namespace DiscordCoreAPI {
     }
 
     template <typename ...T>
-    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
         NewThreadAwaitable<void>();
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0 && !isRepeating) {
-            this_thread::sleep_for(chrono::milliseconds(timeDelayInMs));
-            theFunction(args...);
-            co_return;
+            auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                theFunction(args...);
+                return;
+            };
+            threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
+            DiscordCoreClient::threadPoolTimers.push_back(threadPoolTimer);
+            return;
         }
         else if (timeDelayInMs > 0 && isRepeating) {
             auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
@@ -155,7 +159,7 @@ namespace DiscordCoreAPI {
         else {
             theFunction(args...);
         }
-        co_return;
+        return;
     }
 
     /// Time formatting methods. \brief Time formatting methods.
@@ -1537,7 +1541,6 @@ namespace DiscordCoreAPI {
         function<void()> function{ nullptr };///< The function pointer to be loaded.
         int32_t intervalInMs{ 0 };  ///< The time interval at which to call the function.
         bool repeated{ false }; ///< Whether or not the function is repeating.
-        bool blocking{ false };///< Do we block the current context to wait for its completion?
     };
 
     /// Channel mention data. \brief Channel mention data.

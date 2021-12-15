@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 		~MsgWebSocketSSLClient();
 
 	protected:
-				
+
 		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> outputBuffer{};

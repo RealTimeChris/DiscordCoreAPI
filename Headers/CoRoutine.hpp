@@ -68,27 +68,27 @@ namespace DiscordCoreAPI {
         CoRoutine<returnType>() {}
 
         ~CoRoutine() {
-            if (coroutineHandle && coroutineHandle.done()) {
-                if (coroutineHandle.promise().newThread.joinable()) {
-                    coroutineHandle.promise().newThread.get_stop_source().request_stop();
-                    coroutineHandle.promise().newThread.join();
+            if (this->coroutineHandle && this->coroutineHandle.done()) {
+                if (this->coroutineHandle.promise().newThread.joinable()) {
+                    this->coroutineHandle.promise().newThread.get_stop_source().request_stop();
+                    this->coroutineHandle.promise().newThread.join();
                 }
-                coroutineHandle.destroy();
+                this->coroutineHandle.destroy();
             }
         }
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         /// \returns void.
         void detachThread() {
-            if (coroutineHandle) {
-                coroutineHandle.promise().newThread.detach();
+            if (this->coroutineHandle) {
+                this->coroutineHandle.promise().newThread.detach();
             }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
         /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
-            if (coroutineHandle) {
+            if (this->coroutineHandle) {
                 this->currentStatus = coroutineHandle.promise().currentStatus;
             }
             return this->currentStatus;
@@ -101,15 +101,15 @@ namespace DiscordCoreAPI {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
             else {
-                if (coroutineHandle.promise().newThread.joinable()) {
-                    coroutineHandle.promise().newThread.join();
+                if (this->coroutineHandle.promise().newThread.joinable()) {
+                    this->coroutineHandle.promise().newThread.join();
                 }
                 exception_ptr exceptionPtr{};
-                while (coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
                     rethrow_exception(exceptionPtr);
                 }
-                coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
-                return coroutineHandle.promise().result;
+                this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+                return this->coroutineHandle.promise().result;
             }
         }
 
@@ -117,17 +117,17 @@ namespace DiscordCoreAPI {
         /// \returns returnType The return value of the CoRoutine.
         returnType cancel() {
             if (this != nullptr) {
-                if (coroutineHandle) {
-                    if (coroutineHandle.promise().newThread.joinable()) {
-                        coroutineHandle.promise().newThread.get_stop_source().request_stop();
-                        coroutineHandle.promise().newThread.join();
+                if (this->coroutineHandle) {
+                    if (this->coroutineHandle.promise().newThread.joinable()) {
+                        this->coroutineHandle.promise().newThread.get_stop_source().request_stop();
+                        this->coroutineHandle.promise().newThread.join();
                     }
                     exception_ptr exceptionPtr{};
-                    while (coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                    while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
-                    coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
-                    return coroutineHandle.promise().result;
+                    this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
+                    return this->coroutineHandle.promise().result;
                 }
             }
             return returnType{};
@@ -199,31 +199,32 @@ namespace DiscordCoreAPI {
 
         CoRoutine(const CoRoutine<void>&) = delete;
 
-        CoRoutine<void>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         CoRoutine() {}
 
         ~CoRoutine() {
-            if (coroutineHandle && coroutineHandle.done()) {
+            if (this->coroutineHandle && this->coroutineHandle.done()) {
                 if (this->coroutineHandle.promise().newThread.joinable()) {
+                    this->coroutineHandle.promise().newThread.get_stop_source().request_stop();
                     this->coroutineHandle.promise().newThread.join();
                 }
-                coroutineHandle.destroy();
+                this->coroutineHandle.destroy();
             }
         }
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         /// \returns void.
         void detachThread() {
-            if (coroutineHandle) {
-                coroutineHandle.promise().newThread.detach();
+            if (this->coroutineHandle) {
+                this->coroutineHandle.promise().newThread.detach();
             }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
         /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
-            if (coroutineHandle) {
+            if (this->coroutineHandle) {
                 this->currentStatus = coroutineHandle.promise().currentStatus;
             }
             return this->currentStatus;
@@ -232,18 +233,18 @@ namespace DiscordCoreAPI {
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns void.
         void get(void) {
-            if (!coroutineHandle) {
+            if (!this->coroutineHandle) {
                 throw InvalidState("CoRoutine is not initialized with a proper task.");
             }
             else {
-                if (coroutineHandle.promise().newThread.joinable()) {
-                    coroutineHandle.promise().newThread.join();
+                if (this->coroutineHandle.promise().newThread.joinable()) {
+                    this->coroutineHandle.promise().newThread.join();
                 }
                 exception_ptr exceptionPtr{};
-                while (coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
                     rethrow_exception(exceptionPtr);
                 }
-                coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+                this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
             }
         }
 
@@ -251,16 +252,16 @@ namespace DiscordCoreAPI {
         /// \returns void.
         void cancel() {
             if (this != nullptr) {
-                if (coroutineHandle) {
-                    if (coroutineHandle.promise().newThread.joinable()) {
-                        coroutineHandle.promise().newThread.get_stop_source().request_stop();
-                        coroutineHandle.promise().newThread.join();
+                if (this->coroutineHandle) {
+                    if (this->coroutineHandle.promise().newThread.joinable()) {
+                        this->coroutineHandle.promise().newThread.get_stop_source().request_stop();
+                        this->coroutineHandle.promise().newThread.join();
                     }
                     exception_ptr exceptionPtr{};
-                    while (coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                    while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
-                    coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
+                    this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
                 }
             }
         }

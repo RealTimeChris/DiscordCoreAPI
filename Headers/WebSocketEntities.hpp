@@ -137,7 +137,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<MsgWebSocketSSLClient> sslClient{ nullptr };
 		shared_ptr<ThreadPoolTimer> heartbeatTimer{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
-		VoiceConnectInitData voiceConnectInitData{};		
+		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		concurrency::event disconnectionEvent {};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event * reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
+		VoiceChannelWebSocketAgent(concurrency::event* readyEventNew, concurrency::event* reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
 		void otherAgentConnect(ConnectionWebSocketData* connectionData);
 
@@ -282,7 +282,7 @@ namespace DiscordCoreInternal {
 		event_token closedToken{};
 
 		void onConnectionDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
-		
+
 		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args);
 
 		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
@@ -297,6 +297,6 @@ namespace DiscordCoreInternal {
 
 		void cleanup();
 
-		void connect();		
+		void connect();
 	};
 }
