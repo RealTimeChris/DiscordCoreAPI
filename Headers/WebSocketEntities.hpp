@@ -176,6 +176,8 @@ namespace DiscordCoreInternal {
 
 		void sendHeartBeat();
 
+		bool handleFrame(vector<uint8_t>&);
+
 		void connect();
 	};
 

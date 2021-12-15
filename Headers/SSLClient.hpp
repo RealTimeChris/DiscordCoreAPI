@@ -32,6 +32,8 @@ namespace DiscordCoreInternal {
 
 		void writeData(const vector<uint8_t>&);
 
+		void writeData(const string&);
+
 		void readData(vector<uint8_t>&);
 
 		uint64_t getBytesOut();
