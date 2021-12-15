@@ -13,12 +13,12 @@
 namespace DiscordCoreInternal {
 
 	constexpr uint64_t WebSocketMaxPayloadLengthLarge = 65535;
-	constexpr uint8_t WebSocketPayloadLengthMagicLarge = 126;
-	constexpr uint8_t WebSocketPayloadLengthMagicHuge = 127;
+	constexpr unsigned char WebSocketPayloadLengthMagicLarge = 126;
+	constexpr unsigned char WebSocketPayloadLengthMagicHuge = 127;
 	constexpr uint64_t WebSocketMaxPayloadLengthSmall = 125;
-	constexpr uint64_t MaxHeaderSize = sizeof(uint64_t) + 2;
-	constexpr uint8_t WebSocketFinishBit = (1u << 7u);
-	constexpr uint8_t WebSocketMaskBit = (1u << 7u);
+	constexpr uint8_t MaxHeaderSize = sizeof(uint64_t) + 2;
+	constexpr unsigned char WebSocketFinishBit = (1u << 7u);
+	constexpr unsigned char WebSocketMaskBit = (1u << 7u);
 
 	enum class WebSocketEventType {
 		Unset = 0,
@@ -87,7 +87,7 @@ namespace DiscordCoreInternal {
 		WS_OP_BINARY = 0x02,
 		WS_OP_CLOSE = 0x08,
 		WS_OP_PING = 0x09,
-		WS_OP_PONG = 0x0a
+		WS_OP_PONG = 0x0a 
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
@@ -118,7 +118,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketAgent {
 	public:
 
-		MsgWebSocketAgent(string hostname, string port = "443", string urlpath = "", WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
 
 		void sendMessage(string& dataToSend);
 
@@ -162,7 +162,7 @@ namespace DiscordCoreInternal {
 		string botToken{ "" };
 		string authKey{ "" };
 
-		uint64_t fillHeader(vector<uint8_t>&, uint64_t, WebSocketOpCodes);
+		uint64_t fillHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opcode);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
 

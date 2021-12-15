@@ -61,6 +61,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend void ::terminateWrapper();
 		friend class Guild;
+		friend class Test;
 
 		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
 		static unique_ptr<DiscordCoreClient> thisPointer;
