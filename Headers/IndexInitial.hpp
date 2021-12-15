@@ -99,6 +99,12 @@ extern "C"
 #include <iostream>
 #include <concrt.h>
 #include <sodium.h>
+#include <signal.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <io.h>
 #include <stdio.h>
 #include <string>
 #include <regex>

@@ -30,23 +30,23 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			map<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>> audioBuffersMap{};
-			map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
-			map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
-			map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
-			map<string, unique_ptr<SongAPI>> songAPIMap{};
+			ObjectCache<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>> audioBuffersMap{};
+			ObjectCache<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
+			ObjectCache<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
+			ObjectCache<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
+			ObjectCache<string, unique_ptr<SongAPI>> songAPIMap{};
 		}
 	}
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>>* getAudioBuffersMap();
+	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>>* getAudioBuffersMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
+	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
+	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
+	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<SongAPI>>* getSongAPIMap();
+	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<SongAPI>>* getSongAPIMap();
 
 	/**
 	* \addtogroup main_endpoints
@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		template <typename ...T>
-		friend void executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
+		friend CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend void ::terminateWrapper();
@@ -73,11 +73,11 @@ namespace DiscordCoreAPI {
 		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
 		/// \param functionVector A pointer to a vector of function pointers to be run on timers.
 		/// \returns void
-		static void setup(string, string, vector<RepeatedFunctionData> = vector<RepeatedFunctionData>(), CacheOptions = CacheOptions());
+		static CoRoutine<void> setup(string, string, vector<RepeatedFunctionData> = vector<RepeatedFunctionData>(), CacheOptions = CacheOptions());
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		/// \returns void
-		static void runBot();
+		static void  runBot();
 
 		DiscordCoreClient(string, string, vector<RepeatedFunctionData>);
 

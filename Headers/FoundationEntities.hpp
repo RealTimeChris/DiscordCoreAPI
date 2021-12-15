@@ -136,12 +136,13 @@ namespace DiscordCoreAPI {
     }
 
     template <typename ...T>
-    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+        NewThreadAwaitable<void>();
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0 && !isRepeating) {
             this_thread::sleep_for(chrono::milliseconds(timeDelayInMs));
             theFunction(args...);
-            return;
+            co_return;
         }
         else if (timeDelayInMs > 0 && isRepeating) {
             auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
@@ -154,7 +155,7 @@ namespace DiscordCoreAPI {
         else {
             theFunction(args...);
         }
-        return;
+        co_return;
     }
 
     /// Time formatting methods. \brief Time formatting methods.
@@ -1534,8 +1535,9 @@ namespace DiscordCoreAPI {
     /// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
     struct DiscordCoreAPI_Dll RepeatedFunctionData {
         function<void()> function{ nullptr };///< The function pointer to be loaded.
-        bool repeated{ false }; ///< Whether or not the function is repeating.
         int32_t intervalInMs{ 0 };  ///< The time interval at which to call the function.
+        bool repeated{ false }; ///< Whether or not the function is repeating.
+        bool blocking{ false };///< Do we block the current context to wait for its completion?
     };
 
     /// Channel mention data. \brief Channel mention data.
@@ -2645,15 +2647,21 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
         storageType& returnValue(keyType valueId) {
-            lock_guard<mutex> returnLock{ *this->accessMutex };
-            return this->cache.at(valueId);
+            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
+            if (!returnLock.try_lock()) {
+                cout << "WE'RE WAITING ON THE LOCK! (returnValue)" << endl;
+            }
+            return ref(this->cache.at(valueId));
         }
 
         /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(keyType valueId) {
-            lock_guard<mutex> containLock{ *this->accessMutex };
+            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
+            if (!returnLock.try_lock()) {
+                cout << "WE'RE WAITING ON THE LOCK! (contains)" << endl;
+            }
             return this->cache.contains(valueId);
         }
 
@@ -2661,7 +2669,10 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns void.
         void erase(keyType valueId) {
-            lock_guard<mutex> eraseLock{ *this->accessMutex };
+            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
+            if (!returnLock.try_lock()) {
+                cout << "WE'RE WAITING ON THE LOCK! (erase)" << endl;
+            }
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -2672,85 +2683,10 @@ namespace DiscordCoreAPI {
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
         void storeValue(keyType valueId, storageType storageValue) {
-            lock_guard<mutex> storeLock{ *this->accessMutex };
-            this->cache.insert_or_assign(valueId, storageValue);
-        }
-
-    protected:
-
-        map<keyType, storageType> cache{};
-
-        unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
-    };
-
-    /// A Thread-safe cache for storing objects of any kind. \brief A Thread-safe cache for storing objects of any kind.
-    /// \param storageType The type of item to be stored.
-    template<typename keyType, typename storageType>
-    class DiscordCoreAPI_Dll ObjectCacheWithMove {
-    public:
-
-        friend class Guilds;
-
-        ObjectCacheWithMove() = default;
-
-        auto end() {
-            lock_guard<mutex> returnLock{ *this->accessMutex };
-            return this->cache.end();
-        }
-
-        auto begin() {
-            lock_guard<mutex> returnLock{ *this->accessMutex };
-            return this->cache.begin();
-        }
-
-        ObjectCacheWithMove& operator=(const ObjectCacheWithMove& other) {
-            this->accessMutex = make_unique<mutex>();
-            this->cache = other.cache;
-            return *this;
-        }
-
-        ObjectCacheWithMove& operator=(ObjectCacheWithMove& other) {
-            this->accessMutex = move(other.accessMutex);
-            this->cache = other.cache;
-            return *this;
-        }
-
-        ObjectCacheWithMove(ObjectCacheWithMove& other) {
-            *this = other;
-        }
-
-        /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
-        /// \param valueId The chosen item's key.
-        /// \returns storageType The typed item that is stored.
-        storageType& returnValue(keyType valueId) {
-            lock_guard<mutex> returnLock{ *this->accessMutex };
-            return this->cache.at(valueId);
-        }
-
-        /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
-        /// \param valueId The chosen item's key.
-        /// \returns bool Whether or not the item is present at the given key.
-        bool contains(keyType valueId) {
-            lock_guard<mutex> containLock{ *this->accessMutex };
-            return this->cache.contains(valueId);
-        }
-
-        /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
-        /// \param valueId The chosen item's key.
-        /// \returns void.
-        void erase(keyType valueId) {
-            lock_guard<mutex> eraseLock{ *this->accessMutex };
-            if (this->cache.contains(valueId)) {
-                this->cache.erase(valueId);
+            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
+            if (!returnLock.try_lock()) {
+                cout << "WE'RE WAITING ON THE LOCK! (storeValue)" << endl;
             }
-        }
-
-        /// Stores an item in the cache. \brief Stores an item in the cache.
-        /// \param valueId The item's id to store it at.
-        /// \param storageValue The item to store in the object-cache.
-        /// \returns void.
-        void storeValue(keyType valueId, storageType storageValue) {
-            lock_guard<mutex> storeLock{ *this->accessMutex };
             this->cache.insert_or_assign(valueId, move(storageValue));
         }
 
@@ -3059,7 +2995,7 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll RateLimitData {
         RateLimitData() {};
-        RateLimitData(RateLimitData& other) {
+        RateLimitData(const RateLimitData& other) {
             this->nextExecutionTime = other.nextExecutionTime;
             this->getsRemaining = other.getsRemaining;
             this->msRemainTotal = other.msRemainTotal;
@@ -3067,7 +3003,7 @@ namespace  DiscordCoreInternal {
             this->workloadType = other.workloadType;
             this->isItMarked = other.isItMarked;
             this->tempBucket = other.tempBucket;
-            this->theMutex.swap(other.theMutex);
+            this->theMutex = make_unique<recursive_mutex>();
             this->totalGets = other.totalGets;
             this->msRemain = other.msRemain;
             this->bucket = other.bucket;
@@ -3083,6 +3019,8 @@ namespace  DiscordCoreInternal {
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };
         string bucket{ "" };
+
+        ~RateLimitData() = default;
     };
 
     struct DiscordCoreAPI_Dll VoiceConnectInitData {

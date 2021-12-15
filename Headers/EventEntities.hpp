@@ -12,10 +12,10 @@ namespace DiscordCoreAPI {
 
     struct EventToken {
 
-        template<typename Args>
+        template<typename R, typename Args>
         friend class Event;
 
-        template<typename Args>
+        template<typename R, typename Args>
         friend class EventDelegate;
 
         EventToken() = default;
@@ -26,48 +26,48 @@ namespace DiscordCoreAPI {
 
     };
 
-    template<typename Arg>
+    template<typename R, typename Arg>
     class EventDelegate {
     public:
 
-        template<typename A>
+        template<typename R, typename A>
         friend class Event;
 
-        EventDelegate<Arg>& operator=(EventDelegate<Arg>&& other) {
+        EventDelegate<R, Arg>& operator=(EventDelegate<R, Arg>&& other) {
             this->theFunction = move(other.theFunction);
             this->eventToken = move(other.eventToken);
             return *this;
         }
 
-        EventDelegate(EventDelegate<Arg>&& other) {
+        EventDelegate(EventDelegate<R, Arg>&& other) {
             *this = move(other);
         }
 
-        EventDelegate& operator=(EventDelegate<Arg>&other) {
+        EventDelegate& operator=(EventDelegate<R, Arg>&other) {
             this->theFunction = other.theFunction;
             this->eventToken = other.eventToken;
             return *this;
         };
 
-        EventDelegate(EventDelegate<Arg>&other){
+        EventDelegate(EventDelegate<R, Arg>&other){
             *this = other;
         }
 
-        EventDelegate(function<void(Arg)> theFunctionNew) {
+        EventDelegate(function<R(Arg)> theFunctionNew) {
             this->theFunction = theFunctionNew;
         }
 
-        EventDelegate(void(*theFunctionNew)(Arg)) {
+        EventDelegate(R(*theFunctionNew)(Arg)) {
             this->theFunction = theFunctionNew;
         }
 
         EventToken eventToken{};
 
     protected:
-        function<void(Arg)>theFunction{};
+        function<R(Arg)>theFunction{};
     };
 
-    template<typename Arg>
+    template<typename R, typename Arg>
     class Event {
     public:
 
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
-        EventToken add(EventDelegate<Arg> eventDelegate) {
+        EventToken add(EventDelegate<R, Arg> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
             EventToken eventToken = eventDelegate.eventToken;
             eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
             }
         }
 
-        void operator()(Argt arg) {
+        void operator()(Arg arg) {
             lock_guard<mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : this->theFunctions) {
                 value.theFunction(arg);
@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        ObjectCache<string, EventDelegate<Arg>> theFunctions{};
+        ObjectCache<string, EventDelegate<R, Arg>> theFunctions{};
         string eventId{ "" };
         mutex accessMutex{};
     };
