@@ -30,15 +30,15 @@ namespace DiscordCoreInternal {
 
 		MsgWebSocketSSLClient(string, string);
 
-		void writeData(const vector<uint8_t>&);
+		void writeData(vector<uint8_t>&);
 
-		void writeData(const string&);
-
-		void readData(vector<uint8_t>&);
+		void writeData(string&);
 
 		uint64_t getBytesOut();
 
 		uint64_t getBytesIn();
+
+		void readData();
 
 		~MsgWebSocketSSLClient();
 

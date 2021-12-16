@@ -166,17 +166,15 @@ namespace DiscordCoreInternal {
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
 
-		bool handleBuffer(vector<uint8_t>& buffer);
-
-		void onMessageReceived(vector<uint8_t>&);
-
 		DiscordCoreAPI::CoRoutine<void> run();
 
-		bool parseHeader(vector<uint8_t>&);
+		bool onMessageReceived();
 
 		void sendHeartBeat();
 
-		bool handleFrame(vector<uint8_t>&);
+		bool handleBuffer();
+
+		bool parseHeader();
 
 		void connect();
 	};
