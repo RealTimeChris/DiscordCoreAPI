@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
     };
 
     bool operator==(const EventToken& lhs, const EventToken& rhs) {
-        if (lhs.eventId == rhs.eventId) {
+        if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
             return true;
         }
         else {
@@ -291,75 +291,64 @@ namespace DiscordCoreAPI {
     class Event<void, void> {
     public:
 
-        Event(Event<void, void>& other) : accessMutex(mutex{}) {
-            *this = other;
-        }
-
         Event<void, void>& operator=(Event<void, void>& other) {
             this->eventToken = other.eventToken;
-            this->eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            this->amIActive = other.amIActive;
-            lock_guard<mutex> accessLock{ this->accessMutex };
-            Event::theEvents.storeValue(this->eventToken, ref(*this));
+            this->amIActive->store(other.amIActive->load());
+            Event::refCounts.returnValue(this->eventToken) += 1;
+            return *this;
+        }
+
+        Event(Event<void, void>& other) {
+            *this = other;
         }
 
         Event() : accessMutex(mutex{}) {
             this->eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
             this->eventToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
             lock_guard<mutex> accessLock{ this->accessMutex };
-            Event::theEvents.storeValue(this->eventToken, ref(*this));
+            Event::theEvents.storeValue(this->eventToken, this);
+            Event::refCounts.storeValue(this->eventToken, 1);
         }
 
-        uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
+        bool wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
             uint32_t millisecondsWaited{ 0 };
-            bool doWeBreak{ false };
-            while (!doWeBreak) {
-                if (this->amIActive) {
-                    doWeBreak = true;
-                    break;
+            while (true) {
+                if (*Event::theEvents.returnValue(this->eventToken)->amIActive) {
+                    return true;
                 }
                 else {
                     this_thread::sleep_for(chrono::microseconds(1000));
                     millisecondsWaited += 1;
                 }
                 if (millisecondsWaited >= millisecondsMaxToWait) {
-                    break;
+                    return false;
                 }
-            }
-            if (doWeBreak) {
-                return 0;
-            }
-            else {
-                return 1;
             }
         }
 
         void set() {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            for (auto& [key, value] : Event::theEvents) {
-                if (key == this->eventToken) {
-                    value.get().amIActive = true;
-                }
-            }
+            *Event::theEvents.returnValue(this->eventToken)->amIActive = true;
         }
 
         void reset() {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            for (auto& [key, value] : Event::theEvents) {
-                if (key == this->eventToken) {
-                    value.get().amIActive= false;
-                }
-            }
+            *Event::theEvents.returnValue(this->eventToken)->amIActive = false;
         }
 
         ~Event() {
-            Event::theEvents.erase(this->eventToken);
+            Event::refCounts.returnValue(this->eventToken) -= 1;
+            if (Event::refCounts.returnValue(this->eventToken) == 0) {
+                Event::refCounts.erase(this->eventToken);
+                Event::theEvents.erase(this->eventToken);
+            }
         }
 
     protected:
-        static ObjectMultiCache<EventToken, reference_wrapper<Event<void, void>>> theEvents;
+        static ObjectCache<EventToken, Event<void, void>*> theEvents;
+        static ObjectCache<EventToken, uint32_t> refCounts;
+        unique_ptr<atomic<bool>> amIActive{ make_unique<atomic<bool>>() };
         EventToken eventToken{};
-        bool amIActive{ false };
         mutex accessMutex{};
 
     };

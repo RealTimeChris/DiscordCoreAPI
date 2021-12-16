@@ -2643,12 +2643,12 @@ namespace DiscordCoreAPI {
         ObjectCache(ObjectCache&) = delete;
 
         auto end() {
-            lock_guard<mutex> returnLock{ *this->accessMutex };
+            unique_lock<mutex> accessLock{ *this->accessMutex };
             return this->cache.end();
         }
 
         auto begin() {
-            lock_guard<mutex> returnLock{ *this->accessMutex };
+            unique_lock<mutex> accessLock{ *this->accessMutex };
             return this->cache.begin();
         }
 
@@ -2656,10 +2656,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
         storageType& returnValue(keyType valueId) {
-            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
-            if (!returnLock.try_lock()) {
-                cout << "WE'RE WAITING ON THE LOCK! (returnValue)" << endl;
-            }
+            unique_lock<mutex> accessLock{ *this->accessMutex };
             return ref(this->cache.at(valueId));
         }
 
@@ -2667,10 +2664,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(keyType valueId) {
-            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
-            if (!returnLock.try_lock()) {
-                cout << "WE'RE WAITING ON THE LOCK! (contains)" << endl;
-            }
+            unique_lock<mutex> accessLock{ *this->accessMutex };
             return this->cache.contains(valueId);
         }
 
@@ -2678,10 +2672,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns void.
         void erase(keyType valueId) {
-            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
-            if (!returnLock.try_lock()) {
-                cout << "WE'RE WAITING ON THE LOCK! (erase)" << endl;
-            }
+            unique_lock<mutex> accessLock{ *this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -2692,10 +2683,7 @@ namespace DiscordCoreAPI {
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
         void storeValue(keyType valueId, storageType storageValue) {
-            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
-            if (!returnLock.try_lock()) {
-                cout << "WE'RE WAITING ON THE LOCK! (storeValue)" << endl;
-            }
+            unique_lock<mutex> accessLock{ *this->accessMutex };
             this->cache.insert_or_assign(valueId, move(storageValue));
         }
 
