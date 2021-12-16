@@ -118,11 +118,13 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketAgent {
 	public:
 
-		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
 
 		void sendMessage(string& dataToSend);
 
 		void sendMessage(json& data);
+
+		void cleanup();
 
 		void close();
 
@@ -172,7 +174,7 @@ namespace DiscordCoreInternal {
 
 		void sendHeartBeat();
 
-		bool handleBuffer();
+		void handleBuffer();
 
 		bool parseHeader();
 
