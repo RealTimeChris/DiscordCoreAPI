@@ -26,8 +26,6 @@ namespace DiscordCoreAPI {
 
         friend inline bool operator!=(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-        ~EventDelegateToken() = default;
-
     protected:
 
         EventDelegateToken() = default;
@@ -36,7 +34,7 @@ namespace DiscordCoreAPI {
         string eventId{ "" };
 
     };
-
+    
     bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
             return true;
@@ -55,7 +53,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+    bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs.handlerId < rhs.handlerId) {
             return true;
         }
@@ -64,7 +62,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    inline bool operator>(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+    bool operator>(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs < rhs) {
             return false;
         }
@@ -82,7 +80,6 @@ namespace DiscordCoreAPI {
 
         EventDelegate<R, Args...>& operator=(EventDelegate<R, Args...>&& other) {
             this->theFunction = move(other.theFunction);
-            this->eventToken = move(other.eventToken);
             return *this;
         }
 
@@ -102,8 +99,6 @@ namespace DiscordCoreAPI {
             this->theFunction = theFunctionNew;
         }
 
-        EventDelegateToken eventToken{};
-
     protected:
         function<R(Args...)>theFunction{};
     };
@@ -122,10 +117,11 @@ namespace DiscordCoreAPI {
 
         EventDelegateToken add(EventDelegate<R, Args...> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            eventDelegate.eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            eventDelegate.eventToken.eventId = this->eventId;
-            this->theFunctions.storeValue(eventDelegate.eventToken, move(eventDelegate));
-            return eventDelegate.eventToken;
+            EventDelegateToken eventToken{};
+            eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventToken.eventId = this->eventId;
+            this->theFunctions.storeValue(eventToken, move(eventDelegate));
+            return eventToken;
         }
 
         void remove(EventDelegateToken  eventToken) {
@@ -139,7 +135,7 @@ namespace DiscordCoreAPI {
             lock_guard<mutex> accessLock{ this->accessMutex };
             map<EventDelegateToken, R> theMap{};
             for (auto& [key, value] : this->theFunctions) {
-                theMap.insert_or_assign(value.eventToken, value.theFunction(args...));
+                theMap.insert_or_assign(key, value.theFunction(args...));
             }
             return theMap;
         }
@@ -158,7 +154,6 @@ namespace DiscordCoreAPI {
 
         EventDelegate<void, Args...>& operator=(EventDelegate<void, Args...>&& other) {
             this->theFunction = move(other.theFunction);
-            this->eventToken = move(other.eventToken);
             return *this;
         }
 
@@ -178,8 +173,6 @@ namespace DiscordCoreAPI {
             this->theFunction = theFunctionNew;
         }
 
-        EventDelegateToken eventToken{};
-
     protected:
         function<void(Args...)>theFunction{};
     };
@@ -198,10 +191,11 @@ namespace DiscordCoreAPI {
 
         EventDelegateToken add(EventDelegate<void, Args...> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            eventDelegate.eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            eventDelegate.eventToken.eventId = this->eventId;
-            this->theFunctions.storeValue(eventDelegate.eventToken, move(eventDelegate));
-            return eventDelegate.eventToken;
+            EventDelegateToken eventToken{};
+            eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventToken.eventId = this->eventId;
+            this->theFunctions.storeValue(eventToken, move(eventDelegate));
+            return eventToken;
         }
 
         void remove(EventDelegateToken  eventToken) {
@@ -231,7 +225,7 @@ namespace DiscordCoreAPI {
 
         template<typename R, typename ...Args>
         friend class EventDelegate;
-        
+
         friend inline bool operator<(const EventToken& lhs, const EventToken& rhs);
 
         friend inline bool operator>(const EventToken& lhs, const EventToken& rhs);
@@ -239,7 +233,7 @@ namespace DiscordCoreAPI {
         friend inline bool operator==(const EventToken& lhs, const EventToken& rhs);
 
         friend inline bool operator!=(const EventToken& lhs, const EventToken& rhs);
-       
+
     protected:
 
         string handlerId{ "" };
@@ -248,7 +242,7 @@ namespace DiscordCoreAPI {
     };
 
     bool operator==(const EventToken& lhs, const EventToken& rhs) {
-        if (lhs.eventId == rhs.eventId&& lhs.handlerId== rhs.handlerId) {
+        if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
             return true;
         }
         else {
@@ -298,7 +292,7 @@ namespace DiscordCoreAPI {
             *this = other;
         }
 
-        Event()  {
+        Event() {
             EventToken newToken{};
             newToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()).c_str();
             newToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()).c_str();
@@ -346,7 +340,7 @@ namespace DiscordCoreAPI {
         static ObjectCache<EventToken, Event<void, void>*> theEvents;
         atomic<shared_ptr<EventToken>> eventToken{ atomic<shared_ptr<EventToken>>(make_shared<EventToken>()) };
         atomic<shared_ptr<bool>> amIActive{ atomic<shared_ptr<bool>>(make_shared<bool>()) };
-        
+
 
     };
 }

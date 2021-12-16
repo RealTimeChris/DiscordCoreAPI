@@ -96,6 +96,7 @@ namespace DiscordCoreAPI {
                     rethrow_exception(exceptionPtr);
                 }
                 this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+                this->currentStatus = this->coroutineHandle.promise().currentStatus;
                 return this->coroutineHandle.promise().result;
             }
         }
@@ -105,15 +106,12 @@ namespace DiscordCoreAPI {
         returnType cancel() {
             if (this != nullptr) {
                 if (this->coroutineHandle) {
-                    if (this->coroutineHandle.promise().newThread.joinable()) {
-                        this->coroutineHandle.promise().newThread.get_stop_source().request_stop();
-                        this->coroutineHandle.promise().newThread.join();
-                    }
                     exception_ptr exceptionPtr{};
                     while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
                     this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
+                    this->currentStatus = this->coroutineHandle.promise().currentStatus;
                     return this->coroutineHandle.promise().result;
                 }
             }
@@ -231,6 +229,7 @@ namespace DiscordCoreAPI {
                     rethrow_exception(exceptionPtr);
                 }
                 this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+                this->currentStatus = this->coroutineHandle.promise().currentStatus;
             }
         }
 
@@ -239,15 +238,12 @@ namespace DiscordCoreAPI {
         void cancel() {
             if (this != nullptr) {
                 if (this->coroutineHandle) {
-                    if (this->coroutineHandle.promise().newThread.joinable()) {
-                        this->coroutineHandle.promise().newThread.get_stop_source().request_stop();
-                        this->coroutineHandle.promise().newThread.join();
-                    }
                     exception_ptr exceptionPtr{};
                     while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
                     this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
+                    this->currentStatus = this->coroutineHandle.promise().currentStatus;
                 }
             }
         }

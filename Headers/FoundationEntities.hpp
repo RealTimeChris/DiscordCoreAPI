@@ -2657,7 +2657,7 @@ namespace DiscordCoreAPI {
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
-        storageType& returnValue(keyType valueId) {
+        storageType& returnValue(const keyType& valueId) {
             unique_lock<mutex> accessLock{ *this->accessMutex };
             return ref(this->cache.at(valueId));
         }
@@ -2665,7 +2665,7 @@ namespace DiscordCoreAPI {
         /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
-        bool contains(keyType valueId) {
+        bool contains(const keyType& valueId) {
             unique_lock<mutex> accessLock{ *this->accessMutex };
             return this->cache.contains(valueId);
         }
@@ -2673,7 +2673,7 @@ namespace DiscordCoreAPI {
         /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns void.
-        void erase(keyType valueId) {
+        void erase(const keyType& valueId) {
             unique_lock<mutex> accessLock{ *this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
@@ -2684,7 +2684,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The item's id to store it at.
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
-        void storeValue(keyType valueId, storageType storageValue) {
+        void storeValue(const keyType& valueId, storageType storageValue) {
             unique_lock<mutex> accessLock{ *this->accessMutex };
             this->cache.insert_or_assign(valueId, move(storageValue));
         }
