@@ -300,14 +300,14 @@ namespace DiscordCoreAPI {
             this->eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
             this->amIActive = other.amIActive;
             lock_guard<mutex> accessLock{ this->accessMutex };
-            Event::theEvents.storeValue(this->eventToken, *this);
+            Event::theEvents.storeValue(this->eventToken, ref(*this));
         }
 
         Event() : accessMutex(mutex{}) {
             this->eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
             this->eventToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
             lock_guard<mutex> accessLock{ this->accessMutex };
-            Event::theEvents.storeValue(this->eventToken, *this);
+            Event::theEvents.storeValue(this->eventToken, ref(*this));
         }
 
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
@@ -338,7 +338,7 @@ namespace DiscordCoreAPI {
             lock_guard<mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : Event::theEvents) {
                 if (key == this->eventToken) {
-                    value.amIActive = true;
+                    value.get().amIActive = true;
                 }
             }
         }
@@ -347,7 +347,7 @@ namespace DiscordCoreAPI {
             lock_guard<mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : Event::theEvents) {
                 if (key == this->eventToken) {
-                    value.amIActive = false;
+                    value.get().amIActive= false;
                 }
             }
         }
@@ -357,7 +357,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        static ObjectMultiCache<EventToken, Event<void, void>&> theEvents;
+        static ObjectMultiCache<EventToken, reference_wrapper<Event<void, void>>> theEvents;
         EventToken eventToken{};
         bool amIActive{ false };
         mutex accessMutex{};
