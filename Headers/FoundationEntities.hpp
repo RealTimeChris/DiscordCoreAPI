@@ -40,10 +40,12 @@ namespace DiscordCoreAPI {
     using namespace winrt;
     using namespace std;
 
+    struct GetGuildMemberRolesData;
     template<typename returnType>
     class CoRoutine;
     class DiscordCoreClient;
     class VoiceConnection;
+    struct GetRolesData;
     class GuildMember;
 
     /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.

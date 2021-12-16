@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
         Event<void, void>& operator=(Event<void, void>& other) {
             this->eventToken.store(other.eventToken.load());
             this->amIActive.store(other.amIActive.load());
-            Event::refCounts.returnValue(*this->eventToken.load()) += 1;
+            *Event::refCounts.returnValue(*this->eventToken.load()) += 1;
             return *this;
         }
 
@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
             newToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()).c_str();
             this->eventToken = make_shared<EventToken>(newToken);
             Event::theEvents.storeValue(*this->eventToken.load(), this);
-            Event::refCounts.storeValue(*this->eventToken.load(), 1);
+            Event::refCounts.storeValue(*this->eventToken.load(), make_shared<uint32_t>(1));
         }
 
         bool wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
@@ -334,7 +334,7 @@ namespace DiscordCoreAPI {
         }
 
         ~Event() {
-            Event::refCounts.returnValue(*this->eventToken.load()) -= 1;
+            *Event::refCounts.returnValue(*this->eventToken.load()) -= 1;
             if (Event::refCounts.returnValue(*this->eventToken.load()) == 0) {
                 Event::refCounts.erase(*this->eventToken.load());
                 Event::theEvents.erase(*this->eventToken.load());
@@ -342,10 +342,10 @@ namespace DiscordCoreAPI {
         }
 
     protected:
+        static ObjectCache<EventToken, shared_ptr<uint32_t>> refCounts;
         static ObjectCache<EventToken, Event<void, void>*> theEvents;
-        static ObjectCache<EventToken, uint32_t> refCounts;
-        atomic<shared_ptr<EventToken>> eventToken{ atomic<shared_ptr<EventToken>>() };
-        atomic<shared_ptr<bool>> amIActive{ atomic<shared_ptr<bool>>() };
+        atomic<shared_ptr<EventToken>> eventToken{ atomic<shared_ptr<EventToken>>(make_shared<EventToken>()) };
+        atomic<shared_ptr<bool>> amIActive{ atomic<shared_ptr<bool>>(make_shared<bool>()) };
         
 
     };

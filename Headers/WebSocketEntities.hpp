@@ -7,9 +7,11 @@
 
 #include "IndexInitial.hpp"
 #include "SongDecoder.hpp"
+#include "FoundationEntities.hpp"
 #include "ErlPacker.hpp"
 #include "SSLClient.hpp"
 #include "EventEntities.hpp"
+#include "UserEntities.hpp"
 
 namespace DiscordCoreInternal {
 

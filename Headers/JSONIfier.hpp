@@ -6,7 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "ChannelEntities.hpp"
+#include "FoundationEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -18,6 +18,7 @@ namespace DiscordCoreAPI {
 	struct CreateGuildApplicationCommandData;
 	struct EditGlobalApplicationCommandData;
 	struct EditGuildApplicationCommandData;
+	struct ModifyGuildChannelPositionsData;
 	struct StartThreadWithoutMessageData;
 	struct CreateGuildScheduledEventData;
 	struct ModifyGuildScheduledEventData;
@@ -32,6 +33,7 @@ namespace DiscordCoreAPI {
 	class CreateFollowUpMessageData;
 	struct CreateChannelInviteData;
 	struct DeleteMessagesBulkData;
+	struct CreateGuildChannelData;
 	class EditFollowUpMessageData;
 	class EditWebHookMessageData;
 	struct FollowNewsChannelData;
@@ -41,7 +43,7 @@ namespace DiscordCoreAPI {
 	struct UpdateVoiceStateData;
 	struct CreateGuildRoleData;
 	struct BeginGuildPruneData;
-	struct ModifyGuildRoleData;
+	struct ModifyGuildRoleData;	
 	struct AddGuildMemberData;
 	struct CreateGuildBanData;
 	class ExecuteWebHookData;

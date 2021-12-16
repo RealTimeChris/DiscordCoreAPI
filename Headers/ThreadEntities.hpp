@@ -3,6 +3,8 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
+#pragma once
+
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
