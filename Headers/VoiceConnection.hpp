@@ -39,12 +39,12 @@ namespace DiscordCoreAPI {
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song.
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
 		/// \returns An event_token for later de-registering the event. 
-		DiscordCoreAPI::EventToken onSongCompletion(DiscordCoreAPI::EventDelegate<CoRoutine<void>, SongCompletionEventData> handler);
+		DiscordCoreAPI::EventDelegateToken onSongCompletion(DiscordCoreAPI::EventDelegate<CoRoutine<void>, SongCompletionEventData> handler);
 
 		/// For de-registering the event-handler function that was previously registered. \brief For de-registering the event-handler function that was previously registered.
 		/// \param token The event_token that was returned from the registration function.
 		/// \returns void.
-		void onSongCompletion(DiscordCoreAPI::EventToken token);
+		void onSongCompletion(DiscordCoreAPI::EventDelegateToken token);
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns A string containing the Channel's id. 
@@ -56,20 +56,20 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		unique_ptr<concurrency::event> reconnectionEvent{ make_unique<concurrency::event>() };
+		unique_ptr<Event<void, void>> reconnectionEvent{ make_unique<Event<void, void>>() };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		UnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		concurrency::event connectionReadyEvent {};
-		concurrency::event disconnectionEvent {};
+		Event<void, void> connectionReadyEvent {};
+		Event<void, void> disconnectionEvent {};
 		const int32_t maxBufferSize{ 1276 };
-		concurrency::event playWaitEvent {};
-		concurrency::event stopWaitEvent {};
-		concurrency::event playSetEvent {};
-		concurrency::event stopSetEvent {};
+		Event<void, void> playWaitEvent {};
+		Event<void, void> stopWaitEvent {};
+		Event<void, void> playSetEvent {};
+		Event<void, void> stopSetEvent {};
 		CoRoutine<void> theTask{ nullptr };
-		concurrency::event pauseEvent {};
+		Event<void, void> pauseEvent {};
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };

@@ -99,10 +99,8 @@ extern "C"
 #include <coroutine>
 #include <atltime.h>
 #include <iostream>
-#include <concrt.h>
 #include <sodium.h>
 #include <signal.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <string>
 #include <regex>

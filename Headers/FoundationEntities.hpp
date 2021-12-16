@@ -17,7 +17,6 @@ namespace DiscordCoreInternal {
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
-    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -37,7 +36,6 @@ namespace DiscordCoreAPI {
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
-    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -863,41 +861,53 @@ namespace DiscordCoreAPI {
 
     /// Audit log events. \brief Audit log events.
     enum class AuditLogEvent {
-        GUILD_UPDATE = 1,///< Guild upate.
-        CHANNEL_CREATE = 10,///< Channel create.
-        CHANNEL_UPDATE = 11,///< Channel update.
-        CHANNEL_DELETE = 12,///< Channel delete.
-        CHANNEL_OVERWRITE_CREATE = 13,///< Channel-overwrite create.
-        CHANNEL_OVERWRITE_UPDATE = 14,///< Channel-overwrite update.
-        CHANNEL_OVERWRITE_DELETE = 15,///< Channel-overwrite delete.
-        MEMBER_KICK = 20,///< Member kick.
-        MEMBER_PRUNE = 21,///< Member prune.
-        MEMBER_BAN_ADD = 22,///< Member ban add.
-        MEMBER_BAN_REMOVE = 23,///< Member ban remove.
-        MEMBER_UPDATE = 24,///< Member update.
-        MEMBER_ROLE_UPDATE = 25,///< Member Role update.
-        MEMBER_MOVE = 26,///< Member move.
-        MEMBER_DISCONNECT = 27,///< Member disconnect.
-        BOT_ADD = 28,///< Bot add.
-        ROLE_CREATE = 30,///< Role create.
-        ROLE_UPDATE = 31,///< Role update.
-        ROLE_DELETE = 32,///< Role delete.
-        INVITE_CREATE = 40,///< Invite create.
-        INVITE_UPDATE = 41,///< Invite update.
-        INVITE_DELETE = 42,///< Invite delete.
-        WEBHOOK_CREATE = 50,///< WebHook create.
-        WEBHOOK_UPDATE = 51,///< WebHook update.
-        WEBHOOK_DELETE = 52,///< WebHook delete.
-        EMOJI_CREATE = 60,///< Emoji create.
-        EMOJI_UPDATE = 61,///< Emoji update.
-        EMOJI_DELETE = 62,///< Emoji delete.
-        MESSAGE_DELETE = 72,///< Message delete.
-        MESSAGE_BULK_DELETE = 73,///< Message bulk delete.
-        MESSAGE_PIN = 74,///< Message pin.
-        MESSAGE_UNPIN = 75,///< Message unpin.
-        INTEGRATION_CREATE = 80,///< Integration create.
-        INTEGRATION_UPDATE = 81,///< Integration update.
-        INTEGRATION_DELETE = 82///< Integration delete.
+        GUILD_UPDATE = 1,
+        CHANNEL_CREATE = 10,
+        CHANNEL_UPDATE = 11,
+        CHANNEL_DELETE = 12,
+        CHANNEL_OVERWRITE_CREATE = 13,
+        CHANNEL_OVERWRITE_UPDATE = 14,
+        CHANNEL_OVERWRITE_DELETE = 15,
+        MEMBER_KICK = 20,
+        MEMBER_PRUNE = 21,
+        MEMBER_BAN_ADD = 22,
+        MEMBER_BAN_REMOVE = 23,
+        MEMBER_UPDATE = 24,
+        MEMBER_ROLE_UPDATE = 25,
+        MEMBER_MOVE = 26,
+        MEMBER_DISCONNECT = 27,
+        BOT_ADD = 28,
+        ROLE_CREATE = 30,
+        ROLE_UPDATE = 31,
+        ROLE_DELETE = 32,
+        INVITE_CREATE = 40,
+        INVITE_UPDATE = 41,
+        INVITE_DELETE = 42,
+        WEBHOOK_CREATE = 50,
+        WEBHOOK_UPDATE = 51,
+        WEBHOOK_DELETE = 52,
+        EMOJI_CREATE = 60,
+        EMOJI_UPDATE = 61,
+        EMOJI_DELETE = 62,
+        MESSAGE_DELETE = 72,
+        MESSAGE_BULK_DELETE = 73,
+        MESSAGE_PIN = 74,
+        MESSAGE_UNPIN = 75,
+        INTEGRATION_CREATE = 80,
+        INTEGRATION_UPDATE = 81,
+        INTEGRATION_DELETE = 82,
+        STAGE_INSTANCE_CREATE = 83,
+        STAGE_INSTANCE_UPDATE = 84,
+        STAGE_INSTANCE_DELETE = 85,
+        STICKER_CREATE = 90,
+        STICKER_UPDATE = 91,
+        STICKER_DELETE = 92,
+        GUILD_SCHEDULED_EVENT_CREATE = 100,
+        GUILD_SCHEDULED_EVENT_UPDATE = 101,
+        GUILD_SCHEDULED_EVENT_DELETE = 102,
+        THREAD_CREATE = 110,
+        THREAD_UPDATE = 111,
+        THREAD_DELETE = 112
     };
 
     /// Audit log entry info data \brief Audit log entry info data.
@@ -2692,6 +2702,72 @@ namespace DiscordCoreAPI {
     protected:
 
         map<keyType, storageType> cache{};
+
+        unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
+    };
+
+    /// A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key. \brief A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key.
+    /// \param storageType The type of item to be stored.
+    template<typename keyType, typename storageType>
+    class DiscordCoreAPI_Dll ObjectMultiCache {
+    public:
+
+        friend class Guilds;
+
+        ObjectMultiCache() = default;
+
+        ObjectMultiCache& operator=(ObjectMultiCache&) = delete;
+
+        ObjectMultiCache(ObjectMultiCache&) = delete;
+
+        auto end() {
+            unique_lock<mutex> endLock{ *this->accessMutex };
+            return this->cache.end();
+        }
+
+        auto begin() {
+            lock_guard<mutex> beginLock{ *this->accessMutex };
+            return this->cache.begin();
+        }
+
+        /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
+        /// \param valueId The chosen item's key.
+        /// \returns storageType The typed item that is stored.
+        storageType& returnValue(keyType valueId) {
+            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
+            return ref(this->cache.at(valueId));
+        }
+
+        /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns bool Whether or not the item is present at the given key.
+        bool contains(keyType valueId) {
+            unique_lock<mutex> containsLock{ *this->accessMutex };
+            return this->cache.contains(valueId);
+        }
+
+        /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns void.
+        void erase(keyType valueId) {
+            unique_lock<mutex> eraseLock{ *this->accessMutex };
+            if (this->cache.contains(valueId)) {
+                this->cache.erase(valueId);
+            }
+        }
+
+        /// Stores an item in the cache. \brief Stores an item in the cache.
+        /// \param valueId The item's id to store it at.
+        /// \param storageValue The item to store in the object-cache.
+        /// \returns void.
+        void storeValue(keyType valueId, storageType storageValue) {
+            unique_lock<mutex> storeLock{ *this->accessMutex };
+            this->cache.insert(pair<keyType, storageType>(valueId, storageValue));
+        }
+
+    protected:
+
+        multimap<keyType, storageType> cache{};
 
         unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
     };

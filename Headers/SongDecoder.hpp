@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
         AVCodecContext* audioDecodeContext{ nullptr };
         UnboundedMessageBlock<bool> readyBuffer{};
         AVFormatContext* formatContext{ nullptr };
-        concurrency::event readyToStartEvent {};
+        Event<void, void> readyToStartEvent {};
         int32_t refreshTimeForBuffer{ 10000 };
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };

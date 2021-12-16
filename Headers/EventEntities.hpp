@@ -10,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-    struct EventToken {
+    struct EventDelegateToken {
 
         template<typename R, typename ...Args>
         friend class Event;
@@ -18,26 +18,26 @@ namespace DiscordCoreAPI {
         template<typename R, typename ...Args>
         friend class EventDelegate;
 
-        friend inline bool operator<(const EventToken& lhs, const EventToken& rhs);
+        friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-        friend inline bool operator>(const EventToken& lhs, const EventToken& rhs);
+        friend inline bool operator>(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-        friend inline bool operator==(const EventToken& lhs, const EventToken& rhs);
+        friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-        friend inline bool operator!=(const EventToken& lhs, const EventToken& rhs);
+        friend inline bool operator!=(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-        ~EventToken() = default;
+        ~EventDelegateToken() = default;
 
     protected:
 
-        EventToken() = default;
+        EventDelegateToken() = default;
 
         string handlerId{ "" };
         string eventId{ "" };
 
     };
 
-    bool operator==(const EventToken& lhs, const EventToken& rhs) {
+    bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
             return true;
         }
@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    bool operator!=(const EventToken& lhs, const EventToken& rhs) {
+    bool operator!=(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs == rhs) {
             return false;
         }
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    inline bool operator<(const EventToken& lhs, const EventToken& rhs) {
+    inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs.handlerId < rhs.handlerId) {
             return true;
         }
@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    inline bool operator>(const EventToken& lhs, const EventToken& rhs) {
+    inline bool operator>(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs < rhs) {
             return false;
         }
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
             this->theFunction = theFunctionNew;
         }
 
-        EventToken eventToken{};
+        EventDelegateToken eventToken{};
 
     protected:
         function<R(Args...)>theFunction{};
@@ -112,33 +112,32 @@ namespace DiscordCoreAPI {
     class Event {
     public:
 
-        Event<R, Args...>& operator=(const Event<R, Args...>& other) = delete;
+        Event<R, Args...>& operator=(const Event<R, Args...>&) = delete;
 
-        Event(const Event<R, Args...>& other) = delete;
+        Event(const Event<R, Args...>&) = delete;
 
         Event() {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
-        EventToken add(EventDelegate<R, Args...> eventDelegate) {
+        EventDelegateToken add(EventDelegate<R, Args...> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            EventToken eventToken = eventDelegate.eventToken;
-            eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            eventToken.eventId = this->eventId;
-            this->theFunctions.storeValue(eventDelegate.eventToken.handlerId, move(eventDelegate));
-            return eventToken;
+            eventDelegate.eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventDelegate.eventToken.eventId = this->eventId;
+            this->theFunctions.storeValue(eventDelegate.eventToken, move(eventDelegate));
+            return eventDelegate.eventToken;
         }
 
-        void remove(EventToken  eventToken) {
+        void remove(EventDelegateToken  eventToken) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            if (this->theFunctions.contains(eventToken.handlerId)) {
-                this->theFunctions.erase(eventToken.handlerId);
+            if (this->theFunctions.contains(eventToken)) {
+                this->theFunctions.erase(eventToken);
             }
         }
 
-        map<EventToken, R> operator()(Args... args) {
+        map<EventDelegateToken, R> operator()(Args... args) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            map<EventToken, R> theMap{};
+            map<EventDelegateToken, R> theMap{};
             for (auto& [key, value] : this->theFunctions) {
                 theMap.insert_or_assign(value.eventToken, value.theFunction(args...));
             }
@@ -146,7 +145,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        ObjectCache<string, EventDelegate<R, Args...>> theFunctions{};
+        ObjectCache<EventDelegateToken, EventDelegate<R, Args...>> theFunctions{};
         string eventId{ "" };
         mutex accessMutex{};
     };
@@ -179,7 +178,7 @@ namespace DiscordCoreAPI {
             this->theFunction = theFunctionNew;
         }
 
-        EventToken eventToken{};
+        EventDelegateToken eventToken{};
 
     protected:
         function<void(Args...)>theFunction{};
@@ -193,19 +192,22 @@ namespace DiscordCoreAPI {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
-        EventToken add(EventDelegate<void, Args...> eventDelegate) {
+        Event& operator=(const Event&) = delete;
+
+        Event(const Event&) = delete;
+
+        EventDelegateToken add(EventDelegate<void, Args...> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            EventToken eventToken = eventDelegate.eventToken;
-            eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            eventToken.eventId = this->eventId;
-            this->theFunctions.storeValue(eventDelegate.eventToken.handlerId, move(eventDelegate));
-            return eventToken;
+            eventDelegate.eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventDelegate.eventToken.eventId = this->eventId;
+            this->theFunctions.storeValue(eventDelegate.eventToken, move(eventDelegate));
+            return eventDelegate.eventToken;
         }
 
-        void remove(EventToken  eventToken) {
+        void remove(EventDelegateToken  eventToken) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            if (this->theFunctions.contains(eventToken.handlerId)) {
-                this->theFunctions.erase(eventToken.handlerId);
+            if (this->theFunctions.contains(eventToken)) {
+                this->theFunctions.erase(eventToken);
             }
         }
 
@@ -217,8 +219,148 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        ObjectCache<string, EventDelegate<void, Args...>> theFunctions{};
+        ObjectCache<EventDelegateToken, EventDelegate<void, Args...>> theFunctions{};
         string eventId{ "" };
         mutex accessMutex{};
+    };
+
+    struct EventToken {
+
+        template<typename R, typename ...Args>
+        friend class Event;
+
+        template<typename R, typename ...Args>
+        friend class EventDelegate;
+
+        friend inline bool operator<(const EventToken& lhs, const EventToken& rhs);
+
+        friend inline bool operator>(const EventToken& lhs, const EventToken& rhs);
+
+        friend inline bool operator==(const EventToken& lhs, const EventToken& rhs);
+
+        friend inline bool operator!=(const EventToken& lhs, const EventToken& rhs);
+
+        ~EventToken() = default;
+
+    protected:
+
+        EventToken() = default;
+
+        string handlerId{ "" };
+        string eventId{ "" };
+
+    };
+
+    bool operator==(const EventToken& lhs, const EventToken& rhs) {
+        if (lhs.eventId == rhs.eventId) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    bool operator!=(const EventToken& lhs, const EventToken& rhs) {
+        if (lhs == rhs) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    inline bool operator<(const EventToken& lhs, const EventToken& rhs) {
+        if (lhs.handlerId < rhs.handlerId) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    inline bool operator>(const EventToken& lhs, const EventToken& rhs) {
+        if (lhs < rhs) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    template<>
+    class Event<void, void> {
+    public:
+
+        Event(Event<void, void>& other) : accessMutex(mutex{}) {
+            *this = other;
+        }
+
+        Event<void, void>& operator=(Event<void, void>& other) {
+            this->eventToken = other.eventToken;
+            this->eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            this->amIActive = other.amIActive;
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            Event::theEvents.storeValue(this->eventToken, *this);
+        }
+
+        Event() : accessMutex(mutex{}) {
+            this->eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            this->eventToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            Event::theEvents.storeValue(this->eventToken, *this);
+        }
+
+        uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
+            uint32_t millisecondsWaited{ 0 };
+            bool doWeBreak{ false };
+            while (!doWeBreak) {
+                if (this->amIActive) {
+                    doWeBreak = true;
+                    break;
+                }
+                else {
+                    this_thread::sleep_for(chrono::microseconds(1000));
+                    millisecondsWaited += 1;
+                }
+                if (millisecondsWaited >= millisecondsMaxToWait) {
+                    break;
+                }
+            }
+            if (doWeBreak) {
+                return 0;
+            }
+            else {
+                return 1;
+            }
+        }
+
+        void set() {
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            for (auto& [key, value] : Event::theEvents) {
+                if (key == this->eventToken) {
+                    value.amIActive = true;
+                }
+            }
+        }
+
+        void reset() {
+            lock_guard<mutex> accessLock{ this->accessMutex };
+            for (auto& [key, value] : Event::theEvents) {
+                if (key == this->eventToken) {
+                    value.amIActive = false;
+                }
+            }
+        }
+
+        ~Event() {
+            Event::theEvents.erase(this->eventToken);
+        }
+
+    protected:
+        static ObjectMultiCache<EventToken, Event<void, void>&> theEvents;
+        EventToken eventToken{};
+        bool amIActive{ false };
+        mutex accessMutex{};
+
     };
 }
