@@ -9,6 +9,7 @@
 #include "SongDecoder.hpp"
 #include "ErlPacker.hpp"
 #include "SSLClient.hpp"
+#include "EventEntities.hpp"
 
 namespace DiscordCoreInternal {
 

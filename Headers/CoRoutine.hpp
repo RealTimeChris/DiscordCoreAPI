@@ -6,20 +6,6 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "EventEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "ChannelEntities.hpp"
-#include "GuildEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "GuildScheduledEventEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "MessageEntities.hpp"
-#include "ReactionEntities.hpp"
-#include "RoleEntities.hpp"
-#include "StageInstanceEntities.hpp"
-#include "StickerEntities.hpp"
-#include "UserEntities.hpp"
-#include "WebHookEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -130,7 +116,6 @@ namespace DiscordCoreAPI {
                     return this->coroutineHandle.promise().result;
                 }
             }
-            return returnType{};
         }
 
         class DiscordCoreAPI_Dll promise_type {
@@ -142,7 +127,7 @@ namespace DiscordCoreAPI {
 
             jthread newThread{};
 
-            returnType result{};
+            returnType result;
 
             promise_type() {}
 

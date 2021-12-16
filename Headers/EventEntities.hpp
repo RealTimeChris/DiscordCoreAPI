@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 
         template<typename R, typename ...Args>
         friend class EventDelegate;
-
+        
         friend inline bool operator<(const EventToken& lhs, const EventToken& rhs);
 
         friend inline bool operator>(const EventToken& lhs, const EventToken& rhs);
@@ -239,12 +239,8 @@ namespace DiscordCoreAPI {
         friend inline bool operator==(const EventToken& lhs, const EventToken& rhs);
 
         friend inline bool operator!=(const EventToken& lhs, const EventToken& rhs);
-
-        ~EventToken() = default;
-
+       
     protected:
-
-        EventToken() = default;
 
         string handlerId{ "" };
         string eventId{ "" };
@@ -252,7 +248,7 @@ namespace DiscordCoreAPI {
     };
 
     bool operator==(const EventToken& lhs, const EventToken& rhs) {
-        if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
+        if (lhs.eventId == rhs.eventId&& lhs.handlerId== rhs.handlerId) {
             return true;
         }
         else {
@@ -292,9 +288,9 @@ namespace DiscordCoreAPI {
     public:
 
         Event<void, void>& operator=(Event<void, void>& other) {
-            this->eventToken = other.eventToken;
-            this->amIActive->store(other.amIActive->load());
-            Event::refCounts.returnValue(this->eventToken) += 1;
+            this->eventToken.store(other.eventToken.load());
+            this->amIActive.store(other.amIActive.load());
+            Event::refCounts.returnValue(*this->eventToken.load()) += 1;
             return *this;
         }
 
@@ -302,18 +298,19 @@ namespace DiscordCoreAPI {
             *this = other;
         }
 
-        Event() : accessMutex(mutex{}) {
-            this->eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            this->eventToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            lock_guard<mutex> accessLock{ this->accessMutex };
-            Event::theEvents.storeValue(this->eventToken, this);
-            Event::refCounts.storeValue(this->eventToken, 1);
+        Event()  {
+            EventToken newToken{};
+            newToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()).c_str();
+            newToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()).c_str();
+            this->eventToken = make_shared<EventToken>(newToken);
+            Event::theEvents.storeValue(*this->eventToken.load(), this);
+            Event::refCounts.storeValue(*this->eventToken.load(), 1);
         }
 
         bool wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
             uint32_t millisecondsWaited{ 0 };
             while (true) {
-                if (*Event::theEvents.returnValue(this->eventToken)->amIActive) {
+                if (*Event::theEvents.returnValue(*this->eventToken.load())->amIActive.load()) {
                     return true;
                 }
                 else {
@@ -327,29 +324,29 @@ namespace DiscordCoreAPI {
         }
 
         void set() {
-            lock_guard<mutex> accessLock{ this->accessMutex };
-            *Event::theEvents.returnValue(this->eventToken)->amIActive = true;
+            cout << "SETTING!" << endl;
+            *Event::theEvents.returnValue(*this->eventToken.load())->amIActive.load() = true;
         }
 
         void reset() {
-            lock_guard<mutex> accessLock{ this->accessMutex };
-            *Event::theEvents.returnValue(this->eventToken)->amIActive = false;
+            cout << "RESETTING!" << endl;
+            *Event::theEvents.returnValue(*this->eventToken.load())->amIActive.load() = false;
         }
 
         ~Event() {
-            Event::refCounts.returnValue(this->eventToken) -= 1;
-            if (Event::refCounts.returnValue(this->eventToken) == 0) {
-                Event::refCounts.erase(this->eventToken);
-                Event::theEvents.erase(this->eventToken);
+            Event::refCounts.returnValue(*this->eventToken.load()) -= 1;
+            if (Event::refCounts.returnValue(*this->eventToken.load()) == 0) {
+                Event::refCounts.erase(*this->eventToken.load());
+                Event::theEvents.erase(*this->eventToken.load());
             }
         }
 
     protected:
         static ObjectCache<EventToken, Event<void, void>*> theEvents;
         static ObjectCache<EventToken, uint32_t> refCounts;
-        unique_ptr<atomic<bool>> amIActive{ make_unique<atomic<bool>>() };
-        EventToken eventToken{};
-        mutex accessMutex{};
+        atomic<shared_ptr<EventToken>> eventToken{ atomic<shared_ptr<EventToken>>() };
+        atomic<shared_ptr<bool>> amIActive{ atomic<shared_ptr<bool>>() };
+        
 
     };
 }
