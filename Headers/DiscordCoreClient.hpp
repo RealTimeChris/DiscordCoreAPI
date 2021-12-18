@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 
 		void initialize();
 
-		static void clearTaskVector();
+		static CoRoutine<void> clearTaskVector();
 
 		static void cleanup();
 		

@@ -17,6 +17,7 @@ namespace DiscordCoreInternal {
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
+    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -36,6 +37,7 @@ namespace DiscordCoreAPI {
     using namespace winrt::Windows::Storage;
     using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
+    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -43,6 +45,8 @@ namespace DiscordCoreAPI {
     struct GetGuildMemberRolesData;
     template<typename returnType>
     class CoRoutine;
+    template<>
+    class CoRoutine<void>;
     class DiscordCoreClient;
     class VoiceConnection;
     struct GetRolesData;
@@ -60,12 +64,12 @@ namespace DiscordCoreAPI {
         UnboundedMessageBlock(UnboundedMessageBlock<objectType>&) = delete;
 
         void send(objectType theObject) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
+            lock_guard<mutex> accessLock{ *this->accessMutex };
             this->theArray.push(theObject);
         }
 
         bool try_receive(objectType& theObject) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
+            lock_guard<mutex> accessLock{ *this->accessMutex };
             if (this->theArray.size() == 0) {
                 return false;
             }
@@ -81,7 +85,7 @@ namespace DiscordCoreAPI {
     protected:
         queue<objectType> theArray{};
 
-        mutex accessMutex{};
+        shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
 
     };
 
@@ -137,7 +141,6 @@ namespace DiscordCoreAPI {
 
     template <typename ...T>
     void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
-        NewThreadAwaitable<void>();
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0 && !isRepeating) {
             auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
@@ -2693,7 +2696,7 @@ namespace DiscordCoreAPI {
 
         map<keyType, storageType> cache{};
 
-        unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
+        shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
     };
 
     /// A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key. \brief A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key.
@@ -2725,7 +2728,7 @@ namespace DiscordCoreAPI {
         /// \returns storageType The typed item that is stored.
         storageType& returnValue(keyType valueId) {
             unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
-            return ref(this->cache.at(valueId));
+            return ref(this->cache.extract(valueId));
         }
 
         /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
@@ -2752,7 +2755,7 @@ namespace DiscordCoreAPI {
         /// \returns void.
         void storeValue(keyType valueId, storageType storageValue) {
             unique_lock<mutex> storeLock{ *this->accessMutex };
-            this->cache.insert(pair<keyType, storageType>(valueId, storageValue));
+            this->cache.insert(make_pair(valueId, storageValue));
         }
 
     protected:

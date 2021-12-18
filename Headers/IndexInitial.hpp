@@ -98,6 +98,7 @@ extern "C"
 #include <opus/opus.h>
 #include <coroutine>
 #include <atltime.h>
+#include <concrt.h>
 #include <iostream>
 #include <sodium.h>
 #include <signal.h>

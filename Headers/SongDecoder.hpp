@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
-        uint64_t totalFileSize{ 0 };
+        int64_t totalFileSize{ 0 };
         int32_t bufferMaxSize{ 0 };
     };
 
@@ -48,7 +48,6 @@ namespace DiscordCoreAPI {
         AVCodecContext* audioDecodeContext{ nullptr };
         UnboundedMessageBlock<bool> readyBuffer{};
         AVFormatContext* formatContext{ nullptr };
-        Event<void, void> readyToStartEvent {};
         int32_t refreshTimeForBuffer{ 10000 };
         SwrContext* swrContext{ nullptr };
         AVIOContext* ioContext{ nullptr };
@@ -56,10 +55,11 @@ namespace DiscordCoreAPI {
         vector<uint8_t> currentBuffer{};
         AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
-        uint64_t totalFileSize{ 0 };
         bool haveWeBooted{ false };
+        int64_t totalFileSize{ 0 };
         AVCodec* codec{ nullptr };
         CoRoutine<void> theTask{};
+
         CoRoutine<void> run();
     };
 

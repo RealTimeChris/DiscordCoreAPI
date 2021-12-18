@@ -7,16 +7,27 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
 
-    struct EventDelegateToken {
+    struct DiscordCoreAPI_Dll EventDelegateToken {
 
         template<typename R, typename ...Args>
         friend class Event;
 
         template<typename R, typename ...Args>
         friend class EventDelegate;
+
+        EventDelegateToken& operator=(const EventDelegateToken& other) {
+            this->handlerId = other.handlerId;
+            this->eventId = other.eventId;
+            return *this;
+        }
+
+        EventDelegateToken(const EventDelegateToken& other) {
+            *this = other;
+        }
 
         friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
@@ -34,7 +45,7 @@ namespace DiscordCoreAPI {
         string eventId{ "" };
 
     };
-    
+
     bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
             return true;
@@ -89,13 +100,13 @@ namespace DiscordCoreAPI {
 
         EventDelegate<R, Args...>& operator=(const EventDelegate<R, Args...>& other) = delete;
 
-        EventDelegate(const EventDelegate<R, Args...>& other) = delete;
+        EventDelegate<R, Args...>(const EventDelegate<R, Args...>& other) = delete;
 
-        EventDelegate(function<R(Args...)> theFunctionNew) {
+        EventDelegate<R, Args...>(function<R(Args...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
         }
 
-        EventDelegate(R(*theFunctionNew)(Args...)) {
+        EventDelegate<R, Args...>(R(*theFunctionNew)(Args...)) {
             this->theFunction = theFunctionNew;
         }
 
@@ -104,7 +115,7 @@ namespace DiscordCoreAPI {
     };
 
     template<typename R, typename  ...Args>
-    class Event {
+    class DiscordCoreAPI_Dll Event {
     public:
 
         Event<R, Args...>& operator=(const Event<R, Args...>&) = delete;
@@ -131,13 +142,14 @@ namespace DiscordCoreAPI {
             }
         }
 
-        map<EventDelegateToken, R> operator()(Args... args) {
+        CoRoutine<void> operator()(Args... args) {
+            ObjectCache<EventDelegateToken, EventDelegate<R, Args...>>* theFunctionsNew = &this->theFunctions;
+            co_await NewThreadAwaitable<void>();
             lock_guard<mutex> accessLock{ this->accessMutex };
-            map<EventDelegateToken, R> theMap{};
-            for (auto& [key, value] : this->theFunctions) {
-                theMap.insert_or_assign(key, value.theFunction(args...));
+            for (auto& [key, value] : *theFunctionsNew) {
+                value.theFunction(args...);
             }
-            return theMap;
+            co_return;
         }
 
     protected:
@@ -178,7 +190,7 @@ namespace DiscordCoreAPI {
     };
 
     template<typename ...Args>
-    class Event<void, Args...> {
+    class DiscordCoreAPI_Dll Event<void, Args...> {
     public:
 
         Event() {
@@ -205,11 +217,14 @@ namespace DiscordCoreAPI {
             }
         }
 
-        void operator()(Args... args) {
+        CoRoutine<void> operator()(Args... args) {
+            ObjectCache<EventDelegateToken, EventDelegate<void, Args...>>* theFunctionsNew = &this->theFunctions;
+            co_await NewThreadAwaitable<void>();
             lock_guard<mutex> accessLock{ this->accessMutex };
-            for (auto& [key, value] : this->theFunctions) {
+            for (auto& [key, value] : *theFunctionsNew) {
                 value.theFunction(args...);
             }
+            co_return;
         }
 
     protected:
@@ -218,128 +233,105 @@ namespace DiscordCoreAPI {
         mutex accessMutex{};
     };
 
-    struct EventToken {
+    struct DiscordCoreAPI_Dll EventCore {
 
-        template<typename R, typename ...Args>
-        friend class Event;
+        friend class Event<void, void>;
 
-        template<typename R, typename ...Args>
-        friend class EventDelegate;
+        EventCore& operator=(EventCore&) = delete;
 
-        friend inline bool operator<(const EventToken& lhs, const EventToken& rhs);
+        EventCore(EventCore&) = delete;
 
-        friend inline bool operator>(const EventToken& lhs, const EventToken& rhs);
-
-        friend inline bool operator==(const EventToken& lhs, const EventToken& rhs);
-
-        friend inline bool operator!=(const EventToken& lhs, const EventToken& rhs);
+        EventCore() {};
 
     protected:
-
-        string handlerId{ "" };
-        string eventId{ "" };
+        static ObjectCache<string, unique_ptr<EventCore>> theEvents;
+        static ObjectCache<string, uint32_t> refCounts;
+        bool* theEventState{ new bool{false} };
 
     };
 
-    bool operator==(const EventToken& lhs, const EventToken& rhs) {
-        if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    bool operator!=(const EventToken& lhs, const EventToken& rhs) {
-        if (lhs == rhs) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
-    inline bool operator<(const EventToken& lhs, const EventToken& rhs) {
-        if (lhs.handlerId < rhs.handlerId) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    inline bool operator>(const EventToken& lhs, const EventToken& rhs) {
-        if (lhs < rhs) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
     template<>
-    class Event<void, void> {
+    class DiscordCoreAPI_Dll Event<void, void> {
     public:
 
+        bool* theEventState{ new bool{false} };
+        string eventId{ "" };
+
+        Event<void, void>& operator=(Event<void, void>&&) = delete;
+
+        Event(Event<void, void>&&) = delete;
+
+        Event<void, void>& operator=(const Event<void, void>& other) = delete;
+
+        Event(const Event<void, void>& other) = delete;
+
         Event<void, void>& operator=(Event<void, void>& other) {
-            this->eventToken.store(other.eventToken.load());
-            this->amIActive.store(other.amIActive.load());
-            *Event::refCounts.returnValue(*this->eventToken.load()) += 1;
+            this->eventId = other.eventId;
+            this->theEventState = other.theEventState;
+            cout << "THE VALUE NEW (COPY ASSIGNMENT): " << EventCore::refCounts.returnValue(this->eventId) << endl;
             return *this;
         }
 
         Event(Event<void, void>& other) {
             *this = other;
+            EventCore::refCounts.returnValue(this->eventId) += 1;
+            cout << "THE VALUE NEW (COPY CONSTRUCT): " << EventCore::refCounts.returnValue(this->eventId) << endl;
         }
 
         Event() {
-            EventToken newToken{};
-            newToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()).c_str();
-            newToken.eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()).c_str();
-            this->eventToken = make_shared<EventToken>(newToken);
-            Event::theEvents.storeValue(*this->eventToken.load(), this);
-            Event::refCounts.storeValue(*this->eventToken.load(), make_shared<uint32_t>(1));
+            this->eventId = to_string(chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            EventCore::theEvents.storeValue(this->eventId, make_unique<EventCore>());
+            EventCore::refCounts.storeValue(this->eventId, 1);
+            this->theEventState = EventCore::theEvents.returnValue(this->eventId)->theEventState;
         }
 
-        bool wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
+        uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
             uint32_t millisecondsWaited{ 0 };
             while (true) {
-                if (*Event::theEvents.returnValue(*this->eventToken.load())->amIActive.load()) {
-                    return true;
+                cout << "WERE WAITING WERE WAITING FOR " << testString << " " << millisecondsMaxToWait << endl;
+                if (*this->theEventState) {
+                    cout << "IT'S TRUE WE'RE OUT OF HERRE!" << endl;
+                    return 0;
                 }
                 else {
                     this_thread::sleep_for(chrono::microseconds(1000));
+                    cout << "IT'S TRUE WERE STILL WAITING ANDTHE TIME IS: " << to_string(millisecondsWaited) << endl;
                     millisecondsWaited += 1;
                 }
                 if (millisecondsWaited >= millisecondsMaxToWait) {
-                    return false;
+                    cout << "LOOKS LIKE WE'RE TIMED OUT!" << endl;
+                    return 1;
                 }
             }
         }
 
-        void set() {
-            cout << "SETTING!" << endl;
-            *Event::theEvents.returnValue(*this->eventToken.load())->amIActive.load() = true;
+        CoRoutine<void> set(string testValue = "") {
+            co_await NewThreadAwaitable<void>();
+            cout << "SETTING THE PREVIOUS STATE: FOR " << testValue << boolalpha << *this->theEventState<< endl;
+            *this->theEventState = true;
+            cout << "SETTING THE NEW STATE: FOR " << testValue << boolalpha << *this->theEventState << endl;
+            co_return;
         }
 
         void reset() {
             cout << "RESETTING!" << endl;
-            *Event::theEvents.returnValue(*this->eventToken.load())->amIActive.load() = false;
+            *this->theEventState = false;
         }
 
         ~Event() {
-            *Event::refCounts.returnValue(*this->eventToken.load()) -= 1;
-            if (Event::refCounts.returnValue(*this->eventToken.load()) == 0) {
-                Event::refCounts.erase(*this->eventToken.load());
-                Event::theEvents.erase(*this->eventToken.load());
+            if (EventCore::refCounts.returnValue(this->eventId) > 0) {
+                EventCore::refCounts.returnValue(this->eventId) -= 1;
+                cout << "THE VALUE ID: " << EventCore::refCounts.returnValue(this->eventId) << endl;
+                
+            }
+            if (EventCore::refCounts.returnValue(this->eventId) == 0) {
+                cout << "IM BEING DESTROYED" << endl;
+                EventCore::refCounts.erase(this->eventId);
+                EventCore::theEvents.erase(this->eventId);
             }
         }
 
     protected:
-        static ObjectCache<EventToken, shared_ptr<uint32_t>> refCounts;
-        static ObjectCache<EventToken, Event<void, void>*> theEvents;
-        atomic<shared_ptr<EventToken>> eventToken{ atomic<shared_ptr<EventToken>>(make_shared<EventToken>()) };
-        atomic<shared_ptr<bool>> amIActive{ atomic<shared_ptr<bool>>(make_shared<bool>()) };
 
 
     };

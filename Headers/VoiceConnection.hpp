@@ -12,6 +12,9 @@
 
 namespace DiscordCoreAPI {
 
+	template<>
+	class CoRoutine<void>;
+
 	/**
 	* \addtogroup voice_connection
 	* @{
@@ -56,19 +59,19 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		unique_ptr<Event<void, void>> reconnectionEvent{ make_unique<Event<void, void>>() };
+		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
 		DiscordCoreInternal::BaseWebSocketAgent* baseWebsocketAgent{ nullptr };
 		UnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		Event<void, void> connectionReadyEvent {};
+		Event<void, void> connectionReadyEvent{};
 		Event<void, void> disconnectionEvent {};
+		unique_ptr<CoRoutine<void>> theTask{};
 		const int32_t maxBufferSize{ 1276 };
 		Event<void, void> playWaitEvent {};
 		Event<void, void> stopWaitEvent {};
 		Event<void, void> playSetEvent {};
-		Event<void, void> stopSetEvent {};
-		CoRoutine<void> theTask{ nullptr };
+		Event<void, void> stopSetEvent{};
 		Event<void, void> pauseEvent {};
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
