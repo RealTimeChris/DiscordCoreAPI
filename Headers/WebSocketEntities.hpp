@@ -139,9 +139,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
+		unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{};
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
 		unique_ptr<MsgWebSocketSSLClient> sslClient{ nullptr };
-		shared_ptr<ThreadPoolTimer> heartbeatTimer{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -204,8 +204,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
-		shared_ptr<ThreadPoolTimer> heartbeatTimer{ nullptr };
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
+		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -267,9 +267,9 @@ namespace DiscordCoreInternal {
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
 		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };
+		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{};
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
-		ThreadPoolTimer heartbeatTimer{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };
 		MessageWebSocket webSocket{ nullptr };

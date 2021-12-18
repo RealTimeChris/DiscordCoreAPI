@@ -308,9 +308,163 @@ namespace DiscordCoreAPI {
                 }
             }
         }
+    };
+
+    class ThreadPool {
+    public:
+
+        ThreadPool() = default;
+
+        ThreadPool& operator=(ThreadPool&) = delete;
+
+        ThreadPool(ThreadPool&) = delete;
+
+        void storeThread(string theKey, CoRoutine<void> thread) {
+            this->threads.insert(make_pair(theKey, move(thread)));
+        }
+
+        void stopThread(string theKey) {
+            if (this->threads.contains(theKey)) {
+                this->threads.erase(theKey);
+            }
+        }
 
     protected:
 
+        map<string, CoRoutine<void>>threads{};
 
     };
+
+    class ThreadPoolTimer;
+
+    typedef function<void(ThreadPoolTimer)> TimeElapsedHandler;
+
+    class ThreadPoolTimer {
+    public:
+
+        ThreadPoolTimer& operator=(ThreadPoolTimer&& other) {
+            this->theFunction = move(other.theFunction);
+            this->theInterval = other.theInterval;
+            this->repeating = other.repeating;
+            this->stopWatch = other.stopWatch;
+            this->threadId = move(other.threadId);
+            other.threadId = "";
+            this->running = other.running;
+            return *this;
+        }
+
+        ThreadPoolTimer(ThreadPoolTimer&& other) {
+            *this = move(other);
+        }
+
+        ThreadPoolTimer& operator=(ThreadPoolTimer& other) = delete;
+
+        ThreadPoolTimer(ThreadPoolTimer& other) = delete;
+
+        ThreadPoolTimer& operator=(const ThreadPoolTimer& other) = delete;
+
+        ThreadPoolTimer(const ThreadPoolTimer& other) = delete;
+
+        ThreadPoolTimer() {
+            this->threadId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::steady_clock::now().time_since_epoch()).count());
+        }
+
+        static ThreadPoolTimer CreateTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {
+            ThreadPoolTimer threadPoolTimer{};
+            threadPoolTimer.theFunction = timeElapsedHandler;
+            threadPoolTimer.theInterval = timeDelay;
+            threadPoolTimer.repeating = false;
+            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, move(threadPoolTimer.run()));
+            return threadPoolTimer;
+        }
+
+        static ThreadPoolTimer CreatePeriodicTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeInterval) {
+            ThreadPoolTimer threadPoolTimer{};
+            threadPoolTimer.theFunction = timeElapsedHandler;
+            threadPoolTimer.theInterval = timeInterval;
+            threadPoolTimer.repeating = true;
+            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, move(threadPoolTimer.run()));
+            return threadPoolTimer;
+        }
+
+        bool Running() {
+            return this->running;
+        }
+
+        void Cancel() {
+            ThreadPoolTimer::threads.stopThread(this->threadId);
+        }
+
+        ~ThreadPoolTimer() {
+            ThreadPoolTimer::threads.stopThread(this->threadId);
+        }
+
+    protected:
+
+        static ThreadPool threads;
+
+        StopWatch<chrono::milliseconds> stopWatch{ 0 };
+
+        TimeElapsedHandler theFunction{};
+
+        uint64_t theInterval{ 0 };
+        
+        bool repeating{ false };
+
+        bool running{ false };
+
+        string threadId{ "" };
+
+        CoRoutine<void> run() {
+            this->running = true;
+            auto cancelHandle = co_await NewThreadAwaitable<void>();
+            this->stopWatch = StopWatch<chrono::milliseconds>{ static_cast<int64_t>(this->theInterval) };
+            while (true) {
+                this->stopWatch.resetTimer();
+                while (!this->stopWatch.hasTimePassed()) {
+                    if (cancelHandle.promise().newThread->get_stop_token().stop_requested()) {
+                        this->running = false;
+                        co_return;
+                    }
+                    this_thread::sleep_for(chrono::milliseconds(1));
+                }
+                if (cancelHandle.promise().newThread->get_stop_token().stop_requested() || !this->repeating) {
+                    this->running = false;
+                    co_return;
+                }
+                this->theFunction(move(*this));
+            }
+            this->running = false;
+            co_return;
+        }
+        
+    };
+    
+    template <typename ...T>
+    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+        co_await NewThreadAwaitable<void>();
+        ThreadPoolTimer threadPoolTimer{};
+        if (timeDelayInMs > 0 && !isRepeating) {
+            TimeElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                theFunction(args...);
+                return;
+            };
+            threadPoolTimer = ThreadPoolTimer::CreateTimer(timeElapsedHandler, timeDelayInMs);
+            DiscordCoreClient::threadPoolTimers.push_back(move(threadPoolTimer));
+            co_return;
+        }
+        else if (timeDelayInMs > 0 && isRepeating) {
+            TimeElapsedHandler timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
+                theFunction(args...);
+                return;
+            };
+            threadPoolTimer = ThreadPoolTimer::CreatePeriodicTimer(timeElapsedHandler, timeDelayInMs);
+            DiscordCoreClient::threadPoolTimers.push_back(move(threadPoolTimer));
+        }
+        else {
+            theFunction(args...);
+        }
+        co_return;
+    }
+
 }

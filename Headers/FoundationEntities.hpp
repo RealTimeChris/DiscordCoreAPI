@@ -11,11 +11,8 @@ namespace DiscordCoreInternal {
 
     using namespace winrt::Windows::Networking::Sockets;
     using namespace winrt::Windows::Web::Http::Headers;
-    using namespace winrt::Windows::System::Threading;
     using namespace winrt::Windows::Storage::Streams;
     using namespace winrt::Windows::Web::Http;
-    using namespace winrt::Windows::Storage;
-    using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
     using namespace concurrency;
     using namespace nlohmann;
@@ -31,11 +28,8 @@ namespace DiscordCoreAPI {
 
     using namespace winrt::Windows::Networking::Sockets;
     using namespace winrt::Windows::Web::Http::Headers;
-    using namespace winrt::Windows::System::Threading;
     using namespace winrt::Windows::Storage::Streams;
     using namespace winrt::Windows::Web::Http;
-    using namespace winrt::Windows::Storage;
-    using namespace winrt::Windows::System;
     using namespace winrt::Windows::Web;
     using namespace concurrency;
     using namespace nlohmann;
@@ -137,33 +131,6 @@ namespace DiscordCoreAPI {
             }
         };
         return doWeBreak;
-    }
-
-    template <typename ...T>
-    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
-        co_await NewThreadAwaitable<void>();
-        ThreadPoolTimer threadPoolTimer{ nullptr };
-        if (timeDelayInMs > 0 && !isRepeating) {
-            auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
-                theFunction(args...);
-                return;
-            };
-            threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            DiscordCoreClient::threadPoolTimers.push_back(threadPoolTimer);
-            co_return;
-        }
-        else if (timeDelayInMs > 0 && isRepeating) {
-            auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
-                theFunction(args...);
-                return;
-            };
-            threadPoolTimer = threadPoolTimer.CreatePeriodicTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
-            DiscordCoreClient::threadPoolTimers.push_back(threadPoolTimer);
-        }
-        else {
-            theFunction(args...);
-        }
-        co_return;
     }
 
     /// Time formatting methods. \brief Time formatting methods.

@@ -42,22 +42,26 @@ namespace DiscordCoreAPI {
         
         class DiscordCoreAPI_Dll promise_type;
 
-        CoRoutine<returnType>& operator=(CoRoutine<returnType>&& other) noexcept {
-            this->coroutineHandle = coroutine_handle<CoRoutine<returnType>::promise_type>();
-            CoRoutine::promise_type::promise_type(move(other.coroutineHandle.promise().newThread), other.coroutineHandle.promise().currentStatus, other.coroutineHandle.promise().result);
+        CoRoutine<returnType>& operator=(const CoRoutine<returnType>& other) {
+            this->coroutineHandle = coroutine_handle<promise_type>();
+            CoRoutine<returnType>::promise_type::promise_type(move(other.coroutineHandle.promise().newThread), other.coroutineHandle.promise().currentStatus);
             this->currentStatus = other.currentStatus;
+            this->coroutineHandle.promise().currentStatus = other.coroutineHandle.promise().currentStatus;
+            this->coroutineHandle.promise().newThread = move(other.coroutineHandle.promise().newThread);
             this->coroutineHandle.promise().result = other.coroutineHandle.promise().result;
             return *this;
-        }
+        };
 
-        CoRoutine(CoRoutine<returnType>&& other) noexcept {
-            *this = move(other);
-        }
+        CoRoutine(const CoRoutine<returnType>& other) {
+            *this = other;
+        };
 
-        CoRoutine<returnType>& operator=(CoRoutine<returnType>&other) {
-            this->coroutineHandle = coroutine_handle<CoRoutine<returnType>::promise_type>();
-            CoRoutine::promise_type::promise_type(move(other.coroutineHandle.promise().newThread), other.coroutineHandle.promise().currentStatus, other.coroutineHandle.promise().result);
+        CoRoutine<returnType>& operator=(CoRoutine<returnType>& other) {
+            this->coroutineHandle = coroutine_handle<promise_type>();
+            CoRoutine<returnType>::promise_type::promise_type(move(other.coroutineHandle.promise().newThread), other.coroutineHandle.promise().currentStatus);
             this->currentStatus = other.currentStatus;
+            this->coroutineHandle.promise().currentStatus = other.coroutineHandle.promise().currentStatus;
+            this->coroutineHandle.promise().newThread = move(other.coroutineHandle.promise().newThread);
             this->coroutineHandle.promise().result = other.coroutineHandle.promise().result;
             return *this;
         };
@@ -207,20 +211,25 @@ namespace DiscordCoreAPI {
 
         class DiscordCoreAPI_Dll promise_type;
 
-        CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
-            this->coroutineHandle = other.coroutineHandle.from_promise(other.coroutineHandle.promise());
+        CoRoutine<void>& operator=(const CoRoutine<void>& other) {
+            this->coroutineHandle = coroutine_handle<promise_type>();
+            CoRoutine<void>::promise_type::promise_type(move(other.coroutineHandle.promise().newThread), other.coroutineHandle.promise().currentStatus);
             this->currentStatus = other.currentStatus;
+            this->coroutineHandle.promise().currentStatus = other.coroutineHandle.promise().currentStatus;
+            this->coroutineHandle.promise().newThread = move(other.coroutineHandle.promise().newThread);
             return *this;
-        }
+        };
 
-        CoRoutine(CoRoutine<void>&& other) noexcept {
-            *this = move(other);
-        }
+        CoRoutine(const CoRoutine<void>& other) {
+            *this = other;
+        };
 
         CoRoutine<void>& operator=(CoRoutine<void>& other) {
             this->coroutineHandle = coroutine_handle<promise_type>();
-            CoRoutine::promise_type::promise_type(move(other.coroutineHandle.promise().newThread), other.coroutineHandle.promise().currentStatus);
+            CoRoutine<void>::promise_type::promise_type(move(other.coroutineHandle.promise().newThread), other.coroutineHandle.promise().currentStatus);
             this->currentStatus = other.currentStatus;
+            this->coroutineHandle.promise().currentStatus = other.coroutineHandle.promise().currentStatus;
+            this->coroutineHandle.promise().newThread = move(other.coroutineHandle.promise().newThread);
             return *this;
         };
 
