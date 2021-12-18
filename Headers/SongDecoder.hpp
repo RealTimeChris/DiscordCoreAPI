@@ -46,7 +46,6 @@ namespace DiscordCoreAPI {
         UnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         AVCodecContext* audioDecodeContext{ nullptr };
-        UnboundedMessageBlock<bool> readyBuffer{};
         AVFormatContext* formatContext{ nullptr };
         int32_t refreshTimeForBuffer{ 10000 };
         SwrContext* swrContext{ nullptr };
