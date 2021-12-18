@@ -100,7 +100,6 @@ namespace DiscordCoreAPI {
         Event<R, Args...>& operator=(Event<R, Args...>&& other) {
             this->theFunctions = move(other.theFunctions);
             this->eventId = other.eventId;
-            this->accessMutex = mutex{};            
             return *this;
         }
 
@@ -113,12 +112,12 @@ namespace DiscordCoreAPI {
         Event(const Event<R, Args...>&) = delete;
 
         Event() {
-            this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            this->eventId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
         EventDelegateToken add(EventDelegate<R, Args...> eventDelegate) {
             EventDelegateToken eventToken{};
-            eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventToken.handlerId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
             this->theFunctions.storeValue(eventToken, move(eventDelegate));
             return eventToken;
@@ -131,8 +130,7 @@ namespace DiscordCoreAPI {
         }
 
         void operator()(Args... args) {
-            ObjectCache<EventDelegateToken, EventDelegate<R, Args...>>* theFunctionsNew = &this->theFunctions;
-            for (auto& [key, value] : *theFunctionsNew) {
+            for (auto& [key, value] : this->theFunctions) {
                 value.theFunction(args...);
             }
         }
@@ -177,17 +175,27 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Event<void, Args...> {
     public:
 
-        Event() {
-            this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+        Event<void, Args...>& operator=(Event<void, Args...>&& other) {
+            this->theFunctions = move(other.theFunctions);
+            this->eventId = other.eventId;
+            return *this;
+        }
+
+        Event(Event<void, Args...>&& other) {
+            *this = move(other);
         }
 
         Event<void, Args...>& operator=(const Event<void, Args...>&) = delete;
 
         Event(const Event<void, Args...>&) = delete;
 
+        Event() {
+            this->eventId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
+        }
+
         EventDelegateToken add(EventDelegate<void, Args...> eventDelegate) {
             EventDelegateToken eventToken{};
-            eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            eventToken.handlerId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
             this->theFunctions.storeValue(eventToken, move(eventDelegate));
             return eventToken;
@@ -200,20 +208,21 @@ namespace DiscordCoreAPI {
         }
 
         void operator()(Args... args) {
-            ObjectCache<EventDelegateToken, EventDelegate<void, Args...>>* theFunctionsNew = &this->theFunctions;
-            for (auto& [key, value] : *theFunctionsNew) {
+            for (auto& [key, value] : this->theFunctions) {
                 value.theFunction(args...);
             }
         }
 
     protected:
+
         ObjectCache<EventDelegateToken, EventDelegate<void, Args...>> theFunctions{};
         string eventId{ "" };
+
     };
 
     struct DiscordCoreAPI_Dll EventCore {
 
-        friend class Event<void, void>;        
+        friend class Event<void, void>;
 
         EventCore& operator=(EventCore&) = delete;
 
@@ -241,9 +250,13 @@ namespace DiscordCoreAPI {
 
         Event(Event<void, void>&&) = delete;
 
+        Event<void, void>& operator=(const Event<void, void>&) = delete;
+
+        Event(const Event<void, void>&) = delete;
+
         Event<void, void>& operator=(Event<void, void>& other) {
-            this->eventId = other.eventId;
             this->theEventState = other.theEventState;
+            this->eventId = other.eventId;
             return *this;
         }
 
@@ -253,7 +266,7 @@ namespace DiscordCoreAPI {
         }
 
         Event() {
-            this->eventId = to_string(chrono::duration_cast<chrono::nanoseconds>(chrono::system_clock::now().time_since_epoch()).count());
+            this->eventId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
             EventCore::theEvents.storeValue(this->eventId, make_unique<EventCore>());
             EventCore::refCounts.storeValue(this->eventId, 1);
             this->theEventState = EventCore::theEvents.returnValue(this->eventId)->theEventState;
@@ -284,13 +297,15 @@ namespace DiscordCoreAPI {
         }
 
         ~Event() {
-            if (EventCore::refCounts.returnValue(this->eventId) > 0) {
-                EventCore::refCounts.returnValue(this->eventId) -= 1;
-                
-            }
-            if (EventCore::refCounts.returnValue(this->eventId) == 0) {
-                EventCore::refCounts.erase(this->eventId);
-                EventCore::theEvents.erase(this->eventId);
+            if (EventCore::refCounts.contains(this->eventId)) {
+                if (EventCore::refCounts.returnValue(this->eventId) > 0) {
+                    EventCore::refCounts.returnValue(this->eventId) -= 1;
+
+                }
+                if (EventCore::refCounts.returnValue(this->eventId) == 0) {
+                    EventCore::refCounts.erase(this->eventId);
+                    EventCore::theEvents.erase(this->eventId);
+                }
             }
         }
 

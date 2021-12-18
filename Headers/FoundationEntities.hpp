@@ -2644,51 +2644,51 @@ namespace DiscordCoreAPI {
 
         ObjectCache() = default;
 
-        ObjectCache& operator=(ObjectCache&& other) {
+        ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&& other) {
             this->accessMutex = other.accessMutex;
             this->cache = move(other.cache);
             return *this;
         } 
 
-        ObjectCache(ObjectCache&& other) {
+        ObjectCache(ObjectCache<keyType, storageType>&& other) {
             *this = move(other);
         }
 
-        ObjectCache& operator=(ObjectCache&) = delete;
+        ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&) = delete;
 
-        ObjectCache(ObjectCache&) = delete;
+        ObjectCache(ObjectCache<keyType, storageType>&) = delete;
 
         auto end() {
-            unique_lock<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ *this->accessMutex };
             return this->cache.end();
         }
 
         auto begin() {
-            unique_lock<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ *this->accessMutex };
             return this->cache.begin();
         }
 
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
-        storageType& returnValue(const keyType& valueId) {
-            unique_lock<mutex> accessLock{ *this->accessMutex };
+        storageType& returnValue(keyType valueId) {
+            lock_guard<mutex> accessLock{ *this->accessMutex };
             return ref(this->cache.at(valueId));
         }
 
         /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
-        bool contains(const keyType& valueId) {
-            unique_lock<mutex> accessLock{ *this->accessMutex };
+        bool contains(keyType valueId) {
+            lock_guard<mutex> accessLock{ *this->accessMutex };
             return this->cache.contains(valueId);
         }
 
         /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
         /// \param valueId The chosen item's key.
         /// \returns void.
-        void erase(const keyType& valueId) {
-            unique_lock<mutex> accessLock{ *this->accessMutex };
+        void erase(keyType valueId) {
+            lock_guard<mutex> accessLock{ *this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -2698,16 +2698,16 @@ namespace DiscordCoreAPI {
         /// \param valueId The item's id to store it at.
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
-        void storeValue(const keyType& valueId, storageType storageValue) {
-            unique_lock<mutex> accessLock{ *this->accessMutex };
-            this->cache.insert_or_assign(valueId, move(storageValue));
+        void storeValue(keyType valueId, storageType storageValue) {
+            lock_guard<mutex> accessLock{ *this->accessMutex };
+            this->cache.insert_or_assign(move(valueId), move(storageValue));
         }
 
     protected:
 
-        map<keyType, storageType> cache{};
-
         shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
+
+        map<keyType, storageType> cache{};
     };
 
     /// A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key. \brief A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key.
@@ -2720,12 +2720,22 @@ namespace DiscordCoreAPI {
 
         ObjectMultiCache() = default;
 
-        ObjectMultiCache& operator=(ObjectMultiCache&) = delete;
+        ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&& other) {
+            this->accessMutex = other.accessMutex;
+            this->cache = move(other.cache);
+            return *this;
+        }
 
-        ObjectMultiCache(ObjectMultiCache&) = delete;
+        ObjectMultiCache(ObjectMultiCache<keyType, storageType>&& other) {
+            *this = move(other);
+        }
+
+        ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&) = delete;
+
+        ObjectMultiCache(ObjectMultiCache<keyType, storageType>&) = delete;
 
         auto end() {
-            unique_lock<mutex> endLock{ *this->accessMutex };
+            lock_guard<mutex> endLock{ *this->accessMutex };
             return this->cache.end();
         }
 
@@ -2738,7 +2748,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
         storageType& returnValue(keyType valueId) {
-            unique_lock<mutex> returnLock{ *this->accessMutex, defer_lock };
+            lock_guard<mutex> returnLock{ *this->accessMutex, defer_lock };
             return ref(this->cache.extract(valueId));
         }
 
@@ -2746,7 +2756,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(keyType valueId) {
-            unique_lock<mutex> containsLock{ *this->accessMutex };
+            lock_guard<mutex> containsLock{ *this->accessMutex };
             return this->cache.contains(valueId);
         }
 
@@ -2754,7 +2764,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns void.
         void erase(keyType valueId) {
-            unique_lock<mutex> eraseLock{ *this->accessMutex };
+            lock_guard<mutex> eraseLock{ *this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -2765,15 +2775,15 @@ namespace DiscordCoreAPI {
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
         void storeValue(keyType valueId, storageType storageValue) {
-            unique_lock<mutex> storeLock{ *this->accessMutex };
-            this->cache.insert(make_pair(valueId, storageValue));
+            lock_guard<mutex> storeLock{ *this->accessMutex };
+            this->cache.insert_or_assign(move(valueId), move(storageValue));
         }
 
     protected:
 
-        multimap<keyType, storageType> cache{};
-
         unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
+
+        multimap<keyType, storageType> cache{};
     };
 
     /// PermissionsConverter class, for manipulating Permission values. \brief PermissionsConverter class, for manipulating Permission values.
