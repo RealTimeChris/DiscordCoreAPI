@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
-        Event<void, Args...>& operator=(const Event<void, Args...>&) = delete;''
+        Event<void, Args...>& operator=(const Event<void, Args...>&) = delete;
 
         Event(const Event<void, Args...>&) = delete;
 
