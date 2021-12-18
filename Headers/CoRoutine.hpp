@@ -122,6 +122,7 @@ namespace DiscordCoreAPI {
                     return this->coroutineHandle.promise().result;
                 }
             }
+            return returnType{};
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
