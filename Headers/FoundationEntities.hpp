@@ -87,21 +87,52 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll StopWatch {
     public:
 
-        StopWatch<timeType>(int64_t maxNumberOfMsNew) {
-            this->maxNumberOfMs = maxNumberOfMsNew;
-            this->startTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
+        StopWatch() = delete;
+
+        StopWatch<timeType>& operator=(const StopWatch<timeType>& other) {
+            this->maxNumberOfMs = other.maxNumberOfMs;
+            this->startTime = other.startTime;
+            cout << "START TIME (CONST COPY ASSIGNMENT): " << this->startTime << endl;
+            return *this;
+        }
+
+        StopWatch(const StopWatch<timeType>& other) {
+            *this = other;
+        }
+
+        StopWatch<timeType>& operator=(StopWatch<timeType>& other) {
+            this->maxNumberOfMs = other.maxNumberOfMs;
+            this->startTime = other.startTime;
+            cout << "START TIME (COPY ASSIGNMENT): " << this->startTime << endl;
+            return *this;
+        }
+
+        StopWatch(StopWatch<timeType>& other) {
+            *this = other;
+        }
+
+        StopWatch(timeType maxNumberOfMsNew) {
+            this->maxNumberOfMs = maxNumberOfMsNew.count();
+            cout << "MAX NUMBER OF MS " << this->maxNumberOfMs << endl;
+            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
+            cout << "START TIME: " << this->startTime << endl;
         }
 
         int64_t totalTimePassed() {
-            int64_t currentTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
+            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
+            cout << "TOTAL TIME PASSED: " << elapsedTime << endl;
             return elapsedTime;
         }
 
         bool hasTimePassed() {
-            int64_t currentTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
+            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
+            cout << "START TIME (REAL): " << this->startTime << endl;
+            cout << "CURRENT TIME TIME (REAL): " << currentTime << endl;
             int64_t elapsedTime = currentTime - this->startTime;
+            cout << "TOTAL TIME PASSED (REAL): " << elapsedTime << " OUT OF: " << this->maxNumberOfMs << endl;
             if (elapsedTime >= this->maxNumberOfMs) {
+                cout << "WE PASSED THE TIME! (REAL): " << endl;
                 return true;
             }
             else {
@@ -110,18 +141,19 @@ namespace DiscordCoreAPI {
         }
 
         void resetTimer() {
-            this->startTime = chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count();
+            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
     protected:
 
         int64_t maxNumberOfMs{ 0 };
         int64_t startTime{ 0 };
+        
     };
 
     template <typename T>
     bool waitForTimeToPass(UnboundedMessageBlock<T>* outBuffer, T* argOne, int32_t timeInMsNew) {
-        StopWatch<chrono::milliseconds> stopWatch(timeInMsNew);
+        StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer->try_receive(*argOne)) {
             this_thread::sleep_for(chrono::milliseconds(10));

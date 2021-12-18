@@ -139,9 +139,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
-		unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{};
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
 		unique_ptr<MsgWebSocketSSLClient> sslClient{ nullptr };
+		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
