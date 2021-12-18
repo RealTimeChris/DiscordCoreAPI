@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
     protected:
         static ObjectCache<string, unique_ptr<EventCore>> theEvents;
         static ObjectCache<string, uint32_t> refCounts;
-        bool* theEventState{ new bool{false} };
+        shared_ptr<bool> theEventState{ make_shared<bool>(false) };
 
     };
 
@@ -254,8 +254,9 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Event<void, void> {
     public:
 
-        bool* theEventState{ new bool{false} };
+        shared_ptr<bool> theEventState{ make_shared<bool>(false) };
         string eventId{ "" };
+        mutex accessMutex{};
 
         Event<void, void>& operator=(Event<void, void>&&) = delete;
 
@@ -268,14 +269,12 @@ namespace DiscordCoreAPI {
         Event<void, void>& operator=(Event<void, void>& other) {
             this->eventId = other.eventId;
             this->theEventState = other.theEventState;
-            cout << "THE VALUE NEW (COPY ASSIGNMENT): " << EventCore::refCounts.returnValue(this->eventId) << endl;
             return *this;
         }
 
         Event(Event<void, void>& other) {
             *this = other;
             EventCore::refCounts.returnValue(this->eventId) += 1;
-            cout << "THE VALUE NEW (COPY CONSTRUCT): " << EventCore::refCounts.returnValue(this->eventId) << endl;
         }
 
         Event() {
@@ -288,44 +287,37 @@ namespace DiscordCoreAPI {
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
             uint32_t millisecondsWaited{ 0 };
             while (true) {
-                cout << "WERE WAITING WERE WAITING FOR " << testString << " " << millisecondsMaxToWait << endl;
+                lock_guard<mutex> accessLock{ this->accessMutex };
                 if (*this->theEventState) {
-                    cout << "IT'S TRUE WE'RE OUT OF HERRE!" << endl;
                     return 0;
                 }
                 else {
                     this_thread::sleep_for(chrono::microseconds(1000));
-                    cout << "IT'S TRUE WERE STILL WAITING ANDTHE TIME IS: " << to_string(millisecondsWaited) << endl;
                     millisecondsWaited += 1;
                 }
+                accessLock.~lock_guard();
                 if (millisecondsWaited >= millisecondsMaxToWait) {
-                    cout << "LOOKS LIKE WE'RE TIMED OUT!" << endl;
                     return 1;
                 }
             }
         }
 
-        CoRoutine<void> set(string testValue = "") {
-            co_await NewThreadAwaitable<void>();
-            cout << "SETTING THE PREVIOUS STATE: FOR " << testValue << boolalpha << *this->theEventState<< endl;
+        void set(string testValue = "") {
+            lock_guard<mutex> accessLock{ this->accessMutex };
             *this->theEventState = true;
-            cout << "SETTING THE NEW STATE: FOR " << testValue << boolalpha << *this->theEventState << endl;
-            co_return;
         }
 
         void reset() {
-            cout << "RESETTING!" << endl;
+            lock_guard<mutex> accessLock{ this->accessMutex };
             *this->theEventState = false;
         }
 
         ~Event() {
             if (EventCore::refCounts.returnValue(this->eventId) > 0) {
                 EventCore::refCounts.returnValue(this->eventId) -= 1;
-                cout << "THE VALUE ID: " << EventCore::refCounts.returnValue(this->eventId) << endl;
                 
             }
             if (EventCore::refCounts.returnValue(this->eventId) == 0) {
-                cout << "IM BEING DESTROYED" << endl;
                 EventCore::refCounts.erase(this->eventId);
                 EventCore::theEvents.erase(this->eventId);
             }
