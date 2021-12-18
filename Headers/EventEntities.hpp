@@ -117,7 +117,6 @@ namespace DiscordCoreAPI {
         }
 
         EventDelegateToken add(EventDelegate<R, Args...> eventDelegate) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             EventDelegateToken eventToken{};
             eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
@@ -126,26 +125,21 @@ namespace DiscordCoreAPI {
         }
 
         void remove(EventDelegateToken  eventToken) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             if (this->theFunctions.contains(eventToken)) {
                 this->theFunctions.erase(eventToken);
             }
         }
 
-        CoRoutine<void> operator()(Args... args) {
+        void operator()(Args... args) {
             ObjectCache<EventDelegateToken, EventDelegate<R, Args...>>* theFunctionsNew = &this->theFunctions;
-            co_await NewThreadAwaitable<void>();
-            lock_guard<mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : *theFunctionsNew) {
                 value.theFunction(args...);
             }
-            co_return;
         }
 
     protected:
         ObjectCache<EventDelegateToken, EventDelegate<R, Args...>> theFunctions{};
         string eventId{ "" };
-        mutex accessMutex{};
     };
 
     template<typename ...Args>
@@ -192,7 +186,6 @@ namespace DiscordCoreAPI {
         Event(const Event<void, Args...>&) = delete;
 
         EventDelegateToken add(EventDelegate<void, Args...> eventDelegate) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             EventDelegateToken eventToken{};
             eventToken.handlerId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
@@ -201,26 +194,21 @@ namespace DiscordCoreAPI {
         }
 
         void remove(EventDelegateToken  eventToken) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             if (this->theFunctions.contains(eventToken)) {
                 this->theFunctions.erase(eventToken);
             }
         }
 
-        CoRoutine<void> operator()(Args... args) {
+        void operator()(Args... args) {
             ObjectCache<EventDelegateToken, EventDelegate<void, Args...>>* theFunctionsNew = &this->theFunctions;
-            co_await NewThreadAwaitable<void>();
-            lock_guard<mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : *theFunctionsNew) {
                 value.theFunction(args...);
             }
-            co_return;
         }
 
     protected:
         ObjectCache<EventDelegateToken, EventDelegate<void, Args...>> theFunctions{};
         string eventId{ "" };
-        mutex accessMutex{};
     };
 
     struct DiscordCoreAPI_Dll EventCore {
