@@ -100,13 +100,13 @@ namespace DiscordCoreAPI {
 
         EventDelegate<R, Args...>& operator=(const EventDelegate<R, Args...>& other) = delete;
 
-        EventDelegate<R, Args...>(const EventDelegate<R, Args...>& other) = delete;
+        EventDelegate(const EventDelegate<R, Args...>& other) = delete;
 
-        EventDelegate<R, Args...>(function<R(Args...)> theFunctionNew) {
+        EventDelegate(function<R(Args...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
         }
 
-        EventDelegate<R, Args...>(R(*theFunctionNew)(Args...)) {
+        EventDelegate(R(*theFunctionNew)(Args...)) {
             this->theFunction = theFunctionNew;
         }
 
@@ -197,9 +197,9 @@ namespace DiscordCoreAPI {
             this->eventId = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
         }
 
-        Event& operator=(const Event&) = delete;
+        Event<void, Args...>& operator=(const Event<void, Args...>&) = delete;''
 
-        Event(const Event&) = delete;
+        Event(const Event<void, Args...>&) = delete;
 
         EventDelegateToken add(EventDelegate<void, Args...> eventDelegate) {
             lock_guard<mutex> accessLock{ this->accessMutex };
@@ -256,7 +256,6 @@ namespace DiscordCoreAPI {
 
         shared_ptr<bool> theEventState{ make_shared<bool>(false) };
         string eventId{ "" };
-        mutex accessMutex{};
 
         Event<void, void>& operator=(Event<void, void>&&) = delete;
 
@@ -287,7 +286,6 @@ namespace DiscordCoreAPI {
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
             uint32_t millisecondsWaited{ 0 };
             while (true) {
-                lock_guard<mutex> accessLock{ this->accessMutex };
                 if (*this->theEventState) {
                     return 0;
                 }
@@ -295,7 +293,6 @@ namespace DiscordCoreAPI {
                     this_thread::sleep_for(chrono::microseconds(1000));
                     millisecondsWaited += 1;
                 }
-                accessLock.~lock_guard();
                 if (millisecondsWaited >= millisecondsMaxToWait) {
                     return 1;
                 }
@@ -303,12 +300,10 @@ namespace DiscordCoreAPI {
         }
 
         void set(string testValue = "") {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             *this->theEventState = true;
         }
 
         void reset() {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             *this->theEventState = false;
         }
 
