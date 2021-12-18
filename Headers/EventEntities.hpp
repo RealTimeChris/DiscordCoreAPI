@@ -19,23 +19,11 @@ namespace DiscordCoreAPI {
         template<typename R, typename ...Args>
         friend class EventDelegate;
 
-        EventDelegateToken& operator=(const EventDelegateToken& other) {
-            this->handlerId = other.handlerId;
-            this->eventId = other.eventId;
-            return *this;
-        }
-
-        EventDelegateToken(const EventDelegateToken& other) {
-            *this = other;
-        }
+        friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
         friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
         friend inline bool operator>(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
-
-        friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
-
-        friend inline bool operator!=(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
     protected:
 
@@ -52,15 +40,6 @@ namespace DiscordCoreAPI {
         }
         else {
             return false;
-        }
-    }
-
-    bool operator!=(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
-        if (lhs == rhs) {
-            return false;
-        }
-        else {
-            return true;
         }
     }
 
@@ -117,6 +96,17 @@ namespace DiscordCoreAPI {
     template<typename R, typename  ...Args>
     class DiscordCoreAPI_Dll Event {
     public:
+
+        Event<R, Args...>& operator=(Event<R, Args...>&& other) {
+            this->theFunctions = move(other.theFunctions);
+            this->eventId = other.eventId;
+            this->accessMutex = mutex{};            
+            return *this;
+        }
+
+        Event(Event<R, Args...>&& other) {
+            *this = move(other);
+        }
 
         Event<R, Args...>& operator=(const Event<R, Args...>&) = delete;
 
@@ -235,17 +225,19 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll EventCore {
 
-        friend class Event<void, void>;
+        friend class Event<void, void>;        
 
         EventCore& operator=(EventCore&) = delete;
 
         EventCore(EventCore&) = delete;
 
-        EventCore() {};
+        EventCore() = default;
 
     protected:
+
         static ObjectCache<string, unique_ptr<EventCore>> theEvents;
         static ObjectCache<string, uint32_t> refCounts;
+
         shared_ptr<bool> theEventState{ make_shared<bool>(false) };
 
     };
@@ -260,10 +252,6 @@ namespace DiscordCoreAPI {
         Event<void, void>& operator=(Event<void, void>&&) = delete;
 
         Event(Event<void, void>&&) = delete;
-
-        Event<void, void>& operator=(const Event<void, void>& other) = delete;
-
-        Event(const Event<void, void>& other) = delete;
 
         Event<void, void>& operator=(Event<void, void>& other) {
             this->eventId = other.eventId;

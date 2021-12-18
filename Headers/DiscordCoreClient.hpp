@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		template <typename ...T>
-		friend void executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
+		friend CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend void ::terminateWrapper();

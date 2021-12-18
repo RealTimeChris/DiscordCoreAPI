@@ -140,7 +140,8 @@ namespace DiscordCoreAPI {
     }
 
     template <typename ...T>
-    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+        co_await NewThreadAwaitable<void>();
         ThreadPoolTimer threadPoolTimer{ nullptr };
         if (timeDelayInMs > 0 && !isRepeating) {
             auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
@@ -149,7 +150,7 @@ namespace DiscordCoreAPI {
             };
             threadPoolTimer = threadPoolTimer.CreateTimer(timeElapsedHandler, winrt::Windows::Foundation::TimeSpan(timeDelayInMs * 10000));
             DiscordCoreClient::threadPoolTimers.push_back(threadPoolTimer);
-            return;
+            co_return;
         }
         else if (timeDelayInMs > 0 && isRepeating) {
             auto timeElapsedHandler = [=](ThreadPoolTimer threadPoolTimerNew)->void {
@@ -162,7 +163,7 @@ namespace DiscordCoreAPI {
         else {
             theFunction(args...);
         }
-        return;
+        co_return;
     }
 
     /// Time formatting methods. \brief Time formatting methods.
@@ -2642,6 +2643,16 @@ namespace DiscordCoreAPI {
         friend class Guilds;
 
         ObjectCache() = default;
+
+        ObjectCache& operator=(ObjectCache&& other) {
+            this->accessMutex = other.accessMutex;
+            this->cache = move(other.cache);
+            return *this;
+        } 
+
+        ObjectCache(ObjectCache&& other) {
+            *this = move(other);
+        }
 
         ObjectCache& operator=(ObjectCache&) = delete;
 

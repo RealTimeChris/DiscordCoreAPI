@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 
         bool getFrame(RawFrameData* dataPackage);
 
-        bool startMe();
+        void startMe();
 
         ~SongDecoder();
 
