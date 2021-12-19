@@ -471,7 +471,7 @@ namespace DiscordCoreAPI {
                 cancelHandle.promise().waitForTime(static_cast<int64_t>(theInterval * 98 / 100));
                 while (!stopWatch.hasTimePassed()) {
                     cout << "WE HAVE YET TO HIT THE TIMER!" << endl;
-                    if (cancelHandle.promise().newThread->get_stop_token().stop_requested()) {
+                    if (cancelHandle.promise().isItStopped()) {
                         cout << "WE HAVE YET TO HIT THE TIMER!" << endl;
                         co_return;
                     }
@@ -479,7 +479,7 @@ namespace DiscordCoreAPI {
                 }
                 cout << "WE HIT THE TIMER!" << endl;
                 theFunction();
-                if (cancelHandle.promise().newThread->get_stop_token().stop_requested() || !repeating) {
+                if (cancelHandle.promise().isItStopped() || !repeating) {
                     co_return;
                 }
             }

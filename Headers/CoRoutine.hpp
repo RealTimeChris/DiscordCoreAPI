@@ -141,14 +141,18 @@ namespace DiscordCoreAPI {
         class promise_type {
         public:
 
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-            UnboundedMessageBlock<exception_ptr> exceptionBuffer{};
-            unique_ptr<jthread> newThread{ nullptr };
-            condition_variable condVar{};
-            returnType result;
-            mutex lockMutex{};
+            friend inline auto NewThreadAwaitable<returnType>();
+            friend class CoRoutine<returnType>;
 
             promise_type() {};
+
+            void requestStop() {
+                this->newThread->get_stop_source().request_stop();
+            }
+
+            bool isItStopped() {
+                return this->newThread->get_stop_token().stop_requested();
+            }
 
             void waitForTime(uint64_t timeToWaitForInMs) {
                 unique_lock<mutex> timedLock{ this->lockMutex };
@@ -178,6 +182,16 @@ namespace DiscordCoreAPI {
             }
 
             ~promise_type() {}
+
+        protected:
+
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+            UnboundedMessageBlock<exception_ptr> exceptionBuffer{};
+            unique_ptr<jthread> newThread{ nullptr };
+            condition_variable condVar{};
+            returnType result;
+            mutex lockMutex{};
+
         };
 
     protected:
@@ -295,20 +309,26 @@ namespace DiscordCoreAPI {
         class promise_type {
         public:
 
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-            UnboundedMessageBlock<exception_ptr> exceptionBuffer{};
-            unique_ptr<jthread> newThread{ nullptr };
-            condition_variable condVar{};
-            mutex lockMutex{};
+            template<typename R>
+            friend auto NewThreadAwaitable<void>();
+            friend class CoRoutine<void>;
 
             promise_type() {};
+
+            void requestStop() {
+                this->newThread->get_stop_source().request_stop();
+            }
+
+            bool isItStopped() {
+                return this->newThread->get_stop_token().stop_requested();
+            }
 
             void waitForTime(uint64_t timeToWaitForInMs) {
                 unique_lock<mutex> timedLock{ this->lockMutex };
                 this->condVar.wait_for(timedLock, chrono::milliseconds(timeToWaitForInMs));
             }
 
-            void return_void() {};
+            void return_void() {}
 
             auto get_return_object() {
                 return CoRoutine<void>{ coroutine_handle<promise_type>::from_promise(*this) };
@@ -329,6 +349,15 @@ namespace DiscordCoreAPI {
             }
 
             ~promise_type() {}
+
+        protected:
+
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+            UnboundedMessageBlock<exception_ptr> exceptionBuffer{};
+            unique_ptr<jthread> newThread{ nullptr };
+            condition_variable condVar{};
+            mutex lockMutex{};
+
         };
 
     protected:
