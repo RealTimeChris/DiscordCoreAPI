@@ -92,7 +92,6 @@ namespace DiscordCoreAPI {
         StopWatch<timeType>& operator=(const StopWatch<timeType>& other) {
             this->maxNumberOfMs = other.maxNumberOfMs;
             this->startTime = other.startTime;
-            cout << "START TIME (CONST COPY ASSIGNMENT): " << this->startTime << endl;
             return *this;
         }
 
@@ -103,7 +102,6 @@ namespace DiscordCoreAPI {
         StopWatch<timeType>& operator=(StopWatch<timeType>& other) {
             this->maxNumberOfMs = other.maxNumberOfMs;
             this->startTime = other.startTime;
-            cout << "START TIME (COPY ASSIGNMENT): " << this->startTime << endl;
             return *this;
         }
 
@@ -113,26 +111,19 @@ namespace DiscordCoreAPI {
 
         StopWatch(timeType maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew.count();
-            cout << "MAX NUMBER OF MS " << this->maxNumberOfMs << endl;
             this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
-            cout << "START TIME: " << this->startTime << endl;
         }
 
         int64_t totalTimePassed() {
             int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
-            cout << "TOTAL TIME PASSED: " << elapsedTime << endl;
             return elapsedTime;
         }
 
         bool hasTimePassed() {
             int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
-            cout << "START TIME (REAL): " << this->startTime << endl;
-            cout << "CURRENT TIME TIME (REAL): " << currentTime << endl;
             int64_t elapsedTime = currentTime - this->startTime;
-            cout << "TOTAL TIME PASSED (REAL): " << elapsedTime << " OUT OF: " << this->maxNumberOfMs << endl;
             if (elapsedTime >= this->maxNumberOfMs) {
-                cout << "WE PASSED THE TIME! (REAL): " << endl;
                 return true;
             }
             else {
@@ -2320,6 +2311,8 @@ namespace DiscordCoreAPI {
         InputEventData eventData{};
         string commandName{ "" };
 
+        CommandData() = default;
+
         CommandData(InputEventData inputEventData) {
             this->eventData = inputEventData;
             if (inputEventData.interactionData.data.applicationCommanddata.name != "") {
@@ -2633,7 +2626,8 @@ namespace DiscordCoreAPI {
     * @{
     */
 
-    /// A Thread-safe cache for storing objects of any kind. \brief A Thread-safe cache for storing objects of any kind.
+    /// A cache for storing objects of any kind. \brief A cache for storing objects of any kind.
+    /// \param keyType The type to use for the storage keys.
     /// \param storageType The type of item to be stored.
     template<typename keyType, typename storageType>
     class DiscordCoreAPI_Dll ObjectCache {
@@ -2644,10 +2638,9 @@ namespace DiscordCoreAPI {
         ObjectCache() = default;
 
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&& other) {
-            this->accessMutex = other.accessMutex;
             this->cache = move(other.cache);
             return *this;
-        } 
+        }
 
         ObjectCache(ObjectCache<keyType, storageType>&& other) {
             *this = move(other);
@@ -2656,6 +2649,75 @@ namespace DiscordCoreAPI {
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&) = delete;
 
         ObjectCache(ObjectCache<keyType, storageType>&) = delete;
+
+        auto end() {
+            return this->cache.end();
+        }
+
+        auto begin() {
+            return this->cache.begin();
+        }
+
+        /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
+        /// \param valueId The chosen item's key.
+        /// \returns storageType The typed item that is stored.
+        storageType& returnValue(keyType valueId) {
+            return ref(this->cache.at(valueId));
+        }
+
+        /// Checks if an item exists at a chosen item-id. \brief Checks if an item exists at a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns bool Whether or not the item is present at the given key.
+        bool contains(keyType valueId) {
+            return this->cache.contains(valueId);
+        }
+
+        /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
+        /// \param valueId The chosen item's key.
+        /// \returns void.
+        void erase(keyType valueId) {
+            if (this->cache.contains(valueId)) {
+                this->cache.erase(valueId);
+            }
+        }
+
+        /// Stores an item in the cache. \brief Stores an item in the cache.
+        /// \param valueId The item's id to store it at.
+        /// \param storageValue The item to store in the object-cache.
+        /// \returns void.
+        void storeValue(keyType valueId, storageType storageValue) {
+            this->cache.insert_or_assign(move(valueId), move(storageValue));
+        }
+
+    protected:
+
+        map<keyType, storageType> cache{};
+    };
+
+    /// A Thread-safe cache for storing objects of any kind. \brief A Thread-safe cache for storing objects of any kind.
+    /// \param keyType The type to use for the storage keys.
+    /// \param storageType The type of item to be stored.
+    template<typename keyType, typename storageType>
+    class DiscordCoreAPI_Dll TSObjectCache {
+    public:
+
+        friend class Guilds;
+
+        TSObjectCache() = default;
+
+        TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
+            this->accessMutex = other.accessMutex;
+            this->cache = move(other.cache);
+            return *this;
+        } 
+
+        TSObjectCache(TSObjectCache<keyType, storageType>&& other) {
+            *this = move(other);
+        }
+
+        TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&) = delete;
+
+        TSObjectCache(TSObjectCache<keyType, storageType>&) = delete;
 
         auto end() {
             lock_guard<mutex> accessLock{ *this->accessMutex };

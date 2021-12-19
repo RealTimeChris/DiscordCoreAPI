@@ -27,6 +27,7 @@
 #include "StageInstanceEntities.hpp"
 #include "YouTubeAPI.hpp"
 #include "StickerEntities.hpp"
+#include "ThreadPool.hpp"
 #include "SSLClient.hpp"
 #include "WebHookEntities.hpp"
 #include "SongAPI.hpp"
@@ -71,11 +72,13 @@ namespace DiscordCoreAPI {
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend void ::terminateWrapper();
+		friend class Interactions;
+		friend class Messages;
 		friend class Guild;
 		friend class Test;
-
-		static vector<unique_ptr<CoRoutine<void>>> theTaskVector;
+		
 		static unique_ptr<DiscordCoreClient> thisPointer;
+		static ThreadPool theTaskVector;
 		static string commandPrefix;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
@@ -104,15 +107,12 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
-		function<void(void)> theFunction{};
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		BotUser currentUser{};
 		string botToken{ "" };
 
 		void initialize();
-
-		static CoRoutine<void> clearTaskVector();
 
 		static void cleanup();
 		

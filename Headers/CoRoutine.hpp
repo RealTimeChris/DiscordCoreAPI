@@ -235,6 +235,7 @@ namespace DiscordCoreAPI {
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
+                cout << "WERE BEING CALLED (COROUTINE DESTRO)" << endl;
                 this->coroutineHandle.destroy();
             }
         }
@@ -297,13 +298,13 @@ namespace DiscordCoreAPI {
                         this->coroutineHandle.promise().condVar.notify_all();
                     }
                 }
+                exception_ptr exceptionPtr{};
+                while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                    rethrow_exception(exceptionPtr);
+                }
+                this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
+                this->currentStatus = this->coroutineHandle.promise().currentStatus;
             }
-            exception_ptr exceptionPtr{};
-            while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
-                rethrow_exception(exceptionPtr);
-            }
-            this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
-            this->currentStatus = this->coroutineHandle.promise().currentStatus;
         }
 
         class promise_type {
@@ -348,7 +349,9 @@ namespace DiscordCoreAPI {
                 this->exceptionBuffer.send(current_exception());
             }
 
-            ~promise_type() {}
+            ~promise_type() {
+                cout << "WERE BEING CALLED (PROMISE DESTRO)" << endl;
+            }
 
         protected:
 

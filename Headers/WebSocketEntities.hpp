@@ -11,6 +11,7 @@
 #include "ErlPacker.hpp"
 #include "SSLClient.hpp"
 #include "EventEntities.hpp"
+#include "ThreadPool.hpp"
 #include "UserEntities.hpp"
 
 namespace DiscordCoreInternal {
@@ -139,9 +140,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
+		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
 		unique_ptr<MsgWebSocketSSLClient> sslClient{ nullptr };
-		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -203,9 +204,9 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
 		shared_ptr<MessageWebSocket> webSocket{ nullptr };
-		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{};
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -263,11 +264,11 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
+		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
 		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };
-		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{};
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
