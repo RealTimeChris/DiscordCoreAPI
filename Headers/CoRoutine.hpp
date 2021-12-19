@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
         class promise_type {
         public:
 
-            friend inline auto NewThreadAwaitable<returnType>();
+            friend auto NewThreadAwaitable<returnType>();
             friend class CoRoutine<returnType>;
 
             promise_type() {};
