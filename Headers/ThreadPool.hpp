@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
 
-        ThreadPoolTimer(nullptr_t Null) {}
+        ThreadPoolTimer(nullptr_t) {}
 
         static ThreadPoolTimer CreateTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {
             ThreadPoolTimer threadPoolTimer{};
@@ -119,12 +119,12 @@ namespace DiscordCoreAPI {
             StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(theInterval) };
             while (true) {
                 stopWatch.resetTimer();
-                cancelHandle.promise().waitForTime(static_cast<int64_t>(theInterval * 98 / 100));
+                cancelHandle.promise().waitForTime(static_cast<int64_t>(theInterval * 99 / 100));
                 while (!stopWatch.hasTimePassed()) {
                     if (cancelHandle.promise().isItStopped()) {
                         co_return;
                     }
-                    this_thread::sleep_for(chrono::milliseconds(5));
+                    this_thread::sleep_for(chrono::milliseconds(10));
                 }
                 theFunction();
                 if (cancelHandle.promise().isItStopped() || !repeating) {
