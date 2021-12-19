@@ -14,7 +14,7 @@
 - Create a new class, within the `DiscordCoreAPI` namespace, derived from the `BaseFunction` class.
 - Set the `commandName` and `helpDescription` members of the class.
 - Add a `create()` function, where the return value is a `unique_ptr` to the class type of the current command.
-- Add a `virtual CoRoutine<void> execute()` function with an argument of type `DiscordCoreAPI::BaseFunctionArguments`.
+- Add a `virtual void execute()` function with an argument of type `DiscordCoreAPI::BaseFunctionArguments`.
 - CONTINUED FURTHER DOWN.
 
 ```cpp
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 			return make_unique<Test>();
 		}
 
-		virtual CoRoutine<void> execute(BaseFunctionArguments args) {
+		virtual void execute(BaseFunctionArguments args) {
 			try {
 			if(args->argumentsArray[0] == "test"){
 			
