@@ -226,7 +226,6 @@ namespace DiscordCoreInternal {
 		string sessionId{ "" };
 		string botToken{ "" };
 
-
 		void onMessageReceived(MessageWebSocket const&, MessageWebSocketMessageReceivedEventArgs args);
 
 		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
@@ -263,6 +262,7 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
+		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
@@ -277,7 +277,6 @@ namespace DiscordCoreInternal {
 		event_token voiceDataReceivedToken{};
 		event_token messageReceivedToken{};
 		int32_t currentReconnectTries{ 0 };
-		bool areWeReadyToConnect{ true };
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };

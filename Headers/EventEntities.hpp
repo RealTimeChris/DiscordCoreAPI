@@ -325,6 +325,7 @@ namespace DiscordCoreAPI {
         }
 
         void stopThread(string theKey) {
+            lock_guard<mutex> accessLock{ this->accessMutex };
             if (this->threads.contains(theKey)) {
                 cout << "IT CONTAINS THE KEY" << endl;
                 this->threads.at(theKey)->cancel();
@@ -337,7 +338,12 @@ namespace DiscordCoreAPI {
 
         CoRoutineStatus getThreadStatus(string theKey) {
             lock_guard<mutex> accessLock{ this->accessMutex };
-            return this->threads.at(theKey)->getStatus();
+            if (this->threads.contains(theKey)) {
+                return this->threads.at(theKey)->getStatus();
+            }
+            else {
+                return CoRoutineStatus{};
+            }
         }
 
     protected:
@@ -347,31 +353,35 @@ namespace DiscordCoreAPI {
 
     };
 
-    class ThreadPoolTimer;
-
-    typedef function<void(ThreadPoolTimer)> TimeElapsedHandler;
+    typedef function<void(void)> TimeElapsedHandler;
 
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
 
         ThreadPoolTimer& operator=(const ThreadPoolTimer&& other) {
             this->threadId = other.threadId;
+            ThreadPoolTimer::threadRefCounts.at(this->threadId) += 1;
+            cout << "THE COUNT: " << ThreadPoolTimer::threadRefCounts.at(this->threadId) << endl;
             return *this;
         }
 
         ThreadPoolTimer(const ThreadPoolTimer&& other) {
             *this = other;
             ThreadPoolTimer::threadRefCounts.at(this->threadId) += 1;
+            cout << "THE COUNT: " << ThreadPoolTimer::threadRefCounts.at(this->threadId) << endl;
         }
 
         ThreadPoolTimer& operator=(ThreadPoolTimer&& other) {
             this->threadId = other.threadId;
+            ThreadPoolTimer::threadRefCounts.at(this->threadId) += 1;
+            cout << "THE COUNT: " << ThreadPoolTimer::threadRefCounts.at(this->threadId) << endl;
             return *this;
         }
 
         ThreadPoolTimer(ThreadPoolTimer&& other) {
             *this = move(other);
             ThreadPoolTimer::threadRefCounts.at(this->threadId) += 1;
+            cout << "THE COUNT: " << ThreadPoolTimer::threadRefCounts.at(this->threadId) << endl;
         }
 
         ThreadPoolTimer& operator=(const ThreadPoolTimer& other) {
@@ -382,6 +392,7 @@ namespace DiscordCoreAPI {
         ThreadPoolTimer(const ThreadPoolTimer& other) {
             *this = other;
             ThreadPoolTimer::threadRefCounts.at(this->threadId) += 1;
+            cout << "THE COUNT: " << ThreadPoolTimer::threadRefCounts.at(this->threadId) << endl;
         }
 
         ThreadPoolTimer& operator=(ThreadPoolTimer& other) {
@@ -392,6 +403,7 @@ namespace DiscordCoreAPI {
         ThreadPoolTimer(ThreadPoolTimer& other) {
             *this = other;
             ThreadPoolTimer::threadRefCounts.at(this->threadId) += 1;
+            cout << "THE COUNT: " << ThreadPoolTimer::threadRefCounts.at(this->threadId) << endl;
         }
 
         ThreadPoolTimer() {
@@ -452,22 +464,21 @@ namespace DiscordCoreAPI {
 
         CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating) {
             auto cancelHandle = co_await NewThreadAwaitable<void>();
-            ThreadPoolTimer timerNew = *this;
             StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(theInterval) };
             while (true) {
                 cout << "TIMED TIMED TIMED" << endl;
                 stopWatch.resetTimer();
-                cancelHandle.promise().waitForTime(static_cast<int64_t>(theInterval * 80 / 100));
+                cancelHandle.promise().waitForTime(static_cast<int64_t>(theInterval * 98 / 100));
                 while (!stopWatch.hasTimePassed()) {
                     cout << "WE HAVE YET TO HIT THE TIMER!" << endl;
                     if (cancelHandle.promise().newThread->get_stop_token().stop_requested()) {
                         cout << "WE HAVE YET TO HIT THE TIMER!" << endl;
                         co_return;
                     }
-                    this_thread::sleep_for(chrono::milliseconds(1));
+                    this_thread::sleep_for(chrono::milliseconds(2));
                 }
                 cout << "WE HIT THE TIMER!" << endl;
-                theFunction(timerNew);
+                theFunction();
                 if (cancelHandle.promise().newThread->get_stop_token().stop_requested() || !repeating) {
                     co_return;
                 }
@@ -481,7 +492,7 @@ namespace DiscordCoreAPI {
     CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
         co_await NewThreadAwaitable<void>();
         if (timeDelayInMs > 0 && !isRepeating) {
-            TimeElapsedHandler timeElapsedHandler = [&](ThreadPoolTimer)->void {
+            TimeElapsedHandler timeElapsedHandler = [&]()->void {
                 theFunction(args...);
                 return;
             };
@@ -490,7 +501,7 @@ namespace DiscordCoreAPI {
             co_return;
         }
         else if (timeDelayInMs > 0 && isRepeating) {
-            TimeElapsedHandler timeElapsedHandler = [&](ThreadPoolTimer)->void {
+            TimeElapsedHandler timeElapsedHandler = [&]()->void {
                 theFunction(args...);
                 return;
             };
