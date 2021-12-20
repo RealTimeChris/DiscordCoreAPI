@@ -14,7 +14,6 @@ namespace DiscordCoreInternal {
     using namespace winrt::Windows::Storage::Streams;
     using namespace winrt::Windows::Web::Http;
     using namespace winrt::Windows::Web;
-    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -31,7 +30,6 @@ namespace DiscordCoreAPI {
     using namespace winrt::Windows::Storage::Streams;
     using namespace winrt::Windows::Web::Http;
     using namespace winrt::Windows::Web;
-    using namespace concurrency;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -2616,7 +2614,7 @@ namespace DiscordCoreAPI {
         Unset = 0,///< Unset.
         Encoded = 1,///< Encoded.
         RawPCM = 2,///< Raw PCM.
-        Cancel = 3///< Cancel.
+        cancel = 3///< cancel.
     };
 
     /// Represents a single frame of audio data. \brief Represents a single frame of audio data.

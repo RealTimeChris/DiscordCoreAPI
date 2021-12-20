@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 	public:
 
 		template <typename ...T>
-		friend CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
+		friend void executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend void ::terminateWrapper();
@@ -78,8 +78,8 @@ namespace DiscordCoreAPI {
 		friend class Test;
 		
 		static unique_ptr<DiscordCoreClient> thisPointer;
-		static ThreadPool threads;
 		static string commandPrefix;
+		static ThreadPool threads;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
 

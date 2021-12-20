@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
     enum class CoRoutineStatus {
         Idle = 0,///< Idle.
-        Running = 1,///< Running.
+        running = 1,///< running.
         Complete = 2,///< Complete.
         Cancelled = 3///< Cancelled.
     };
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
             }
 
             suspend_never initial_suspend() {
-                this->currentStatus = CoRoutineStatus::Running;
+                this->currentStatus = CoRoutineStatus::running;
                 return{};
             }
 
@@ -335,7 +335,7 @@ namespace DiscordCoreAPI {
             }
 
             suspend_never initial_suspend() {
-                this->currentStatus = CoRoutineStatus::Running;
+                this->currentStatus = CoRoutineStatus::running;
                 return{};
             }
 

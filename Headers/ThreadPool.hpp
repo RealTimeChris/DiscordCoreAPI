@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
             while (!this->doWeQuit) {
                 this_thread::sleep_for(chrono::milliseconds(10000));
                 for (auto& [key, value] : this->threads) {
-                    if (value->getStatus() != CoRoutineStatus::Running) {
+                    if (value->getStatus() != CoRoutineStatus::running) {
                         this->threads.erase(key);
                     }
                 }
@@ -74,24 +74,24 @@ namespace DiscordCoreAPI {
 
         ThreadPoolTimer(nullptr_t) {}
 
-        static ThreadPoolTimer CreateTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {
+        static ThreadPoolTimer createTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeDelay, timeElapsedHandler, false)));
             return threadPoolTimer;
         }
 
-        static ThreadPoolTimer CreatePeriodicTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeInterval) {
+        static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeInterval) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeInterval, timeElapsedHandler, true)));
             return threadPoolTimer;
         }
 
-        void Cancel() {
+        void cancel() {
             ThreadPoolTimer::threads.stopThread(this->threadId);
         }
 
-        bool Running() {
-            if (ThreadPoolTimer::threads.getThreadStatus(this->threadId) == CoRoutineStatus::Running) {
+        bool running() {
+            if (ThreadPoolTimer::threads.getThreadStatus(this->threadId) == CoRoutineStatus::running) {
                 return true;
             }
             else {
@@ -132,25 +132,21 @@ namespace DiscordCoreAPI {
     };
 
     template <typename ...T>
-    CoRoutine<void> executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
-        co_await NewThreadAwaitable<void>();
+    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
         if (timeDelayInMs > 0 && !isRepeating) {
-            TimeElapsedHandler timeElapsedHandler = [&]()->void {
+            TimeElapsedHandler timeElapsedHandler = [=]()->void {
                 theFunction(args...);
             };
-            ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::CreateTimer(timeElapsedHandler, timeDelayInMs);
-            co_return;
+            ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::createTimer(timeElapsedHandler, timeDelayInMs);
         }
         else if (timeDelayInMs > 0 && isRepeating) {
-            TimeElapsedHandler timeElapsedHandler = [&]()->void {
+            TimeElapsedHandler timeElapsedHandler = [=]()->void {
                 theFunction(args...);
             };
-            ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::CreatePeriodicTimer(timeElapsedHandler, timeDelayInMs);
-            co_return;
+            ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::createPeriodicTimer(timeElapsedHandler, timeDelayInMs);
         }
         else {
             throw exception("Please enter a valid delay time!");
-            co_return;
         }
         
     };

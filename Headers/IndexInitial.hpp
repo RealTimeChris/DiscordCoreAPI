@@ -96,7 +96,6 @@ extern "C"
 #include <nanobench.h>
 #include <opus/opus.h>
 #include <coroutine>
-#include <concrt.h>
 #include <iostream>
 #include <sodium.h>
 #include <iostream>
