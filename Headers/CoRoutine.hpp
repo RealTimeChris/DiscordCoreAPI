@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    struct InvalidState : public exception {
+    struct DiscordCoreAPI_Dll InvalidState : public exception {
     public:
         explicit InvalidState(const string& message) : exception(message.c_str()) {};
     };
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
     /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
-    class CoRoutine<void> {
+    class DiscordCoreAPI_Dll CoRoutine<void> {
     public:
 
         class promise_type;
@@ -378,7 +378,7 @@ namespace DiscordCoreAPI {
     /// \param returnType The type of the value returned by the containing CoRoutine.
     /// \returns A coroutine_handle<CoRoutine<returnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
     template<typename returnType>
-    inline auto NewThreadAwaitable() {
+    auto NewThreadAwaitable() {
         class NewThreadAwaitable {
         public:
 

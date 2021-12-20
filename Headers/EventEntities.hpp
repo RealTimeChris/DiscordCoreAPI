@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
     };
 
     template<typename R, typename  ...Args>
-    class DiscordCoreAPI_Dll Event {
+    class Event {
     public:
 
         Event<R, Args...>& operator=(Event<R, Args...>&& other) {
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
     };
 
     template<typename ...Args>
-    class EventDelegate<void, Args...> {
+    class DiscordCoreAPI_Dll EventDelegate<void, Args...> {
     public:
 
         friend class Event<void, Args...>;
@@ -246,6 +246,10 @@ namespace DiscordCoreAPI {
 
         friend class Event<void, void>;
 
+        EventCore& operator=(const EventCore&) = delete;
+
+        EventCore(const EventCore&) = delete;
+
         EventCore& operator=(EventCore&) = delete;
 
         EventCore(EventCore&) = delete;
@@ -272,9 +276,16 @@ namespace DiscordCoreAPI {
 
         Event(Event<void, void>&&) = delete;
 
-        Event<void, void>& operator=(const Event<void, void>&) = delete;
+        Event<void, void>& operator=(const Event<void, void>& other) {
+            this->theEventState = other.theEventState;
+            this->eventId = other.eventId;
+            return *this;
+        }
 
-        Event(const Event<void, void>&) = delete;
+        Event(const Event<void, void>& other) {
+            *this = other;
+            EventCore::refCounts.at(this->eventId) += 1;
+        } 
 
         Event<void, void>& operator=(Event<void, void>& other) {
             this->theEventState = other.theEventState;
