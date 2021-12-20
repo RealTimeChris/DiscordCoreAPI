@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static ObjectCache<string, Channel> cache;
+		static map<string, Channel> cache;
 
 		static void insertChannel(Channel dataPackage);
 

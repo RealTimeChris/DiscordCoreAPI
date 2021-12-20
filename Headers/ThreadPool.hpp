@@ -23,12 +23,10 @@ namespace DiscordCoreAPI {
         ThreadPool(ThreadPool&) = delete;
 
         void storeThread(string theKey, unique_ptr<CoRoutine<void>> thread) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             this->threads.insert(make_pair(theKey, move(thread)));
         }
 
         void stopThread(string theKey) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             if (this->threads.contains(theKey)) {
                 this->threads.at(theKey)->cancel();
                 this->threads.erase(theKey);
@@ -36,7 +34,6 @@ namespace DiscordCoreAPI {
         }
 
         CoRoutineStatus getThreadStatus(string theKey) {
-            lock_guard<mutex> accessLock{ this->accessMutex };
             if (this->threads.contains(theKey)) {
                 return this->threads.at(theKey)->getStatus();
             }
@@ -54,7 +51,6 @@ namespace DiscordCoreAPI {
         map<string, unique_ptr<CoRoutine<void>>> threads{};
         CoRoutine<void> cleanupTask;
         bool doWeQuit{ false };
-        mutex accessMutex{};
 
         CoRoutine<void> theTask() {
             co_await NewThreadAwaitable<void>();
@@ -81,13 +77,13 @@ namespace DiscordCoreAPI {
         static ThreadPoolTimer CreateTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeDelay, timeElapsedHandler, false)));
-            return ref(threadPoolTimer);
+            return threadPoolTimer;
         }
 
         static ThreadPoolTimer CreatePeriodicTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeInterval) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeInterval, timeElapsedHandler, true)));
-            return ref(threadPoolTimer);
+            return threadPoolTimer;
         }
 
         void Cancel() {
@@ -106,7 +102,6 @@ namespace DiscordCoreAPI {
     protected:
 
         static ThreadPool threads;
-        static mutex accessMutex;
 
         string threadId{ "" };
 
@@ -142,23 +137,21 @@ namespace DiscordCoreAPI {
         if (timeDelayInMs > 0 && !isRepeating) {
             TimeElapsedHandler timeElapsedHandler = [&]()->void {
                 theFunction(args...);
-                return;
             };
             ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::CreateTimer(timeElapsedHandler, timeDelayInMs);
-            DiscordCoreClient::threadPoolTimers.push_back(threadPoolTimer);
             co_return;
         }
         else if (timeDelayInMs > 0 && isRepeating) {
             TimeElapsedHandler timeElapsedHandler = [&]()->void {
                 theFunction(args...);
-                return;
             };
             ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::CreatePeriodicTimer(timeElapsedHandler, timeDelayInMs);
-            DiscordCoreClient::threadPoolTimers.push_back(threadPoolTimer);
+            co_return;
         }
         else {
-            theFunction(args...);
+            throw exception("Please enter a valid delay time!");
+            co_return;
         }
-        co_return;
+        
     };
 }

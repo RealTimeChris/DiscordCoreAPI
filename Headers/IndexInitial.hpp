@@ -96,14 +96,14 @@ extern "C"
 #include <nanobench.h>
 #include <opus/opus.h>
 #include <coroutine>
-#include <atltime.h>
 #include <concrt.h>
 #include <iostream>
 #include <sodium.h>
-#include <signal.h>
-#include <stdio.h>
+#include <iostream>
 #include <string>
+#include <ctime>
 #include <regex>
+#include <cmath>
 #include <mutex>
 #include <queue>
 #define CURL_STATICLIB

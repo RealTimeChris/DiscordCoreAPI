@@ -42,8 +42,8 @@ namespace DiscordCoreAPI {
     protected:
 
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        UnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
-        UnboundedMessageBlock<RawFrameData> outDataBuffer{};
+        TSUnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
+        TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
         AVCodecContext* audioDecodeContext{ nullptr };
         AVFormatContext* formatContext{ nullptr };

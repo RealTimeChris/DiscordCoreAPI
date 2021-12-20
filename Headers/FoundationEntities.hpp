@@ -46,24 +46,27 @@ namespace DiscordCoreAPI {
     struct GetRolesData;
     class GuildMember;
 
-    /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-    /// \param objectType The type of object that will be sent over the message block.
+    /// A messaging block for data-structures. \brief A messaging block for data-structures.
+   /// \param objectType The type of object that will be sent over the message block.
     template<typename objectType>
     class UnboundedMessageBlock {
     public:
-        UnboundedMessageBlock() = default;
+
+        UnboundedMessageBlock<objectType>& operator=(const UnboundedMessageBlock<objectType>&) = delete;
+
+        UnboundedMessageBlock(const UnboundedMessageBlock<objectType>&) = delete;
 
         UnboundedMessageBlock<objectType>& operator=(UnboundedMessageBlock<objectType>&) = delete;
 
         UnboundedMessageBlock(UnboundedMessageBlock<objectType>&) = delete;
 
+        UnboundedMessageBlock() = default;
+
         void send(objectType theObject) {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
             this->theArray.push(theObject);
         }
 
-        bool try_receive(objectType& theObject) {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+        bool tryReceive(objectType& theObject) {
             if (this->theArray.size() == 0) {
                 return false;
             }
@@ -77,10 +80,148 @@ namespace DiscordCoreAPI {
         ~UnboundedMessageBlock() {};
 
     protected:
+
         queue<objectType> theArray{};
 
-        shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
+    };
 
+    /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
+    /// \param objectType The type of object that will be sent over the message block.
+    template<typename objectType>
+    class TSUnboundedMessageBlock {
+    public:
+
+        TSUnboundedMessageBlock<objectType>& operator=(const TSUnboundedMessageBlock<objectType>&) = delete;
+
+        TSUnboundedMessageBlock(const TSUnboundedMessageBlock<objectType>&) = delete;
+
+        TSUnboundedMessageBlock<objectType>& operator=(TSUnboundedMessageBlock<objectType>&) = delete;
+
+        TSUnboundedMessageBlock(TSUnboundedMessageBlock<objectType>&) = delete;
+
+        TSUnboundedMessageBlock() = default;
+
+        void send(objectType theObject) {
+            lock_guard<mutex> accessLock{ *this->accessMutex };
+            this->theArray.push(theObject);
+        }
+
+        bool tryReceive(objectType& theObject) {
+            lock_guard<mutex> accessLock{ *this->accessMutex };
+            if (this->theArray.size() == 0) {
+                return false;
+            }
+            else {
+                theObject = this->theArray.front();
+                this->theArray.pop();
+                return true;
+            }
+        }
+
+        ~TSUnboundedMessageBlock() {};
+
+    protected:
+
+        shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
+        queue<objectType> theArray{};
+
+    };
+
+    class Time {
+    public:
+
+        Time(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second) {
+            this->second = second;
+            this->minute = minute;
+            this->month = month;
+            this->year = year;
+            this->hour = hour;
+            this->day = day;
+        };
+
+        int64_t getTime() {
+            int64_t theValue{};
+            for (int64_t x = 1970; x < this->year; x += 1) {
+                theValue += this->secondsInJan;
+                theValue += this->secondsInFeb;
+                theValue += this->secondsInMar;
+                theValue += this->secondsInApr;
+                theValue += this->secondsInMay;
+                theValue += this->secondsInJun;
+                theValue += this->secondsInJul;
+                theValue += this->secondsInAug;
+                theValue += this->secondsInSep;
+                theValue += this->secondsInOct;
+                theValue += this->secondsInNov;
+                theValue += this->secondsInDec;
+                if (x % 4 == 0) {
+                    theValue += this->secondsPerDay;
+                }
+            }
+            if (this->month > 0) {
+                theValue += (this->day - 1) * this->secondsPerDay;
+                theValue += this->hour * this->secondsPerHour;
+                theValue += this->minute * this->secondsPerMinute;
+                theValue += this->second;
+            }
+            if (this->month > 1) {
+                theValue += this->secondsInJan;
+            }
+            if (this->month > 2) {
+                theValue += this->secondsInFeb;
+            }
+            if (this->month > 3) {
+                theValue += this->secondsInMar;
+            }
+            if (this->month > 4) {
+                theValue += this->secondsInApr;
+            }
+            if (this->month > 5) {
+                theValue += this->secondsInMay;
+            }
+            if (this->month > 6) {
+                theValue += this->secondsInJun;
+            }
+            if (this->month > 7) {
+                theValue += this->secondsInJul;
+            }
+            if (this->month > 8) {
+                theValue += this->secondsInAug;
+            }
+            if (this->month > 9) {
+                theValue += this->secondsInSep;
+            }
+            if (this->month > 10) {
+                theValue += this->secondsInOct;
+            }
+            if (this->month > 11) {
+                theValue += this->secondsInNov;
+            }
+            return theValue;
+        }
+
+    protected:
+        int64_t year{ 0 };
+        int64_t month{ 0 };
+        int64_t day{ 0 };
+        int64_t hour{ 0 };
+        int64_t minute{ 0 };
+        int64_t second{ 0 };
+        const int64_t secondsInJan{ 31 * 24 * 60 * 60 };
+        const int64_t secondsInFeb{ 28 * 24 * 60 * 60 };
+        const int64_t secondsInMar{ 31 * 24 * 60 * 60 };
+        const int64_t secondsInApr{ 30 * 24 * 60 * 60 };
+        const int64_t secondsInMay{ 31 * 24 * 60 * 60 };
+        const int64_t secondsInJun{ 30 * 24 * 60 * 60 };
+        const int64_t secondsInJul{ 31 * 24 * 60 * 60 };
+        const int64_t secondsInAug{ 31 * 24 * 60 * 60 };
+        const int64_t secondsInSep{ 30 * 24 * 60 * 60 };
+        const int64_t secondsInOct{ 31 * 24 * 60 * 60 };
+        const int64_t secondsInNov{ 30 * 24 * 60 * 60 };
+        const int64_t secondsInDec{ 31 * 24 * 60 * 60 };
+        const int64_t secondsPerMinute{ 60 };
+        const int64_t secondsPerHour{ 60 * 60 };
+        const int64_t secondsPerDay{ 60 * 60 * 24 };
     };
 
     template<typename timeType>
@@ -146,7 +287,21 @@ namespace DiscordCoreAPI {
     bool waitForTimeToPass(UnboundedMessageBlock<T>* outBuffer, T* argOne, int32_t timeInMsNew) {
         StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
-        while (!outBuffer->try_receive(*argOne)) {
+        while (!outBuffer->tryReceive(*argOne)) {
+            this_thread::sleep_for(chrono::milliseconds(10));
+            if (stopWatch.hasTimePassed()) {
+                doWeBreak = true;
+                break;
+            }
+        };
+        return doWeBreak;
+    }
+
+    template <typename T>
+    bool waitForTimeToPass(TSUnboundedMessageBlock<T>* outBuffer, T* argOne, int32_t timeInMsNew) {
+        StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
+        bool doWeBreak{ false };
+        while (!outBuffer->tryReceive(*argOne)) {
             this_thread::sleep_for(chrono::milliseconds(10));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
@@ -199,7 +354,8 @@ namespace DiscordCoreAPI {
 
         string getDateTimeStamp(TimeFormat timeFormat) {
             this->timeStampInMs = convertTimestampToInteger(this->originalTimeStamp);
-            return convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
+            string newString = convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
+            return newString;
         }
 
         string getOriginalTimeStamp() {
@@ -2661,7 +2817,7 @@ namespace DiscordCoreAPI {
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
-        storageType& returnValue(keyType valueId) {
+        storageType& at(keyType valueId) {
             return ref(this->cache.at(valueId));
         }
 
@@ -2685,13 +2841,13 @@ namespace DiscordCoreAPI {
         /// \param valueId The item's id to store it at.
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
-        void storeValue(keyType valueId, storageType storageValue) {
+        void insert_or_assign(keyType valueId, storageType storageValue) {
             this->cache.insert_or_assign(move(valueId), move(storageValue));
         }
 
     protected:
 
-        map<keyType, storageType> cache{};
+        ObjectCache<keyType, storageType> cache{};
     };
 
     /// A Thread-safe cache for storing objects of any kind. \brief A Thread-safe cache for storing objects of any kind.
@@ -2732,7 +2888,7 @@ namespace DiscordCoreAPI {
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
-        storageType& returnValue(keyType valueId) {
+        storageType& at(keyType valueId) {
             lock_guard<mutex> accessLock{ *this->accessMutex };
             return ref(this->cache.at(valueId));
         }
@@ -2759,7 +2915,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The item's id to store it at.
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
-        void storeValue(keyType valueId, storageType storageValue) {
+        void insert_or_assign(keyType valueId, storageType storageValue) {
             lock_guard<mutex> accessLock{ *this->accessMutex };
             this->cache.insert_or_assign(move(valueId), move(storageValue));
         }
@@ -2808,7 +2964,7 @@ namespace DiscordCoreAPI {
         /// Returns a value at a chosen value-id. \brief Returns a value at a chosen value-id.
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
-        storageType& returnValue(keyType valueId) {
+        storageType& at(keyType valueId) {
             lock_guard<mutex> returnLock{ *this->accessMutex, defer_lock };
             return ref(this->cache.extract(valueId));
         }
@@ -2835,7 +2991,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The item's id to store it at.
         /// \param storageValue The item to store in the object-cache.
         /// \returns void.
-        void storeValue(keyType valueId, storageType storageValue) {
+        void insert_or_assign(keyType valueId, storageType storageValue) {
             lock_guard<mutex> storeLock{ *this->accessMutex };
             this->cache.insert_or_assign(move(valueId), move(storageValue));
         }
@@ -2923,7 +3079,7 @@ namespace  DiscordCoreInternal {
         string endpoint{ "" };
         string port{ "" };
     protected:
-        DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::AudioFrameData>* audioDataBuffer{ nullptr };
+        DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreAPI::AudioFrameData>* audioDataBuffer{ nullptr };
     };
 
     struct DiscordCoreAPI_Dll UpdatePresenceData {

@@ -42,23 +42,23 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			ObjectCache<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>> audioBuffersMap{};
-			ObjectCache<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
-			ObjectCache<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
-			ObjectCache<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
-			ObjectCache<string, unique_ptr<SongAPI>> songAPIMap{};
+			map<string, unique_ptr<TSUnboundedMessageBlock<AudioFrameData>>> audioBuffersMap{};
+			map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
+			map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
+			map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
+			map<string, unique_ptr<SongAPI>> songAPIMap{};
 		}
 	}
 
-	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<UnboundedMessageBlock<AudioFrameData>>>* getAudioBuffersMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<TSUnboundedMessageBlock<AudioFrameData>>>* getAudioBuffersMap();
 
-	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 
-	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
 
-	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
 
-	DiscordCoreAPI_Dll ObjectCache<string, unique_ptr<SongAPI>>* getSongAPIMap();
+	DiscordCoreAPI_Dll map<string, unique_ptr<SongAPI>>* getSongAPIMap();
 
 	/**
 	* \addtogroup main_endpoints
@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		friend class Test;
 		
 		static unique_ptr<DiscordCoreClient> thisPointer;
-		static ThreadPool theTaskVector;
+		static ThreadPool threads;
 		static string commandPrefix;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
@@ -96,14 +96,11 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreClient(string, string, vector<RepeatedFunctionData>);
 
-		static string getGateWayUrl();
-
 		~DiscordCoreClient();
 
 	protected:
 
 		static vector<RepeatedFunctionData> functionsToExecute;
-		static vector<ThreadPoolTimer> threadPoolTimers;
 
 		UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
@@ -112,9 +109,9 @@ namespace DiscordCoreAPI {
 		BotUser currentUser{};
 		string botToken{ "" };
 
-		void initialize();
+		static string getGateWayUrl();
 
-		static void cleanup();
+		void initialize();
 		
 		void terminate();
 

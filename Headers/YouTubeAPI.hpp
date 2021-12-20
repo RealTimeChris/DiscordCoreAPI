@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 		YouTubeSong theSong{};
 		string guildId{ "" };
 
-		void sendEmptyingFrames(UnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
+		void sendEmptyingFrames(TSUnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 

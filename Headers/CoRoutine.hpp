@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
                         }
                     }
                     exception_ptr exceptionPtr{};
-                    while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                    while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
                     this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
                     }
                 }
                 exception_ptr exceptionPtr{};
-                while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
                     rethrow_exception(exceptionPtr);
                 }
                 this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
@@ -159,8 +159,8 @@ namespace DiscordCoreAPI {
                 this->condVar.wait_for(timedLock, chrono::milliseconds(timeToWaitForInMs));
             }
 
-            void return_value(returnType returnValue) {
-                this->result = returnValue;
+            void return_value(returnType at) {
+                this->result = at;
             }
 
             auto get_return_object() {
@@ -235,7 +235,6 @@ namespace DiscordCoreAPI {
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
-                cout << "WERE BEING CALLED (COROUTINE DESTRO)" << endl;
                 this->coroutineHandle.destroy();
             }
         }
@@ -278,7 +277,7 @@ namespace DiscordCoreAPI {
                         }
                     }
                     exception_ptr exceptionPtr{};
-                    while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                    while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
                         rethrow_exception(exceptionPtr);
                     }
                     this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
@@ -299,7 +298,7 @@ namespace DiscordCoreAPI {
                     }
                 }
                 exception_ptr exceptionPtr{};
-                while (this->coroutineHandle.promise().exceptionBuffer.try_receive(exceptionPtr)) {
+                while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
                     rethrow_exception(exceptionPtr);
                 }
                 this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
@@ -349,9 +348,7 @@ namespace DiscordCoreAPI {
                 this->exceptionBuffer.send(current_exception());
             }
 
-            ~promise_type() {
-                cout << "WERE BEING CALLED (PROMISE DESTRO)" << endl;
-            }
+            ~promise_type() {}
 
         protected:
 

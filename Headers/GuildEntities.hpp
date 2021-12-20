@@ -496,7 +496,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	protected:
-		static ObjectCache<string, Guild> cache;
+		static map<string, Guild> cache;
 
 		static void insertGuild(Guild Guild);
 

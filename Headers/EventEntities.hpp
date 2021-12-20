@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
             EventDelegateToken eventToken{};
             eventToken.handlerId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
-            this->theFunctions.storeValue(eventToken, move(eventDelegate));
+            this->theFunctions.insert_or_assign(eventToken, move(eventDelegate));
             return eventToken;
         }
 
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        ObjectCache<EventDelegateToken, EventDelegate<R, Args...>> theFunctions{};
+        map<EventDelegateToken, EventDelegate<R, Args...>> theFunctions{};
         string eventId{ "" };
     };
 
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
             EventDelegateToken eventToken{};
             eventToken.handlerId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
-            this->theFunctions.storeValue(eventToken, move(eventDelegate));
+            this->theFunctions.insert_or_assign(eventToken, move(eventDelegate));
             return eventToken;
         }
 
@@ -215,7 +215,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        ObjectCache<EventDelegateToken, EventDelegate<void, Args...>> theFunctions{};
+        map<EventDelegateToken, EventDelegate<void, Args...>> theFunctions{};
         string eventId{ "" };
 
     };
@@ -232,8 +232,8 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static ObjectCache<string, unique_ptr<EventCore>> theEvents;
-        static ObjectCache<string, uint32_t> refCounts;
+        static map<string, unique_ptr<EventCore>> theEvents;
+        static map<string, uint32_t> refCounts;
 
         shared_ptr<bool> theEventState{ make_shared<bool>(false) };
 
@@ -262,14 +262,14 @@ namespace DiscordCoreAPI {
 
         Event(Event<void, void>& other) {
             *this = other;
-            EventCore::refCounts.returnValue(this->eventId) += 1;
+            EventCore::refCounts.at(this->eventId) += 1;
         }
 
         Event() {
             this->eventId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
-            EventCore::theEvents.storeValue(this->eventId, make_unique<EventCore>());
-            EventCore::refCounts.storeValue(this->eventId, 1);
-            this->theEventState = EventCore::theEvents.returnValue(this->eventId)->theEventState;
+            EventCore::theEvents.insert_or_assign(this->eventId, make_unique<EventCore>());
+            EventCore::refCounts.insert_or_assign(this->eventId, 1);
+            this->theEventState = EventCore::theEvents.at(this->eventId)->theEventState;
         }
 
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
@@ -298,11 +298,11 @@ namespace DiscordCoreAPI {
 
         ~Event() {
             if (EventCore::refCounts.contains(this->eventId)) {
-                if (EventCore::refCounts.returnValue(this->eventId) > 0) {
-                    EventCore::refCounts.returnValue(this->eventId) -= 1;
+                if (EventCore::refCounts.at(this->eventId) > 0) {
+                    EventCore::refCounts.at(this->eventId) -= 1;
 
                 }
-                if (EventCore::refCounts.returnValue(this->eventId) == 0) {
+                if (EventCore::refCounts.at(this->eventId) == 0) {
                     EventCore::refCounts.erase(this->eventId);
                     EventCore::theEvents.erase(this->eventId);
                 }

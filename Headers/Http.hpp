@@ -21,18 +21,18 @@ namespace DiscordCoreInternal {
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.contains(workload.workloadType)) {
-					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.returnValue(workload.workloadType);
+					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataRaw = HttpRequestAgent::rateLimitData.returnValue(rateLimitDataNew->bucket).get();
+						rateLimitDataRaw = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).get();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.storeValue(rateLimitDataRaw->bucket, move(rateLimitDataNew));
+						HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataRaw->bucket, move(rateLimitDataNew));
 					}
 				}
 				else {
 					rateLimitDataNew->tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitDataBucketValues.storeValue(workload.workloadType, rateLimitDataNew->tempBucket);
-					HttpRequestAgent::rateLimitData.storeValue(rateLimitDataRaw->tempBucket, move(rateLimitDataNew));
+					HttpRequestAgent::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
+					HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataRaw->tempBucket, move(rateLimitDataNew));
 				}
 				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
 				returnType returnObject{};
@@ -53,18 +53,18 @@ namespace DiscordCoreInternal {
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.contains(workload.workloadType)) {
-					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.returnValue(workload.workloadType);
+					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataRaw = HttpRequestAgent::rateLimitData.returnValue(rateLimitDataNew->bucket).get();
+						rateLimitDataRaw = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).get();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.storeValue(rateLimitDataRaw->bucket, move(rateLimitDataNew));
+						HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataRaw->bucket, move(rateLimitDataNew));
 					}
 				}
 				else {
 					rateLimitDataNew->tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitDataBucketValues.storeValue(workload.workloadType, rateLimitDataNew->tempBucket);
-					HttpRequestAgent::rateLimitData.storeValue(rateLimitDataRaw->tempBucket, move(rateLimitDataNew));
+					HttpRequestAgent::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
+					HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataRaw->tempBucket, move(rateLimitDataNew));
 				}
 				HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
 				return;
@@ -82,18 +82,18 @@ namespace DiscordCoreInternal {
 				RateLimitData* rateLimitDataRaw = rateLimitDataNew.get();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpRequestAgent::rateLimitDataBucketValues.contains(workload.workloadType)) {
-					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.returnValue(workload.workloadType);
+					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpRequestAgent::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataRaw = HttpRequestAgent::rateLimitData.returnValue(rateLimitDataNew->bucket).get();
+						rateLimitDataRaw = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).get();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.storeValue(rateLimitDataRaw->bucket, move(rateLimitDataNew));
+						HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataRaw->bucket, move(rateLimitDataNew));
 					}
 				}
 				else {
 					rateLimitDataNew->tempBucket = to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitDataBucketValues.storeValue(workload.workloadType, rateLimitDataNew->tempBucket);
-					HttpRequestAgent::rateLimitData.storeValue(rateLimitDataRaw->tempBucket, move(rateLimitDataNew));
+					HttpRequestAgent::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
+					HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataRaw->tempBucket, move(rateLimitDataNew));
 				}
 				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, false);
 				return returnData;
@@ -106,8 +106,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static DiscordCoreAPI::ObjectCache<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static DiscordCoreAPI::ObjectCache<string, unique_ptr<RateLimitData>> rateLimitData;
+		static DiscordCoreAPI::map<HttpWorkloadType, string> rateLimitDataBucketValues;
+		static DiscordCoreAPI::map<string, unique_ptr<RateLimitData>> rateLimitData;
 		static string botToken;
 		static string baseURL;
 

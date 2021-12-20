@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
 	protected:
-		static ObjectCache<string, GuildMember> cache;
+		static map<string, GuildMember> cache;
 
 		static void insertGuildMember(GuildMember dataPackage);
 
