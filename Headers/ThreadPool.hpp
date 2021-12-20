@@ -55,9 +55,9 @@ namespace DiscordCoreAPI {
         CoRoutine<void> theTask() {
             co_await NewThreadAwaitable<void>();
             while (!this->doWeQuit) {
-                this_thread::sleep_for(chrono::milliseconds(10000));
+                this_thread::sleep_for(chrono::milliseconds(30000));
                 for (auto& [key, value] : this->threads) {
-                    if (value->getStatus() != CoRoutineStatus::running) {
+                    if (value->getStatus() != CoRoutineStatus::Running) {
                         this->threads.erase(key);
                     }
                 }
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
         }
 
         bool running() {
-            if (ThreadPoolTimer::threads.getThreadStatus(this->threadId) == CoRoutineStatus::running) {
+            if (ThreadPoolTimer::threads.getThreadStatus(this->threadId) == CoRoutineStatus::Running) {
                 return true;
             }
             else {

@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
     enum class CoRoutineStatus {
         Idle = 0,///< Idle.
-        running = 1,///< running.
+        Running = 1,///< Running.
         Complete = 2,///< Complete.
         Cancelled = 3///< Cancelled.
     };
@@ -36,6 +36,18 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
+        CoRoutine<returnType>& operator=(CoRoutine<returnType>&& other) noexcept {
+            this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
+            this->currentStatus = other.currentStatus;
+            other.coroutineHandle = coroutine_handle<promise_type>();
+            other.currentStatus = CoRoutineStatus::Cancelled;
+            return *this;
+        };
+
+        CoRoutine(CoRoutine<returnType>&& other) noexcept {
+            *this = move(other);
+        };
+
         CoRoutine<returnType>& operator=(const CoRoutine<returnType>& other) = delete;
 
         CoRoutine(const CoRoutine<returnType>& other) = delete;
@@ -44,21 +56,12 @@ namespace DiscordCoreAPI {
 
         CoRoutine(CoRoutine<returnType>& other) = delete;
 
-        CoRoutine<returnType>& operator=(CoRoutine<returnType>&& other) noexcept {
-            this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-            other.coroutineHandle = coroutine_handle<promise_type>();
-            other.currentStatus = CoRoutineStatus::Cancelled;
-            this->currentStatus = other.currentStatus;
-            return *this;
-        };
-
-        CoRoutine(CoRoutine<returnType>&& other) noexcept {
-            *this = move(other);
-        };
+        CoRoutine<returnType>() {
+            this->currentStatus = CoRoutineStatus::Idle;
+            this->coroutineHandle = nullptr;
+        }
 
         CoRoutine<returnType>(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
-
-        CoRoutine<returnType>() {}
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
@@ -168,7 +171,7 @@ namespace DiscordCoreAPI {
             }
 
             suspend_never initial_suspend() {
-                this->currentStatus = CoRoutineStatus::running;
+                this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
@@ -209,6 +212,18 @@ namespace DiscordCoreAPI {
 
         class promise_type;
 
+        CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
+            this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
+            this->currentStatus = other.currentStatus;
+            other.coroutineHandle = coroutine_handle<promise_type>();
+            other.currentStatus = CoRoutineStatus::Cancelled;
+            return *this;
+        };
+
+        CoRoutine(CoRoutine<void>&& other) noexcept {
+            *this = move(other);
+        };
+
         CoRoutine<void>& operator=(const CoRoutine<void>& other) = delete;
 
         CoRoutine(const CoRoutine<void>& other) = delete;
@@ -217,21 +232,12 @@ namespace DiscordCoreAPI {
 
         CoRoutine(CoRoutine<void>& other) = delete;
 
-        CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
-            this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-            other.coroutineHandle = coroutine_handle<promise_type>();
-            other.currentStatus = CoRoutineStatus::Cancelled;
-            this->currentStatus = other.currentStatus;
-            return *this;
-        };
-
-        CoRoutine(CoRoutine<void>&& other) noexcept {
-            *this = move(other);
-        };
+        CoRoutine() {
+            this->currentStatus = CoRoutineStatus::Idle;
+            this->coroutineHandle = nullptr;
+        }
 
         CoRoutine(coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
-
-        CoRoutine() {}
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
@@ -335,7 +341,7 @@ namespace DiscordCoreAPI {
             }
 
             suspend_never initial_suspend() {
-                this->currentStatus = CoRoutineStatus::running;
+                this->currentStatus = CoRoutineStatus::Running;
                 return{};
             }
 
