@@ -14,13 +14,17 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ThreadPool {
     public:
 
-        ThreadPool() {
-            this->cleanupTask = this->theTask();
-        }
+        ThreadPool& operator=(const ThreadPool&) = delete;
+
+        ThreadPool(const ThreadPool&) = delete;
 
         ThreadPool& operator=(ThreadPool&) = delete;
 
         ThreadPool(ThreadPool&) = delete;
+
+        ThreadPool() {
+            this->cleanupTask = this->theTask();
+        }
 
         void storeThread(string theKey, unique_ptr<CoRoutine<void>> thread) {
             this->threads.insert(make_pair(theKey, move(thread)));

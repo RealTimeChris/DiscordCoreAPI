@@ -70,6 +70,7 @@ namespace DiscordCoreAPI {
 
         EventDelegate<R, Args...>& operator=(EventDelegate<R, Args...>&& other) {
             this->theFunction = move(other.theFunction);
+            other.theFunction = function<R(Args...)>{};
             return *this;
         }
 
@@ -80,6 +81,10 @@ namespace DiscordCoreAPI {
         EventDelegate<R, Args...>& operator=(const EventDelegate<R, Args...>& other) = delete;
 
         EventDelegate(const EventDelegate<R, Args...>& other) = delete;
+
+        EventDelegate<R, Args...>& operator=(EventDelegate<R, Args...>& other) = delete;
+
+        EventDelegate(EventDelegate<R, Args...>& other) = delete;
 
         EventDelegate(function<R(Args...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
@@ -99,7 +104,9 @@ namespace DiscordCoreAPI {
 
         Event<R, Args...>& operator=(Event<R, Args...>&& other) {
             this->theFunctions = move(other.theFunctions);
-            this->eventId = other.eventId;
+            other.theFunctions = map<EventDelegateToken, EventDelegate<R, Args...>>{};
+            this->eventId = move(other.eventId);
+            other.eventId = string{};
             return *this;
         }
 
@@ -110,6 +117,10 @@ namespace DiscordCoreAPI {
         Event<R, Args...>& operator=(const Event<R, Args...>&) = delete;
 
         Event(const Event<R, Args...>&) = delete;
+
+        Event<R, Args...>& operator=(Event<R, Args...>&) = delete;
+
+        Event(Event<R, Args...>&) = delete;
 
         Event() {
             this->eventId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());
@@ -148,6 +159,7 @@ namespace DiscordCoreAPI {
 
         EventDelegate<void, Args...>& operator=(EventDelegate<void, Args...>&& other) {
             this->theFunction = move(other.theFunction);
+            other.theFunction = function<void(Args...)>{};
             return *this;
         }
 
@@ -158,6 +170,10 @@ namespace DiscordCoreAPI {
         EventDelegate<void, Args...>& operator=(const EventDelegate<void, Args...>& other) = delete;
 
         EventDelegate(const EventDelegate<void, Args...>& other) = delete;
+
+        EventDelegate<void, Args...>& operator=(EventDelegate<void, Args...>& other) = delete;
+
+        EventDelegate(EventDelegate<void, Args...>& other) = delete;
 
         EventDelegate(function<void(Args...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
@@ -177,7 +193,9 @@ namespace DiscordCoreAPI {
 
         Event<void, Args...>& operator=(Event<void, Args...>&& other) {
             this->theFunctions = move(other.theFunctions);
-            this->eventId = other.eventId;
+            other.theFunctions = map<EventDelegateToken, EventDelegate<void, Args...>>{};
+            this->eventId = move(other.eventId);
+            other.eventId = string{};
             return *this;
         }
 
@@ -188,6 +206,10 @@ namespace DiscordCoreAPI {
         Event<void, Args...>& operator=(const Event<void, Args...>&) = delete;
 
         Event(const Event<void, Args...>&) = delete;
+
+        Event<void, Args...>& operator=(Event<void, Args...>&) = delete;
+
+        Event(Event<void, Args...>&) = delete;
 
         Event() {
             this->eventId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count());

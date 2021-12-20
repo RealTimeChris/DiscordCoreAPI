@@ -38,8 +38,8 @@ namespace DiscordCoreAPI {
 
         CoRoutine<returnType>& operator=(CoRoutine<returnType>&& other) noexcept {
             this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-            this->currentStatus = other.currentStatus;
             other.coroutineHandle = coroutine_handle<promise_type>();
+            this->currentStatus = other.currentStatus;
             other.currentStatus = CoRoutineStatus::Cancelled;
             return *this;
         };
@@ -214,8 +214,8 @@ namespace DiscordCoreAPI {
 
         CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
             this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-            this->currentStatus = other.currentStatus;
             other.coroutineHandle = coroutine_handle<promise_type>();
+            this->currentStatus = other.currentStatus;
             other.currentStatus = CoRoutineStatus::Cancelled;
             return *this;
         };
