@@ -11,6 +11,30 @@
 
 namespace DiscordCoreAPI {
 
+    class jthreadWrapper {
+    public:
+
+        jthreadWrapper() {}
+
+        jthreadWrapper(unique_ptr<bool> theBool, jthread thread) {
+            this->theThread.swap(thread);
+            this->theBool = move(theBool);
+        }
+
+        void stopThread() {
+            this->theThread.get_stop_source().request_stop();
+        }
+
+        bool areWeRunning() {
+            return *this->theBool;
+        }
+
+    protected:
+
+        unique_ptr<bool> theBool{};
+        jthread theThread{};            
+    };
+
     class DiscordCoreAPI_Dll ThreadPool {
     public:
 
@@ -27,22 +51,34 @@ namespace DiscordCoreAPI {
         }
 
         void storeThread(string theKey, unique_ptr<CoRoutine<void>> thread) {
+            this->threads02.insert(make_pair(theKey, move(thread)));
+        }
+
+        void storeThread(string theKey, unique_ptr<jthreadWrapper> thread) {
             this->threads.insert(make_pair(theKey, move(thread)));
+        }
+
+        bool getThreadStatus(string theKey) {
+            bool result{ false };
+            if (this->threads.contains(theKey)) {
+                result = this->threads.at(theKey)->areWeRunning();
+            }
+            else if (
+                this->threads02.contains(theKey)) {
+                if (this->threads02.at(theKey)->getStatus() == CoRoutineStatus::Running) {
+                    result = true;
+                }
+            }
+            return result;
         }
 
         void stopThread(string theKey) {
             if (this->threads.contains(theKey)) {
-                this->threads.at(theKey)->cancel();
+                this->threads.at(theKey)->stopThread();
                 this->threads.erase(theKey);
             }
-        }
-
-        CoRoutineStatus getThreadStatus(string theKey) {
-            if (this->threads.contains(theKey)) {
-                return this->threads.at(theKey)->getStatus();
-            }
-            else {
-                return CoRoutineStatus{};
+            else if (this->threads02.contains(theKey)) {
+                this->threads02.at(theKey)->cancel();
             }
         }
 
@@ -52,8 +88,9 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        map<string, unique_ptr<CoRoutine<void>>> threads{};
-        CoRoutine<void> cleanupTask;
+        map<string, unique_ptr<CoRoutine<void>>> threads02{};
+        map<string, unique_ptr<jthreadWrapper>> threads{};
+        CoRoutine<void> cleanupTask{};
         bool doWeQuit{ false };
 
         CoRoutine<void> theTask() {
@@ -61,8 +98,13 @@ namespace DiscordCoreAPI {
             while (!this->doWeQuit) {
                 this_thread::sleep_for(chrono::milliseconds(30000));
                 for (auto& [key, value] : this->threads) {
-                    if (value->getStatus() != CoRoutineStatus::Running) {
+                    if (!value->areWeRunning()) {
                         this->threads.erase(key);
+                    }
+                }
+                for (auto& [key, value] : this->threads02) {
+                    if (value->getStatus() != CoRoutineStatus::Running) {
+                        this->threads02.erase(key);
                     }
                 }
             }
@@ -80,13 +122,59 @@ namespace DiscordCoreAPI {
 
         static ThreadPoolTimer createTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {
             ThreadPoolTimer threadPoolTimer{};
-            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeDelay, timeElapsedHandler, false)));
+            unique_ptr<bool> theBool{ make_unique<bool>() };
+            jthread newThread([](stop_token stopToken, TimeElapsedHandler theFunction, uint64_t timeDelay, bool* theState) {
+                StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeDelay) };
+                while (true) {
+                    stopWatch.resetTimer();
+                    uint64_t msCount{ 0 };
+                    while (!stopToken.stop_requested() && msCount < timeDelay) {
+                        msCount += 1;
+                        this_thread::sleep_for(chrono::milliseconds(1));
+                    }
+                    while (!stopWatch.hasTimePassed()) {
+                        if (stopToken.stop_requested()) {
+                            *theState = false;
+                            return;
+                        }
+                        this_thread::sleep_for(chrono::milliseconds(10));
+                    }
+                    theFunction();
+                    *theState = false;
+                    return;
+                }
+                }, timeElapsedHandler, timeDelay, theBool.get());
+            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<jthreadWrapper>(move(theBool), move(newThread)));
             return threadPoolTimer;
         }
 
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeInterval) {
             ThreadPoolTimer threadPoolTimer{};
-            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeInterval, timeElapsedHandler, true)));
+            unique_ptr<bool> theBool{ make_unique<bool>() };
+            jthread newThread([](stop_token stopToken, TimeElapsedHandler theFunction, uint64_t timeDelay, bool* theState) {
+                StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeDelay) };
+                while (true) {
+                    stopWatch.resetTimer();
+                    uint64_t msCount{ 0 };
+                    while (!stopToken.stop_requested() && msCount < timeDelay) {
+                        msCount += 1;
+                        this_thread::sleep_for(chrono::milliseconds(1));
+                    }
+                    while (!stopWatch.hasTimePassed()) {
+                        if (stopToken.stop_requested()) {
+                            *theState = false;
+                            return;
+                        }
+                        this_thread::sleep_for(chrono::milliseconds(10));
+                    }
+                    theFunction();
+                    if (stopToken.stop_requested()) {
+                        *theState = false;
+                        return;
+                    }
+                }
+                }, timeElapsedHandler, timeInterval, theBool.get());
+            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<jthreadWrapper>(move(theBool), move(newThread)));
             return threadPoolTimer;
         }
 
@@ -95,7 +183,7 @@ namespace DiscordCoreAPI {
         }
 
         bool running() {
-            if (ThreadPoolTimer::threads.getThreadStatus(this->threadId) == CoRoutineStatus::Running) {
+            if (ThreadPoolTimer::threads.getThreadStatus(this->threadId)) {
                 return true;
             }
             else {
@@ -114,22 +202,7 @@ namespace DiscordCoreAPI {
         }
 
         CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating) {
-            auto cancelHandle = co_await NewThreadAwaitable<void>();
-            StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(theInterval) };
-            while (true) {
-                stopWatch.resetTimer();
-                cancelHandle.promise().waitForTime(static_cast<int64_t>(theInterval * 99 / 100));
-                while (!stopWatch.hasTimePassed()) {
-                    if (cancelHandle.promise().isItStopped()) {
-                        co_return;
-                    }
-                    this_thread::sleep_for(chrono::milliseconds(10));
-                }
-                theFunction();
-                if (cancelHandle.promise().isItStopped() || !repeating) {
-                    co_return;
-                }
-            }
+            
             co_return;
         }
 

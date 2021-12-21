@@ -23,8 +23,6 @@ namespace DiscordCoreAPI {
 
         friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-        friend inline bool operator>(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
-
     protected:
 
         EventDelegateToken() = default;
@@ -49,15 +47,6 @@ namespace DiscordCoreAPI {
         }
         else {
             return false;
-        }
-    }
-
-    bool operator>(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
-        if (lhs < rhs) {
-            return false;
-        }
-        else {
-            return true;
         }
     }
 
