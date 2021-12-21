@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		WS_OP_BINARY = 0x02,
 		WS_OP_CLOSE = 0x08,
 		WS_OP_PING = 0x09,
-		WS_OP_PONG = 0x0a 
+		WS_OP_PONG = 0x0a
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
@@ -122,7 +122,11 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketAgent {
 	public:
 
+		friend class VoiceChannelWebSocketAgent;
+
 		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+
+		MsgWebSocketAgent(nullptr_t);
 
 		void sendMessage(string& dataToSend);
 
@@ -167,10 +171,13 @@ namespace DiscordCoreInternal {
 		string sessionId{ "" };
 		string botToken{ "" };
 		string authKey{ "" };
+		string port{ "" };
 
 		uint64_t fillHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opcode);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
+
+		void getVoiceConnectionData(VoiceConnectInitData doWeCollect);
 
 		DiscordCoreAPI::CoRoutine<void> run();
 
@@ -245,9 +252,8 @@ namespace DiscordCoreInternal {
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class DiscordCoreAPI::Guild;
 
-		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, BaseWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
+		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
 		void otherAgentConnect(ConnectionWebSocketData* connectionData);
 
@@ -268,7 +274,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
 		DatagramSocket connectionDatagramSocket{ nullptr };
-		BaseWebSocketAgent* baseWebSocketAgent{ nullptr };
+		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};

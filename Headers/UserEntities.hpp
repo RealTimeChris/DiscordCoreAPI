@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "WebSocketEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -88,7 +89,7 @@ namespace DiscordCoreAPI {
 
 		friend class DiscordCoreClient;
 
-		BotUser(UserData dataPackage, DiscordCoreInternal::BaseWebSocketAgent* pBaseWebSocketAgentNew);
+		BotUser(UserData dataPackage, DiscordCoreInternal::MsgWebSocketAgent* pBaseWebSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes.
 		/// \returns void.
@@ -104,7 +105,7 @@ namespace DiscordCoreAPI {
 
 		BotUser();
 
-		DiscordCoreInternal::BaseWebSocketAgent* pBaseWebSocketAgent{ nullptr };
+		DiscordCoreInternal::MsgWebSocketAgent* pBaseWebSocketAgent{ nullptr };
 	};
 	/**@}*/
 

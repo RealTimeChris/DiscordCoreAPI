@@ -43,6 +43,7 @@ namespace DiscordCoreAPI {
     class VoiceConnection;
     struct GetRolesData;
     class GuildMember;
+    class BotUser;
 
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
    /// \param objectType The type of object that will be sent over the message block.

@@ -23,11 +23,6 @@ namespace DiscordCoreInternal {
 
 		friend class MsgWebSocketAgent;
 
-		function<void(vector<uint8_t>)> readableNotification{};
-		function<uint32_t()> writeableCallBack{};
-		function<void()> writeableNotification{};
-		function<uint32_t()> readableCallBack{};
-
 		MsgWebSocketSSLClient(string, string);
 
 		void writeData(vector<uint8_t>&);
@@ -44,10 +39,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		size_t clientToServerLength{ 0 }, clientToServerOffset{ 0 };
 		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
 		const uint32_t bufferSize{ 1024 * 16 };
 		fd_set readfds{}, writefds{}, efds{};
+		size_t clientToServerOffset{ 0 };
 		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
 		MsgWebSocketSSLContext ssl{};

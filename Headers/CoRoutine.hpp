@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
         returnType cancel() {
             if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
                 if (this->coroutineHandle.promise().newThread->joinable()) {
-                    this->coroutineHandle.promise().newThread->get_stop_source().request_stop();
+                    this->coroutineHandle.promise().requestStop();
                     {
                         lock_guard<mutex> accessLock{ this->coroutineHandle.promise().lockMutex };
                         this->coroutineHandle.promise().condVar.notify_all();
@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
         void cancel() {
             if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
                 if (this->coroutineHandle.promise().newThread->joinable()) {
-                    this->coroutineHandle.promise().newThread->get_stop_source().request_stop();
+                    this->coroutineHandle.promise().requestStop();
                     {
                         lock_guard<mutex> accessLock{ this->coroutineHandle.promise().lockMutex };
                         this->coroutineHandle.promise().condVar.notify_all();

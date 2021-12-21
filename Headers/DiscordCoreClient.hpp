@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 		static vector<RepeatedFunctionData> functionsToExecute;
 
 		UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
-		unique_ptr<DiscordCoreInternal::BaseWebSocketAgent> baseWebSocketAgent{ nullptr };
+		unique_ptr<DiscordCoreInternal::MsgWebSocketAgent> baseWebSocketAgent{ nullptr };
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		BotUser currentUser{};
