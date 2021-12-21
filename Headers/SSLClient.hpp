@@ -20,14 +20,13 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
 	public:
 
-		friend class VoiceChannelWebSocketAgent;
 		friend class MsgWebSocketAgent;
-		
+
 		MsgWebSocketSSLClient(string, string);
 
 		void writeData(vector<uint8_t>&);
 
-		void writeData(string&);
+		void writeData(string);
 
 		uint64_t getBytesOut();
 
@@ -50,38 +49,6 @@ namespace DiscordCoreInternal {
 		uint64_t bytesIn{ 0 };
 		string hostname{ "" };
 		string cipher{ "" };
-		string port{ "" };
-	};
-
-	class DiscordCoreAPI_Dll DatagramWebSocketSSLClient {
-	public:
-
-		friend class VoiceChannelWebSocketAgent;
-
-		DatagramWebSocketSSLClient(string, string);
-
-		void writeData(vector<uint8_t>&);
-
-		void writeData(string&);
-
-		uint64_t getBytesOut();
-
-		uint64_t getBytesIn();
-
-		void readVoiceData();
-
-		~DatagramWebSocketSSLClient();
-
-	protected:
-
-		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
-		const uint32_t bufferSize{ 1024 * 16 };
-		size_t clientToServerOffset{ 0 };
-		vector<uint8_t> outputBuffer{};
-		vector<uint8_t> inputBuffer{};
-		uint64_t bytesOut{ 0 };
-		uint64_t bytesIn{ 0 };
-		string hostname{ "" };
 		string port{ "" };
 	};
 

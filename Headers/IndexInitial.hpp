@@ -39,22 +39,17 @@
 #pragma comment(lib, "libcurl")
 #pragma comment(lib, "windowsapp")
 #pragma comment(lib, "openssl")
-#pragma comment(lib, "libapps")
-#pragma comment(lib, "libssl_static")
+#pragma comment(lib, "libssl")
 #pragma comment(lib, "libcrypto_static")
-#pragma comment(lib, "dasync")
-#pragma comment(lib, "crypt32")
-#pragma comment(lib, "User32")
-#pragma comment(lib, "Kernel32")
 
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
 
 #ifdef _WIN32
 #include <WinSock2.h>
-#include <Ws2tcpip.h>
+#include <WS2tcpip.h>
 #include <io.h>
-#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib,"ws2_32")
 #endif
 
 #include <winrt/Windows.Foundation.Collections.h>
@@ -94,7 +89,6 @@ extern "C"
 #include <cpp-base64/base64.h>
 #include <nlohmann/json.hpp>
 #include <openssl/crypto.h>
-#include <openssl/async.h>
 #include <glib-2.0/glib.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>

@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
 		void connect();
 	};
 
-	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent : public MsgWebSocketAgent {
+	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -200,11 +200,13 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
+		void otherAgentConnect(ConnectionWebSocketData* connectionData);
+
+		void sendConnectionData(vector<uint8_t>& message);
+
 		void sendVoiceData(vector<uint8_t> data);
 
-		void sendMessage(vector<uint8_t>& text);
-
-		void sendMessage(string& text);
+		void sendMessage(vector<uint8_t> text);
 
 		~VoiceChannelWebSocketAgent();
 
@@ -212,17 +214,20 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
-		unique_ptr<DatagramWebSocketSSLClient> voiceSocket{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
 		ConnectionWebSocketData* connectionData{ nullptr };
+		DatagramSocket connectionDatagramSocket{ nullptr };
 		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
 		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
-		DiscordCoreAPI::CoRoutine<void> theTask{};
+		DatagramSocket voiceSocket{ nullptr };
+		MessageWebSocket webSocket{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
+		event_token voiceDataReceivedToken{};
+		event_token messageReceivedToken{};
 		int32_t currentReconnectTries{ 0 };
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
@@ -230,30 +235,25 @@ namespace DiscordCoreInternal {
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
 		bool* doWeReconnect{ nullptr };
-		bool doWeQuit{ false };
+		event_token closedToken{};
 		string hostIp{ "" };
+		string port{ "" };		
 
-		DiscordCoreAPI::CoRoutine<void> run();
+		void onConnectionDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
 
-		void onVoiceDataReceived();
+		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args);
+
+		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
+
+		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
 
 		void collectExternalIP();
-
-		void onMessageReceived();
-
-		void handleVoiceBuffer();
-
-		bool parseVoiceHeader();
 
 		void sendHeartBeat();
 
 		void voiceConnect();
 
-		void handleBuffer();
-		
-		bool parseHeader();
-
-		void onClosed();
+		void cleanup();
 
 		void connect();
 	};
