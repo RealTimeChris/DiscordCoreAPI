@@ -100,7 +100,9 @@ namespace DiscordCoreInternal {
 		WebSocketWorkload() {}
 		WebSocketWorkload& operator=(WebSocketWorkload&& other) noexcept {
 			this->payLoad = move(other.payLoad);
+			other.payLoad = json();
 			this->eventType = other.eventType;
+			other.eventType = WebSocketEventType::Unset;
 			return *this;
 		}
 		WebSocketWorkload(WebSocketWorkload&& other) noexcept {
@@ -128,7 +130,7 @@ namespace DiscordCoreInternal {
 
 		MsgWebSocketAgent(nullptr_t);
 
-		void sendMessage(string& dataToSend);
+		void sendMessage(string dataToSend);
 
 		void sendMessage(json& data);
 
@@ -160,6 +162,7 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCodes dataOpcode{};
 		string connectionPath{ "" };
+		mutex accessorMutex03{};
 		mutex accessorMutex02{};
 		mutex accessorMutex01{};
 		string socketPath{ "" };

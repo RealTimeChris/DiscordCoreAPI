@@ -15,7 +15,6 @@ namespace DiscordCoreInternal {
 		SSL_CTX* context{ nullptr };
 
 		SSL* ssl{ nullptr };
-
 	};
 
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
@@ -27,7 +26,7 @@ namespace DiscordCoreInternal {
 
 		void writeData(vector<uint8_t>&);
 
-		void writeData(string&);
+		void writeData(string);
 
 		uint64_t getBytesOut();
 
