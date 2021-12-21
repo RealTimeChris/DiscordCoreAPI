@@ -134,8 +134,6 @@ namespace DiscordCoreInternal {
 
 		void cleanup();
 
-		void close();
-
 		~MsgWebSocketAgent();
 
 	protected:
@@ -188,6 +186,8 @@ namespace DiscordCoreInternal {
 		void handleBuffer();
 
 		bool parseHeader();
+
+		void onClosed();
 
 		void connect();
 	};
