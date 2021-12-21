@@ -134,8 +134,6 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(json& data);
 
-		void cleanup();
-
 		~MsgWebSocketAgent();
 
 	protected:
@@ -162,7 +160,6 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCodes dataOpcode{};
 		string connectionPath{ "" };
-		mutex accessorMutex03{};
 		mutex accessorMutex02{};
 		mutex accessorMutex01{};
 		string socketPath{ "" };
