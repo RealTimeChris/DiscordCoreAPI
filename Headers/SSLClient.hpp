@@ -47,10 +47,8 @@ namespace DiscordCoreInternal {
 		vector<uint8_t> inputBuffer{};
 		MsgWebSocketSSLContext ssl{};
 		uint64_t bytesOut{ 0 };
-		uint64_t lastTime{ 0 };
 		uint64_t bytesIn{ 0 };
 		string hostname{ "" };
-		bool blocking{ true };
 		string cipher{ "" };
 		string port{ "" };
 	};
