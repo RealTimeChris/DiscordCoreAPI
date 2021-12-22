@@ -124,10 +124,10 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketAgent {
 	public:
 
-		friend class TVoiceChannelWebSocketAgent;
+		friend class VoiceChannelWebSocketAgent;
 		friend class VoiceChannelWebSocketAgent;
 
-		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opcode = WebSocketOpCodes::WS_OP_BINARY);
+		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
 
 		MsgWebSocketAgent(nullptr_t);
 
@@ -172,7 +172,7 @@ namespace DiscordCoreInternal {
 		string authKey{ "" };
 		string port{ "" };
 
-		uint64_t fillHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opcode);
+		uint64_t createHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opCode);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
 
@@ -214,84 +214,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
 		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
-		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
-		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
-		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
-		DiscordCoreAPI::Event<void, void> connectionReadyEvent{};
-		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
-		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
-		WebSocketState state{ WebSocketState::Initializing };
-		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
-		VoiceConnectInitData voiceConnectInitData{};
-		VoiceConnectionData voiceConnectionData{};
-		DatagramSocket voiceSocket{ nullptr };
-		const int32_t maxReconnectTries{ 10 };
-		event_token voiceDataReceivedToken{};
-		int32_t currentReconnectTries{ 0 };
-		map<string, string> HttpHeaders{};
-		bool areWeAuthenticated{ false };
-		int32_t lastNumberReceived{ 0 };
-		int32_t heartbeatInterval{ 0 };
-		bool areWeTerminating{ false };
-		bool areWeWaitingForIp{ true };
-		bool* doWeReconnect{ nullptr };
-		string connectionPath{ "" };
-		string socketPath{ "" };
-		mutex accessorMutex02{};
-		mutex accessorMutex01{};
-		uint32_t errorCode{ 0 };
-		bool doWeQuit{ false };
-		string port{ "443" };
-		string authKey{ "" };
-		string hostIp{ "" };
-		
-
-		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
-
-		uint64_t fillHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opcode);
-
-		void tokenize(const string&, vector<string>&, string = "\r\n");
-
-		DiscordCoreAPI::CoRoutine<void> run();
-
-		void collectExternalIP();
-
-		void onMessageReceived();
-
-		void sendHeartBeat();
-
-		void voiceConnect();
-
-		void handleBuffer();
-
-		bool parseHeader();
-
-		void onClosed();
-
-		void connect();
-	};
-
-	class DiscordCoreAPI_Dll TVoiceChannelWebSocketAgent {
-	public:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::VoiceConnection;
-
-		TVoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
-
-		void sendVoiceData(vector<uint8_t>& data);
-
-		void sendMessage(vector<uint8_t>& data);
-
-		void sendMessage(string& dataToSend);
-
-		~TVoiceChannelWebSocketAgent();
-
-	protected:
-
-		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
-		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
-		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		unique_ptr<DatagramWebSocketSSLClient> voiceSocket{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
@@ -313,20 +235,19 @@ namespace DiscordCoreInternal {
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
 		bool* doWeReconnect{ nullptr };
-		string connectionPath{ "" };
-		string socketPath{ "" };
+		string relativePath{ "" };
 		mutex accessorMutex02{};
 		mutex accessorMutex01{};
 		uint32_t errorCode{ 0 };
 		bool doWeQuit{ false };
+		string hostName{ "" };
 		string port{ "443" };
 		string authKey{ "" };
 		string hostIp{ "" };
 
-
 		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
 
-		uint64_t fillHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opcode);
+		uint64_t createHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opCode);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
 

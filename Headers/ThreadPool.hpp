@@ -73,6 +73,8 @@ namespace DiscordCoreAPI {
 
     typedef function<void(void)> TimeElapsedHandler;
 
+    typedef void(*TimeElapsedHandlerTwo)(void);
+
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
 
@@ -85,6 +87,18 @@ namespace DiscordCoreAPI {
         }
 
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeInterval) {
+            ThreadPoolTimer threadPoolTimer{};
+            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeInterval, timeElapsedHandler, true)));
+            return threadPoolTimer;
+        }
+
+        static ThreadPoolTimer createTimer(TimeElapsedHandlerTwo timeElapsedHandler, uint64_t timeDelay) {
+            ThreadPoolTimer threadPoolTimer{};
+            ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeDelay, timeElapsedHandler, false)));
+            return threadPoolTimer;
+        }
+
+        static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, uint64_t timeInterval) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeInterval, timeElapsedHandler, true)));
             return threadPoolTimer;
@@ -118,7 +132,27 @@ namespace DiscordCoreAPI {
             StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(theInterval) };
             while (true) {
                 stopWatch.resetTimer();
-                cancelHandle.promise().waitForTime(static_cast<int64_t>(theInterval * 99 / 100));
+                cancelHandle.promise().waitForTime(static_cast<int64_t>(ceil(static_cast<double>(theInterval) * 99.0f / 100.0f)));
+                while (!stopWatch.hasTimePassed()) {
+                    if (cancelHandle.promise().isItStopped()) {
+                        co_return;
+                    }
+                    this_thread::sleep_for(chrono::milliseconds(10));
+                }
+                theFunction();
+                if (cancelHandle.promise().isItStopped() || !repeating) {
+                    co_return;
+                }
+            }
+            co_return;
+        }
+
+        CoRoutine<void> run(int64_t theInterval, TimeElapsedHandlerTwo theFunction, bool repeating) {
+            auto cancelHandle = co_await NewThreadAwaitable<void>();
+            StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(theInterval) };
+            while (true) {
+                stopWatch.resetTimer();
+                cancelHandle.promise().waitForTime(static_cast<int64_t>(ceil(static_cast<double>(theInterval) * 99.0f / 100.0f)));
                 while (!stopWatch.hasTimePassed()) {
                     if (cancelHandle.promise().isItStopped()) {
                         co_return;
