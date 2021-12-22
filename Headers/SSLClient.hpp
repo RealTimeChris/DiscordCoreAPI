@@ -25,9 +25,11 @@ namespace DiscordCoreInternal {
 		
 		MsgWebSocketSSLClient(string, string);
 
+		MsgWebSocketSSLClient(nullptr_t);
+
 		void writeData(vector<uint8_t>&);
 
-		void writeData(string);
+		void writeData(string&);
 
 		uint64_t getBytesOut();
 
@@ -41,11 +43,10 @@ namespace DiscordCoreInternal {
 
 		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
 		const uint32_t bufferSize{ 1024 * 16 };
-		fd_set readfds{}, writefds{}, efds{};
-		size_t clientToServerOffset{ 0 };
 		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
 		MsgWebSocketSSLContext ssl{};
+		fd_set readfds{}, writefds{}, efds{};
 		uint64_t bytesOut{ 0 };
 		uint64_t bytesIn{ 0 };
 		string hostname{ "" };
