@@ -20,8 +20,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
 	public:
 
+		friend class VoiceChannelWebSocketAgent;
 		friend class MsgWebSocketAgent;
-
+		
 		MsgWebSocketSSLClient(string, string);
 
 		void writeData(vector<uint8_t>&);

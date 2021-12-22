@@ -144,7 +144,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
-		unique_ptr<MsgWebSocketSSLClient> sslClient{ nullptr };
+		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -200,13 +200,11 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
-		void otherAgentConnect(ConnectionWebSocketData* connectionData);
-
-		void sendConnectionData(vector<uint8_t>& message);
-
 		void sendVoiceData(vector<uint8_t> data);
 
-		void sendMessage(vector<uint8_t> text);
+		void sendMessage(vector<uint8_t>& data);
+
+		void sendMessage(string dataToSend);
 
 		~VoiceChannelWebSocketAgent();
 
@@ -214,46 +212,60 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
+		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
+		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
+		DiscordCoreAPI::Event<void, void> connectionReadyEvent{};
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
-		ConnectionWebSocketData* connectionData{ nullptr };
-		DatagramSocket connectionDatagramSocket{ nullptr };
+		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
+		WebSocketState state{ WebSocketState::Initializing };
 		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
-		event_token onConnectionDataReceivedToken{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		DatagramSocket voiceSocket{ nullptr };
-		MessageWebSocket webSocket{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		event_token voiceDataReceivedToken{};
-		event_token messageReceivedToken{};
 		int32_t currentReconnectTries{ 0 };
+		map<string, string> HttpHeaders{};
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
 		bool* doWeReconnect{ nullptr };
-		event_token closedToken{};
+		string connectionPath{ "" };
+		string socketPath{ "" };
+		mutex accessorMutex02{};
+		mutex accessorMutex01{};
+		uint32_t errorCode{ 0 };
+		bool doWeQuit{ false };
+		string port{ "443" };
+		string authKey{ "" };
 		string hostIp{ "" };
-		string port{ "" };		
-
-		void onConnectionDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
-
-		void onMessageReceived(MessageWebSocket msgWebSocket, MessageWebSocketMessageReceivedEventArgs args);
+		
 
 		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
 
-		void onClosed(IWebSocket const&, WebSocketClosedEventArgs const& args);
+		uint64_t fillHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opcode);
+
+		void tokenize(const string&, vector<string>&, string = "\r\n");
+
+		DiscordCoreAPI::CoRoutine<void> run();
 
 		void collectExternalIP();
+
+		void onMessageReceived();
 
 		void sendHeartBeat();
 
 		void voiceConnect();
 
-		void cleanup();
+		void handleBuffer();
+
+		bool parseHeader();
+
+		void onClosed();
 
 		void connect();
 	};

@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 
 		VoiceConnection();
 
-		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::MsgWebSocketAgent* baseWebsocketAgentNew, DiscordCoreInternal::ConnectionWebSocketData* connectionData);
+		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::MsgWebSocketAgent* baseWebsocketAgentNew);
 				
 		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
 		/// \param frameData A single frame worth of audio data.
