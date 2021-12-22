@@ -218,7 +218,6 @@ namespace DiscordCoreInternal {
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
-		DiscordCoreAPI::Event<void, void> connectionReadyEvent{};
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
 		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
 		WebSocketState state{ WebSocketState::Initializing };
@@ -245,7 +244,7 @@ namespace DiscordCoreInternal {
 		string authKey{ "" };
 		string hostIp{ "" };
 
-		uint64_t createHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCodes opCode);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
 
