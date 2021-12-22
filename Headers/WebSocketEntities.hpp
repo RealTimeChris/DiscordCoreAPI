@@ -245,8 +245,6 @@ namespace DiscordCoreInternal {
 		string authKey{ "" };
 		string hostIp{ "" };
 
-		void onVoiceDataReceived(DatagramSocket const&, DatagramSocketMessageReceivedEventArgs const& args);
-
 		uint64_t createHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opCode);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");

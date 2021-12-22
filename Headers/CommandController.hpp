@@ -24,22 +24,12 @@ namespace DiscordCoreAPI {
 	public:
 
 		vector<string> argumentsArray{};///< A vector of string arguments.
-		unique_ptr<InputEventData> eventData{ make_unique<InputEventData>() };///< InputEventData representing the input event that triggered the command.
+		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
 
 		BaseFunctionArguments() = default;
 
-		BaseFunctionArguments(BaseFunctionArguments& args) {
-			this->eventData = make_unique<InputEventData>(*args.eventData);
-			this->argumentsArray = args.argumentsArray;
-		}
-
 		BaseFunctionArguments(InputEventData inputEventData) {
-			this->eventData = make_unique<InputEventData>(inputEventData);
-		}
-
-		BaseFunctionArguments(const BaseFunctionArguments& other) {
-			this->eventData = make_unique<InputEventData>(*other.eventData);
-			this->argumentsArray = other.argumentsArray;
+			this->eventData = inputEventData;
 		}
 
 		virtual ~BaseFunctionArguments() {};
