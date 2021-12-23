@@ -12,13 +12,13 @@
 namespace DiscordCoreInternal {
 
 	vector<string> splitHeaders(const string& text);
-	
+
 	class HttpGetMethod {
 	public:
 
 		HttpGetMethod(string botToken);
 
-		void sendGetRequest(BIO* bio, string relativePath, string host, string botToken);
+		void sendGetRequest(string line, string path, string botToken);
 
 		string get(string hostName, string path);
 
