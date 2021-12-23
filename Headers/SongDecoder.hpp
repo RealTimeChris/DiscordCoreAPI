@@ -35,13 +35,15 @@ namespace DiscordCoreAPI {
 
         bool getFrame(RawFrameData* dataPackage);
 
+        CoRoutine<void> run();
+
         void startMe();
 
         ~SongDecoder();
 
     protected:
 
-        int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        int32_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 };
         TSUnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrame* frame{ nullptr }, * newFrame{ nullptr };
@@ -58,8 +60,7 @@ namespace DiscordCoreAPI {
         int64_t totalFileSize{ 0 };
         AVCodec* codec{ nullptr };
         CoRoutine<void> theTask{};
-
-        CoRoutine<void> run();
+        bool areWeDone{ false };
     };
 
 }

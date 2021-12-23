@@ -17,7 +17,7 @@ namespace DiscordCoreInternal {
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
-
+    
     class BaseWebSocketAgent;
     class HttpRequestAgent;
     class DataParser;    
@@ -3300,7 +3300,16 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll RateLimitData {
         RateLimitData() {};
-        RateLimitData(const RateLimitData& other) {
+
+        RateLimitData& operator=(const RateLimitData&) = delete;
+
+        RateLimitData(const RateLimitData&) = delete;
+
+        RateLimitData& operator=(RateLimitData&) = delete;
+
+        RateLimitData(RateLimitData&) = delete;
+
+        RateLimitData& operator=(RateLimitData&& other){
             this->nextExecutionTime = other.nextExecutionTime;
             this->getsRemaining = other.getsRemaining;
             this->msRemainTotal = other.msRemainTotal;
@@ -3308,11 +3317,17 @@ namespace  DiscordCoreInternal {
             this->workloadType = other.workloadType;
             this->isItMarked = other.isItMarked;
             this->tempBucket = other.tempBucket;
-            this->theMutex = make_unique<recursive_mutex>();
+            this->theMutex.swap(other.theMutex);
             this->totalGets = other.totalGets;
             this->msRemain = other.msRemain;
             this->bucket = other.bucket;
+            return *this;
         }
+
+        RateLimitData(RateLimitData&& other) {
+            *this = move(other);
+        }
+
         unique_ptr<recursive_mutex> theMutex{ make_unique<recursive_mutex>() };
         HttpWorkloadType workloadType{};
         int64_t nextExecutionTime{ 0 };
@@ -3323,7 +3338,7 @@ namespace  DiscordCoreInternal {
         string tempBucket{ "" };
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };
-        string bucket{ "" };
+        hstring bucket{ L"" };
 
         ~RateLimitData() = default;
     };

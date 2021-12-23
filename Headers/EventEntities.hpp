@@ -268,6 +268,7 @@ namespace DiscordCoreAPI {
         Event<void, void>& operator=(const Event<void, void>& other) {
             this->theEventState = other.theEventState;
             this->eventId = other.eventId;
+            EventCore::refCounts.at(this->eventId) += 1;
             return *this;
         }
 
@@ -279,6 +280,7 @@ namespace DiscordCoreAPI {
         Event<void, void>& operator=(Event<void, void>& other) {
             this->theEventState = other.theEventState;
             this->eventId = other.eventId;
+            EventCore::refCounts.at(this->eventId) += 1;
             return *this;
         }
 

@@ -57,6 +57,8 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		static map<string, unique_ptr<CoRoutine<void>>>theTasks;
+
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
@@ -65,17 +67,17 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		Event<void, void> connectionReadyEvent{};
-		Event<void, void> disconnectionEvent {};
+		Event<void, void> disconnectionEvent{};
 		unique_ptr<CoRoutine<void>> theTask{};
 		const int32_t maxBufferSize{ 1276 };
-		Event<void, void> playWaitEvent {};
-		Event<void, void> stopWaitEvent {};
-		Event<void, void> playSetEvent {};
+		Event<void, void> playWaitEvent{};
+		Event<void, void> stopWaitEvent{};
+		Event<void, void> playSetEvent{};
 		Event<void, void> stopSetEvent{};
-		Event<void, void> pauseEvent {};
 		bool areWeConnectedBool{ false };
 		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };
+		Event<void, void> pauseEvent{};
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		bool doWeReconnect{ false };

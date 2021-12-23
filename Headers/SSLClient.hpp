@@ -50,17 +50,23 @@ namespace DiscordCoreInternal {
 
 		friend class VoiceChannelWebSocketAgent;
 
-		DatagramWebSocketSSLClient(string, string);
+		DatagramWebSocketSSLClient(string hostName, string post);
+
+		string collectExternalIp(uint32_t audioSSRC);
+
+		void writeData(vector<uint8_t>& dataToWrite);
 
 		DatagramWebSocketSSLClient(nullptr_t);
 
-		string collectExternalIp(uint32_t);
+		bool readData(bool doWeClear);
 
-		void writeData(vector<uint8_t>&);
+		int64_t getBytesWritten();
+
+		vector<uint8_t> getData();
+
+		int64_t getBytesRead();
 
 		void toggleBlocking();
-
-		bool readData(bool);
 
 		~DatagramWebSocketSSLClient();
 
@@ -71,6 +77,8 @@ namespace DiscordCoreInternal {
 		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
 		bool areWeBlocking{ true };
+		int64_t bytesWritten{ 0 };
+		int64_t bytesRead{ 0 };
 		string hostname{ "" };
 		string port{ "" };
 	};
