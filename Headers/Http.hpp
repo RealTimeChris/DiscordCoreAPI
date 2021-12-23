@@ -13,29 +13,40 @@ namespace DiscordCoreInternal {
 
 	vector<string> splitHeaders(const string& text);
 
-	class HttpGetMethod {
+	struct HttpResponseData {
+		map<string, string> headers{};
+		int32_t responseCode{ 0 };
+		string content{ "" };
+	};
+
+	class HttpClient {
 	public:
 
-		HttpGetMethod(string botToken);
+		HttpClient(string);
 
-		void sendGetRequest(string line, string path, string botToken);
+		HttpResponseData constructHttpRequest(string baseUrl, string relativePath, map<string, string> headers, string content);
 
-		string get(string hostName, string path);
+		void sendGetRequest(string, string, string);
 
 		string receiveHttpMessage();
 
+		string get(string, string);
+
 		string receiveSomeData();
 
-		~HttpGetMethod();
+		~HttpClient();
 
 	protected:
 
+		unique_ptr<BIO> bioPtr{ make_unique<BIO>(nullptr ,[&]() {BIO_free_all(bioPtr.get()); delete bioPtr.get(); }) };
+		unique_ptr<SSL> ssl{ make_unique<SSL>(nullptr ,[&]() {SSL_free(ssl.get()); delete ssl.get(); }) };
+		unique_ptr<CURL> curlHandle{ nullptr };
+		unique_ptr<SSL_CTX> ctx{ make_unique<SSL_CTX>(nullptr ,[&]() {SSL_CTX_free(ctx.get());  delete ctx.get(); }) };
+		map<string, string> headers{};
 		uint32_t fileDescriptor{ 0 };
-		SSL_CTX* ctx{ nullptr };
-		BIO* bioPtr{ nullptr };
 		string botToken{ "" };
+		string baseUrl{ "" };
 		string port{ "443" };
-		SSL* ssl{ nullptr };
 		WSAData wsaData{};
 	};
 
@@ -144,11 +155,11 @@ namespace DiscordCoreInternal {
 		static HttpRequestHeaderCollection postHeaders;
 		static HttpRequestHeaderCollection putHeaders;
 		static HttpRequestHeaderCollection getHeaders;
-		static HttpClient deleteHttpClient;
-		static HttpClient patchHttpClient;
-		static HttpClient postHttpClient;
-		static HttpClient putHttpClient;
-		static HttpClient getHttpClient;
+		static winrt::Windows::Web::Http::HttpClient deleteHttpClient;
+		static winrt::Windows::Web::Http::HttpClient patchHttpClient;
+		static winrt::Windows::Web::Http::HttpClient postHttpClient;
+		static winrt::Windows::Web::Http::HttpClient putHttpClient;
+		static winrt::Windows::Web::Http::HttpClient getHttpClient;
 
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);
 

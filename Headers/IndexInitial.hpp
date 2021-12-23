@@ -37,9 +37,9 @@
 #endif
 
 #pragma comment(lib, "libcurl")
-#pragma comment(lib, "windowsapp")
 #pragma comment(lib, "openssl")
 #pragma comment(lib, "libssl")
+#pragma comment(lib, "ossltest")
 #pragma comment(lib, "libcrypto_static")
 
 #pragma warning(push)
@@ -49,6 +49,7 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <io.h>
+#pragma comment(lib, "windowsapp")
 #pragma comment(lib, "ws2_32")
 #pragma comment(lib, "User32")
 #pragma comment(lib, "Kernel32")
@@ -59,8 +60,6 @@
 #include <winrt/Windows.Web.Http.Headers.h>
 #include <winrt/Windows.Web.Http.Filters.h>
 #include <winrt/Windows.Storage.Streams.h>
-#include <Poco/Net/HTTPClientSession.h>
-#include <Poco/Net/HTTPRequest.h>
 
 extern "C"
 {
@@ -91,6 +90,7 @@ extern "C"
 #include <libavutil/opt.h>
 }
 #include <cpp-base64/base64.h>
+#include <openssl/ossl_typ.h>
 #include <nlohmann/json.hpp>
 #include <openssl/crypto.h>
 #include <glib-2.0/glib.h>
