@@ -2568,15 +2568,6 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll RawFrameData {
         vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
-        RawFrameData() {};
-        RawFrameData& operator=(const RawFrameData& other) {
-            this->sampleCount = other.sampleCount;
-            this->data = other.data;
-            return *this;
-        }
-        RawFrameData(const RawFrameData& other) {
-            *this = other;
-        }
         RawFrameData& operator=(RawFrameData&& other) noexcept {
             this->sampleCount = other.sampleCount;
             this->data = move(other.data);
@@ -2585,21 +2576,21 @@ namespace DiscordCoreAPI {
         RawFrameData(RawFrameData&& other) noexcept {
             *this = move(other);
         }
+        RawFrameData& operator=(const RawFrameData& other) {
+            this->sampleCount = other.sampleCount;
+            this->data = other.data;
+            return *this;
+        }
+        RawFrameData(const RawFrameData& other) {
+            *this = other;
+        }
+        RawFrameData() {};
     };
 
     /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
     struct DiscordCoreAPI_Dll EncodedFrameData {
         vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
-        EncodedFrameData() {}
-        EncodedFrameData& operator=(const EncodedFrameData& other) {
-            this->sampleCount = other.sampleCount;
-            this->data = other.data;
-            return *this;
-        }
-        EncodedFrameData(const EncodedFrameData& other) {
-            *this = other;
-        }
         EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
             this->sampleCount = other.sampleCount;
             this->data = move(other.data);
@@ -2608,6 +2599,15 @@ namespace DiscordCoreAPI {
         EncodedFrameData(EncodedFrameData&& other) noexcept {
             *this = move(other);
         }
+        EncodedFrameData& operator=(const EncodedFrameData& other) {
+            this->sampleCount = other.sampleCount;
+            this->data = other.data;
+            return *this;
+        }
+        EncodedFrameData(const EncodedFrameData& other) {
+            *this = other;
+        }
+        EncodedFrameData() {}
     };
 
     /// Audio frame types. \brief Audio frame types.
@@ -2623,16 +2623,6 @@ namespace DiscordCoreAPI {
         AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
         EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
         RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
-        AudioFrameData() {};
-        AudioFrameData& operator=(const AudioFrameData& other) {
-            this->encodedFrameData = other.encodedFrameData;
-            this->rawFrameData = other.rawFrameData;
-            this->type = other.type;
-            return *this;
-        }
-        AudioFrameData(const AudioFrameData& other) {
-            *this = other;
-        }
         AudioFrameData& operator=(AudioFrameData&& other) noexcept {
             this->encodedFrameData = move(other.encodedFrameData);
             this->rawFrameData = move(other.rawFrameData);
@@ -2642,6 +2632,16 @@ namespace DiscordCoreAPI {
         AudioFrameData(AudioFrameData&& other) noexcept {
             *this = move(other);
         }
+        AudioFrameData& operator=(const AudioFrameData& other) {
+            this->encodedFrameData = other.encodedFrameData;
+            this->rawFrameData = other.rawFrameData;
+            this->type = other.type;
+            return *this;
+        }
+        AudioFrameData(const AudioFrameData& other) {
+            *this = other;
+        }
+        AudioFrameData() {};
     };
 
     /// A song from the various platforms. \brief A song from the various platforms.
@@ -2790,8 +2790,6 @@ namespace DiscordCoreAPI {
 
         friend class Guilds;
 
-        ObjectCache() = default;
-
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&& other) {
             this->cache = move(other.cache);
             return *this;
@@ -2804,6 +2802,8 @@ namespace DiscordCoreAPI {
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&) = delete;
 
         ObjectCache(ObjectCache<keyType, storageType>&) = delete;
+
+        ObjectCache() = default;
 
         auto end() {
             return this->cache.end();
@@ -2858,8 +2858,6 @@ namespace DiscordCoreAPI {
 
         friend class Guilds;
 
-        TSObjectCache() = default;
-
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
             this->accessMutex = other.accessMutex;
             this->cache = move(other.cache);
@@ -2873,6 +2871,8 @@ namespace DiscordCoreAPI {
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&) = delete;
 
         TSObjectCache(TSObjectCache<keyType, storageType>&) = delete;
+
+        TSObjectCache() = default;
 
         auto end() {
             lock_guard<mutex> accessLock{ *this->accessMutex };
@@ -2934,8 +2934,6 @@ namespace DiscordCoreAPI {
 
         friend class Guilds;
 
-        ObjectMultiCache() = default;
-
         ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&& other) {
             this->accessMutex = other.accessMutex;
             this->cache = move(other.cache);
@@ -2949,6 +2947,8 @@ namespace DiscordCoreAPI {
         ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&) = delete;
 
         ObjectMultiCache(ObjectMultiCache<keyType, storageType>&) = delete;
+
+        ObjectMultiCache() = default;
 
         auto end() {
             lock_guard<mutex> endLock{ *this->accessMutex };
@@ -3299,17 +3299,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
-        RateLimitData() {};
 
-        RateLimitData& operator=(const RateLimitData&) = delete;
-
-        RateLimitData(const RateLimitData&) = delete;
-
-        RateLimitData& operator=(RateLimitData&) = delete;
-
-        RateLimitData(RateLimitData&) = delete;
-
-        RateLimitData& operator=(RateLimitData&& other){
+        RateLimitData& operator=(RateLimitData&& other) {
             this->nextExecutionTime = other.nextExecutionTime;
             this->getsRemaining = other.getsRemaining;
             this->msRemainTotal = other.msRemainTotal;
@@ -3328,8 +3319,18 @@ namespace  DiscordCoreInternal {
             *this = move(other);
         }
 
+        RateLimitData& operator=(const RateLimitData&) = delete;
+
+        RateLimitData(const RateLimitData&) = delete;
+
+        RateLimitData& operator=(RateLimitData&) = delete;
+
+        RateLimitData(RateLimitData&) = delete;
+
+        RateLimitData() {};
+
         unique_ptr<recursive_mutex> theMutex{ make_unique<recursive_mutex>() };
-        HttpWorkloadType workloadType{};
+        HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
         int64_t nextExecutionTime{ 0 };
         int64_t msRemainTotal{ 0 };
         int64_t timeStartedAt{ 0 };
@@ -3338,7 +3339,7 @@ namespace  DiscordCoreInternal {
         string tempBucket{ "" };
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };
-        hstring bucket{ L"" };
+        string bucket{ "" };
 
         ~RateLimitData() = default;
     };
