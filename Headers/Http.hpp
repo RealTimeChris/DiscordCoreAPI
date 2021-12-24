@@ -13,6 +13,47 @@ namespace DiscordCoreInternal {
 
 	vector<string> splitHeaders(const string& text);
 
+	struct CURLDeleter {
+		void operator()(CURL* curlHandle) {
+			curl_easy_cleanup(curlHandle);
+		}
+	};
+
+	struct CURLWrapper {
+
+		unique_ptr<CURL, CURLDeleter> curlHandle{ nullptr };
+
+		CURL* operator*() {
+			return this->curlHandle.get();
+		}
+
+		CURLWrapper& operator=(CURLWrapper& other) {
+			this->curlHandle.swap(other.curlHandle);
+			return *this;
+		}
+
+		CURLWrapper(CURLWrapper& other) {
+			*this = other;
+		}
+
+		CURLWrapper& operator=(CURL* curlHandleNew) {
+			this->curlHandle.reset(curlHandleNew);
+			return *this;
+		}
+
+		CURLWrapper(CURL* curlHandleNew) {
+			this->curlHandle.reset(curlHandleNew);
+		}
+
+		CURLWrapper(nullptr_t nullPtr) {
+			this->curlHandle = nullPtr;
+		}
+
+		~CURLWrapper() {
+			curl_easy_cleanup(this->curlHandle.get());
+		}
+	};
+
 	struct HttpResponseData {
 		map<string, string> headers{};
 		int32_t responseCode{ 0 };
@@ -22,32 +63,34 @@ namespace DiscordCoreInternal {
 	class HttpClient {
 	public:
 
-		HttpClient(string);
+		HttpClient& operator=(HttpClient& other);
 
-		HttpResponseData constructHttpRequest(string baseUrl, string relativePath, map<string, string> headers, string content);
+		HttpClient(HttpClient& other);
 
-		void sendGetRequest(string, string, string);
+		HttpClient() = default;
 
-		string receiveHttpMessage();
+		HttpClient(string, HttpWorkloadClass workloadType);
 
-		string get(string, string);
+		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
-		string receiveSomeData();
+		static void addHeader(string, string);
+
+		static void removeHeader(string);
 
 		~HttpClient();
 
-	protected:
+		static unique_ptr<curl_slist> headerList;
+		static map<string, string> headers;
 
-		unique_ptr<BIO> bioPtr{ make_unique<BIO>(nullptr ,[&]() {BIO_free_all(bioPtr.get()); delete bioPtr.get(); }) };
-		unique_ptr<SSL> ssl{ make_unique<SSL>(nullptr ,[&]() {SSL_free(ssl.get()); delete ssl.get(); }) };
-		unique_ptr<CURL> curlHandle{ nullptr };
-		unique_ptr<SSL_CTX> ctx{ make_unique<SSL_CTX>(nullptr ,[&]() {SSL_CTX_free(ctx.get());  delete ctx.get(); }) };
-		map<string, string> headers{};
+	protected:		
+
+		unique_ptr<CURLWrapper> curlHandle{ nullptr };
+		
+		HttpWorkloadClass workloadClass{};
 		uint32_t fileDescriptor{ 0 };
 		string botToken{ "" };
 		string baseUrl{ "" };
 		string port{ "443" };
-		WSAData wsaData{};
 	};
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {
@@ -155,6 +198,11 @@ namespace DiscordCoreInternal {
 		static HttpRequestHeaderCollection postHeaders;
 		static HttpRequestHeaderCollection putHeaders;
 		static HttpRequestHeaderCollection getHeaders;
+		static HttpClient deleteClient;
+		static HttpClient patchClient;
+		static HttpClient postClient;
+		static HttpClient putClient;
+		static HttpClient getClient;
 		static winrt::Windows::Web::Http::HttpClient deleteHttpClient;
 		static winrt::Windows::Web::Http::HttpClient patchHttpClient;
 		static winrt::Windows::Web::Http::HttpClient postHttpClient;
