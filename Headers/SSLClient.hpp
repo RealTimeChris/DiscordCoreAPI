@@ -35,7 +35,6 @@ namespace DiscordCoreInternal {
 
 		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
 		const uint32_t bufferSize{ 1024 * 16 };
-		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
 		SSL_CTX* context{ nullptr };
 		bool areWeBlocking{ true };
@@ -74,8 +73,44 @@ namespace DiscordCoreInternal {
 
 		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
 		const uint32_t bufferSize{ 1024 * 16 };
-		vector<uint8_t> outputBuffer{};
 		vector<uint8_t> inputBuffer{};
+		bool areWeBlocking{ true };
+		int64_t bytesWritten{ 0 };
+		int64_t bytesRead{ 0 };
+		string hostname{ "" };
+		string port{ "" };
+	};
+
+	class DiscordCoreAPI_Dll StreamWebSocketSSLClient {
+	public:
+
+		friend class VoiceChannelWebSocketAgent;
+
+		StreamWebSocketSSLClient(string hostName, string post);
+
+		string collectExternalIp(uint32_t audioSSRC);
+
+		void writeData(vector<uint8_t>& dataToWrite);
+
+		StreamWebSocketSSLClient(nullptr_t);
+
+		bool readData(bool doWeClear);
+
+		int64_t getBytesWritten();
+
+		vector<uint8_t> getData();
+
+		int64_t getBytesRead();
+
+		void toggleBlocking();
+
+		~StreamWebSocketSSLClient();
+
+	protected:
+
+		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
+		const uint32_t bufferSize{ 1024 * 16 };
+		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		int64_t bytesWritten{ 0 };
 		int64_t bytesRead{ 0 };
