@@ -51,10 +51,6 @@
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
 
-#include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Windows.Networking.Sockets.h>
-#include <winrt/Windows.Storage.Streams.h>
-
 extern "C"
 {
 #include <libavutil/mastering_display_metadata.h>
@@ -90,7 +86,6 @@ extern "C"
 #include <glib-2.0/glib.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <winrt/base.h>
 #include <nanobench.h>
 #include <opus/opus.h>
 #include <coroutine>
@@ -122,8 +117,6 @@ extern "C"
 #ifdef DELETE
 #undef DELETE
 #endif
-
-#pragma intrinsic(__ll_lshift)
 
 /**
 * \defgroup main_endpoints Main Endpoints

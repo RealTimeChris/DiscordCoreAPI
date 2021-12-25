@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	DiscordCoreAPI_Dll int32_t JSONIFY(hstring initialPayload);
+	DiscordCoreAPI_Dll int32_t JSONIFY(string initialPayload);
 
 	DiscordCoreAPI_Dll json JSONIFY(string botToken, int32_t intents);
 

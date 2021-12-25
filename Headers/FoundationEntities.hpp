@@ -9,10 +9,7 @@
 
 namespace DiscordCoreInternal {
 
-    using namespace winrt::Windows::Networking::Sockets;
-    using namespace winrt::Windows::Storage::Streams;
     using namespace nlohmann;
-    using namespace winrt;
     using namespace std;
     
     class BaseWebSocketAgent;
@@ -22,10 +19,7 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-    using namespace winrt::Windows::Networking::Sockets;
-    using namespace winrt::Windows::Storage::Streams;
     using namespace nlohmann;
-    using namespace winrt;
     using namespace std;
 
     struct GetGuildMemberRolesData;

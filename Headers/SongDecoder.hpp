@@ -12,7 +12,51 @@
 
 namespace DiscordCoreAPI {
 
-    DiscordCoreAPI_Dll int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+    struct AVFrameDeleter {
+        void operator()(AVFrame* other) {
+            av_frame_unref(other);
+            av_frame_free(&other);
+        }
+    };
+
+    struct AVCodecContextDeleter {
+        void operator()(AVCodecContext* other) {
+            avcodec_free_context(&other);
+        }
+    };
+
+    struct AVFormatContextDeleter {
+        void operator()(AVFormatContext* other) {
+            avformat_close_input(&other);
+            avformat_free_context(other);
+        }
+    };
+
+    struct SwrContextDeleter {
+        void operator()(SwrContext* other) {
+            swr_free(&other);
+        }
+    };
+
+    struct AVIOContextDeleter {
+        void operator()(AVIOContext* other) {
+            av_freep(other);
+        }
+    };
+
+    struct AVPacketDeleter {
+        void operator()(AVPacket* other) {
+            av_packet_free(&other);
+        }
+    };
+
+    struct AVCodecDeleter {
+        void operator()(AVCodec* other) {}
+    };
+
+    struct AVStreamDeleter {
+        void operator()(AVStream* other) {}
+    };
 
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
     public:
@@ -23,7 +67,6 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll SongDecoder {
     public:
 
-        friend DiscordCoreAPI_Dll int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
         friend class SoundCloudAPI;
         friend class YouTubeAPI;
 
@@ -33,7 +76,9 @@ namespace DiscordCoreAPI {
 
         void submitDataForDecoding(vector<uint8_t> dataToDecode);
 
-        void updateBufferRefreshTime(int32_t newRefreshTime);        
+        void updateBufferRefreshTime(int32_t newRefreshTime);
+
+        void cancelMe();
 
         bool getFrame(RawFrameData* dataPackage);
 
@@ -44,21 +89,21 @@ namespace DiscordCoreAPI {
     protected:
 
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        unique_ptr<AVCodecContext, AVCodecContextDeleter> audioDecodeContext{ nullptr };
+        unique_ptr<AVFormatContext, AVFormatContextDeleter> formatContext{ nullptr };
+        unique_ptr<AVFrame, AVFrameDeleter> frame{ nullptr }, newFrame{ nullptr };
+        unique_ptr<AVIOContext, AVIOContextDeleter> ioContext{ nullptr };
+        unique_ptr<SwrContext, SwrContextDeleter> swrContext{ nullptr };
+        unique_ptr<AVStream, AVStreamDeleter> audioStream{ nullptr };
         TSUnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
+        unique_ptr<AVPacket, AVPacketDeleter> packet{ nullptr };
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
-        AVFrame* frame{ nullptr }, * newFrame{ nullptr };
-        AVCodecContext* audioDecodeContext{ nullptr };
-        AVFormatContext* formatContext{ nullptr };
+        unique_ptr<AVCodec, AVCodecDeleter> codec{ nullptr };
         int32_t refreshTimeForBuffer{ 10000 };
-        SwrContext* swrContext{ nullptr };
-        AVIOContext* ioContext{ nullptr };
-        AVStream* audioStream{ nullptr };
         vector<uint8_t> currentBuffer{};
-        AVPacket* packet{ nullptr };
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };
-        AVCodec* codec{ nullptr };
         CoRoutine<void> theTask{};
 
         CoRoutine<void> run();

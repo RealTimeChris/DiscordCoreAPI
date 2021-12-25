@@ -225,7 +225,6 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };
-		event_token voiceDataReceivedToken{};
 		int32_t currentReconnectTries{ 0 };
 		map<string, string> HttpHeaders{};
 		bool areWeAuthenticated{ false };
