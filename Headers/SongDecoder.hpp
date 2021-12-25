@@ -29,9 +29,11 @@ namespace DiscordCoreAPI {
 
         SongDecoder(BuildSongDecoderData dataPackage);
 
+        static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+
         void submitDataForDecoding(vector<uint8_t> dataToDecode);
 
-        void updateBufferRefreshTime(int32_t newRefreshTime);
+        void updateBufferRefreshTime(int32_t newRefreshTime);        
 
         bool getFrame(RawFrameData* dataPackage);
 
