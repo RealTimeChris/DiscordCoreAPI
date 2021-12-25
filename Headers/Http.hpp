@@ -27,7 +27,7 @@ namespace DiscordCoreInternal {
 		int32_t responseCode{ 0 };
 		string contentReal{ "" };
 	protected:
-		vector<char> content{};
+		string content{};
 	};
 
 	struct HttpInputData {
@@ -64,6 +64,7 @@ namespace DiscordCoreInternal {
 
 		static unique_ptr<curl_slist> headerList;
 		static map<string, string> headers;
+		static mutex accessMutex;
 	};
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {
@@ -166,21 +167,11 @@ namespace DiscordCoreInternal {
 		static string botToken;
 		static string baseURL;
 
-		static HttpRequestHeaderCollection deleteHeaders;
-		static HttpRequestHeaderCollection patchHeaders;
-		static HttpRequestHeaderCollection postHeaders;
-		static HttpRequestHeaderCollection putHeaders;
-		static HttpRequestHeaderCollection getHeaders;
 		static HttpClient deleteClient;
 		static HttpClient patchClient;
 		static HttpClient postClient;
 		static HttpClient putClient;
 		static HttpClient getClient;
-		static winrt::Windows::Web::Http::HttpClient deleteHttpClient;
-		static winrt::Windows::Web::Http::HttpClient patchHttpClient;
-		static winrt::Windows::Web::Http::HttpClient postHttpClient;
-		static winrt::Windows::Web::Http::HttpClient putHttpClient;
-		static winrt::Windows::Web::Http::HttpClient getHttpClient;
 
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);
 

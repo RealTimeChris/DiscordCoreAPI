@@ -25,10 +25,16 @@
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #endif
-#endif
-
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <io.h>
+#pragma comment(lib, "windowsapp")
+#pragma comment(lib, "ws2_32")
+#pragma comment(lib, "User32")
+#pragma comment(lib, "Kernel32")
 #endif
 
 #ifdef _DEBUG
@@ -45,20 +51,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
 
-#ifdef _WIN32
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#include <io.h>
-#pragma comment(lib, "windowsapp")
-#pragma comment(lib, "ws2_32")
-#pragma comment(lib, "User32")
-#pragma comment(lib, "Kernel32")
-#endif
-
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Networking.Sockets.h>
-#include <winrt/Windows.Web.Http.Headers.h>
-#include <winrt/Windows.Web.Http.Filters.h>
 #include <winrt/Windows.Storage.Streams.h>
 
 extern "C"

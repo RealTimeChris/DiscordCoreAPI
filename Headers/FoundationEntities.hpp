@@ -10,10 +10,7 @@
 namespace DiscordCoreInternal {
 
     using namespace winrt::Windows::Networking::Sockets;
-    using namespace winrt::Windows::Web::Http::Headers;
     using namespace winrt::Windows::Storage::Streams;
-    using namespace winrt::Windows::Web::Http;
-    using namespace winrt::Windows::Web;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -26,10 +23,7 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
     using namespace winrt::Windows::Networking::Sockets;
-    using namespace winrt::Windows::Web::Http::Headers;
     using namespace winrt::Windows::Storage::Streams;
-    using namespace winrt::Windows::Web::Http;
-    using namespace winrt::Windows::Web;
     using namespace nlohmann;
     using namespace winrt;
     using namespace std;
@@ -2760,11 +2754,6 @@ namespace DiscordCoreAPI {
         string baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
         string baseSearchURL{ "https://soundcloud.com/search?q=" };
         string appVersion{ "1631696495" };
-
-        HttpClient httpClientForGettingSecondURL{ HttpClient() };
-        HttpClient httpClientForGettingFinalURLs{ HttpClient() };
-        HttpRequestHeaderCollection headerCollectionForSecondURL{ httpClientForGettingSecondURL.DefaultRequestHeaders() };
-        HttpRequestHeaderCollection headerCollectionForFinalURLs{ httpClientForGettingFinalURLs.DefaultRequestHeaders() };
         string trackAuthorization{ "" };
 
         SoundCloudSong() noexcept;
