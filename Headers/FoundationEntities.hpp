@@ -285,11 +285,16 @@ namespace DiscordCoreAPI {
     }
 
     template <typename T>
-    bool waitForTimeToPass(TSUnboundedMessageBlock<T>* outBuffer, T& argOne, int32_t timeInMsNew) {
+    bool waitForTimeToPass(TSUnboundedMessageBlock<T>* outBuffer, T& argOne, int32_t timeInMsNew, bool* doWeQuit = nullptr) {
         StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer->tryReceive(argOne)) {
             this_thread::sleep_for(chrono::microseconds(1000));
+            if (doWeQuit != nullptr) {
+                if (*doWeQuit) {
+                    break;
+                }
+            }
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;

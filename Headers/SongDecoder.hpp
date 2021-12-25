@@ -26,10 +26,7 @@ namespace DiscordCoreAPI {
     };
 
     struct AVFormatContextDeleter {
-        void operator()(AVFormatContext* other) {
-            avformat_close_input(&other);
-            avformat_free_context(other);
-        }
+        void operator()(AVFormatContext* other) {};
     };
 
     struct SwrContextDeleter {

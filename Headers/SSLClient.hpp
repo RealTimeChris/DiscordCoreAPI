@@ -19,7 +19,6 @@ namespace DiscordCoreInternal {
 	struct SSLDeleter {
 		void operator()(SSL* other) {
 			SSL_shutdown(other);
-			SSL_free(other);
 		}
 	};
 
