@@ -88,13 +88,11 @@ namespace DiscordCoreInternal {
 
 		StreamWebSocketSSLClient(string hostName, string post);
 
-		string collectExternalIp(uint32_t audioSSRC);
-
 		void writeData(vector<uint8_t>& dataToWrite);
 
 		StreamWebSocketSSLClient(nullptr_t);
 
-		bool readData(bool doWeClear);
+		bool readData();
 
 		int64_t getBytesWritten();
 
@@ -110,12 +108,15 @@ namespace DiscordCoreInternal {
 
 		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
 		const uint32_t bufferSize{ 1024 * 16 };
+		SSL_CTX* context{ nullptr };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		int64_t bytesWritten{ 0 };
 		int64_t bytesRead{ 0 };
 		string hostname{ "" };
+		SSL* ssl{ nullptr };
 		string port{ "" };
+		fd_set readfds{};
 	};
 
 }
