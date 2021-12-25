@@ -26,7 +26,10 @@ namespace DiscordCoreAPI {
     };
 
     struct AVFormatContextDeleter {
-        void operator()(AVFormatContext* other) {};
+        void operator()(AVFormatContext* other) {
+            avformat_close_input(&other);
+            avformat_free_context(other);
+        }
     };
 
     struct SwrContextDeleter {
@@ -48,11 +51,11 @@ namespace DiscordCoreAPI {
     };
 
     struct AVCodecDeleter {
-        void operator()(AVCodec* other) {}
+        void operator()(AVCodec*) {};
     };
 
     struct AVStreamDeleter {
-        void operator()(AVStream* other) {}
+        void operator()(AVStream*) {};
     };
 
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
