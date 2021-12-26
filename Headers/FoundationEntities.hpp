@@ -217,26 +217,6 @@ namespace DiscordCoreAPI {
 
         StopWatch() = delete;
 
-        StopWatch<timeType>& operator=(const StopWatch<timeType>& other) {
-            this->maxNumberOfMs = other.maxNumberOfMs;
-            this->startTime = other.startTime;
-            return *this;
-        }
-
-        StopWatch(const StopWatch<timeType>& other) {
-            *this = other;
-        }
-
-        StopWatch<timeType>& operator=(StopWatch<timeType>& other) {
-            this->maxNumberOfMs = other.maxNumberOfMs;
-            this->startTime = other.startTime;
-            return *this;
-        }
-
-        StopWatch(StopWatch<timeType>& other) {
-            *this = other;
-        }
-
         StopWatch(timeType maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew.count();
             this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
@@ -285,16 +265,11 @@ namespace DiscordCoreAPI {
     }
 
     template <typename T>
-    bool waitForTimeToPass(TSUnboundedMessageBlock<T>* outBuffer, T& argOne, int32_t timeInMsNew, bool* doWeQuit = nullptr) {
+    bool waitForTimeToPass(TSUnboundedMessageBlock<T>* outBuffer, T& argOne, int32_t timeInMsNew) {
         StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer->tryReceive(argOne)) {
             this_thread::sleep_for(chrono::microseconds(1000));
-            if (doWeQuit != nullptr) {
-                if (*doWeQuit) {
-                    break;
-                }
-            }
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;
@@ -911,6 +886,14 @@ namespace DiscordCoreAPI {
         int32_t membershipState{ 0 };///< Current state.
         string teamId{ "" };///< Id of the current team.
         UserData user{};///< User data of the current User.
+    };
+
+    /// For updating the current voice state. \brief For updating the current voice state.
+    struct DiscordCoreAPI_Dll UpdateVoiceStateData {
+        string channelId{ "" };///< Id of the desired voice Channel. Leave blank to disconnect.
+        bool selfMute{ false };///< Whether or not we self-mute ourselves.
+        bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
+        string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
     };
 
     /// Team object data. \brief Team object data.

@@ -23,14 +23,6 @@ namespace DiscordCoreAPI {
 		bool afk{ false };///< Are we afk?
 	};
 
-	/// For updating the current voice state. \brief For updating the current voice state.
-	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
-		string channelId{ "" };///< Id of the desired voice Channel. Leave blank to disconnect.
-		bool selfMute{ false };///< Whether or not we self-mute ourselves.
-		bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
-		string guildId{ "" };///< The id of the Guild fo which we would like to establish a voice connection.
-	};
-
 	/// For adding a user to a group DM. \brief For adding a user to a group DM.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		string token{ "" };///< The user's access token.

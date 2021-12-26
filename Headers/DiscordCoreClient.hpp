@@ -102,14 +102,13 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
+		unique_ptr<WSADATA, DiscordCoreInternal::WSADATADeleter> wsaData{ new WSADATA(), DiscordCoreInternal::WSADATADeleter() };
 		UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::MsgWebSocketAgent> baseWebSocketAgent{ nullptr };
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		BotUser currentUser{};
 		string botToken{ "" };
-
-		static string getGateWayUrl();
 
 		void initialize();
 		

@@ -12,7 +12,6 @@
 #include "SSLClient.hpp"
 #include "EventEntities.hpp"
 #include "ThreadPool.hpp"
-#include "UserEntities.hpp"
 
 namespace DiscordCoreInternal {
 
@@ -124,7 +123,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll MsgWebSocketAgent {
 	public:
 
-		friend class VoiceChannelWebSocketAgent;
 		friend class VoiceChannelWebSocketAgent;
 
 		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);

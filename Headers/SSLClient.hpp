@@ -20,6 +20,7 @@ namespace DiscordCoreInternal {
 	struct SSLDeleter {
 		void operator()(SSL* other) {
 			SSL_shutdown(other);
+			cout << "WERE HERE BEING DELETED!" << endl;
 		}
 	};
 
@@ -29,23 +30,31 @@ namespace DiscordCoreInternal {
 
 	struct SocketDeleter {
 		void operator()(Socket* other) {
+#ifdef _WIN32
 			shutdown(other->theSocket, 2);
 			closesocket(other->theSocket);
+#else
+			close(fileDescriptor);
+#endif
+		}
+	};
+
+	struct WSADATADeleter {
+		void operator()(WSADATA* other) {
+			WSACleanup();
 		}
 	};
 
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
 	public:
-
-		friend class VoiceChannelWebSocketAgent;
-		friend class VoiceChannelWebSocketAgent;
-		friend class MsgWebSocketAgent;
 		
 		MsgWebSocketSSLClient(string, string);
 
 		MsgWebSocketSSLClient(nullptr_t);
 
 		void writeData(vector<uint8_t>&);
+
+		vector<uint8_t>& getInputBuffer();
 
 		void writeData(string&);
 		
@@ -56,9 +65,9 @@ namespace DiscordCoreInternal {
 		~MsgWebSocketSSLClient();
 
 	protected:
-
+		
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
+		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr , SSL_CTXDeleter() };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> inputBuffer{};
@@ -70,8 +79,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll DatagramWebSocketSSLClient {
 	public:
-
-		friend class VoiceChannelWebSocketAgent;
 
 		DatagramWebSocketSSLClient(string hostName, string post);
 
@@ -108,8 +115,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll StreamWebSocketSSLClient {
 	public:
 
-		friend class VoiceChannelWebSocketAgent;
-
 		StreamWebSocketSSLClient(string hostName, string post, uint64_t bufferSize);
 
 		StreamWebSocketSSLClient(nullptr_t);
@@ -130,10 +135,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
+		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr , SSL_CTXDeleter() };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
-		uint64_t fileDescriptor{ 0 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		int64_t bytesWritten{ 0 };

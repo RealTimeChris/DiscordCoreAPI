@@ -12,9 +12,6 @@
 
 namespace DiscordCoreAPI {
 
-	template<>
-	class CoRoutine<void>;
-
 	/**
 	* \addtogroup voice_connection
 	* @{
