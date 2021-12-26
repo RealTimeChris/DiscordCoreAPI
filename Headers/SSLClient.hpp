@@ -20,7 +20,6 @@ namespace DiscordCoreInternal {
 	struct SSLDeleter {
 		void operator()(SSL* other) {
 			SSL_shutdown(other);
-			cout << "WERE HERE BEING DELETED!" << endl;
 		}
 	};
 
@@ -40,7 +39,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct WSADATADeleter {
-		void operator()(WSADATA* other) {
+		void operator()(WSADATA*) {
 			WSACleanup();
 		}
 	};
@@ -66,8 +65,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 		
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr , SSL_CTXDeleter() };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
+		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> inputBuffer{};
@@ -84,9 +83,9 @@ namespace DiscordCoreInternal {
 
 		DatagramWebSocketSSLClient(nullptr_t);
 
-		string collectExternalIp(uint32_t audioSSRC);
-
 		void writeData(string& dataToWrite);
+
+		vector<char>& getInputBuffer();
 
 		bool readData(bool doWeClear);
 
@@ -102,7 +101,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
@@ -135,8 +134,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr , SSL_CTXDeleter() };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
+		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};

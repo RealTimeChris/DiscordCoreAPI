@@ -16,7 +16,6 @@
 #include "ReactionEntities.hpp"
 #include "RoleEntities.hpp"
 #include "ThreadEntities.hpp"
-#include "UserEntities.hpp"
 #include "InteractionEntities.hpp"
 #include "EventManager.hpp"
 #include "WebSocketEntities.hpp"
@@ -27,6 +26,7 @@
 #include "StageInstanceEntities.hpp"
 #include "YouTubeAPI.hpp"
 #include "StickerEntities.hpp"
+#include "UserEntities.hpp"
 #include "ThreadPool.hpp"
 #include "SSLClient.hpp"
 #include "WebHookEntities.hpp"
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		friend class Messages;
 		friend class Guild;
 		friend class Test;
-		
+
 		static unique_ptr<DiscordCoreClient> thisPointer;
 		static string commandPrefix;
 		static ThreadPool threads;
@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 		string botToken{ "" };
 
 		void initialize();
-		
+
 		void terminate();
 
 		void run();

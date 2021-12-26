@@ -337,6 +337,12 @@ namespace DiscordCoreAPI {
 
     };
 
+    struct OpusEncoderDeleter {
+        void operator()(OpusEncoder* other) {
+            opus_encoder_destroy(other);
+        }
+    };
+
     /**
     * \addtogroup foundation_entities
     * @{

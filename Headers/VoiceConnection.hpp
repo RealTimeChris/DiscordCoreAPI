@@ -63,6 +63,7 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		unique_ptr<OpusEncoder, OpusEncoderDeleter> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
 		Event<void, void> disconnectionEvent{};
 		unique_ptr<CoRoutine<void>> theTask{};
@@ -72,7 +73,6 @@ namespace DiscordCoreAPI {
 		Event<void, void> playSetEvent{};
 		Event<void, void> stopSetEvent{};
 		bool areWeConnectedBool{ false };
-		OpusEncoder* encoder{ nullptr };
 		bool areWeInstantiated{ false };
 		Event<void, void> pauseEvent{};
 		bool hasTerminateRun{ false };
