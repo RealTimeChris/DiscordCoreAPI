@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include <stdio.h>
 
 namespace DiscordCoreInternal {
 
@@ -56,8 +57,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		unique_ptr<Socket> fileDescriptor{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> inputBuffer{};
@@ -74,17 +75,17 @@ namespace DiscordCoreInternal {
 
 		DatagramWebSocketSSLClient(string hostName, string post);
 
+		DatagramWebSocketSSLClient(nullptr_t);
+
 		string collectExternalIp(uint32_t audioSSRC);
 
 		void writeData(string& dataToWrite);
 
-		DatagramWebSocketSSLClient(nullptr_t);
-
 		bool readData(bool doWeClear);
 
-		int64_t getBytesWritten();
-
 		vector<uint8_t> getData();
+		
+		int64_t getBytesWritten();
 
 		int64_t getBytesRead();
 
@@ -94,7 +95,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket> fileDescriptor{ nullptr };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
@@ -111,26 +112,26 @@ namespace DiscordCoreInternal {
 
 		StreamWebSocketSSLClient(string hostName, string post, uint64_t bufferSize);
 
+		StreamWebSocketSSLClient(nullptr_t);
+		
 		void writeData(vector<uint8_t>& dataToWrite);
 
-		StreamWebSocketSSLClient(nullptr_t);
-
-		bool readData();
+		vector<uint8_t> getData();
 
 		int64_t getBytesWritten();
-
-		vector<uint8_t> getData();
 
 		int64_t getBytesRead();
 
 		void toggleBlocking();
 
+		bool readData();
+
 		~StreamWebSocketSSLClient();
 
 	protected:
 
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		unique_ptr<Socket> fileDescriptor{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
