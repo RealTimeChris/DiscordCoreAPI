@@ -69,7 +69,6 @@ namespace DiscordCoreAPI {
 
 		template <typename ...T>
 		friend void executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
-		friend class DiscordCoreInternal::MsgWebSocketAgent;
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend void ::terminateWrapper();
@@ -79,9 +78,10 @@ namespace DiscordCoreAPI {
 		friend class Test;
 		
 		static unique_ptr<DiscordCoreClient> thisPointer;
-		static unique_ptr<EventManager> eventManager;
 		static string commandPrefix;
 		static ThreadPool threads;
+
+		unique_ptr<EventManager> eventManager{ nullptr };
 
 		/// Sets up some resources for the library. \brief Sets up some resources for the library.
 		/// \param botTokenNew Your bot token. 
@@ -101,14 +101,13 @@ namespace DiscordCoreAPI {
 	protected:
 
 		static vector<RepeatedFunctionData> functionsToExecute;
-		static bool doWeQuit;
 
 		UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::MsgWebSocketAgent> baseWebSocketAgent{ nullptr };
 		CacheOptions cacheOptions{};
-		
-		string botToken{ "" };
+		bool doWeQuit{ false };
 		BotUser currentUser{};
+		string botToken{ "" };
 
 		static string getGateWayUrl();
 
@@ -117,8 +116,6 @@ namespace DiscordCoreAPI {
 		void terminate();
 
 		void run();
-
-		static CoRoutine<void> run(DiscordCoreInternal::WebSocketWorkload);
 	};
 	/**@}*/
 

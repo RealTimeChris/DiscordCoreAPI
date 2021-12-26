@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
+		uint64_t fileDescriptor{ static_cast<uint64_t>(~0) };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> inputBuffer{};
@@ -83,7 +83,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
+		uint64_t fileDescriptor{ static_cast<uint64_t>(~0) };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> inputBuffer{};
 		bool areWeBlocking{ true };
@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		uint32_t fileDescriptor{ static_cast<uint32_t>(~0) };
+		uint64_t fileDescriptor{ static_cast<uint64_t>(~0) };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
