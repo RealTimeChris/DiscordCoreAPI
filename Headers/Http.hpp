@@ -33,18 +33,47 @@ namespace DiscordCoreInternal {
 		string theData{};
 	};
 
-	class HttpGetClient {
+	class HttpClientNew {
 	public:
-		HttpGetClient();
 
-		HttpResponseData executeHttpRequest(string baseUrl, string relativePath, map<string, string> headers);
+		HttpClientNew& operator=(HttpClientNew&& other) {
+			this->context.swap(other.context);
+			this->fileDescriptor.swap(other.fileDescriptor);
+			this->headers = other.headers;
+			this->inputBuffer = other.inputBuffer;
+			this->readfds = other.readfds;
+			this->ssl.swap(other.ssl);
+			return *this;
+		}
+
+		HttpClientNew(HttpClientNew&& other) {
+			*this = move(other);
+		}
+
+		HttpClientNew();
+
+		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
+
+		static map<string, string> getHeaders();
+
+		static void addHeader(string, string);
+
+		static void removeHeader(string);
 
 	protected:
+
+		static map<string, string> headers;
+		static mutex accessMutex;
+
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		vector<char> inputBuffer{};
 		fd_set readfds{};
+
+		static string connect(string baseUrl, HttpClientNew& newClient);
+
+		static string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 	};
 
 	class HttpClient {

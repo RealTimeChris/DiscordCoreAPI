@@ -21,6 +21,40 @@ namespace DiscordCoreInternal {
 		}
 	};
 
+	struct addrinfoWrapper{
+
+		addrinfoWrapper(nullptr_t other) {
+			this->other = unique_ptr<addrinfo, addrinfoDeleter>();
+		}
+
+		addrinfo* operator->() {
+			return this->other.get();
+		}
+
+		operator PADDRINFOA() {
+			return this->other.get();
+		}
+
+		addrinfoWrapper& operator=(PADDRINFOA& other) {
+			this->other.reset(other);
+			return *this;
+		}
+
+		addrinfoWrapper(PADDRINFOA& other) {
+			this->other.reset(other);
+		}
+
+		addrinfoWrapper(addrinfoWrapper& other) {
+			this->other.swap(other.other);
+		}
+
+		addrinfo* operator=(addrinfoWrapper& other) {
+			this->other.swap(other.other);
+			return other.other.get();
+		}
+		unique_ptr<addrinfo, addrinfoDeleter> other{ nullptr };
+	};
+
 	struct SSL_CTXDeleter {
 		void operator()(SSL_CTX* other) {
 			SSL_CTX_free(other);
