@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 	public:
 		HttpGetClient();
 
-		string executeHttpRequest(string baseUrl, string relativePath, string botToken);
+		HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string botToken);
 
 	protected:
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
