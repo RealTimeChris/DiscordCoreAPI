@@ -11,6 +11,16 @@
 
 namespace DiscordCoreInternal {
 
+	struct SSL_METHODDeleter {
+		void operator()(const SSL_METHOD*) {};
+	};
+
+	struct addrinfoDeleter {
+		void operator()(addrinfo* other) {
+			freeaddrinfo(other);
+		}
+	};
+
 	struct SSL_CTXDeleter {
 		void operator()(SSL_CTX* other) {
 			SSL_CTX_free(other);
