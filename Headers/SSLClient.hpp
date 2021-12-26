@@ -22,6 +22,17 @@ namespace DiscordCoreInternal {
 		}
 	};
 
+	struct Socket {
+		uint64_t theSocket{ 0 };
+	};
+
+	struct SocketDeleter {
+		void operator()(Socket* other) {
+			shutdown(other->theSocket, 2);
+			closesocket(other->theSocket);
+		}
+	};
+
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
 	public:
 
@@ -46,7 +57,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		uint64_t fileDescriptor{ static_cast<uint64_t>(~0) };
+		unique_ptr<Socket> fileDescriptor{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<uint8_t> inputBuffer{};
@@ -65,7 +76,7 @@ namespace DiscordCoreInternal {
 
 		string collectExternalIp(uint32_t audioSSRC);
 
-		void writeData(vector<uint8_t>& dataToWrite);
+		void writeData(string& dataToWrite);
 
 		DatagramWebSocketSSLClient(nullptr_t);
 
@@ -83,9 +94,9 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		uint64_t fileDescriptor{ static_cast<uint64_t>(~0) };
+		unique_ptr<Socket> fileDescriptor{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
-		vector<uint8_t> inputBuffer{};
+		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		int64_t bytesWritten{ 0 };
 		int64_t bytesRead{ 0 };
@@ -119,7 +130,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		uint64_t fileDescriptor{ static_cast<uint64_t>(~0) };
+		unique_ptr<Socket> fileDescriptor{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};

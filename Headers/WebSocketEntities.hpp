@@ -201,7 +201,7 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
-		void sendVoiceData(vector<uint8_t>& data);
+		void sendVoiceData(string& data);
 
 		void sendMessage(vector<uint8_t>& data);
 

@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
 
-		void sendSingleAudioFrame(vector<uint8_t> audioDataPacketNew);
+		void sendSingleAudioFrame(string audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 
