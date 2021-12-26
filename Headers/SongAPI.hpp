@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "GuildMemberEntities.hpp"
+#include "EventEntities.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -22,6 +23,8 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class VoiceConnection;
 		friend class Guild;
+
+		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
 
 		Playlist playlist{};
 

@@ -58,7 +58,6 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
 		DiscordCoreInternal::MsgWebSocketAgent* baseWebsocketAgent{ nullptr };
 		TSUnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};

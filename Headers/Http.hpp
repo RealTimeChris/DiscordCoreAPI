@@ -13,8 +13,6 @@ namespace DiscordCoreInternal {
 
 	int32_t parseCode(string rawString);
 
-	void CURLDeleter(CURL* curlHandle);
-
 	class HttpClient;
 
 	struct HttpResponseData {
@@ -39,7 +37,7 @@ namespace DiscordCoreInternal {
 	public:
 		HttpGetClient();
 
-		HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string botToken);
+		HttpResponseData executeHttpRequest(string baseUrl, string relativePath, map<string, string> headers);
 
 	protected:
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
