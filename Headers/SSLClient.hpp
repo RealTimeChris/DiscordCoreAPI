@@ -21,38 +21,38 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	struct addrinfoWrapper{
+	struct addrinfoWrapper {
 
 		addrinfoWrapper(nullptr_t other) {
-			this->other = unique_ptr<addrinfo, addrinfoDeleter>();
+			this->thePtr = unique_ptr<addrinfo, addrinfoDeleter>();
 		}
 
 		addrinfo* operator->() {
-			return this->other.get();
+			return this->thePtr.get();
 		}
 
 		operator PADDRINFOA() {
-			return this->other.get();
+			return this->thePtr.get();
 		}
 
 		addrinfoWrapper& operator=(PADDRINFOA& other) {
-			this->other.reset(other);
+			this->thePtr.reset(other);
 			return *this;
 		}
 
 		addrinfoWrapper(PADDRINFOA& other) {
-			this->other.reset(other);
+			this->thePtr.reset(other);
 		}
 
 		addrinfoWrapper(addrinfoWrapper& other) {
-			this->other.swap(other.other);
+			this->thePtr.swap(other.thePtr);
 		}
 
 		addrinfo* operator=(addrinfoWrapper& other) {
-			this->other.swap(other.other);
-			return other.other.get();
+			this->thePtr.swap(other.thePtr);
+			return other.thePtr.get();
 		}
-		unique_ptr<addrinfo, addrinfoDeleter> other{ nullptr };
+		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ nullptr };
 	};
 
 	struct SSL_CTXDeleter {
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
 	public:
-		
+
 		MsgWebSocketSSLClient(string, string);
 
 		MsgWebSocketSSLClient(nullptr_t);
@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 		vector<uint8_t>& getInputBuffer();
 
 		void writeData(string&);
-		
+
 		void toggleBlocking();
 
 		bool readData();
@@ -108,8 +108,8 @@ namespace DiscordCoreInternal {
 		~MsgWebSocketSSLClient();
 
 	protected:
-		
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
+
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
@@ -134,7 +134,7 @@ namespace DiscordCoreInternal {
 		bool readData(bool doWeClear);
 
 		vector<uint8_t> getData();
-		
+
 		int64_t getBytesWritten();
 
 		int64_t getBytesRead();
@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
@@ -161,7 +161,7 @@ namespace DiscordCoreInternal {
 		StreamWebSocketSSLClient(string hostName, string post, uint64_t bufferSize);
 
 		StreamWebSocketSSLClient(nullptr_t);
-		
+
 		void writeData(vector<uint8_t>& dataToWrite);
 
 		vector<uint8_t> getData();
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };

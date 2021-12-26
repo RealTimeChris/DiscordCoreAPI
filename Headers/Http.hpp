@@ -15,7 +15,7 @@ namespace DiscordCoreInternal {
 
 	class HttpClient;
 
-	struct HttpResponseData {
+	struct DiscordCoreAPI_Dll HttpResponseData {
 
 		friend size_t writeDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
 		friend size_t readDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
@@ -28,13 +28,15 @@ namespace DiscordCoreInternal {
 		string content{};
 	};
 
-	struct HttpInputData {
+	struct DiscordCoreAPI_Dll HttpInputData {
 		int32_t writtenBytes{ 0 };
 		string theData{};
 	};
 
-	class HttpClientNew {
+	class DiscordCoreAPI_Dll HttpClientNew {
 	public:
+
+		friend class DiscordCoreAPI::Test;
 
 		HttpClientNew& operator=(HttpClientNew&& other) {
 			this->context.swap(other.context);
@@ -63,9 +65,9 @@ namespace DiscordCoreInternal {
 	protected:
 
 		static map<string, string> headers;
-		static mutex accessMutex;
+		static recursive_mutex accessMutex;
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		vector<char> inputBuffer{};
@@ -74,38 +76,6 @@ namespace DiscordCoreInternal {
 		static string connect(string baseUrl, HttpClientNew& newClient);
 
 		static string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
-	};
-
-	class HttpClient {
-	public:
-
-		HttpClient& operator=(HttpClient&& other);
-
-		HttpClient(HttpClient&& other);
-
-		HttpClient& operator=(HttpClient& other) = delete;
-
-		HttpClient(HttpClient& other) = delete;
-
-		HttpClient() = default;
-
-		HttpClient(string, HttpWorkloadClass workloadType);
-
-		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
-
-		static void addHeader(string, string);
-
-		static void removeHeader(string);
-
-		static map<string, string> getHeaders();
-
-		~HttpClient();
-
-	protected:		
-
-		static unique_ptr<curl_slist> headerList;
-		static map<string, string> headers;
-		static mutex accessMutex;
 	};
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {
@@ -207,12 +177,6 @@ namespace DiscordCoreInternal {
 		static DiscordCoreAPI::map<string, unique_ptr<RateLimitData>> rateLimitData;
 		static string botToken;
 		static string baseURL;
-
-		static HttpClient deleteClient;
-		static HttpClient patchClient;
-		static HttpClient postClient;
-		static HttpClient putClient;
-		static HttpClient getClient;
 
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);
 

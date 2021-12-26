@@ -55,7 +55,8 @@ namespace DiscordCoreAPI {
     };
 
     struct AVStreamDeleter {
-        void operator()(AVStream*) {};
+        void operator()(AVStream*) {
+        };
     };
 
     struct DiscordCoreAPI_Dll BuildSongDecoderData {

@@ -22,6 +22,7 @@ namespace DiscordCoreAPI {
     using namespace nlohmann;
     using namespace std;
 
+    class Test;
     struct GetGuildMemberRolesData;
     template<typename returnType>
     class CoRoutine;

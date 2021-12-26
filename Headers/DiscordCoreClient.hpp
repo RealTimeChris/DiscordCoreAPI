@@ -9,6 +9,7 @@
 #include "FoundationEntities.hpp"
 #include "EventEntities.hpp"
 #include "ApplicationCommandEntities.hpp"
+#include "Http.hpp"
 #include "ChannelEntities.hpp"
 #include "GuildEntities.hpp"
 #include "GuildMemberEntities.hpp"
