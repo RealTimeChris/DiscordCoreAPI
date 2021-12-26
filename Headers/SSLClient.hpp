@@ -130,10 +130,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() ,SocketDeleter() };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
+		uint64_t fileDescriptor{ 0 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		int64_t bytesWritten{ 0 };
