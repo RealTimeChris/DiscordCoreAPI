@@ -5,12 +5,6 @@
 
 #pragma once
 
-#ifdef DISCORDCOREAPIDLL_EXPORTS
-#define DiscordCoreAPI_Dll __declspec(dllexport)
-#else
-#define DiscordCoreAPI_Dll __declspec(dllimport)
-#endif
-
 #ifndef _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING 
 #define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING 
 #endif
@@ -20,6 +14,11 @@
 #endif
 
 #ifdef _WIN32
+#ifdef DISCORDCOREAPIDLL_EXPORTS
+#define DiscordCoreAPI_Dll __declspec(dllexport)
+#else
+#define DiscordCoreAPI_Dll __declspec(dllimport)
+#endif
 #ifndef WINRT_LEAN_AND_MEAN
 #define WINRT_LEAN_AND_MEAN
 #endif
