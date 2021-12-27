@@ -19,25 +19,32 @@ namespace DiscordCoreInternal {
 		friend size_t writeDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
 		friend size_t readDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
 		friend class HttpClient;
+		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
+		int64_t currentOffset{ -1 };
+		int64_t contentSize{ -1 };
 		int32_t responseCode{ 0 };
 		string contentReal{ "" };
-	protected:
-		string content{};
+		string rawInput{ "" };
 	};
 
-	struct HttpInputData {
-		int32_t writtenBytes{ 0 };
-		string theData{};
-	};
-
-	class HttpGetClientNew {
+	class HttpClientNew {
 	public:
-		HttpGetClientNew();
+		HttpClientNew();
 
-		HttpResponseData executeHttpRequest(string baseUrl, string relativePath, map<string, string> headers);
+		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
+
+		static map<string, string> getHeaders();
+
+		static void addHeader(string, string);
+
+		static void removeHeader(string);
 
 	protected:
+
+		static map<string, string> headers;
+		static mutex accessMutex;
+
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
@@ -47,17 +54,29 @@ namespace DiscordCoreInternal {
 
 	class HttpClient {
 	public:
+
 		HttpClient& operator=(HttpClient&& other);
+
 		HttpClient(HttpClient&& other);
+
 		HttpClient& operator=(HttpClient& other) = delete;
+
 		HttpClient(HttpClient& other) = delete;
+
 		HttpClient() = default;
+
 		HttpClient(string, HttpWorkloadClass workloadType);
+
 		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
+
 		static void addHeader(string, string);
+
 		static void removeHeader(string);
+
 		static map<string, string> getHeaders();
+
 		~HttpClient();
+
 	protected:
 		static unique_ptr<curl_slist> headerList;
 		static map<string, string> headers;

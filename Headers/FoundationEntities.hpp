@@ -11,8 +11,8 @@ namespace DiscordCoreInternal {
 
     using namespace nlohmann;
     using namespace std;
-    
-    class BaseWebSocketAgent;
+
+    class MsgWebSocketAgent;
     class HttpRequestAgent;
     class DataParser;    
 }
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
         StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer->tryReceive(argOne)) {
-            this_thread::sleep_for(chrono::microseconds(1000));
+            this_thread::sleep_for(chrono::milliseconds(1));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
         StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer->tryReceive(argOne)) {
-            this_thread::sleep_for(chrono::microseconds(1000));
+            this_thread::sleep_for(chrono::milliseconds(1));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;
@@ -2005,6 +2005,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll InputEventData {
     public:
 
+        friend class DiscordCoreInternal::MsgWebSocketAgent;
         friend struct RecurseThroughMessagePagesData;
         friend struct OnInteractionCreationData;
         friend class RespondToInputEventData;
@@ -2278,6 +2279,7 @@ namespace DiscordCoreAPI {
     public:
 
         friend class CreateEphemeralInteractionResponseData;
+        friend class DiscordCoreInternal::MsgWebSocketAgent;
         friend class CreateDeferredInteractionResponseData;
         friend class CreateEphemeralFollowUpMessageData;
         friend class CreateInteractionResponseData;

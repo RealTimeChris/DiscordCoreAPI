@@ -23,7 +23,7 @@ namespace DiscordCoreInternal {
 
 	struct addrinfoWrapper {
 
-		addrinfoWrapper(nullptr_t other) {
+		addrinfoWrapper(nullptr_t) {
 			this->thePtr = unique_ptr<addrinfo, addrinfoDeleter>();
 		}
 

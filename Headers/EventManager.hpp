@@ -318,6 +318,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EventManager {
 	public:
 
+		friend class DiscordCoreInternal::MsgWebSocketAgent;
 		friend class DiscordCoreClient;
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnInputEventCreationData structure as an argument.
