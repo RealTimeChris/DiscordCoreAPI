@@ -11,24 +11,41 @@
 
 namespace DiscordCoreInternal {
 
-	int32_t parseCode(string rawString);
+	DiscordCoreAPI_Dll int32_t parseCode(string rawString);
 
-	class HttpClient;
+	class DiscordCoreAPI_Dll HttpClient;
 
-	struct HttpResponseData {
+	struct DiscordCoreAPI_Dll HttpResponseData {
 		friend size_t writeDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
 		friend size_t readDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
 		friend class HttpClient;
 		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
 		int64_t currentOffset{ -1 };
+		int32_t responseCode{ -1 };
 		int64_t contentSize{ -1 };
-		int32_t responseCode{ 0 };
 		string contentReal{ "" };
 		string rawInput{ "" };
 	};
 
-	class HttpClientNew {
+	struct DiscordCoreAPI_Dll CURLDeleter {
+		void operator()(CURL* curlHandle) {
+			curl_easy_cleanup(curlHandle);
+		}
+	};
+
+	struct DiscordCoreAPI_Dll CURLUDeleter {
+		void operator()(CURLU* other) {
+			curl_free(other);
+		}
+	};
+
+	struct DiscordCoreAPI_Dll HttpInputData {
+		int64_t bytesWritten{ 0 };
+		string theData{};
+	};
+
+	class DiscordCoreAPI_Dll HttpClientNew {
 	public:
 		HttpClientNew();
 
@@ -52,7 +69,7 @@ namespace DiscordCoreInternal {
 		fd_set readfds{};
 	};
 
-	class HttpClient {
+	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
 		HttpClient& operator=(HttpClient&& other);
