@@ -22,6 +22,7 @@ namespace DiscordCoreInternal {
 		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
 		int64_t currentOffset{ -1 };
+		int64_t contentOffset{ 0 };
 		int32_t responseCode{ -1 };
 		int64_t contentSize{ -1 };
 		string contentReal{ "" };
@@ -62,9 +63,25 @@ namespace DiscordCoreInternal {
 		static map<string, string> headers;
 		static mutex accessMutex;
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket() };
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
+		static string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
+
+		static bool connect(string baseUrl, string relativePath, HttpClientNew& clientNew);
+
+		static bool sendRequest(string request, HttpClientNew& clientNew);
+
+		static HttpResponseData getResponse(HttpClientNew& clientNew);
+
+		static void parseHeaders(HttpResponseData& inputValue);
+
+		static void parseCodeTwo(HttpResponseData& inputValue);
+
+		static bool parseChunk(HttpResponseData& dataPackage);
+		
+		static void parseSize(HttpResponseData& dataPackage);
+
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
+		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr, SSL_CTXDeleter{} };
+		unique_ptr<SSL, SSLDeleter> ssl{ nullptr, SSLDeleter{} };
 		vector<char> inputBuffer{};
 		fd_set readfds{};
 	};
