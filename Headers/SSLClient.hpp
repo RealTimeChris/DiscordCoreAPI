@@ -24,7 +24,7 @@ namespace DiscordCoreInternal {
 	struct addrinfoWrapper {
 
 		addrinfoWrapper(nullptr_t) {
-			this->thePtr = unique_ptr<addrinfo, addrinfoDeleter>();
+			ZeroMemory(this->thePtr.get(), sizeof(addrinfo));
 		}
 
 		addrinfo* operator->() {
@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 		}
 
 		addrinfoWrapper(PADDRINFOA& other) {
-			this->thePtr.reset(other);
+			*this->thePtr = *other;
 		}
 
 		addrinfoWrapper(addrinfoWrapper& other) {
@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 			this->thePtr.swap(other.thePtr);
 			return other.thePtr.get();
 		}
-		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ nullptr };
+		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo{}, addrinfoDeleter{} };
 	};
 
 	struct SSL_CTXDeleter {

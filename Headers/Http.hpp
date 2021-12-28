@@ -11,6 +11,9 @@
 
 namespace DiscordCoreInternal {
 
+	const string soundcloudCertPath{ "C:/Program Files/OpenSSL-Win64/bin/PEM/Root-R3.pem" };
+	const string youtubeCertPath{ "C:/Program Files/OpenSSL-Win64/bin/PEM/gtsr1.pem" };
+
 	DiscordCoreAPI_Dll int32_t parseCode(string rawString);
 
 	class DiscordCoreAPI_Dll HttpClient;
@@ -28,7 +31,7 @@ namespace DiscordCoreInternal {
 		string contentReal{ "" };
 		string rawInput{ "" };
 	};
-
+	
 	struct DiscordCoreAPI_Dll CURLDeleter {
 		void operator()(CURL* curlHandle) {
 			curl_easy_cleanup(curlHandle);
