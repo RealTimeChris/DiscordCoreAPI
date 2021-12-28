@@ -52,16 +52,11 @@ namespace DiscordCoreInternal {
 
 		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
-		static map<string, string> getHeaders();
+		void addHeader(string, string);
 
-		static void addHeader(string, string);
-
-		static void removeHeader(string);
+		void removeHeader(string);
 
 	protected:
-
-		static map<string, string> headers;
-		static mutex accessMutex;
 
 		static string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
@@ -82,6 +77,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr, SSL_CTXDeleter{} };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr, SSLDeleter{} };
+		map<string, string> headers{};
 		vector<char> inputBuffer{};
 		fd_set readfds{};
 	};
@@ -119,7 +115,11 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {
 	public:
+
+		friend class HttpClientNew;
+
 		static void initialize(string);
+
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			try {
