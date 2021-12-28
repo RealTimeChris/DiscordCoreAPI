@@ -58,8 +58,10 @@ namespace DiscordCoreAPI {
         friend class Event;
 
         EventDelegate<R, Args...>& operator=(EventDelegate<R, Args...>&& other) {
-            this->theFunction = move(other.theFunction);
-            other.theFunction = function<R(Args...)>{};
+            if (this != &other) {
+                this->theFunction = move(other.theFunction);
+                other.theFunction = function<R(Args...)>{};
+            }
             return *this;
         }
 
@@ -92,10 +94,12 @@ namespace DiscordCoreAPI {
     public:
 
         Event<R, Args...>& operator=(Event<R, Args...>&& other) {
-            this->theFunctions = move(other.theFunctions);
-            other.theFunctions = map<EventDelegateToken, EventDelegate<R, Args...>>{};
-            this->eventId = move(other.eventId);
-            other.eventId = string{};
+            if (this != &other) {
+                this->theFunctions = move(other.theFunctions);
+                other.theFunctions = map<EventDelegateToken, EventDelegate<R, Args...>>{};
+                this->eventId = move(other.eventId);
+                other.eventId = string{};
+            }
             return *this;
         }
 
@@ -147,8 +151,10 @@ namespace DiscordCoreAPI {
         friend class Event<void, Args...>;
 
         EventDelegate<void, Args...>& operator=(EventDelegate<void, Args...>&& other) {
-            this->theFunction = move(other.theFunction);
-            other.theFunction = function<void(Args...)>{};
+            if (this != &other) {
+                this->theFunction = move(other.theFunction);
+                other.theFunction = function<void(Args...)>{};
+            }
             return *this;
         }
 
@@ -181,10 +187,12 @@ namespace DiscordCoreAPI {
     public:
 
         Event<void, Args...>& operator=(Event<void, Args...>&& other) {
-            this->theFunctions = move(other.theFunctions);
-            other.theFunctions = map<EventDelegateToken, EventDelegate<void, Args...>>{};
-            this->eventId = move(other.eventId);
-            other.eventId = string{};
+            if (this != &other) {
+                this->theFunctions = move(other.theFunctions);
+                other.theFunctions = map<EventDelegateToken, EventDelegate<void, Args...>>{};
+                this->eventId = move(other.eventId);
+                other.eventId = string{};
+            }
             return *this;
         }
 
@@ -261,10 +269,6 @@ namespace DiscordCoreAPI {
         shared_ptr<bool> theEventState{ make_shared<bool>(false) };
         string eventId{ "" };
 
-        Event<void, void>& operator=(Event<void, void>&&) = delete;
-
-        Event(Event<void, void>&&) = delete;
-
         Event<void, void>& operator=(const Event<void, void>& other) {
             this->theEventState = other.theEventState;
             this->eventId = other.eventId;
@@ -303,7 +307,7 @@ namespace DiscordCoreAPI {
                     return 0;
                 }
                 else {
-                    this_thread::sleep_for(chrono::microseconds(1000));
+                    this_thread::sleep_for(chrono::milliseconds(1));
                     millisecondsWaited += 1;
                 }
                 if (millisecondsWaited >= millisecondsMaxToWait) {

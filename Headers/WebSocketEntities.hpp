@@ -98,10 +98,12 @@ namespace DiscordCoreInternal {
 		json payLoad{};
 		WebSocketWorkload() {}
 		WebSocketWorkload& operator=(WebSocketWorkload&& other) noexcept {
-			this->payLoad = move(other.payLoad);
-			other.payLoad = json();
-			this->eventType = other.eventType;
-			other.eventType = WebSocketEventType::Unset;
+			if (this != &other) {
+				this->payLoad = move(other.payLoad);
+				other.payLoad = json();
+				this->eventType = other.eventType;
+				other.eventType = WebSocketEventType::Unset;
+			}
 			return *this;
 		}
 		WebSocketWorkload(WebSocketWorkload&& other) noexcept {

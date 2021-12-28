@@ -2554,8 +2554,12 @@ namespace DiscordCoreAPI {
         vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
         RawFrameData& operator=(RawFrameData&& other) noexcept {
-            this->sampleCount = other.sampleCount;
-            this->data = move(other.data);
+            if (this != &other) {
+                this->sampleCount = other.sampleCount;
+                other.sampleCount = -1;
+                this->data = move(other.data);
+                other.data = vector<uint8_t>{};
+            }            
             return *this;
         }
         RawFrameData(RawFrameData&& other) noexcept {
@@ -2577,8 +2581,12 @@ namespace DiscordCoreAPI {
         vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
         EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
-            this->sampleCount = other.sampleCount;
-            this->data = move(other.data);
+            if (this != &other) {
+                this->sampleCount = other.sampleCount;
+                other.sampleCount = -1;
+                this->data = move(other.data);
+                other.data = vector<uint8_t>{};
+            }
             return *this;
         }
         EncodedFrameData(EncodedFrameData&& other) noexcept {
@@ -2609,9 +2617,14 @@ namespace DiscordCoreAPI {
         EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
         RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
         AudioFrameData& operator=(AudioFrameData&& other) noexcept {
-            this->encodedFrameData = move(other.encodedFrameData);
-            this->rawFrameData = move(other.rawFrameData);
-            this->type = other.type;
+            if (this != &other) {
+                this->encodedFrameData = move(other.encodedFrameData);
+                other.encodedFrameData = EncodedFrameData{};
+                this->rawFrameData = move(other.rawFrameData);
+                other.rawFrameData = RawFrameData{};
+                this->type = other.type;
+                other.type = AudioFrameType::Unset;
+            }
             return *this;
         }
         AudioFrameData(AudioFrameData&& other) noexcept {
@@ -2771,7 +2784,10 @@ namespace DiscordCoreAPI {
         friend class Guilds;
 
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&& other) {
-            this->cache = move(other.cache);
+            if (this != &other) {
+                this->cache = move(other.cache);
+                other.cache = ObjectCache<keyType, storageType>{};
+            }            
             return *this;
         }
 
@@ -2839,8 +2855,12 @@ namespace DiscordCoreAPI {
         friend class Guilds;
 
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
-            this->accessMutex = other.accessMutex;
-            this->cache = move(other.cache);
+            if (this != &other) {
+                this->accessMutex = other.accessMutex;
+                other.accessMutex = shared_ptr<mutex>{};
+                this->cache = move(other.cache);
+                other.cache = map<keyType, storageType>{};
+            }
             return *this;
         } 
 
@@ -2915,8 +2935,12 @@ namespace DiscordCoreAPI {
         friend class Guilds;
 
         ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&& other) {
-            this->accessMutex = other.accessMutex;
-            this->cache = move(other.cache);
+            if (this != &other) {
+                this->accessMutex = other.accessMutex;
+                other.accessMutex = unique_ptr<mutex>{};
+                this->cache = move(other.cache);
+                other.cache = multimap<keyType, storageType>{};
+            }
             return *this;
         }
 
@@ -3281,17 +3305,29 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll RateLimitData {
 
         RateLimitData& operator=(RateLimitData&& other) {
-            this->nextExecutionTime = other.nextExecutionTime;
-            this->getsRemaining = other.getsRemaining;
-            this->msRemainTotal = other.msRemainTotal;
-            this->timeStartedAt = other.timeStartedAt;
-            this->workloadType = other.workloadType;
-            this->isItMarked = other.isItMarked;
-            this->tempBucket = other.tempBucket;
-            this->theMutex.swap(other.theMutex);
-            this->totalGets = other.totalGets;
-            this->msRemain = other.msRemain;
-            this->bucket = other.bucket;
+            if (this != &other) {
+                this->nextExecutionTime = other.nextExecutionTime;
+                other.nextExecutionTime = 0;
+                this->getsRemaining = other.getsRemaining;
+                other.getsRemaining = 0;
+                this->msRemainTotal = other.msRemainTotal;
+                other.msRemainTotal = 0;
+                this->timeStartedAt = other.timeStartedAt;
+                other.timeStartedAt = 0;
+                this->workloadType = other.workloadType;
+                other.workloadType = HttpWorkloadType::UNSET;
+                this->isItMarked = other.isItMarked;
+                other.isItMarked = false;
+                this->tempBucket = other.tempBucket;
+                other.tempBucket = "";
+                this->theMutex.swap(other.theMutex);
+                this->totalGets = other.totalGets;
+                other.totalGets = 0;
+                this->msRemain = other.msRemain;
+                other.msRemain = 0;
+                this->bucket = other.bucket;
+                other.bucket = "";
+            }
             return *this;
         }
 
