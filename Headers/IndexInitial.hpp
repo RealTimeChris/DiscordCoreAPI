@@ -46,10 +46,8 @@
 #endif
 
 #pragma comment(lib, "libcurl")
-#pragma comment(lib, "openssl")
+#pragma comment(lib, "libcrypto")
 #pragma comment(lib, "libssl")
-#pragma comment(lib, "ossltest")
-#pragma comment(lib, "libcrypto_static")
 
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
@@ -82,19 +80,41 @@ extern "C"
 #include <libavutil/lzo.h>
 #include <libavutil/opt.h>
 }
+#include <openssl/opensslconf.h>
+#include <openssl/core_names.h>
 #include <cpp-base64/base64.h>
 #include <openssl/ossl_typ.h>
+#include <openssl/x509_vfy.h>
+#include <openssl/symhacks.h>
 #include <nlohmann/json.hpp>
+#include <openssl/x509v3.h>
+#include <openssl/bioerr.h>
 #include <openssl/crypto.h>
+#include <openssl/sslerr.h>
+#include <openssl/evperr.h>
 #include <glib-2.0/glib.h>
+#include <openssl/e_os2.h>
+#include <openssl/store.h>
+#include <openssl/async.h>
+#include <openssl/ocsp.h>
+#include <openssl/x509.h>
 #include <openssl/ssl.h>
+#include <openssl/kdf.h>
 #include <openssl/err.h>
+#include <openssl/ssl.h>
+#include <openssl/pem.h>
+#include <openssl/evp.h>
+#include <openssl/bio.h>
+#include <openssl/bn.h>
+#include <openssl/ct.h>
 #include <nanobench.h>
 #include <opus/opus.h>
+#include <filesystem>
 #include <coroutine>
 #include <iostream>
 #include <sodium.h>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <ctime>
 #include <regex>

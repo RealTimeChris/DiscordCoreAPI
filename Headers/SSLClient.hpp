@@ -21,6 +21,24 @@ namespace DiscordCoreInternal {
 		}
 	};
 
+	class Counter {
+	public:
+
+		void incrementCount() {
+			this->count += 1;
+		}
+
+		void decrementCount() {
+			this->count -= 1;
+		}
+
+		uint32_t getCount() {
+			return this->count;
+		}
+	protected:
+		uint32_t count{ 0 };
+	};
+
 	struct addrinfoWrapper {
 
 		addrinfoWrapper(nullptr_t) {

@@ -3304,7 +3304,7 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll RateLimitData {
 
-        RateLimitData& operator=(RateLimitData&& other) {
+        RateLimitData& operator=(RateLimitData&& other) noexcept {
             if (this != &other) {
                 this->nextExecutionTime = other.nextExecutionTime;
                 other.nextExecutionTime = 0;
@@ -3331,7 +3331,7 @@ namespace  DiscordCoreInternal {
             return *this;
         }
 
-        RateLimitData(RateLimitData&& other) {
+        RateLimitData(RateLimitData&& other) noexcept {
             *this = move(other);
         }
 

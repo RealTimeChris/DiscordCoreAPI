@@ -11,12 +11,23 @@
 
 namespace DiscordCoreInternal {
 
-	const string soundcloudCertPath{ "C:/Program Files/OpenSSL-Win64/bin/PEM/Root-R3.pem" };
-	const string youtubeCertPath{ "C:/Program Files/OpenSSL-Win64/bin/PEM/gtsr1.pem" };
+	const string randomCertPath{ "C:/Program Files/Common Files/SSL/certs/DigiCertHighAssuranceEVRootCA.crt.pem" };
+	const string soundcloudCertPath{ "C:/Program Files/Common Files/SSL/certs/Root-R3.pem" };
+	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
+	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 
 	DiscordCoreAPI_Dll int32_t parseCode(string rawString);
 
-	class DiscordCoreAPI_Dll HttpClient;
+	struct DiscordCoreAPI_Dll HttpInputData {
+		int64_t bytesWritten{ 0 };
+		string theData{};
+	};
+
+	struct BIODeleter {
+		void operator()(BIO* other) {
+			BIO_free(other);
+		}
+	};
 
 	struct DiscordCoreAPI_Dll HttpResponseData {
 		friend size_t writeDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
@@ -31,22 +42,93 @@ namespace DiscordCoreInternal {
 		string contentReal{ "" };
 		string rawInput{ "" };
 	};
-	
-	struct DiscordCoreAPI_Dll CURLDeleter {
-		void operator()(CURL* curlHandle) {
-			curl_easy_cleanup(curlHandle);
+
+	class CURLWrapper {
+	public:
+
+		CURLWrapper& operator=(CURLWrapper&& other) noexcept {
+			this->theCounter = other.theCounter;
+			this->thePtr = other.thePtr;
+			other.thePtr = nullptr;
+			return *this;
 		}
+
+		CURLWrapper(CURLWrapper&& other) noexcept {
+			*this = move(other);
+		}
+
+		CURLWrapper(CURL* other) {
+			this->thePtr = other;
+		}
+
+		CURLWrapper& operator=(CURL* other) = delete;
+
+		CURLWrapper(CURLWrapper& other) = delete;
+
+		operator CURL* () {
+			return this->thePtr;
+		}
+
+		CURLWrapper(nullptr_t) {
+			this->thePtr = nullptr;
+			this->theCounter = new Counter{};
+			this->theCounter->incrementCount();
+		}
+
+		~CURLWrapper() {
+			this->theCounter->decrementCount();
+			if (this->theCounter->getCount() == 0) {
+				curl_easy_cleanup(this->thePtr);
+				delete this->theCounter;
+			}
+		}
+
+		Counter* theCounter{};
+		CURL* thePtr;
 	};
 
-	struct DiscordCoreAPI_Dll CURLUDeleter {
-		void operator()(CURLU* other) {
-			curl_free(other);
-		}
-	};
+	class CURLUWrapper {
+	public:
 
-	struct DiscordCoreAPI_Dll HttpInputData {
-		int64_t bytesWritten{ 0 };
-		string theData{};
+		CURLUWrapper& operator=(CURLUWrapper&& other) noexcept {
+			this->theCounter = other.theCounter;
+			this->thePtr = other.thePtr;
+			other.thePtr = nullptr;
+			return *this;
+		}
+
+		CURLUWrapper(CURLUWrapper&& other) noexcept {
+			*this = move(other);
+		}
+
+		CURLUWrapper(CURLU* other) {
+			this->thePtr = other;
+		}
+
+		CURLUWrapper& operator=(CURLU* other) = delete;
+
+		CURLUWrapper(CURLUWrapper& other) = delete;
+
+		operator CURLU* () {
+			return this->thePtr;
+		}
+
+		CURLUWrapper(nullptr_t) {
+			this->thePtr = nullptr;
+			this->theCounter = new Counter{};
+			this->theCounter->incrementCount();
+		}
+
+		~CURLUWrapper() {
+			this->theCounter->decrementCount();
+			if (this->theCounter->getCount() == 0) {
+				curl_free(this->thePtr);
+				delete this->theCounter;
+			}
+		}
+
+		Counter* theCounter{};
+		CURLU* thePtr{};
 	};
 
 	class DiscordCoreAPI_Dll HttpClientNew {
@@ -69,28 +151,37 @@ namespace DiscordCoreInternal {
 
 		static HttpResponseData getResponse(HttpClientNew& clientNew);
 
+		static void loadToStore(std::string file, X509_STORE*& store);
+
 		static void parseHeaders(HttpResponseData& inputValue);
 
 		static void parseCodeTwo(HttpResponseData& inputValue);
 
 		static bool parseChunk(HttpResponseData& dataPackage);
-		
+
 		static void parseSize(HttpResponseData& dataPackage);
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
+		static void verifyCertificate(string certPath);
+
+		static X509* loadCert(std::string file);
+		
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr, SSL_CTXDeleter{} };
+		
+		unique_ptr<BIO, BIODeleter> connectionBio{ nullptr, BIODeleter{} };
+		unique_ptr<Socket, SocketDeleter> fileDescriptor{ 0, SocketDeleter{} };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr, SSLDeleter{} };
 		map<string, string> headers{};
 		vector<char> inputBuffer{};
+		
 		fd_set readfds{};
 	};
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
-		HttpClient& operator=(HttpClient&& other);
+		HttpClient& operator=(HttpClient&& other) noexcept;
 
-		HttpClient(HttpClient&& other);
+		HttpClient(HttpClient&& other) noexcept;
 
 		HttpClient& operator=(HttpClient& other) = delete;
 
@@ -204,7 +295,7 @@ namespace DiscordCoreInternal {
 					HttpRequestAgent::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
 					HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataRaw->tempBucket, move(rateLimitDataNew));
 				}
-				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, false);
+				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataRaw, true);
 				return returnData;
 			}
 			catch (...) {
@@ -214,8 +305,8 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		static DiscordCoreAPI::map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static DiscordCoreAPI::map<string, unique_ptr<RateLimitData>> rateLimitData;
+		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
+		static map<string, unique_ptr<RateLimitData>> rateLimitData;
 		static HttpClient deleteClient;
 		static HttpClient patchClient;
 		static HttpClient postClient;
