@@ -220,17 +220,17 @@ namespace DiscordCoreAPI {
 
         StopWatch(timeType maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew.count();
-            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
+            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
         }
 
         int64_t totalTimePassed() {
-            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
+            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
             return elapsedTime;
         }
 
         bool hasTimePassed() {
-            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
+            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
             if (elapsedTime >= this->maxNumberOfMs) {
                 return true;
@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
         }
 
         void resetTimer() {
-            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::system_clock::now().time_since_epoch()).count());
+            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
         }
 
     protected:
