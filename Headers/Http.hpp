@@ -16,11 +16,116 @@ namespace DiscordCoreInternal {
 	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 
-	DiscordCoreAPI_Dll int32_t parseCode(string rawString);
-
 	struct DiscordCoreAPI_Dll HttpInputData {
 		int64_t bytesWritten{ 0 };
 		string theData{};
+	};
+
+	class StringWrapper {
+	public:
+
+		StringWrapper() {};
+
+		StringWrapper(string newString) {
+			this->theStrings.push_back(newString);
+			this->currentStringCount += 1;
+		}
+
+		uint64_t size() {
+			return this->getCurrentTotalSize();
+		}
+
+		template<typename _Iter>
+		void insert(const string::const_iterator where, _Iter first, _Iter last) {
+			string newString{ where };
+			uint64_t offSet = newString.size();
+			uint64_t offsetIndex = offSet / 16384;
+			uint64_t remainder = offSet % 16384;
+			uint64_t currentOffset{ 0 };
+			uint64_t length = last - first;
+			uint64_t currentIndex{ offsetIndex };
+			while (length > 0) {
+				uint64_t currentRemainder = 16384 - this->theStrings[currentIndex].size();
+				if (length > (16384 - this->theStrings[currentIndex].size())) {
+					this->theStrings[currentIndex].insert(this->theStrings[currentIndex].begin() + currentOffset, first + currentOffset, first + currentOffset + currentRemainder);
+				}
+				currentIndex += 1;
+				currentOffset += currentRemainder;
+				length -= currentRemainder;
+			}
+		}
+
+		auto begin() {
+			return this->theStrings[0].begin();
+		}
+
+		auto end() {
+			return this->theStrings[this->currentStringCount].end();
+		}
+
+		string substr(uint64_t offset, uint64_t count) {
+			string theReturnString{};
+			uint64_t theIndexOffset = offset / 16384;
+			uint64_t remainderOffset = offset % 16384;
+			uint64_t remainder = count % 16384;
+			if (offset + count >= this->getCurrentTotalSize()) {
+				uint64_t currentIndex{ theIndexOffset };
+				while (currentIndex < this->theStrings.size()) {
+					theReturnString.insert(theReturnString.begin(), this->theStrings[currentIndex].begin() + remainderOffset, this->theStrings[currentIndex].begin() + remainder);
+					currentIndex += 1;
+				}
+			}
+			else {
+				uint64_t currentIndex{ theIndexOffset };
+				while (currentIndex < this->theStrings.size()) {
+					if (currentIndex < this->theStrings.size() - 1) {
+						theReturnString.insert(theReturnString.begin(), this->theStrings[currentIndex].begin() + remainderOffset, this->theStrings[currentIndex].end());
+					}
+					else {
+						theReturnString.insert(theReturnString.begin(), this->theStrings[currentIndex].begin(), this->theStrings[currentIndex].begin() + remainder);
+					}
+					currentIndex += 1;
+				}
+			}
+		}
+
+		uint64_t getCurrentTotalSize() {
+			uint64_t theValue{ 0 };
+			if (this->currentStringCount > 0) {
+				theValue = (16384 * this->currentStringCount - 1) + this->theStrings[this->currentStringCount].size();
+			}
+			return theValue;
+		}
+
+		uint64_t find(string theString) {
+			uint64_t theIndex{ 0 };
+			uint64_t theInnerIndex{ 0 };
+			for (uint32_t x = 0; x < this->theStrings.size(); x += 1) {
+				if (this->theStrings[x].find(theString) != string::npos) {
+					theInnerIndex = this->theStrings[x].find(theString);
+					theIndex = x;
+					break;
+				}
+			}
+			uint64_t theFinalValue = theIndex * 16384 + theInnerIndex;
+			return theFinalValue;
+		}
+
+		void addStringContents(string newString) {
+			if (this->theStrings[this->currentStringCount].size() + newString.size() > 16384) {
+				uint64_t offSetFromMax = 16384 - this->theStrings[this->currentStringCount].size();
+				this->theStrings[this->currentStringCount].insert(this->theStrings[this->currentStringCount].end(), newString.begin(), newString.begin() + offSetFromMax);
+				string newerString{};
+				newerString.insert(newerString.begin(), newString.begin() + offSetFromMax, newString.end());
+				this->theStrings.push_back(newerString);
+			}
+			else {
+				this->theStrings[this->currentStringCount].insert(this->theStrings[this->currentStringCount].begin(), newString.begin(), newString.end());
+			}
+		}
+
+		vector<string> theStrings{};
+		uint64_t currentStringCount{ 0 };
 	};
 
 	struct BIODeleter {
@@ -30,9 +135,6 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpResponseData {
-		friend size_t writeDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
-		friend size_t readDataCallBack(char* ptr, size_t size, size_t nmemb, void* userData);
-		friend class HttpClient;
 		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
 		int64_t currentOffset{ -1 };
@@ -131,9 +233,9 @@ namespace DiscordCoreInternal {
 		CURLU* thePtr{};
 	};
 
-	class DiscordCoreAPI_Dll HttpClientNew {
+	class DiscordCoreAPI_Dll HttpClient {
 	public:
-		HttpClientNew();
+		HttpClient();
 
 		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
@@ -145,72 +247,33 @@ namespace DiscordCoreInternal {
 
 		static string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
-		static bool connect(string baseUrl, string relativePath, HttpClientNew& clientNew);
+		static bool connect(string baseUrl, string relativePath, HttpClient& clientNew);
 
-		static bool sendRequest(string request, HttpClientNew& clientNew);
+		static bool sendRequest(string request, HttpClient& clientNew);
 
-		static HttpResponseData getResponse(HttpClientNew& clientNew);
-
-		static void loadToStore(std::string file, X509_STORE*& store);
+		static HttpResponseData getResponse(HttpClient& clientNew);
 
 		static void parseHeaders(HttpResponseData& inputValue);
-
-		static void parseCodeTwo(HttpResponseData& inputValue);
 
 		static bool parseChunk(HttpResponseData& dataPackage);
 
 		static void parseSize(HttpResponseData& dataPackage);
 
-		static void verifyCertificate(string certPath);
-
-		static X509* loadCert(std::string file);
+		static void parseCode(HttpResponseData& inputValue);
 		
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr, SSL_CTXDeleter{} };
-		
-		unique_ptr<BIO, BIODeleter> connectionBio{ nullptr, BIODeleter{} };
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ 0, SocketDeleter{} };
+		unique_ptr<BIO, BIODeleter> connectionBio{ nullptr, BIODeleter{} };
 		unique_ptr<SSL, SSLDeleter> ssl{ nullptr, SSLDeleter{} };
 		map<string, string> headers{};
 		vector<char> inputBuffer{};
-		
 		fd_set readfds{};
-	};
-
-	class DiscordCoreAPI_Dll HttpClient {
-	public:
-
-		HttpClient& operator=(HttpClient&& other) noexcept;
-
-		HttpClient(HttpClient&& other) noexcept;
-
-		HttpClient& operator=(HttpClient& other) = delete;
-
-		HttpClient(HttpClient& other) = delete;
-
-		HttpClient() = default;
-
-		HttpClient(string, HttpWorkloadClass workloadType);
-
-		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
-
-		static void addHeader(string, string);
-
-		static void removeHeader(string);
-
-		static map<string, string> getHeaders();
-
-		~HttpClient();
-
-	protected:
-		static unique_ptr<curl_slist> headerList;
-		static map<string, string> headers;
-		static mutex accessMutex;
 	};
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {
 	public:
 
-		friend class HttpClientNew;
+		friend class HttpClient;
 
 		static void initialize(string);
 
@@ -307,11 +370,6 @@ namespace DiscordCoreInternal {
 	protected:
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static map<string, unique_ptr<RateLimitData>> rateLimitData;
-		static HttpClient deleteClient;
-		static HttpClient patchClient;
-		static HttpClient postClient;
-		static HttpClient putClient;
-		static HttpClient getClient;
 		static string botToken;
 		static string baseURL;
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);

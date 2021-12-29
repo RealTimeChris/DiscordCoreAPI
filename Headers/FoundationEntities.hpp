@@ -1548,6 +1548,7 @@ namespace DiscordCoreAPI {
         string audioSampleRate{ "" };
         int32_t averageBitrate{ 0 };
         int64_t contentLength{ 0 };
+        bool doWeGetSaved{ false };
         string audioQuality{ "" };
         string downloadURL{ "" };
         string signature{ "" };
@@ -2759,6 +2760,7 @@ namespace DiscordCoreAPI {
         string baseSearchURL{ "https://soundcloud.com/search?q=" };
         string appVersion{ "1631696495" };
         string trackAuthorization{ "" };
+        bool doWeGetSaved{ false };
 
         SoundCloudSong() noexcept;
 

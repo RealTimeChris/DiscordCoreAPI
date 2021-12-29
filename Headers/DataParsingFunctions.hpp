@@ -3821,6 +3821,7 @@ namespace DiscordCoreInternal {
                         isItFound = true;
                         pDataStructure->firstDownloadURL = value["url"].get<string>();
                         pDataStructure->songId = value["url"].get<string>();
+                        pDataStructure->doWeGetSaved = true;
                     }
                 }
                 bool isItFound2{ false };
