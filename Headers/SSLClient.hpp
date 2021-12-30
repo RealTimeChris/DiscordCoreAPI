@@ -75,14 +75,64 @@ namespace DiscordCoreInternal {
 
 	struct SSL_CTXDeleter {
 		void operator()(SSL_CTX* other) {
-			SSL_CTX_free(other);
+			if (other != nullptr) {
+				SSL_CTX_free(other);
+				other = nullptr;
+			}
 		}
+	};
+
+	struct SSL_CTXWrapper {
+
+		SSL_CTXWrapper(nullptr_t) {};
+
+		SSL_CTXWrapper& operator=(SSL_CTX* other) {
+			this->thePtr = unique_ptr<SSL_CTX, SSL_CTXDeleter>(other, SSL_CTXDeleter{});
+			if (SSL_CTX_up_ref(other) != 1) {
+				cout << "SSL_CTX_up_ref() Error: " << ERR_get_error() << endl;
+			}
+			return *this;
+		}
+
+		operator SSL_CTX* () {
+			return this->thePtr.get();
+		}
+
+		~SSL_CTXWrapper() {}
+
+	protected:
+		unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr , SSL_CTXDeleter{} };
 	};
 
 	struct SSLDeleter {
 		void operator()(SSL* other) {
-			SSL_shutdown(other);
+			if (other != nullptr) {
+				SSL_free(other);
+				other = nullptr;
+			}
 		}
+	};
+
+	struct SSLWrapper {
+
+		SSLWrapper(nullptr_t) {};
+
+		SSLWrapper& operator=(SSL* other) {
+			this->thePtr = unique_ptr<SSL, SSLDeleter>(other, SSLDeleter{});
+			if (SSL_up_ref(other) != 1) {
+				cout << "SSL_up_ref() Error: " << ERR_get_error() << endl;
+			}
+			return *this;
+		}
+
+		operator SSL* () {
+			return this->thePtr.get();
+		}
+
+		~SSLWrapper() {}
+
+		protected:
+			unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
 	};
 
 	struct Socket {
@@ -128,11 +178,11 @@ namespace DiscordCoreInternal {
 	protected:
 
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
+		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
 		bool areWeBlocking{ true };
+		SSLWrapper ssl{ nullptr };
 		string hostname{ "" };
 		string port{ "" };
 		fd_set readfds{};
@@ -197,12 +247,12 @@ namespace DiscordCoreInternal {
 	protected:
 
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr };
-		unique_ptr<SSL, SSLDeleter> ssl{ nullptr };
+		SSL_CTXWrapper  context{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		int64_t bytesWritten{ 0 };
+		SSLWrapper ssl{ nullptr };
 		int64_t bytesRead{ 0 };
 		string hostname{ "" };
 		string port{ "" };

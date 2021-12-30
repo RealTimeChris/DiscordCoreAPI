@@ -21,119 +21,6 @@ namespace DiscordCoreInternal {
 		string theData{};
 	};
 
-	class StringWrapper {
-	public:
-
-		StringWrapper() {};
-
-		StringWrapper(string newString) {
-			this->theStrings.push_back(newString);
-			this->currentStringCount += 1;
-		}
-
-		uint64_t size() {
-			return this->getCurrentTotalSize();
-		}
-
-		template<typename _Iter>
-		void insert(const string::const_iterator where, _Iter first, _Iter last) {
-			string newString{ where };
-			uint64_t offSet = newString.size();
-			uint64_t offsetIndex = offSet / 16384;
-			uint64_t remainder = offSet % 16384;
-			uint64_t currentOffset{ 0 };
-			uint64_t length = last - first;
-			uint64_t currentIndex{ offsetIndex };
-			while (length > 0) {
-				uint64_t currentRemainder = 16384 - this->theStrings[currentIndex].size();
-				if (length > (16384 - this->theStrings[currentIndex].size())) {
-					this->theStrings[currentIndex].insert(this->theStrings[currentIndex].begin() + currentOffset, first + currentOffset, first + currentOffset + currentRemainder);
-				}
-				currentIndex += 1;
-				currentOffset += currentRemainder;
-				length -= currentRemainder;
-			}
-		}
-
-		auto begin() {
-			return this->theStrings[0].begin();
-		}
-
-		auto end() {
-			return this->theStrings[this->currentStringCount].end();
-		}
-
-		string substr(uint64_t offset, uint64_t count) {
-			string theReturnString{};
-			uint64_t theIndexOffset = offset / 16384;
-			uint64_t remainderOffset = offset % 16384;
-			uint64_t remainder = count % 16384;
-			if (offset + count >= this->getCurrentTotalSize()) {
-				uint64_t currentIndex{ theIndexOffset };
-				while (currentIndex < this->theStrings.size()) {
-					theReturnString.insert(theReturnString.begin(), this->theStrings[currentIndex].begin() + remainderOffset, this->theStrings[currentIndex].begin() + remainder);
-					currentIndex += 1;
-				}
-			}
-			else {
-				uint64_t currentIndex{ theIndexOffset };
-				while (currentIndex < this->theStrings.size()) {
-					if (currentIndex < this->theStrings.size() - 1) {
-						theReturnString.insert(theReturnString.begin(), this->theStrings[currentIndex].begin() + remainderOffset, this->theStrings[currentIndex].end());
-					}
-					else {
-						theReturnString.insert(theReturnString.begin(), this->theStrings[currentIndex].begin(), this->theStrings[currentIndex].begin() + remainder);
-					}
-					currentIndex += 1;
-				}
-			}
-		}
-
-		uint64_t getCurrentTotalSize() {
-			uint64_t theValue{ 0 };
-			if (this->currentStringCount > 0) {
-				theValue = (16384 * this->currentStringCount - 1) + this->theStrings[this->currentStringCount].size();
-			}
-			return theValue;
-		}
-
-		uint64_t find(string theString) {
-			uint64_t theIndex{ 0 };
-			uint64_t theInnerIndex{ 0 };
-			for (uint32_t x = 0; x < this->theStrings.size(); x += 1) {
-				if (this->theStrings[x].find(theString) != string::npos) {
-					theInnerIndex = this->theStrings[x].find(theString);
-					theIndex = x;
-					break;
-				}
-			}
-			uint64_t theFinalValue = theIndex * 16384 + theInnerIndex;
-			return theFinalValue;
-		}
-
-		void addStringContents(string newString) {
-			if (this->theStrings[this->currentStringCount].size() + newString.size() > 16384) {
-				uint64_t offSetFromMax = 16384 - this->theStrings[this->currentStringCount].size();
-				this->theStrings[this->currentStringCount].insert(this->theStrings[this->currentStringCount].end(), newString.begin(), newString.begin() + offSetFromMax);
-				string newerString{};
-				newerString.insert(newerString.begin(), newString.begin() + offSetFromMax, newString.end());
-				this->theStrings.push_back(newerString);
-			}
-			else {
-				this->theStrings[this->currentStringCount].insert(this->theStrings[this->currentStringCount].begin(), newString.begin(), newString.end());
-			}
-		}
-
-		vector<string> theStrings{};
-		uint64_t currentStringCount{ 0 };
-	};
-
-	struct BIODeleter {
-		void operator()(BIO* other) {
-			BIO_free(other);
-		}
-	};
-
 	struct DiscordCoreAPI_Dll HttpResponseData {
 		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
@@ -145,93 +32,89 @@ namespace DiscordCoreInternal {
 		string rawInput{ "" };
 	};
 
-	class CURLWrapper {
-	public:
+	struct CURLDeleter {
+		void operator()(CURL* other) {
+			if (other != nullptr) {
+				curl_free(other);
+				other = nullptr;
+			}
+		}
+	};
 
-		CURLWrapper& operator=(CURLWrapper&& other) noexcept {
-			this->theCounter = other.theCounter;
-			this->thePtr = other.thePtr;
-			other.thePtr = nullptr;
+	struct CURLWrapper {
+
+		CURLWrapper& operator=(CURL* other) {
+			this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
 			return *this;
 		}
-
-		CURLWrapper(CURLWrapper&& other) noexcept {
-			*this = move(other);
-		}
-
-		CURLWrapper(CURL* other) {
-			this->thePtr = other;
-		}
-
-		CURLWrapper& operator=(CURL* other) = delete;
-
-		CURLWrapper(CURLWrapper& other) = delete;
 
 		operator CURL* () {
-			return this->thePtr;
+			return this->thePtr.get();
 		}
 
-		CURLWrapper(nullptr_t) {
-			this->thePtr = nullptr;
-			this->theCounter = new Counter{};
-			this->theCounter->incrementCount();
-		}
+		~CURLWrapper() {}
 
-		~CURLWrapper() {
-			this->theCounter->decrementCount();
-			if (this->theCounter->getCount() == 0) {
-				curl_easy_cleanup(this->thePtr);
-				delete this->theCounter;
-			}
-		}
-
-		Counter* theCounter{};
-		CURL* thePtr;
+	protected:
+		unique_ptr<CURL, CURLDeleter> thePtr{ nullptr , CURLDeleter{} };
 	};
 
-	class CURLUWrapper {
-	public:
+	struct CURLUDeleter {
+		void operator()(CURL* other) {
+			if (other != nullptr) {
+				curl_free(other);
+				other = nullptr;
+			}
+		}
+	};
 
-		CURLUWrapper& operator=(CURLUWrapper&& other) noexcept {
-			this->theCounter = other.theCounter;
-			this->thePtr = other.thePtr;
-			other.thePtr = nullptr;
+	struct CURLUWrapper {
+
+		CURLUWrapper& operator=(CURLU* other) {
+			this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
 			return *this;
 		}
 
-		CURLUWrapper(CURLUWrapper&& other) noexcept {
-			*this = move(other);
-		}
-
-		CURLUWrapper(CURLU* other) {
-			this->thePtr = other;
-		}
-
-		CURLUWrapper& operator=(CURLU* other) = delete;
-
-		CURLUWrapper(CURLUWrapper& other) = delete;
-
 		operator CURLU* () {
-			return this->thePtr;
+			return this->thePtr.get();
 		}
 
-		CURLUWrapper(nullptr_t) {
-			this->thePtr = nullptr;
-			this->theCounter = new Counter{};
-			this->theCounter->incrementCount();
-		}
+		~CURLUWrapper() {}
 
-		~CURLUWrapper() {
-			this->theCounter->decrementCount();
-			if (this->theCounter->getCount() == 0) {
-				curl_free(this->thePtr);
-				delete this->theCounter;
+	protected:
+		unique_ptr<CURLU, CURLUDeleter> thePtr{ nullptr , CURLUDeleter{} };
+	};
+
+	struct BIODeleter {
+		void operator()(BIO* other) {
+			if (other != nullptr) {
+				BIO_free(other);
+				other = nullptr;
 			}
 		}
-
-		Counter* theCounter{};
-		CURLU* thePtr{};
 	};
+
+	struct BIOWrapper {
+
+		BIOWrapper(nullptr_t) {};
+
+		BIOWrapper& operator=(BIO* other) {
+			this->thePtr = unique_ptr<BIO, BIODeleter>(other, BIODeleter{});
+			if (BIO_up_ref(other) != 1) {
+				cout << "BIO_up_ref() Error: " << ERR_get_error() << endl;
+			};
+			return *this;
+		}
+
+		operator BIO* () {
+			return this->thePtr.get();
+		}
+
+		~BIOWrapper() {}
+
+	protected:
+		unique_ptr<BIO, BIODeleter> thePtr{ nullptr , BIODeleter{} };
+	};
+
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
@@ -263,12 +146,12 @@ namespace DiscordCoreInternal {
 
 		static shared_ptr<map<string, string>> headersDefault;
 
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr, SSL_CTXDeleter{} };
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ 0, SocketDeleter{} };
-		unique_ptr<BIO, BIODeleter> connectionBio{ nullptr, BIODeleter{} };
-		unique_ptr<SSL, SSLDeleter> ssl{ nullptr, SSLDeleter{} };
+		BIOWrapper connectionBio{ nullptr };
+		SSL_CTXWrapper context{ nullptr };
 		map<string, string> headers{};
 		vector<char> inputBuffer{};
+		SSLWrapper ssl{ nullptr };
 		fd_set readfds{};
 	};
 
