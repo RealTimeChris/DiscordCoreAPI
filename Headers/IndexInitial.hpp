@@ -116,6 +116,7 @@ extern "C"
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cctype>
 #include <ctime>
 #include <regex>
 #include <cmath>
