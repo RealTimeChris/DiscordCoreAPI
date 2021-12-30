@@ -30,7 +30,7 @@ namespace DiscordCoreInternal {
 			this->contentOffset = 0;
 			this->contentSize = 0;
 		}
-		
+
 		map<string, string> headers{};
 		bool doWeHaveHeaders{ false };
 		string contentFinalReal{ "" };
@@ -40,90 +40,6 @@ namespace DiscordCoreInternal {
 		int64_t contentSize{};
 		string rawInput{};
 	};
-
-	struct CURLDeleter {
-		void operator()(CURL* other) {
-			if (other != nullptr) {
-				curl_free(other);
-				other = nullptr;
-			}
-		}
-	};
-
-	struct CURLWrapper {
-
-		CURLWrapper& operator=(CURL* other) {
-			this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
-			return *this;
-		}
-
-		operator CURL* () {
-			return this->thePtr.get();
-		}
-
-		~CURLWrapper() {}
-
-	protected:
-		unique_ptr<CURL, CURLDeleter> thePtr{ nullptr , CURLDeleter{} };
-	};
-
-	struct CURLUDeleter {
-		void operator()(CURL* other) {
-			if (other != nullptr) {
-				curl_free(other);
-				other = nullptr;
-			}
-		}
-	};
-
-	struct CURLUWrapper {
-
-		CURLUWrapper& operator=(CURLU* other) {
-			this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
-			return *this;
-		}
-
-		operator CURLU* () {
-			return this->thePtr.get();
-		}
-
-		~CURLUWrapper() {}
-
-	protected:
-		unique_ptr<CURLU, CURLUDeleter> thePtr{ nullptr , CURLUDeleter{} };
-	};
-
-	struct BIODeleter {
-		void operator()(BIO* other) {
-			if (other != nullptr) {
-				BIO_free(other);
-				other = nullptr;
-			}
-		}
-	};
-
-	struct BIOWrapper {
-
-		BIOWrapper(nullptr_t) {};
-
-		BIOWrapper& operator=(BIO* other) {
-			this->thePtr = unique_ptr<BIO, BIODeleter>(other, BIODeleter{});
-			if (BIO_up_ref(other) != 1) {
-				cout << "BIO_up_ref() Error: " << ERR_get_error() << endl;
-			};
-			return *this;
-		}
-
-		operator BIO* () {
-			return this->thePtr.get();
-		}
-
-		~BIOWrapper() {}
-
-	protected:
-		unique_ptr<BIO, BIODeleter> thePtr{ nullptr , BIODeleter{} };
-	};
-
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:

@@ -7,21 +7,53 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-#include <stdio.h>
 
 namespace DiscordCoreInternal {
 
-	struct SSL_METHODDeleter {
+	struct DiscordCoreAPI_Dll BIODeleter {
+		void operator()(BIO* other) {
+			if (other != nullptr) {
+				BIO_free(other);
+				other = nullptr;
+			}
+		}
+	};
+
+	struct DiscordCoreAPI_Dll BIOWrapper {
+
+		BIOWrapper(nullptr_t) {};
+
+		BIOWrapper& operator=(BIO* other) {
+			this->thePtr = unique_ptr<BIO, BIODeleter>(other, BIODeleter{});
+			if (BIO_up_ref(other) != 1) {
+				cout << "BIO_up_ref() Error: " << ERR_get_error() << endl;
+			};
+			return *this;
+		}
+
+		operator BIO* () {
+			return this->thePtr.get();
+		}
+
+	protected:
+		unique_ptr<BIO, BIODeleter> thePtr{ nullptr , BIODeleter{} };
+	};
+
+	struct DiscordCoreAPI_Dll SSL_METHODDeleter {
 		void operator()(const SSL_METHOD*) {}
 	};
 
-	struct SSL_METHODWrapper {
+	struct DiscordCoreAPI_Dll SSL_METHODWrapper {
 
 		SSL_METHODWrapper(nullptr_t) {};
 
 		SSL_METHODWrapper& operator=(const SSL_METHOD* other) {
 			this->thePtr = unique_ptr<const SSL_METHOD, SSL_METHODDeleter>(other, SSL_METHODDeleter{});
 			return *this;
+		}
+
+		SSL_METHODWrapper(const SSL_METHOD* other) {
+			*this = other;
 		}
 
 		operator const SSL_METHOD* () {
@@ -32,7 +64,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<const SSL_METHOD, SSL_METHODDeleter> thePtr{ nullptr, SSL_METHODDeleter{} };
 	};
 
-	struct addrinfoDeleter {
+	struct DiscordCoreAPI_Dll addrinfoDeleter {
 		void operator()(addrinfo* other) {
 			if (other != nullptr) {
 				freeaddrinfo(other);
@@ -41,7 +73,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	struct addrinfoWrapper {
+	struct DiscordCoreAPI_Dll addrinfoWrapper {
 
 		addrinfoWrapper(nullptr_t) {
 			ZeroMemory(this->thePtr.get(), sizeof(addrinfo));
@@ -64,7 +96,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo , addrinfoDeleter{} };
 	};
 
-	struct SSL_CTXDeleter {
+	struct DiscordCoreAPI_Dll SSL_CTXDeleter {
 		void operator()(SSL_CTX* other) {
 			if (other != nullptr) {
 				SSL_CTX_free(other);
@@ -73,7 +105,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	struct SSL_CTXWrapper {
+	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 
 		SSL_CTXWrapper(nullptr_t) {};
 
@@ -93,7 +125,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr , SSL_CTXDeleter{} };
 	};
 
-	struct SSLDeleter {
+	struct DiscordCoreAPI_Dll SSLDeleter {
 		void operator()(SSL* other) {
 			if (other != nullptr) {
 				SSL_free(other);
@@ -102,7 +134,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	struct SSLWrapper {
+	struct DiscordCoreAPI_Dll SSLWrapper {
 
 		SSLWrapper(nullptr_t) {};
 
@@ -122,7 +154,7 @@ namespace DiscordCoreInternal {
 			unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
 	};
 
-	struct SOCKETDeleter {
+	struct DiscordCoreAPI_Dll SOCKETDeleter {
 		void operator()(SOCKET* other) {
 #ifdef _WIN32
 			shutdown(*other, 2);
@@ -133,7 +165,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	struct SOCKETWrapper {
+	struct DiscordCoreAPI_Dll SOCKETWrapper {
 
 		SOCKETWrapper(nullptr_t) {}
 
@@ -149,7 +181,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<SOCKET, SOCKETDeleter>thePtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
-	struct WSADATADeleter {
+	struct DiscordCoreAPI_Dll WSADATADeleter {
 		void operator()(WSADATA*) {
 			WSACleanup();
 		}
