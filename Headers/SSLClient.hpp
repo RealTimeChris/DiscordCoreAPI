@@ -12,7 +12,7 @@
 namespace DiscordCoreInternal {
 
 	struct SSL_METHODDeleter {
-		void operator()(const SSL_METHOD* other) {}
+		void operator()(const SSL_METHOD*) {}
 	};
 
 	struct SSL_METHODWrapper {
@@ -43,7 +43,9 @@ namespace DiscordCoreInternal {
 
 	struct addrinfoWrapper {
 
-		addrinfoWrapper(nullptr_t) {};
+		addrinfoWrapper(nullptr_t) {
+			ZeroMemory(this->thePtr.get(), sizeof(addrinfo));
+		};
 
 		addrinfoWrapper& operator=(addrinfo* other) {
 			this->thePtr = unique_ptr<addrinfo, addrinfoDeleter>(other, addrinfoDeleter{});
@@ -59,7 +61,7 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ nullptr , addrinfoDeleter{} };
+		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo , addrinfoDeleter{} };
 	};
 
 	struct SSL_CTXDeleter {
