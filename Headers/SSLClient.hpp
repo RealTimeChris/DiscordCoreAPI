@@ -122,44 +122,31 @@ namespace DiscordCoreInternal {
 			unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
 	};
 
-	struct Socket {
-		uint64_t theSocket{ 0 };
-	};
-
 	struct SOCKETDeleter {
 		void operator()(SOCKET* other) {
 #ifdef _WIN32
 			shutdown(*other, 2);
 			closesocket(*other);
 #else
-			close(other->theSocket);
+			close(*other);
 #endif
 		}
 	};
 
 	struct SOCKETWrapper {
 
-		SOCKETWrapper(nullptr_t){}
+		SOCKETWrapper(nullptr_t) {}
 
-		SOCKETWrapper(SOCKET other) {
-			this->thePtr = unique_ptr<SOCKET, SOCKETDeleter>(&other, SOCKETDeleter{});
+		SOCKETWrapper& operator=(SOCKET other) {
+			*this->thePtr = other;
+			return *this;
 		}
 
 		operator SOCKET() {
 			return *this->thePtr;
 		}
 
-		SOCKETWrapper& operator=(SOCKET other) {
-			this->thePtr.reset(&other);
-			return *this;
-		}		
-
-		SOCKET operator=(SOCKETWrapper& other) {
-			this->thePtr.swap(other.thePtr);
-			return *this->thePtr.get();
-		}
-
-		unique_ptr<SOCKET, SOCKETDeleter> thePtr{ nullptr };
+		unique_ptr<SOCKET, SOCKETDeleter>thePtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
 	struct WSADATADeleter {
