@@ -12,65 +12,54 @@
 namespace DiscordCoreInternal {
 
 	struct SSL_METHODDeleter {
-		void operator()(const SSL_METHOD*) {};
+		void operator()(const SSL_METHOD* other) {}
+	};
+
+	struct SSL_METHODWrapper {
+
+		SSL_METHODWrapper(nullptr_t) {};
+
+		SSL_METHODWrapper& operator=(const SSL_METHOD* other) {
+			this->thePtr = unique_ptr<const SSL_METHOD, SSL_METHODDeleter>(other, SSL_METHODDeleter{});
+			return *this;
+		}
+
+		operator const SSL_METHOD* () {
+			return this->thePtr.get();
+		}
+
+	protected:
+		unique_ptr<const SSL_METHOD, SSL_METHODDeleter> thePtr{ nullptr, SSL_METHODDeleter{} };
 	};
 
 	struct addrinfoDeleter {
 		void operator()(addrinfo* other) {
-			freeaddrinfo(other);
+			if (other != nullptr) {
+				freeaddrinfo(other);
+				other = nullptr;
+			}
 		}
-	};
-
-	class Counter {
-	public:
-
-		void incrementCount() {
-			this->count += 1;
-		}
-
-		void decrementCount() {
-			this->count -= 1;
-		}
-
-		uint32_t getCount() {
-			return this->count;
-		}
-	protected:
-		uint32_t count{ 0 };
 	};
 
 	struct addrinfoWrapper {
 
-		addrinfoWrapper(nullptr_t) {
-			ZeroMemory(this->thePtr.get(), sizeof(addrinfo));
+		addrinfoWrapper(nullptr_t) {};
+
+		addrinfoWrapper& operator=(addrinfo* other) {
+			this->thePtr = unique_ptr<addrinfo, addrinfoDeleter>(other, addrinfoDeleter{});
+			return *this;
 		}
 
 		addrinfo* operator->() {
 			return this->thePtr.get();
 		}
 
-		operator PADDRINFOA() {
+		operator addrinfo* () {
 			return this->thePtr.get();
 		}
 
-		addrinfoWrapper& operator=(PADDRINFOA& other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
-
-		addrinfoWrapper(PADDRINFOA& other) {
-			*this->thePtr = *other;
-		}
-
-		addrinfoWrapper(addrinfoWrapper& other) {
-			this->thePtr.swap(other.thePtr);
-		}
-
-		addrinfo* operator=(addrinfoWrapper& other) {
-			this->thePtr.swap(other.thePtr);
-			return other.thePtr.get();
-		}
-		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo{}, addrinfoDeleter{} };
+	protected:
+		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ nullptr , addrinfoDeleter{} };
 	};
 
 	struct SSL_CTXDeleter {
@@ -97,8 +86,6 @@ namespace DiscordCoreInternal {
 		operator SSL_CTX* () {
 			return this->thePtr.get();
 		}
-
-		~SSL_CTXWrapper() {}
 
 	protected:
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr , SSL_CTXDeleter{} };
@@ -129,8 +116,6 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		~SSLWrapper() {}
-
 		protected:
 			unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
 	};
@@ -139,15 +124,40 @@ namespace DiscordCoreInternal {
 		uint64_t theSocket{ 0 };
 	};
 
-	struct SocketDeleter {
-		void operator()(Socket* other) {
+	struct SOCKETDeleter {
+		void operator()(SOCKET* other) {
 #ifdef _WIN32
-			shutdown(other->theSocket, 2);
-			closesocket(other->theSocket);
+			shutdown(*other, 2);
+			closesocket(*other);
 #else
-			close(fileDescriptor);
+			close(other->theSocket);
 #endif
 		}
+	};
+
+	struct SOCKETWrapper {
+
+		SOCKETWrapper(nullptr_t){}
+
+		SOCKETWrapper(SOCKET other) {
+			this->thePtr = unique_ptr<SOCKET, SOCKETDeleter>(&other, SOCKETDeleter{});
+		}
+
+		operator SOCKET() {
+			return *this->thePtr;
+		}
+
+		SOCKETWrapper& operator=(SOCKET other) {
+			this->thePtr.reset(&other);
+			return *this;
+		}		
+
+		SOCKET operator=(SOCKETWrapper& other) {
+			this->thePtr.swap(other.thePtr);
+			return *this->thePtr.get();
+		}
+
+		unique_ptr<SOCKET, SOCKETDeleter> thePtr{ nullptr };
 	};
 
 	struct WSADATADeleter {
@@ -177,7 +187,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
+		SOCKETWrapper fileDescriptor{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
@@ -213,7 +223,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
+		SOCKETWrapper fileDescriptor{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
@@ -246,7 +256,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ new Socket(), SocketDeleter{} };
+		SOCKETWrapper fileDescriptor{ nullptr };
 		SSL_CTXWrapper  context{ nullptr };
 		uint64_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};

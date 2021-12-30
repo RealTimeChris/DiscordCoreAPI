@@ -11,25 +11,34 @@
 
 namespace DiscordCoreInternal {
 
-	const string randomCertPath{ "C:/Program Files/Common Files/SSL/certs/DigiCertHighAssuranceEVRootCA.crt.pem" };
 	const string soundcloudCertPath{ "C:/Program Files/Common Files/SSL/certs/Root-R3.pem" };
 	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 
-	struct DiscordCoreAPI_Dll HttpInputData {
-		int64_t bytesWritten{ 0 };
-		string theData{};
-	};
+	class DiscordCoreAPI_Dll HttpResponseData {
+	public:
+		HttpResponseData() {
+			this->doWeHaveHeaders = false;
+			this->currentOffset = -1;
+			this->contentOffset = -1;
+			this->responseCode = -1;
+			this->contentSize = -1;
+		}
 
-	struct DiscordCoreAPI_Dll HttpResponseData {
-		bool doWeHaveHeaders{ false };
+		void incrementStack() {
+			this->currentOffset = 0;
+			this->contentOffset = 0;
+			this->contentSize = 0;
+		}
+		
 		map<string, string> headers{};
-		int64_t currentOffset{ -1 };
-		int64_t contentOffset{ 0 };
-		int32_t responseCode{ -1 };
-		int64_t contentSize{ -1 };
-		string contentReal{ "" };
-		string rawInput{ "" };
+		bool doWeHaveHeaders{ false };
+		string contentFinalReal{ "" };
+		int64_t currentOffset{};
+		int64_t contentOffset{};
+		int32_t responseCode{};
+		int64_t contentSize{};
+		string rawInput{};
 	};
 
 	struct CURLDeleter {
@@ -122,10 +131,6 @@ namespace DiscordCoreInternal {
 
 		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
-		void addHeader(string, string);
-
-		void removeHeader(string);
-
 	protected:
 
 		static string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
@@ -144,12 +149,9 @@ namespace DiscordCoreInternal {
 
 		static void parseCode(HttpResponseData& inputValue);
 
-		static shared_ptr<map<string, string>> headersDefault;
-
-		unique_ptr<Socket, SocketDeleter> fileDescriptor{ 0, SocketDeleter{} };
+		SOCKETWrapper fileDescriptor{ nullptr };
 		BIOWrapper connectionBio{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		map<string, string> headers{};
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		fd_set readfds{};

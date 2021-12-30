@@ -2719,8 +2719,6 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        string baseSearchURL{ "https://www.youtube.com/results?search_query=" };
-        string baseWatchURL{ "https://www.youtube.com/watch?v=" };
         string baseURL{ "https://www.youtube.com" };
 
         vector<YouTubeFormat> formats{};
@@ -2756,8 +2754,8 @@ namespace DiscordCoreAPI {
 
         static string clientId;
 
-        string baseSearchURL02{ "https://api-v2.soundcloud.com/search?q=" };
-        string baseSearchURL{ "https://soundcloud.com/search?q=" };
+        string baseURL02{ "https://api-v2.soundcloud.com" };
+        string baseURL{ "https://soundcloud.com" };
         string appVersion{ "1631696495" };
         string trackAuthorization{ "" };
         bool doWeGetSaved{ false };
