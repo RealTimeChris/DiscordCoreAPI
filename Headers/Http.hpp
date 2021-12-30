@@ -260,7 +260,9 @@ namespace DiscordCoreInternal {
 		static void parseSize(HttpResponseData& dataPackage);
 
 		static void parseCode(HttpResponseData& inputValue);
-		
+
+		static shared_ptr<map<string, string>> headersDefault;
+
 		unique_ptr<SSL_CTX, SSL_CTXDeleter> context{ nullptr, SSL_CTXDeleter{} };
 		unique_ptr<Socket, SocketDeleter> fileDescriptor{ 0, SocketDeleter{} };
 		unique_ptr<BIO, BIODeleter> connectionBio{ nullptr, BIODeleter{} };
