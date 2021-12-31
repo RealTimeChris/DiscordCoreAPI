@@ -18,7 +18,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpResponseData {
 	public:
 		HttpResponseData() {
-			this->doWeHaveHeaders = false;
 			this->currentOffset = -1;
 			this->contentOffset = -1;
 			this->responseCode = -1;
@@ -27,11 +26,15 @@ namespace DiscordCoreInternal {
 
 		void incrementStack() {
 			this->contentSize = -1;
+			this->contentOffset = 0;
+			this->currentOffset = 0;
 		}
 
-		map<string, string> headers{};
+		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
+		map<string, string> headers{};
 		string contentFinalReal{ "" };
+		bool isItChunked{ false };
 		int64_t currentOffset{};
 		int64_t contentOffset{};
 		int32_t responseCode{};
@@ -53,10 +56,12 @@ namespace DiscordCoreInternal {
 
 		static bool sendRequest(string request, HttpClient& clientNew);
 
+		static bool checkForHeadersToParse(HttpResponseData theData);
+
 		static HttpResponseData getResponse(HttpClient& clientNew);
 
 		static void parseHeaders(HttpResponseData& inputValue);
-
+		
 		static bool parseChunk(HttpResponseData& dataPackage);
 
 		static void parseSize(HttpResponseData& dataPackage);
