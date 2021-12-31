@@ -173,8 +173,8 @@ namespace DiscordCoreInternal {
 	protected:
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static map<string, unique_ptr<RateLimitData>> rateLimitData;
-		static string botToken;
-		static string baseURL;
+		static shared_ptr<string> botToken;
+		static shared_ptr<string> baseURL;
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);
 		static HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
 		static HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);

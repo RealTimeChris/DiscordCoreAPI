@@ -150,8 +150,8 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		protected:
-			unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
+	protected:
+		unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SOCKETDeleter {
