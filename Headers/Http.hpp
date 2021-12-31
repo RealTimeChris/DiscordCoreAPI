@@ -26,9 +26,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void incrementStack() {
-			this->currentOffset = 0;
-			this->contentOffset = 0;
-			this->contentSize = 0;
+			this->contentSize = -1;
 		}
 
 		map<string, string> headers{};
