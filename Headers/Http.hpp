@@ -17,29 +17,17 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpResponseData {
 	public:
-		HttpResponseData() {
-			this->currentOffset = -1;
-			this->contentOffset = -1;
-			this->responseCode = -1;
-			this->contentSize = -1;
-		}
-
-		void incrementStack() {
-			this->contentSize = -1;
-			this->contentOffset = 0;
-			this->currentOffset = 0;
-		}
 
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
 		string contentFinalReal{ "" };
+		int64_t currentOffset{ -1 };
+		int64_t contentOffset{ -1 };
+		int32_t responseCode{ -1 };
+		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
-		int64_t currentOffset{};
-		int64_t contentOffset{};
-		int32_t responseCode{};
-		int64_t contentSize{};
-		string rawInput{};
+		string rawInput{ "" };
 	};
 
 	class DiscordCoreAPI_Dll HttpClient {
@@ -61,19 +49,17 @@ namespace DiscordCoreInternal {
 		static HttpResponseData getResponse(HttpClient& clientNew);
 
 		static void parseHeaders(HttpResponseData& inputValue);
-		
+
 		static bool parseChunk(HttpResponseData& dataPackage);
 
 		static void parseSize(HttpResponseData& dataPackage);
-
+		
 		static void parseCode(HttpResponseData& inputValue);
 
-		SOCKETWrapper fileDescriptor{ nullptr };
 		BIOWrapper connectionBio{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
-		fd_set readfds{};
 	};
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {

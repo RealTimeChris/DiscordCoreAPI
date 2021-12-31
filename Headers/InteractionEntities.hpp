@@ -608,7 +608,7 @@ namespace DiscordCoreAPI {
         /// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
         /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the selection.
         /// \returns A vector of SelectMenuResponseData.
-        vector<SelectMenuResponseData> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        CoRoutine<vector<SelectMenuResponseData>>collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
 
         ~SelectMenuCollector();
 
@@ -629,7 +629,7 @@ namespace DiscordCoreAPI {
         string messageId{ "" };
         string userId{ "" };
 
-        CoRoutine<void> run();
+        void run();
     };
 
     /// Button response data. \brief Button response data.
@@ -661,7 +661,7 @@ namespace DiscordCoreAPI {
         /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
         /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the button press.
         /// \returns A vector of ButtonResponseData.
-        vector<ButtonResponseData> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        CoRoutine<vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
 
         ~ButtonCollector();
 
@@ -670,17 +670,17 @@ namespace DiscordCoreAPI {
         unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         vector<ButtonResponseData> responseVector{};
         bool doWeSendInitialResponse{ false };
-        InteractionData interactionData{};
         bool getButtonDataForAll{ false };
-        uint32_t maxTimeInMs{ 0 };
+        InteractionData interactionData{};
         int32_t maxNumberOfPresses{ 0 };
+        uint32_t maxTimeInMs{ 0 };
         string channelId{ "" };
         string messageId{ "" };
         bool doWeQuit{ false };
         string buttonId{ "" };
         string userId{ "" };
 
-        CoRoutine<void> run();
+        void run();
     };
     /**@}*/
 };

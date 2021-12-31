@@ -178,6 +178,8 @@ namespace DiscordCoreInternal {
 			return *this->thePtr;
 		}
 
+	protected:
+
 		unique_ptr<SOCKET, SOCKETDeleter>thePtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 

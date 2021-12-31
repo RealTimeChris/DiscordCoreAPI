@@ -252,10 +252,10 @@ namespace DiscordCoreAPI {
     };
 
     template <typename T>
-    bool waitForTimeToPass(UnboundedMessageBlock<T>* outBuffer, T& argOne, int32_t timeInMsNew) {
+    bool waitForTimeToPass(UnboundedMessageBlock<T>& outBuffer, T& argOne, int32_t timeInMsNew) {
         StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
-        while (!outBuffer->tryReceive(argOne)) {
+        while (!outBuffer.tryReceive(argOne)) {
             this_thread::sleep_for(chrono::milliseconds(1));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
@@ -266,10 +266,10 @@ namespace DiscordCoreAPI {
     }
 
     template <typename T>
-    bool waitForTimeToPass(TSUnboundedMessageBlock<T>* outBuffer, T& argOne, int32_t timeInMsNew) {
+    bool waitForTimeToPass(TSUnboundedMessageBlock<T>& outBuffer, T& argOne, int32_t timeInMsNew) {
         StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
-        while (!outBuffer->tryReceive(argOne)) {
+        while (!outBuffer.tryReceive(argOne)) {
             this_thread::sleep_for(chrono::milliseconds(1));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
