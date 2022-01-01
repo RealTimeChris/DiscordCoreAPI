@@ -22,8 +22,6 @@ namespace DiscordCoreInternal {
 		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
 		string contentFinalReal{ "" };
-		int64_t currentOffset{ -1 };
-		int64_t contentOffset{ -1 };
 		int32_t responseCode{ -1 };
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
