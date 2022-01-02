@@ -76,7 +76,6 @@ namespace DiscordCoreAPI {
 		Event<void, void> pauseEvent{};
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
-		bool doWeReconnect{ false };
 		uint16_t sequenceIndex{ 0 };
 		bool areWeWaiting{ false };
 		bool areWePlaying{ false };
