@@ -26,35 +26,39 @@ namespace DiscordCoreInternal {
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
 		string rawInput{ "" };
+
+		bool checkForHeadersToParse();
+
+		void parseHeaders();
+
+		bool parseChunk();
+
+		void parseSize();
+
+		void clearCRLF();
+
+		void parseCode();
+	};
+
+	class DiscordCoreAPI_Dll RequestBuilder {
+	public:
+
+		static string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+
 	};
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
-		HttpClient();
 
-		static HttpResponseData executeHttpRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
+		static HttpResponseData executeHttpRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 	protected:
-
-		string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
 		bool connect(string baseUrl, string relativePath);
 
 		bool sendRequest(string request);
 
-		bool checkForHeadersToParse();
-
 		HttpResponseData getResponse();
-
-		void parseHeaders();
-
-		bool parseChunk();
-		
-		void parseSize();
-
-		void clearCRLF();
-		
-		void parseCode();
 
 		BIOWrapper connectionBio{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
@@ -65,6 +69,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {
 	public:
+
+		friend class HttpClient;
 
 		static void initialize(string);
 
@@ -161,13 +167,12 @@ namespace DiscordCoreInternal {
 	protected:
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static map<string, unique_ptr<RateLimitData>> rateLimitData;
-		static shared_ptr<string> botToken;
-		static shared_ptr<string> baseURL;
+		static atomic<shared_ptr<string>> botToken;
+		static atomic<shared_ptr<string>> baseURL;
+
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, RateLimitData* rateLimitDataNew, bool printResult);
-		static HttpData httpGETObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-		static HttpData httpPUTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-		static HttpData httpPOSTObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-		static HttpData httpPATCHObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
-		static HttpData httpDELETEObjectData(HttpWorkloadData workloadData, RateLimitData* pRateLimitData);
+
+		static HttpData HttpRequest(HttpWorkloadData&, RateLimitData*);
+
 	};
 }
