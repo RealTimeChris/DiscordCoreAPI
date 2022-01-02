@@ -34,90 +34,90 @@ namespace DiscordCoreAPI {
     class GuildMember;
     class BotUser;
 
-    struct DiscordCoreAPI_Dll CURLDeleter {
-        void operator()(CURL* other) {
-            if (other != nullptr) {
-                curl_easy_cleanup(other);
-                other = nullptr;
-            }
-        }
-    };
-
     struct DiscordCoreAPI_Dll CURLWrapper {
 
-        CURLWrapper(nullptr_t) {};
+        struct CURLDeleter {
+            void operator()(CURL* other) {
+                if (other != nullptr) {
+                    curl_easy_cleanup(other);
+                    other = nullptr;
+                }
+            }
+        };
 
         CURLWrapper& operator=(CURL* other) {
             this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
             return *this;
         }
 
-        CURLWrapper(CURL* other) {
-            this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
-        }
-
         operator CURL* () {
             return this->thePtr.get();
+        }
+
+        CURLWrapper(nullptr_t) {};
+
+        CURLWrapper(CURL* other) {
+            this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
         }
 
     protected:
         unique_ptr<CURL, CURLDeleter> thePtr{ nullptr , CURLDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll CURLUDeleter {
-        void operator()(CURLU* other) {
-            if (other != nullptr) {
-                curl_url_cleanup(other);
-                other = nullptr;
-            }
-        }
-    };
-
     struct DiscordCoreAPI_Dll CURLUWrapper {
 
-        CURLUWrapper(nullptr_t) {};
+        struct CURLUDeleter {
+            void operator()(CURLU* other) {
+                if (other != nullptr) {
+                    curl_url_cleanup(other);
+                    other = nullptr;
+                }
+            }
+        };
 
         CURLUWrapper& operator=(CURLU* other) {
             this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
             return *this;
         }
 
-        CURLUWrapper(CURLU* other) {
-            this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
-        }
-
         operator CURLU* () {
             return this->thePtr.get();
+        }
+
+        CURLUWrapper(nullptr_t) {};
+
+        CURLUWrapper(CURLU* other) {
+            this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
         }
 
     protected:
         unique_ptr<CURLU, CURLUDeleter> thePtr{ nullptr , CURLUDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll CURLCharDeleter {
-        void operator()(char* other) {
-            if (other != nullptr) {
-                curl_free(other);
-                other = nullptr;
-            }
-        }
-    };
-
     struct DiscordCoreAPI_Dll CURLCharWrapper {
 
-        CURLCharWrapper(nullptr_t) {};
+        struct CURLCharDeleter {
+            void operator()(char* other) {
+                if (other != nullptr) {
+                    curl_free(other);
+                    other = nullptr;
+                }
+            }
+        };
 
         CURLCharWrapper& operator=(char* other) {
             this->thePtr = unique_ptr<char, CURLCharDeleter>(other, CURLCharDeleter{});
             return *this;
         }
 
-        CURLCharWrapper(char* other) {
-            this->thePtr = unique_ptr<char, CURLCharDeleter>(other, CURLCharDeleter{});
-        }
-
         operator char* () {
             return this->thePtr.get();
+        }
+
+        CURLCharWrapper(nullptr_t) {};
+
+        CURLCharWrapper(char* other) {
+            this->thePtr = unique_ptr<char, CURLCharDeleter>(other, CURLCharDeleter{});
         }
 
     protected:

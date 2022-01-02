@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_METHODWrapper {
 
-		struct DiscordCoreAPI_Dll SSL_METHODDeleter {
+		struct SSL_METHODDeleter {
 			void operator()(const SSL_METHOD*) {}
 		};
 
@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 
-		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
+		struct SSL_CTXDeleter {
 			void operator()(SSL_CTX* other) {
 				if (other != nullptr) {
 					SSL_CTX_free(other);
@@ -127,7 +127,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
 
-		struct DiscordCoreAPI_Dll SSLDeleter {
+		struct SSLDeleter {
 			void operator()(SSL* other) {
 				if (other != nullptr) {
 					SSL_free(other);
@@ -156,7 +156,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 
-		struct DiscordCoreAPI_Dll SOCKETDeleter {
+		struct SOCKETDeleter {
 			void operator()(SOCKET* other) {
 #ifdef _WIN32
 				shutdown(*other, 2);
@@ -183,9 +183,9 @@ namespace DiscordCoreInternal {
 		unique_ptr<SOCKET, SOCKETDeleter>thePtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
-	struct WSADATAWrapper {
+	struct DiscordCoreAPI_Dll WSADATAWrapper {
 
-		struct DiscordCoreAPI_Dll WSADATADeleter {
+		struct WSADATADeleter {
 			void operator()(WSADATA*) {
 				WSACleanup();
 			}
