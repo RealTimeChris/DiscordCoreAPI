@@ -15,14 +15,23 @@ namespace DiscordCoreInternal {
 	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 
-	class DiscordCoreAPI_Dll HttpResponseData {
+	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
+
+		friend class HttpClient;
+
+		string contentFinalReal{ "" };
+		int64_t responseCode{ -1 };
+
+		static string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+
+		map<string, string> getResponseHeaders();
+
+	protected:
 
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
 		map<string, string> headers{};
-		string contentFinalReal{ "" };
-		int64_t responseCode{ -1 };
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
 		string rawInput{ "" };
@@ -40,66 +49,37 @@ namespace DiscordCoreInternal {
 		void parseCode();
 	};
 
-	class DiscordCoreAPI_Dll RequestBuilder {
-	public:
-
-		static string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
-
-	};
-
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
-		static HttpResponseData executeHttpRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
-
-	protected:
-
-		bool connect(string baseUrl, string relativePath);
-
-		bool sendRequest(string request);
-
-		HttpResponseData getResponse();
-
-		BIOWrapper connectionBio{ nullptr };
-		SSL_CTXWrapper context{ nullptr };
-		HttpResponseData responseData{};
-		vector<char> inputBuffer{};
-		SSLWrapper ssl{ nullptr };
-	};
-
-	class DiscordCoreAPI_Dll HttpRequestAgent {
-	public:
-
-		friend class HttpClient;
-
-		static void initialize(string);
+		static HttpRnRBuilder executeHttpRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
 			try {
 				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
-				if (HttpRequestAgent::rateLimitDataBucketValues.contains(workload.workloadType)) {
-					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					if (HttpRequestAgent::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).load();
+				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
+					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
+					if (HttpClient::rateLimitData.contains(rateLimitDataNew->bucket)) {
+						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket).load();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
+						HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
 					}
 				}
 				else {
 					rateLimitDataNew->tempBucket = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
-					HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
+					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
+					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
-				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataNew, true);
+				HttpData returnData = HttpClient::executeByRateLimitData(workload, rateLimitDataNew, true);
 				returnType returnObject{};
 				DataParser::parseObject(returnData.data, &returnObject);
 				return returnObject;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult");
 			}
 			returnType returnObject{};
 			return returnObject;
@@ -110,25 +90,25 @@ namespace DiscordCoreInternal {
 			try {
 				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
-				if (HttpRequestAgent::rateLimitDataBucketValues.contains(workload.workloadType)) {
-					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					if (HttpRequestAgent::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).load();
+				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
+					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
+					if (HttpClient::rateLimitData.contains(rateLimitDataNew->bucket)) {
+						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket).load();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
+						HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
 					}
 				}
 				else {
 					rateLimitDataNew->tempBucket = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
-					HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
+					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
+					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
-				HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataNew, true);
+				HttpClient::executeByRateLimitData(workload, rateLimitDataNew, true);
 				return;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult");
 			}
 			return;
 		}
@@ -138,28 +118,30 @@ namespace DiscordCoreInternal {
 			try {
 				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
-				if (HttpRequestAgent::rateLimitDataBucketValues.contains(workload.workloadType)) {
-					rateLimitDataNew->bucket = HttpRequestAgent::rateLimitDataBucketValues.at(workload.workloadType);
-					if (HttpRequestAgent::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataNew = HttpRequestAgent::rateLimitData.at(rateLimitDataNew->bucket).load();
+				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
+					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
+					if (HttpClient::rateLimitData.contains(rateLimitDataNew->bucket)) {
+						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket).load();
 					}
 					else {
-						HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
+						HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
 					}
 				}
 				else {
 					rateLimitDataNew->tempBucket = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count());
-					HttpRequestAgent::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
-					HttpRequestAgent::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
+					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
+					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
-				HttpData returnData = HttpRequestAgent::executeByRateLimitData(workload, rateLimitDataNew, true);
+				HttpData returnData = HttpClient::executeByRateLimitData(workload, rateLimitDataNew, true);
 				return returnData;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult");
 			}
 			return HttpData();
 		}
+
+		static void initialize(string);
 
 	protected:
 
@@ -168,9 +150,22 @@ namespace DiscordCoreInternal {
 		static atomic<shared_ptr<string>> botToken;
 		static atomic<shared_ptr<string>> baseURL;
 
+		BIOWrapper connectionBio{ nullptr };
+		SSL_CTXWrapper context{ nullptr };
+		HttpRnRBuilder responseData{};
+		vector<char> inputBuffer{};
+		SSLWrapper ssl{ nullptr };
+
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
 
 		static HttpData HttpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>);
+
+		bool connect(string baseUrl, string relativePath);
+
+		bool sendRequest(string request);
+
+		HttpRnRBuilder getResponse();
+		
 
 	};
 }

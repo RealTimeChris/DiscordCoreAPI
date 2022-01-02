@@ -13,7 +13,7 @@ namespace DiscordCoreInternal {
     using namespace std;
 
     class MsgWebSocketAgent;
-    class HttpRequestAgent;
+    class HttpClient;
     class DataParser;    
 }
 
