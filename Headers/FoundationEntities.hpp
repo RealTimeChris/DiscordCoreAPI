@@ -2738,6 +2738,7 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreInternal::DataParser;
+        friend class YouTubeRequestBuilder;
         friend class DatabaseManagerAgent;
         friend class SoundCloudSong;
         friend class SoundCloudAPI;
@@ -2794,6 +2795,7 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreInternal::DataParser;
+        friend class YouTubeRequestBuilder;
         friend class SoundCloudAPI;
         friend class YouTubeAPI;
         friend class SongAPI;
@@ -2801,24 +2803,14 @@ namespace DiscordCoreAPI {
 
         operator Song();
 
-        YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
-
-        vector<YouTubeSong> searchForSong(string songQuery);
-
         virtual ~YouTubeSong() {};
 
     protected:
-
-        string baseURL{ "https://www.youtube.com" };
 
         vector<YouTubeFormat> formats{};
         string html5PlayerFile{ "" };
         string playerResponse{ "" };
         string html5Player{ "" };
-
-        YouTubeSong();
-
-        YouTubeSong collectDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
 
     };
 

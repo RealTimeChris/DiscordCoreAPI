@@ -12,27 +12,46 @@
 
 namespace DiscordCoreAPI {
 
-	DiscordCoreAPI_Dll string between(string body, string left, string right);
+	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
+	public:
 
-	DiscordCoreAPI_Dll vector<char> splitString(string stringToSplit);
+		YouTubeRequestBuilder() = default;
 
-	DiscordCoreAPI_Dll vector<char> sliceVector(vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
+		static YouTubeSong constructFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
-	DiscordCoreAPI_Dll vector<char> reverseString(vector<char> stringToReverse);
+		static YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
+		
+		static vector<YouTubeSong> constructFirstDownloadUrl(string theString);
 
-	DiscordCoreAPI_Dll vector<char> swapHeadAndPosition(vector<char> inputVector, int32_t position);
+		static vector<string> constructFinalDownloadUrl(Song newSong);
 
-	DiscordCoreAPI_Dll string joinString(vector<char> stringToJoin);
+	protected:
 
-	DiscordCoreAPI_Dll string setDownloadURL(YouTubeFormat format);
+		static string baseURL;
 
-	DiscordCoreAPI_Dll vector<string> extractActions(string html5PlayerPageBody);
+		static vector<char> sliceVector(vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
+		
+		static vector<char> swapHeadAndPosition(vector<char> inputVector, int32_t position);
+		
+		static YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
 
-	DiscordCoreAPI_Dll vector<string> getTokens(string html5PlayerFile);
+		static string decipher(vector<string> tokens, string cipherSignature);
 
-	DiscordCoreAPI_Dll string decipher(vector<string> tokens, string cipherSignature);
+		static vector<string> extractActions(string html5PlayerPageBody);
 
-	DiscordCoreAPI_Dll YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
+		static vector<char> reverseString(vector<char> stringToReverse);
+
+		static string between(string body, string left, string right);
+
+		static vector<string> getTokens(string html5PlayerFile);
+
+		static vector<char> splitString(string stringToSplit);
+
+		static string joinString(vector<char> stringToJoin);
+
+		static string setDownloadURL(YouTubeFormat format);
+
+	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
