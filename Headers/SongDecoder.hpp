@@ -14,49 +14,227 @@ namespace DiscordCoreAPI {
 
     struct AVFrameDeleter {
         void operator()(AVFrame* other) {
-            av_frame_unref(other);
-            av_frame_free(&other);
+            if (other != nullptr) {
+                av_frame_unref(other);
+                av_frame_free(&other);
+                other = nullptr;
+            }
         }
+    };
+
+    struct DiscordCoreAPI_Dll AVFrameWrapper {
+
+        AVFrameWrapper(nullptr_t) {};
+
+        AVFrameWrapper& operator=(AVFrame* other) {
+            this->thePtr = unique_ptr<AVFrame, AVFrameDeleter>(other, AVFrameDeleter{});
+            return *this;
+        }
+
+        AVFrame* operator->() {
+            return this->thePtr.get();
+        }
+
+        operator AVFrame* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr , AVFrameDeleter{} };
     };
 
     struct AVCodecContextDeleter {
         void operator()(AVCodecContext* other) {
-            avcodec_free_context(&other);
+            if (other != nullptr) {
+                avcodec_free_context(&other);
+                other = nullptr;
+            }            
         }
+    };
+
+    struct DiscordCoreAPI_Dll AVCodecContextWrapper {
+
+        AVCodecContextWrapper(nullptr_t) {};
+
+        AVCodecContextWrapper& operator=(AVCodecContext* other) {
+            this->thePtr = unique_ptr<AVCodecContext, AVCodecContextDeleter>(other, AVCodecContextDeleter{});
+            return *this;
+        }
+
+        AVCodecContext* operator->() {
+            return this->thePtr.get();
+        }
+
+        operator AVCodecContext* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr , AVCodecContextDeleter{} };
     };
 
     struct AVFormatContextDeleter {
         void operator()(AVFormatContext* other) {
-            avformat_close_input(&other);
-            avformat_free_context(other);
+            if (other != nullptr) {
+                avformat_close_input(&other);
+                avformat_free_context(other);
+                other = nullptr;
+            }
         }
+    };
+
+    struct DiscordCoreAPI_Dll AVFormatContextWrapper {
+
+        AVFormatContextWrapper(nullptr_t) {};
+
+        AVFormatContextWrapper& operator=(AVFormatContext* other) {
+            this->thePtr = unique_ptr<AVFormatContext, AVFormatContextDeleter>(other, AVFormatContextDeleter{});
+            return *this;
+        }
+
+        AVFormatContext* operator->() {
+            return this->thePtr.get();
+        }
+
+        operator AVFormatContext* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<AVFormatContext, AVFormatContextDeleter> thePtr{ nullptr , AVFormatContextDeleter{} };
     };
 
     struct SwrContextDeleter {
         void operator()(SwrContext* other) {
-            swr_free(&other);
+            if (other != nullptr) {
+                swr_free(&other);
+                other = nullptr;
+            }
         }
+    };
+
+    struct DiscordCoreAPI_Dll SwrContextWrapper {
+
+        SwrContextWrapper(nullptr_t) {};
+
+        SwrContextWrapper& operator=(SwrContext* other) {
+            this->thePtr = unique_ptr<SwrContext, SwrContextDeleter>(other, SwrContextDeleter{});
+            return *this;
+        }
+
+        operator SwrContext* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr , SwrContextDeleter{} };
     };
 
     struct AVIOContextDeleter {
         void operator()(AVIOContext* other) {
-            av_freep(other);
+            if (other != nullptr) {
+                av_freep(other);
+                other = nullptr;
+            }
         }
+    };
+
+    struct DiscordCoreAPI_Dll AVIOContextWrapper {
+
+        AVIOContextWrapper(nullptr_t) {};
+
+        AVIOContextWrapper& operator=(AVIOContext* other) {
+            this->thePtr = unique_ptr<AVIOContext, AVIOContextDeleter>(other, AVIOContextDeleter{});
+            return *this;
+        }
+
+        AVIOContext* operator->() {
+            return this->thePtr.get();
+        }
+
+        operator AVIOContext* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr , AVIOContextDeleter{} };
     };
 
     struct AVPacketDeleter {
         void operator()(AVPacket* other) {
-            av_packet_free(&other);
+            if (other != nullptr) {
+                av_packet_free(&other);
+                other = nullptr;
+            }
         }
+    };
+
+    struct DiscordCoreAPI_Dll AVPacketWrapper {
+
+        AVPacketWrapper(nullptr_t) {};
+
+        AVPacketWrapper& operator=(AVPacket* other) {
+            this->thePtr = unique_ptr<AVPacket, AVPacketDeleter>(other, AVPacketDeleter{});
+            return *this;
+        }
+
+        AVPacket* operator->() {
+            return this->thePtr.get();
+        }
+
+        operator AVPacket* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr , AVPacketDeleter{} };
     };
 
     struct AVCodecDeleter {
         void operator()(AVCodec*) {};
     };
 
+    struct DiscordCoreAPI_Dll AVCodecWrapper {
+
+        AVCodecWrapper(nullptr_t) {};
+
+        AVCodecWrapper& operator=(AVCodec* other) {
+            this->thePtr = unique_ptr<AVCodec, AVCodecDeleter>(other, AVCodecDeleter{});
+            return *this;
+        }
+
+        operator AVCodec* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr , AVCodecDeleter{} };
+    };
+
     struct AVStreamDeleter {
         void operator()(AVStream*) {
         };
+    };
+
+    struct DiscordCoreAPI_Dll AVStreamWrapper {
+
+        AVStreamWrapper(nullptr_t) {};
+
+        AVStreamWrapper& operator=(AVStream* other) {
+            this->thePtr = unique_ptr<AVStream, AVStreamDeleter>(other, AVStreamDeleter{});
+            return *this;
+        }
+
+        AVStream* operator->(){
+            return this->thePtr.get();
+        }
+
+        operator AVStream* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr , AVStreamDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll BuildSongDecoderData {
@@ -90,17 +268,17 @@ namespace DiscordCoreAPI {
     protected:
 
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        unique_ptr<AVCodecContext, AVCodecContextDeleter> audioDecodeContext{ nullptr };
-        unique_ptr<AVFormatContext, AVFormatContextDeleter> formatContext{ nullptr };
-        unique_ptr<AVFrame, AVFrameDeleter> frame{ nullptr }, newFrame{ nullptr };
-        unique_ptr<AVIOContext, AVIOContextDeleter> ioContext{ nullptr };
-        unique_ptr<SwrContext, SwrContextDeleter> swrContext{ nullptr };
-        unique_ptr<AVStream, AVStreamDeleter> audioStream{ nullptr };
         TSUnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
-        unique_ptr<AVPacket, AVPacketDeleter> packet{ nullptr };
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
-        unique_ptr<AVCodec, AVCodecDeleter> codec{ nullptr };
+        AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
+        AVCodecContextWrapper audioDecodeContext{ nullptr };
+        AVFormatContextWrapper formatContext{ nullptr };
+        AVIOContextWrapper ioContext{ nullptr };
+        SwrContextWrapper swrContext{ nullptr };
+        AVStreamWrapper audioStream{ nullptr };
         int32_t refreshTimeForBuffer{ 10000 };
+        AVPacketWrapper packet{ nullptr };
+        AVCodecWrapper codec{ nullptr };
         vector<uint8_t> currentBuffer{};
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };

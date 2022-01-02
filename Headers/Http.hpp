@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 				return returnObject;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
 			returnType returnObject{};
 			return returnObject;
@@ -153,7 +153,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
 			return;
 		}
@@ -182,7 +182,7 @@ namespace DiscordCoreInternal {
 				return returnData;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpRequestAgent::submitWorkloadAndGetResult Error: ");
 			}
 			return HttpData();
 		}
