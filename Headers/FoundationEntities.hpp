@@ -3288,7 +3288,7 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll HttpData {
         vector<string> responseHeaderValues{};
         string returnMessage{ "" };
-        int32_t returnCode{ 0 };
+        int64_t returnCode{ 0 };
         json data{};
     };
 
