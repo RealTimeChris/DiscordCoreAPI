@@ -49,8 +49,10 @@ namespace DiscordCoreInternal {
 		static void parseHeaders(HttpResponseData& inputValue);
 
 		static bool parseChunk(HttpResponseData& dataPackage);
-
+		
 		static void parseSize(HttpResponseData& dataPackage);
+
+		static void clearCRLF(HttpResponseData& dataPackage);
 		
 		static void parseCode(HttpResponseData& inputValue);
 

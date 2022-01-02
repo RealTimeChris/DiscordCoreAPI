@@ -3409,7 +3409,6 @@ namespace  DiscordCoreInternal {
                 this->isItMarked = other.isItMarked;
                 other.isItMarked = false;
                 this->tempBucket = other.tempBucket;
-                other.tempBucket = "";
                 this->theMutex.swap(other.theMutex);
                 this->totalGets = other.totalGets;
                 other.totalGets = 0;
