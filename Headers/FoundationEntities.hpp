@@ -291,7 +291,7 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll string convertMsToDurationString(int32_t durationInMs);
 
-    DiscordCoreAPI_Dll void rethrowException(string stackTrace, UnboundedMessageBlock<exception>* sendBuffer = nullptr, bool rethrow = false);
+    DiscordCoreAPI_Dll void reportException(string stackTrace, UnboundedMessageBlock<exception>* sendBuffer = nullptr, bool rethrow = false);
 
     DiscordCoreAPI_Dll string convertToLowerCase(string stringToConvert);
 
