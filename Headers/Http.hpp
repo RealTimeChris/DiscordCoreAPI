@@ -36,28 +36,29 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
+		string constructRequest(string baseUrl, string relativePath, string content, map<string, string> headers, HttpWorkloadClass workloadClass);
 
-		static bool connect(string baseUrl, string relativePath, HttpClient& clientNew);
+		bool connect(string baseUrl, string relativePath);
 
-		static bool sendRequest(string request, HttpClient& clientNew);
+		bool sendRequest(string request);
 
-		static bool checkForHeadersToParse(HttpResponseData theData);
+		bool checkForHeadersToParse();
 
-		static HttpResponseData getResponse(HttpClient& clientNew);
+		HttpResponseData getResponse();
 
-		static void parseHeaders(HttpResponseData& inputValue);
+		void parseHeaders();
 
-		static bool parseChunk(HttpResponseData& dataPackage);
+		bool parseChunk();
 		
-		static void parseSize(HttpResponseData& dataPackage);
+		void parseSize();
 
-		static void clearCRLF(HttpResponseData& dataPackage);
+		void clearCRLF();
 		
-		static void parseCode(HttpResponseData& inputValue);
+		void parseCode();
 
 		BIOWrapper connectionBio{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
+		HttpResponseData responseData{};
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 	};
