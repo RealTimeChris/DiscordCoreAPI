@@ -14,37 +14,6 @@ namespace DiscordCoreInternal {
 	const string soundcloudCertPath{ "C:/Program Files/Common Files/SSL/certs/Root-R3.pem" };
 	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
-
-	struct DiscordCoreAPI_Dll CURLDeleter {
-		void operator()(CURL* other) {
-			if (other != nullptr) {
-				curl_easy_cleanup(other);
-				other = nullptr;
-			}
-		}
-	};
-
-	struct DiscordCoreAPI_Dll CURLWrapper {
-
-		CURLWrapper(nullptr_t) {};
-
-		CURLWrapper& operator=(CURL* other) {
-			this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
-			return *this;
-		}
-
-		CURLWrapper(CURL* other) {
-			this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
-		}
-
-		operator CURL* () {
-			return this->thePtr.get();
-		}
-
-	protected:
-		unique_ptr<CURL, CURLDeleter> thePtr{ nullptr , CURLDeleter{} };
-	};
-
 	class DiscordCoreAPI_Dll HttpResponseData {
 	public:
 

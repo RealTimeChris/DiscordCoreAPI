@@ -34,6 +34,96 @@ namespace DiscordCoreAPI {
     class GuildMember;
     class BotUser;
 
+    struct DiscordCoreAPI_Dll CURLDeleter {
+        void operator()(CURL* other) {
+            if (other != nullptr) {
+                curl_easy_cleanup(other);
+                other = nullptr;
+            }
+        }
+    };
+
+    struct DiscordCoreAPI_Dll CURLWrapper {
+
+        CURLWrapper(nullptr_t) {};
+
+        CURLWrapper& operator=(CURL* other) {
+            this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
+            return *this;
+        }
+
+        CURLWrapper(CURL* other) {
+            this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
+        }
+
+        operator CURL* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<CURL, CURLDeleter> thePtr{ nullptr , CURLDeleter{} };
+    };
+
+    struct DiscordCoreAPI_Dll CURLUDeleter {
+        void operator()(CURLU* other) {
+            if (other != nullptr) {
+                curl_url_cleanup(other);
+                other = nullptr;
+            }
+        }
+    };
+
+    struct DiscordCoreAPI_Dll CURLUWrapper {
+
+        CURLUWrapper(nullptr_t) {};
+
+        CURLUWrapper& operator=(CURLU* other) {
+            this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
+            return *this;
+        }
+
+        CURLUWrapper(CURLU* other) {
+            this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
+        }
+
+        operator CURLU* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<CURLU, CURLUDeleter> thePtr{ nullptr , CURLUDeleter{} };
+    };
+
+    struct DiscordCoreAPI_Dll CURLCharDeleter {
+        void operator()(char* other) {
+            if (other != nullptr) {
+                curl_free(other);
+                other = nullptr;
+            }
+        }
+    };
+
+    struct DiscordCoreAPI_Dll CURLCharWrapper {
+
+        CURLCharWrapper(nullptr_t) {};
+
+        CURLCharWrapper& operator=(char* other) {
+            this->thePtr = unique_ptr<char, CURLCharDeleter>(other, CURLCharDeleter{});
+            return *this;
+        }
+
+        CURLCharWrapper(char* other) {
+            this->thePtr = unique_ptr<char, CURLCharDeleter>(other, CURLCharDeleter{});
+        }
+
+        operator char* () {
+            return this->thePtr.get();
+        }
+
+    protected:
+        unique_ptr<char, CURLCharDeleter> thePtr{ nullptr, CURLCharDeleter{} };
+    };
+
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
    /// \param objectType The type of object that will be sent over the message block.
     template<typename objectType>
