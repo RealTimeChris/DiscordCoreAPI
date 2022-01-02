@@ -14,6 +14,7 @@ namespace DiscordCoreInternal {
 	const string soundcloudCertPath{ "C:/Program Files/Common Files/SSL/certs/Root-R3.pem" };
 	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
+
 	class DiscordCoreAPI_Dll HttpResponseData {
 	public:
 
@@ -61,8 +62,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpRequestAgent {
 	public:
-
-		friend class HttpClient;
 
 		static void initialize(string);
 
