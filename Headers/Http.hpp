@@ -15,12 +15,6 @@ namespace DiscordCoreInternal {
 	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 
-	enum class HttpHeaderValueType {
-		Integer64 = 0,
-		String = 1,
-		Float64 = 2
-	};	
-
 	class HttpHeader {
 	public:
 
