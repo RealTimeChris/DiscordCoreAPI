@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static map<string, unique_ptr<CoRoutine<void>>>theTasks;
+		static map<string, CoRoutineWrapper>theTasks;
 
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
@@ -65,8 +65,8 @@ namespace DiscordCoreAPI {
 		unique_ptr<OpusEncoder, OpusEncoderDeleter> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
 		Event<void, void> disconnectionEvent{};
-		unique_ptr<CoRoutine<void>> theTask{};
 		const int32_t maxBufferSize{ 1276 };
+		CoRoutineWrapper theTask{ nullptr };
 		Event<void, void> playWaitEvent{};
 		Event<void, void> stopWaitEvent{};
 		Event<void, void> playSetEvent{};

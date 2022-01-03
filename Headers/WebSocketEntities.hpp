@@ -142,10 +142,10 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
-		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
 		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
+		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -213,7 +213,6 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
-		unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		unique_ptr<DatagramWebSocketSSLClient> voiceSocket{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
@@ -221,6 +220,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
 		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
 		WebSocketState state{ WebSocketState::Initializing };
+		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
 		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};

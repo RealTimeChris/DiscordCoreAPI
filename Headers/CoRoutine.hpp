@@ -338,6 +338,12 @@ namespace DiscordCoreAPI {
                 this->condVar.wait_for(timedLock, chrono::milliseconds(timeToWaitForInMs));
             }
 
+            unique_ptr<stop_token> getStopToken() {
+                auto thePtr = this->newThread->get_stop_token();
+                unique_ptr<stop_token> thePtr02(&thePtr);
+                return thePtr02;
+            }
+
             void return_void() {}
 
             auto get_return_object() {
@@ -406,6 +412,45 @@ namespace DiscordCoreAPI {
         };
         return NewThreadAwaitable();
     }
+
+    class CoRoutineWrapper {
+    public:
+        struct CoRoutineDeleter {
+            void operator()(CoRoutine<void>* other) {
+                if (other != nullptr) {
+                    other->cancel();
+                    other = nullptr;
+                }
+            }
+        };
+        
+        CoRoutineWrapper& operator=(CoRoutine<void>* other) {
+            this->thePtr = unique_ptr<CoRoutine<void>, CoRoutineDeleter>(other, CoRoutineDeleter{});
+            return *this;
+        }
+
+        operator CoRoutine<void>* () {
+            return this->thePtr.get();
+        }
+
+        CoRoutine<void>*  operator->() {
+            return this->thePtr.get();
+        }
+
+        unique_ptr<CoRoutine<void>, CoRoutineDeleter> operator*() {
+            return move(this->thePtr);
+        }
+
+        CoRoutineWrapper(nullptr_t) {};
+
+        CoRoutineWrapper(CoRoutine<void>* other) {
+            this->thePtr = unique_ptr<CoRoutine<void>, CoRoutineDeleter>(other, CoRoutineDeleter{});
+        }
+
+    protected:
+
+        unique_ptr<CoRoutine<void>, CoRoutineDeleter> thePtr{ nullptr, CoRoutineDeleter{} };
+    };
 
     /**@}*/
 };

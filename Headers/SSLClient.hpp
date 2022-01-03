@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "EventEntities.hpp"
 
 namespace DiscordCoreInternal {
 
@@ -222,13 +223,15 @@ namespace DiscordCoreInternal {
 		~MsgWebSocketSSLClient();
 
 	protected:
-
+		
+		DiscordCoreAPI::Event<void, void> finishEvent{};
 		SOCKETWrapper fileDescriptor{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
 		bool areWeBlocking{ true };
 		SSLWrapper ssl{ nullptr };
+		bool doWeQuit{ false };
 		string hostname{ "" };
 		string port{ "" };
 		fd_set readfds{};
@@ -259,6 +262,7 @@ namespace DiscordCoreInternal {
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
+		bool doWeQuit{ false };
 		string hostname{ "" };
 		string port{ "" };
 	};

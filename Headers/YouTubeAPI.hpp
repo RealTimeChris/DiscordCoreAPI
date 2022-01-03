@@ -68,10 +68,10 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		Event<void, void> readyToQuitEventOut{};
 		Event<void, void> readyToQuitEventIn{};
 		const int32_t maxBufferSize{ 8192 };
+		CoRoutineWrapper theTask{ nullptr };
 		YouTubeSong theSong{};
 		string guildId{ "" };
 
