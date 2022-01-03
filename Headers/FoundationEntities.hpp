@@ -184,6 +184,11 @@ namespace DiscordCoreAPI {
             this->theArray.push(theObject);
         }
 
+        void clearContents() {
+            lock_guard<mutex> accessLock{ *this->accessMutex };
+            this->theArray = queue<objectType>{};
+        }
+
         bool tryReceive(objectType& theObject) {
             lock_guard<mutex> accessLock{ *this->accessMutex };
             if (this->theArray.size() == 0) {

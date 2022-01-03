@@ -54,8 +54,6 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static map<string, CoRoutineWrapper>theTasks;
-
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
 		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		DiscordCoreInternal::MsgWebSocketAgent* baseWebsocketAgent{ nullptr };

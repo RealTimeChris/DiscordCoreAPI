@@ -253,8 +253,6 @@ namespace DiscordCoreAPI {
 
         bool getFrame(RawFrameData* dataPackage);
 
-        CoRoutine<void> run();
-
         void cancelMe();
 
         void startMe();
@@ -273,12 +271,15 @@ namespace DiscordCoreAPI {
         SwrContextWrapper swrContext{ nullptr };
         AVStreamWrapper audioStream{ nullptr };
         int32_t refreshTimeForBuffer{ 10000 };
+        CoRoutineWrapper theTask{ nullptr };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
         vector<uint8_t> currentBuffer{};
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };
+
+        CoRoutine<void> run();
     };
 
 }
