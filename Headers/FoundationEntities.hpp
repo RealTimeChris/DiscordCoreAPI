@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator CURL* () {
+        operator CURL*() {
             return this->thePtr.get();
         }
 
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator CURLU* () {
+        operator CURLU*() {
             return this->thePtr.get();
         }
 
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator char* () {
+        operator char*() {
             return this->thePtr.get();
         }
 
@@ -446,7 +446,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator OpusEncoder* () {
+        operator OpusEncoder*() {
             return this->thePtr.get();
         }
 

@@ -430,7 +430,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator CoRoutine<void>* () {
+        operator CoRoutine<void>*() {
             return this->thePtr.get();
         }
 

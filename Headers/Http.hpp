@@ -136,7 +136,7 @@ namespace DiscordCoreInternal {
 		friend class HttpConnection;
 		friend class HttpClient;
 
-		string contentFinalReal{ "" };
+		string contentFinal{ "" };
 		int64_t responseCode{ -1 };
 
 		string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
@@ -172,7 +172,7 @@ namespace DiscordCoreInternal {
 
 		HttpConnection(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
-		HttpData getResponse(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
 		bool sendRequest();
 
@@ -197,10 +197,10 @@ namespace DiscordCoreInternal {
 
 		friend class HttpRnRBuilder;
 
-		static HttpData executeHttpRequest(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData executeHttpRequest(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
 		template<typename returnType>
-		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
+		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
 				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
@@ -231,7 +231,7 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		static void submitWorkloadAndGetResult<void>(HttpWorkloadData workload) {
+		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
 				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
@@ -259,7 +259,7 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData workload) {
+		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
 				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
 				rateLimitDataNew->workloadType = workload.workloadType;
@@ -295,7 +295,7 @@ namespace DiscordCoreInternal {
 		static atomic<shared_ptr<string>> botToken;
 		static atomic<shared_ptr<string>> baseURL;
 
-		static HttpData executeByRateLimitData(HttpWorkloadData workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
+		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
 
 		static HttpData HttpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>);
 
