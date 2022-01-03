@@ -25,7 +25,23 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {};
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+			if (headers.contains("x-ratelimit-retry-after")) {
+				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<double>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
+			}
+			else if (headers.contains("x-ratelimit-remaining")) {
+				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining")->value);
+			}
+			else if (headers.contains("x-ratelimit-limit")) {
+				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit")->value.c_str());
+			}
+			else if (headers.contains("x-ratelimit-reset-after")) {
+				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after")->value) * 1000.0f);
+			}
+			else if (headers.contains("x-ratelimit-bucket")) {
+				pRateLimitData->bucket = headers.at("x-ratelimit-bucket")->value;
+			}
+		};
 
 		virtual ~HttpHeader() {};
 
@@ -33,92 +49,11 @@ namespace DiscordCoreInternal {
 		string key{ "" };
 	};
 
-	class RateLimitRetryAfter : public HttpHeader {
-	public:
-
-		RateLimitRetryAfter(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
-			if (headers.contains("x-ratelimit-retry-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<double>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
-			}
-		}
-	};
-
-	class RateLimitMsRemain : public HttpHeader {
-	public:
-
-		RateLimitMsRemain(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
-			if (headers.contains("x-ratelimit-remaining")) {
-				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining")->value);
-			}
-		}
-
-	};
-
-	class RateLimitLimit : public HttpHeader {
-	public:
-
-		RateLimitLimit(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
-			if (headers.contains("x-ratelimit-limit")) {
-				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit")->value.c_str());
-			}
-		}
-
-	};
-
-	class RateLimitResetAfter : public HttpHeader {
-	public:
-
-		RateLimitResetAfter(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
-			if (headers.contains("x-ratelimit-reset-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after")->value) * 1000.0f);
-			}
-		}
-
-	};
-
-	class RateLimitBucket : public HttpHeader {
-	public:
-
-		RateLimitBucket(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
-			if (headers.contains("x-ratelimit-bucket")) {
-				pRateLimitData->bucket = headers.at("x-ratelimit-bucket")->value;
-			}
-		}
-
-	};
-
 	class HttpHeaderBuilder {
 	public:
 
 		static shared_ptr<HttpHeader> getHeader(string key, string value) {
-			if (key.find("x-ratelimit-remaining") != string::npos) {
-				return make_shared<RateLimitMsRemain>(key, value);
-			}
-			else if (key.find("x-ratelimit-reset-after") != string::npos) {
-				return make_shared<RateLimitResetAfter>(key, value);
-			}
-			else if (key.find("x-ratelimit-bucket") != string::npos) {
-				return make_shared<RateLimitBucket>(key, value);
-			}
-			else if (key.find("x-ratelimit-limit") != string::npos) {
-				return make_shared<RateLimitLimit>(key, value);
-			}
-			else if (key.find("x-ratelimit-retry-after") != string::npos) {
-				return make_shared<RateLimitRetryAfter>(key, value);
-			}
-			else {
-				return make_shared<HttpHeader>(key, value);
-			}
+			return make_shared<HttpHeader>(key, value);
 		};
 	};
 
