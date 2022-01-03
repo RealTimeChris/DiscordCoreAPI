@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 
 		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
 			if (headers.contains("x-ratelimit-retry-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
+				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<double>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
 			}
 		}
 	};

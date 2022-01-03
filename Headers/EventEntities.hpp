@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
         template<typename R, typename... A>
         friend class Event;
 
-        EventDelegate<R, Args...>& operator=(EventDelegate<R, Args...>&& other) {
+        EventDelegate<R, Args...>& operator=(EventDelegate<R, Args...>&& other) noexcept {
             if (this != &other) {
                 this->theFunction = move(other.theFunction);
                 other.theFunction = function<R(Args...)>{};
@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        EventDelegate(EventDelegate<R, Args...>&& other) {
+        EventDelegate(EventDelegate<R, Args...>&& other) noexcept {
             *this = move(other);
         }
 
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 
         friend class Event<void, Args...>;
 
-        EventDelegate<void, Args...>& operator=(EventDelegate<void, Args...>&& other) {
+        EventDelegate<void, Args...>& operator=(EventDelegate<void, Args...>&& other) noexcept {
             if (this != &other) {
                 this->theFunction = move(other.theFunction);
                 other.theFunction = function<void(Args...)>{};
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        EventDelegate(EventDelegate<void, Args...>&& other) {
+        EventDelegate(EventDelegate<void, Args...>&& other) noexcept {
             *this = move(other);
         }
 
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Event<void, Args...> {
     public:
 
-        Event<void, Args...>& operator=(Event<void, Args...>&& other) {
+        Event<void, Args...>& operator=(Event<void, Args...>&& other) noexcept {
             if (this != &other) {
                 this->theFunctions = move(other.theFunctions);
                 other.theFunctions = map<EventDelegateToken, EventDelegate<void, Args...>>{};
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        Event(Event<void, Args...>&& other) {
+        Event(Event<void, Args...>&& other) noexcept {
             *this = move(other);
         }
 

@@ -23,7 +23,7 @@ namespace DiscordCoreInternal {
 		};
 
 		BIOWrapper& operator=(BIO*other) {
-			this->thePtr = unique_ptr<BIO, BIODeleter>(other, BIODeleter{});
+			this->thePtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
 				cout << "BIO_up_ref() Error: " << ERR_get_error() << endl;
 			};
@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 		};
 
 		SSL_METHODWrapper& operator=(const SSL_METHOD* other) {
-			this->thePtr = unique_ptr<const SSL_METHOD, SSL_METHODDeleter>(other, SSL_METHODDeleter{});
+			this->thePtr.reset(other);
 			return *this;
 		}
 
@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 		};
 
 		addrinfoWrapper& operator=(addrinfo* other) {
-			this->thePtr = unique_ptr<addrinfo, addrinfoDeleter>(other, addrinfoDeleter{});
+			this->thePtr.reset(other);
 			return *this;
 		}
 
@@ -109,7 +109,7 @@ namespace DiscordCoreInternal {
 		};
 
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
-			this->thePtr = unique_ptr<SSL_CTX, SSL_CTXDeleter>(other, SSL_CTXDeleter{});
+			this->thePtr.reset(other);
 			if (SSL_CTX_up_ref(other) != 1) {
 				cout << "SSL_CTX_up_ref() Error: " << ERR_get_error() << endl;
 			}
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 		};
 
 		SSLWrapper& operator=(SSL* other) {
-			this->thePtr = unique_ptr<SSL, SSLDeleter>(other, SSLDeleter{});
+			this->thePtr.reset(other);
 			if (SSL_up_ref(other) != 1) {
 				cout << "SSL_up_ref() Error: " << ERR_get_error() << endl;
 			}

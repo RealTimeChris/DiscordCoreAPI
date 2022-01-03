@@ -62,9 +62,9 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		unique_ptr<OpusEncoder, OpusEncoderDeleter> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
 		Event<void, void> disconnectionEvent{};
+		OpusEncoderWrapper encoder{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutineWrapper theTask{ nullptr };
 		Event<void, void> playWaitEvent{};

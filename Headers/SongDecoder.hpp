@@ -23,8 +23,6 @@ namespace DiscordCoreAPI {
             }
         };
 
-        AVFrameWrapper(nullptr_t) {};
-
         AVFrameWrapper& operator=(AVFrame* other) {
             this->thePtr.reset(other);
             return *this;
@@ -37,6 +35,8 @@ namespace DiscordCoreAPI {
         operator AVFrame* () {
             return this->thePtr.get();
         }
+
+        AVFrameWrapper(nullptr_t) {};
 
     protected:
         unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr , AVFrameDeleter{} };
@@ -52,8 +52,6 @@ namespace DiscordCoreAPI {
             }
         };
 
-        AVCodecContextWrapper(nullptr_t) {};
-
         AVCodecContextWrapper& operator=(AVCodecContext* other) {
             this->thePtr.reset(other);
             return *this;
@@ -66,6 +64,8 @@ namespace DiscordCoreAPI {
         operator AVCodecContext* () {
             return this->thePtr.get();
         }
+
+        AVCodecContextWrapper(nullptr_t) {};
 
     protected:
         unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr , AVCodecContextDeleter{} };
@@ -81,8 +81,6 @@ namespace DiscordCoreAPI {
             }
         };
 
-        AVFormatContextWrapper(nullptr_t) {};
-
         AVFormatContextWrapper& operator=(AVFormatContext* other) {
             this->thePtr.reset(other);
             return *this;
@@ -95,6 +93,8 @@ namespace DiscordCoreAPI {
         operator AVFormatContext* () {
             return this->thePtr.get();
         }
+
+        AVFormatContextWrapper(nullptr_t) {};
 
     protected:
         unique_ptr<AVFormatContext, AVFormatContextDeleter> thePtr{ nullptr , AVFormatContextDeleter{} };
@@ -110,8 +110,6 @@ namespace DiscordCoreAPI {
             }
         };
 
-        SwrContextWrapper(nullptr_t) {};
-
         SwrContextWrapper& operator=(SwrContext* other) {
             this->thePtr.reset(other);
             return *this;
@@ -120,6 +118,8 @@ namespace DiscordCoreAPI {
         operator SwrContext* () {
             return this->thePtr.get();
         }
+
+        SwrContextWrapper(nullptr_t) {};
 
     protected:
         unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr , SwrContextDeleter{} };
@@ -135,8 +135,6 @@ namespace DiscordCoreAPI {
             }
         };
 
-        AVIOContextWrapper(nullptr_t) {};
-
         AVIOContextWrapper& operator=(AVIOContext* other) {
             this->thePtr.reset(other);
             return *this;
@@ -149,6 +147,8 @@ namespace DiscordCoreAPI {
         operator AVIOContext* () {
             return this->thePtr.get();
         }
+
+        AVIOContextWrapper(nullptr_t) {};
 
     protected:
         unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr , AVIOContextDeleter{} };
@@ -164,8 +164,6 @@ namespace DiscordCoreAPI {
             }
         };
 
-        AVPacketWrapper(nullptr_t) {};
-
         AVPacketWrapper& operator=(AVPacket* other) {
             this->thePtr.reset(other);
             return *this;
@@ -179,6 +177,8 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
+        AVPacketWrapper(nullptr_t) {};
+
     protected:
         unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr , AVPacketDeleter{} };
     };
@@ -189,8 +189,6 @@ namespace DiscordCoreAPI {
             void operator()(AVCodec*) {};
         };
 
-        AVCodecWrapper(nullptr_t) {};
-
         AVCodecWrapper& operator=(AVCodec* other) {
             this->thePtr.reset(other);
             return *this;
@@ -200,6 +198,8 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
+        AVCodecWrapper(nullptr_t) {};
+
     protected:
         unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr , AVCodecDeleter{} };
     };
@@ -208,11 +208,9 @@ namespace DiscordCoreAPI {
 
         struct AVStreamDeleter {
             void operator()(AVStream*) {
-                
+
             };
         };
-
-        AVStreamWrapper(nullptr_t) {};
 
         AVStreamWrapper& operator=(AVStream* other) {
             this->thePtr.reset(other);
@@ -226,6 +224,8 @@ namespace DiscordCoreAPI {
         operator AVStream* () {
             return this->thePtr.get();
         }
+
+        AVStreamWrapper(nullptr_t) {};
 
     protected:
         unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr , AVStreamDeleter{} };
@@ -251,9 +251,11 @@ namespace DiscordCoreAPI {
 
         void updateBufferRefreshTime(int32_t newRefreshTime);
 
-        void cancelMe();
-
         bool getFrame(RawFrameData* dataPackage);
+
+        CoRoutine<void> run();
+
+        void cancelMe();
 
         void startMe();
 
@@ -267,21 +269,16 @@ namespace DiscordCoreAPI {
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
         AVCodecContextWrapper audioDecodeContext{ nullptr };
         AVFormatContextWrapper formatContext{ nullptr };
-        unique_ptr<stop_token> stopToken{ nullptr };
         AVIOContextWrapper ioContext{ nullptr };
         SwrContextWrapper swrContext{ nullptr };
         AVStreamWrapper audioStream{ nullptr };
         int32_t refreshTimeForBuffer{ 10000 };
-        CoRoutineWrapper theTask{ nullptr };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
         vector<uint8_t> currentBuffer{};
-        Event<void, void> finishEvent{};
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };
-
-        CoRoutine<void> run();
     };
 
 }

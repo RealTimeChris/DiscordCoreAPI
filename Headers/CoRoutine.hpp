@@ -413,8 +413,8 @@ namespace DiscordCoreAPI {
         return NewThreadAwaitable();
     }
 
-    class CoRoutineWrapper {
-    public:
+    struct CoRoutineWrapper {
+
         struct CoRoutineDeleter {
             void operator()(CoRoutine<void>* other) {
                 if (other != nullptr) {
@@ -425,7 +425,7 @@ namespace DiscordCoreAPI {
         };
         
         CoRoutineWrapper& operator=(CoRoutine<void>* other) {
-            this->thePtr = unique_ptr<CoRoutine<void>, CoRoutineDeleter>(other, CoRoutineDeleter{});
+            this->thePtr.reset(other);
             return *this;
         }
 
@@ -444,7 +444,7 @@ namespace DiscordCoreAPI {
         CoRoutineWrapper(nullptr_t) {};
 
         CoRoutineWrapper(CoRoutine<void>* other) {
-            this->thePtr = unique_ptr<CoRoutine<void>, CoRoutineDeleter>(other, CoRoutineDeleter{});
+            this->thePtr.reset(other);
         }
 
     protected:

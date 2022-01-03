@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
         };
 
         CURLWrapper& operator=(CURL* other) {
-            this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
+            this->thePtr.reset(other);
             return *this;
         }
 
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
         CURLWrapper(nullptr_t) {};
 
         CURLWrapper(CURL* other) {
-            this->thePtr = unique_ptr<CURL, CURLDeleter>(other, CURLDeleter{});
+            this->thePtr.reset(other);
         }
 
     protected:
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
         };
 
         CURLUWrapper& operator=(CURLU* other) {
-            this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
+            this->thePtr.reset(other);
             return *this;
         }
 
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
         CURLUWrapper(nullptr_t) {};
 
         CURLUWrapper(CURLU* other) {
-            this->thePtr = unique_ptr<CURLU, CURLUDeleter>(other, CURLUDeleter{});
+            this->thePtr.reset(other);
         }
 
     protected:
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
         };
 
         CURLCharWrapper& operator=(char* other) {
-            this->thePtr = unique_ptr<char, CURLCharDeleter>(other, CURLCharDeleter{});
+            this->thePtr.reset(other);
             return *this;
         }
 
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
         CURLCharWrapper(nullptr_t) {};
 
         CURLCharWrapper(char* other) {
-            this->thePtr = unique_ptr<char, CURLCharDeleter>(other, CURLCharDeleter{});
+            this->thePtr.reset(other);
         }
 
     protected:
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    class Time {
+    class DiscordCoreAPI_Dll Time {
     public:
 
         Time(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second) {
@@ -428,11 +428,28 @@ namespace DiscordCoreAPI {
 
     };
 
-    struct OpusEncoderDeleter {
-        void operator()(OpusEncoder* other) {
-            opus_encoder_destroy(other);
+    struct OpusEncoderWrapper {
+
+        struct DiscordCoreAPI_Dll OpusEncoderDeleter {
+            void operator()(OpusEncoder* other) {
+                opus_encoder_destroy(other);
+            }
+        };
+
+        OpusEncoderWrapper& operator=(OpusEncoder* other) {
+            this->thePtr.reset(other);
+            return *this;
         }
+
+        operator OpusEncoder* () {
+            return this->thePtr.get();
+        }
+
+        OpusEncoderWrapper(nullptr_t) {};
+    protected:
+        unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr , OpusEncoderDeleter{} };
     };
+    
 
     /**
     * \addtogroup foundation_entities

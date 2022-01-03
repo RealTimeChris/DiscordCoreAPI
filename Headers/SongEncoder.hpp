@@ -18,7 +18,8 @@ namespace DiscordCoreAPI {
 		vector<AudioFrameData> encodeFrames(vector<RawFrameData> rawFrames);
 
 	protected:
-		unique_ptr<OpusEncoder, OpusEncoderDeleter> encoder{ nullptr };
+
+		OpusEncoderWrapper encoder{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		const int32_t sampleRate{ 48000 };
 		const int32_t nChannels{ 2 };
