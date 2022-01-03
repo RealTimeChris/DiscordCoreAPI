@@ -3371,13 +3371,6 @@ namespace  DiscordCoreInternal {
         GET_SOUNDCLOUD_SONG = 203
     };
 
-    struct DiscordCoreAPI_Dll HttpData {
-        vector<string> responseHeaderValues{};
-        string returnMessage{ "" };
-        int64_t returnCode{ 0 };
-        json data{};
-    };
-
     struct DiscordCoreAPI_Dll HttpWorkloadData {
         map<string, string> headersToInsert{};
         HttpWorkloadClass workloadClass{};

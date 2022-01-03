@@ -25,23 +25,7 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
-			if (headers.contains("x-ratelimit-retry-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<double>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
-			}
-			else if (headers.contains("x-ratelimit-remaining")) {
-				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining")->value);
-			}
-			else if (headers.contains("x-ratelimit-limit")) {
-				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit")->value.c_str());
-			}
-			else if (headers.contains("x-ratelimit-reset-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after")->value) * 1000.0f);
-			}
-			else if (headers.contains("x-ratelimit-bucket")) {
-				pRateLimitData->bucket = headers.at("x-ratelimit-bucket")->value;
-			}
-		};
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {};
 
 		virtual ~HttpHeader() {};
 
@@ -49,35 +33,101 @@ namespace DiscordCoreInternal {
 		string key{ "" };
 	};
 
+	class RateLimitRetryAfter : public HttpHeader {
+	public:
+
+		RateLimitRetryAfter(string key, string value) : HttpHeader(key, value) {};
+
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+			if (headers.contains("x-ratelimit-retry-after")) {
+				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
+			}
+		}
+	};
+
+	class RateLimitMsRemain : public HttpHeader {
+	public:
+
+		RateLimitMsRemain(string key, string value) : HttpHeader(key, value) {};
+
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+			if (headers.contains("x-ratelimit-remaining")) {
+				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining")->value);
+			}
+		}
+
+	};
+
+	class RateLimitLimit : public HttpHeader {
+	public:
+
+		RateLimitLimit(string key, string value) : HttpHeader(key, value) {};
+
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+			if (headers.contains("x-ratelimit-limit")) {
+				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit")->value.c_str());
+			}
+		}
+
+	};
+
+	class RateLimitResetAfter : public HttpHeader {
+	public:
+
+		RateLimitResetAfter(string key, string value) : HttpHeader(key, value) {};
+
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+			if (headers.contains("x-ratelimit-reset-after")) {
+				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after")->value) * 1000.0f);
+			}
+		}
+
+	};
+
+	class RateLimitBucket : public HttpHeader {
+	public:
+
+		RateLimitBucket(string key, string value) : HttpHeader(key, value) {};
+
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+			if (headers.contains("x-ratelimit-bucket")) {
+				pRateLimitData->bucket = headers.at("x-ratelimit-bucket")->value;
+			}
+		}
+
+	};
+
 	class HttpHeaderBuilder {
 	public:
 
 		static shared_ptr<HttpHeader> getHeader(string key, string value) {
-			return make_shared<HttpHeader>(key, value);
+			if (key.find("x-ratelimit-remaining") != string::npos) {
+				return make_shared<RateLimitMsRemain>(key, value);
+			}
+			else if (key.find("x-ratelimit-reset-after") != string::npos) {
+				return make_shared<RateLimitResetAfter>(key, value);
+			}
+			else if (key.find("x-ratelimit-bucket") != string::npos) {
+				return make_shared<RateLimitBucket>(key, value);
+			}
+			else if (key.find("x-ratelimit-limit") != string::npos) {
+				return make_shared<RateLimitLimit>(key, value);
+			}
+			else if (key.find("x-ratelimit-retry-after") != string::npos) {
+				return make_shared<RateLimitRetryAfter>(key, value);
+			}
+			else {
+				return make_shared<HttpHeader>(key, value);
+			}
 		};
 	};
 
-	class HttpRnRBuilder;
+	struct DiscordCoreAPI_Dll HttpData {
 
-	class DiscordCoreAPI_Dll HttpConnection {
-	public:
-
-		HttpConnection(string baseUrl, string relativePath);
-
-		bool sendRequest(string request);
-
-		HttpRnRBuilder getResponse();
-
-		bool connect();
-
-	protected:
-
-		BIOWrapper connectionBio{ nullptr };
-		SSL_CTXWrapper context{ nullptr };
-		vector<char> inputBuffer{};
-		SSLWrapper ssl{ nullptr };
-		string relativePath{ "" };
-		string baseUrl{ "" };
+		map<string, shared_ptr<HttpHeader>> responseHeaderValues{};
+		string returnMessage{ "" };
+		int64_t returnCode{ 0 };
+		json data{};
 	};
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
@@ -89,7 +139,7 @@ namespace DiscordCoreInternal {
 		string contentFinalReal{ "" };
 		int64_t responseCode{ -1 };
 
-		static string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+		string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
@@ -117,12 +167,37 @@ namespace DiscordCoreInternal {
 		void parseCode();
 	};
 
+	class DiscordCoreAPI_Dll HttpConnection {
+	public:
+
+		HttpConnection(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+
+		HttpData getResponse(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
+
+		bool sendRequest();
+
+		bool connect();
+
+	protected:
+		
+		BIOWrapper connectionBio{ nullptr };
+		HttpWorkloadClass workloadClass{};
+		SSL_CTXWrapper context{ nullptr };
+		map<string, string> headers{};
+		HttpRnRBuilder httpBuilder{};
+		vector<char> inputBuffer{};
+		SSLWrapper ssl{ nullptr };
+		string relativePath{ "" };
+		string content{ "" };
+		string baseUrl{ "" };
+	};
+
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
 		friend class HttpRnRBuilder;
 
-		static HttpRnRBuilder executeHttpRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+		static HttpData executeHttpRequest(HttpWorkloadData workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData workload) {
