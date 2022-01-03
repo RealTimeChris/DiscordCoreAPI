@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 	
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
 	struct DiscordCoreAPI_Dll OnChannelPinsUpdateData {
-		ChannelPinsUpdateEventData dataPackage{}; ///< The Channel pins update data.
+		ChannelPinsUpdateEventData dataPackage{}; ///< The Channel pins update responseData.
 	};
 
 	/// Data that is received as part of a Thread creation event. \brief Data that is received as part of a Thread creation event.
@@ -83,17 +83,17 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Thread list sync event. \brief Data that is received as part of a Thread list sync event.
 	struct DiscordCoreAPI_Dll OnThreadListSyncData {
-		ThreadListSyncData threadListSyncData{}; ///< The Thread list sync data.
+		ThreadListSyncData threadListSyncData{}; ///< The Thread list sync responseData.
 	};
 
 	/// Data that is received as part of a Thread member update event. \brief Data that is received as part of a Thread member update event.
 	struct DiscordCoreAPI_Dll OnThreadMemberUpdateData {
-		ThreadMemberData threadMember{}; ///< Thread member update data.
+		ThreadMemberData threadMember{}; ///< Thread member update responseData.
 	};
 
 	/// Data that is received as part of a Thread members update event. \brief Data that is received as part of a Thread members update event.
 	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData {
-		ThreadMembersUpdateData threadMembersUpdateData{}; ///< Thread member's update data.
+		ThreadMembersUpdateData threadMembersUpdateData{}; ///< Thread member's update responseData.
 	};
 
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Guild emojis update event. \brief Data that is received as part of a Guild emojis update event.
 	struct DiscordCoreAPI_Dll OnGuildEmojisUpdateData {
-		GuildEmojisUpdateEventData updateData{}; ///< The Guild emoji's update data.
+		GuildEmojisUpdateEventData updateData{}; ///< The Guild emoji's update responseData.
 	};
 
 	/// Data that is received as part of a Guild sticker update event. \brief Data that is received as part of a Guild sticker update event.
@@ -146,7 +146,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
-		User user{}; ///< The User data of the removed GuildMember.
+		User user{}; ///< The User responseData of the removed GuildMember.
 		string guildId{ "" }; ///< The id of the Guild from which they were removed.
 	};
 

@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 		
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
-		vector<uint8_t> avatar{};///< Image data for the default webhook avatar.
+		vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
 		string channelId{ "" };///< The new channel id this webhook should be moved to.
 		string webhookId{ "" };///< The WebHook to be modified.
 		string name{ "" };///< The default name of the webhook.
@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
 		string webhookToken{ "" };///< Token of the desired WebHook.
-		vector<uint8_t> avatar{};///< Image data for the default webhook avatar.
+		vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
 		string channelId{ "" };///< The new channel id this webhook should be moved to.
 		string webhookId{ "" };///< The WebHook to be modified.
 		string name{ "" };///< The default name of the webhook.

@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 			this->channelData.nsfw = newData.nsfw;
 			this->channelData.type = newData.type;
 		};
-		UpdateChannelData channelData{};///< The data of the channel to be updated.
+		UpdateChannelData channelData{};///< The responseData of the channel to be updated.
 		string channelId{ "" };///< The id of the Channel to modify.
 		string reason{ "" };///< A reason for modifying the Channel.
 	};
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		string name{ "" };///< The name of the Channel.
 	};
 
-	/// For modifying the Channel position data of a single Channel. \brief For modifying the Channel position data of a single Channel.
+	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
 		string parentId{ "" };///< The new parent ID for the channel that is moved.
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
-		vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's data.
+		vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
 		string guildId{ "" };///< Guild within which to re-order the Channel positions.
 		string reason{ "" };///< Reason for re-ordering the Channel positions.
 	};

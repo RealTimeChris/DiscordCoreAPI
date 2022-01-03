@@ -74,6 +74,7 @@ namespace DiscordCoreAPI {
 		CoRoutineWrapper theTask{ nullptr };
 		YouTubeSong theSong{};
 		string guildId{ "" };
+		mutex accessMutex{};
 
 		void sendEmptyingFrames(TSUnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
 

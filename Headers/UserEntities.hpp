@@ -53,12 +53,12 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The user for which you would like to modify the voice state of.
 	};
 
-	/// For getting User data from the library's cache or the Discord server. \brief For getting User data from the library's cache or the Discord server.
+	/// For getting User responseData from the library's cache or the Discord server. \brief For getting User responseData from the library's cache or the Discord server.
 	struct DiscordCoreAPI_Dll GetUserData {
 		string userId{ "" };///< The id of the desired User.
 	};
 
-	/// For modifying the Bot's User data. \brief For modifying the Bot's User data.
+	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
 		vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
 		string username{ "" };///< User's username, if changed may cause the user's discriminator to be randomized.
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
 
-		/// Collects the Bot's current User data. \brief Collects the Bot's current User data.
+		/// Collects the Bot's current User responseData. \brief Collects the Bot's current User responseData.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> getCurrentUserAsync();
 
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
 
-		/// Modifies the Bot's User data. \brief Modifies the Bot's User data.
+		/// Modifies the Bot's User responseData. \brief Modifies the Bot's User responseData.
 		/// \param dataPackage A ModifyCurrentUserData  structure.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a vector<ConnectionData>.
 		static CoRoutine<vector<ConnectionData>> getUserConnections();
 
-		/// Collects the Application data associated with the current Bot. \brief Collects the Application data associated with the current Bot.
+		/// Collects the Application responseData associated with the current Bot. \brief Collects the Application responseData associated with the current Bot.
 		/// \returns A CoRoutine containing an ApplicationData.
 		static CoRoutine<ApplicationData> getCurrentUserApplicationInfoAsync();
 

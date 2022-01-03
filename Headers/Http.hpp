@@ -124,10 +124,10 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpData {
 
-		map<string, shared_ptr<HttpHeader>> responseHeaderValues{};
-		string returnMessage{ "" };
-		int64_t returnCode{ 0 };
-		json data{};
+		map<string, shared_ptr<HttpHeader>> responseHeaders{};
+		string responseMessage{ "" };
+		int64_t responseCode{ 0 };
+		json responseData{};
 	};
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
@@ -220,7 +220,7 @@ namespace DiscordCoreInternal {
 				}
 				HttpData returnData = HttpClient::executeByRateLimitData(workload, rateLimitDataNew, true);
 				returnType returnObject{};
-				DataParser::parseObject(returnData.data, &returnObject);
+				DataParser::parseObject(returnData.responseData, &returnObject);
 				return returnObject;
 			}
 			catch (...) {

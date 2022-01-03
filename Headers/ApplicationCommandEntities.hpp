@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
     /// For bulk-overwriting a collection of global ApplicationCommands. \brief For bulk-overwriting a collection of global ApplicationCommands.
     struct DiscordCoreAPI_Dll BulkOverwriteGlobalApplicationCommandsData {
-        vector<CreateGlobalApplicationCommandData> data{};///< A vector of the options for the ApplicationCommands.
+        vector<CreateGlobalApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
     };
 
     /// For acquiring all of the Guild ApplicationCommands of a single Guild. \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 
     /// For bulk-overwriting a collection of Guild ApplicationCommands. \brief For bulk-overwriting a collection of Guild ApplicationCommands.
     struct DiscordCoreAPI_Dll BulkOverwriteGuildApplicationCommandsData {
-        vector<CreateGuildApplicationCommandData> data{};   ///< A vector of the options for the ApplicationCommands.
+        vector<CreateGuildApplicationCommandData> responseData{};   ///< A vector of the options for the ApplicationCommands.
         string guildId{ "" };   ///< The id of the Guild which you would like to overwrite the commands of.
     };
 
@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 
     /// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
     struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
-        vector<GuildApplicationCommandPermissionsData> permissions{}; ///< A vector of edit-Guild-application-permissions data to edit.
+        vector<GuildApplicationCommandPermissionsData> permissions{}; ///< A vector of edit-Guild-application-permissions responseData to edit.
         string guildId{ "" };///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
     };
 

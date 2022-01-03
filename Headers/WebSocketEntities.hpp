@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(string& dataToSend);
 
-		void sendMessage(json& data);
+		void sendMessage(json& responseData);
 
 		~MsgWebSocketAgent();
 
@@ -201,9 +201,9 @@ namespace DiscordCoreInternal {
 
 		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
-		void sendVoiceData(string& data);
+		void sendVoiceData(string& responseData);
 
-		void sendMessage(vector<uint8_t>& data);
+		void sendMessage(vector<uint8_t>& responseData);
 
 		void sendMessage(string& dataToSend);
 

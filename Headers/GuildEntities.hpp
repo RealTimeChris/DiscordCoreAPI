@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a Guild's widget. \brief For modifying a Guild's widget.
 	struct DiscordCoreAPI_Dll ModifyGuildWidgetData {
-		GuildWidgetData widgetData{};///< The new Guild widget data.
+		GuildWidgetData widgetData{};///< The new Guild widget responseData.
 		string guildId{ "" };///< The Guild for which to modify the widget of.
 		string reason{ "" };///< Reason for modifying the widget.
 	};
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The Guild from which to collect the widget from.
 	};
 
-	/// For geting the vanity invite data of a Guild. \brief For geting the vanity invite data of a Guild.
+	/// For geting the vanity invite responseData of a Guild. \brief For geting the vanity invite responseData of a Guild.
 	struct DiscordCoreAPI_Dll GetGuildVanityInviteData {
 		string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
 	};
@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< The Guild within which you would like to delete the Template.	
 	};
 
-	/// For geting a single invite's data from a Guild. \brief For geting a single invite's data from a Guild.
+	/// For geting a single invite's responseData from a Guild. \brief For geting a single invite's responseData from a Guild.
 	struct DiscordCoreAPI_Dll GetInviteData {
 		string guildScheduledEventId{ "" };///< The Guild scheduled event to include with the invite.
 		bool withExpiration{ false };///< Collect expiration time/date?
@@ -419,7 +419,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a GuildWidgetData.
 		static CoRoutine<GuildWidgetData> getGuildWidgetAsync(GetGuildWidgetData dataPackage);
 
-		/// Gets the vanity invite data from a particular server. \brief Gets the vanity invite data from a particular server.
+		/// Gets the vanity invite responseData from a particular server. \brief Gets the vanity invite responseData from a particular server.
 		/// \param dataPackage A GetGuildVanityInviteData structure.
 		/// \returns A CoRoutine containing InviteData.
 		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);

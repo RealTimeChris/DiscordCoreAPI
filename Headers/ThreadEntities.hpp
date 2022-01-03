@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		string userId{ "" };///< The id of the User to remove from the Thread.
 	};
 
-	/// For collecting a ThreadMember data structure for a given ThreadMember. \brief For collecting a ThreadMember data structure for a given ThreadMember.
+	/// For collecting a ThreadMember responseData structure for a given ThreadMember. \brief For collecting a ThreadMember responseData structure for a given ThreadMember.
 	struct DiscordCoreAPI_Dll GetThreadMemberData {
 		string channelId{ "" };///< The id of the Thread to collect them from.
 		string userId{ "" };///< The id of the User to collect from the Thread.

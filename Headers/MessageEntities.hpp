@@ -409,7 +409,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 
-	/// MessageCollectorReturn data. \brief MessageCollectorReturn data.
+	/// MessageCollectorReturn responseData. \brief MessageCollectorReturn responseData.
 	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
 		vector<Message> messages{}; ///< A vector of collected Messages.
 	};

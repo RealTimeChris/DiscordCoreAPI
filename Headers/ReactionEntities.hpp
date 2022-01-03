@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		friend string DiscordCoreInternal::JSONIFY(CreateGuildEmojiData dataPackage);
 		friend class Reactions;
 
-		vector<uint8_t> imageData{};///< The image data.
+		vector<uint8_t> imageData{};///< The image responseData.
 		vector<string> roles{};///< Roles that can use this Emoji.
 		string guildId{ "" };///< The Guild within which to create the Emoji.
 		string reason{ "" };///< Reason for creating the new Emoji.
