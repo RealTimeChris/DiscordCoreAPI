@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
                     if (cancelHandle.promise().isItStopped()) {
                         co_return;
                     }
-                    this_thread::sleep_for(chrono::milliseconds(10));
+                    this_thread::sleep_for(chrono::milliseconds(1));
                 }
                 theFunction();
                 if (cancelHandle.promise().isItStopped() || !repeating) {
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
                     if (cancelHandle.promise().isItStopped()) {
                         co_return;
                     }
-                    this_thread::sleep_for(chrono::milliseconds(10));
+                    this_thread::sleep_for(chrono::milliseconds(1));
                 }
                 theFunction();
                 if (cancelHandle.promise().isItStopped() || !repeating) {

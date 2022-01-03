@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
+#include <memory>
 
 namespace DiscordCoreAPI {
 
@@ -266,11 +267,11 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Event<void, void> {
     public:
 
-        shared_ptr<bool> theEventState{ make_shared<bool>(false) };
+        atomic<shared_ptr<bool>> theEventState{ make_shared<bool>(false) };
         string eventId{ "" };
 
         Event<void, void>& operator=(const Event<void, void>& other) {
-            this->theEventState = other.theEventState;
+            this->theEventState.store(other.theEventState);
             this->eventId = other.eventId;
             EventCore::refCounts.at(this->eventId) += 1;
             return *this;
@@ -282,7 +283,7 @@ namespace DiscordCoreAPI {
         } 
 
         Event<void, void>& operator=(Event<void, void>& other) {
-            this->theEventState = other.theEventState;
+            this->theEventState.store(other.theEventState);
             this->eventId = other.eventId;
             EventCore::refCounts.at(this->eventId) += 1;
             return *this;
@@ -300,15 +301,17 @@ namespace DiscordCoreAPI {
             this->theEventState = EventCore::theEvents.at(this->eventId)->theEventState;
         }
 
-        uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
-            uint32_t millisecondsWaited{ 0 };
+        uint32_t wait(int64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
+            int64_t millisecondsWaited{ 0 };
             while (true) {
-                if (*this->theEventState) {
+                if (*this->theEventState.load()) {
                     return 0;
                 }
                 else {
+                    int64_t startTime = chrono::duration_cast<chrono::milliseconds, int64_t>(chrono::steady_clock::now().time_since_epoch()).count();
                     this_thread::sleep_for(chrono::milliseconds(1));
-                    millisecondsWaited += 1;
+                    int64_t endTime = chrono::duration_cast<chrono::milliseconds, int64_t>(chrono::steady_clock::now().time_since_epoch()).count();
+                    millisecondsWaited += endTime - startTime;
                 }
                 if (millisecondsWaited >= millisecondsMaxToWait) {
                     return 1;
@@ -317,11 +320,11 @@ namespace DiscordCoreAPI {
         }
 
         void set(string testValue = "") {
-            *this->theEventState = true;
+            *this->theEventState.load() = true;
         }
 
         void reset() {
-            *this->theEventState = false;
+            *this->theEventState.load() = false;
         }
 
         ~Event() {
