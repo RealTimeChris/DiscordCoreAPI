@@ -15,15 +15,41 @@ namespace DiscordCoreInternal {
 	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
 
+	class HttpRnRBuilder;
+
+	class DiscordCoreAPI_Dll HttpConnection {
+	public:
+
+		HttpConnection(string baseUrl, string relativePath);
+
+		bool sendRequest(string request);
+
+		HttpRnRBuilder getResponse();
+
+		bool connect();
+
+	protected:
+
+		BIOWrapper connectionBio{ nullptr };
+		SSL_CTXWrapper context{ nullptr };
+		vector<char> inputBuffer{};
+		SSLWrapper ssl{ nullptr };
+		string relativePath{ "" };
+		string baseUrl{ "" };
+	};
+
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
+		friend class HttpConnection;
 		friend class HttpClient;
 
 		string contentFinalReal{ "" };
 		int64_t responseCode{ -1 };
 
 		static string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+
+		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
 		map<string, string> getResponseHeaders();
 
@@ -51,6 +77,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
+
+		friend class HttpRnRBuilder;
 
 		static HttpRnRBuilder executeHttpRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
@@ -150,21 +178,9 @@ namespace DiscordCoreInternal {
 		static atomic<shared_ptr<string>> botToken;
 		static atomic<shared_ptr<string>> baseURL;
 
-		BIOWrapper connectionBio{ nullptr };
-		SSL_CTXWrapper context{ nullptr };
-		HttpRnRBuilder responseData{};
-		vector<char> inputBuffer{};
-		SSLWrapper ssl{ nullptr };
-
 		static HttpData executeByRateLimitData(HttpWorkloadData workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
 
 		static HttpData HttpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>);
-
-		bool connect(string baseUrl, string relativePath);
-
-		bool sendRequest(string request);
-
-		HttpRnRBuilder getResponse();
 		
 
 	};
