@@ -68,7 +68,6 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unique_ptr<SongEncoder> songEncoder{ nullptr };
 		unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		Event<void, void> readyToQuitEventOut{};
 		Event<void, void> readyToQuitEventIn{};

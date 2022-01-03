@@ -12,6 +12,33 @@
 
 namespace DiscordCoreAPI {
 
+
+	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
+	public:
+
+		SoundCloudRequestBuilder() = default;
+		
+		static SoundCloudSong constructFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
+
+		static vector<SoundCloudSong> constructFirstDownloadUrl(string theString);
+
+		static SoundCloudSong constructSecondDownloadUrl(SoundCloudSong newSong);
+
+		static SoundCloudSong constructFinalDownloadUrl(SoundCloudSong newSong);
+		
+		static string collectClientId();
+
+		static void initialize();
+
+	protected:
+		
+		static string appVersion;
+		static string baseURL02;
+		static string clientId;
+		static string baseURL;
+
+	};
+
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
@@ -28,10 +55,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unique_ptr<SongEncoder> songEncoder{ nullptr };
 		unique_ptr<CoRoutine<void>> theTask{ nullptr };
-		Event<void, void> readyToQuitEventOut {};
-		Event<void, void> readyToQuitEventIn {};
+		Event<void, void> readyToQuitEventOut{};
+		Event<void, void> readyToQuitEventIn{};
 		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };
 		string guildId{ "" };

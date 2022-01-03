@@ -2818,37 +2818,19 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreInternal::DataParser;
+        friend class SoundCloudRequestBuilder;
         friend class SoundCloudAPI;
         friend class SongAPI;
         friend struct Song;
 
         operator Song();
 
-        static void initialize() noexcept;
-
-        SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
-
-        vector<SoundCloudSong> searchForSong(string songQuery);
-
         virtual ~SoundCloudSong() {}
 
     protected:
 
-        static string clientId;
-
-        string baseURL02{ "https://api-v2.soundcloud.com" };
-        string baseURL{ "https://soundcloud.com" };
-        string appVersion{ "1631696495" };
         string trackAuthorization{ "" };
         bool doWeGetSaved{ false };
-
-        SoundCloudSong() noexcept;
-
-        string collectClientId();
-
-        SoundCloudSong findSecondDownloadURL(SoundCloudSong newSong);
-
-        SoundCloudSong findFinalDownloadURLs(SoundCloudSong newSong);
     };
 
     /**

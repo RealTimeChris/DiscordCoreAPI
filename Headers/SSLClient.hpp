@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_METHODWrapper {
 
-		struct SSL_METHODDeleter {
+		struct DiscordCoreAPI_Dll SSL_METHODDeleter {
 			void operator()(const SSL_METHOD*) {}
 		};
 
@@ -249,10 +249,6 @@ namespace DiscordCoreInternal {
 
 		vector<uint8_t> getData();
 
-		int64_t getBytesWritten();
-
-		int64_t getBytesRead();
-
 		void toggleBlocking();
 
 		~DatagramWebSocketSSLClient();
@@ -263,8 +259,6 @@ namespace DiscordCoreInternal {
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
-		int64_t bytesWritten{ 0 };
-		int64_t bytesRead{ 0 };
 		string hostname{ "" };
 		string port{ "" };
 	};
@@ -280,11 +274,7 @@ namespace DiscordCoreInternal {
 
 		vector<uint8_t> getData();
 
-		int64_t getBytesWritten();
-
 		int64_t getBytesRead();
-
-		void toggleBlocking();
 
 		bool readData();
 
@@ -294,11 +284,9 @@ namespace DiscordCoreInternal {
 
 		SOCKETWrapper fileDescriptor{ nullptr };
 		SSL_CTXWrapper  context{ nullptr };
-		uint64_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
-		bool areWeBlocking{ true };
-		int64_t bytesWritten{ 0 };
 		SSLWrapper ssl{ nullptr };
+		uint64_t bufferSize{ 0 };
 		int64_t bytesRead{ 0 };
 		string hostname{ "" };
 		string port{ "" };

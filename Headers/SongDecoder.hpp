@@ -78,7 +78,6 @@ namespace DiscordCoreAPI {
         struct AVFormatContextDeleter {
             void operator()(AVFormatContext* other) {
                 if (other != nullptr) {
-                    avformat_close_input(&other);
                     avformat_free_context(other);
                     other = nullptr;
                 }
