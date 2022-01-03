@@ -419,6 +419,7 @@ namespace DiscordCoreAPI {
             void operator()(CoRoutine<void>* other) {
                 if (other != nullptr) {
                     other->cancel();
+                    other->get();
                     other = nullptr;
                 }
             }
