@@ -216,8 +216,6 @@ namespace DiscordCoreInternal {
 
 		void writeData(string&);
 
-		void toggleBlocking();
-
 		bool readData();
 
 		~MsgWebSocketSSLClient();
@@ -229,12 +227,11 @@ namespace DiscordCoreInternal {
 		const uint32_t bufferSize{ 1024 * 16 };
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
-		bool areWeBlocking{ true };
 		SSLWrapper ssl{ nullptr };
 		bool doWeQuit{ false };
 		string hostname{ "" };
 		string port{ "" };
-		fd_set readfds{};
+		fd_set readSet{};
 	};
 
 	class DiscordCoreAPI_Dll DatagramWebSocketSSLClient {
@@ -282,8 +279,6 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
-		~StreamWebSocketSSLClient();
-
 	protected:
 
 		SOCKETWrapper fileDescriptor{ nullptr };
@@ -294,7 +289,7 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{ 0 };
 		string hostname{ "" };
 		string port{ "" };
-		fd_set readfds{};
+		fd_set readSet{};
 	};
 
 }
