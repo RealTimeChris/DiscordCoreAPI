@@ -268,6 +268,10 @@ namespace DiscordCoreAPI {
 
         bool getFrame(RawFrameData* dataPackage);
 
+        bool haveWeFailed() {
+            return this->haveWeFailedBool.load();
+        }
+
         void cancelMe();
 
         void startMe();
@@ -287,6 +291,7 @@ namespace DiscordCoreAPI {
         AVIOContextWrapper ioContext{ nullptr };
         SwrContextWrapper swrContext{ nullptr };
         AVStreamWrapper audioStream{ nullptr };
+        atomic<bool> haveWeFailedBool{ false };
         int32_t refreshTimeForBuffer{ 10000 };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };

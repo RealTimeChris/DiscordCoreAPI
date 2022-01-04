@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 		/// \param searchQuery The Song to search for.
 		/// \param guildId The Guild id to search for the Song within.
 		/// \returns A vector of Song objects representing the search results.
-		static vector<unique_ptr<Song>> searchForSong(string searchQuery, string guildId);
+		static vector<Song> searchForSong(string searchQuery, string guildId);
 
 		/// Adds a Song to the current Playlist's UnboundedMessageBlock. \brief Adds a Song to the current Playlist's UnboundedMessageBlock.
 		/// \param guildMember The GuildMember that is adding the Song to the UnboundedMessageBlock.

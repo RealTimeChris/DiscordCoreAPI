@@ -2771,12 +2771,15 @@ namespace DiscordCoreAPI {
         friend class YouTubeAPI;
         friend class SongAPI;
 
-        
         SongType type{ SongType::SoundCloud };///< The type of song.
-        
+
+        string secondDownloadURL{ "" };
+        string firstDownloadURL{ "" };
+        string html5PlayerFile{ "" };
         string addedByUserName{ "" };///< The User name of the individual who added this Song to the playlist.
         string addedByUserId{ "" };///< The User id of the individual who added this Song to the playlist.
         string thumbnailURL{ "" };///< The Url of the thumbnail image of this Song.
+        string html5Player{ "" };
         string description{ "" };///< A description of the Song.
         string songTitle{ "" };///< The title of the Song.
         string duration{ "" };///< The duration of the Song.
@@ -2794,13 +2797,9 @@ namespace DiscordCoreAPI {
 
         vector<DownloadURL> finalDownloadURLs{};
         string trackAuthorization{ "" };
-        string secondDownloadURL{ "" };
-        string firstDownloadURL{ "" };
-        string html5PlayerFile{ "" };
         string playerResponse{ "" };
         bool doWeGetSaved{ false };
         int32_t contentLength{ 0 };
-        string html5Player{ "" };
         YouTubeFormat format{};
         string songId{ "" };
 
