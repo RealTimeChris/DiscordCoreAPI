@@ -2768,7 +2768,9 @@ namespace DiscordCoreAPI {
         friend class YouTubeAPI;
         friend class SongAPI;
 
+        
         SongType type{ SongType::SoundCloud };///< The type of song.
+        vector<YouTubeFormat> formats{};
         string addedByUserName{ "" };///< The User name of the individual who added this Song to the playlist.
         string addedByUserId{ "" };///< The User id of the individual who added this Song to the playlist.
         string thumbnailURL{ "" };///< The Url of the thumbnail image of this Song.
@@ -2791,6 +2793,9 @@ namespace DiscordCoreAPI {
         string secondDownloadURL{ "" };
         string firstDownloadURL{ "" };
         int32_t contentLength{ 0 };
+        string html5PlayerFile{ "" };
+        string playerResponse{ "" };
+        string html5Player{ "" };
         string songId{ "" };
 
     };
@@ -2826,13 +2831,6 @@ namespace DiscordCoreAPI {
         operator Song();
 
         virtual ~YouTubeSong() {};
-
-    protected:
-
-        vector<YouTubeFormat> formats{};
-        string html5PlayerFile{ "" };
-        string playerResponse{ "" };
-        string html5Player{ "" };
 
     };
 
