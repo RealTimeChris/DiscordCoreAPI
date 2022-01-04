@@ -2755,6 +2755,9 @@ namespace DiscordCoreAPI {
         AudioFrameData() {};
     };
 
+    class SoundCloudSong;
+    class YouTubeSong;
+
     /// A song from the various platforms. \brief A song from the various platforms.
     struct DiscordCoreAPI_Dll Song {
     public:
@@ -2770,7 +2773,7 @@ namespace DiscordCoreAPI {
 
         
         SongType type{ SongType::SoundCloud };///< The type of song.
-        vector<YouTubeFormat> formats{};
+        
         string addedByUserName{ "" };///< The User name of the individual who added this Song to the playlist.
         string addedByUserId{ "" };///< The User id of the individual who added this Song to the playlist.
         string thumbnailURL{ "" };///< The Url of the thumbnail image of this Song.
@@ -2783,19 +2786,22 @@ namespace DiscordCoreAPI {
 
         virtual ~Song() {};
 
-    protected:
-
         operator SoundCloudSong();
 
         operator YouTubeSong();
 
+    protected:
+
         vector<DownloadURL> finalDownloadURLs{};
+        string trackAuthorization{ "" };
         string secondDownloadURL{ "" };
         string firstDownloadURL{ "" };
-        int32_t contentLength{ 0 };
         string html5PlayerFile{ "" };
         string playerResponse{ "" };
+        bool doWeGetSaved{ false };
+        int32_t contentLength{ 0 };
         string html5Player{ "" };
+        YouTubeFormat format{};
         string songId{ "" };
 
     };
@@ -2846,11 +2852,6 @@ namespace DiscordCoreAPI {
         operator Song();
 
         virtual ~SoundCloudSong() {}
-
-    protected:
-
-        string trackAuthorization{ "" };
-        bool doWeGetSaved{ false };
     };
 
     /**
