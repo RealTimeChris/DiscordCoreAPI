@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			map<string, unique_ptr<TSUnboundedMessageBlock<AudioFrameData>>> audioBuffersMap{};
+			map<string, TSUnboundedMessageBlock<AudioFrameData>*> audioBuffersMap{};
 			map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
 			map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
 			map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<TSUnboundedMessageBlock<AudioFrameData>>>* getAudioBuffersMap();
+	DiscordCoreAPI_Dll map<string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBuffersMap();
 
 	DiscordCoreAPI_Dll map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 

@@ -144,6 +144,10 @@ namespace DiscordCoreAPI {
             this->theArray.push(theObject);
         }
 
+        void clearContents() {
+            this->theArray = queue<objectType>{};
+        }
+        
         bool tryReceive(objectType& theObject) {
             if (this->theArray.size() == 0) {
                 return false;

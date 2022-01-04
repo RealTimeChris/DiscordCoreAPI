@@ -25,6 +25,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 
 		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
+		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		bool doWeReconnect{ false };
 
 		Playlist playlist{};
