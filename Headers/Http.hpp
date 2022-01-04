@@ -172,9 +172,11 @@ namespace DiscordCoreInternal {
 
 		HttpConnection(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
-		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		HttpConnection(nullptr_t);
 
-		bool sendRequest();
+		bool sendRequest(string baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+
+		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
 		bool connect();
 
@@ -198,6 +200,8 @@ namespace DiscordCoreInternal {
 		friend class HttpRnRBuilder;
 
 		static HttpData executeHttpRequest(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
+
+		static vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
