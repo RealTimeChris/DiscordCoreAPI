@@ -253,8 +253,6 @@ namespace DiscordCoreInternal {
 
 		vector<uint8_t> getData();
 
-		void toggleBlocking();
-
 		~DatagramSocketSSLClient();
 
 	protected:

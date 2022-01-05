@@ -86,9 +86,9 @@ namespace DiscordCoreAPI {
 
 		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
+		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
 
-		void sendSingleAudioFrame(string audioDataPacketNew);
+		void sendSingleAudioFrame(string& audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 
