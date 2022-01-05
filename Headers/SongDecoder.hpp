@@ -266,11 +266,9 @@ namespace DiscordCoreAPI {
 
         void updateBufferRefreshTime(int32_t newRefreshTime);
 
-        bool getFrame(RawFrameData* dataPackage);
+        bool getFrame(RawFrameData& dataPackage);
 
-        bool haveWeFailed() {
-            return this->haveWeFailedBool.load();
-        }
+        bool haveWeFailed();
 
         void cancelMe();
 
