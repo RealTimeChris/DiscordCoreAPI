@@ -95,6 +95,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo, addrinfoDeleter{} };
+		PADDRINFOA thePtrNew{ this->thePtr.get() };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
@@ -213,9 +214,9 @@ namespace DiscordCoreInternal {
 
 		WebSocketSSLClient(nullptr_t);
 
-		void writeData(vector<uint8_t>&);
-
 		vector<uint8_t>& getInputBuffer();
+
+		void writeData(vector<uint8_t>&);
 
 		void writeData(string&);
 

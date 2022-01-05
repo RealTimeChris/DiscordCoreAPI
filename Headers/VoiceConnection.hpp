@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 		Event<void, void> disconnectionEvent{};
 		OpusEncoderWrapper encoder{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
-		CoRoutineWrapper theTask{ nullptr };
+		CoRoutine<void> theTask{ nullptr };
 		Event<void, void> playWaitEvent{};
 		Event<void, void> stopWaitEvent{};
 		Event<void, void> playSetEvent{};
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		string channelId{ "" };
 		string guildId{ "" };
 
-		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData bufferToSend);
+		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
 
