@@ -79,7 +79,6 @@ namespace DiscordCoreInternal {
 	};
 
 	enum class WebSocketState : uint8_t {
-
 		Initializing = 0,
 		Connected = 1
 	};
@@ -94,9 +93,12 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
+
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		json payLoad{};
+
 		WebSocketWorkload() {}
+
 		WebSocketWorkload& operator=(WebSocketWorkload&& other) noexcept {
 			if (this != &other) {
 				this->payLoad = move(other.payLoad);
@@ -106,19 +108,23 @@ namespace DiscordCoreInternal {
 			}
 			return *this;
 		}
+
 		WebSocketWorkload(WebSocketWorkload&& other) noexcept {
 			*this = move(other);
 		}
+
 		WebSocketWorkload& operator=(const WebSocketWorkload& other) noexcept {
 			WebSocketWorkload& theVal = const_cast<WebSocketWorkload&>(other);
 			this->payLoad = move(theVal.payLoad);
 			this->eventType = other.eventType;
 			return *this;
 		}
+
 		WebSocketWorkload(const WebSocketWorkload& other) {
 			WebSocketWorkload& theVal = const_cast<WebSocketWorkload&>(other);
 			*this = move(theVal);
 		}
+
 		~WebSocketWorkload() {};
 	};
 

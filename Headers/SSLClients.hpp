@@ -22,7 +22,7 @@ namespace DiscordCoreInternal {
 			}
 		};
 
-		BIOWrapper& operator=(BIO*other) {
+		BIOWrapper& operator=(BIO* other) {
 			this->thePtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
 				cout << "BIO_up_ref() Error: " << ERR_get_error() << endl;
@@ -161,10 +161,10 @@ namespace DiscordCoreInternal {
 			void operator()(SOCKET* other) {
 				if (other != nullptr) {
 #ifdef _WIN32
-					shutdown(*other, 2);
-					closesocket(*other);
+					shutdown(* other, 2);
+					closesocket(* other);
 #else
-					close(*other);
+					close(* other);
 #endif
 					other = nullptr;
 				}
@@ -184,7 +184,6 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper(nullptr_t) {}
 
 	protected:
-
 		unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
