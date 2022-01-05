@@ -199,9 +199,9 @@ namespace DiscordCoreInternal {
 
 		friend class HttpRnRBuilder;
 
-		static HttpData executeHttpRequest(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>, bool = false);
 
-		static vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
+		static vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
@@ -222,13 +222,16 @@ namespace DiscordCoreInternal {
 					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
 					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
-				HttpData returnData = HttpClient::executeByRateLimitData(workload, rateLimitDataNew, true);
+				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
+				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
+				HttpData returnData = HttpClient::httpRequest(workload, rateLimitDataNew, true);
 				returnType returnObject{};
 				DataParser::parseObject(returnData.responseData, &returnObject);
 				return returnObject;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
 			}
 			returnType returnObject{};
 			return returnObject;
@@ -253,11 +256,14 @@ namespace DiscordCoreInternal {
 					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
 					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
-				HttpClient::executeByRateLimitData(workload, rateLimitDataNew, true);
+				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
+				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
+				HttpClient::httpRequest(workload, rateLimitDataNew, true);
 				return;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
 			}
 			return;
 		}
@@ -281,11 +287,14 @@ namespace DiscordCoreInternal {
 					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
 					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
-				HttpData returnData = HttpClient::executeByRateLimitData(workload, rateLimitDataNew, true);
+				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
+				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
+				HttpData returnData = HttpClient::httpRequest(workload, rateLimitDataNew, false);
 				return returnData;
 			}
 			catch (...) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
 			}
 			return HttpData();
 		}
@@ -301,8 +310,8 @@ namespace DiscordCoreInternal {
 
 		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
 
-		static HttpData HttpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>);
+		static HttpData executehttpRequest(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
-
+		static vector<HttpData> executehttpRequest(vector<HttpWorkloadData>& workloadData);
 	};
 }
