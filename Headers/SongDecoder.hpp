@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        operator AVFrame* () {
+        operator AVFrame*() {
             return this->thePtr.get();
         }
 
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
             return &this->thePtr.get()->theContext;
         }
 
-        operator AVFormatContext* () {
+        operator AVFormatContext*() {
             return this->thePtr.get()->theContext;
         }
 
@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        operator AVIOContext* () {
+        operator AVIOContext*() {
             return this->thePtr.get();
         }
 
@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        operator AVPacket* () {
+        operator AVPacket*() {
             return this->thePtr.get();
         }
 
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator AVCodec* () {
+        operator AVCodec*() {
             return this->thePtr.get();
         }
 

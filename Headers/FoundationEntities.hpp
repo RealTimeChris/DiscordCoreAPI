@@ -2767,12 +2767,13 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreInternal::DataParser;
+        friend class SoundCloudRequestBuilder;
         friend class YouTubeRequestBuilder;
         friend class DatabaseManagerAgent;
         friend class SoundCloudSong;
         friend class SoundCloudAPI;
         friend class YouTubeSong;
-        friend class YouTubeAPI;
+        friend class YouTubeAPI;        
         friend class SongAPI;
 
         SongType type{ SongType::SoundCloud };///< The type of song.
@@ -2830,31 +2831,15 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll YouTubeSong : public Song{
     public:
 
-        friend class DiscordCoreInternal::DataParser;
-        friend class YouTubeRequestBuilder;
-        friend class SoundCloudAPI;
-        friend class YouTubeAPI;
-        friend class SongAPI;
-        friend struct Song;
-
         operator Song();
-
-        virtual ~YouTubeSong() {};
 
     };
 
     class DiscordCoreAPI_Dll SoundCloudSong : public Song {
     public:
 
-        friend class DiscordCoreInternal::DataParser;
-        friend class SoundCloudRequestBuilder;
-        friend class SoundCloudAPI;
-        friend class SongAPI;
-        friend struct Song;
-
         operator Song();
 
-        virtual ~SoundCloudSong() {}
     };
 
     /**

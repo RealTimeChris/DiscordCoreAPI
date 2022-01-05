@@ -1,4 +1,4 @@
-/// SSLClent.hpp - Header file for the "SSL Client" stuff.
+/// SSLClents.hpp - Header file for the "SSL Client" stuff.
 /// Dec 12, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris
@@ -159,13 +159,17 @@ namespace DiscordCoreInternal {
 
 		struct SOCKETDeleter {
 			void operator()(SOCKET* other) {
+				if (other != nullptr) {
 #ifdef _WIN32
-				shutdown(*other, 2);
-				closesocket(*other);
+					shutdown(*other, 2);
+					closesocket(*other);
 #else
-				close(*other);
+					close(*other);
 #endif
+					other = nullptr;
+				}
 			}
+
 		};
 
 		SOCKETWrapper& operator=(SOCKET other) {

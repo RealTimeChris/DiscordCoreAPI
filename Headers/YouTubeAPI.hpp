@@ -19,15 +19,15 @@ namespace DiscordCoreAPI {
 
 		static YouTubeSong constructFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
-		static YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
-		
 		static vector<YouTubeSong> constructFirstDownloadUrl(string theString);
-
-		static vector<string> constructFinalDownloadUrl(Song newSong);
 
 	protected:
 
 		static string baseURL;
+
+		static YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
+
+		static YouTubeSong constructFinalDownloadUrl(Song newSong);
 
 		static vector<char> sliceVector(vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
 		

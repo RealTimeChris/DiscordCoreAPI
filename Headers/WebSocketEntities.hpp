@@ -9,7 +9,7 @@
 #include "SongDecoder.hpp"
 #include "FoundationEntities.hpp"
 #include "ErlPacker.hpp"
-#include "SSLClient.hpp"
+#include "SSLClients.hpp"
 #include "EventEntities.hpp"
 #include "ThreadPool.hpp"
 
