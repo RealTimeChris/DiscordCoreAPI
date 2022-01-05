@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<SOCKET, SOCKETDeleter>thePtr{ new SOCKET{}, SOCKETDeleter{} };
+		unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll WSADATAWrapper {
@@ -200,15 +200,15 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		unique_ptr<WSADATA, WSADATADeleter>thePtr{ new WSADATA{}, WSADATADeleter{} };
+		unique_ptr<WSADATA, WSADATADeleter> thePtr{ new WSADATA{}, WSADATADeleter{} };
 	};
 
-	class DiscordCoreAPI_Dll MsgWebSocketSSLClient {
+	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		MsgWebSocketSSLClient(string, string);
+		WebSocketSSLClient(string, string);
 
-		MsgWebSocketSSLClient(nullptr_t);
+		WebSocketSSLClient(nullptr_t);
 
 		void writeData(vector<uint8_t>&);
 
@@ -218,12 +218,12 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
-		~MsgWebSocketSSLClient();
+		~WebSocketSSLClient();
 
 	protected:
 		
 		DiscordCoreAPI::Event<void, void> finishEvent{};
-		SOCKETWrapper theSocket{ nullptr };
+		SOCKETWrapper fileDescriptor{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
@@ -234,12 +234,12 @@ namespace DiscordCoreInternal {
 		fd_set readSet{};
 	};
 
-	class DiscordCoreAPI_Dll DatagramWebSocketSSLClient {
+	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramWebSocketSSLClient(string hostName, string post);
+		DatagramSocketSSLClient(string hostName, string post);
 
-		DatagramWebSocketSSLClient(nullptr_t);
+		DatagramSocketSSLClient(nullptr_t);
 
 		void writeData(string& dataToWrite);
 
@@ -251,11 +251,11 @@ namespace DiscordCoreInternal {
 
 		void toggleBlocking();
 
-		~DatagramWebSocketSSLClient();
+		~DatagramSocketSSLClient();
 
 	protected:
 
-		SOCKETWrapper theSocket{ nullptr };
+		SOCKETWrapper fileDescriptor{ nullptr };
 		const uint32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
@@ -264,12 +264,12 @@ namespace DiscordCoreInternal {
 		string port{ "" };
 	};
 
-	class DiscordCoreAPI_Dll StreamWebSocketSSLClient {
+	class DiscordCoreAPI_Dll StreamSocketSSLClient {
 	public:
 
-		StreamWebSocketSSLClient(string hostName, string post, uint64_t bufferSize);
+		StreamSocketSSLClient(string hostName, string post, uint64_t bufferSize);
 
-		StreamWebSocketSSLClient(nullptr_t);
+		StreamSocketSSLClient(nullptr_t);
 
 		void writeData(vector<uint8_t>& dataToWrite);
 
@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		SOCKETWrapper theSocket{ nullptr };
+		SOCKETWrapper fileDescriptor{ nullptr };
 		SSL_CTXWrapper  context{ nullptr };
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };

@@ -144,7 +144,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void> disconnectionEvent{};
-		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
+		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
@@ -213,12 +213,12 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
-		unique_ptr<DatagramWebSocketSSLClient> voiceSocket{ nullptr };
+		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
-		unique_ptr<MsgWebSocketSSLClient> webSocket{ nullptr };
+		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		WebSocketState state{ WebSocketState::Initializing };
 		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
 		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
