@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static string baseURL;
+		static string baseUrl;
 
 		static YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
 
@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
 		static string joinString(vector<char> stringToJoin);
 
-		static string setDownloadURL(YouTubeFormat format);
+		static string setDownloadUrl(YouTubeFormat format);
 
 	};
 

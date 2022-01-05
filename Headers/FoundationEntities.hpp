@@ -624,21 +624,21 @@ namespace DiscordCoreAPI {
 
         /// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
         /// \param authorName The author's name.
-        /// \param authorAvatarURL The url to their avatar.
+        /// \param authorAvatarUrl The url to their avatar.
         /// \returns A pointer to this embed.
-        EmbedData* setAuthor(string authorName, string authorAvatarURL = "") {
+        EmbedData* setAuthor(string authorName, string authorAvatarUrl = "") {
             this->author.name = authorName;
-            this->author.iconUrl = authorAvatarURL;
+            this->author.iconUrl = authorAvatarUrl;
             return this;
         }
 
         /// Sets the footer's values for the embed. \brief Sets the footer's values for the embed.
         /// \param footerText The footer's text.
-        /// \param footerIconURLText Url to the footer's icon.
+        /// \param footerIconUrlText Url to the footer's icon.
         /// \returns A pointer to this embed.
-        EmbedData* setFooter(string footerText, string footerIconURLText = "") {
+        EmbedData* setFooter(string footerText, string footerIconUrlText = "") {
             this->footer.text = footerText;
-            this->footer.iconUrl = footerIconURLText;
+            this->footer.iconUrl = footerIconUrlText;
             return this;
         }
 
@@ -681,10 +681,10 @@ namespace DiscordCoreAPI {
         }
 
         /// Sets the thumbnail of the embed. \brief Sets the thumbnail of the embed.
-        /// \param thumbnailURL The url to the thumbnail to be used.
+        /// \param thumbnailUrl The url to the thumbnail to be used.
         /// \returns A pointer to this embed.
-        EmbedData* setThumbnail(string thumbnailURL) {
-            this->thumbnail.url = thumbnailURL;
+        EmbedData* setThumbnail(string thumbnailUrl) {
+            this->thumbnail.url = thumbnailUrl;
             return this;
         }
 
@@ -697,10 +697,10 @@ namespace DiscordCoreAPI {
         }
 
         /// Sets the image of the embed. \brief Sets the image of the embed.
-        /// \param imageURL The url of the image to be set on the embed.
+        /// \param imageUrl The url of the image to be set on the embed.
         /// \returns A pointer to this embed.
-        EmbedData* setImage(string imageURL) {
-            this->image.url = imageURL;
+        EmbedData* setImage(string imageUrl) {
+            this->image.url = imageUrl;
             return this;
         }
     };
@@ -1033,8 +1033,8 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ApplicationData : public DiscordEntity {
     public:
         bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
-        string termsOfServiceUrl{ "" };///< Terms of service URL.
-        string privacyPolicyUrl{ "" };///< Privacy policy URL.
+        string termsOfServiceUrl{ "" };///< Terms of service Url.
+        string privacyPolicyUrl{ "" };///< Privacy policy Url.
         vector<string> rpcOrigins{};///< Array of RPC origin strings.
         string primarySkuId{ "" };///< Primary SKU Id.
         string description{ "" };///< Description of the application.
@@ -1236,7 +1236,7 @@ namespace DiscordCoreAPI {
     /// Button data. \brief Button data.
     struct DiscordCoreAPI_Dll ButtonData {
         string label{ "" }; ///< Visible label of the button.
-        string url{ "" };   ///< URL to display on the button.
+        string url{ "" };   ///< Url to display on the button.
     };
 
     /// Activity types. \brief Activity types.
@@ -1429,7 +1429,7 @@ namespace DiscordCoreAPI {
         string systemChannelId{ "" };   ///< Channel id for the Guild's system Channel.
         string rulesChannelId{ "" };    ///< Channel id for the Guild's rules Channel.
         bool widgetEnabled{ false };    ///< Is the widget enabled?        
-        string vanityURLCode{ "" }; ///< Vanity URL code, if applicable.
+        string vanityUrlCode{ "" }; ///< Vanity Url code, if applicable.
         string applicationId{ "" }; ///< The current application id.
         int32_t maxPresences{ 0 };  ///< Max number of presences allowed.
         string afkChannelId{ "" };  ///< Channel if of the "afk" Channel,
@@ -1449,9 +1449,9 @@ namespace DiscordCoreAPI {
         bool owner{ false };    ///< Is the bot the owner?        
         MFALevel mfaLevel{};    ///< MFA level.
         bool large{ false };    ///< Is this Guild "large"?        
-        string splash{ "" };    ///< URL to the Guild's splash.
-        string banner{ "" };    ///< URL to the Guild's banner.       
-        string icon{ "" };  ///< URL to the Guild's icon.
+        string splash{ "" };    ///< Url to the Guild's splash.
+        string banner{ "" };    ///< Url to the Guild's banner.       
+        string icon{ "" };  ///< Url to the Guild's icon.
         string name{ "" };  ///< The Guild's name.
 
         GuildData() {};
@@ -1666,7 +1666,7 @@ namespace DiscordCoreAPI {
         int64_t contentLength{ 0 };
         bool doWeGetSaved{ false };
         string audioQuality{ "" };
-        string downloadURL{ "" };
+        string downloadUrl{ "" };
         string signature{ "" };
         string mimeType{ "" };
         int32_t bitrate{ 0 };
@@ -1757,7 +1757,7 @@ namespace DiscordCoreAPI {
         int32_t maxValues{ 0 }; ///< Maximum number of selectable options?
         int32_t minValues{ 0 }; ///< Minimum number of required selectable options?
         EmojiData emoji{}; ///< An emoji to put on the component.
-        string url{ "" }; ///< An optional URL to place.
+        string url{ "" }; ///< An optional Url to place.
     };
 
     /// Action row data of Message components. \brief Action row data of Message components.
@@ -2067,7 +2067,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll GatewayBotData {
         SessionStartData sessionStartLimit{};///< Information on the current session start limit.
         uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
-        string url{ "" };///< The WSS URL that can be used for connecting to the gateway.       
+        string url{ "" };///< The WSS Url that can be used for connecting to the gateway.       
     };
 
     /// Input event response types. \brief Input event response types.
@@ -2199,9 +2199,9 @@ namespace DiscordCoreAPI {
             }
         }
 
-        /// Gets the avatar URL of the last User to trigger this input-event. \brief Gets the avatar URL of the last User to trigger this input-event.
-        /// \returns A string containing the avatar URL.
-        string getAvatarURL() {
+        /// Gets the avatar Url of the last User to trigger this input-event. \brief Gets the avatar Url of the last User to trigger this input-event.
+        /// \returns A string containing the avatar Url.
+        string getAvatarUrl() {
             if (this->messageData.author.avatar == "" && this->interactionData.member.user.avatar != "") {
                 return this->interactionData.member.user.avatar;
             }
@@ -2655,8 +2655,8 @@ namespace DiscordCoreAPI {
         SoundCloud = 1///< SoundCloud.
     };
 
-    /// Represents a download URL. \brief Represents a download URL.
-    struct DiscordCoreAPI_Dll DownloadURL {
+    /// Represents a download Url. \brief Represents a download Url.
+    struct DiscordCoreAPI_Dll DownloadUrl {
         int32_t contentSize{ 0 };
         string urlPath{ "" };
     };
@@ -2778,17 +2778,17 @@ namespace DiscordCoreAPI {
 
         SongType type{ SongType::SoundCloud };///< The type of song.
 
-        string secondDownloadURL{ "" };
-        string firstDownloadURL{ "" };
+        string secondDownloadUrl{ "" };
+        string firstDownloadUrl{ "" };
         string html5PlayerFile{ "" };
         string addedByUserName{ "" };///< The User name of the individual who added this Song to the playlist.
         string addedByUserId{ "" };///< The User id of the individual who added this Song to the playlist.
-        string thumbnailURL{ "" };///< The Url of the thumbnail image of this Song.
+        string thumbnailUrl{ "" };///< The Url of the thumbnail image of this Song.
         string html5Player{ "" };
         string description{ "" };///< A description of the Song.
         string songTitle{ "" };///< The title of the Song.
         string duration{ "" };///< The duration of the Song.
-        string viewURL{ "" };///< The url for listening to this Song through a browser.
+        string viewUrl{ "" };///< The url for listening to this Song through a browser.
 
         Song() {};
 
@@ -2800,7 +2800,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        vector<DownloadURL> finalDownloadURLs{};
+        vector<DownloadUrl> finalDownloadUrls{};
         string trackAuthorization{ "" };
         string playerResponse{ "" };
         bool doWeGetSaved{ false };
@@ -3365,7 +3365,7 @@ namespace  DiscordCoreInternal {
         string relativePath{ "" };
         string callStack{ "" };
         string content{ "" };
-        string baseURL{ "" };
+        string baseUrl{ "" };
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {

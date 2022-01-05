@@ -965,9 +965,9 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
-                string iconURLString = "https://cdn.discordapp.com/";
-                iconURLString += "icons/" + pDataStructure->id + "/" + jsonObjectData["icon"].get<string>() + ".png";
-                pDataStructure->icon = iconURLString;
+                string iconUrlString = "https://cdn.discordapp.com/";
+                iconUrlString += "icons/" + pDataStructure->id + "/" + jsonObjectData["icon"].get<string>() + ".png";
+                pDataStructure->icon = iconUrlString;
             }
 
             if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
@@ -979,15 +979,15 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("splash") && !jsonObjectData["splash"].is_null()) {
-                string iconURLString = "https://cdn.discordapp.com/";
-                iconURLString += "splashes/" + pDataStructure->id + "/" + jsonObjectData["splash"].get<string>() + ".png";
-                pDataStructure->splash = iconURLString;
+                string iconUrlString = "https://cdn.discordapp.com/";
+                iconUrlString += "splashes/" + pDataStructure->id + "/" + jsonObjectData["splash"].get<string>() + ".png";
+                pDataStructure->splash = iconUrlString;
             }
 
             if (jsonObjectData.contains("discovery_splash") && !jsonObjectData["discovery_splash"].is_null()) {
-                string discordSplashURLString = "https://cdn.discordapp.com/";
-                discordSplashURLString += "discovery-splashes/" + pDataStructure->id + "/" + jsonObjectData["discovery_splash"].get<string>() + ".png";
-                pDataStructure->discoverySplash = discordSplashURLString;
+                string discordSplashUrlString = "https://cdn.discordapp.com/";
+                discordSplashUrlString += "discovery-splashes/" + pDataStructure->id + "/" + jsonObjectData["discovery_splash"].get<string>() + ".png";
+                pDataStructure->discoverySplash = discordSplashUrlString;
             }
 
             if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
@@ -1007,7 +1007,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("vanity_url_code") && !jsonObjectData["vanity_url_code"].is_null()) {
-                pDataStructure->vanityURLCode = jsonObjectData["vanity_url_code"].get<string>();
+                pDataStructure->vanityUrlCode = jsonObjectData["vanity_url_code"].get<string>();
             }
 
             if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
@@ -1015,9 +1015,9 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("banner") && !jsonObjectData["banner"].is_null()) {
-                string guildBannerURL = "https://cdn.discordapp.com/";
-                guildBannerURL += "banners/" + pDataStructure->id + "/" + jsonObjectData["banner"].get<string>() + ".png";
-                pDataStructure->banner = guildBannerURL;
+                string guildBannerUrl = "https://cdn.discordapp.com/";
+                guildBannerUrl += "banners/" + pDataStructure->id + "/" + jsonObjectData["banner"].get<string>() + ".png";
+                pDataStructure->banner = guildBannerUrl;
             }
 
             if (jsonObjectData.contains("rule_Channel_id") && !jsonObjectData["rule_Channel_id"].is_null()) {
@@ -2768,10 +2768,10 @@ namespace DiscordCoreInternal {
                         }
 
                         if (newData.signatureCipher.find("url") != string::npos) {
-                            newData.downloadURL = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
+                            newData.downloadUrl = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
                         }
                         else if (value.contains("url") && !value["url"].is_null()) {
-                            newData.downloadURL = value["url"];
+                            newData.downloadUrl = value["url"];
                         }
 
                         pDataStructure->push_back(move(newData));
@@ -2842,10 +2842,10 @@ namespace DiscordCoreInternal {
                         }
 
                         if (newData.signatureCipher.find("url") != string::npos) {
-                            newData.downloadURL = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
+                            newData.downloadUrl = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
                         }
                         else if (value.contains("url") && !value["url"].is_null()) {
-                            newData.downloadURL = value["url"];
+                            newData.downloadUrl = value["url"];
                         }
 
                         pDataStructure->push_back(move(newData));
@@ -3789,7 +3789,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("thumbnail") && !jsonObjectData["thumbnail"].is_null()) {
-                pDataStructure->thumbnailURL = jsonObjectData["thumbnail"]["thumbnails"].at(0)["url"].get<string>();
+                pDataStructure->thumbnailUrl = jsonObjectData["thumbnail"]["thumbnails"].at(0)["url"].get<string>();
             }
 
             if (jsonObjectData.contains("videoId") && !jsonObjectData["videoId"].is_null()) {
@@ -3819,7 +3819,7 @@ namespace DiscordCoreInternal {
                 for (auto& value : jsonObjectData["media"]["transcodings"]) {
                     if (value["preset"] == "opus_0_0") {
                         isItFound = true;
-                        pDataStructure->firstDownloadURL = value["url"].get<string>();
+                        pDataStructure->firstDownloadUrl = value["url"].get<string>();
                         pDataStructure->songId = value["url"].get<string>();
                         pDataStructure->doWeGetSaved = true;
                     }
@@ -3828,7 +3828,7 @@ namespace DiscordCoreInternal {
                 if (!isItFound) {
                     for (auto& value : jsonObjectData["media"]["transcodings"]) {
                         if (value["preset"] == "mp3_0_0") {
-                            pDataStructure->firstDownloadURL = value["url"].get<string>();
+                            pDataStructure->firstDownloadUrl = value["url"].get<string>();
                             pDataStructure->songId = value["url"].get<string>();
                             isItFound2 = true;
                         }
@@ -3836,7 +3836,7 @@ namespace DiscordCoreInternal {
                 }
                 if (!isItFound2 && !isItFound) {
                     for (auto& value : jsonObjectData["media"]["transcodings"]) {
-                        pDataStructure->firstDownloadURL = value["url"].get<string>();
+                        pDataStructure->firstDownloadUrl = value["url"].get<string>();
                         pDataStructure->songId = value["url"].get<string>();
                     }
                 }
@@ -3860,11 +3860,11 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("artwork_url") && !jsonObjectData["artwork_url"].is_null()) {
-                pDataStructure->thumbnailURL = jsonObjectData["artwork_url"].get<string>();
+                pDataStructure->thumbnailUrl = jsonObjectData["artwork_url"].get<string>();
             }
             else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
                 if (jsonObjectData["user"].contains("avatar_url") && !jsonObjectData["user"]["avatar_url"].is_null()) {
-                    pDataStructure->thumbnailURL = jsonObjectData["user"]["avatar_url"].get<string>();
+                    pDataStructure->thumbnailUrl = jsonObjectData["user"]["avatar_url"].get<string>();
                 }
             }
 
@@ -3874,7 +3874,7 @@ namespace DiscordCoreInternal {
             }
 
             if (jsonObjectData.contains("permalink_url") && !jsonObjectData["permalink_url"].is_null()) {
-                pDataStructure->viewURL = jsonObjectData["permalink_url"].get<string>();
+                pDataStructure->viewUrl = jsonObjectData["permalink_url"].get<string>();
             }
         }
     };

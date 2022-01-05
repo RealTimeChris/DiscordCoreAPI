@@ -33,9 +33,9 @@ namespace DiscordCoreAPI {
 	protected:
 		
 		static string appVersion;
-		static string baseURL02;
+		static string baseUrl02;
 		static string clientId;
-		static string baseURL;
+		static string baseUrl;
 
 	};
 

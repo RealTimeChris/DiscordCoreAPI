@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 		static map<string, atomic<shared_ptr<RateLimitData>>> rateLimitData;
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static atomic<shared_ptr<string>> botToken;
-		static atomic<shared_ptr<string>> baseURL;
+		static atomic<shared_ptr<string>> baseUrl;
 
 		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
 
