@@ -73,16 +73,15 @@ namespace DiscordCoreAPI {
 		bool areWeInstantiated{ false };
 		Event<void, void> pauseEvent{};
 		bool hasTerminateRun{ false };
-		bool areWePlaying{ nullptr };
 		bool areWeStopping{ false };
 		bool doWeReconnect{ false };
 		uint16_t sequenceIndex{ 0 };
+		bool areWePlaying{ false };
 		bool areWeWaiting{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
 		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
-		string guildId{ "" };
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* websocketAgentNew);
 
@@ -93,8 +92,6 @@ namespace DiscordCoreAPI {
 		void sendSingleAudioFrame(string& audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
-
-		void reconnect(string guildId);
 
 		bool areWeCurrentlyPlaying();
 
@@ -107,6 +104,8 @@ namespace DiscordCoreAPI {
 		void pauseToggle();
 
 		void disconnect();
+
+		void reconnect();
 
 		bool stop();
 
