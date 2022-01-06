@@ -222,7 +222,7 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
-		~WebSocketSSLClient();
+		~WebSocketSSLClient() = default;
 
 	protected:
 
@@ -251,7 +251,7 @@ namespace DiscordCoreInternal {
 
 		vector<uint8_t> getData();
 
-		~DatagramSocketSSLClient();
+		~DatagramSocketSSLClient() = default;
 
 	protected:
 
