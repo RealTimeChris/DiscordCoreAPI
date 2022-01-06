@@ -54,64 +54,21 @@
 
 extern "C"
 {
-#include <libavutil/mastering_display_metadata.h>
-#include <libavutil/channel_layout.h>
 #include <libswresample/swresample.h>
-#include <libavutil/intreadwrite.h>
-#include <libavutil/mathematics.h>
 #include <libavformat/avformat.h>
-#include <libavutil/audio_fifo.h>
-#include <libavutil/spherical.h>
-#include <libavutil/samplefmt.h>
-#include <libavutil/timestamp.h>
-#include <libavutil/avstring.h>
-#include <libavutil/avassert.h>
-#include <libavutil/intfloat.h>
-#include <libavutil/imgutils.h>
-#include <libavcodec/avcodec.h>
-#include <libavutil/version.h>
-#include <libavutil/macros.h>
-#include <libavutil/avutil.h>
-#include <libavutil/base64.h>
-#include <libavformat/avio.h>
-#include <libavutil/frame.h>
-#include <libavutil/dict.h>
-#include <libavutil/opt.h>
-#include <libavutil/lzo.h>
-#include <libavutil/opt.h>
 }
-#include <openssl/opensslconf.h>
-#include <openssl/core_names.h>
 #include <cpp-base64/base64.h>
-#include <openssl/ossl_typ.h>
-#include <openssl/x509_vfy.h>
-#include <openssl/symhacks.h>
 #include <nlohmann/json.hpp>
 #include <openssl/x509v3.h>
-#include <openssl/bioerr.h>
-#include <openssl/crypto.h>
-#include <openssl/sslerr.h>
-#include <openssl/evperr.h>
 #include <glib-2.0/glib.h>
-#include <openssl/e_os2.h>
-#include <openssl/store.h>
-#include <openssl/async.h>
-#include <openssl/ocsp.h>
-#include <openssl/x509.h>
 #include <openssl/ssl.h>
-#include <openssl/kdf.h>
 #include <openssl/err.h>
-#include <openssl/ssl.h>
-#include <openssl/pem.h>
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/bn.h>
-#include <openssl/ct.h>
 #include <nanobench.h>
 #include <opus/opus.h>
+#define CURL_STATICLIB
+#include <curl\curl.h>
 #include <filesystem>
 #include <coroutine>
-#include <iostream>
 #include <sodium.h>
 #include <iostream>
 #include <fstream>
@@ -122,8 +79,6 @@ extern "C"
 #include <cmath>
 #include <mutex>
 #include <queue>
-#define CURL_STATICLIB
-#include <curl\curl.h>
 
 #ifdef _DEBUG
 #define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
