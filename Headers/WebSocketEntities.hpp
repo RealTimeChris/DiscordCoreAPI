@@ -227,7 +227,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		WebSocketState state{ WebSocketState::Initializing };
 		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
-		WebSocketAgent* baseWebSocketAgent{ nullptr };
+		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };

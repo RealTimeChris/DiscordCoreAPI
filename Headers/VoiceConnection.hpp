@@ -55,11 +55,11 @@ namespace DiscordCoreAPI {
 	protected:
 
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
-		unique_ptr<DiscordCoreInternal::DatagramSocketAgent> voiceChannelWebSocketAgent{ nullptr };
+		unique_ptr<DiscordCoreInternal::DatagramSocketAgent> datagramSocketAgent{ nullptr };
 		TSUnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
-		DiscordCoreInternal::WebSocketAgent* baseWebsocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
 		Event<void, void> connectionReadyEvent{};
 		Event<void, void> disconnectionEvent{};
 		OpusEncoderWrapper encoder{ nullptr };

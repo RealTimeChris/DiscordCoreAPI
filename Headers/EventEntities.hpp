@@ -24,9 +24,9 @@ namespace DiscordCoreAPI {
 
         friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-    protected:
-
         EventDelegateToken() = default;
+
+    protected:
 
         string handlerId{ "" };
         string eventId{ "" };

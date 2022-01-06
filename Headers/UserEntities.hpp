@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 
 		BotUser();
 
-		DiscordCoreInternal::WebSocketAgent* pBaseWebSocketAgent{ nullptr };
+		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
 	};
 	/**@}*/
 
