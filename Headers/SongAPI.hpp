@@ -26,13 +26,6 @@ namespace DiscordCoreAPI {
 
 		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
-		Event<void, void> playWaitEvent{};
-		Event<void, void> stopWaitEvent{};
-		Event<void, void> playSetEvent{};
-		Event<void, void> stopSetEvent{};
-		Event<void, void> pauseEvent{};
-		bool doWeReconnect{ false };
-		bool areWePlaying{ false };
 
 		Playlist playlist{};
 

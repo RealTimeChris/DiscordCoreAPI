@@ -65,16 +65,17 @@ namespace DiscordCoreAPI {
 		OpusEncoderWrapper encoder{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
-		Event<void, void>* playWaitEvent{};
-		Event<void, void>* stopWaitEvent{};
-		Event<void, void>* playSetEvent{};
-		Event<void, void>* stopSetEvent{};
+		Event<void, void> playWaitEvent{};
+		Event<void, void> stopWaitEvent{};
+		Event<void, void> playSetEvent{};
+		Event<void, void> stopSetEvent{};
 		bool areWeConnectedBool{ false };
 		bool areWeInstantiated{ false };
-		Event<void, void>* pauseEvent{};
+		Event<void, void> pauseEvent{};
 		bool hasTerminateRun{ false };
-		bool* areWePlaying{ nullptr };
+		bool areWePlaying{ nullptr };
 		bool areWeStopping{ false };
+		bool doWeReconnect{ false };
 		uint16_t sequenceIndex{ 0 };
 		bool areWeWaiting{ false };
 		AudioFrameData audioData{};
@@ -103,6 +104,10 @@ namespace DiscordCoreAPI {
 		CoRoutine<void> run();
 
 		void pauseToggle();
+
+		void disconnect();
+
+		void connect();
 
 		bool stop();
 
