@@ -225,10 +225,9 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLClient();
 
 	protected:
-		
-		DiscordCoreAPI::Event<void, void> finishEvent{};
+
 		SOCKETWrapper fileDescriptor{ nullptr };
-		const uint32_t bufferSize{ 1024 * 16 };
+		const int32_t bufferSize{ 1024 * 16 };
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
@@ -258,7 +257,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		SOCKETWrapper fileDescriptor{ nullptr };
-		const uint32_t bufferSize{ 1024 * 16 };
+		const int32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		bool doWeQuit{ false };
@@ -269,7 +268,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll StreamSocketSSLClient {
 	public:
 
-		StreamSocketSSLClient(string hostName, string post, uint64_t bufferSize);
+		StreamSocketSSLClient(string hostName, string post, int32_t bufferSize);
 
 		StreamSocketSSLClient(nullptr_t);
 
@@ -287,7 +286,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper  context{ nullptr };
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
-		uint64_t bufferSize{ 0 };
+		int32_t bufferSize{ 0 };
 		int64_t bytesRead{ 0 };
 		string hostname{ "" };
 		string port{ "" };
