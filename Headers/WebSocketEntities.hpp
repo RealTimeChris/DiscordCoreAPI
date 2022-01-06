@@ -1,4 +1,4 @@
-// WebSocketEntities.hpp - Header for the websocket related classes and structs.
+// WebSocketEntities.hpp - Header for the webSocket related classes and structs.
 // May 13, 2021
 // Chris M.
 // https://github.com/RealTimeChris

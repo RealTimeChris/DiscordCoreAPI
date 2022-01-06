@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class Test;
 
-		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* websocketAgentNew);
+		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
 				
 		VoiceConnection() = default;
 
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
 
-		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* websocketAgentNew);
+		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
 
 		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 
