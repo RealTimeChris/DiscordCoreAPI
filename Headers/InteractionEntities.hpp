@@ -519,7 +519,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Interactions {
     public:
 
-        friend class DiscordCoreInternal::MsgWebSocketAgent;
+        friend class DiscordCoreInternal::WebSocketAgent;
         friend class DiscordCoreClient;
         friend class EventHandler;
         friend class EventManager;        

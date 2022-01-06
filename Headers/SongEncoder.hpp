@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
 
 		SongEncoder();
 
-		vector<AudioFrameData> encodeFrames(vector<RawFrameData> rawFrames);
+		vector<AudioFrameData> encodeFrames(vector<RawFrameData>& rawFrames);
 
 	protected:
 
@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 		const int32_t sampleRate{ 48000 };
 		const int32_t nChannels{ 2 };
 
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData inputFrame);
+		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
 
 	};
 

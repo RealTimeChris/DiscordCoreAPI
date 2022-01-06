@@ -128,20 +128,20 @@ namespace DiscordCoreInternal {
 		~WebSocketWorkload() {};
 	};
 
-	class DiscordCoreAPI_Dll MsgWebSocketAgent {
+	class DiscordCoreAPI_Dll WebSocketAgent {
 	public:
 
-		friend class VoiceChannelWebSocketAgent;
+		friend class DatagramSocketAgent;
 
-		MsgWebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
+		WebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
 
-		MsgWebSocketAgent(nullptr_t);
+		WebSocketAgent(nullptr_t);
 
 		void sendMessage(string& dataToSend);
 
 		void sendMessage(json& responseData);
 
-		~MsgWebSocketAgent();
+		~WebSocketAgent();
 
 	protected:
 
@@ -199,13 +199,13 @@ namespace DiscordCoreInternal {
 		void connect();
 	};
 
-	class DiscordCoreAPI_Dll VoiceChannelWebSocketAgent {
+	class DiscordCoreAPI_Dll DatagramSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceChannelWebSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, MsgWebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
+		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
 		void sendVoiceData(string& responseData);
 
@@ -213,7 +213,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(string& dataToSend);
 
-		~VoiceChannelWebSocketAgent();
+		~DatagramSocketAgent();
 
 	protected:
 
@@ -227,7 +227,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		WebSocketState state{ WebSocketState::Initializing };
 		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
-		MsgWebSocketAgent* baseWebSocketAgent{ nullptr };
+		WebSocketAgent* baseWebSocketAgent{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };

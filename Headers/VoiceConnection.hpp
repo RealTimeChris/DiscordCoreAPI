@@ -27,10 +27,10 @@ namespace DiscordCoreAPI {
 		friend class Guild;
 		friend class Test;
 
-		VoiceConnection();
-
-		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::MsgWebSocketAgent* baseWebsocketAgentNew);
+		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* websocketAgentNew);
 				
+		VoiceConnection() = default;
+
 		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
 		/// \param frameData A single frame worth of audio data.
 		/// \returns void. 
@@ -55,9 +55,9 @@ namespace DiscordCoreAPI {
 	protected:
 
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
-		unique_ptr<DiscordCoreInternal::VoiceChannelWebSocketAgent> voiceChannelWebSocketAgent{ nullptr };
-		DiscordCoreInternal::MsgWebSocketAgent* baseWebsocketAgent{ nullptr };
+		unique_ptr<DiscordCoreInternal::DatagramSocketAgent> voiceChannelWebSocketAgent{ nullptr };
 		TSUnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
+		DiscordCoreInternal::WebSocketAgent* baseWebsocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		Event<void, void> connectionReadyEvent{};
@@ -82,8 +82,9 @@ namespace DiscordCoreAPI {
 		bool areWePaused{ false };
 		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
-		string channelId{ "" };
 		string guildId{ "" };
+
+		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* websocketAgentNew);
 
 		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 
@@ -106,8 +107,6 @@ namespace DiscordCoreAPI {
 		void pauseToggle();
 
 		void disconnect();
-
-		void connect();
 
 		bool stop();
 

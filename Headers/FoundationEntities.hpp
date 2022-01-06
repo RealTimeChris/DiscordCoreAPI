@@ -12,7 +12,7 @@ namespace DiscordCoreInternal {
     using namespace nlohmann;
     using namespace std;
 
-    class MsgWebSocketAgent;
+    class WebSocketAgent;
     class HttpClient;
     class DataParser;    
 }
@@ -2122,7 +2122,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll InputEventData {
     public:
 
-        friend class DiscordCoreInternal::MsgWebSocketAgent;
+        friend class DiscordCoreInternal::WebSocketAgent;
         friend struct RecurseThroughMessagePagesData;
         friend struct OnInteractionCreationData;
         friend class RespondToInputEventData;
@@ -2396,7 +2396,7 @@ namespace DiscordCoreAPI {
     public:
 
         friend class CreateEphemeralInteractionResponseData;
-        friend class DiscordCoreInternal::MsgWebSocketAgent;
+        friend class DiscordCoreInternal::WebSocketAgent;
         friend class CreateDeferredInteractionResponseData;
         friend class CreateEphemeralFollowUpMessageData;
         friend class CreateInteractionResponseData;
@@ -3150,7 +3150,7 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll ConnectionWebSocketData {
         friend class DiscordCoreAPI::VoiceConnection;
-        friend class VoiceChannelWebSocketAgent;
+        friend class DatagramSocketAgent;
         ConnectionWebSocketType type{};
         string endpoint{ "" };
         string port{ "" };
