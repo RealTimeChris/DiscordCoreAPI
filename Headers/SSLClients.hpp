@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		SOCKETWrapper fileDescriptor{ nullptr };
+		SOCKETWrapper theSocket{ nullptr };
 		const int32_t bufferSize{ 1024 * 16 };
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
@@ -255,7 +255,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		SOCKETWrapper fileDescriptor{ nullptr };
+		SOCKETWrapper theSocket{ nullptr };
 		const int32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
@@ -280,7 +280,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		SOCKETWrapper fileDescriptor{ nullptr };
+		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper  context{ nullptr };
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
