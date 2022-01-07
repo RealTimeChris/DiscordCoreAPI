@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
     class TSUnboundedMessageBlock {
     public:
 
-        TSUnboundedMessageBlock<objectType>& operator=(TSUnboundedMessageBlock<objectType>&& other) {
+        TSUnboundedMessageBlock<objectType>& operator=(TSUnboundedMessageBlock<objectType>&& other) noexcept {
             this->accessMutex = other.accessMutex;
             other.accessMutex = shared_ptr<mutex>{};
             this->theArray = move(other.theArray);
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        TSUnboundedMessageBlock(TSUnboundedMessageBlock<objectType>&& other) {
+        TSUnboundedMessageBlock(TSUnboundedMessageBlock<objectType>&& other) noexcept {
             *this = move(other);
         }
 

@@ -374,12 +374,12 @@ namespace DiscordCoreAPI {
     /// \returns A coroutine_handle<CoRoutine<returnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
     template<typename returnType>
     auto NewThreadAwaitable() {
-        class NewThreadAwaitable {
+        class NewThreadAwaitableClass {
         public:
 
             coroutine_handle<CoRoutine<returnType>::promise_type> waiterHandle{ nullptr };
 
-            NewThreadAwaitable() {};
+            NewThreadAwaitableClass() {};
 
             bool await_ready() const noexcept {
                 return false;
@@ -395,7 +395,7 @@ namespace DiscordCoreAPI {
                 return this->waiterHandle;
             }
         };
-        return NewThreadAwaitable();
+        return NewThreadAwaitableClass();
     }
 
     struct DiscordCoreAPI_Dll CoRoutineWrapper {

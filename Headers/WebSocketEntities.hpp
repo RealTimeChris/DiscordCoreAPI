@@ -114,8 +114,8 @@ namespace DiscordCoreInternal {
 		}
 
 		WebSocketWorkload& operator=(const WebSocketWorkload& other) noexcept {
-			this->payLoad = move(other.payLoad);
 			this->eventType = other.eventType;
+			this->payLoad = other.payLoad;
 			return *this;
 		}
 
