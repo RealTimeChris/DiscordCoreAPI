@@ -11,9 +11,10 @@
 
 namespace DiscordCoreInternal {
 
-	const string soundcloudCertPath{ "C:/Program Files/Common Files/SSL/certs/Root-R3.pem" };
-	const string youtubeCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
-	const string googleCertPath{ "C:/Program Files/Common Files/SSL/certs/gtsr1.pem" };
+	const string soundcloudCertPath{ "C:/SSL/certs/Root-R3.pem" };
+	const string youtubeCertPath{ "C:/SSL/certs/gtsr1.pem" };
+	const string googleCertPath{ "C:/SSL/certs/gtsr1.pem" };
+	const string defaultCertPath{ "C:/SSL/certs/DigiCert3.pem" };
 
 	class HttpHeader {
 	public:
