@@ -100,6 +100,8 @@ namespace DiscordCoreAPI {
 
 		void pauseToggle();
 
+		void sendSilence();
+
 		void disconnect();
 
 		void reconnect();
