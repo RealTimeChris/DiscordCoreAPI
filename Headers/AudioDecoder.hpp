@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVCodecWrapper {
 
-        struct DiscordCoreAPI_Dll AVCodecDeleter {
+        struct AVCodecDeleter {
             void operator()(AVCodec*) {};
         };
 
@@ -278,8 +278,6 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        CoRoutineWrapper theTask{ nullptr };
-
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
         TSUnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
@@ -291,6 +289,7 @@ namespace DiscordCoreAPI {
         AVStreamWrapper audioStream{ nullptr };
         atomic<bool> haveWeFailedBool{ false };
         int32_t refreshTimeForBuffer{ 10000 };
+        CoRoutineWrapper theTask{ nullptr };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
         vector<uint8_t> currentBuffer{};
