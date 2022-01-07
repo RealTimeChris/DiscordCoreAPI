@@ -14,7 +14,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVFrameWrapper {
 
-        struct DiscordCoreAPI_Dll AVFrameDeleter {
+        struct AVFrameDeleter {
             void operator()(AVFrame* other) {
                 if (other != nullptr) {
                     av_frame_unref(other);
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVCodecContextWrapper {
 
-        struct DiscordCoreAPI_Dll AVCodecContextDeleter {
+        struct AVCodecContextDeleter {
             void operator()(AVCodecContext* other) {
                 if (other != nullptr) {
                     avcodec_free_context(&other);
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVFormatContextWrapper {
 
-        struct DiscordCoreAPI_Dll AVFormatContextDeleter {
+        struct AVFormatContextDeleter {
             void operator()(AVFormatContextWrapper01* other) {
                 if (other->didItInitialize) {
                     avformat_close_input(&other->theContext);
@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll SwrContextWrapper {
 
-        struct DiscordCoreAPI_Dll SwrContextDeleter {
+        struct SwrContextDeleter {
             void operator()(SwrContext* other) {
                 if (other != nullptr) {
                     swr_free(&other);
@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVIOContextWrapper {
 
-        struct DiscordCoreAPI_Dll AVIOContextDeleter {
+        struct AVIOContextDeleter {
             void operator()(AVIOContext* other) {
                 if (other != nullptr) {
                     av_freep(&other);
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVPacketWrapper {
 
-        struct DiscordCoreAPI_Dll AVPacketDeleter {
+        struct AVPacketDeleter {
             void operator()(AVPacket* other) {
                 if (other != nullptr) {
                     av_packet_free(&other);
@@ -223,7 +223,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVStreamWrapper {
 
-        struct DiscordCoreAPI_Dll AVStreamDeleter {
+        struct AVStreamDeleter {
             void operator()(AVStream*) {};
         };
 

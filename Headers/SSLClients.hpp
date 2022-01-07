@@ -95,7 +95,6 @@ namespace DiscordCoreInternal {
 
 	protected:
 		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo, addrinfoDeleter{} };
-		PADDRINFOA thePtrNew{ this->thePtr.get() };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
@@ -162,10 +161,10 @@ namespace DiscordCoreInternal {
 			void operator()(SOCKET* other) {
 				if (other != nullptr) {
 #ifdef _WIN32
-					shutdown(* other, 2);
-					closesocket(* other);
+					shutdown(*other, 2);
+					closesocket(*other);
 #else
-					close(* other);
+					close(*other);
 #endif
 					other = nullptr;
 				}
@@ -210,10 +209,10 @@ namespace DiscordCoreInternal {
 	template <typename T>
 	concept StringOrVector = requires(T v)
 	{
-		{v.data() }-> std::convertible_to<char*>;
+		{v.data() }-> convertible_to<char*>;
 	} || requires(T v)
 	{
-		{v.data()}-> std::convertible_to<uint8_t*>;
+		{v.data()}-> convertible_to<uint8_t*>;
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {

@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
         CoRoutine<void> theTask() {
             co_await NewThreadAwaitable<void>();
             while (!this->doWeQuit) {
-                this_thread::sleep_for(chrono::milliseconds(30000));
+                this_thread::sleep_for(milliseconds(30000));
                 for (auto& [key, value] : this->threads) {
                     if (value->getStatus() != CoRoutineStatus::Running) {
                         this->threads.erase(key);
@@ -124,12 +124,12 @@ namespace DiscordCoreAPI {
         string threadId{ "" };
 
         ThreadPoolTimer() {
-            this->threadId = to_string(chrono::duration_cast<chrono::microseconds>(chrono::steady_clock::now().time_since_epoch()).count());
+            this->threadId = to_string(duration_cast<microseconds>(steady_clock::now().time_since_epoch()).count());
         }
 
         CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating) {
             auto cancelHandle = co_await NewThreadAwaitable<void>();
-            StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(theInterval) };
+            StopWatch<milliseconds> stopWatch{ milliseconds(theInterval) };
             while (true) {
                 stopWatch.resetTimer();
                 cancelHandle.promise().waitForTime(static_cast<int64_t>(ceil(static_cast<double>(theInterval) * 99.0f / 100.0f)));
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
                     if (cancelHandle.promise().isItStopped()) {
                         co_return;
                     }
-                    this_thread::sleep_for(chrono::milliseconds(1));
+                    this_thread::sleep_for(milliseconds(1));
                 }
                 theFunction();
                 if (cancelHandle.promise().isItStopped() || !repeating) {
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 
         CoRoutine<void> run(int64_t theInterval, TimeElapsedHandlerTwo theFunction, bool repeating) {
             auto cancelHandle = co_await NewThreadAwaitable<void>();
-            StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(theInterval) };
+            StopWatch<milliseconds> stopWatch{ milliseconds(theInterval) };
             while (true) {
                 stopWatch.resetTimer();
                 cancelHandle.promise().waitForTime(static_cast<int64_t>(ceil(static_cast<double>(theInterval) * 99.0f / 100.0f)));
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
                     if (cancelHandle.promise().isItStopped()) {
                         co_return;
                     }
-                    this_thread::sleep_for(chrono::milliseconds(1));
+                    this_thread::sleep_for(milliseconds(1));
                 }
                 theFunction();
                 if (cancelHandle.promise().isItStopped() || !repeating) {

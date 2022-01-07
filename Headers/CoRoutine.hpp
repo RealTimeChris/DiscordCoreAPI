@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 
             void waitForTime(uint64_t timeToWaitForInMs) {
                 unique_lock<mutex> timedLock{ this->lockMutex };
-                this->condVar.wait_for(timedLock, chrono::milliseconds(timeToWaitForInMs));
+                this->condVar.wait_for(timedLock, milliseconds(timeToWaitForInMs));
             }
 
             void return_value(returnType at) {
@@ -320,7 +320,7 @@ namespace DiscordCoreAPI {
 
             void waitForTime(uint64_t timeToWaitForInMs) {
                 unique_lock<mutex> timedLock{ this->lockMutex };
-                this->condVar.wait_for(timedLock, chrono::milliseconds(timeToWaitForInMs));
+                this->condVar.wait_for(timedLock, milliseconds(timeToWaitForInMs));
             }
 
             unique_ptr<stop_token> getStopToken() {

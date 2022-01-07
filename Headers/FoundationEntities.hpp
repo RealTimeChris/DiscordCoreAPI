@@ -9,7 +9,8 @@
 
 namespace DiscordCoreInternal {
 
-    using namespace nlohmann;
+    using namespace std::chrono;
+    using namespace nlohmann;    
     using namespace std;
 
     class WebSocketAgent;
@@ -19,6 +20,7 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+    using namespace std::chrono;
     using namespace nlohmann;
     using namespace std;
 
@@ -344,17 +346,17 @@ namespace DiscordCoreAPI {
 
         StopWatch(timeType maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew.count();
-            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
+            this->startTime = static_cast<int64_t>(duration_cast<timeType>(steady_clock::now().time_since_epoch()).count());
         }
 
         int64_t totalTimePassed() {
-            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
+            int64_t currentTime = static_cast<int64_t>(duration_cast<timeType>(steady_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
             return elapsedTime;
         }
 
         bool hasTimePassed() {
-            int64_t currentTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
+            int64_t currentTime = static_cast<int64_t>(duration_cast<timeType>(steady_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
             if (elapsedTime >= this->maxNumberOfMs) {
                 return true;
@@ -365,7 +367,7 @@ namespace DiscordCoreAPI {
         }
 
         void resetTimer() {
-            this->startTime = static_cast<int64_t>(chrono::duration_cast<timeType>(chrono::steady_clock::now().time_since_epoch()).count());
+            this->startTime = static_cast<int64_t>(duration_cast<timeType>(steady_clock::now().time_since_epoch()).count());
         }
 
     protected:
@@ -377,10 +379,10 @@ namespace DiscordCoreAPI {
 
     template <typename T>
     bool waitForTimeToPass(UnboundedMessageBlock<T>& outBuffer, T& argOne, int32_t timeInMsNew) {
-        StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
+        StopWatch<milliseconds> stopWatch{ milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {
-            this_thread::sleep_for(chrono::milliseconds(1));
+            this_thread::sleep_for(milliseconds(1));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;
@@ -391,10 +393,10 @@ namespace DiscordCoreAPI {
 
     template <typename T>
     bool waitForTimeToPass(TSUnboundedMessageBlock<T>& outBuffer, T& argOne, int32_t timeInMsNew) {
-        StopWatch<chrono::milliseconds> stopWatch{ chrono::milliseconds(timeInMsNew) };
+        StopWatch<milliseconds> stopWatch{ milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {
-            this_thread::sleep_for(chrono::milliseconds(1));
+            this_thread::sleep_for(milliseconds(1));
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;

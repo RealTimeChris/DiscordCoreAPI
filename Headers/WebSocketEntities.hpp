@@ -15,14 +15,6 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr uint64_t WebSocketMaxPayloadLengthLarge = 65535;
-	constexpr unsigned char WebSocketPayloadLengthMagicLarge = 126;
-	constexpr unsigned char WebSocketPayloadLengthMagicHuge = 127;
-	constexpr uint64_t WebSocketMaxPayloadLengthSmall = 125;
-	constexpr uint8_t MaxHeaderSize = sizeof(uint64_t) + 2;
-	constexpr unsigned char WebSocketFinishBit = (1u << 7u);
-	constexpr unsigned char WebSocketMaskBit = (1u << 7u);
-
 	enum class WebSocketEventType {
 		Unset = 0,
 		Application_Command_Create = 1,
@@ -129,7 +121,7 @@ namespace DiscordCoreInternal {
 
 		friend class  DatagramSocketAgent;
 
-		WebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
+		WebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
 
 		WebSocketAgent(nullptr_t);
 
@@ -142,10 +134,17 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
+		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>* webSocketWorkloadTarget{ nullptr };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
+		const unsigned char WebSocketPayloadLengthMagicLarge{ 126 };
+		const unsigned char WebSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
+		const uint64_t WebSocketMaxPayloadLengthLarge{ 65535 };
+		const uint64_t WebSocketMaxPayloadLengthSmall{ 125 };
+		const unsigned char WebSocketFinishBit{ (1u << 7u) };
 		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
+		const uint8_t MaxHeaderSize{ sizeof(uint64_t) + 2 };
+		const unsigned char WebSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
@@ -172,7 +171,7 @@ namespace DiscordCoreInternal {
 		string authKey{ "" };
 		string port{ "" };
 
-		uint64_t createHeader(unsigned char* outbuf, uint64_t sendlength, WebSocketOpCodes opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCodes opCode);
 
 		void tokenize(const string&, vector<string>&, string = "\r\n");
 
@@ -214,11 +213,18 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
+		const unsigned char WebSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
+		const unsigned char WebSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
+		const uint64_t WebSocketMaxPayloadLengthLarge{ 65535 };
+		const uint64_t WebSocketMaxPayloadLengthSmall{ 125 };
 		WebSocketState state{ WebSocketState::Initializing };
+		const unsigned char WebSocketFinishBit{ (1u << 7u) };
 		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
+		const uint8_t MaxHeaderSize{ sizeof(uint64_t) + 2 };
+		const unsigned char WebSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		WebSocketAgent* webSocketAgent{ nullptr };

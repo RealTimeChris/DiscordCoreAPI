@@ -170,8 +170,6 @@ namespace DiscordCoreInternal {
 
 		HttpConnection();
 
-		HttpConnection(nullptr_t);
-
 		bool sendRequest(string baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
@@ -184,6 +182,7 @@ namespace DiscordCoreInternal {
 		string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
 		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
 		BIOWrapper connectionBio{ nullptr };
+		int64_t maxBufferSize{ 16 * 1024 };
 		SSL_CTXWrapper context{ nullptr };
 		HttpRnRBuilder httpBuilder{};
 		SSLWrapper ssl{ nullptr };
@@ -213,7 +212,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 				else {
-					rateLimitDataNew->tempBucket = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count());
+					rateLimitDataNew->tempBucket = to_string(duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count());
 					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
 					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
@@ -247,7 +246,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 				else {
-					rateLimitDataNew->tempBucket = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count());
+					rateLimitDataNew->tempBucket = to_string(duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count());
 					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
 					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
@@ -278,7 +277,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 				else {
-					rateLimitDataNew->tempBucket = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count());
+					rateLimitDataNew->tempBucket = to_string(duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count());
 					HttpClient::rateLimitDataBucketValues.insert_or_assign(workload.workloadType, rateLimitDataNew->tempBucket);
 					HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->tempBucket, rateLimitDataNew);
 				}
