@@ -124,9 +124,12 @@ namespace DiscordCoreAPI {
         unique_ptr<char, CURLCharDeleter> thePtr{ nullptr, CURLCharDeleter{} };
     };
 
+    template<typename T>
+    concept Copyable = copyable<T>;
+
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
    /// \param objectType The type of object that will be sent over the message block.
-    template<typename objectType>
+    template<Copyable objectType>
     class UnboundedMessageBlock {
     public:
 
@@ -179,7 +182,7 @@ namespace DiscordCoreAPI {
 
     /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
     /// \param objectType The type of object that will be sent over the message block.
-    template<typename objectType>
+    template<Copyable objectType>
     class TSUnboundedMessageBlock {
     public:
 
@@ -459,7 +462,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    struct OpusEncoderWrapper {
+    struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 
         struct DiscordCoreAPI_Dll OpusEncoderDeleter {
             void operator()(OpusEncoder* other) {
@@ -490,7 +493,7 @@ namespace DiscordCoreAPI {
     /// For ids of DiscordEntities. \brief For ids of DiscordEntities.
     typedef string Snowflake;
 
-    /// Base class for all Discord entities. \brief Base class for all Discord entities.
+    /// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
     public:
         Snowflake id{ "" };///< The identifier "snowflake" of the given entity.
@@ -2144,15 +2147,15 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll InputEventData {
     public:
 
-        friend class DiscordCoreInternal::WebSocketAgent;
+        friend class  DiscordCoreInternal::WebSocketAgent;
         friend struct RecurseThroughMessagePagesData;
         friend struct OnInteractionCreationData;
-        friend class RespondToInputEventData;
+        friend class  RespondToInputEventData;
         friend struct BaseFunctionArguments;
-        friend class DiscordCoreClient;
-        friend class EventHandler;
+        friend class  DiscordCoreClient;
+        friend class  EventHandler;
         friend struct CommandData;
-        friend class InputEvents;
+        friend class  InputEvents;
 
         InputEventResponseType inputEventResponseType{}; ///< The type of event response that is represented by this structure.
         InputEventType eventType{}; ///< The type of input-event that is represented by this structure.
@@ -2417,19 +2420,19 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll RespondToInputEventData {
     public:
 
-        friend class CreateEphemeralInteractionResponseData;
-        friend class DiscordCoreInternal::WebSocketAgent;
-        friend class CreateDeferredInteractionResponseData;
-        friend class CreateEphemeralFollowUpMessageData;
-        friend class CreateInteractionResponseData;
-        friend class EditInteractionResponseData;
-        friend class DeferComponentResponseData;
-        friend class CreateFollowUpMessageData;
-        friend class EditFollowUpMessageData;
-        friend class CreateMessageData;
-        friend class EditMessageData;
-        friend class InputEvents;
-        friend class SendDMData;
+        friend class  CreateEphemeralInteractionResponseData;
+        friend class  DiscordCoreInternal::WebSocketAgent;
+        friend class  CreateDeferredInteractionResponseData;
+        friend class  CreateEphemeralFollowUpMessageData;
+        friend class  CreateInteractionResponseData;
+        friend class  EditInteractionResponseData;
+        friend class  DeferComponentResponseData;
+        friend class  CreateFollowUpMessageData;
+        friend class  EditFollowUpMessageData;
+        friend class  CreateMessageData;
+        friend class  EditMessageData;
+        friend class  InputEvents;
+        friend class  SendDMData;
 
         InputEventResponseType type{}; ///< The type of response to make.
 
@@ -2781,22 +2784,22 @@ namespace DiscordCoreAPI {
         AudioFrameData() {};
     };
 
-    class SoundCloudSong;
-    class YouTubeSong;
+    class DiscordCoreAPI_Dll SoundCloudSong;
+    class DiscordCoreAPI_Dll YouTubeSong;
 
     /// A song from the various platforms. \brief A song from the various platforms.
     struct DiscordCoreAPI_Dll Song {
     public:
 
-        friend class DiscordCoreInternal::DataParser;
-        friend class SoundCloudRequestBuilder;
-        friend class YouTubeRequestBuilder;
-        friend class DatabaseManagerAgent;
-        friend class SoundCloudSong;
-        friend class SoundCloudAPI;
-        friend class YouTubeSong;
-        friend class YouTubeAPI;        
-        friend class SongAPI;
+        friend class  DiscordCoreInternal::DataParser;
+        friend class  SoundCloudRequestBuilder;
+        friend class  YouTubeRequestBuilder;
+        friend class  DatabaseManagerAgent;
+        friend class  SoundCloudSong;
+        friend class  SoundCloudAPI;
+        friend class  YouTubeSong;
+        friend class  YouTubeAPI;        
+        friend class  SongAPI;
 
         SongType type{ SongType::SoundCloud };///< The type of song.
 
@@ -2873,10 +2876,10 @@ namespace DiscordCoreAPI {
     /// \param keyType The type to use for the storage keys.
     /// \param storageType The type of item to be stored.
     template<typename keyType, typename storageType>
-    class DiscordCoreAPI_Dll ObjectCache {
+    class ObjectCache {
     public:
 
-        friend class Guilds;
+        friend class  Guilds;
 
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
@@ -2944,10 +2947,10 @@ namespace DiscordCoreAPI {
     /// \param keyType The type to use for the storage keys.
     /// \param storageType The type of item to be stored.
     template<typename keyType, typename storageType>
-    class DiscordCoreAPI_Dll TSObjectCache {
+    class TSObjectCache {
     public:
 
-        friend class Guilds;
+        friend class  Guilds;
 
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
@@ -3024,10 +3027,10 @@ namespace DiscordCoreAPI {
     /// A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key. \brief A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key.
     /// \param storageType The type of item to be stored.
     template<typename keyType, typename storageType>
-    class DiscordCoreAPI_Dll ObjectMultiCache {
+    class ObjectMultiCache {
     public:
 
-        friend class Guilds;
+        friend class  Guilds;
 
         ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&& other) {
             if (this != &other) {
@@ -3171,8 +3174,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll ConnectionWebSocketData {
-        friend class DiscordCoreAPI::VoiceConnection;
-        friend class DatagramSocketAgent;
+        friend class  DiscordCoreAPI::VoiceConnection;
+        friend class  DatagramSocketAgent;
         ConnectionWebSocketType type{};
         string endpoint{ "" };
         string port{ "" };

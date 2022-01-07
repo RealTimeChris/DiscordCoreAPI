@@ -16,13 +16,13 @@ namespace DiscordCoreAPI {
 	* \addtogroup voice_connection
 	* @{
 	*/
-	/// Class representing the Song APIs. \brief Class representing the Song APIs.
+	/// class DiscordCoreAPI_Dll representing the Song APIs. \brief class DiscordCoreAPI_Dll representing the Song APIs.
 	class DiscordCoreAPI_Dll SongAPI {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		friend class Guild;
+		friend class  DiscordCoreClient;
+		friend class  VoiceConnection;
+		friend class  Guild;
 
 		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};

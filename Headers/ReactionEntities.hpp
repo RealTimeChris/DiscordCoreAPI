@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 	/// For creating a new Guild Emoji.
 	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
 		friend string DiscordCoreInternal::JSONIFY(CreateGuildEmojiData dataPackage);
-		friend class Reactions;
+		friend class  Reactions;
 
 		vector<uint8_t> imageData{};///< The image responseData.
 		vector<string> roles{};///< Roles that can use this Emoji.
@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Reaction. \brief A single Reaction.
-	class Reaction : public ReactionData {
+	class DiscordCoreAPI_Dll Reaction : public ReactionData {
 	public:
 
 		Reaction();
@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the Reaction related Discord endpoints. \brief An interface class for the Reaction related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Reaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Reaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Reactions {
 	public:
 

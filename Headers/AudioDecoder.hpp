@@ -1,4 +1,4 @@
-// SongDecoder.hpp - Header for the song decoder class.
+// AudioDecoder.hpp - Header for the audio decoder class.
 // Jul 29, 2021
 // Chris M.
 // https://github.com/RealTimeChris
@@ -14,7 +14,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVFrameWrapper {
 
-        struct AVFrameDeleter {
+        struct DiscordCoreAPI_Dll AVFrameDeleter {
             void operator()(AVFrame* other) {
                 if (other != nullptr) {
                     av_frame_unref(other);
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVCodecContextWrapper {
 
-        struct AVCodecContextDeleter {
+        struct DiscordCoreAPI_Dll AVCodecContextDeleter {
             void operator()(AVCodecContext* other) {
                 if (other != nullptr) {
                     avcodec_free_context(&other);
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVFormatContextWrapper {
 
-        struct AVFormatContextDeleter {
+        struct DiscordCoreAPI_Dll AVFormatContextDeleter {
             void operator()(AVFormatContextWrapper01* other) {
                 if (other->didItInitialize) {
                     avformat_close_input(&other->theContext);
@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll SwrContextWrapper {
 
-        struct SwrContextDeleter {
+        struct DiscordCoreAPI_Dll SwrContextDeleter {
             void operator()(SwrContext* other) {
                 if (other != nullptr) {
                     swr_free(&other);
@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVIOContextWrapper {
 
-        struct AVIOContextDeleter {
+        struct DiscordCoreAPI_Dll AVIOContextDeleter {
             void operator()(AVIOContext* other) {
                 if (other != nullptr) {
                     av_freep(&other);
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVPacketWrapper {
 
-        struct AVPacketDeleter {
+        struct DiscordCoreAPI_Dll AVPacketDeleter {
             void operator()(AVPacket* other) {
                 if (other != nullptr) {
                     av_packet_free(&other);
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVCodecWrapper {
 
-        struct AVCodecDeleter {
+        struct DiscordCoreAPI_Dll AVCodecDeleter {
             void operator()(AVCodec*) {};
         };
 
@@ -223,7 +223,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVStreamWrapper {
 
-        struct AVStreamDeleter {
+        struct DiscordCoreAPI_Dll AVStreamDeleter {
             void operator()(AVStream*) {};
         };
 
@@ -246,19 +246,19 @@ namespace DiscordCoreAPI {
         unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr , AVStreamDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll BuildSongDecoderData {
+    struct DiscordCoreAPI_Dll BuildAudioDecoderData {
     public:
         int64_t totalFileSize{ 0 };
         int32_t bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll SongDecoder {
+    class DiscordCoreAPI_Dll AudioDecoder {
     public:
 
-        friend class SoundCloudAPI;
-        friend class YouTubeAPI;
+        friend class  SoundCloudAPI;
+        friend class  YouTubeAPI;
 
-        SongDecoder(BuildSongDecoderData dataPackage);
+        AudioDecoder(BuildAudioDecoderData dataPackage);
 
         static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 
@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
 
         void startMe();
 
-        ~SongDecoder();
+        ~AudioDecoder();
 
     protected:
 

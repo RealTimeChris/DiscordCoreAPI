@@ -1,4 +1,4 @@
-// SongEncoder.hpp - Header for the song encoder class.
+// AudioEncoder.hpp - Header for the audio encoder class.
 // Aug 22, 2021
 // Chris M.
 // https://github.com/RealTimeChris
@@ -10,12 +10,14 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll SongEncoder {
+	class DiscordCoreAPI_Dll AudioEncoder {
 	public:
 
-		SongEncoder();
+		AudioEncoder();
 
 		vector<AudioFrameData> encodeFrames(vector<RawFrameData>& rawFrames);
+
+		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
 
 	protected:
 
@@ -23,8 +25,6 @@ namespace DiscordCoreAPI {
 		const int32_t maxBufferSize{ 1276 };
 		const int32_t sampleRate{ 48000 };
 		const int32_t nChannels{ 2 };
-
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
 
 	};
 

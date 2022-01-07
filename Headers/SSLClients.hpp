@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_METHODWrapper {
 
-		struct DiscordCoreAPI_Dll SSL_METHODDeleter {
+		struct SSL_METHODDeleter {
 			void operator()(const SSL_METHOD*) {}
 		};
 

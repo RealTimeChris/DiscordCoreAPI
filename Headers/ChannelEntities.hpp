@@ -149,13 +149,13 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Channel related endpoints. \brief An interface class DiscordCoreAPI_Dll for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
-		friend class Guild;
+		friend class  DiscordCoreClient;
+		friend class  EventHandler;
+		friend class  Guild;
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.

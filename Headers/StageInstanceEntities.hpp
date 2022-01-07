@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a single StageInstance. \brief For deleting a single StageInstance.
-	struct DeleteStageInstanceData {
+	struct DiscordCoreAPI_Dll DeleteStageInstanceData {
 		string channelId{ "" };///< The channel Id of the StageInstance.
 		string reason{ "" };///< Reason for deleting the StageInstance.
 	};
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the StageInstance related Discord endpoints. \brief An interface class for the StageInstance related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the StageInstance related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the StageInstance related Discord endpoints.
 	class DiscordCoreAPI_Dll StageInstances {
 	public:
 

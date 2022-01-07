@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a single Thread. \brief Represents a single Thread.
-	class Thread : public ChannelData {
+	class DiscordCoreAPI_Dll Thread : public ChannelData {
 	public:
 
 		Thread();
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the Thread related endpoints. \brief An interface class for the Thread related endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Thread related endpoints. \brief An interface class DiscordCoreAPI_Dll for the Thread related endpoints.
 	class DiscordCoreAPI_Dll Threads {
 	public:
 

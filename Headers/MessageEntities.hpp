@@ -36,8 +36,8 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
-		friend class InputEvents;
-		friend class Messages;
+		friend class  InputEvents;
+		friend class  Messages;
 
 		CreateMessageData(string channelIdNew) {
 			this->channelId = channelIdNew;
@@ -180,9 +180,9 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For sending a direct-message. \brief For sending a direct-message.
-	class SendDMData : public CreateMessageData {
+	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
 	public:
-		friend class InputEvents;
+		friend class  InputEvents;
 
 		SendDMData(RespondToInputEventData dataPackage) {
 			this->targetUserId = dataPackage.targetUserId;
@@ -215,8 +215,8 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
-		friend class InputEvents;
-		friend class Messages;
+		friend class  InputEvents;
+		friend class  Messages;
 
 		EditMessageData(InputEventData dataPackage) {
 			this->requesterId = dataPackage.getRequesterId();
@@ -418,7 +418,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll MessageCollector {
 	public:
 
-		friend class DiscordCoreClient;
+		friend class  DiscordCoreClient;
 
 		MessageCollector();
 
@@ -452,7 +452,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
+	/// An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	public:
 

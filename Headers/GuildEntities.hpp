@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
 
-		friend class Guilds;
+		friend class  Guilds;
 
 		Guild();
 
@@ -308,12 +308,12 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend class  DiscordCoreClient;
+		friend class  EventHandler;
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.

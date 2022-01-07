@@ -16,7 +16,7 @@ namespace DiscordCoreInternal {
 	const string googleCertPath{ "C:/SSL/certs/gtsr1.pem" };
 	const string defaultCertPath{ "C:/SSL/certs/DigiCert3.pem" };
 
-	class HttpHeader {
+	class DiscordCoreAPI_Dll HttpHeader {
 	public:
 
 		HttpHeader(nullptr_t) {};
@@ -34,7 +34,7 @@ namespace DiscordCoreInternal {
 		string key{ "" };
 	};
 
-	class RateLimitRetryAfter : public HttpHeader {
+	class DiscordCoreAPI_Dll RateLimitRetryAfter : public HttpHeader {
 	public:
 
 		RateLimitRetryAfter(string key, string value) : HttpHeader(key, value) {};
@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class RateLimitMsRemain : public HttpHeader {
+	class DiscordCoreAPI_Dll RateLimitMsRemain : public HttpHeader {
 	public:
 
 		RateLimitMsRemain(string key, string value) : HttpHeader(key, value) {};
@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class RateLimitLimit : public HttpHeader {
+	class DiscordCoreAPI_Dll RateLimitLimit : public HttpHeader {
 	public:
 
 		RateLimitLimit(string key, string value) : HttpHeader(key, value) {};
@@ -72,7 +72,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class RateLimitResetAfter : public HttpHeader {
+	class DiscordCoreAPI_Dll RateLimitResetAfter : public HttpHeader {
 	public:
 
 		RateLimitResetAfter(string key, string value) : HttpHeader(key, value) {};
@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class RateLimitBucket : public HttpHeader {
+	class DiscordCoreAPI_Dll RateLimitBucket : public HttpHeader {
 	public:
 
 		RateLimitBucket(string key, string value) : HttpHeader(key, value) {};
@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 
 	};
 
-	class HttpHeaderBuilder {
+	class DiscordCoreAPI_Dll HttpHeaderBuilder {
 	public:
 
 		static shared_ptr<HttpHeader> getHeader(string key, string value) {
@@ -134,8 +134,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
-		friend class HttpConnection;
-		friend class HttpClient;
+		friend class  HttpConnection;
+		friend class  HttpClient;
 
 		string contentFinal{ "" };
 		int64_t responseCode{ -1 };
@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
-		friend class HttpRnRBuilder;
+		friend class  HttpRnRBuilder;
 
 		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>, bool = false);
 

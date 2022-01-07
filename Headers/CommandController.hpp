@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CommandController {
 	public:
-		friend class DiscordCoreClient;
+		friend class  DiscordCoreClient;
 
 		static map<vector<string>, unique_ptr<BaseFunction>> functions;
 

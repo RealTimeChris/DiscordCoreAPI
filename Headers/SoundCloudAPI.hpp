@@ -7,11 +7,10 @@
 
 #include "IndexInitial.hpp"
 #include "CoRoutine.hpp"
-#include "SongEncoder.hpp"
-#include "SongDecoder.hpp"
+#include "AudioEncoder.hpp"
+#include "AudioDecoder.hpp"
 
 namespace DiscordCoreAPI {
-
 
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	public:
@@ -42,11 +41,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		friend class SoundCloudAPI;
-		friend class SongAPI;
-		friend class Guild;
+		friend class  DiscordCoreClient;
+		friend class  VoiceConnection;
+		friend class  SoundCloudAPI;
+		friend class  SongAPI;
+		friend class  Guild;
 
 		SoundCloudAPI(string guildId) noexcept;
 

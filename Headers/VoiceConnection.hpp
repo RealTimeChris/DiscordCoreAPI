@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"
+#include "AudioEncoder.hpp"
 #include "CoRoutine.hpp"
 
 namespace DiscordCoreAPI {
@@ -20,12 +21,12 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class SoundCloudAPI;
-		friend class YouTubeAPI;
-		friend class SongAPI;
-		friend class Guild;
-		friend class Test;
+		friend class  DiscordCoreClient;
+		friend class  SoundCloudAPI;
+		friend class  YouTubeAPI;
+		friend class  SongAPI;
+		friend class  Guild;
+		friend class  Test;
 
 		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
 				
@@ -60,8 +61,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
+		unique_ptr<AudioEncoder> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
-		OpusEncoderWrapper encoder{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
 		Event<void, void> playWaitEvent{};
@@ -85,8 +86,6 @@ namespace DiscordCoreAPI {
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
 
 		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
-
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
 
 		void sendSingleAudioFrame(string& audioDataPacketNew);
 

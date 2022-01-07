@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
         public:
 
             friend auto NewThreadAwaitable<returnType>();
-            friend class CoRoutine<returnType>;
+            friend class  CoRoutine<returnType>;
 
             promise_type() {};
 
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
     /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
-    class DiscordCoreAPI_Dll CoRoutine<void> {
+    class CoRoutine<void> {
     public:
 
         class promise_type;
@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 
             template<typename R>
             friend auto NewThreadAwaitable<void>();
-            friend class CoRoutine<void>;
+            friend class  CoRoutine<void>;
 
             promise_type() {};
 
@@ -398,7 +398,7 @@ namespace DiscordCoreAPI {
         return NewThreadAwaitable();
     }
 
-    struct CoRoutineWrapper {
+    struct DiscordCoreAPI_Dll CoRoutineWrapper {
 
         struct CoRoutineDeleter {
             void operator()(CoRoutine<void>* other) {
@@ -410,6 +410,11 @@ namespace DiscordCoreAPI {
             }
         };
         
+        CoRoutineWrapper& operator=(CoRoutine<void> other) {
+            this->thePtr.reset(&other);
+            return *this;
+        }
+
         CoRoutineWrapper& operator=(CoRoutine<void>* other) {
             this->thePtr.reset(other);
             return *this;

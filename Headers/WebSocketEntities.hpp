@@ -6,7 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "SongDecoder.hpp"
+#include "AudioDecoder.hpp"
 #include "FoundationEntities.hpp"
 #include "ErlPacker.hpp"
 #include "SSLClients.hpp"
@@ -127,7 +127,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketAgent {
 	public:
 
-		friend class DatagramSocketAgent;
+		friend class  DatagramSocketAgent;
 
 		WebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", DiscordCoreAPI::UnboundedMessageBlock<WebSocketWorkload>* workloadTarget = nullptr, WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
 
@@ -196,8 +196,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketAgent {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::VoiceConnection;
+		friend class  DiscordCoreAPI::DiscordCoreClient;
+		friend class  DiscordCoreAPI::VoiceConnection;
 
 		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
@@ -213,16 +213,16 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
-		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
+		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
-		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		WebSocketState state{ WebSocketState::Initializing };
-		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
-		WebSocketAgent* webSocketAgent{ nullptr };
+		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
+		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
+		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };

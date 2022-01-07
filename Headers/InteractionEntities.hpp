@@ -142,8 +142,8 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll DeferComponentResponseData : public InteractionResponse {
     public:
 
-        friend class CreateInteractionResponseData;
-        friend class InputEvents;
+        friend class  CreateInteractionResponseData;
+        friend class  InputEvents;
 
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -174,9 +174,9 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
     public:
 
-        friend class CreateInteractionResponseData;
-        friend class Interactions;
-        friend class InputEvents;
+        friend class  CreateInteractionResponseData;
+        friend class  Interactions;
+        friend class  InputEvents;
 
         CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -210,10 +210,10 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
-        friend class SelectMenuCollector;
-        friend class ButtonCollector;
-        friend class Interactions;
-        friend class InputEvents;        
+        friend class  SelectMenuCollector;
+        friend class  ButtonCollector;
+        friend class  Interactions;
+        friend class  InputEvents;        
 
         CreateInteractionResponseData(DeferComponentResponseData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -276,8 +276,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
-        friend class Interactions;
-        friend class InputEvents;
+        friend class  Interactions;
+        friend class  InputEvents;
 
         CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
             this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
@@ -320,8 +320,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
-        friend class Interactions;
-        friend class InputEvents;
+        friend class  Interactions;
+        friend class  InputEvents;
 
         EditInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -353,8 +353,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
         friend void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
-        friend class InputEvents;
-        friend class Interactions;
+        friend class  InputEvents;
+        friend class  Interactions;
 
         DeleteInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -371,9 +371,9 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public InteractionResponse {
     public:
 
-        friend class CreateFollowUpMessageData;
-        friend class Interactions;
-        friend class InputEvents;
+        friend class  CreateFollowUpMessageData;
+        friend class  Interactions;
+        friend class  InputEvents;
 
         CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -406,8 +406,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
-        friend class Interactions;
-        friend class InputEvents;
+        friend class  Interactions;
+        friend class  InputEvents;
 
         CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData dataPackage) {
             this->interactionPackage = dataPackage.interactionPackage;
@@ -453,8 +453,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
-        friend class Interactions;
-        friend class InputEvents;
+        friend class  Interactions;
+        friend class  InputEvents;
         EditFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -486,8 +486,8 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
         friend void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
-        friend class InputEvents;
-        friend class Interactions;
+        friend class  InputEvents;
+        friend class  Interactions;
         
         DeleteFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
@@ -515,14 +515,14 @@ namespace DiscordCoreAPI {
     * \addtogroup main_endpoints
     * @{
     */
-    /// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
+    /// An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints.
     class DiscordCoreAPI_Dll Interactions {
     public:
 
-        friend class DiscordCoreInternal::WebSocketAgent;
-        friend class DiscordCoreClient;
-        friend class EventHandler;
-        friend class EventManager;        
+        friend class  DiscordCoreInternal::WebSocketAgent;
+        friend class  DiscordCoreClient;
+        friend class  EventHandler;
+        friend class  EventManager;        
 
         /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.
         /// \param dataPackage A CreateDeferredInteractionResponseData structure.
@@ -592,7 +592,7 @@ namespace DiscordCoreAPI {
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
     class DiscordCoreAPI_Dll SelectMenuCollector {
     public:
-        friend class DiscordCoreClient;
+        friend class  DiscordCoreClient;
 
         static map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
 
@@ -645,7 +645,7 @@ namespace DiscordCoreAPI {
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
     class DiscordCoreAPI_Dll ButtonCollector {
     public:
-        friend class DiscordCoreClient;
+        friend class  DiscordCoreClient;
 
         static map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 

@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll BotUser : public UserData {
 	public:
 
-		friend class DiscordCoreClient;
+		friend class  DiscordCoreClient;
 
 		BotUser(UserData dataPackage, DiscordCoreInternal::WebSocketAgent* pBaseWebSocketAgentNew);
 
@@ -105,14 +105,14 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the User related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
-		friend class Users;
-		friend class Guild;
+		friend class  DiscordCoreClient;
+		friend class  EventHandler;
+		friend class  Users;
+		friend class  Guild;
 
 		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.

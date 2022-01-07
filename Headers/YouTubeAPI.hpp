@@ -7,8 +7,8 @@
 
 #include "IndexInitial.hpp"
 #include "CoRoutine.hpp"
-#include "SongEncoder.hpp"
-#include "SongDecoder.hpp"
+#include "AudioEncoder.hpp"
+#include "AudioDecoder.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -56,11 +56,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		friend class YouTubeSong;
-		friend class SongAPI;
-		friend class Guild;
+		friend class  DiscordCoreClient;
+		friend class  VoiceConnection;
+		friend class  YouTubeSong;
+		friend class  SongAPI;
+		friend class  Guild;
 
 		YouTubeAPI(string guildId);
 

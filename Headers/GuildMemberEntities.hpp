@@ -89,13 +89,13 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
-		friend class Guild;
+		friend class  DiscordCoreClient;
+		friend class  EventHandler;
+		friend class  Guild;
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
