@@ -114,18 +114,14 @@ namespace DiscordCoreInternal {
 		}
 
 		WebSocketWorkload& operator=(const WebSocketWorkload& other) noexcept {
-			WebSocketWorkload& theVal = const_cast<WebSocketWorkload&>(other);
-			this->payLoad = move(theVal.payLoad);
+			this->payLoad = move(other.payLoad);
 			this->eventType = other.eventType;
 			return *this;
 		}
 
 		WebSocketWorkload(const WebSocketWorkload& other) {
-			WebSocketWorkload& theVal = const_cast<WebSocketWorkload&>(other);
-			*this = move(theVal);
+			*this = other;
 		}
-
-		~WebSocketWorkload() {};
 	};
 
 	class DiscordCoreAPI_Dll WebSocketAgent {
@@ -162,7 +158,6 @@ namespace DiscordCoreInternal {
 		int32_t currentReconnectTries{ 0 };
 		map<string, string> HttpHeaders{};
 		bool areWeCollectingData{ false };
-		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCodes dataOpcode{};
@@ -233,7 +228,6 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		map<string, string> HttpHeaders{};
-		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };

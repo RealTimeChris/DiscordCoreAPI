@@ -207,6 +207,15 @@ namespace DiscordCoreInternal {
 		unique_ptr<WSADATA, WSADATADeleter> thePtr{ new WSADATA{}, WSADATADeleter{} };
 	};
 
+	template <typename T>
+	concept StringOrVector = requires(T v)
+	{
+		{v.data() }-> std::convertible_to<char*>;
+	} || requires(T v)
+	{
+		{v.data()}-> std::convertible_to<uint8_t*>;
+	};
+
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
@@ -216,9 +225,15 @@ namespace DiscordCoreInternal {
 
 		vector<uint8_t>& getInputBuffer();
 
-		void writeData(vector<uint8_t>&);
-
-		void writeData(string&);
+		template<StringOrVector typeName>
+		void writeData(typeName& data) {
+			int32_t result = SSL_write(this->ssl, data.data(), static_cast<uint32_t>(data.size()));
+			if (result <= 0) {
+				cout << "SSL_write() Error: " << SSL_get_error(this->ssl, result) << endl;
+				return;
+			};
+			data.clear();
+		}
 
 		bool readData();
 
@@ -226,8 +241,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
-		const int32_t bufferSize{ 1024 * 16 };
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
@@ -255,8 +270,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
-		const int32_t bufferSize{ 1024 * 16 };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
 		string hostname{ "" };
@@ -282,9 +297,9 @@ namespace DiscordCoreInternal {
 
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper  context{ nullptr };
+		const int32_t maxBufferSize{ 0 };
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
-		int32_t bufferSize{ 0 };
 		int64_t bytesRead{ 0 };
 		string hostname{ "" };
 		string port{ "" };

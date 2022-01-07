@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator char*() {
+        operator char* () {
             return this->thePtr.get();
         }
 
@@ -130,6 +130,16 @@ namespace DiscordCoreAPI {
     class UnboundedMessageBlock {
     public:
 
+        UnboundedMessageBlock<objectType>& operator=(UnboundedMessageBlock<objectType>&& other) {
+            this->theArray = move(other.theArray);
+            other.theArray = queue<objectType>{};
+            return *this;
+        }
+
+        UnboundedMessageBlock(UnboundedMessageBlock<objectType>&& other) {
+            *this = move(other);
+        }
+
         UnboundedMessageBlock<objectType>& operator=(const UnboundedMessageBlock<objectType>&) = delete;
 
         UnboundedMessageBlock(const UnboundedMessageBlock<objectType>&) = delete;
@@ -147,7 +157,7 @@ namespace DiscordCoreAPI {
         void clearContents() {
             this->theArray = queue<objectType>{};
         }
-        
+
         bool tryReceive(objectType& theObject) {
             if (this->theArray.size() == 0) {
                 return false;
@@ -172,6 +182,18 @@ namespace DiscordCoreAPI {
     template<typename objectType>
     class TSUnboundedMessageBlock {
     public:
+
+        TSUnboundedMessageBlock<objectType>& operator=(TSUnboundedMessageBlock<objectType>&& other) {
+            this->accessMutex = other.accessMutex;
+            other.accessMutex = shared_ptr<mutex>{};
+            this->theArray = move(other.theArray);
+            other.theArray = queue<objectType>{};
+            return *this;
+        }
+
+        TSUnboundedMessageBlock(TSUnboundedMessageBlock<objectType>&& other) {
+            *this = move(other);
+        }
 
         TSUnboundedMessageBlock<objectType>& operator=(const TSUnboundedMessageBlock<objectType>&) = delete;
 

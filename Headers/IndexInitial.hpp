@@ -66,17 +66,14 @@ extern "C"
 #include <nanobench.h>
 #include <opus/opus.h>
 #define CURL_STATICLIB
-#include <curl\curl.h>
-#include <filesystem>
+#include <curl/curl.h>
+#include <type_traits>
 #include <coroutine>
 #include <sodium.h>
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <cctype>
-#include <ctime>
+#include <concepts>
+#include <memory>
 #include <regex>
-#include <cmath>
 #include <mutex>
 #include <queue>
 
