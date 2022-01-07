@@ -61,7 +61,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
 		Event<void, void> connectionReadyEvent{};
-		Event<void, void> disconnectionEvent{};
 		OpusEncoderWrapper encoder{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };

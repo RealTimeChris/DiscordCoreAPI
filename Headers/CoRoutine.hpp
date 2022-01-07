@@ -14,11 +14,6 @@ namespace DiscordCoreAPI {
     * \addtogroup utilities
     * @{
     */
-    /// An exception for when the CoRoutine is not in the correct state. \brief An exception for when the CoRoutine is not in the correct state.
-    struct DiscordCoreAPI_Dll InvalidState : public exception {
-    public:
-        explicit InvalidState(const string& message) : exception(message.c_str()) {};
-    };
 
     /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
     enum class CoRoutineStatus {
@@ -97,25 +92,20 @@ namespace DiscordCoreAPI {
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns returnType The return value of the CoRoutine.
-        returnType get(void) {
+        returnType get() {
             if (this != nullptr) {
-                if (!this->coroutineHandle) {
-                    throw InvalidState("CoRoutine is not initialized with a proper task.");
-                }
-                else {
-                    if (this->coroutineHandle.promise().newThread != nullptr) {
-                        if (this->coroutineHandle.promise().newThread->joinable()) {
-                            this->coroutineHandle.promise().newThread->join();
-                        }
+                if (this->coroutineHandle.promise().newThread != nullptr) {
+                    if (this->coroutineHandle.promise().newThread->joinable()) {
+                        this->coroutineHandle.promise().newThread->join();
                     }
-                    exception_ptr exceptionPtr{};
-                    while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
-                        rethrow_exception(exceptionPtr);
-                    }
-                    this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
-                    this->currentStatus = this->coroutineHandle.promise().currentStatus;
-                    return this->coroutineHandle.promise().result;
                 }
+                exception_ptr exceptionPtr{};
+                while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
+                    rethrow_exception(exceptionPtr);
+                }
+                this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+                this->currentStatus = this->coroutineHandle.promise().currentStatus;
+                return this->coroutineHandle.promise().result;
             }
             return returnType{};
         }
@@ -275,24 +265,19 @@ namespace DiscordCoreAPI {
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns returnType The return value of the CoRoutine.
-        void get(void) {
+        void get() {
             if (this != nullptr) {
-                if (!this->coroutineHandle) {
-                    throw InvalidState("CoRoutine is not initialized with a proper task.");
-                }
-                else {
-                    if (this->coroutineHandle.promise().newThread != nullptr) {
-                        if (this->coroutineHandle.promise().newThread->joinable()) {
-                            this->coroutineHandle.promise().newThread->join();
-                        }
+                if (this->coroutineHandle.promise().newThread != nullptr) {
+                    if (this->coroutineHandle.promise().newThread->joinable()) {
+                        this->coroutineHandle.promise().newThread->join();
                     }
-                    exception_ptr exceptionPtr{};
-                    while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
-                        rethrow_exception(exceptionPtr);
-                    }
-                    this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
-                    this->currentStatus = this->coroutineHandle.promise().currentStatus;
                 }
+                exception_ptr exceptionPtr{};
+                while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
+                    rethrow_exception(exceptionPtr);
+                }
+                this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
+                this->currentStatus = this->coroutineHandle.promise().currentStatus;
             }
         }
 
