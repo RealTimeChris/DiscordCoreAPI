@@ -27,7 +27,6 @@ namespace DiscordCoreAPI {
         /// \param emojiName An emoji name, if desired.        
         /// \param emojiId An emoji id, if desired.
         /// \param url A url, if applicable.
-        /// \returns void
         void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -60,7 +59,6 @@ namespace DiscordCoreAPI {
         /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
-        /// \returns void
         void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
@@ -88,42 +86,36 @@ namespace DiscordCoreAPI {
 
         /// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
         /// \param dataPackage An AllowedMentionsData structure.
-        /// \returns void
         void addAllowedMentions(AllowedMentionsData dataPackage) {
             this->data.data.allowedMentions = dataPackage;
         }
 
         /// For setting the components in a response. \brief For setting the components in a response. 
         /// \param dataPackage An ActionRowData structure.
-        /// \returns void
         void addComponentRow(ActionRowData dataPackage) {
             this->data.data.components.push_back(dataPackage);
         }
 
         /// Sets the response type of the current Message. \brief Sets the response type of the current Message.
         /// \param type Interaction callback type.
-        /// \returns void
         void setResponseType(InteractionCallbackType type) {
             this->data.type = type;
         }
 
         /// For setting the embeds in a response. \brief For setting the embeds in a response.
         /// \param dataPackage An EmbedData structure.
-        /// \returns void
         void addMessageEmbed(EmbedData dataPackage) {
             this->data.data.embeds.push_back(dataPackage);
         }
 
         /// For setting the Message content in a response. \brief For setting the Message content in a response.
         /// \param dataPackage A string, containing the content.
-        /// \returns void
         void addContent(string dataPackage) {
             this->data.data.content = dataPackage;
         }
 
         /// For setting the tts status of a response. \brief For setting the tts status of a response.
         /// \param enabledTTs A bool.
-        /// \returns void
         void setTTSStatus(bool enabledTTs) {
             this->data.data.tts = enabledTTs;
         }
@@ -598,7 +590,6 @@ namespace DiscordCoreAPI {
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
-        /// \returns void
         SelectMenuCollector(InputEventData dataPackage);
 
         /// Used to collect the select-menu inputs from one or more users. \brief Used to collect the select-menu inputs from one or more users.
@@ -651,7 +642,6 @@ namespace DiscordCoreAPI {
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
-        /// \returns void
         ButtonCollector(InputEventData dataPackage);
 
         /// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.

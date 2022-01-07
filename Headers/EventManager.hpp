@@ -326,7 +326,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onInputEventCreation(EventDelegate<void, OnInputEventCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onInputEventCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -335,7 +334,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onApplicationCommandCreation(EventDelegate<void, OnApplicationCommandCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onApplicationCommandCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -344,7 +342,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onApplicationCommandUpdate(EventDelegate<void, OnApplicationCommandUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onApplicationCommandUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -353,7 +350,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onApplicationCommandDeletion(EventDelegate<void, OnApplicationCommandDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onApplicationCommandDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -362,7 +358,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onChannelCreation(EventDelegate<void, OnChannelCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onChannelCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -371,7 +366,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onChannelUpdate(EventDelegate<void, OnChannelUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onChannelUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -380,7 +374,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onChannelDeletion(EventDelegate<void, OnChannelDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onChannelDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -389,7 +382,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onChannelPinsUpdate(EventDelegate<void, OnChannelPinsUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onChannelPinsUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -398,7 +390,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onThreadCreation(EventDelegate<void, OnThreadCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onThreadCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -407,7 +398,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onThreadUpdate(EventDelegate<void, OnThreadUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onThreadUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -416,7 +406,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onThreadDeletion(EventDelegate<void, OnThreadDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onThreadDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -425,7 +414,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onThreadListSync(EventDelegate<void, OnThreadListSyncData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onThreadListSync(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -434,7 +422,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onThreadMemberUpdate(EventDelegate<void, OnThreadMemberUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onThreadMemberUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -443,7 +430,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onThreadMembersUpdate(EventDelegate<void, OnThreadMembersUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onThreadMembersUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -452,7 +438,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildCreation(EventDelegate<void, OnGuildCreationData>  handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onGuildCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -461,7 +446,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildUpdate(EventDelegate<void, OnGuildUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onGuildUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -470,7 +454,6 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildDeletion(EventDelegate<void, OnGuildDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
 		void onGuildDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -479,7 +462,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildBanAdd(EventDelegate<void, OnGuildBanAddData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildBanAdd(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -488,7 +471,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildBanRemove(EventDelegate<void, OnGuildBanRemoveData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildBanRemove(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -497,7 +480,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildEmojisUpdate(EventDelegate<void, OnGuildEmojisUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildEmojisUpdate(EventDelegateToken token);
 		
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -506,7 +489,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildStickersUpdate(EventDelegate<void, OnGuildStickersUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildStickersUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -515,7 +498,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildIntegrationsUpdate(EventDelegate<void, OnGuildIntegrationsUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildIntegrationsUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -524,7 +507,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildMembersChunk(EventDelegate<void, OnGuildMembersChunkData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildMembersChunk(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -533,7 +516,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildMemberAdd(EventDelegate<void, OnGuildMemberAddData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildMemberAdd(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -542,7 +525,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildMemberRemove(EventDelegate<void, OnGuildMemberRemoveData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildMemberRemove(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -551,7 +534,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onGuildMemberUpdate(EventDelegate<void, OnGuildMemberUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onGuildMemberUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -560,7 +543,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onRoleCreation(EventDelegate<void, OnRoleCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onRoleCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -569,7 +552,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onRoleUpdate(EventDelegate<void, OnRoleUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onRoleUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -578,7 +561,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onRoleDeletion(EventDelegate<void, OnRoleDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onRoleDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -587,7 +570,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onIntegrationCreation(EventDelegate<void, OnIntegrationCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onIntegrationCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -596,7 +579,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onIntegrationUpdate(EventDelegate<void, OnIntegrationUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onIntegrationUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -605,7 +588,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onIntegrationDeletion(EventDelegate<void, OnIntegrationDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onIntegrationDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -614,7 +597,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onInteractionCreation(EventDelegate<void, OnInteractionCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onInteractionCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -623,7 +606,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onInviteCreation(EventDelegate<void, OnInviteCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onInviteCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -632,7 +615,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onInviteDeletion(EventDelegate<void, OnInviteDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onInviteDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -641,7 +624,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onMessageCreation(EventDelegate<void, OnMessageCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onMessageCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -650,7 +633,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onMessageUpdate(EventDelegate<void, OnMessageUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onMessageUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -659,7 +642,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onMessageDeletion(EventDelegate<void, OnMessageDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onMessageDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -668,7 +651,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onMessageDeleteBulk(EventDelegate<void, OnMessageDeleteBulkData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onMessageDeleteBulk(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -677,7 +660,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onReactionAdd(EventDelegate<void, OnReactionAddData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onReactionAdd(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -686,7 +669,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onReactionRemove(EventDelegate<void, OnReactionRemoveData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onReactionRemove(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -695,7 +678,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onReactionRemoveAll(EventDelegate<void, OnReactionRemoveAllData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onReactionRemoveAll(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -704,7 +687,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onReactionRemoveEmoji(EventDelegate<void, OnReactionRemoveEmojiData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onReactionRemoveEmoji(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -713,7 +696,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onPresenceUpdate(EventDelegate<void, OnPresenceUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onPresenceUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -722,7 +705,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onStageInstanceCreation(EventDelegate<void, OnStageInstanceCreationData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onStageInstanceCreation(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -731,7 +714,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onStageInstanceUpdate(EventDelegate<void, OnStageInstanceUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onStageInstanceUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -740,7 +723,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onStageInstanceDeletion(EventDelegate<void, OnStageInstanceDeletionData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onStageInstanceDeletion(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -749,7 +732,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onTypingStart(EventDelegate<void, OnTypingStartData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onTypingStart(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -758,7 +741,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onUserUpdate(EventDelegate<void, OnUserUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onUserUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -767,7 +750,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onVoiceStateUpdate(EventDelegate<void, OnVoiceStateUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onVoiceStateUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -776,7 +759,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onVoiceServerUpdate(EventDelegate<void, OnVoiceServerUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onVoiceServerUpdate(EventDelegateToken token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
@@ -785,7 +768,7 @@ namespace DiscordCoreAPI {
 		EventDelegateToken onWebhookUpdate(EventDelegate<void, OnWebhookUpdateData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
-		/// \returns void
+		
 		void onWebhookUpdate(EventDelegateToken token);
 
 	protected:

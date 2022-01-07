@@ -88,11 +88,9 @@ namespace DiscordCoreAPI {
 		/// \param botTokenNew Your bot token. 
 		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
 		/// \param functionVector A pointer to a vector of function pointers to be run on timers.
-		/// \returns void
 		static void setup(string, string, vector<RepeatedFunctionData> = vector<RepeatedFunctionData>(), CacheOptions = CacheOptions());
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
-		/// \returns void
 		static void  runBot();
 
 		DiscordCoreClient(string, string, vector<RepeatedFunctionData>);

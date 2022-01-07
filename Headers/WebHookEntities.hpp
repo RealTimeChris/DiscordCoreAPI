@@ -96,7 +96,6 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.        
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		/// \returns void
 		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -129,7 +128,6 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		/// \returns void
 		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -157,35 +155,30 @@ namespace DiscordCoreAPI {
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		/// \returns void
 		void addAllowedMentions(AllowedMentionsData dataPackage) {
 			this->allowedMentions = dataPackage;
 		}
 
 		/// For setting the components in a response. \brief For setting the components in a response. 
 		/// \param dataPackage An ActionRowData structure.
-		/// \returns void
 		void addComponentRow(ActionRowData dataPackage) {
 			this->components.push_back(dataPackage);
 		}
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		/// \returns void
 		void addMessageEmbed(EmbedData dataPackage) {
 			this->embeds.push_back(dataPackage);
 		}
 
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
 		/// \param dataPackage A string, containing the content.
-		/// \returns void
 		void addContent(string dataPackage) {
 			this->content = dataPackage;
 		}
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		/// \returns void
 		void setTTSStatus(bool enabledTTs) {
 			this->tts = enabledTTs;
 		}
@@ -234,7 +227,6 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.        
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		/// \returns void
 		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -267,7 +259,6 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		/// \returns void
 		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -295,28 +286,24 @@ namespace DiscordCoreAPI {
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		/// \returns void
 		void addAllowedMentions(AllowedMentionsData dataPackage) {
 			this->allowedMentions = dataPackage;
 		}
 
 		/// For setting the components in a response. \brief For setting the components in a response. 
 		/// \param dataPackage An ActionRowData structure.
-		/// \returns void
 		void addComponentRow(ActionRowData dataPackage) {
 			this->components.push_back(dataPackage);
 		}
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		/// \returns void
 		void addMessageEmbed(EmbedData dataPackage) {
 			this->embeds.push_back(dataPackage);
 		}
 
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
 		/// \param dataPackage A string, containing the content.
-		/// \returns void
 		void addContent(string dataPackage) {
 			this->content = dataPackage;
 		}

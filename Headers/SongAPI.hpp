@@ -70,7 +70,6 @@ namespace DiscordCoreAPI {
 
 		/// Toggles pausing on and off. \brief Toggles pausing on and off.
 		/// \param guildId The id of the Guild which you would like to pause the Song for.
-		/// \returns void
 		static void pauseToggle(string guildId);
 
 		/// Checks if there is currently playing music for the current Guild. \brief Checks if there is currently playing music for the current Guild.
@@ -86,7 +85,6 @@ namespace DiscordCoreAPI {
 		/// Sets the playlist of the desired Guild. \brief Sets the playlist of the desired Guild.
 		/// \param playlistNew The new Playlist to be set.
 		/// \param guildId The id of the desired Guild to set the Playlist of.
-		/// \returns void.
 		static void setPlaylist(Playlist playlistNew, string guildId);
 
 		/// Returns the current loop-all status of the current Guild's Playlist. \brief Returns the current loop-all status of the current Guild's Playlist.
@@ -97,7 +95,6 @@ namespace DiscordCoreAPI {
 		/// Enables or disables the loop-all status of the playlist. \brief Enables or disables the loop-all status of the playlist.
 		/// \param enabled A bool representing whether or not to enable the loop-all status.
 		/// \param guildId The Guild id for which Guild to update this status in.
-		/// \returns void
 		static void setLoopAllStatus(bool enabled, string guildId);
 
 		/// Returns the current loop-song of the current Guild's Playlist. \brief Returns the current loop-song of the current Guild's Playlist.
@@ -108,14 +105,12 @@ namespace DiscordCoreAPI {
 		/// Enables or disables the loop-song status of the playlist. \brief Enables or disables the loop-song status of the playlist.
 		/// \param enabled A bool representing whether or not to enable the loop-song status.
 		/// \param guildId The Guild id for which Guild to update this status in.
-		/// \returns void
 		static void setLoopSongStatus(bool enabled, string guildId);		
 
 		/// Sets the position of a Song in the current Playlist's song UnboundedMessageBlock. \brief Sets the position of a Song in the current Playlist's song UnboundedMessageBlock.
 		/// \param firstSongPosition The first Song's initial position.
 		/// \param secondSongPosition The first Song's final position.
 		/// \param guildId The id of the desired Guild to update the Song positions in.
-		/// \returns void.
 		static void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, string guildId);
 
 		/// Collects the currently playing Song. \brief Collects the currently playing Song.
@@ -126,7 +121,6 @@ namespace DiscordCoreAPI {
 		/// Sets the currently playing Song. \brief Sets the currently playing Song.
 		/// \param song The Song to set as the currently playing Song.
 		/// \param guildId The id for which Guild to set the current Song of.
-		/// \returns void
 		static void setCurrentSong(Song song, string guildId);
 
 	protected:

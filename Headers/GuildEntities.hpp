@@ -286,7 +286,6 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(string channelId);
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
-		/// \returns void
 		void disconnect();
 
 		/// Checks if we are currently connected to a voice Channel. \brief Checks if we are currently connected to a voice Channel.

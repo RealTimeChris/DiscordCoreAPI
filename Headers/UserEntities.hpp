@@ -84,11 +84,9 @@ namespace DiscordCoreAPI {
 		BotUser(UserData dataPackage, DiscordCoreInternal::WebSocketAgent* pBaseWebSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes.
-		/// \returns void.
 		void updateVoiceStatus(UpdateVoiceStateData datdataPackageaPackage);
 
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
-		/// \returns void.
 		void updatePresence(UpdatePresenceData dataPackage);
 
 		virtual ~BotUser();

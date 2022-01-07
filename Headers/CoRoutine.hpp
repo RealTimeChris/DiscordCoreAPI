@@ -67,7 +67,6 @@ namespace DiscordCoreAPI {
         }
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
-         /// \returns void.
         void detachThread() {
             if (this != nullptr) {
                 if (this->coroutineHandle) {
@@ -111,7 +110,7 @@ namespace DiscordCoreAPI {
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
-        /// \returns void.
+        /// \returns returnType The object to be returned.
         returnType cancel() {
             if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
                 if (this->coroutineHandle.promise().newThread->joinable()) {
@@ -240,7 +239,6 @@ namespace DiscordCoreAPI {
         }
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
-        /// \returns void.
         void detachThread() {
             if (this != nullptr) {
                 if (this->coroutineHandle) {
@@ -264,7 +262,6 @@ namespace DiscordCoreAPI {
         }
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
-        /// \returns returnType The return value of the CoRoutine.
         void get() {
             if (this != nullptr) {
                 if (this->coroutineHandle.promise().newThread != nullptr) {
@@ -282,7 +279,6 @@ namespace DiscordCoreAPI {
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
-        /// \returns void.
         void cancel() {
             if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
                 if (this->coroutineHandle.promise().newThread->joinable()) {
