@@ -11,11 +11,6 @@
 
 namespace DiscordCoreInternal {
 
-	const string soundcloudCertPath{ "C:/SSL/certs/Root-R3.pem" };
-	const string youtubeCertPath{ "C:/SSL/certs/gtsr1.pem" };
-	const string googleCertPath{ "C:/SSL/certs/gtsr1.pem" };
-	const string defaultCertPath{ "C:/SSL/certs/DigiCert3.pem" };
-
 	class DiscordCoreAPI_Dll HttpHeader {
 	public:
 
@@ -135,10 +130,6 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend class  HttpConnection;
-		friend class  HttpClient;
-
-		string contentFinal{ "" };
-		int64_t responseCode{ -1 };
 
 		string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
@@ -146,11 +137,17 @@ namespace DiscordCoreInternal {
 
 		map<string, shared_ptr<HttpHeader>> getResponseHeaders();
 
+		const int64_t getResponseCode();
+
+		const string getFinalContent();
+
 	protected:
 
 		map<string, shared_ptr<HttpHeader>> headers{};
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
+		int64_t responseCode{ -1 };
+		string contentFinal{ "" };
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
 		string rawInput{ "" };
@@ -171,7 +168,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnection {
 	public:
 
-		HttpConnection(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+		HttpConnection();
 
 		HttpConnection(nullptr_t);
 
@@ -179,20 +176,17 @@ namespace DiscordCoreInternal {
 
 		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
-		bool connect();
+		bool connect(string baseUrl);
 
 	protected:
-		
+
+		string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
+		string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
+		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
 		BIOWrapper connectionBio{ nullptr };
-		HttpWorkloadClass workloadClass{};
 		SSL_CTXWrapper context{ nullptr };
-		map<string, string> headers{};
 		HttpRnRBuilder httpBuilder{};
-		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
-		string relativePath{ "" };
-		string content{ "" };
-		string baseUrl{ "" };
 	};
 
 	class DiscordCoreAPI_Dll HttpClient {
