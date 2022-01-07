@@ -27,8 +27,6 @@ namespace DiscordCoreAPI {
 		friend class  SongAPI;
 		friend class  Guild;
 		friend class  Test;
-
-		VoiceConnection(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
 				
 		VoiceConnection() = default;
 
@@ -61,6 +59,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
+		Event<void, void>* reconnectionEvent{ nullptr };
 		unique_ptr<AudioEncoder> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
 		const int32_t maxBufferSize{ 1276 };
@@ -83,7 +82,7 @@ namespace DiscordCoreAPI {
 		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
 
-		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
+		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew, Event<void, void>* reconnectionEvent);
 
 		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 

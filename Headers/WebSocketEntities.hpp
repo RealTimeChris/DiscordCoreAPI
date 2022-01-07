@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
-		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
+		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		map<string, bool*> areWeReadyToConnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -199,7 +199,7 @@ namespace DiscordCoreInternal {
 		friend class  DiscordCoreAPI::DiscordCoreClient;
 		friend class  DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, DiscordCoreAPI::Event<void, void>* reconnectionEventNew, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
+		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
 
 		void sendVoiceData(string& responseData);
 
@@ -212,7 +212,6 @@ namespace DiscordCoreInternal {
 	protected:
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
-		DiscordCoreAPI::Event<void, void>* reconnectionEvent{ nullptr };
 		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
