@@ -437,6 +437,8 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll string urlEncode(string inputString);
 
+    DiscordCoreAPI_Dll string generateX64BaseEncodedKey();
+
     class DiscordCoreAPI_Dll TimeStamp {
     public:
 
@@ -3383,15 +3385,14 @@ namespace  DiscordCoreInternal {
     struct DiscordCoreAPI_Dll RateLimitData {
         HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
         int64_t nextExecutionTime{ 0 };
-        recursive_mutex theMutex{};
         int64_t msRemainTotal{ 0 };
         int64_t timeStartedAt{ 0 };
         int32_t getsRemaining{ 0 };
-        bool isItMarked{ false };
         string tempBucket{ "" };
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };
         string bucket{ "" };
+        mutex theMutex{};
     };
 
     struct DiscordCoreAPI_Dll VoiceConnectInitData {
@@ -3401,8 +3402,8 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll VoiceConnectionData {
-        vector<uint8_t> secretKey{};
         string voiceEncryptionMode{ "" };
+        vector<uint8_t> secretKey{};
         uint32_t audioSSRC{ 0 };
         string externalIp{ "" };
         string voicePort{ "" };
