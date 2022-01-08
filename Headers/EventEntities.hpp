@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
         static map<string, unique_ptr<EventCore>> theEvents;
         static map<string, uint32_t> refCounts;
 
-        shared_ptr<bool> theEventState{ make_shared<bool>(false) };
+        bool theEventState{ false };
 
     };
 
@@ -266,7 +266,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Event<void, void> {
     public:
 
-        atomic<shared_ptr<bool>> theEventState{ make_shared<bool>(false) };
+        atomic<bool> theEventState{ false };
         string eventId{ "" };
 
         Event<void, void>& operator=(const Event<void, void>& other) {
@@ -297,13 +297,13 @@ namespace DiscordCoreAPI {
             this->eventId = to_string(duration_cast<microseconds>(steady_clock::now().time_since_epoch()).count());
             EventCore::theEvents.insert_or_assign(this->eventId, make_unique<EventCore>());
             EventCore::refCounts.insert_or_assign(this->eventId, 1);
-            this->theEventState = EventCore::theEvents.at(this->eventId)->theEventState;
+            this->theEventState.store(move(EventCore::theEvents.at(this->eventId)->theEventState));
         }
 
         uint32_t wait(int64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
             int64_t millisecondsWaited{ 0 };
             while (true) {
-                if (*this->theEventState.load()) {
+                if (this->theEventState.load()) {
                     return 0;
                 }
                 else {
@@ -319,11 +319,11 @@ namespace DiscordCoreAPI {
         }
 
         void set(string testValue = "") {
-            *this->theEventState.load() = true;
+            this->theEventState.store(true);
         }
 
         void reset() {
-            *this->theEventState.load() = false;
+            this->theEventState.store(false);
         }
 
         ~Event() {

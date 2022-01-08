@@ -24,9 +24,6 @@ namespace DiscordCoreAPI {
 		friend class  VoiceConnection;
 		friend class  Guild;
 
-		unique_ptr<Event<void, void> > reconnectionEvent{ make_unique<Event<void, void>>() };
-		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
-
 		Playlist playlist{};
 
 		SongAPI(string guildId);

@@ -52,12 +52,12 @@ namespace DiscordCoreAPI {
 	protected:
 
 		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
+		unique_ptr<Event<void, void>> reconnectionEvent{ make_unique<Event<void, void>>() };
 		unique_ptr<DiscordCoreInternal::DatagramSocketAgent> datagramSocketAgent{ nullptr };
-		TSUnboundedMessageBlock<AudioFrameData>* audioDataBuffer{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
-		Event<void, void>* reconnectionEvent{ nullptr };
+		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		unique_ptr<AudioEncoder> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
 		const int32_t maxBufferSize{ 1276 };
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
 
-		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew, Event<void, void>* reconnectionEvent);
+		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
 
 		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 

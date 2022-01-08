@@ -189,8 +189,6 @@ namespace DiscordCoreAPI {
     public:
 
         TSUnboundedMessageBlock<objectType>& operator=(TSUnboundedMessageBlock<objectType>&& other) noexcept {
-            this->accessMutex = other.accessMutex;
-            other.accessMutex = shared_ptr<mutex>{};
             this->theArray = move(other.theArray);
             other.theArray = queue<objectType>{};
             return *this;
@@ -211,17 +209,17 @@ namespace DiscordCoreAPI {
         TSUnboundedMessageBlock() = default;
 
         void send(objectType theObject) {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             this->theArray.push(theObject);
         }
 
         void clearContents() {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             this->theArray = queue<objectType>{};
         }
 
         bool tryReceive(objectType& theObject) {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             if (this->theArray.size() == 0) {
                 return false;
             }
@@ -236,7 +234,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
+        mutex accessMutex{ mutex() };
         queue<objectType> theArray{};
 
     };
@@ -2946,8 +2944,6 @@ namespace DiscordCoreAPI {
 
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
-                this->accessMutex = other.accessMutex;
-                other.accessMutex = shared_ptr<mutex>{};
                 this->cache = move(other.cache);
                 other.cache = map<keyType, storageType>{};
             }
@@ -2965,12 +2961,12 @@ namespace DiscordCoreAPI {
         TSObjectCache() = default;
 
         auto end() {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             return this->cache.end();
         }
 
         auto begin() {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             return this->cache.begin();
         }
 
@@ -2978,7 +2974,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
         storageType& at(keyType valueId) {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             return ref(this->cache.at(valueId));
         }
 
@@ -2986,14 +2982,14 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(keyType valueId) {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             return this->cache.contains(valueId);
         }
 
         /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
         /// \param valueId The chosen item's key.
         void erase(keyType valueId) {
-            lock_guard<mutex> accessLock{ *this->accessMutex };
+            lock_guard<mutex> accessLock{ this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -3009,9 +3005,9 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
-
         map<keyType, storageType> cache{};
+
+        mutex accessMutex{};
     };
 
     /// A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key. \brief A Thread-safe cache for storing objects of any kind - it can have multiple items stored using the same key.
@@ -3043,12 +3039,12 @@ namespace DiscordCoreAPI {
         ObjectMultiCache() = default;
 
         auto end() {
-            lock_guard<mutex> endLock{ *this->accessMutex };
+            lock_guard<mutex> endLock{ this->accessMutex };
             return this->cache.end();
         }
 
         auto begin() {
-            lock_guard<mutex> beginLock{ *this->accessMutex };
+            lock_guard<mutex> beginLock{ this->accessMutex };
             return this->cache.begin();
         }
 
@@ -3056,7 +3052,7 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
         storageType& at(keyType valueId) {
-            lock_guard<mutex> returnLock{ *this->accessMutex, defer_lock };
+            lock_guard<mutex> returnLock{ this->accessMutex, defer_lock };
             return ref(this->cache.extract(valueId));
         }
 
@@ -3064,14 +3060,14 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(keyType valueId) {
-            lock_guard<mutex> containsLock{ *this->accessMutex };
+            lock_guard<mutex> containsLock{ this->accessMutex };
             return this->cache.contains(valueId);
         }
 
         /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
         /// \param valueId The chosen item's key.
         void erase(keyType valueId) {
-            lock_guard<mutex> eraseLock{ *this->accessMutex };
+            lock_guard<mutex> eraseLock{ this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -3087,7 +3083,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        unique_ptr<mutex> accessMutex{ make_unique<mutex>() };
+        mutex accessMutex{};
 
         multimap<keyType, storageType> cache{};
     };

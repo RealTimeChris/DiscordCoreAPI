@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		WebSocketWorkload(const WebSocketWorkload& other) {
+		WebSocketWorkload(const WebSocketWorkload& other) noexcept {
 			*this = other;
 		}
 	};
@@ -134,8 +134,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		atomic<shared_ptr<DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>>> webSocketWorkloadTarget{ make_shared<DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload>>() };
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		const unsigned char WebSocketPayloadLengthMagicLarge{ 126 };
 		const unsigned char WebSocketPayloadLengthMagicHuge{ 127 };
