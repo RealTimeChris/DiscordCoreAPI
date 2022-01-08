@@ -159,6 +159,7 @@ namespace DiscordCoreInternal {
 		int32_t currentReconnectTries{ 0 };
 		map<string, string> HttpHeaders{};
 		bool areWeCollectingData{ false };
+		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCodes dataOpcode{};
