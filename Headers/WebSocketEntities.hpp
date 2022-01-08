@@ -123,13 +123,13 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DatagramSocketAgent;
 
-		WebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
+		WebSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
 
 		WebSocketAgent(nullptr_t);
 
 		void sendMessage(string& dataToSend);
 
-		void sendMessage(json& responseData);
+		void sendMessage(json& dataToSend);
 
 		~WebSocketAgent();
 
@@ -163,15 +163,15 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCodes dataOpcode{};
-		string connectionPath{ "" };
-		mutex accessorMutex02{};
+		string relativePath{ "" };
+		mutex accessorMutex00{};
 		mutex accessorMutex01{};
-		string socketPath{ "" };
 		uint32_t errorCode{ 0 };
 		bool doWeQuit{ false };
 		WebSocketState state{};
 		string sessionId{ "" };
 		string botToken{ "" };
+		string baseUrl{ "" };
 		string authKey{ "" };
 		string port{ "" };
 
@@ -214,7 +214,6 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
 		const unsigned char WebSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
@@ -225,10 +224,10 @@ namespace DiscordCoreInternal {
 		const uint64_t WebSocketMaxPayloadLengthSmall{ 125 };
 		WebSocketState state{ WebSocketState::Initializing };
 		const unsigned char WebSocketFinishBit{ (1u << 7u) };
+		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
 		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint8_t MaxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char WebSocketMaskBit{ (1u << 7u) };
-		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
@@ -241,11 +240,10 @@ namespace DiscordCoreInternal {
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
 		string relativePath{ "" };
-		mutex accessorMutex02{};
-		mutex accessorMutex01{};
+		mutex accessorMutex00{};
 		uint32_t errorCode{ 0 };
 		bool doWeQuit{ false };
-		string hostName{ "" };
+		string baseUrl{ "" };
 		string port{ "443" };
 		string authKey{ "" };
 		string hostIp{ "" };

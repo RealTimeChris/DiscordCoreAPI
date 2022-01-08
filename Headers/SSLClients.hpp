@@ -245,7 +245,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper context{ nullptr };
 		vector<uint8_t> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
-		string hostname{ "" };
+		string baseUrl{ "" };
 		string port{ "" };
 		fd_set readSet{};
 	};
@@ -273,7 +273,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 		vector<char> inputBuffer{};
 		bool areWeBlocking{ true };
-		string hostname{ "" };
+		string baseUrl{ "" };
 		string port{ "" };
 	};
 
@@ -300,7 +300,7 @@ namespace DiscordCoreInternal {
 		vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		int64_t bytesRead{ 0 };
-		string hostname{ "" };
+		string baseUrl{ "" };
 		string port{ "" };
 		fd_set readSet{};
 	};

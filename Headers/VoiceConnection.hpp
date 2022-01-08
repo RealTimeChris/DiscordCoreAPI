@@ -27,8 +27,10 @@ namespace DiscordCoreAPI {
 		friend class  SongAPI;
 		friend class  Guild;
 		friend class  Test;
-				
+		
 		VoiceConnection() = default;
+
+		VoiceConnection(DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
 
 		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
 		/// \param frameData A single frame worth of audio data.
@@ -62,7 +64,7 @@ namespace DiscordCoreAPI {
 		Event<void, void> connectionReadyEvent{};
 		atomic<bool> doWeReconnect{ false };
 		const int32_t maxBufferSize{ 1276 };
-		CoRoutine<void> theTask{ nullptr };
+		CoRoutineWrapper theTask{ nullptr };
 		Event<void, void> playWaitEvent{};
 		Event<void, void> stopWaitEvent{};
 		Event<void, void> playSetEvent{};
@@ -80,7 +82,7 @@ namespace DiscordCoreAPI {
 		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
 
-		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew, DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
+		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 
 		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 
