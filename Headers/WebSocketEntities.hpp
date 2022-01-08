@@ -120,6 +120,7 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DatagramSocketAgent;
 
 		WebSocketAgent(string botToken, string hostname, string port = "443", string urlpath = "", WebSocketOpCodes opCode = WebSocketOpCodes::WS_OP_BINARY);
@@ -137,6 +138,7 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::Event<void, void> areWeReadyToConnectEvent{};
 		const unsigned char WebSocketPayloadLengthMagicLarge{ 126 };
 		const unsigned char WebSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
@@ -147,7 +149,7 @@ namespace DiscordCoreInternal {
 		const uint8_t MaxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char WebSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
-		map<string, bool*> areWeReadyToConnectPtrs{};
+		map<string, atomic<bool>*> doWeReconnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -199,11 +201,11 @@ namespace DiscordCoreInternal {
 		friend class  DiscordCoreAPI::DiscordCoreClient;
 		friend class  DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew, bool* doWeReconnectNew);
-
-		void sendVoiceData(string& responseData);
+		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew, atomic<bool>* doWeReconnectNew);
 
 		void sendMessage(vector<uint8_t>& responseData);
+
+		void sendVoiceData(string& responseData);
 
 		void sendMessage(string& dataToSend);
 
@@ -212,7 +214,6 @@ namespace DiscordCoreInternal {
 	protected:
 
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>* voiceConnectionDataBuffer{ nullptr };
-		unique_ptr<bool> areWeReadyToConnect{ make_unique<bool>() };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
 		const unsigned char WebSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
@@ -230,6 +231,7 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData voiceConnectInitData{};
 		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		atomic<bool>* doWeReconnect{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		map<string, string> HttpHeaders{};
@@ -237,7 +239,6 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
-		bool* doWeReconnect{ nullptr };
 		string relativePath{ "" };
 		mutex accessorMutex02{};
 		mutex accessorMutex01{};

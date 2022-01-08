@@ -60,6 +60,7 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		unique_ptr<AudioEncoder> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
+		atomic<bool> doWeReconnect{ false };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
 		Event<void, void> playWaitEvent{};
@@ -71,7 +72,6 @@ namespace DiscordCoreAPI {
 		Event<void, void> pauseEvent{};
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
-		bool doWeReconnect{ false };
 		uint16_t sequenceIndex{ 0 };
 		bool areWePlaying{ false };
 		bool areWeWaiting{ false };
