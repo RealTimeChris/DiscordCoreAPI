@@ -3367,8 +3367,11 @@ namespace  DiscordCoreInternal {
         GET_SOUNDCLOUD_SONG = 203
     };
 
+    typedef string Key;
+    typedef string Value;
+
     struct DiscordCoreAPI_Dll HttpWorkloadData {
-        map<string, string> headersToInsert{};
+        map<Key, Value> headersToInsert{};
         HttpWorkloadClass workloadClass{};
         HttpWorkloadType workloadType{};
         string relativePath{ "" };
@@ -3378,50 +3381,9 @@ namespace  DiscordCoreInternal {
     };
 
     struct DiscordCoreAPI_Dll RateLimitData {
-
-        RateLimitData& operator=(RateLimitData&& other) noexcept {
-            if (this != &other) {
-                this->nextExecutionTime = other.nextExecutionTime;
-                other.nextExecutionTime = 0;
-                this->getsRemaining = other.getsRemaining;
-                other.getsRemaining = 0;
-                this->msRemainTotal = other.msRemainTotal;
-                other.msRemainTotal = 0;
-                this->timeStartedAt = other.timeStartedAt;
-                other.timeStartedAt = 0;
-                this->workloadType = other.workloadType;
-                other.workloadType = HttpWorkloadType::UNSET;
-                this->isItMarked = other.isItMarked;
-                other.isItMarked = false;
-                this->tempBucket = other.tempBucket;
-                this->theMutex.swap(other.theMutex);
-                this->totalGets = other.totalGets;
-                other.totalGets = 0;
-                this->msRemain = other.msRemain;
-                other.msRemain = 0;
-                this->bucket = other.bucket;
-                other.bucket = "";
-            }
-            return *this;
-        }
-
-        RateLimitData(RateLimitData&& other) noexcept {
-            *this = move(other);
-        }
-
-        RateLimitData& operator=(const RateLimitData&) = delete;
-
-        RateLimitData(const RateLimitData&) = delete;
-
-        RateLimitData& operator=(RateLimitData&) = delete;
-
-        RateLimitData(RateLimitData&) = delete;
-
-        RateLimitData() {};
-
-        unique_ptr<recursive_mutex> theMutex{ make_unique<recursive_mutex>() };
         HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
         int64_t nextExecutionTime{ 0 };
+        recursive_mutex theMutex{};
         int64_t msRemainTotal{ 0 };
         int64_t timeStartedAt{ 0 };
         int32_t getsRemaining{ 0 };
@@ -3430,8 +3392,6 @@ namespace  DiscordCoreInternal {
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };
         string bucket{ "" };
-
-        ~RateLimitData() = default;
     };
 
     struct DiscordCoreAPI_Dll VoiceConnectInitData {
