@@ -101,7 +101,6 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		TSUnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		unique_ptr<DiscordCoreInternal::WebSocketAgent> webSocketAgent{ nullptr };
 		DiscordCoreInternal::WSADATAWrapper wsaData{};
 		CacheOptions cacheOptions{};
