@@ -168,8 +168,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnection {
 	public:
 
-		HttpConnection();
-
 		bool sendRequest(string baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
@@ -205,7 +203,7 @@ namespace DiscordCoreInternal {
 				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
 					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpClient::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket).load();
+						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket);
 					}
 					else {
 						HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
@@ -239,7 +237,7 @@ namespace DiscordCoreInternal {
 				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
 					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpClient::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket).load();
+						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket);
 					}
 					else {
 						HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
@@ -270,7 +268,7 @@ namespace DiscordCoreInternal {
 				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
 					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
 					if (HttpClient::rateLimitData.contains(rateLimitDataNew->bucket)) {
-						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket).load();
+						rateLimitDataNew = HttpClient::rateLimitData.at(rateLimitDataNew->bucket);
 					}
 					else {
 						HttpClient::rateLimitData.insert_or_assign(rateLimitDataNew->bucket, rateLimitDataNew);
@@ -297,8 +295,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static map<string, atomic<shared_ptr<RateLimitData>>> rateLimitData;
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
+		static map<string, shared_ptr<RateLimitData>> rateLimitData;
 		static atomic<shared_ptr<string>> botToken;
 		static atomic<shared_ptr<string>> baseUrl;
 
