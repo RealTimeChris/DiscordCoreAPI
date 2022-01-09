@@ -224,10 +224,10 @@ namespace DiscordCoreInternal {
 		const uint64_t WebSocketMaxPayloadLengthSmall{ 125 };
 		WebSocketState state{ WebSocketState::Initializing };
 		const unsigned char WebSocketFinishBit{ (1u << 7u) };
-		DiscordCoreAPI::CoRoutineWrapper theTask{ nullptr };
 		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint8_t MaxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char WebSocketMaskBit{ (1u << 7u) };
+		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};

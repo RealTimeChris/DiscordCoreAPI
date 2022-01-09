@@ -67,30 +67,34 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 
-		addrinfo* operator->() {
-			this->thePtrTwo = new addrinfo{};
-			return static_cast<addrinfo*>(this->thePtrTwo);
+		struct addrinfoDeleter {
+			void operator()(addrinfo* other) {
+				if (other != nullptr) {
+					freeaddrinfo(other);
+					other = nullptr;
+				}
+			}
+		};
+
+		addrinfoWrapper& operator=(addrinfo* other) {
+			this->thePtr.reset(other);
+			return *this;
 		}
 
-		operator PADDRINFOA*() {
-			this->thePtrTwo = new addrinfo{};
-			return &this->thePtrTwo;
+		addrinfo* operator->() {
+			return this->thePtr.get();
 		}
 
 		operator addrinfo*() {
-			this->thePtrTwo = new addrinfo{};
-			return static_cast<addrinfo*>(this->thePtrTwo);
+			return this->thePtr.get();
 		}
 
 		addrinfoWrapper(nullptr_t) {
+			ZeroMemory(this->thePtr.get(), sizeof(addrinfo));
 		};
 
-		~addrinfoWrapper() {
-			delete this->thePtrTwo;
-		}
-
 	protected:
-		PADDRINFOA thePtrTwo{ new addrinfo{} };
+		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo, addrinfoDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
