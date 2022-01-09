@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 		Event<void, void> connectionReadyEvent{};
 		atomic<bool> doWeReconnect{ false };
 		const int32_t maxBufferSize{ 1276 };
-		CoRoutineWrapper theTask{ nullptr };
+		CoRoutine<void> theTask{ nullptr };
 		Event<void, void> playWaitEvent{};
 		Event<void, void> stopWaitEvent{};
 		Event<void, void> playSetEvent{};
