@@ -232,8 +232,6 @@ namespace DiscordCoreInternal {
 		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };
-		bool areWeAuthenticated01{ false };
-		bool areWeAuthenticated02{ false };
 		int32_t currentReconnectTries{ 0 };
 		map<string, string> HttpHeaders{};
 		int32_t lastNumberReceived{ 0 };
