@@ -214,10 +214,10 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		WebSocketOpCode dataOpcode{ WebSocketOpCode::WS_OP_TEXT };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
+		WebSocketOpCode dataOpcode{ WebSocketOpCode::WS_OP_TEXT };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		DiscordCoreAPI::Event<void, void> connectionReadyEvent{};
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
@@ -232,6 +232,8 @@ namespace DiscordCoreInternal {
 		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };
+		bool areWeAuthenticated01{ false };
+		bool areWeAuthenticated02{ false };
 		int32_t currentReconnectTries{ 0 };
 		map<string, string> HttpHeaders{};
 		int32_t lastNumberReceived{ 0 };
