@@ -82,7 +82,17 @@ namespace DiscordCoreInternal {
 		}
 
 		addrinfo* operator->() {
-			return this->thePtr.get();
+			if (this->thePtrTwo == nullptr) {
+				return this->thePtr.get();
+			}
+			else {
+				return this->thePtrTwo;
+			}
+		}
+
+		operator PADDRINFOA*() {
+			this->thePtrTwo = new addrinfo{};
+			return &this->thePtrTwo;
 		}
 
 		operator addrinfo*() {
@@ -95,6 +105,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo, addrinfoDeleter{} };
+		PADDRINFOA thePtrTwo{};
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
