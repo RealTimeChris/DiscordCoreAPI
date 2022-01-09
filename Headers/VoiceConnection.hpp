@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		unique_ptr<AudioEncoder> encoder{ nullptr };
-		Event<void, void> connectionReadyEvent{};
+		Event<void, void>* connectionReadyEvent{};
 		atomic<bool>* doWeReconnect{ nullptr };
 		Event<void, void> reconnectionEvent{};
 		const int32_t maxBufferSize{ 1276 };
