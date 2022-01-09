@@ -2832,7 +2832,7 @@ namespace DiscordCoreAPI {
     /// Song completion event data. \brief Song completion event data.
     struct DiscordCoreAPI_Dll SongCompletionEventData {
         VoiceConnection* voiceConnection{}; ///< A pointer to the current VoiceConnection.
-        bool isThisAReplay{ false };///< Is this a replay? (Did a track recently fail to play?)
+        bool wasItAFail{ false };///< Is this a replay? (Did a track recently fail to play?)
         Song previousSong{};///< The previously played Song.
     };
 

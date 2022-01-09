@@ -38,11 +38,10 @@
 #pragma comment(lib, "ws2_32")
 #pragma comment(lib, "User32")
 #pragma comment(lib, "Kernel32")
-#endif
-
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include "crtdbg.h"
+#endif
 #endif
 
 #pragma comment(lib, "libcurl")
@@ -77,9 +76,11 @@ extern "C"
 #include <mutex>
 #include <queue>
 
+#ifdef _WIN32
 #ifdef _DEBUG
 #define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW
+#endif
 #endif
 
 #ifdef max

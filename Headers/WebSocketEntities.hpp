@@ -149,7 +149,6 @@ namespace DiscordCoreInternal {
 		const uint8_t MaxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char WebSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
-		map<string, atomic<bool>*> doWeReconnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -160,13 +159,14 @@ namespace DiscordCoreInternal {
 		map<string, string> HttpHeaders{};
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
+		atomic<bool> doWeReconnectMain{};
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCodes dataOpcode{};
 		string relativePath{ "" };
 		mutex accessorMutex00{};
 		mutex accessorMutex01{};
-		uint32_t errorCode{ 0 };
+		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
 		WebSocketState state{};
 		string sessionId{ "" };
@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 		friend class  DiscordCoreAPI::DiscordCoreClient;
 		friend class  DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* readyEventNew, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew, atomic<bool>* doWeReconnectNew);
+		DatagramSocketAgent(DiscordCoreAPI::Event<void, void>* connectionReadyEvent, VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew);
 
 		void sendMessage(vector<uint8_t>& responseData);
 
@@ -214,12 +214,12 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		DiscordCoreAPI::Event<void, void>* connectionReadyEvent{ nullptr };
 		WebSocketOpCodes dataOpcode{ WebSocketOpCodes::WS_OP_TEXT };
 		const unsigned char WebSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char WebSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
-		DiscordCoreAPI::Event<void, void>* readyEvent{ nullptr };
 		const uint64_t WebSocketMaxPayloadLengthLarge{ 65535 };
 		const uint64_t WebSocketMaxPayloadLengthSmall{ 125 };
 		WebSocketState state{ WebSocketState::Initializing };
@@ -241,7 +241,7 @@ namespace DiscordCoreInternal {
 		bool areWeWaitingForIp{ true };
 		string relativePath{ "" };
 		mutex accessorMutex00{};
-		uint32_t errorCode{ 0 };
+		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
 		string baseUrl{ "" };
 		string port{ "443" };
