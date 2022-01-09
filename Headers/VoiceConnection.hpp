@@ -53,8 +53,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unique_ptr<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>> onSongCompletionEvent{ make_unique<DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData>>() };
-		unique_ptr<Event<void, void>> reconnectionEvent{ make_unique<Event<void, void>>() };
+		DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
 		unique_ptr<DiscordCoreInternal::DatagramSocketAgent> datagramSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
@@ -62,6 +61,7 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		unique_ptr<AudioEncoder> encoder{ nullptr };
 		Event<void, void> connectionReadyEvent{};
+		Event<void, void> reconnectionEvent{};
 		atomic<bool> doWeReconnect{ false };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
