@@ -562,7 +562,7 @@ namespace DiscordCoreAPI {
         static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
     protected:
-        static map<string, unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
+        static unordered_map<string, unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
     };
     /**@}*/
 
@@ -586,7 +586,7 @@ namespace DiscordCoreAPI {
     public:
         friend class  DiscordCoreClient;
 
-        static map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
+        static unordered_map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferunordered_map;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -638,7 +638,7 @@ namespace DiscordCoreAPI {
     public:
         friend class  DiscordCoreClient;
 
-        static map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
+        static unordered_map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferunordered_map;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.

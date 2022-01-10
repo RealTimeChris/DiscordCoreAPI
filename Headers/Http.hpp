@@ -21,7 +21,7 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {};
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {};
 
 		virtual ~HttpHeader() {};
 
@@ -34,7 +34,7 @@ namespace DiscordCoreInternal {
 
 		RateLimitRetryAfter(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
 			if (headers.contains("x-ratelimit-retry-after")) {
 				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
 			}
@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 
 		RateLimitMsRemain(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
 			if (headers.contains("x-ratelimit-remaining")) {
 				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining")->value);
 			}
@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 
 		RateLimitLimit(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
 			if (headers.contains("x-ratelimit-limit")) {
 				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit")->value.c_str());
 			}
@@ -72,7 +72,7 @@ namespace DiscordCoreInternal {
 
 		RateLimitResetAfter(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
 			if (headers.contains("x-ratelimit-reset-after")) {
 				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after")->value) * 1000.0f);
 			}
@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 
 		RateLimitBucket(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
 			if (headers.contains("x-ratelimit-bucket")) {
 				pRateLimitData->bucket = headers.at("x-ratelimit-bucket")->value;
 			}
@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpData {
 
-		map<string, shared_ptr<HttpHeader>> responseHeaders{};
+		unordered_map<string, shared_ptr<HttpHeader>> responseHeaders{};
 		string responseMessage{ "" };
 		int64_t responseCode{ 0 };
 		json responseData{};
@@ -131,11 +131,11 @@ namespace DiscordCoreInternal {
 
 		friend class  HttpConnection;
 
-		string buildRequest(string& baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+		string buildRequest(string& baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
-		map<string, shared_ptr<HttpHeader>> getResponseHeaders();
+		unordered_map<string, shared_ptr<HttpHeader>> getResponseHeaders();
 
 		const int64_t getResponseCode();
 
@@ -143,7 +143,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		map<string, shared_ptr<HttpHeader>> headers{};
+		unordered_map<string, shared_ptr<HttpHeader>> headers{};
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
 		int64_t responseCode{ -1 };
@@ -168,7 +168,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnection {
 	public:
 
-		bool sendRequest(string baseUrl, string& relativePath, string& content, map<string, string>& headers, HttpWorkloadClass workloadClass);
+		bool sendRequest(string baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
@@ -315,8 +315,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static map<string, shared_ptr<RateLimitData>> rateLimitData;
+		static unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
+		static unordered_map<string, shared_ptr<RateLimitData>> rateLimitData;
 		static atomic<shared_ptr<string>> botToken;
 		static atomic<shared_ptr<string>> baseUrl;
 

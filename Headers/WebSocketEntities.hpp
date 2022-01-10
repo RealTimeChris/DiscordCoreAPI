@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
-		map<string, atomic<bool>*> doWeReconnectPtrs{};
+		unordered_map<string, atomic<bool>*> doWeReconnectPtrs{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -157,7 +157,7 @@ namespace DiscordCoreInternal {
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
-		map<string, string> HttpHeaders{};
+		unordered_map<string, string> HttpHeaders{};
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
-		map<string, string> HttpHeaders{};
+		unordered_map<string, string> HttpHeaders{};
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };

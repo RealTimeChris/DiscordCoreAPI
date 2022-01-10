@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 		EXPORT = 113,
 		NEW_REFERENCE = 114,
 		SMALL_ATOM = 115,
-		MAP = 116,
+		unordered_map = 116,
 		FUNCTION = 117,
 		UTF8_ATOM = 118,
 		SMALL_UTF8_ATOM = 119
@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 
 		static void appendListHeader(ErlPackBuffer&, uint32_t&);
 
-		static void appendMapHeader(ErlPackBuffer&, uint32_t&);
+		static void appendunordered_mapHeader(ErlPackBuffer&, uint32_t&);
 
 		static void read8Bits(ErlPackBuffer&, uint8_t&);
 
@@ -151,7 +151,7 @@ namespace DiscordCoreInternal {
 
 		static json parseNil(ErlPackBuffer&);
 
-		static json parseMap(ErlPackBuffer&);
+		static json parseunordered_map(ErlPackBuffer&);
 
 		static json parseFloat(ErlPackBuffer&);
 

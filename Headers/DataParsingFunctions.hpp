@@ -2912,8 +2912,8 @@ namespace DiscordCoreInternal {
                 auto& value = jsonObjectData["resolved"];
                 if (value.contains("users") && !value["users"].is_null()) {
                     pDataStructure->resolved.users.clear();
-                    auto newMap = value["users"].get<map<string, json>>();
-                    for (auto&  [key, newValue] : newMap) {
+                    auto newunordered_map = value["users"].get<unordered_map<string, json>>();
+                    for (auto&  [key, newValue] : newunordered_map) {
                         DiscordCoreAPI::UserData newData{};
                         parseObject(newValue, &newData);
                         pDataStructure->resolved.users.insert(make_pair(key,move(newData)));
@@ -2921,8 +2921,8 @@ namespace DiscordCoreInternal {
                 }
                 if (value.contains("channels") && !value["channels"].is_null()) {
                     pDataStructure->resolved.channels.clear();
-                    auto newMap = value["channels"].get<map<string, json>>();
-                    for (auto&  [key, newValue] : newMap) {
+                    auto newunordered_map = value["channels"].get<unordered_map<string, json>>();
+                    for (auto&  [key, newValue] : newunordered_map) {
                         DiscordCoreAPI::ChannelData newData{};
                         parseObject(newValue, &newData);
                         pDataStructure->resolved.channels.insert(make_pair(key,move(newData)));
@@ -2930,8 +2930,8 @@ namespace DiscordCoreInternal {
                 }
                 if (value.contains("roles") && !value["roles"].is_null()) {
                     pDataStructure->resolved.roles.clear();
-                    auto newMap = value["roles"].get<map<string, json>>();
-                    for (auto&  [key, newValue] : newMap) {
+                    auto newunordered_map = value["roles"].get<unordered_map<string, json>>();
+                    for (auto&  [key, newValue] : newunordered_map) {
                         DiscordCoreAPI::RoleData newData{};
                         parseObject(newValue, &newData);
                         pDataStructure->resolved.roles.insert(make_pair(key,move(newData)));
@@ -2939,8 +2939,8 @@ namespace DiscordCoreInternal {
                 }
                 if (value.contains("members") && !value["members"].is_null()) {
                     pDataStructure->resolved.members.clear();
-                    auto newMap = value["members"].get<map<string, json>>();
-                    for (auto&  [key, newValue] : newMap) {
+                    auto newunordered_map = value["members"].get<unordered_map<string, json>>();
+                    for (auto&  [key, newValue] : newunordered_map) {
                         DiscordCoreAPI::GuildMemberData newData{};
                         parseObject(newValue, &newData);
                         pDataStructure->resolved.members.insert(make_pair(key,move(newData)));
@@ -2948,8 +2948,8 @@ namespace DiscordCoreInternal {
                 }
                 if (value.contains("messages") && !value["messages"].is_null()) {
                     pDataStructure->resolved.messages.clear();
-                    auto newMap = value["messages"].get<map<string, json>>();
-                    for (auto&  [key, newValue] : newMap) {
+                    auto newunordered_map = value["messages"].get<unordered_map<string, json>>();
+                    for (auto&  [key, newValue] : newunordered_map) {
                         DiscordCoreAPI::MessageData newData{};
                         parseObject(newValue, &newData);
                         pDataStructure->resolved.messages.insert(make_pair(key,move(newData)));

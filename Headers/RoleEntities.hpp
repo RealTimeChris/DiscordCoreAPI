@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static map<string, Role> cache;
+		static unordered_map<string, Role> cache;
 
 		static void insertRole(Role dataPackage);
 

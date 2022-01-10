@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        map<string, unique_ptr<CoRoutine<void>>> threads{};
+        unordered_map<string, unique_ptr<CoRoutine<void>>> threads{};
         CoRoutine<void> cleanupTask;
         bool doWeQuit{ false };
 

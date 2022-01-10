@@ -43,23 +43,23 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			map<string, TSUnboundedMessageBlock<AudioFrameData>*> audioBuffersMap{};
-			map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
-			map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
-			map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
-			map<string, unique_ptr<SongAPI>> songAPIMap{};
+			unordered_map<string, TSUnboundedMessageBlock<AudioFrameData>*> audioBufferMap{};
+			unordered_map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
+			unordered_map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
+			unordered_map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
+			unordered_map<string, unique_ptr<SongAPI>> songAPIMap{};
 		}
 	}
 
-	DiscordCoreAPI_Dll map<string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBuffersMap();
+	DiscordCoreAPI_Dll unordered_map<string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
+	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
+	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
+	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
 
-	DiscordCoreAPI_Dll map<string, unique_ptr<SongAPI>>* getSongAPIMap();
+	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<SongAPI>>* getSongAPIMap();
 
 	/**
 	* \addtogroup main_endpoints

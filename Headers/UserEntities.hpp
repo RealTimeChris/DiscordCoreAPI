@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 
 
 	protected:
-		static map<string, User> cache;
+		static unordered_map<string, User> cache;
 
 		static void insertUser(User user);
 	};

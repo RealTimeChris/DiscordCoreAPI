@@ -809,11 +809,11 @@ namespace DiscordCoreAPI {
     /// Data structure representing a single Channel. \brief Data structure representing a single Channel.
     class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
     public:
-        map<string, OverWriteData> permissionOverwrites{}; ///< Permission overwrites for the given Channel.
+        unordered_map<string, OverWriteData> permissionOverwrites{}; ///< Permission overwrites for the given Channel.
+        unordered_map<string, UserData> recipients{};  ///< Recipients, in the case of a group DM or DM.
         int32_t defaultAutoArchiveDuration{ 0 };
         ThreadMetadataData threadMetadata{}; ///< Metadata in the case that this Channel is a Thread.
         ChannelType type{ ChannelType::DM };    ///< The type of the Channel.
-        map<string, UserData> recipients{};  ///< Recipients, in the case of a group DM or DM.
         TimeStamp lastPinTimestamp{ "" };  ///< Timestamp of the last pinned Message.
         int32_t videoQualityMode{ 0 };  ///< Video quality mode.
         int32_t rateLimitPerUser{ 0 };  ///< Amount of seconds a User has to wait before sending another Message.
@@ -970,7 +970,7 @@ namespace DiscordCoreAPI {
 
     /// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
     struct DiscordCoreAPI_Dll UpdateChannelData {
-        map<string, OverWriteData> permissionOverwrites{};
+        unordered_map<string, OverWriteData> permissionOverwrites{};
         int32_t defaultAutoArchiveDuration{ 10080 };
         int32_t videoQualityMode{ 1 };
         int32_t rateLimitPerUser{ 0 };
@@ -1431,25 +1431,25 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
     public:
         DefaultMessageNotificationLevel defaultMessageNotifications{};///<Default Message notification level.
+        unordered_map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
+        unordered_map<string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
         ExplicitContentFilterLevel explicitContentFilter{}; ///< Explicit content filtering level, by default.
-        map<string, PresenceUpdateData> presences{}; ///< Array of presences for each GuildMember.
+        unordered_map<string, GuildMemberData> members{};  ///< Array of GuildMembers.
+        unordered_map<string, StickerData> stickers{}; ///< Array of Guild stickers.
+        unordered_map<string, ChannelData> channels{}; ///< Array of Guild channels.
+        unordered_map<string, ChannelData> threads{};  ///< Array of Guild threads.
         vector<StageInstanceData> stageInstances{}; ///< Array of stage instances.
-        map<string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
-        map<string, GuildMemberData> members{};  ///< Array of GuildMembers.
+        unordered_map<string, EmojiData> emoji{};  ///< Array of Guild emojis.
+        unordered_map<string, RoleData> roles{};   ///< Array of Guild roles.
         int32_t premiumSubscriptionCount{ 0 }; ///< Premium subscription count.
         int32_t approximatePresenceCount{ 0 }; ///< Approximate quantity of presences.
         VerificationLevel verificationLevel{};  ///< Verification level required.
-        map<string, StickerData> stickers{}; ///< Array of Guild stickers.
-        map<string, ChannelData> channels{}; ///< Array of Guild channels.
-        string publicUpdatesChannelId{ "" }; ///< Id of the public updates Channel.        
+        string publicUpdatesChannelId{ "" }; ///< Id of the public updates Channel.
         int32_t approximateMemberCount{ 0 };    ///< Approximate member count.
-        map<string, ChannelData> threads{};  ///< Array of Guild threads.        
         WelcomeScreenData welcomeScreen{};  ///< Welcome screen for the Guild.
         int32_t maxVideoChannelUsers{ 0 };  ///< Maximum quantity of users per video Channel.
         AfkTimeOutDurations afkTimeOut{};    ///< Time for an individual to time out as afk.
         int32_t systemChannelFlags{ 0 };    ///< System Channel flags.
-        map<string, EmojiData> emoji{};  ///< Array of Guild emojis.
-        map<string, RoleData> roles{};   ///< Array of Guild roles.
         string discoverySplash{ "" };   ///< Link to the discovery image's splash.
         string preferredLocale{ "" };   ///< Preferred locale, for voice chat servers.
         string widgetChannelId{ "" };   ///< Channel id for the Guild's widget.
@@ -1988,11 +1988,11 @@ namespace DiscordCoreAPI {
 
     /// Resolved data. \brief Resolved data.
     struct DiscordCoreAPI_Dll ResolvedData {
-        map<string, GuildMemberData> members{}; ///< Map full of GuildMemeberData.
-        map<string, MessageData> messages{};///< Map full of MessageData.
-        map<string, ChannelData> channels{};///< Map full of ChannelData.
-        map<string, UserData> users{};///< Map full of UserData.
-        map<string, RoleData> roles{};///< Map full of RoleData.
+        unordered_map<string, GuildMemberData> members{}; ///< Map full of GuildMemeberData.
+        unordered_map<string, MessageData> messages{};///< Map full of MessageData.
+        unordered_map<string, ChannelData> channels{};///< Map full of ChannelData.
+        unordered_map<string, UserData> users{};///< Map full of UserData.
+        unordered_map<string, RoleData> roles{};///< Map full of RoleData.
     };
 
     struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption;
@@ -2947,7 +2947,7 @@ namespace DiscordCoreAPI {
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
                 this->cache = move(other.cache);
-                other.cache = map<keyType, storageType>{};
+                other.cache = unordered_map<keyType, storageType>{};
             }
             return *this;
         } 
@@ -3007,7 +3007,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        map<keyType, storageType> cache{};
+        unordered_map<keyType, storageType> cache{};
 
         mutex accessMutex{};
     };
@@ -3373,7 +3373,7 @@ namespace  DiscordCoreInternal {
     typedef string Value;
 
     struct DiscordCoreAPI_Dll HttpWorkloadData {
-        map<Key, Value> headersToInsert{};
+        unordered_map<Key, Value> headersToInsert{};
         HttpWorkloadClass workloadClass{};
         HttpWorkloadType workloadType{};
         string relativePath{ "" };
@@ -3413,4 +3413,5 @@ namespace  DiscordCoreInternal {
         string token{ "" };
         string keys{ "" };
     };
+
 };

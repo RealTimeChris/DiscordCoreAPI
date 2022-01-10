@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
         Event<R, Args...>& operator=(Event<R, Args...>&& other) {
             if (this != &other) {
                 this->theFunctions = move(other.theFunctions);
-                other.theFunctions = map<EventDelegateToken, EventDelegate<R, Args...>>{};
+                other.theFunctions = unordered_map<EventDelegateToken, EventDelegate<R, Args...>>{};
                 this->eventId = move(other.eventId);
                 other.eventId = string{};
             }
@@ -255,8 +255,8 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static map<string, unique_ptr<EventCore>> theEvents;
-        static map<string, uint32_t> refCounts;
+        static unordered_map<string, unique_ptr<EventCore>> theEvents;
+        static unordered_map<string, uint32_t> refCounts;
 
         bool theEventState{ false };
 
