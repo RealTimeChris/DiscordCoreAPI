@@ -213,7 +213,7 @@ namespace DiscordCoreInternal {
 		~DatagramSocketAgent();
 
 	protected:
-
+		
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
