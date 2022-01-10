@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
-
+         
         ThreadPoolTimer(nullptr_t) {}
 
         static ThreadPoolTimer createTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {

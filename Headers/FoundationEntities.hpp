@@ -559,20 +559,20 @@ namespace DiscordCoreAPI {
         }
 
         operator const char* () {
-            return *this;
+            return this->data();
         }
 
         operator string() {
             return *this;
         }
 
-        /// Adds one or more Permissions to a string value. \brief Adds one or more Permissions to a string value.
+        /// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
         /// \param permissionsToAdd A vector containing the Permissions you wish to add.
-        void addPermissionsToString(vector<Permission> permissionsToAdd);
+        void addPermissions(vector<Permission> permissionsToAdd);
 
-        /// Removes one or more Permissions from a string value. \brief Removes one or more Permissions from a string value.
+        /// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
         /// \param permissionsToRemove A vector containing the Permissions you wish to remove.
-        void removePermissionsFromString(vector<Permission> permissionsToRemove);
+        void removePermissions(vector<Permission> permissionsToRemove);
 
         /// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
         /// \returns A vector full of strings of the Permissions that are in the input string's value.
@@ -603,7 +603,7 @@ namespace DiscordCoreAPI {
 
         string computeBasePermissions(GuildMember guildMember);
 
-        string  computeOverwrites(string basePermissions, GuildMember guildMember, ChannelData channel);
+        string computeOverwrites(string basePermissions, GuildMember guildMember, ChannelData channel);
 
         string computePermissions(GuildMember guildMember, ChannelData channel);
     };
