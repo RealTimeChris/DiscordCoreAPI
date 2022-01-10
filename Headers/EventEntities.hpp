@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
         Event<R, Args...>& operator=(Event<R, Args...>&& other) {
             if (this != &other) {
                 this->theFunctions = move(other.theFunctions);
-                other.theFunctions = unordered_map<EventDelegateToken, EventDelegate<R, Args...>>{};
+                other.theFunctions = map<EventDelegateToken, EventDelegate<R, Args...>>{};
                 this->eventId = move(other.eventId);
                 other.eventId = string{};
             }

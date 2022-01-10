@@ -62,6 +62,7 @@ namespace DiscordCoreAPI {
                 this_thread::sleep_for(milliseconds(30000));
                 for (auto& [key, value] : this->threads) {
                     if (value->getStatus() != CoRoutineStatus::Running) {
+                        this->threads.at(key)->get();
                         this->threads.erase(key);
                     }
                 }

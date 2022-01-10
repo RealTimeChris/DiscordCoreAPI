@@ -315,8 +315,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static unordered_map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static unordered_map<string, shared_ptr<RateLimitData>> rateLimitData;
+		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
+		static map<string, shared_ptr<RateLimitData>> rateLimitData;
 		static atomic<shared_ptr<string>> botToken;
 		static atomic<shared_ptr<string>> baseUrl;
 

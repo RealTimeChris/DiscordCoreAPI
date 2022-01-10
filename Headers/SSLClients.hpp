@@ -236,8 +236,6 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
-		~WebSocketSSLClient() = default;
-
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
@@ -264,8 +262,6 @@ namespace DiscordCoreInternal {
 		bool readData(bool doWeClear);
 
 		vector<uint8_t> getData();
-
-		~DatagramSocketSSLClient() = default;
 
 	protected:
 

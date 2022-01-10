@@ -174,8 +174,6 @@ namespace DiscordCoreAPI {
             }
         }
 
-        ~UnboundedMessageBlock() {};
-
     protected:
 
         queue<objectType> theArray{};
@@ -229,8 +227,6 @@ namespace DiscordCoreAPI {
                 return true;
             }
         }
-
-        ~TSUnboundedMessageBlock() {};
 
     protected:
 
@@ -2808,8 +2804,6 @@ namespace DiscordCoreAPI {
         string songTitle{ "" };///< The title of the Song.
         string duration{ "" };///< The duration of the Song.
         string viewUrl{ "" };///< The url for listening to this Song through a browser.
-
-        Song() {};
 
         virtual ~Song() {};
 

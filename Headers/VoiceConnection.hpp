@@ -49,8 +49,6 @@ namespace DiscordCoreAPI {
 		/// \returns A string containing the Channel's id. 
 		string getChannelId();
 
-		~VoiceConnection();
-
 	protected:
 
 		DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};

@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 
 		uint32_t offSet{};
 
-		ErlPackBuffer();
+		ErlPackBuffer() = default;
 
 		ErlPackBuffer(unique_ptr<vector<uint8_t>>);
 
@@ -64,8 +64,6 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer& operator=(ErlPackBuffer&) = delete;
 
 		ErlPackBuffer(ErlPackBuffer&) = delete;
-
-		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
@@ -77,11 +75,11 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static void etfByteOrder16(uint16_t&, uint16_t&);
+		static void etfByteOrder16(uint16_t, uint16_t&);
 
-		static void etfByteOrder32(uint32_t&, uint32_t&);
+		static void etfByteOrder32(uint32_t, uint32_t&);
 
-		static void etfByteOrder64(uint64_t&, uint64_t&);
+		static void etfByteOrder64(uint64_t, uint64_t&);
 
 		static void store16Bits(vector<uint8_t>&, uint16_t&, uint32_t&);
 
