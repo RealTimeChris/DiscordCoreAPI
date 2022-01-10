@@ -39,9 +39,9 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
+		Permissions permissions{ "0" };///< The base permissions to give the Role.
 		string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
-		bool mentionable{ false };///< Is it mentionable by others in the Guild?
-		string permissions{ "0" };///< The base permissions to give the Role.
+		bool mentionable{ false };///< Is it mentionable by others in the Guild.
 		int32_t position{ 0 };///< The position amongst the other roles.
 		string guildId{ "" };///< Which Guild to make the Role in.
 		bool hoist{ false };///< Is this Role hoisted above the rest of them?
@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	public:
-		
+
 		friend class  DiscordCoreClient;
 		friend class  EventHandler;
 		friend class  Guild;

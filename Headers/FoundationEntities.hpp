@@ -34,7 +34,51 @@ namespace DiscordCoreAPI {
     class VoiceConnection;
     struct GetRolesData;
     class GuildMember;
+    class ChannelData;
     class BotUser;
+
+    /// Permissions values, for a given Channel. \brief Permissions values, for a given Channel.
+    enum class Permission : int64_t {
+        CREATE_INSTANT_INVITE = 0x0000000001,///< Create instant invite.
+        KICK_MEMBERS = 0x0000000002,///< Kick members.
+        BAN_MEMBERS = 0x0000000004,///< Ban members.
+        ADMINISTRATOR = 0x0000000008,///< Administrator.
+        MANAGE_CHANNELS = 0x0000000010,///< Manage Channels.
+        MANAGE_GUILD = 0x0000000020,///< Manage Guild.
+        ADD_REACTIONS = 0x0000000040,///< Add Reactions.
+        VIEW_AUDIT_LOG = 0x0000000080,///< View audit log.
+        PRIORITY_SPEAKER = 0x0000000100,///< Priority speaker.
+        STREAM = 0x0000000200,///< Stream.
+        VIEW_CHANNEL = 0x0000000400,///< View Channel.
+        SEND_MESSAGES = 0x0000000800,///< Send Messages.
+        SEND_TTS_MESSAGES = 0x0000001000,///< Send TTS Messages.
+        MANAGE_MESSAGES = 0x0000002000,///< Manage Messages.
+        EMBED_LINKS = 0x0000004000,///< Embed links.
+        ATTACH_FILES = 0x0000008000,///< Attach files.
+        READ_MESSAGE_HISTORY = 0x0000010000,///< Read Message history.
+        MENTION_EVERYONE = 0x0000020000,///< Mention everyone.
+        USE_EXTERNAL_EMOJIS = 0x0000040000,///< Use external Emojis.
+        VIEW_GUILD_INSIGHTS = 0x0000080000,///< View Guild insights.
+        CONNECT = 0x0000100000,///< Connect.
+        SPEAK = 0x0000200000,///< Speak.
+        MUTE_MEMBERS = 0x0000400000,///< Mute members.
+        DEAFEN_MEMBERS = 0x0000800000,///< Deafen members.
+        MOVE_MEMBERS = 0x0001000000,///< Move members.
+        USE_VAD = 0x0002000000,///< Use VAD.
+        CHANGE_NICKNAME = 0x0004000000,///< Change nickname.
+        MANAGE_NICKNAMES = 0x0008000000,///< Manage nicknames.
+        MANAGE_ROLES = 0x0010000000,///< Manage Roles.
+        MANAGE_WEBHOOKS = 0x0020000000,///< Manage WebHooks.
+        MANAGE_EMOJIS_AND_STICKERS = 0x0040000000,///< Manage Emojis and Stickers.
+        USE_APPLICATION_COMMANDS = 0x0080000000,///< Use ApplicationCommands.
+        REQUEST_TO_SPEAK = 0x0100000000,///< Request to speak.
+        MANAGE_THREADS = 0x0400000000,///< Manage Threads.
+        CREATE_PUBLIC_THREADS = 0x0800000000,///< Create public Threads.
+        CREATE_PRIVATE_THREADS = 0x1000000000,///< Create private Threads.
+        USE_EXTERNAL_STICKERS = 0x2000000000,///< Use external Stickers.
+        SEND_MESSAGES_IN_THREADS = 0x4000000000,///< Send Messages in Threads.
+        START_EMBEDDED_ACTIVITIES = 0x8000000000///< Start embedded activities.
+    };
 
     struct DiscordCoreAPI_Dll CURLWrapper {
 
@@ -481,7 +525,90 @@ namespace DiscordCoreAPI {
     protected:
         unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr , OpusEncoderDeleter{} };
     };
-    
+
+    /**
+    * \addtogroup utilities
+    * @{
+    */
+
+    /// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
+    class DiscordCoreAPI_Dll Permissions : public string {
+    public:
+
+        Permissions& operator=(string& other) {
+            if (other.size() == 0) {
+                this->push_back('0');
+            }
+            else {
+                for (auto& value : other) {
+                    this->push_back(value);
+                }
+            }
+            return *this;
+        }
+
+        Permissions(string permsNew) {
+            if (permsNew.size() == 0) {
+                this->push_back('0');
+            }
+            else {
+                for (auto& value : permsNew) {
+                    this->push_back(value);
+                }
+            }
+        }
+
+        operator const char* () {
+            return *this;
+        }
+
+        operator string() {
+            return *this;
+        }
+
+        /// Adds one or more Permissions to a string value. \brief Adds one or more Permissions to a string value.
+        /// \param permissionsToAdd A vector containing the Permissions you wish to add.
+        void addPermissionsToString(vector<Permission> permissionsToAdd);
+
+        /// Removes one or more Permissions from a string value. \brief Removes one or more Permissions from a string value.
+        /// \param permissionsToRemove A vector containing the Permissions you wish to remove.
+        void removePermissionsFromString(vector<Permission> permissionsToRemove);
+
+        /// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
+        /// \returns A vector full of strings of the Permissions that are in the input string's value.
+        vector<string> displayPermissions();
+
+        /// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
+        /// \returns A string containing all of the possible Permissions.
+        string getAllPermissions();
+
+        /// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
+        /// \returns A string containing the current Permissions.
+        string getCurrentPermissionString();
+
+        /// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
+        /// \param guildMember The GuildMember who's Permissions to analyze.
+        /// \param channel The Channel withint which to check for Permissions.
+        /// \returns A string containing the final Permission's value for a given Channel.
+        string getAllOfMyPerrmissions(GuildMember guildMember, ChannelData channel);
+
+        /// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
+        /// \param guildMember The GuildMember who to check the Permissions of.
+        /// \param channel The Channel within which to check for the Permission's presence.
+        /// \param permission A Permission to check the current Channel for.
+        /// \returns A bool suggesting the presence of the chosen Permission.
+        bool checkForPermission(GuildMember guildMember, ChannelData channel, Permission permission);
+
+    protected:
+
+        string computeBasePermissions(GuildMember guildMember);
+
+        string  computeOverwrites(string basePermissions, GuildMember guildMember, ChannelData channel);
+
+        string computePermissions(GuildMember guildMember, ChannelData channel);
+    };
+
+    /**@}*/
 
     /**
     * \addtogroup foundation_entities
@@ -512,8 +639,8 @@ namespace DiscordCoreAPI {
     /// Data structure representing a single Role. \brief Data structure representing a single Role.
     class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
     public:
+        Permissions permissions{ "" }; ///< The Role's base Guild Permissions.
         bool mentionable{ false }; ///< Is ths Role mentionable?
-        string permissions{ "" }; ///< The Role's base Guild Permissions.
         int32_t position{ 0 }; ///< Its position amongst the rest of the Guild's roles.
         bool managed{ false }; ///< is it a managed Role?
         RoleTagsData tags{}; ///< Role tags for the Role.
@@ -747,8 +874,8 @@ namespace DiscordCoreAPI {
     public:
         PermissionOverwritesType type{};   ///< Role or User type.
         string channelId{ "" };///< Channel id for which Channel this overwrite beint64_ts to.
-        string allow{ "" };///< Collection of Permissions to allow.
-        string deny{ "" };///< Collection of Permissions to deny.
+        Permissions allow{ "" };///< Collection of Permissions to allow.
+        Permissions deny{ "" };///< Collection of Permissions to deny.
 
         virtual ~OverWriteData() {};
     };
@@ -852,8 +979,8 @@ namespace DiscordCoreAPI {
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
     class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
     public:
+        Permissions permissions{ "" };///< Their base-level Permissions in the Guild.
         string premiumSince{ "" };///< If applicable, when they first boosted the server.
-        string permissions{ "" };///< Their base-level Permissions in the Guild.
         string userMention{ "" };///< What to enter to get them mentioned in a Message.
         vector<string> roles{}; ///< The Guild roles that they have.
         TimeStamp joinedAt{ "" };///< When they joined the Guild.
@@ -1028,7 +1155,7 @@ namespace DiscordCoreAPI {
 
     /// Team members object data. \brief Team members object data.
     struct DiscordCoreAPI_Dll TeamMembersObjectData {
-        vector<string> permissions{};///< Permissions for the team.
+        vector<Permissions> permissions{};///< Permissions for the team.
         int32_t membershipState{ 0 };///< Current state.
         string teamId{ "" };///< Id of the current team.
         UserData user{};///< User data of the current User.
@@ -1446,6 +1573,7 @@ namespace DiscordCoreAPI {
         int32_t maxVideoChannelUsers{ 0 };  ///< Maximum quantity of users per video Channel.
         AfkTimeOutDurations afkTimeOut{};    ///< Time for an individual to time out as afk.
         int32_t systemChannelFlags{ 0 };    ///< System Channel flags.
+        Permissions permissions{ "" };   ///< Current Permissions for the bot in the Guild.
         string discoverySplash{ "" };   ///< Link to the discovery image's splash.
         string preferredLocale{ "" };   ///< Preferred locale, for voice chat servers.
         string widgetChannelId{ "" };   ///< Channel id for the Guild's widget.
@@ -1460,7 +1588,6 @@ namespace DiscordCoreAPI {
         bool unavailable{ false };  ///< Is the Guild currently available to the bot?
         PremiumTier premiumTier{};  ///< What is the premium tier?
         TimeStamp joinedAt{ "" };  ///< When the bot joined this Guild.
-        string permissions{ "" };   ///< Current Permissions for the bot in the Guild.
         string description{ "" };   ///< Description of the Guild.
         int32_t memberCount{ 0 };   ///< Member count.
         int32_t maxMembers{ 0 };    ///< Max quantity of members.
@@ -2599,49 +2726,6 @@ namespace DiscordCoreAPI {
         }
     };
 
-    /// Permissions values, for a given Channel. \brief Permissions values, for a given Channel.
-    enum class Permissions : int64_t {
-        CREATE_INSTANT_INVITE = 0x0000000001,///< Create instant invite.
-        KICK_MEMBERS = 0x0000000002,///< Kick members.
-        BAN_MEMBERS = 0x0000000004,///< Ban members.
-        ADMINISTRATOR = 0x0000000008,///< Administrator.
-        MANAGE_CHANNELS = 0x0000000010,///< Manage Channels.
-        MANAGE_GUILD = 0x0000000020,///< Manage Guild.
-        ADD_REACTIONS = 0x0000000040,///< Add Reactions.
-        VIEW_AUDIT_LOG = 0x0000000080,///< View audit log.
-        PRIORITY_SPEAKER = 0x0000000100,///< Priority speaker.
-        STREAM = 0x0000000200,///< Stream.
-        VIEW_CHANNEL = 0x0000000400,///< View Channel.
-        SEND_MESSAGES = 0x0000000800,///< Send Messages.
-        SEND_TTS_MESSAGES = 0x0000001000,///< Send TTS Messages.
-        MANAGE_MESSAGES = 0x0000002000,///< Manage Messages.
-        EMBED_LINKS = 0x0000004000,///< Embed links.
-        ATTACH_FILES = 0x0000008000,///< Attach files.
-        READ_MESSAGE_HISTORY = 0x0000010000,///< Read Message history.
-        MENTION_EVERYONE = 0x0000020000,///< Mention everyone.
-        USE_EXTERNAL_EMOJIS = 0x0000040000,///< Use external Emojis.
-        VIEW_GUILD_INSIGHTS = 0x0000080000,///< View Guild insights.
-        CONNECT = 0x0000100000,///< Connect.
-        SPEAK = 0x0000200000,///< Speak.
-        MUTE_MEMBERS = 0x0000400000,///< Mute members.
-        DEAFEN_MEMBERS = 0x0000800000,///< Deafen members.
-        MOVE_MEMBERS = 0x0001000000,///< Move members.
-        USE_VAD = 0x0002000000,///< Use VAD.
-        CHANGE_NICKNAME = 0x0004000000,///< Change nickname.
-        MANAGE_NICKNAMES = 0x0008000000,///< Manage nicknames.
-        MANAGE_ROLES = 0x0010000000,///< Manage Roles.
-        MANAGE_WEBHOOKS = 0x0020000000,///< Manage WebHooks.
-        MANAGE_EMOJIS_AND_STICKERS = 0x0040000000,///< Manage Emojis and Stickers.
-        USE_APPLICATION_COMMANDS = 0x0080000000,///< Use ApplicationCommands.
-        REQUEST_TO_SPEAK = 0x0100000000,///< Request to speak.
-        MANAGE_THREADS = 0x0400000000,///< Manage Threads.
-        CREATE_PUBLIC_THREADS = 0x0800000000,///< Create public Threads.
-        CREATE_PRIVATE_THREADS = 0x1000000000,///< Create private Threads.
-        USE_EXTERNAL_STICKERS = 0x2000000000,///< Use external Stickers.
-        SEND_MESSAGES_IN_THREADS = 0x4000000000,///< Send Messages in Threads.
-        START_EMBEDDED_ACTIVITIES = 0x8000000000///< Start embedded activities.
-    };
-
     /// For selecting the caching style of the library. \brief For selecting the caching style of the library.
     struct DiscordCoreAPI_Dll CacheOptions {
         bool cacheGuildMembers{ false };///< Do we cache GuildMembers?
@@ -3084,58 +3168,6 @@ namespace DiscordCoreAPI {
         multimap<keyType, storageType> cache{};
     };
 
-    /// PermissionsConverter class, for manipulating Permission values. \brief PermissionsConverter class, for manipulating Permission values.
-    class DiscordCoreAPI_Dll PermissionsConverter {
-    public:
-
-        /// Checks a given string for a particular Permission's presence. \brief Checks a given string for a particular Permission's presence.
-        /// \param permission Which Permission to check for.
-        /// \param permissionString The string within which to check for the Permission.
-        /// \returns A bool answering about whether the Permission is present.
-        static bool checkForPresence(Permissions permission, string permissionString);
-
-        /// Adds one or more Permissions to a string value. \brief Adds one or more Permissions to a string value.
-        /// \param originalPermissionString The original Permission string to modify.
-        /// \param permissionsToAdd A vector containing the Permissions you wish to add.
-        /// \returns A string containing the new Permissions value.
-        static string addPermissionsToString(string originalPermissionString, vector<Permissions> permissionsToAdd);
-
-        /// Removes one or more Permissions from a string value. \brief Removes one or more Permissions from a string value.
-        /// \param originalPermissionString The original Permission string to modify.
-        /// \param permissionsToRemove A vector containing the Permissions you wish to remove.
-        /// \returns A string containing the new Permissions value.
-        static string removePermissionsFromString(string originalPermissionString, vector<Permissions> permissionsToRemove);
-
-        /// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
-        /// \param permissionString The string to check for Permissions.
-        /// \returns A vector full of strings of the Permissions that are in the input string's value.
-        static vector<string> displayPermissions(string permissionString);
-
-        /// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
-        /// \returns A string containing all of the possible Permissions.
-        static string getAllPermissions();
-
-        /// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
-        /// \param guildMember The GuildMember who's Permissions to analyze.
-        /// \param channel The Channel withint which to check for Permissions.
-        /// \returns A string containing the final Permission's value for a given Channel.
-        static string getAllOfMyPerrmissions(GuildMember guildMember, ChannelData channel);
-
-        /// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
-        /// \param guildMember The GuildMember who to check the Permissions of.
-        /// \param channel The Channel within which to check for the Permission's presence.
-        /// \param permission A Permission to check the current Channel for.
-        /// \returns A bool suggesting the presence of the chosen Permission.
-        static bool checkForPermission(GuildMember guildMember, ChannelData channel, Permissions permission);
-
-    protected:
-        static string computeBasePermissions(GuildMember guildMember);
-
-        static string  computeOverwrites(string basePermissions, GuildMember guildMember, ChannelData channel);
-
-        static string computePermissions(GuildMember guildMember, ChannelData channel);
-    };
-
     struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData {
         InputEventData inputEventData{};
         uint32_t currentPageIndex{};
@@ -3356,11 +3388,7 @@ namespace  DiscordCoreInternal {
         DELETE_WEBHOOK_MESSAGE = 158,
         GET_APPLICATION_INFO = 159,
         GET_AUTHORIZATION_INFO = 160,
-        GET_GATEWAY_BOT = 161,
-        GET_YOUTUBE_SEARCH = 200,
-        GET_SOUNDCLOUD_SEARCH = 201,
-        GET_SOUNDCLOUD_AUTH = 202,
-        GET_SOUNDCLOUD_SONG = 203
+        GET_GATEWAY_BOT = 161
     };
 
     typedef string Key;
