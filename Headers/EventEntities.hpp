@@ -242,6 +242,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll EventCore {
 
         friend class  Event<void, void>;
+        friend struct EventCoreDeleter;
 
         EventCore& operator=(const EventCore&) = delete;
 
@@ -255,55 +256,46 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static map<string, unique_ptr<EventCore>> theEvents;
-        static map<string, uint32_t> refCounts;
-
-        bool theEventState{ false };
+        shared_ptr<bool> theEventState{ make_shared<bool>() };
 
     };
 
     template<>
     class DiscordCoreAPI_Dll Event<void, void> {
     public:
-
-        atomic<bool> theEventState{ false };
-        string eventId{ "" };
+        
+        atomic<shared_ptr<bool>> theEventState{ nullptr };
+        shared_ptr<EventCore> theEventCore{ nullptr };
 
         Event<void, void>& operator=(const Event<void, void>& other) {
-            this->theEventState.store(other.theEventState);
-            this->eventId = other.eventId;
-            EventCore::refCounts.at(this->eventId) += 1;
+            this->theEventState.store(other.theEventState.load());
+            this->theEventCore = other.theEventCore;
             return *this;
         }
 
         Event(const Event<void, void>& other) {
             *this = other;
-            EventCore::refCounts.at(this->eventId) += 1;
         } 
 
         Event<void, void>& operator=(Event<void, void>& other) {
-            this->theEventState.store(other.theEventState);
-            this->eventId = other.eventId;
-            EventCore::refCounts.at(this->eventId) += 1;
+            this->theEventState.store(other.theEventState.load());
+            this->theEventCore = other.theEventCore;
             return *this;
         }
 
         Event(Event<void, void>& other) {
             *this = other;
-            EventCore::refCounts.at(this->eventId) += 1;
         }
 
         Event() {
-            this->eventId = to_string(duration_cast<microseconds>(steady_clock::now().time_since_epoch()).count());
-            EventCore::theEvents.insert_or_assign(this->eventId, make_unique<EventCore>());
-            EventCore::refCounts.insert_or_assign(this->eventId, 1);
-            this->theEventState.store(move(EventCore::theEvents.at(this->eventId)->theEventState));
+            this->theEventCore = make_shared<EventCore>();
+            this->theEventState.store(this->theEventCore->theEventState);
         }
 
         uint32_t wait(int64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
             int64_t millisecondsWaited{ 0 };
             while (true) {
-                if (this->theEventState.load()) {
+                if (*this->theEventState.load()) {
                     return 0;
                 }
                 else {
@@ -319,24 +311,15 @@ namespace DiscordCoreAPI {
         }
 
         void set(string testValue = "") {
-            this->theEventState.store(true);
+            auto thePtr = this->theEventState.load();
+            *thePtr = true;
+            this->theEventState.store(thePtr);
         }
 
         void reset() {
-            this->theEventState.store(false);
-        }
-
-        ~Event() {
-            if (EventCore::refCounts.contains(this->eventId)) {
-                if (EventCore::refCounts.at(this->eventId) > 0) {
-                    EventCore::refCounts.at(this->eventId) -= 1;
-
-                }
-                if (EventCore::refCounts.at(this->eventId) == 0) {
-                    EventCore::refCounts.erase(this->eventId);
-                    EventCore::theEvents.erase(this->eventId);
-                }
-            }
+            auto thePtr = this->theEventState.load();
+            *thePtr = false;
+            this->theEventState.store(thePtr);
         }
     };
 
