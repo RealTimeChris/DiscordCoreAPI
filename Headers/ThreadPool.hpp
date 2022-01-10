@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        unordered_map<string, unique_ptr<CoRoutine<void>>> threads{};
+        map<string, unique_ptr<CoRoutine<void>>> threads{};
         CoRoutine<void> cleanupTask;
         bool doWeQuit{ false };
 
@@ -81,25 +81,25 @@ namespace DiscordCoreAPI {
          
         ThreadPoolTimer(nullptr_t) {}
 
-        static ThreadPoolTimer createTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeDelay) {
+        static ThreadPoolTimer createTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeDelay) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeDelay, timeElapsedHandler, false)));
             return threadPoolTimer;
         }
 
-        static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, uint64_t timeInterval) {
+        static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeInterval, timeElapsedHandler, true)));
             return threadPoolTimer;
         }
 
-        static ThreadPoolTimer createTimer(TimeElapsedHandlerTwo timeElapsedHandler, uint64_t timeDelay) {
+        static ThreadPoolTimer createTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeDelay) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeDelay, timeElapsedHandler, false)));
             return threadPoolTimer;
         }
 
-        static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, uint64_t timeInterval) {
+        static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval) {
             ThreadPoolTimer threadPoolTimer{};
             ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, make_unique<CoRoutine<void>>(threadPoolTimer.run(timeInterval, timeElapsedHandler, true)));
             return threadPoolTimer;
