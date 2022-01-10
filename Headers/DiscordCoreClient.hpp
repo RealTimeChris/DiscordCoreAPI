@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 
 		static vector<RepeatedFunctionData> functionsToExecute;
 
-		unique_ptr<DiscordCoreInternal::WebSocketAgent> webSocketAgent{ nullptr };
+		unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
 		DiscordCoreInternal::WSADATAWrapper wsaData{};
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };

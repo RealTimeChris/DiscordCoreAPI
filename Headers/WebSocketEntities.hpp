@@ -116,22 +116,22 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class DiscordCoreAPI_Dll WebSocketAgent {
+	class DiscordCoreAPI_Dll BaseSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class DatagramSocketAgent;
+		friend class VoiceSocketAgent;
 
-		WebSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::WS_OP_BINARY);
+		BaseSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::WS_OP_BINARY);
 
-		WebSocketAgent(nullptr_t);
+		BaseSocketAgent(nullptr_t);
 
 		void sendMessage(string& dataToSend);
 
 		void sendMessage(json& dataToSend);
 
-		~WebSocketAgent();
+		~BaseSocketAgent();
 
 	protected:
 
@@ -196,13 +196,13 @@ namespace DiscordCoreInternal {
 		void connect();
 	};
 
-	class DiscordCoreAPI_Dll DatagramSocketAgent {
+	class DiscordCoreAPI_Dll VoiceSocketAgent {
 	public:
 
 		friend class  DiscordCoreAPI::DiscordCoreClient;
 		friend class  DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketAgent(VoiceConnectInitData initDataNew, WebSocketAgent* baseWebSocketAgentNew);
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew);
 
 		void sendMessage(vector<uint8_t>& responseData);
 
@@ -210,7 +210,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(string& dataToSend);
 
-		~DatagramSocketAgent();
+		~VoiceSocketAgent();
 
 	protected:
 		
@@ -230,7 +230,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		unordered_map<string, string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
-		WebSocketAgent* webSocketAgent{ nullptr };
+		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };

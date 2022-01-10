@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 		
 		VoiceConnection() = default;
 
-		VoiceConnection(DiscordCoreInternal::WebSocketAgent* webSocketAgentNew);
+		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew);
 
 		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
 		/// \param frameData A single frame worth of audio data.
@@ -52,10 +52,10 @@ namespace DiscordCoreAPI {
 	protected:
 
 		DiscordCoreAPI::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
-		unique_ptr<DiscordCoreInternal::DatagramSocketAgent> datagramSocketAgent{ nullptr };
+		unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
+		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		DiscordCoreInternal::WebSocketAgent* webSocketAgent{ nullptr };
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		unique_ptr<AudioEncoder> encoder{ nullptr };
 		atomic<bool>* doWeReconnect{ nullptr };
