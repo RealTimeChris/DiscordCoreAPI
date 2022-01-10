@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static unordered_map<string, unique_ptr<EventCore>> theEvents;
+        static map<string, unique_ptr<EventCore>> theEvents;
         static map<string, uint32_t> refCounts;
 
         bool theEventState{ false };
