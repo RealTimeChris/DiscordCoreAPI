@@ -586,7 +586,7 @@ namespace DiscordCoreAPI {
     public:
         friend class  DiscordCoreClient;
 
-        static unordered_map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferunordered_map;
+        static unordered_map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -638,7 +638,7 @@ namespace DiscordCoreAPI {
     public:
         friend class  DiscordCoreClient;
 
-        static unordered_map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferunordered_map;
+        static unordered_map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.

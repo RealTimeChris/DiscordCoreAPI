@@ -136,12 +136,13 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
 		DiscordCoreAPI::Event<void, void> areWeReadyToConnectEvent{};
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
+		unordered_map<string, atomic<bool>*> doWeReconnectPtrs{};
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
@@ -149,7 +150,7 @@ namespace DiscordCoreInternal {
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
-		unordered_map<string, atomic<bool>*> doWeReconnectPtrs{};
+		unordered_map<string, string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -157,7 +158,6 @@ namespace DiscordCoreInternal {
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
-		unordered_map<string, string> HttpHeaders{};
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
@@ -228,12 +228,12 @@ namespace DiscordCoreInternal {
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
+		unordered_map<string, string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
 		WebSocketAgent* webSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
-		unordered_map<string, string> HttpHeaders{};
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
