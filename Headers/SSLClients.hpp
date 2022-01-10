@@ -268,7 +268,6 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		vector<char> inputBuffer{};
-		bool areWeBlocking{ true };
 		string baseUrl{ "" };
 		string port{ "" };
 	};

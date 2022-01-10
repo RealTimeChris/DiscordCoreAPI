@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
     class Event {
     public:
 
-        Event<R, Args...>& operator=(Event<R, Args...>&& other) {
+        Event<R, Args...>& operator=(Event<R, Args...>&& other) noexcept {
             if (this != &other) {
                 this->theFunctions = move(other.theFunctions);
                 other.theFunctions = map<EventDelegateToken, EventDelegate<R, Args...>>{};
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        Event(Event<R, Args...>&& other) {
+        Event(Event<R, Args...>&& other) noexcept {
             *this = move(other);
         }
 
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
     protected:
 
         static unordered_map<string, unique_ptr<EventCore>> theEvents;
-        static unordered_map<string, uint32_t> refCounts;
+        static map<string, uint32_t> refCounts;
 
         bool theEventState{ false };
 
