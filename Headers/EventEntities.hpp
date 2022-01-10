@@ -295,6 +295,7 @@ namespace DiscordCoreAPI {
         uint32_t wait(int64_t millisecondsMaxToWait = UINT64_MAX, string testString = "") {
             int64_t millisecondsWaited{ 0 };
             while (true) {
+                cout << "WERE HERE THIS IS IT!" << endl;
                 if (*this->theEventState.load()) {
                     return 0;
                 }
