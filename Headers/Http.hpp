@@ -21,7 +21,7 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {};
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {};
 
 		virtual ~HttpHeader() {};
 
@@ -34,9 +34,9 @@ namespace DiscordCoreInternal {
 
 		RateLimitRetryAfter(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
 			if (headers.contains("x-ratelimit-retry-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after")->value)) * 1000.0f);
+				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after").value)) * 1000.0f);
 			}
 		}
 	};
@@ -46,9 +46,9 @@ namespace DiscordCoreInternal {
 
 		RateLimitMsRemain(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
 			if (headers.contains("x-ratelimit-remaining")) {
-				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining")->value);
+				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
 			}
 		}
 
@@ -59,9 +59,9 @@ namespace DiscordCoreInternal {
 
 		RateLimitLimit(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
 			if (headers.contains("x-ratelimit-limit")) {
-				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit")->value.c_str());
+				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit").value.c_str());
 			}
 		}
 
@@ -72,9 +72,9 @@ namespace DiscordCoreInternal {
 
 		RateLimitResetAfter(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
 			if (headers.contains("x-ratelimit-reset-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after")->value) * 1000.0f);
+				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
 			}
 		}
 
@@ -85,9 +85,9 @@ namespace DiscordCoreInternal {
 
 		RateLimitBucket(string key, string value) : HttpHeader(key, value) {};
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, shared_ptr<HttpHeader>> headers) {
+		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
 			if (headers.contains("x-ratelimit-bucket")) {
-				pRateLimitData->bucket = headers.at("x-ratelimit-bucket")->value;
+				pRateLimitData->bucket = headers.at("x-ratelimit-bucket").value;
 			}
 		}
 
@@ -96,31 +96,31 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpHeaderBuilder {
 	public:
 
-		static shared_ptr<HttpHeader> getHeader(string key, string value) {
+		static HttpHeader getHeader(string key, string value) {
 			if (key.find("x-ratelimit-remaining") != string::npos) {
-				return make_shared<RateLimitMsRemain>(key, value);
+				return RateLimitMsRemain(key, value);
 			}
 			else if (key.find("x-ratelimit-reset-after") != string::npos) {
-				return make_shared<RateLimitResetAfter>(key, value);
+				return RateLimitResetAfter(key, value);
 			}
 			else if (key.find("x-ratelimit-bucket") != string::npos) {
-				return make_shared<RateLimitBucket>(key, value);
+				return RateLimitBucket(key, value);
 			}
 			else if (key.find("x-ratelimit-limit") != string::npos) {
-				return make_shared<RateLimitLimit>(key, value);
+				return RateLimitLimit(key, value);
 			}
 			else if (key.find("x-ratelimit-retry-after") != string::npos) {
-				return make_shared<RateLimitRetryAfter>(key, value);
+				return RateLimitRetryAfter(key, value);
 			}
 			else {
-				return make_shared<HttpHeader>(key, value);
+				return HttpHeader(key, value);
 			}
 		};
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {
 
-		unordered_map<string, shared_ptr<HttpHeader>> responseHeaders{};
+		unordered_map<string, HttpHeader> responseHeaders{};
 		string responseMessage{ "" };
 		int64_t responseCode{ 0 };
 		json responseData{};
@@ -135,7 +135,7 @@ namespace DiscordCoreInternal {
 
 		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
-		unordered_map<string, shared_ptr<HttpHeader>> getResponseHeaders();
+		unordered_map<string, HttpHeader> getResponseHeaders();
 
 		const int64_t getResponseCode();
 
@@ -143,7 +143,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unordered_map<string, shared_ptr<HttpHeader>> headers{};
+		unordered_map<string, HttpHeader> headers{};
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
 		int64_t responseCode{ -1 };
