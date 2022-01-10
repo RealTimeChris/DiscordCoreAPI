@@ -191,10 +191,6 @@ namespace DiscordCoreInternal {
 
 		friend class  HttpRnRBuilder;
 
-		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>, bool = false);
-
-		static vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
-
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
@@ -291,6 +287,30 @@ namespace DiscordCoreInternal {
 			return HttpData();
 		}
 
+		template<typename returnType>
+		static returnType submitWorkloadAndGetResult(vector<HttpWorkloadData>& workload) {
+			try {
+				auto returnData = HttpClient::httpRequest(workload);
+				return returnData;
+			}
+			catch (...) {
+				DiscordCoreAPI::reportException(workload[0].callStack + "::HttpClient::submitWorkloadAndGetResult()");
+			}
+			return vector<HttpData>();
+		}
+
+		template<>
+		static vector<HttpData> submitWorkloadAndGetResult<vector<HttpData>>(vector<HttpWorkloadData>& workload) {
+			try {
+				auto returnData = HttpClient::httpRequest(workload);
+				return returnData;
+			}
+			catch (...) {
+				DiscordCoreAPI::reportException(workload[0].callStack + "::HttpClient::submitWorkloadAndGetResult()");
+			}
+			return vector<HttpData>();
+		}
+
 		static void initialize(string);
 
 	protected:
@@ -304,6 +324,10 @@ namespace DiscordCoreInternal {
 
 		static HttpData executehttpRequest(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
 
+		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>, bool = false);
+		
 		static vector<HttpData> executehttpRequest(vector<HttpWorkloadData>& workloadData);
+
+		static vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
 	};
 }
