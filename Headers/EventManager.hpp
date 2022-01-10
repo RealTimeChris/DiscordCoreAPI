@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 		string guildId{ "" };///< Id of the Guild for which the WebHook Update is occurring.
 	};
 
-	/// class DiscordCoreAPI_Dll for handling the assignment of event-handling functions. \brief class DiscordCoreAPI_Dll for handling the assignment of event-handling functions.int32_t
+	/// class for handling the assignment of event-handling functions. \brief class for handling the assignment of event-handling functions.int32_t
 	class DiscordCoreAPI_Dll EventManager {
 	public:
 

@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
     * \addtogroup main_endpoints
     * @{
     */
-    /// An interface class DiscordCoreAPI_Dll for the ApplicationCommand related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the ApplicationCommand related Discord endpoints.
+    /// An interface class for the ApplicationCommand related Discord endpoints. \brief An interface class for the ApplicationCommand related Discord endpoints.
     class DiscordCoreAPI_Dll ApplicationCommands {
     public:
         /// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.

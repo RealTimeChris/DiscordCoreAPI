@@ -341,7 +341,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the WebHook related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the WebHook related Discord endpoints;
+	/// An interface class for the WebHook related Discord endpoints. \brief An interface class for the WebHook related Discord endpoints;
 	class DiscordCoreAPI_Dll WebHooks {
 	public:
 

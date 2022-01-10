@@ -491,7 +491,7 @@ namespace DiscordCoreAPI {
     /// For ids of DiscordEntities. \brief For ids of DiscordEntities.
     typedef string Snowflake;
 
-    /// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
+    /// Base class for all Discord entities. \brief Base class for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
     public:
         Snowflake id{ "" };///< The identifier "snowflake" of the given entity.

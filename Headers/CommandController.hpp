@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 		virtual ~BaseFunctionArguments() {};
 	};
 
-	/// Base class DiscordCoreAPI_Dll for the command classes. \brief Base class DiscordCoreAPI_Dll for the command classes.
+	/// Base class for the command classes. \brief Base class for the command classes.
 	class DiscordCoreAPI_Dll BaseFunction {
 	public:
 		string helpDescription{ "" };///< Description of the command for the Help command.
