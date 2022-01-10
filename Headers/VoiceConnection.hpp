@@ -59,7 +59,6 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		unique_ptr<AudioEncoder> encoder{ nullptr };
 		atomic<bool>* doWeReconnect{ nullptr };
-		Event<void, void> reconnectionEvent{};
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
 		Event<void, void> playWaitEvent{};
