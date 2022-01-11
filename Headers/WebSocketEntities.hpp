@@ -142,7 +142,6 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
-		unordered_map<string, atomic<bool>*> doWeReconnectPtrs{};
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
@@ -150,6 +149,7 @@ namespace DiscordCoreInternal {
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
+		map<string, atomic<bool*>> doWeReconnectPtrs{};
 		unordered_map<string, string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
@@ -213,7 +213,7 @@ namespace DiscordCoreInternal {
 		~VoiceSocketAgent();
 
 	protected:
-		
+
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
@@ -232,13 +232,13 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		atomic<bool*> doWeReconnect{ new bool{} };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
-		atomic<bool> doWeReconnect{};
 		string relativePath{ "" };
 		mutex accessorMutex00{};
 		uint32_t closeCode{ 0 };

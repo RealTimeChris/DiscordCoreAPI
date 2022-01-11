@@ -22,6 +22,16 @@ namespace DiscordCoreInternal {
 			}
 		};
 
+		BIOWrapper& operator=(BIOWrapper&& other) noexcept {
+			this->thePtr = move(other.thePtr);
+			other.thePtr = unique_ptr<BIO, BIODeleter>{};
+			return *this;
+		}
+
+		BIOWrapper(BIOWrapper&& other) noexcept {
+			*this = move(other);
+		}
+
 		BIOWrapper& operator=(BIO* other) {
 			this->thePtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
@@ -45,6 +55,16 @@ namespace DiscordCoreInternal {
 		struct SSL_METHODDeleter {
 			void operator()(const SSL_METHOD*) {}
 		};
+
+		SSL_METHODWrapper& operator=(SSL_METHODWrapper&& other) noexcept {
+			this->thePtr = move(other.thePtr);
+			other.thePtr = unique_ptr<SSL_METHOD, SSL_METHODDeleter>{};
+			return *this;
+		}
+
+		SSL_METHODWrapper(SSL_METHODWrapper&& other) noexcept {
+			*this = move(other);
+		}
 
 		SSL_METHODWrapper& operator=(const SSL_METHOD* other) {
 			this->thePtr.reset(other);
@@ -108,6 +128,16 @@ namespace DiscordCoreInternal {
 			}
 		};
 
+		SSL_CTXWrapper& operator=(SSL_CTXWrapper&& other) noexcept {
+			this->thePtr = move(other.thePtr);
+			other.thePtr = unique_ptr<SSL_CTX, SSL_CTXDeleter>{};
+			return *this;
+		}
+
+		SSL_CTXWrapper(SSL_CTXWrapper&& other) noexcept {
+			*this = move(other);
+		}
+
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
 			this->thePtr.reset(other);
 			if (SSL_CTX_up_ref(other) != 1) {
@@ -136,6 +166,16 @@ namespace DiscordCoreInternal {
 				}
 			}
 		};
+
+		SSLWrapper& operator=(SSLWrapper&& other) noexcept {
+			this->thePtr = move(other.thePtr);
+			other.thePtr = unique_ptr<SSL, SSLDeleter>{};
+			return *this;
+		}
+
+		SSLWrapper(SSLWrapper&& other) noexcept {
+			*this = move(other);
+		}
 
 		SSLWrapper& operator=(SSL* other) {
 			this->thePtr.reset(other);
