@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
         /// \param emojiName An emoji name, if desired.        
         /// \param emojiId An emoji id, if desired.
         /// \param url A url, if applicable.
-        void addButton(bool disabled, string customId, string buttonLabel, DiscordCoreAPI::ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+        void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
+        friend string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
         friend class  SelectMenuCollector;
         friend class  ButtonCollector;
         friend class  Interactions;
@@ -267,7 +267,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
+        friend string DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
         friend class  Interactions;
         friend class  InputEvents;
 
@@ -284,6 +284,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
+
         CreateDeferredInteractionResponseData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
@@ -311,7 +312,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
+        friend string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
         friend class  Interactions;
         friend class  InputEvents;
 
@@ -344,7 +345,7 @@ namespace DiscordCoreAPI {
     /// For deleting an Interaction response. \brief For deleting an Interaction response.
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
-        friend void deleteInteractionResponseToBeWrapped(DiscordCoreAPI::DeleteInteractionResponseData dataPackage);
+        friend void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
         friend class  InputEvents;
         friend class  Interactions;
 
@@ -397,7 +398,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
+        friend string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
         friend class  Interactions;
         friend class  InputEvents;
 
@@ -444,9 +445,10 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
+        friend string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
         friend class  Interactions;
         friend class  InputEvents;
+
         EditFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -462,6 +464,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
+
         EditFollowUpMessageData(InputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
             this->interactionPackage.applicationId = dataPackage.getApplicationId();
@@ -477,7 +480,7 @@ namespace DiscordCoreAPI {
     /// For deleting a follow up Message. \brief For deleting a follow up Message.
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
-        friend void deleteFollowUpMessageToBeWrapped(DiscordCoreAPI::DeleteFollowUpMessageData dataPackage);
+        friend void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
         friend class  InputEvents;
         friend class  Interactions;
         
@@ -487,6 +490,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.getInteractionId();
             this->messagePackage.messageId = dataPackage.getMessageId();
         }
+
     protected:
         InteractionPackageData interactionPackage{};
         MessagePackageData messagePackage{};
@@ -562,7 +566,7 @@ namespace DiscordCoreAPI {
         static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
     protected:
-        static unordered_map<string, unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::MessageData>>> collectMessageDataBuffers;
+        static unordered_map<string, unique_ptr<UnboundedMessageBlock<MessageData>>> collectMessageDataBuffers;
     };
     /**@}*/
 
@@ -605,13 +609,13 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
-        DiscordCoreAPI::InteractionData interactionData{};
+        unique_ptr<UnboundedMessageBlock<InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
+        InteractionData interactionData{};
         vector<SelectMenuResponseData> responseVector{};
         int32_t currentCollectedSelectMenuCount{ 0 };
         int32_t maxCollectedSelectMenuCount{ 0 };
         bool doWeSendInitialResponse{ false };
-        bool getButtonDataForAll{ false };
+        bool getSelectMenuDataForAll{ false };
         uint32_t maxTimeInMs{ 0 };
         string selectMenuId{ "" };
         vector<string> values{};
@@ -657,16 +661,18 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        unique_ptr<UnboundedMessageBlock<DiscordCoreAPI::InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
-        vector<ButtonResponseData> responseVector{};
-        bool doWeSendInitialResponse{ false };
-        bool getButtonDataForAll{ false };
+        unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         InteractionData interactionData{};
-        int32_t maxNumberOfPresses{ 0 };
+        vector<ButtonResponseData> responseVector{};
+        int32_t currentCollectedButtonCount{ 0 };
+        bool doWeSendInitialResponse{ false };
+        int32_t maxCollectedButtonCount{ 0 };
+        bool getButtonDataForAll{ false };
         uint32_t maxTimeInMs{ 0 };
+        vector<string> values{};
+        bool doWeQuit{ false };
         string channelId{ "" };
         string messageId{ "" };
-        bool doWeQuit{ false };
         string buttonId{ "" };
         string userId{ "" };
 
