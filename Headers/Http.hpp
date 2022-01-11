@@ -64,13 +64,7 @@ namespace DiscordCoreInternal {
 
 		string buildRequest(string& baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
 
-		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
-
-		unordered_map<string, HttpHeader> getResponseHeaders();
-
-		const int64_t getResponseCode();
-
-		const string getFinalContent();
+		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);;
 
 	protected:
 
