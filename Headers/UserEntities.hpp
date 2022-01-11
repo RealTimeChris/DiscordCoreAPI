@@ -20,7 +20,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		vector<ActivityData> activities{};///< A vector of activities.
 		string status{ "" };///< Current status.
-		bool afk{ false };///< Are we afk?
+		int64_t since{ 0 };///< When was the activity started?
+		bool afk{ false };///< Are we afk.
 	};
 
 	/// For adding a user to a group DM. \brief For adding a user to a group DM.

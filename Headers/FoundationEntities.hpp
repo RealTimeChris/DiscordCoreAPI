@@ -3180,29 +3180,6 @@ namespace DiscordCoreAPI {
 
 namespace  DiscordCoreInternal {
 
-    struct DiscordCoreAPI_Dll UpdatePresenceData {
-        vector<DiscordCoreAPI::ActivityData> activities{};
-        string status{ "" };
-        int64_t since{ 0 };
-        bool afk{ false };
-    };
-
-    struct DiscordCoreAPI_Dll VoiceStateData {
-        DiscordCoreAPI::TimeStamp requestToSpeakTimestamp{ "" };
-        DiscordCoreAPI::GuildMemberData guildMember{};
-        bool selfStream{ false };
-        bool selfVideo{ false };
-        string channelId{ "" };
-        string sessionId{ "" };
-        bool selfDeaf{ false };
-        bool selfMute{ false };
-        bool suppress{ false };
-        string guildId{ "" };
-        string userId{ "" };
-        bool deaf{ false };
-        bool mute{ false };
-    };
-
     enum class HttpWorkloadClass {
         GET = 0,
         PUT = 1,
@@ -3376,11 +3353,8 @@ namespace  DiscordCoreInternal {
         GET_GATEWAY_BOT = 161
     };
 
-    typedef string Key;
-    typedef string Value;
-
     struct DiscordCoreAPI_Dll HttpWorkloadData {
-        unordered_map<Key, Value> headersToInsert{};
+        unordered_map<string, string> headersToInsert{};
         HttpWorkloadClass workloadClass{};
         HttpWorkloadType workloadType{};
         string relativePath{ "" };
@@ -3399,7 +3373,7 @@ namespace  DiscordCoreInternal {
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };
         string bucket{ "" };
-        mutex theMutex{};
+        mutex accessMutex{};
     };
 
     struct DiscordCoreAPI_Dll VoiceConnectInitData {

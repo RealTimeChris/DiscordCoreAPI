@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
     protected:
 
         map<string, unique_ptr<CoRoutine<void>>> threads{};
-        CoRoutine<void> cleanupTask;
+        CoRoutine<void> cleanupTask{};
         bool doWeQuit{ false };
 
         CoRoutine<void> theTask() {
@@ -78,7 +78,25 @@ namespace DiscordCoreAPI {
 
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
-         
+        
+        ThreadPoolTimer& operator=(ThreadPoolTimer&& other) noexcept {
+            this->threadId = move(other.threadId);
+            other.threadId = "";
+            return *this;
+        }
+
+        ThreadPoolTimer(ThreadPoolTimer&& other) noexcept {
+            *this = move(other);
+        }
+
+        ThreadPoolTimer& operator=(const ThreadPoolTimer& other) = delete;
+
+        ThreadPoolTimer(const ThreadPoolTimer& other) = delete;
+
+        ThreadPoolTimer& operator=(ThreadPoolTimer& other) = delete;
+
+        ThreadPoolTimer(ThreadPoolTimer& other) = delete;
+
         ThreadPoolTimer(nullptr_t) {}
 
         static ThreadPoolTimer createTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeDelay) {

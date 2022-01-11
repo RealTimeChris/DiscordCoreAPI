@@ -40,6 +40,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData;	
 	struct DiscordCoreAPI_Dll AddGuildMemberData;
 	struct DiscordCoreAPI_Dll CreateGuildBanData;
+	struct DiscordCoreAPI_Dll UpdatePresenceData;
 	struct DiscordCoreAPI_Dll ModifyChannelData;
 	struct DiscordCoreAPI_Dll ModifyGuildData;
 	struct DiscordCoreAPI_Dll CreateGuildData;
@@ -64,7 +65,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll json JSONIFY(int32_t lastReceivedNumber);
 
-	DiscordCoreAPI_Dll json JSONIFY(UpdatePresenceData dataPackage);
+	DiscordCoreAPI_Dll json JSONIFY(DiscordCoreAPI::UpdatePresenceData dataPackage);
 
 	DiscordCoreAPI_Dll json JSONIFY(DiscordCoreAPI::UpdateVoiceStateData dataPackage);
 
