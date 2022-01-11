@@ -61,13 +61,13 @@ namespace DiscordCoreAPI {
 		atomic<bool*> doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
-		Event<void, void> playWaitEvent{};
-		Event<void, void> stopWaitEvent{};
-		Event<void, void> playSetEvent{};
-		Event<void, void> stopSetEvent{};
+		EventWaiter playWaitEvent{};
+		EventWaiter stopWaitEvent{};
+		EventWaiter playSetEvent{};
+		EventWaiter stopSetEvent{};
 		bool areWeConnectedBool{ false };
 		bool areWeInstantiated{ false };
-		Event<void, void> pauseEvent{};
+		EventWaiter pauseEvent{};
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		uint16_t sequenceIndex{ 0 };

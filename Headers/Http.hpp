@@ -21,101 +21,32 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {};
+		static void constructValues(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
+			if (headers.contains("x-ratelimit-retry-after")) {
+				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after").value)) * 1000.0f);
+			}
+			if (headers.contains("x-ratelimit-remaining")) {
+				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
+			}
+			if (headers.contains("x-ratelimit-limit")) {
+				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit").value.c_str());
+			}
+			if (headers.contains("x-ratelimit-reset-after")) {
+				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
+			}
+			if (headers.contains("x-ratelimit-bucket")) {
+				pRateLimitData->bucket = headers.at("x-ratelimit-bucket").value;
+			}
+		};
+
+		static HttpHeader getHeader(string key, string value) {
+			return HttpHeader(key, value);
+		};
 
 		virtual ~HttpHeader() {};
 
 		string value{ "" };
 		string key{ "" };
-	};
-
-	class DiscordCoreAPI_Dll RateLimitRetryAfter : public HttpHeader {
-	public:
-
-		RateLimitRetryAfter(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
-			if (headers.contains("x-ratelimit-retry-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after").value)) * 1000.0f);
-			}
-		}
-	};
-
-	class DiscordCoreAPI_Dll RateLimitMsRemain : public HttpHeader {
-	public:
-
-		RateLimitMsRemain(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
-			if (headers.contains("x-ratelimit-remaining")) {
-				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
-			}
-		}
-
-	};
-
-	class DiscordCoreAPI_Dll RateLimitLimit : public HttpHeader {
-	public:
-
-		RateLimitLimit(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
-			if (headers.contains("x-ratelimit-limit")) {
-				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit").value.c_str());
-			}
-		}
-
-	};
-
-	class DiscordCoreAPI_Dll RateLimitResetAfter : public HttpHeader {
-	public:
-
-		RateLimitResetAfter(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
-			if (headers.contains("x-ratelimit-reset-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
-			}
-		}
-
-	};
-
-	class DiscordCoreAPI_Dll RateLimitBucket : public HttpHeader {
-	public:
-
-		RateLimitBucket(string key, string value) : HttpHeader(key, value) {};
-
-		virtual void constructValue(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
-			if (headers.contains("x-ratelimit-bucket")) {
-				pRateLimitData->bucket = headers.at("x-ratelimit-bucket").value;
-			}
-		}
-
-	};
-
-	class DiscordCoreAPI_Dll HttpHeaderBuilder {
-	public:
-
-		static HttpHeader getHeader(string key, string value) {
-			if (key.find("x-ratelimit-remaining") != string::npos) {
-				return RateLimitMsRemain(key, value);
-			}
-			else if (key.find("x-ratelimit-reset-after") != string::npos) {
-				return RateLimitResetAfter(key, value);
-			}
-			else if (key.find("x-ratelimit-bucket") != string::npos) {
-				return RateLimitBucket(key, value);
-			}
-			else if (key.find("x-ratelimit-limit") != string::npos) {
-				return RateLimitLimit(key, value);
-			}
-			else if (key.find("x-ratelimit-retry-after") != string::npos) {
-				return RateLimitRetryAfter(key, value);
-			}
-			else {
-				return HttpHeader(key, value);
-			}
-		};
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {

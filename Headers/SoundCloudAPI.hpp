@@ -53,8 +53,8 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		Event<void, void> readyToQuitEventOut{};
-		Event<void, void> readyToQuitEventIn{};
+		EventWaiter readyToQuitEventOut{};
+		EventWaiter readyToQuitEventIn{};
 		const int32_t maxBufferSize{ 8192 };
 		CoRoutineWrapper theTask{ nullptr };
 		SoundCloudSong theSong{ };
