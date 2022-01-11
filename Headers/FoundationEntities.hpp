@@ -158,8 +158,9 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator char* () {
-            return this->thePtr.get();
+        operator string() {
+            string returnValue = this->thePtr.get();
+            return returnValue;
         }
 
         CURLCharWrapper(nullptr_t) {};
@@ -171,6 +172,8 @@ namespace DiscordCoreAPI {
     protected:
         unique_ptr<char, CURLCharDeleter> thePtr{ nullptr, CURLCharDeleter{} };
     };
+
+    bool operator==(CURLCharWrapper& lhs, const  string& rhs);
 
     template<typename T>
     concept Copyable = copyable<T>;
@@ -3183,7 +3186,7 @@ namespace DiscordCoreAPI {
         string buttonId{};
     };
 
-    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, InputEventData originalEvent, uint32_t currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
+    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(string userID, unique_ptr<InputEventData> originalEvent, uint32_t currentPageIndex, vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
     /**@}*/
 };
 
