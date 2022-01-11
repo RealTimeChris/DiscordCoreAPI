@@ -12,7 +12,6 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData;
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandPermissionsData;
-	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData;
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData;
 	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData;
 	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData;
@@ -23,19 +22,14 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CreateGuildScheduledEventData;
 	struct DiscordCoreAPI_Dll ModifyGuildScheduledEventData;
 	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData;
-	class DiscordCoreAPI_Dll CreateInteractionResponseData;
 	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData;
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData;
 	struct DiscordCoreAPI_Dll EditApplicationCommandData;
-	class DiscordCoreAPI_Dll EditInteractionResponseData;
 	struct DiscordCoreAPI_Dll StartThreadWithMessageData;
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData;
-	class DiscordCoreAPI_Dll CreateFollowUpMessageData;
 	struct DiscordCoreAPI_Dll CreateChannelInviteData;
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData;
 	struct DiscordCoreAPI_Dll CreateGuildChannelData;
-	class DiscordCoreAPI_Dll EditFollowUpMessageData;
-	class DiscordCoreAPI_Dll EditWebHookMessageData;
 	struct DiscordCoreAPI_Dll FollowNewsChannelData;
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData;
 	struct DiscordCoreAPI_Dll ModifyGuildEmojiData;
@@ -46,12 +40,19 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData;	
 	struct DiscordCoreAPI_Dll AddGuildMemberData;
 	struct DiscordCoreAPI_Dll CreateGuildBanData;
-	class DiscordCoreAPI_Dll ExecuteWebHookData;
 	struct DiscordCoreAPI_Dll ModifyChannelData;
-	class DiscordCoreAPI_Dll CreateMessageData;
 	struct DiscordCoreAPI_Dll ModifyGuildData;
 	struct DiscordCoreAPI_Dll CreateGuildData;
-	class DiscordCoreAPI_Dll EditMessageData;	
+
+	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData;
+	class DiscordCoreAPI_Dll CreateInteractionResponseData;
+	class DiscordCoreAPI_Dll EditInteractionResponseData;
+	class DiscordCoreAPI_Dll CreateFollowUpMessageData;
+	class DiscordCoreAPI_Dll EditFollowUpMessageData;
+	class DiscordCoreAPI_Dll EditWebHookMessageData;
+	class DiscordCoreAPI_Dll ExecuteWebHookData;
+	class DiscordCoreAPI_Dll CreateMessageData;
+	class DiscordCoreAPI_Dll EditMessageData;
 
 };
 

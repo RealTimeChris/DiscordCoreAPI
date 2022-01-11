@@ -3180,21 +3180,6 @@ namespace DiscordCoreAPI {
 
 namespace  DiscordCoreInternal {
 
-    enum class ConnectionWebSocketType {
-        Receive = 0,
-        Send = 1
-    };
-
-    struct DiscordCoreAPI_Dll ConnectionWebSocketData {
-        friend class  DiscordCoreAPI::VoiceConnection;
-        friend class  VoiceSocketAgent;
-        ConnectionWebSocketType type{};
-        string endpoint{ "" };
-        string port{ "" };
-    protected:
-        DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreAPI::AudioFrameData>* audioDataBuffer{ nullptr };
-    };
-
     struct DiscordCoreAPI_Dll UpdatePresenceData {
         vector<DiscordCoreAPI::ActivityData> activities{};
         string status{ "" };
