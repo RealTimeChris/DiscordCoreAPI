@@ -45,8 +45,6 @@ namespace DiscordCoreAPI {
 
 		StageInstance(StageInstanceData dataNew);
 
-		virtual ~StageInstance() {};
-
 	};
 	
 	/**

@@ -332,8 +332,6 @@ namespace DiscordCoreAPI {
 		WebHook();
 
 		WebHook(WebHookData dataNew);
-
-		virtual ~WebHook() {};
 	};
 	/**@}*/
 

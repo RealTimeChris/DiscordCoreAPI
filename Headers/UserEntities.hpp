@@ -72,8 +72,6 @@ namespace DiscordCoreAPI {
 		User();
 
 		User(UserData dataNew);
-
-		virtual ~User();
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
@@ -89,8 +87,6 @@ namespace DiscordCoreAPI {
 
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
 		void updatePresence(UpdatePresenceData dataPackage);
-
-		virtual ~BotUser();
 
 	protected:
 

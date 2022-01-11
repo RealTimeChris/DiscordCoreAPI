@@ -80,8 +80,6 @@ namespace DiscordCoreAPI {
 		GuildMember();
 
 		GuildMember(GuildMemberData dataNew);
-
-		virtual ~GuildMember();
 	};
 	/**@}*/
 

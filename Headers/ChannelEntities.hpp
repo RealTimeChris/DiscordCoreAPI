@@ -139,8 +139,6 @@ namespace DiscordCoreAPI {
 		Channel();
 
 		Channel(ChannelData dataNew);
-
-		virtual ~Channel();
 	};
 
 	/**@}*/

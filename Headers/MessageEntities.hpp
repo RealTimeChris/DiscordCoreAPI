@@ -384,8 +384,6 @@ namespace DiscordCoreAPI {
 		Message();
 
 		Message(MessageData dataNew);
-
-		virtual ~Message();
 	};
 
 	/**@}*/

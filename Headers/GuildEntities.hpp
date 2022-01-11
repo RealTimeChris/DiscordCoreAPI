@@ -292,8 +292,6 @@ namespace DiscordCoreAPI {
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
 
-		virtual ~Guild();
-
 	protected:
 
 		bool areWeConnectedBool{ false };

@@ -122,8 +122,6 @@ namespace DiscordCoreAPI {
         ApplicationCommand();
 
         ApplicationCommand(ApplicationCommandData dataNew);
-
-        virtual ~ApplicationCommand();
     };
 
     /**@}*/

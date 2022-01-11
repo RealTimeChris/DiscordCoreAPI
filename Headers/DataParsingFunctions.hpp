@@ -343,6 +343,14 @@ namespace DiscordCoreInternal {
                 }
             }
 
+            if (jsonObjectData.contains("unicode_emoji") && !jsonObjectData["unicode_emoji"].is_null()) {
+                pDataStructure->unicodeEmoji = jsonObjectData["unicode_emoji"].get<string>();
+            }
+
+            if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
+                pDataStructure->icon = jsonObjectData["icon"].get<string>();
+            }
+
             if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
                 pDataStructure->name = jsonObjectData["name"].get<string>();
             }

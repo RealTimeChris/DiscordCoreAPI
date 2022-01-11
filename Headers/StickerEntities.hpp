@@ -59,8 +59,6 @@ namespace DiscordCoreAPI {
 		Sticker();
 
 		Sticker(StickerData dataNew);
-
-		virtual ~Sticker();
 	};
 
 	/**@}*/

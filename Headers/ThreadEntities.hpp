@@ -106,8 +106,6 @@ namespace DiscordCoreAPI {
 		Thread();
 
 		Thread(ChannelData dataNew);
-
-		virtual ~Thread();
 	};
 
 	/**@}*/

@@ -119,8 +119,6 @@ namespace DiscordCoreAPI {
 		Reaction();
 
 		Reaction(ReactionData dataNew);
-
-		virtual ~Reaction();
 	};
 
 	/**@}*/

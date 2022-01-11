@@ -105,8 +105,6 @@ namespace DiscordCoreAPI {
 		Role();
 
 		Role(RoleData dataNew);
-
-		virtual ~Role();
 	};
 
 	/**@}*/

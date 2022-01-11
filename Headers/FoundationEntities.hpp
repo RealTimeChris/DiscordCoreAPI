@@ -10,12 +10,12 @@
 namespace DiscordCoreInternal {
 
     using namespace std::chrono;
-    using namespace nlohmann;    
+    using namespace nlohmann;
     using namespace std;
 
     class BaseSocketAgent;
     class HttpClient;
-    class DataParser;    
+    class DataParser;
 }
 
 namespace DiscordCoreAPI {
@@ -37,47 +37,49 @@ namespace DiscordCoreAPI {
     class ChannelData;
     class BotUser;
 
-    /// Permissions values, for a given Channel. \brief Permissions values, for a given Channel.
+    /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
     enum class Permission : int64_t {
-        CREATE_INSTANT_INVITE = 0x0000000001,///< Create instant invite.
-        KICK_MEMBERS = 0x0000000002,///< Kick members.
-        BAN_MEMBERS = 0x0000000004,///< Ban members.
-        ADMINISTRATOR = 0x0000000008,///< Administrator.
-        MANAGE_CHANNELS = 0x0000000010,///< Manage Channels.
-        MANAGE_GUILD = 0x0000000020,///< Manage Guild.
-        ADD_REACTIONS = 0x0000000040,///< Add Reactions.
-        VIEW_AUDIT_LOG = 0x0000000080,///< View audit log.
-        PRIORITY_SPEAKER = 0x0000000100,///< Priority speaker.
-        STREAM = 0x0000000200,///< Stream.
-        VIEW_CHANNEL = 0x0000000400,///< View Channel.
-        SEND_MESSAGES = 0x0000000800,///< Send Messages.
-        SEND_TTS_MESSAGES = 0x0000001000,///< Send TTS Messages.
-        MANAGE_MESSAGES = 0x0000002000,///< Manage Messages.
-        EMBED_LINKS = 0x0000004000,///< Embed links.
-        ATTACH_FILES = 0x0000008000,///< Attach files.
-        READ_MESSAGE_HISTORY = 0x0000010000,///< Read Message history.
-        MENTION_EVERYONE = 0x0000020000,///< Mention everyone.
-        USE_EXTERNAL_EMOJIS = 0x0000040000,///< Use external Emojis.
-        VIEW_GUILD_INSIGHTS = 0x0000080000,///< View Guild insights.
-        CONNECT = 0x0000100000,///< Connect.
-        SPEAK = 0x0000200000,///< Speak.
-        MUTE_MEMBERS = 0x0000400000,///< Mute members.
-        DEAFEN_MEMBERS = 0x0000800000,///< Deafen members.
-        MOVE_MEMBERS = 0x0001000000,///< Move members.
-        USE_VAD = 0x0002000000,///< Use VAD.
-        CHANGE_NICKNAME = 0x0004000000,///< Change nickname.
-        MANAGE_NICKNAMES = 0x0008000000,///< Manage nicknames.
-        MANAGE_ROLES = 0x0010000000,///< Manage Roles.
-        MANAGE_WEBHOOKS = 0x0020000000,///< Manage WebHooks.
-        MANAGE_EMOJIS_AND_STICKERS = 0x0040000000,///< Manage Emojis and Stickers.
-        USE_APPLICATION_COMMANDS = 0x0080000000,///< Use ApplicationCommands.
-        REQUEST_TO_SPEAK = 0x0100000000,///< Request to speak.
-        MANAGE_THREADS = 0x0400000000,///< Manage Threads.
-        CREATE_PUBLIC_THREADS = 0x0800000000,///< Create public Threads.
-        CREATE_PRIVATE_THREADS = 0x1000000000,///< Create private Threads.
-        USE_EXTERNAL_STICKERS = 0x2000000000,///< Use external Stickers.
-        SEND_MESSAGES_IN_THREADS = 0x4000000000,///< Send Messages in Threads.
-        START_EMBEDDED_ACTIVITIES = 0x8000000000///< Start embedded activities.
+        CREATE_INSTANT_INVITE = 0x0000000000000001,///< Create Instant Invite.
+        KICK_MEMBERS = 0x0000000000000002,///< Kick Members.
+        BAN_MEMBERS = 0x0000000000000004,///< Ban Members.
+        ADMINISTRATOR = 0x0000000000000008,///< Administrator.
+        MANAGE_CHANNELS = 0x0000000000000010,///< Manage Channels.
+        MANAGE_GUILD = 0x0000000000000020,///< Manage Guild.
+        ADD_REACTIONS = 0x0000000000000040,///< Add Reactions.
+        VIEW_AUDIT_LOG = 0x0000000000000080,///< View Audit Log.
+        PRIORITY_SPEAKER = 0x0000000000000100,///< Priority Speaker.
+        STREAM = 0x0000000000000200,///< Stream.
+        VIEW_CHANNEL = 0x0000000000000400,///< View Channel.
+        SEND_MESSAGES = 0x0000000000000800,///< Send Messages.
+        SEND_TTS_MESSAGES = 0x0000000000001000,///< Send TTS Messages.
+        MANAGE_MESSAGES = 0x0000000000002000,///< Manage Messages.
+        EMBED_LINKS = 0x0000000000004000,///< Embed Links.
+        ATTACH_FILES = 0x0000000000008000,///< Attach Files.
+        READ_MESSAGE_HISTORY = 0x0000000000010000,///< Read Message History.
+        MENTION_EVERYONE = 0x0000000000020000,///< Mention Everyone.
+        USE_EXTERNAL_EMOJIS = 0x0000000000040000,///< Use External Emoji.
+        VIEW_GUILD_INSIGHTS = 0x0000000000080000,///< View Guild Insights.
+        CONNECT = 0x0000000000100000,///< Connect.
+        SPEAK = 0x0000000000200000,///< Speak.
+        MUTE_MEMBERS = 0x0000000000400000,///< Mute Members.
+        DEAFEN_MEMBERS = 0x0000000000800000,///< Deafen Members.
+        MOVE_MEMBERS = 0x0000000001000000,///< Move Members.
+        USE_VAD = 0x0000000002000000,///< Use VAD.
+        CHANGE_NICKNAME = 0x0000000004000000,///< Change Nickname.
+        MANAGE_NICKNAMES = 0x0000000008000000,///< Manage Nicknames.
+        MANAGE_ROLES = 0x0000000010000000,///< Manage Roles.
+        MANAGE_WEBHOOKS = 0x0000000020000000,///< Manage Webhooks.
+        MANAGE_EMOJIS_AND_STICKERS = 0x0000000040000000,///< Manage Emojis And Stickers.
+        USE_APPLICATION_COMMANDS = 0x0000000080000000,///< Use Application Commands.
+        REQUEST_TO_SPEAK = 0x0000000100000000,///< Request To Speak.
+        MANAGE_EVENTS = 0x0000000200000000,///< Manage Events.
+        MANAGE_THREADS = 0x0000000400000000,///< Manage Threads.
+        CREATE_PUBLIC_THREADS = 0x0000000800000000,///< Create Public Threads.
+        CREATE_PRIVATE_THREADS = 0x0000001000000000,///< Create Private Threads.
+        USE_EXTERNAL_STICKERS = 0x0000002000000000,///< Use External Stickers.
+        SEND_MESSAGES_IN_THREADS = 0x0000004000000000,///< Send Messages In Threads.
+        START_EMBEDDED_ACTIVITIES = 0x0000008000000000,///< Start Embedded Activities.
+        MODERATE_MEMBERS = 0x0000010000000000///< Moderate Members.
     };
 
     struct DiscordCoreAPI_Dll CURLWrapper {
@@ -96,7 +98,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator CURL*() {
+        operator CURL* () {
             return this->thePtr.get();
         }
 
@@ -126,7 +128,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator CURLU*() {
+        operator CURLU* () {
             return this->thePtr.get();
         }
 
@@ -412,7 +414,7 @@ namespace DiscordCoreAPI {
 
         int64_t maxNumberOfMs{ 0 };
         int64_t startTime{ 0 };
-        
+
     };
 
     template <typename T>
@@ -517,7 +519,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator OpusEncoder*() {
+        operator OpusEncoder* () {
             return this->thePtr.get();
         }
 
@@ -580,17 +582,22 @@ namespace DiscordCoreAPI {
 
         /// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
         /// \returns A string containing all of the possible Permissions.
-        string getAllPermissions();
+        static string getAllPermissions();
 
         /// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
         /// \returns A string containing the current Permissions.
         string getCurrentPermissionString();
 
+        /// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
+        /// \param guildMember The GuildMember who's Permissions are to be evaluated.
+        /// \returns A string containing the current Permissions.
+        static string getCurrentGuildPermissions(GuildMember guildMember);
+
         /// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
         /// \param guildMember The GuildMember who's Permissions to analyze.
         /// \param channel The Channel withint which to check for Permissions.
         /// \returns A string containing the final Permission's value for a given Channel.
-        string getAllOfMyPerrmissions(GuildMember guildMember, ChannelData channel);
+        static string getCurrentChannelPermissions(GuildMember guildMember, ChannelData channel);
 
         /// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
         /// \param guildMember The GuildMember who to check the Permissions of.
@@ -601,11 +608,11 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        string computeBasePermissions(GuildMember guildMember);
+        static string computeBasePermissions(GuildMember guildMember);
 
-        string computeOverwrites(string basePermissions, GuildMember guildMember, ChannelData channel);
+        static string computeOverwrites(string basePermissions, GuildMember guildMember, ChannelData channel);
 
-        string computePermissions(GuildMember guildMember, ChannelData channel);
+        static string computePermissions(GuildMember guildMember, ChannelData channel);
     };
 
     /**@}*/
@@ -641,12 +648,14 @@ namespace DiscordCoreAPI {
     public:
         Permissions permissions{ "" }; ///< The Role's base Guild Permissions.
         bool mentionable{ false }; ///< Is ths Role mentionable?
+        string unicodeEmoji{ "" };///< Emoji representing the Role.
         int32_t position{ 0 }; ///< Its position amongst the rest of the Guild's roles.
         bool managed{ false }; ///< is it a managed Role?
         RoleTagsData tags{}; ///< Role tags for the Role.
         bool hoist{ false };///< Is it hoisted above the other roles?
         int32_t color{ 0 };///< The Role's color.
         string name{ "" };///< The Role's name.
+        string icon{ "" };///< Icon representing the Role.
 
         virtual ~RoleData() {};
     };
@@ -669,7 +678,7 @@ namespace DiscordCoreAPI {
         bool bot{ false };///< Are they a bot?
 
         virtual ~UserData() {};
-    };    
+    };
 
     /// Attachment data. \brief Attachment data.
     class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
@@ -1662,7 +1671,7 @@ namespace DiscordCoreAPI {
         string guildScheduledEventId{ "" };///< The scheduled event id which the User subscribed to/
         GuildMemberData member{};///< Guild member data for this User for the Guild which this event belongs to, if any.
         UserData user{};///< User which subscribed to an event.
-    };    
+    };
 
     /// Invite data. \brief Invite data.
     struct DiscordCoreAPI_Dll InviteData {
@@ -2101,7 +2110,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Data structure representing a single Message. \brief Data structure representing a single Message.
-    class DiscordCoreAPI_Dll MessageData : public MessageDataOld{
+    class DiscordCoreAPI_Dll MessageData : public MessageDataOld {
     public:
         MessageDataOld referencedMessage{}; ///< The referenced Message, to reply to.
         string requesterId{ "" }; ///< Requester's id, of who sent this Message.
@@ -2132,7 +2141,7 @@ namespace DiscordCoreAPI {
         string name{ "" };///< Name of the Sticker pack.
         string Id{ "" };///< Id of the Sticker pack.
     };
-    
+
     /// Connection visibility types. \brief Connection visibility types.
     enum class ConnectionVisibilityTypes {
         None = 0,///< None.
@@ -2775,7 +2784,7 @@ namespace DiscordCoreAPI {
                 other.sampleCount = -1;
                 this->data = move(other.data);
                 other.data = vector<uint8_t>{};
-            }            
+            }
             return *this;
         }
         RawFrameData(RawFrameData&& other) noexcept {
@@ -2872,7 +2881,7 @@ namespace DiscordCoreAPI {
         friend class  SoundCloudSong;
         friend class  SoundCloudAPI;
         friend class  YouTubeSong;
-        friend class  YouTubeAPI;        
+        friend class  YouTubeAPI;
         friend class  SongAPI;
 
         SongType type{ SongType::SoundCloud };///< The type of song.
@@ -2925,7 +2934,7 @@ namespace DiscordCoreAPI {
 
     /**@}*/
 
-    class DiscordCoreAPI_Dll YouTubeSong : public Song{
+    class DiscordCoreAPI_Dll YouTubeSong : public Song {
     public:
 
         operator Song();
@@ -2957,7 +2966,7 @@ namespace DiscordCoreAPI {
             if (this != &other) {
                 this->cache = move(other.cache);
                 other.cache = ObjectCache<keyType, storageType>{};
-            }            
+            }
             return *this;
         }
 
@@ -3028,7 +3037,7 @@ namespace DiscordCoreAPI {
                 other.cache = unordered_map<keyType, storageType>{};
             }
             return *this;
-        } 
+        }
 
         TSObjectCache(TSObjectCache<keyType, storageType>&& other) {
             *this = move(other);
