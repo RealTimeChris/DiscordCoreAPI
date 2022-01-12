@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 
 		friend class HttpRnRBuilder;
 		friend class HttpHeader;
-		friend class HttpClient;;
+		friend class HttpClient;		
 
 		HttpConnection& operator=(HttpConnection&& other) noexcept {
 			this->doWeHaveTotalTimePerTick = other.doWeHaveTotalTimePerTick;
@@ -68,6 +68,7 @@ namespace DiscordCoreInternal {
 			this->getsRemaining = other.getsRemaining;
 			this->workloadType = other.workloadType;
 			this->accessMutex = move(other.accessMutex);
+			this->httpBuilder = HttpRnRBuilder{};
 			this->context = move(other.context);
 			this->tempBucket = move(other.tempBucket);
 			this->totalGets = other.totalGets;
@@ -85,9 +86,9 @@ namespace DiscordCoreInternal {
 
 		HttpConnection() = default;
 
-		void sendRequest(string& theRequest);
+		void sendRequest(string baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
 
-		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection, HttpRnRBuilder& httpBuilder);
+		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
 		bool connect(string baseUrl);
 
@@ -106,6 +107,7 @@ namespace DiscordCoreInternal {
 		bool isTheBucketActive{ false };
 		int64_t totalTimePerTick{ 0 };
 		int64_t bucketResetInMs{ 0 };
+		HttpRnRBuilder httpBuilder{};
 		int32_t getsRemaining{ 0 };
 		int64_t msRemainTotal{ 0 };
 		SSLWrapper ssl{ nullptr };
@@ -309,8 +311,6 @@ namespace DiscordCoreInternal {
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static map<string, shared_ptr<HttpConnection>> rateLimitData;
 		static atomic<shared_ptr<string>> botToken;
-
-		HttpRnRBuilder httpBuilder{};
 
 		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<HttpConnection> rateLimitDataNew, bool printResult);
 
