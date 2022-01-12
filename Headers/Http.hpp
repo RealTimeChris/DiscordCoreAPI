@@ -19,9 +19,9 @@ namespace DiscordCoreInternal {
 
 		friend class  HttpConnection;
 
-		string buildRequest(string& baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
-
 		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
+
+		string buildRequest(HttpWorkloadData& workload);
 
 	protected:
 
@@ -100,8 +100,10 @@ namespace DiscordCoreInternal {
 		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
 		shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
 		bool doWeHaveTotalTimePerTick{ false };
+		const int32_t maxRecursionDepth{ 25 };
 		BIOWrapper connectionBio{ nullptr };
 		int64_t maxBufferSize{ 16 * 1024 };
+		int32_t currentRecursionDepth{ 0 };
 		int64_t bucketStartTimeInsMs{ 0 };
 		SSL_CTXWrapper context{ nullptr };
 		bool isTheBucketActive{ false };
