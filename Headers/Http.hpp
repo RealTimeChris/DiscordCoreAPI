@@ -56,21 +56,21 @@ namespace DiscordCoreInternal {
 
 		HttpConnection& operator=(HttpConnection&& other) noexcept {
 			this->doWeHaveTotalTimePerTick = other.doWeHaveTotalTimePerTick;
-			this->bucketStartTimeInsMs = other.bucketStartTimeInsMs;
 			this->soundcloudCertPath = move(other.soundcloudCertPath);
 			this->isTheBucketActive = move(other.isTheBucketActive);
+			this->bucketStartTimeInsMs = other.bucketStartTimeInsMs;
+			this->defaultCertPath = move(other.defaultCertPath);
 			this->connectionBio = move(other.connectionBio);
 			this->totalTimePerTick = other.totalTimePerTick;
-			this->defaultCertPath = move(other.defaultCertPath);
 			this->bucketResetInMs = other.bucketResetInMs;
+			this->accessMutex = move(other.accessMutex);
+			this->tempBucket = move(other.tempBucket);
 			this->msRemainTotal = other.msRemainTotal;
 			this->maxBufferSize = other.maxBufferSize;
 			this->getsRemaining = other.getsRemaining;
 			this->workloadType = other.workloadType;
-			this->accessMutex = move(other.accessMutex);
 			this->httpBuilder = HttpRnRBuilder{};
 			this->context = move(other.context);
-			this->tempBucket = move(other.tempBucket);
 			this->totalGets = other.totalGets;
 			this->msRemain = other.msRemain;
 			this->bucket = other.bucket;
@@ -84,9 +84,11 @@ namespace DiscordCoreInternal {
 
 		HttpConnection() = default;
 
-		void sendRequest(string baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
-
 		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
+
+		void readData(DiscordCoreAPI::StopWatch<milliseconds>& stopWatch);
+
+		void sendRequest(HttpWorkloadData& workloadData);
 
 		bool connect(string baseUrl);
 

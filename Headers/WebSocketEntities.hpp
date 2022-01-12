@@ -160,13 +160,13 @@ namespace DiscordCoreInternal {
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
+		recursive_mutex accessorMutex01{};
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCode dataOpcode{};
 		string relativePath{ "" };
 		mutex accessorMutex00{};
-		mutex accessorMutex01{};
 		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
 		WebSocketState state{};
