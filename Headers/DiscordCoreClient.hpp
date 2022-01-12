@@ -108,6 +108,8 @@ namespace DiscordCoreAPI {
 		BotUser currentUser{};
 		string botToken{ "" };
 
+		string getGateWayBot();
+
 		void initialize();
 
 		void terminate();

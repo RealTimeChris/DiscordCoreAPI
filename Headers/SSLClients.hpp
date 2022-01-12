@@ -258,7 +258,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		WebSocketSSLClient(string, string);
+		WebSocketSSLClient(string, string, vector<uint8_t>*);
 
 		WebSocketSSLClient(nullptr_t);
 
@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		vector<uint8_t> inputBuffer{};
+		vector<uint8_t>* inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		string baseUrl{ "" };
 		string port{ "" };
@@ -291,7 +291,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramSocketSSLClient(string hostName, string post);
+		DatagramSocketSSLClient(string hostName, string post, vector<char>*);
 
 		DatagramSocketSSLClient(nullptr_t);
 
@@ -307,7 +307,7 @@ namespace DiscordCoreInternal {
 
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
-		vector<char> inputBuffer{};
+		vector<char>* inputBuffer{};
 		string baseUrl{ "" };
 		string port{ "" };
 	};

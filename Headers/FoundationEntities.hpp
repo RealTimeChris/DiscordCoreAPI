@@ -3377,10 +3377,13 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll RateLimitData {
         HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
-        int64_t nextExecutionTime{ 0 };
-        int64_t msRemainTotal{ 0 };
-        int64_t timeStartedAt{ 0 };
+        bool doWeHaveTotalTimePerTick{ false };
+        int64_t bucketStartTimeInsMs{ 0 };
+        bool isTheBucketActive{ false };
+        int64_t totalTimePerTick{ 0 };
+        int64_t bucketResetInMs{ 0 };
         int32_t getsRemaining{ 0 };
+        int64_t msRemainTotal{ 0 };
         string tempBucket{ "" };
         int32_t totalGets{ 0 };
         int64_t msRemain{ 0 };

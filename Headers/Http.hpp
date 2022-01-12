@@ -22,20 +22,36 @@ namespace DiscordCoreInternal {
 		}
 
 		static void constructValues(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
-			if (headers.contains("x-ratelimit-retry-after")) {
-				pRateLimitData->msRemain = static_cast<int64_t>(static_cast<float>(stoll(headers.at("x-ratelimit-retry-after").value)) * 1000.0f);
+			if (headers.contains("x-ratelimit-reset")) {
+				pRateLimitData->bucketResetInMs = static_cast<int64_t>(stoll(headers.at("x-ratelimit-reset").value) * 1000);
+			}
+			else {
+				pRateLimitData->bucketResetInMs = 0;
 			}
 			if (headers.contains("x-ratelimit-remaining")) {
 				pRateLimitData->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
+			}
+			else {
+				pRateLimitData->getsRemaining = 0;
 			}
 			if (headers.contains("x-ratelimit-limit")) {
 				pRateLimitData->totalGets = stol(headers.at("x-ratelimit-limit").value.c_str());
 			}
 			if (headers.contains("x-ratelimit-reset-after")) {
+				if (!pRateLimitData->doWeHaveTotalTimePerTick) {
+					pRateLimitData->msRemainTotal = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
+					pRateLimitData->doWeHaveTotalTimePerTick = true;
+				}
 				pRateLimitData->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
+			}
+			else {
+				pRateLimitData->msRemain = 0;
 			}
 			if (headers.contains("x-ratelimit-bucket")) {
 				pRateLimitData->bucket = headers.at("x-ratelimit-bucket").value;
+			}
+			else {
+				pRateLimitData->bucket = string{};
 			}
 		};
 
@@ -243,7 +259,6 @@ namespace DiscordCoreInternal {
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
 		static map<string, shared_ptr<RateLimitData>> rateLimitData;
 		static atomic<shared_ptr<string>> botToken;
-		static atomic<shared_ptr<string>> baseUrl;
 
 		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
 
