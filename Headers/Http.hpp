@@ -11,6 +11,110 @@
 
 namespace DiscordCoreInternal {
 
+	class HttpHeader;
+	struct HttpData;
+
+	class DiscordCoreAPI_Dll HttpRnRBuilder {
+	public:
+
+		friend class  HttpConnection;
+
+		string buildRequest(string& baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
+
+		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> pRateLimitData);
+
+	protected:
+
+		unordered_map<string, HttpHeader> headers{};
+		bool doWeHaveContentSize{ false };
+		bool doWeHaveHeaders{ false };
+		int64_t responseCode{ -1 };
+		string contentFinal{ "" };
+		int64_t contentSize{ -1 };
+		bool isItChunked{ false };
+		string rawInput{ "" };
+
+		bool checkForHeadersToParse();
+
+		void parseHeaders();
+
+		bool parseChunk();
+
+		void parseSize();
+
+		void clearCRLF();
+
+		void parseCode();
+	};
+
+	class DiscordCoreAPI_Dll HttpConnection {
+	public:
+
+		friend class HttpRnRBuilder;
+		friend class HttpHeader;
+		friend class HttpClient;;
+
+		HttpConnection& operator=(HttpConnection&& other) noexcept {
+			this->doWeHaveTotalTimePerTick = other.doWeHaveTotalTimePerTick;
+			this->bucketStartTimeInsMs = other.bucketStartTimeInsMs;
+			this->soundcloudCertPath = move(other.soundcloudCertPath);
+			this->isTheBucketActive = move(other.isTheBucketActive);
+			this->connectionBio = move(other.connectionBio);
+			this->totalTimePerTick = other.totalTimePerTick;
+			this->defaultCertPath = move(other.defaultCertPath);
+			this->bucketResetInMs = other.bucketResetInMs;
+			this->msRemainTotal = other.msRemainTotal;
+			this->maxBufferSize = other.maxBufferSize;
+			this->getsRemaining = other.getsRemaining;
+			this->workloadType = other.workloadType;
+			this->accessMutex = move(other.accessMutex);
+			this->context = move(other.context);
+			this->tempBucket = move(other.tempBucket);
+			this->totalGets = other.totalGets;
+			this->msRemain = other.msRemain;
+			this->bucket = other.bucket;
+			this->ssl = move(other.ssl);
+			return *this;
+		}
+
+		HttpConnection(HttpConnection&& other) noexcept {
+			*this = move(other);
+		}
+
+		bool areWeConnected();
+
+		HttpConnection() = default;
+
+		void sendRequest(string& theRequest);
+
+		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection, HttpRnRBuilder& httpBuilder);
+
+		bool connect(string baseUrl);
+
+	protected:
+
+		string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
+		string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
+		HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
+		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
+		shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
+		bool doWeHaveTotalTimePerTick{ false };
+		BIOWrapper connectionBio{ nullptr };
+		int64_t maxBufferSize{ 16 * 1024 };
+		int64_t bucketStartTimeInsMs{ 0 };
+		SSL_CTXWrapper context{ nullptr };
+		bool isTheBucketActive{ false };
+		int64_t totalTimePerTick{ 0 };
+		int64_t bucketResetInMs{ 0 };
+		int32_t getsRemaining{ 0 };
+		int64_t msRemainTotal{ 0 };
+		SSLWrapper ssl{ nullptr };
+		string tempBucket{ "" };
+		int32_t totalGets{ 0 };
+		int64_t msRemain{ 0 };
+		string bucket{ "" };
+	};
+
 	class DiscordCoreAPI_Dll HttpHeader {
 	public:
 
@@ -21,7 +125,7 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		static void constructValues(shared_ptr<RateLimitData> pRateLimitData, unordered_map<string, HttpHeader> headers) {
+		static void constructValues(shared_ptr<HttpConnection>& pRateLimitData, unordered_map<string, HttpHeader> headers) {
 			if (headers.contains("x-ratelimit-reset")) {
 				pRateLimitData->bucketResetInMs = static_cast<int64_t>(stoll(headers.at("x-ratelimit-reset").value) * 1000);
 			}
@@ -73,60 +177,6 @@ namespace DiscordCoreInternal {
 		json responseData{};
 	};
 
-	class DiscordCoreAPI_Dll HttpRnRBuilder {
-	public:
-
-		friend class  HttpConnection;
-
-		string buildRequest(string& baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
-
-		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);;
-
-	protected:
-
-		unordered_map<string, HttpHeader> headers{};
-		bool doWeHaveContentSize{ false };
-		bool doWeHaveHeaders{ false };
-		int64_t responseCode{ -1 };
-		string contentFinal{ "" };
-		int64_t contentSize{ -1 };
-		bool isItChunked{ false };
-		string rawInput{ "" };
-
-		bool checkForHeadersToParse();
-
-		void parseHeaders();
-
-		bool parseChunk();
-
-		void parseSize();
-
-		void clearCRLF();
-
-		void parseCode();
-	};
-
-	class DiscordCoreAPI_Dll HttpConnection {
-	public:
-
-		bool sendRequest(string baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
-
-		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
-
-		bool connect(string baseUrl);
-
-	protected:
-
-		string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
-		string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
-		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
-		BIOWrapper connectionBio{ nullptr };
-		int64_t maxBufferSize{ 16 * 1024 };
-		SSL_CTXWrapper context{ nullptr };
-		HttpRnRBuilder httpBuilder{};
-		SSLWrapper ssl{ nullptr };
-	};
-
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
@@ -135,7 +185,7 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
+				shared_ptr<HttpConnection> rateLimitDataNew = make_shared<HttpConnection>();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
 					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
@@ -169,7 +219,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
+				shared_ptr<HttpConnection> rateLimitDataNew = make_shared<HttpConnection>();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
 					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
@@ -200,7 +250,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
-				shared_ptr<RateLimitData> rateLimitDataNew = make_shared<RateLimitData>();
+				shared_ptr<HttpConnection> rateLimitDataNew = make_shared<HttpConnection>();
 				rateLimitDataNew->workloadType = workload.workloadType;
 				if (HttpClient::rateLimitDataBucketValues.contains(workload.workloadType)) {
 					rateLimitDataNew->bucket = HttpClient::rateLimitDataBucketValues.at(workload.workloadType);
@@ -257,14 +307,16 @@ namespace DiscordCoreInternal {
 	protected:
 
 		static map<HttpWorkloadType, string> rateLimitDataBucketValues;
-		static map<string, shared_ptr<RateLimitData>> rateLimitData;
+		static map<string, shared_ptr<HttpConnection>> rateLimitData;
 		static atomic<shared_ptr<string>> botToken;
 
-		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<RateLimitData> rateLimitDataNew, bool printResult);
+		HttpRnRBuilder httpBuilder{};
 
-		static HttpData executehttpRequest(HttpWorkloadData& workloadData, shared_ptr<RateLimitData> pRateLimitData);
+		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<HttpConnection> rateLimitDataNew, bool printResult);
 
-		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<RateLimitData>, bool = false);
+		static HttpData executehttpRequest(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> pRateLimitData);
+
+		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<HttpConnection>, bool = false);
 		
 		static vector<HttpData> executehttpRequest(vector<HttpWorkloadData>& workloadData);
 
