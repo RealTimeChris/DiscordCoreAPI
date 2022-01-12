@@ -84,9 +84,7 @@ namespace DiscordCoreInternal {
 
 		HttpConnection() = default;
 
-		bool doWeReconnect();
-
-		bool sendRequest(string baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
+		void sendRequest(string baseUrl, string& relativePath, string& content, unordered_map<string, string>& headers, HttpWorkloadClass workloadClass);
 
 		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
