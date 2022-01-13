@@ -182,6 +182,7 @@ namespace DiscordCoreInternal {
 					httpConnection->bucket = HttpClient::httpConnectionBucketValues.at(workload.workloadType);
 					if (HttpClient::httpConnections.contains(httpConnection->bucket)) {
 						httpConnection = HttpClient::httpConnections.at(httpConnection->bucket);
+						httpConnection->resetValues();
 					}
 					else {
 						HttpClient::httpConnections.insert_or_assign(httpConnection->bucket, httpConnection);
@@ -216,6 +217,7 @@ namespace DiscordCoreInternal {
 					httpConnection->bucket = HttpClient::httpConnectionBucketValues.at(workload.workloadType);
 					if (HttpClient::httpConnections.contains(httpConnection->bucket)) {
 						httpConnection = HttpClient::httpConnections.at(httpConnection->bucket);
+						httpConnection->resetValues();
 					}
 					else {
 						HttpClient::httpConnections.insert_or_assign(httpConnection->bucket, httpConnection);
@@ -247,6 +249,7 @@ namespace DiscordCoreInternal {
 					httpConnection->bucket = HttpClient::httpConnectionBucketValues.at(workload.workloadType);
 					if (HttpClient::httpConnections.contains(httpConnection->bucket)) {
 						httpConnection = HttpClient::httpConnections.at(httpConnection->bucket);
+						httpConnection->resetValues();
 					}
 					else {
 						HttpClient::httpConnections.insert_or_assign(httpConnection->bucket, httpConnection);
