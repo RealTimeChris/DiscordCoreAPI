@@ -3813,10 +3813,25 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
                 if (jsonObjectData["title"].contains("runs")) {
-                    pDataStructure->songTitle = jsonObjectData["title"]["runs"].at(0)["text"].get<string>();
+                    
+                    string newString = jsonObjectData["title"]["runs"].at(0)["text"].get<string>();
+                    if (newString.size() > 256) {
+                        newString = newString.substr(0, 256);
+                    }
+                    char* newString01 = g_utf8_make_valid(newString.c_str(), newString.size());
+                    char* newString02 = g_utf8_normalize(newString01, newString.size(), GNormalizeMode::G_NORMALIZE_ALL);
+
+                    pDataStructure->songTitle = newString02;
                 }
                 else if (jsonObjectData["title"].contains("simpleText")) {
-                    pDataStructure->songTitle = jsonObjectData["title"]["simpleText"].get<string>();
+                    string newString = jsonObjectData["title"]["simpleText"].get<string>();
+                    if (newString.size() > 256) {
+                        newString = newString.substr(0, 256);
+                    }
+                    char* newString01 = g_utf8_make_valid(newString.c_str(), newString.size());
+                    char* newString02 = g_utf8_normalize(newString01, newString.size(), GNormalizeMode::G_NORMALIZE_ALL);
+
+                    pDataStructure->songTitle = newString02;
                 }
             }
             if (jsonObjectData.contains("videoId") && !jsonObjectData["videoId"].is_null()) {
@@ -3856,15 +3871,22 @@ namespace DiscordCoreInternal {
                     }
                 }
             }
-
+            
             if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null() && !jsonObjectData["title"].is_object()) {
-                pDataStructure->songTitle = jsonObjectData["title"].get<string>();
+                string newString = jsonObjectData["title"].get<string>(); 
+                if (newString.size() > 256) {
+                    newString = newString.substr(0, 256);
+                }
+                char* newString01 = g_utf8_make_valid(newString.c_str(), newString.size());
+                char* newString02 = g_utf8_normalize(newString01, newString.size(), GNormalizeMode::G_NORMALIZE_ALL);
+
+                pDataStructure->songTitle = newString02;
             }
 
             if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
                 string newString = jsonObjectData["description"].get<string>();
-                if (newString.size() > 100) {
-                    newString = newString.substr(0, 100);
+                if (newString.size() > 256) {
+                    newString = newString.substr(0, 256);
                 }
                 char* newString01 = g_utf8_make_valid(newString.c_str(), newString.size());
                 char* newString02 = g_utf8_normalize(newString01, newString.size(), GNormalizeMode::G_NORMALIZE_ALL);
@@ -3873,7 +3895,7 @@ namespace DiscordCoreInternal {
                 }
                 pDataStructure->description += "...";
             }
-
+            
             if (jsonObjectData.contains("artwork_url") && !jsonObjectData["artwork_url"].is_null()) {
                 pDataStructure->thumbnailUrl = jsonObjectData["artwork_url"].get<string>();
             }
