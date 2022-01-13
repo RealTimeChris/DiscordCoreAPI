@@ -3792,7 +3792,14 @@ namespace DiscordCoreInternal {
 
             if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData["detailedMetadataSnippets"].is_null()) {
                 for (auto& value : jsonObjectData["detailedMetadataSnippets"].at(0)["snippetText"]["runs"]) {
-                    pDataStructure->description += value["text"].get<string>();
+                    string newString = value["text"].get<string>();
+                    if (newString.size() > 256) {
+                        newString = newString.substr(0, 256);
+                    }
+                    char* newString01 = g_utf8_make_valid(newString.c_str(), newString.size());
+                    char* newString02 = g_utf8_normalize(newString01, newString.size(), GNormalizeMode::G_NORMALIZE_ALL);
+
+                    pDataStructure->description += newString02;
                 }
             }
 
