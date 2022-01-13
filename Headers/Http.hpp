@@ -11,17 +11,21 @@
 
 namespace DiscordCoreInternal {
 
+	class HttpConnection;
 	class HttpHeader;
 	struct HttpData;
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
-		friend class  HttpConnection;
+		friend class HttpConnection;
+		friend class HttpClient;
 
 		HttpData handleHeaders(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
 		string buildRequest(HttpWorkloadData& workload);
+
+		void resetValues();
 
 	protected:
 
@@ -32,7 +36,7 @@ namespace DiscordCoreInternal {
 		string contentFinal{ "" };
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
-		string rawInput{ "" };
+		string rawInput{};
 
 		bool checkForHeadersToParse();
 
@@ -47,77 +51,59 @@ namespace DiscordCoreInternal {
 		void parseCode();
 	};
 
-	class DiscordCoreAPI_Dll HttpConnection {
+	class DiscordCoreAPI_Dll RateLimitData {
 	public:
 
 		friend class HttpRnRBuilder;
 		friend class HttpHeader;
-		friend class HttpClient;		
+		friend class HttpClient;
 
-		HttpConnection& operator=(HttpConnection&& other) noexcept {
+		RateLimitData& operator=(RateLimitData&& other) noexcept {
 			this->doWeHaveTotalTimePerTick = other.doWeHaveTotalTimePerTick;
-			this->soundcloudCertPath = move(other.soundcloudCertPath);
-			this->isTheBucketActive = move(other.isTheBucketActive);
 			this->bucketStartTimeInsMs = other.bucketStartTimeInsMs;
-			this->defaultCertPath = move(other.defaultCertPath);
-			this->connectionBio = move(other.connectionBio);
+			this->isTheBucketActive = move(other.isTheBucketActive);
 			this->totalTimePerTick = other.totalTimePerTick;
 			this->bucketResetInMs = other.bucketResetInMs;
 			this->accessMutex = move(other.accessMutex);
 			this->tempBucket = move(other.tempBucket);
 			this->msRemainTotal = other.msRemainTotal;
-			this->maxBufferSize = other.maxBufferSize;
 			this->getsRemaining = other.getsRemaining;
 			this->workloadType = other.workloadType;
-			this->httpBuilder = HttpRnRBuilder{};
-			this->context = move(other.context);
 			this->totalGets = other.totalGets;
 			this->msRemain = other.msRemain;
 			this->bucket = other.bucket;
-			this->ssl = move(other.ssl);
 			return *this;
 		}
 
-		HttpConnection(HttpConnection&& other) noexcept {
+		RateLimitData(RateLimitData&& other) noexcept {
 			*this = move(other);
 		}
 
-		HttpConnection() = default;
-
-		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
-
-		void readData(DiscordCoreAPI::StopWatch<milliseconds>& stopWatch);
-
-		void sendRequest(HttpWorkloadData& workloadData);
-
-		bool connect(string baseUrl);
+		RateLimitData() = default;
 
 	protected:
 
-		string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
-		string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
 		HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
-		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
 		shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
 		bool doWeHaveTotalTimePerTick{ false };
-		const int32_t maxRecursionDepth{ 25 };
-		BIOWrapper connectionBio{ nullptr };
-		int64_t maxBufferSize{ 16 * 1024 };
-		int32_t currentRecursionDepth{ 0 };
 		int64_t bucketStartTimeInsMs{ 0 };
-		SSL_CTXWrapper context{ nullptr };
 		bool isTheBucketActive{ false };
-		bool doWeReconnectBool{ true };
 		int64_t totalTimePerTick{ 0 };
 		int64_t bucketResetInMs{ 0 };
-		HttpRnRBuilder httpBuilder{};
 		int32_t getsRemaining{ 0 };
 		int64_t msRemainTotal{ 0 };
-		SSLWrapper ssl{ nullptr };
 		string tempBucket{ "" };
 		int32_t totalGets{ 0 };
 		int64_t msRemain{ 0 };
 		string bucket{ "" };
+	};
+
+	class HttpConnection : public HttpSSLClient, public RateLimitData, public HttpRnRBuilder {
+	public:
+
+		HttpConnection() :HttpSSLClient(&this->rawInput) {};
+
+		bool doWeConnect{ true };
 	};
 
 	class DiscordCoreAPI_Dll HttpHeader {
@@ -318,6 +304,8 @@ namespace DiscordCoreInternal {
 		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<HttpConnection> httpConnection, bool printResult);
 
 		static HttpData executehttpRequest(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
+
+		static HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
 		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<HttpConnection>, bool = false);
 		

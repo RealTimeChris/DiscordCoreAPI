@@ -72,9 +72,9 @@ namespace DiscordCoreAPI {
 
     };
 
-    typedef function<void(void)> TimeElapsedHandler;
+    using TimeElapsedHandler = function<void(void)>;
 
-    typedef void(*TimeElapsedHandlerTwo)(void);
+    using TimeElapsedHandlerTwo = void(*)(void);
 
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:

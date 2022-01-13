@@ -246,6 +246,38 @@ namespace DiscordCoreInternal {
 		unique_ptr<WSADATA, WSADATADeleter> thePtr{ new WSADATA{}, WSADATADeleter{} };
 	};
 
+	class HttpSSLClient {
+	public:
+
+		friend class HttpClient;
+
+		HttpSSLClient() = default;
+
+		HttpSSLClient(string* theVector);
+
+		bool writeData(string theData);
+
+		bool connect(string baseUrl);
+
+		string getInputBuffer();
+
+		bool readData();
+
+	protected:
+
+		string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
+		string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
+		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
+		const int32_t maxRecursionDepth{ 25 };
+		BIOWrapper connectionBio{ nullptr };
+		int64_t maxBufferSize{ 16 * 1024 };
+		int32_t currentRecursionDepth{ 0 };
+		string* theInputVector{ nullptr };
+		SSL_CTXWrapper context{ nullptr };
+		bool doWeReconnectBool{ true };
+		SSLWrapper ssl{ nullptr };		
+	};
+
 	template <typename T>
 	concept StringOrVector = requires(T v)
 	{
@@ -310,6 +342,7 @@ namespace DiscordCoreInternal {
 		vector<char>* inputBuffer{};
 		string baseUrl{ "" };
 		string port{ "" };
+		fd_set readSet{};
 	};
 
 	class DiscordCoreAPI_Dll StreamSocketSSLClient {
