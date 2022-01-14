@@ -2581,7 +2581,7 @@ namespace DiscordCoreAPI {
         }
 
         RespondToInputEventData(InteractionData dataPackage) {
-            this->type = InputEventResponseType::DeferredResponse;
+            this->type = InputEventResponseType::InteractionResponse;
             this->applicationId = dataPackage.applicationId;
             this->requesterId = dataPackage.requesterId;
             this->interactionToken = dataPackage.token;
@@ -2600,9 +2600,11 @@ namespace DiscordCoreAPI {
             this->messageId = dataPackage.getMessageId();
             if (dataPackage.eventType == InputEventType::BUTTON_INTERACTION || dataPackage.eventType == InputEventType::SELECT_MENU_INTERACTION) {
                 this->eventType = InteractionType::MESSAGE_COMPONENT;
+                this->type = InputEventResponseType::InteractionResponse;
             }
             else {
                 this->eventType = InteractionType::APPLICATION_COMMAND;
+                this->type = InputEventResponseType::InteractionResponse;
             }
         }
 
