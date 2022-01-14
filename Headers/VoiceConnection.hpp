@@ -21,12 +21,12 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
 
-		friend class  DiscordCoreClient;
-		friend class  SoundCloudAPI;
-		friend class  YouTubeAPI;
-		friend class  SongAPI;
-		friend class  Guild;
-		friend class  Test;
+		friend class DiscordCoreClient;
+		friend class SoundCloudAPI;
+		friend class YouTubeAPI;
+		friend class SongAPI;
+		friend class Guild;
+		friend class Test;
 		
 		VoiceConnection() = default;
 

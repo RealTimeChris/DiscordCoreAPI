@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
 
-		friend class  Guilds;
+		friend class Guilds;
 
 		Guild();
 
@@ -309,8 +309,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guilds {
 	public:
 
-		friend class  DiscordCoreClient;
-		friend class  EventHandler;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.

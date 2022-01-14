@@ -91,9 +91,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 
-		friend class  DiscordCoreClient;
-		friend class  EventHandler;
-		friend class  Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.

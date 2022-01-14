@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 	public:
 		
 		friend string DiscordCoreInternal::JSONIFY(ExecuteWebHookData dataPackage);
-		friend class  WebHooks;
+		friend class WebHooks;
 
 		string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body(defaults to false; when false a message that is not saved does not return an error).
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 	public:
 		 
 		friend string DiscordCoreInternal::JSONIFY(EditWebHookMessageData dataPackage);
-		friend class  WebHooks;
+		friend class WebHooks;
 
 		string messageId{ "" };///< The Message Id to collect.
 		string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.

@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll BotUser : public UserData {
 	public:
 
-		friend class  DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
@@ -104,10 +104,10 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Users {
 	public:
 
-		friend class  DiscordCoreClient;
-		friend class  EventHandler;
-		friend class  Users;
-		friend class  Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Users;
+		friend class Guild;
 
 		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.

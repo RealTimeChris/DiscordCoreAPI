@@ -2250,7 +2250,7 @@ namespace DiscordCoreAPI {
     /// Input event types. \brief Input event types.
     enum class InputEventType {
         UNSET = 0,///< Unset.
-        SLASH_COMMAND_INTERACTION = 1,///< Slash-command Interaction.
+        APPLICATION_COMMAND_INTERACTION = 1,///< Slash-command Interaction.
         BUTTON_INTERACTION = 2,///< Button Interaction.
         REGULAR_MESSAGE = 3,///< Regular Message.
         SELECT_MENU_INTERACTION = 4,///< Select-menu Interaction.
@@ -2284,15 +2284,15 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll InputEventData {
     public:
 
-        friend class  DiscordCoreInternal::BaseSocketAgent;
+        friend class DiscordCoreInternal::BaseSocketAgent;
         friend struct RecurseThroughMessagePagesData;
         friend struct OnInteractionCreationData;
-        friend class  RespondToInputEventData;
+        friend class RespondToInputEventData;
         friend struct BaseFunctionArguments;
-        friend class  DiscordCoreClient;
-        friend class  EventHandler;
+        friend class DiscordCoreClient;
+        friend class EventHandler;
         friend struct CommandData;
-        friend class  InputEvents;
+        friend class InputEvents;
 
         InputEventResponseType inputEventResponseType{}; ///< The type of event response that is represented by this structure.
         InputEventType eventType{}; ///< The type of input-event that is represented by this structure.
@@ -2557,20 +2557,22 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll RespondToInputEventData {
     public:
 
-        friend class  CreateEphemeralInteractionResponseData;
-        friend class  DiscordCoreInternal::BaseSocketAgent;
-        friend class  CreateDeferredInteractionResponseData;
-        friend class  CreateEphemeralFollowUpMessageData;
-        friend class  CreateInteractionResponseData;
-        friend class  EditInteractionResponseData;
-        friend class  DeferComponentResponseData;
-        friend class  CreateFollowUpMessageData;
-        friend class  EditFollowUpMessageData;
-        friend class  CreateMessageData;
-        friend class  EditMessageData;
-        friend class  InputEvents;
-        friend class  SendDMData;
-
+        friend class CreateEphemeralInteractionResponseData;
+        friend class DiscordCoreInternal::BaseSocketAgent;
+        friend class CreateDeferredInteractionResponseData;
+        friend class CreateEphemeralFollowUpMessageData;
+        friend struct DeleteInteractionResponseData;
+        friend class CreateInteractionResponseData;
+        friend class EditInteractionResponseData;
+        friend class DeferComponentResponseData;
+        friend struct DeleteFollowUpMessageData;
+        friend class CreateFollowUpMessageData;
+        friend class EditFollowUpMessageData;
+        friend class CreateMessageData;
+        friend class EditMessageData;
+        friend class InputEvents;
+        friend class SendDMData;
+        
         InputEventResponseType type{}; ///< The type of response to make.
 
         RespondToInputEventData(string channelIdNew) {
@@ -2586,6 +2588,7 @@ namespace DiscordCoreAPI {
             this->messageId = dataPackage.message.id;
             this->channelId = dataPackage.channelId;
             this->interactionId = dataPackage.id;
+            this->eventType = dataPackage.type;
         };
 
         RespondToInputEventData(InputEventData dataPackage) {
@@ -2595,6 +2598,12 @@ namespace DiscordCoreAPI {
             this->requesterId = dataPackage.getRequesterId();
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
+            if (dataPackage.eventType == InputEventType::BUTTON_INTERACTION || dataPackage.eventType == InputEventType::SELECT_MENU_INTERACTION) {
+                this->eventType = InteractionType::MESSAGE_COMPONENT;
+            }
+            else {
+                this->eventType = InteractionType::APPLICATION_COMMAND;
+            }
         }
 
         /// Adds a button to the response Message. \brief Adds a button to the response Message.
@@ -2699,10 +2708,11 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-
+        
         AllowedMentionsData allowedMentions{};
         vector<ActionRowData> components{};
         string interactionToken{ "" };
+        InteractionType eventType{};
         vector<EmbedData> embeds{};
         string interactionId{ "" };
         string applicationId{ "" };
@@ -2877,15 +2887,15 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll Song {
     public:
 
-        friend class  DiscordCoreInternal::DataParser;
-        friend class  SoundCloudRequestBuilder;
-        friend class  YouTubeRequestBuilder;
-        friend class  DatabaseManagerAgent;
-        friend class  SoundCloudSong;
-        friend class  SoundCloudAPI;
-        friend class  YouTubeSong;
-        friend class  YouTubeAPI;
-        friend class  SongAPI;
+        friend class DiscordCoreInternal::DataParser;
+        friend class SoundCloudRequestBuilder;
+        friend class YouTubeRequestBuilder;
+        friend class DatabaseManagerAgent;
+        friend class SoundCloudSong;
+        friend class SoundCloudAPI;
+        friend class YouTubeSong;
+        friend class YouTubeAPI;
+        friend class SongAPI;
 
         SongType type{ SongType::SoundCloud };///< The type of song.
 
@@ -2963,7 +2973,7 @@ namespace DiscordCoreAPI {
     class ObjectCache {
     public:
 
-        friend class  Guilds;
+        friend class Guilds;
 
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
@@ -3032,7 +3042,7 @@ namespace DiscordCoreAPI {
     class TSObjectCache {
     public:
 
-        friend class  Guilds;
+        friend class Guilds;
 
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
@@ -3108,7 +3118,7 @@ namespace DiscordCoreAPI {
     class ObjectMultiCache {
     public:
 
-        friend class  Guilds;
+        friend class Guilds;
 
         ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&& other) {
             if (this != &other) {

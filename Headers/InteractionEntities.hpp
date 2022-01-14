@@ -134,22 +134,14 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll DeferComponentResponseData : public InteractionResponse {
     public:
 
-        friend class  CreateInteractionResponseData;
-        friend class  InputEvents;
+        friend class CreateInteractionResponseData;
+        friend class InputEvents;
 
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->responseType = InputEventResponseType::DeferredResponse;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
-            this->type = InteractionCallbackType::DeferredUpdateMessage;
-        }
-
-        DeferComponentResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->responseType = InputEventResponseType::DeferredResponse;
             this->type = InteractionCallbackType::DeferredUpdateMessage;
         }
 
@@ -166,13 +158,18 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
     public:
 
-        friend class  CreateInteractionResponseData;
-        friend class  Interactions;
-        friend class  InputEvents;
+        friend class CreateInteractionResponseData;
+        friend class Interactions;
+        friend class InputEvents;
 
         CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+                this->data.type = InteractionCallbackType::UpdateMessage;
+            }
+            else {
+                this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            }
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
@@ -181,15 +178,6 @@ namespace DiscordCoreAPI {
             this->data.data.embeds = dataPackage.embeds;
             this->requesterId = dataPackage.requesterId;
             this->data.data.tts = dataPackage.tts;
-            this->data.data.flags = 64;
-        }
-
-        CreateEphemeralInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
             this->data.data.flags = 64;
         }
 
@@ -202,10 +190,10 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
-        friend class  SelectMenuCollector;
-        friend class  ButtonCollector;
-        friend class  Interactions;
-        friend class  InputEvents;        
+        friend class SelectMenuCollector;
+        friend class ButtonCollector;
+        friend class Interactions;
+        friend class InputEvents;        
 
         CreateInteractionResponseData(DeferComponentResponseData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -227,7 +215,12 @@ namespace DiscordCoreAPI {
 
         CreateInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+                this->data.type = InteractionCallbackType::UpdateMessage;
+            }
+            else {
+                this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            }
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
@@ -239,16 +232,13 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
         }
 
-        CreateInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-
         CreateInteractionResponseData(InteractionData dataPackage) {
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            if (dataPackage.type == InteractionType::MESSAGE_COMPONENT) {
+                this->data.type = InteractionCallbackType::UpdateMessage;
+            }
+            else {
+                this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            }
             this->interactionPackage.interactionToken = dataPackage.token;
             this->interactionPackage.interactionId = dataPackage.id;
             if (dataPackage.member.user.id != "") {
@@ -268,11 +258,16 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
-        friend class  Interactions;
-        friend class  InputEvents;
+        friend class Interactions;
+        friend class InputEvents;
 
         CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
-            this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
+            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+                this->data.type = InteractionCallbackType::DeferredUpdateMessage;
+            }
+            else {
+                this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
+            }
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
@@ -283,16 +278,6 @@ namespace DiscordCoreAPI {
             this->requesterId = dataPackage.requesterId;
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
-        }
-
-        CreateDeferredInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->data.type = InteractionCallbackType::DeferredChannelMessageWithSource;
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->requesterId = dataPackage.getAuthorId();
-            this->channelId = dataPackage.getChannelId();
-            this->data.data.flags = 64;
         }
 
         virtual ~CreateDeferredInteractionResponseData() {};
@@ -313,8 +298,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
-        friend class  Interactions;
-        friend class  InputEvents;
+        friend class Interactions;
+        friend class InputEvents;
 
         EditInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -330,14 +315,6 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
         }
 
-        EditInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->data.type = InteractionCallbackType::UpdateMessage;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-
         virtual ~EditInteractionResponseData() {};
 
     };
@@ -346,13 +323,13 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
         friend void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
-        friend class  InputEvents;
-        friend class  Interactions;
+        friend class InputEvents;
+        friend class Interactions;
 
-        DeleteInteractionResponseData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
+        DeleteInteractionResponseData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
         }
 
     protected:
@@ -364,13 +341,18 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public InteractionResponse {
     public:
 
-        friend class  CreateFollowUpMessageData;
-        friend class  Interactions;
-        friend class  InputEvents;
+        friend class CreateFollowUpMessageData;
+        friend class Interactions;
+        friend class InputEvents;
 
         CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+                this->data.type = InteractionCallbackType::UpdateMessage;
+            }
+            else {
+                this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            }
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
@@ -379,15 +361,6 @@ namespace DiscordCoreAPI {
             this->data.data.embeds = dataPackage.embeds;
             this->requesterId = dataPackage.requesterId;
             this->data.data.tts = dataPackage.tts;
-            this->data.data.flags = 64;
-        }
-
-        CreateEphemeralFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
             this->data.data.flags = 64;
         }
 
@@ -399,8 +372,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
-        friend class  Interactions;
-        friend class  InputEvents;
+        friend class Interactions;
+        friend class InputEvents;
 
         CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData dataPackage) {
             this->interactionPackage = dataPackage.interactionPackage;
@@ -410,7 +383,12 @@ namespace DiscordCoreAPI {
 
         CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+                this->data.type = InteractionCallbackType::UpdateMessage;
+            }
+            else {
+                this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            }
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
@@ -420,14 +398,6 @@ namespace DiscordCoreAPI {
             this->requesterId = dataPackage.requesterId;
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
-        }
-
-        CreateFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->data.type = InteractionCallbackType::ChannelMessageWithSource;
-            this->requesterId = dataPackage.getRequesterId();
         }
 
         virtual ~CreateFollowUpMessageData() {};
@@ -446,15 +416,20 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
-        friend class  Interactions;
-        friend class  InputEvents;
+        friend class Interactions;
+        friend class InputEvents;
 
         EditFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
-            this->data.type = InteractionCallbackType::UpdateMessage;
+            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+                this->data.type = InteractionCallbackType::UpdateMessage;
+            }
+            else {
+                this->data.type = InteractionCallbackType::ChannelMessageWithSource;
+            }
             this->messagePackage.channelId = dataPackage.channelId;
             this->messagePackage.messageId = dataPackage.messageId;
             this->data.data.components = dataPackage.components;
@@ -465,15 +440,6 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
         }
 
-        EditFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->messagePackage.messageId = dataPackage.getMessageId();
-            this->data.type = InteractionCallbackType::UpdateMessage;
-            this->requesterId = dataPackage.getRequesterId();
-        }
-
         virtual ~EditFollowUpMessageData() {};
     };
 
@@ -481,14 +447,14 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
         friend void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
-        friend class  InputEvents;
-        friend class  Interactions;
+        friend class InputEvents;
+        friend class Interactions;
         
-        DeleteFollowUpMessageData(InputEventData dataPackage) {
-            this->interactionPackage.interactionToken = dataPackage.getInteractionToken();
-            this->interactionPackage.applicationId = dataPackage.getApplicationId();
-            this->interactionPackage.interactionId = dataPackage.getInteractionId();
-            this->messagePackage.messageId = dataPackage.getMessageId();
+        DeleteFollowUpMessageData(RespondToInputEventData dataPackage) {
+            this->interactionPackage.interactionToken = dataPackage.interactionToken;
+            this->interactionPackage.applicationId = dataPackage.applicationId;
+            this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->messagePackage.messageId = dataPackage.messageId;
         }
 
     protected:
@@ -515,10 +481,10 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Interactions {
     public:
 
-        friend class  DiscordCoreInternal::BaseSocketAgent;
-        friend class  DiscordCoreClient;
-        friend class  EventHandler;
-        friend class  EventManager;        
+        friend class DiscordCoreInternal::BaseSocketAgent;
+        friend class DiscordCoreClient;
+        friend class EventHandler;
+        friend class EventManager;        
 
         /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.
         /// \param dataPackage A CreateDeferredInteractionResponseData structure.
@@ -588,7 +554,7 @@ namespace DiscordCoreAPI {
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
     class DiscordCoreAPI_Dll SelectMenuCollector {
     public:
-        friend class  DiscordCoreClient;
+        friend class DiscordCoreClient;
 
         static unordered_map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
 
@@ -629,6 +595,11 @@ namespace DiscordCoreAPI {
 
     /// Button response data. \brief Button response data.
     struct DiscordCoreAPI_Dll ButtonResponseData {
+        operator InteractionData() {
+
+            return this->interactionData;
+        }
+
         InteractionData interactionData{};///< Interaction data.
         string emojiName{ "" };///< The emoji name, if applicable.
         string channelId{ "" };///< The Channel id where it took place.
@@ -640,7 +611,7 @@ namespace DiscordCoreAPI {
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
     class DiscordCoreAPI_Dll ButtonCollector {
     public:
-        friend class  DiscordCoreClient;
+        friend class DiscordCoreClient;
 
         static unordered_map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 

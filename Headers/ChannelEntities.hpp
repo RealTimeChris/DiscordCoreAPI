@@ -151,9 +151,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channels {
 	public:
 
-		friend class  DiscordCoreClient;
-		friend class  EventHandler;
-		friend class  Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.

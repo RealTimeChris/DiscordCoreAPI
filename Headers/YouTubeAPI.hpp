@@ -56,11 +56,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
-		friend class  DiscordCoreClient;
-		friend class  VoiceConnection;
-		friend class  YouTubeSong;
-		friend class  SongAPI;
-		friend class  Guild;
+		friend class DiscordCoreClient;
+		friend class VoiceConnection;
+		friend class YouTubeSong;
+		friend class SongAPI;
+		friend class Guild;
 
 		YouTubeAPI(string guildId);
 

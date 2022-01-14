@@ -73,10 +73,10 @@ namespace DiscordCoreAPI {
 		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
 		friend void ::terminateWrapper();
-		friend class  Interactions;
-		friend class  Messages;
-		friend class  Guild;
-		friend class  Test;
+		friend class Interactions;
+		friend class Messages;
+		friend class Guild;
+		friend class Test;
 
 		static unique_ptr<DiscordCoreClient> thisPointer;
 		static string commandPrefix;

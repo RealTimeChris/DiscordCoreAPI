@@ -140,7 +140,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
-		friend class  HttpRnRBuilder;
+		friend class HttpRnRBuilder;
 
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {

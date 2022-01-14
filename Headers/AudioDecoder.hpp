@@ -255,8 +255,8 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll AudioDecoder {
     public:
 
-        friend class  SoundCloudAPI;
-        friend class  YouTubeAPI;
+        friend class SoundCloudAPI;
+        friend class YouTubeAPI;
 
         AudioDecoder(BuildAudioDecoderData dataPackage);
 

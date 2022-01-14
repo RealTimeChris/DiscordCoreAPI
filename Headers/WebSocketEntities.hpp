@@ -200,8 +200,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll VoiceSocketAgent {
 	public:
 
-		friend class  DiscordCoreAPI::DiscordCoreClient;
-		friend class  DiscordCoreAPI::VoiceConnection;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::VoiceConnection;
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew);
 
