@@ -58,43 +58,19 @@ namespace DiscordCoreInternal {
 		friend class HttpHeader;
 		friend class HttpClient;
 
-		RateLimitData& operator=(RateLimitData&& other) noexcept {
-			this->doWeHaveTotalTimePerTick = other.doWeHaveTotalTimePerTick;
-			this->bucketStartTimeInsMs = other.bucketStartTimeInsMs;
-			this->isTheBucketActive = move(other.isTheBucketActive);
-			this->totalTimePerTick = other.totalTimePerTick;
-			this->bucketResetInMs = other.bucketResetInMs;
-			this->accessMutex = move(other.accessMutex);
-			this->tempBucket = move(other.tempBucket);
-			this->msRemainTotal = other.msRemainTotal;
-			this->getsRemaining = other.getsRemaining;
-			this->workloadType = other.workloadType;
-			this->totalGets = other.totalGets;
-			this->msRemain = other.msRemain;
-			this->bucket = other.bucket;
-			return *this;
-		}
-
-		RateLimitData(RateLimitData&& other) noexcept {
-			*this = move(other);
-		}
-
 		RateLimitData() = default;
 
 	protected:
 
 		HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
-		shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
 		bool doWeHaveTotalTimePerTick{ false };
-		int64_t bucketStartTimeInsMs{ 0 };
 		bool isTheBucketActive{ false };
 		int64_t totalTimePerTick{ 0 };
-		int64_t bucketResetInMs{ 0 };
 		int32_t getsRemaining{ 0 };
-		int64_t msRemainTotal{ 0 };
 		string tempBucket{ "" };
 		int32_t totalGets{ 0 };
 		int64_t msRemain{ 0 };
+		mutex accessMutex{};
 		string bucket{ "" };
 	};
 
@@ -117,12 +93,6 @@ namespace DiscordCoreInternal {
 		}
 
 		static void constructValues(shared_ptr<HttpConnection>& httpConnection, unordered_map<string, HttpHeader> headers) {
-			if (headers.contains("x-ratelimit-reset")) {
-				httpConnection->bucketResetInMs = static_cast<int64_t>(stoll(headers.at("x-ratelimit-reset").value) * 1000);
-			}
-			else {
-				httpConnection->bucketResetInMs = 0;
-			}
 			if (headers.contains("x-ratelimit-remaining")) {
 				httpConnection->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
 			}
@@ -134,7 +104,6 @@ namespace DiscordCoreInternal {
 			}
 			if (headers.contains("x-ratelimit-reset-after")) {
 				if (!httpConnection->doWeHaveTotalTimePerTick) {
-					httpConnection->msRemainTotal = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
 					httpConnection->doWeHaveTotalTimePerTick = true;
 				}
 				httpConnection->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
