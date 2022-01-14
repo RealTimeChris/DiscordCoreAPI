@@ -39,47 +39,47 @@ namespace DiscordCoreAPI {
 
     /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
     enum class Permission : int64_t {
-       Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
-       Kick_Members = 0x0000000000000002,///< Kick Members.
-       Ban_Members = 0x0000000000000004,///< Ban Members.
-       Administrator = 0x0000000000000008,///< Administrator.
-       Manage_Channels = 0x0000000000000010,///< Manage Channels.
-       Manage_Guild = 0x0000000000000020,///< Manage Guild.
-       Add_Reactions = 0x0000000000000040,///< Add Reactions.
-       View_Audit_Log = 0x0000000000000080,///< View Audit Log.
-       Priority_Speaker = 0x0000000000000100,///< Priority Speaker.
-       Stream = 0x0000000000000200,///< Stream.
-       View_Channel = 0x0000000000000400,///< View Channel.
-       Send_Messages = 0x0000000000000800,///< Send Messages.
-       Send_Tts_Messages = 0x0000000000001000,///< Send TTS Messages.
-       Manage_Messages = 0x0000000000002000,///< Manage Messages.
-       Embed_Links = 0x0000000000004000,///< Embed Links.
-       Attach_Files = 0x0000000000008000,///< Attach Files.
-       Read_Message_History = 0x0000000000010000,///< Read Message History.
-       Mention_Everyone = 0x0000000000020000,///< Mention Everyone.
-       Use_External_Emojis = 0x0000000000040000,///< Use External Emoji.
-       View_Guild_Insights = 0x0000000000080000,///< View Guild Insights.
-       Connect = 0x0000000000100000,///< Connect.
-       Speak = 0x0000000000200000,///< Speak.
-       Mute_Members = 0x0000000000400000,///< Mute Members.
-       Deafen_Members = 0x0000000000800000,///< Deafen Members.
-       Move_Members = 0x0000000001000000,///< Move Members.
-       Use_Vad = 0x0000000002000000,///< Use VAD.
-       Change_Nickname = 0x0000000004000000,///< Change Nickname.
-       Manage_Nicknames = 0x0000000008000000,///< Manage Nicknames.
-       Manage_Roles = 0x0000000010000000,///< Manage Roles.
-       Manage_Webhooks = 0x0000000020000000,///< Manage Webhooks.
-       Manage_Emojis_And_Stickers = 0x0000000040000000,///< Manage Emojis And Stickers.
-       Use_Application_Commands = 0x0000000080000000,///< Use Application Commands.
-       Request_To_Speak = 0x0000000100000000,///< Request To Speak.
-       Manage_Events = 0x0000000200000000,///< Manage Events.
-       Manage_Threads = 0x0000000400000000,///< Manage Threads.
-       Create_Public_Threads = 0x0000000800000000,///< Create Public Threads.
-       Create_Private_Threads = 0x0000001000000000,///< Create Private Threads.
-       Use_External_Stickers = 0x0000002000000000,///< Use External Stickers.
-       Send_Messages_In_Threads = 0x0000004000000000,///< Send Messages In Threads.
-       Start_Embedded_Activities = 0x0000008000000000,///< Start Embedded Activities.
-       Moderate_Members = 0x0000010000000000///< Moderate Members. 0x0000010000000000///< Moderate Members.
+        CREATE_INSTANT_INVITE = 0x0000000000000001,///< Create Instant Invite.
+        KICK_MEMBERS = 0x0000000000000002,///< Kick Members.
+        BAN_MEMBERS = 0x0000000000000004,///< Ban Members.
+        ADMINISTRATOR = 0x0000000000000008,///< Administrator.
+        MANAGE_CHANNELS = 0x0000000000000010,///< Manage Channels.
+        MANAGE_GUILD = 0x0000000000000020,///< Manage Guild.
+        ADD_REACTIONS = 0x0000000000000040,///< Add Reactions.
+        VIEW_AUDIT_LOG = 0x0000000000000080,///< View Audit Log.
+        PRIORITY_SPEAKER = 0x0000000000000100,///< Priority Speaker.
+        Stream = 0x0000000000000200,///< Stream.
+        VIEW_CHANNEL = 0x0000000000000400,///< View Channel.
+        SEND_MESSAGES = 0x0000000000000800,///< Send Messages.
+        SEND_TTS_MESSAGES = 0x0000000000001000,///< Send TTS Messages.
+        MANAGE_MESSAGES = 0x0000000000002000,///< Manage Messages.
+        EMBED_LINKS = 0x0000000000004000,///< Embed Links.
+        ATTACH_FILES = 0x0000000000008000,///< Attach Files.
+        READ_MESSAGE_HISTORY = 0x0000000000010000,///< Read Message History.
+        MENTION_EVERYONE = 0x0000000000020000,///< Mention Everyone.
+        USE_EXTERNAL_EMOJIS = 0x0000000000040000,///< Use External Emoji.
+        VIEW_GUILD_INSIGHTS = 0x0000000000080000,///< View Guild Insights.
+        CONNECT = 0x0000000000100000,///< Connect.
+        SPEAK = 0x0000000000200000,///< Speak.
+        MUTE_MEMBERS = 0x0000000000400000,///< Mute Members.
+        DEAFEN_MEMBERS = 0x0000000000800000,///< Deafen Members.
+        MOVE_MEMBERS = 0x0000000001000000,///< Move Members.
+        USE_VAD = 0x0000000002000000,///< Use VAD.
+        CHANGE_NICKNAME = 0x0000000004000000,///< Change Nickname.
+        MANAGE_NICKNAMES = 0x0000000008000000,///< Manage Nicknames.
+        MANAGE_ROLES = 0x0000000010000000,///< Manage Roles.
+        MANAGE_WEBHOOKS = 0x0000000020000000,///< Manage Webhooks.
+        MANAGE_EMOJIS_AND_STICKERS = 0x0000000040000000,///< Manage Emojis And Stickers.
+        USE_APPLICATION_COMMANDS = 0x0000000080000000,///< Use Application Commands.
+        REQUEST_TO_SPEAK = 0x0000000100000000,///< Request To Speak.
+        MANAGE_EVENTS = 0x0000000200000000,///< Manage Events.
+        MANAGE_THREADS = 0x0000000400000000,///< Manage Threads.
+        CREATE_PUBLIC_THREADS = 0x0000000800000000,///< Create Public Threads.
+        CREATE_PRIVATE_THREADS = 0x0000001000000000,///< Create Private Threads.
+        USE_EXTERNAL_STICKERS = 0x0000002000000000,///< Use External Stickers.
+        SEND_MESSAGES_IN_THREADS = 0x0000004000000000,///< Send Messages In Threads.
+        START_EMBEDDED_ACTIVITIES = 0x0000008000000000,///< Start Embedded Activities.
+        MODERATE_MEMBERS = 0x0000010000000000///< Moderate Members.
     };
 
     struct DiscordCoreAPI_Dll CURLWrapper {
@@ -1273,53 +1273,53 @@ namespace DiscordCoreAPI {
 
     /// Audit log events. \brief Audit log events.
     enum class AuditLogEvent {
-       Guild_Update = 1,
-       Channel_Create = 10,
-       Channel_Update = 11,
-       Channel_Delete = 12,
-       Channel_Overwrite_Create = 13,
-       Channel_Overwrite_Update = 14,
-       Channel_Overwrite_Delete = 15,
-       Member_Kick = 20,
-       Member_Prune = 21,
-       Member_Ban_Add = 22,
-       Member_Ban_Remove = 23,
-       Member_Update = 24,
-       Member_Role_Update = 25,
-       Member_Move = 26,
-       Member_Disconnect = 27,
-       Bot_Add = 28,
-       Role_Create = 30,
-       Role_Update = 31,
-       Role_Delete = 32,
-       Invite_Create = 40,
-       Invite_Update = 41,
-       Invite_Delete = 42,
-       Webhook_Create = 50,
-       Webhook_Update = 51,
-       Webhook_Delete = 52,
-       Emoji_Create = 60,
-       Emoji_Update = 61,
-       Emoji_Delete = 62,
-       Message_Delete = 72,
-       Message_Bulk_Delete = 73,
-       Message_Pin = 74,
-       Message_Unpin = 75,
-       Integration_Create = 80,
-       Integration_Update = 81,
-       Integration_Delete = 82,
-       Stage_Instance_Create = 83,
-       Stage_Instance_Update = 84,
-       Stage_Instance_Delete = 85,
-       Sticker_Create = 90,
-       Sticker_Update = 91,
-       Sticker_Delete = 92,
-       Guild_Scheduled_Event_Create = 100,
-       Guild_Scheduled_Event_Update = 101,
-       Guild_Scheduled_Event_Delete = 102,
-       Thread_Create = 110,
-       Thread_Update = 111,
-       Thread_Delete = 112
+        Guild_Update = 1,
+        Channel_Create = 10,
+        Channel_Update = 11,
+        Channel_Delete = 12,
+        CHANNEL_OVERWRITE_CREATE = 13,
+        CHANNEL_OVERWRITE_UPDATE = 14,
+        CHANNEL_OVERWRITE_DELETE = 15,
+        MEMBER_KICK = 20,
+        MEMBER_PRUNE = 21,
+        MEMBER_BAN_ADD = 22,
+        MEMBER_BAN_REMOVE = 23,
+        MEMBER_UPDATE = 24,
+        MEMBER_ROLE_UPDATE = 25,
+        MEMBER_MOVE = 26,
+        MEMBER_DISCONNECT = 27,
+        BOT_ADD = 28,
+        ROLE_CREATE = 30,
+        ROLE_UPDATE = 31,
+        ROLE_DELETE = 32,
+        INVITE_CREATE = 40,
+        INVITE_UPDATE = 41,
+        INVITE_DELETE = 42,
+        WEBHOOK_CREATE = 50,
+        WEBHOOK_UPDATE = 51,
+        WEBHOOK_DELETE = 52,
+        EMOJI_CREATE = 60,
+        EMOJI_UPDATE = 61,
+        EMOJI_DELETE = 62,
+        MESSAGE_DELETE = 72,
+        MESSAGE_BULK_DELETE = 73,
+        MESSAGE_PIN = 74,
+        MESSAGE_UNPIN = 75,
+        INTEGRATION_CREATE = 80,
+        INTEGRATION_UPDATE = 81,
+        INTEGRATION_DELETE = 82,
+        STAGE_INSTANCE_CREATE = 83,
+        STAGE_INSTANCE_UPDATE = 84,
+        STAGE_INSTANCE_DELETE = 85,
+        STICKER_CREATE = 90,
+        STICKER_UPDATE = 91,
+        STICKER_DELETE = 92,
+        GUILD_SCHEDULED_EVENT_CREATE = 100,
+        GUILD_SCHEDULED_EVENT_UPDATE = 101,
+        GUILD_SCHEDULED_EVENT_DELETE = 102,
+        THREAD_CREATE = 110,
+        THREAD_UPDATE = 111,
+        THREAD_DELETE = 112
     };
 
     /// Audit log entry info data \brief Audit log entry info data.
@@ -2024,7 +2024,7 @@ namespace DiscordCoreAPI {
         Default = 0,///< Default.
         Recipient_Add = 1,///< Recipient add.
         Recipient_Remove = 2,///< Recipient remove.
-        Call = 3,///< Call.
+        CALL = 3,///< Call.
         Channel_Name_Change = 4,///< Channel name change.
         Channel_Icon_Change = 5,///< Channel icon change.
         Channel_Pinned_Message = 6,///< Channel pinned Message.
@@ -2243,7 +2243,7 @@ namespace DiscordCoreAPI {
         Follow_Up_Message = 7,///< Follow-up Message.
         Follow_Up_Message_Edit = 8,///< Follow-up Message edit.
         Ephemeral_Follow_Up_Message = 9,///< Ephemeral follow-up Message.
-        Send_Dm = 10///< Send Dm.
+        SEND_DM = 10///< Send Dm.
     };
 
     /// Input event types. \brief Input event types.
@@ -3310,7 +3310,7 @@ namespace  DiscordCoreInternal {
        Get_Guild_Integrations = 102,
        Delete_Guild_Integration = 103,
        Get_Guild_Widget_Settings = 104,
-       Patch_Guild_Widget = 105,
+       Modify_Guild_Widget = 105,
        Get_Guild_Widget = 106,
        Get_Vanity_Invite = 107,
        Get_Guild_Widget_Image = 108,
@@ -3366,7 +3366,11 @@ namespace  DiscordCoreInternal {
        Delete_Webhook_Message = 158,
        Get_Application_Info = 159,
        Get_Authorization_Info = 160,
-       Get_Gateway_Bot = 161
+       Get_Gateway_Bot = 161BHOOK_MESSAGE = 157,
+        DELETE_WEBHOOK_MESSAGE = 158,
+        GET_APPLICATION_INFO = 159,
+        GET_AUTHORIZATION_INFO = 160,
+        GET_GATEWAY_BOT = 161
     };
 
     struct DiscordCoreAPI_Dll HttpWorkloadData {
