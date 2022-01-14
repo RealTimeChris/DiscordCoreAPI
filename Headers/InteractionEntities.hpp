@@ -567,9 +567,8 @@ namespace DiscordCoreAPI {
         /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
         /// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping
         /// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
-        /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the selection.
         /// \returns A vector of SelectMenuResponseData.
-        CoRoutine<vector<SelectMenuResponseData>>collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        CoRoutine<vector<SelectMenuResponseData>>collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, string targetUserId = "");
 
         ~SelectMenuCollector();
 
@@ -580,7 +579,6 @@ namespace DiscordCoreAPI {
         vector<SelectMenuResponseData> responseVector{};
         int32_t currentCollectedSelectMenuCount{ 0 };
         int32_t maxCollectedSelectMenuCount{ 0 };
-        bool doWeSendInitialResponse{ false };
         bool getSelectMenuDataForAll{ false };
         uint32_t maxTimeInMs{ 0 };
         string selectMenuId{ "" };
@@ -624,9 +622,8 @@ namespace DiscordCoreAPI {
         /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
         /// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
         /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
-        /// \param doWeSendInitialResponse Whether or not we send a "Being updated" message in response to the button press.
         /// \returns A vector of ButtonResponseData.
-        CoRoutine<vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, string targetUserId = "", bool doWeSendInitialResponse = true);
+        CoRoutine<vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, string targetUserId = "");
 
         ~ButtonCollector();
 
@@ -636,7 +633,6 @@ namespace DiscordCoreAPI {
         InteractionData interactionData{};
         vector<ButtonResponseData> responseVector{};
         int32_t currentCollectedButtonCount{ 0 };
-        bool doWeSendInitialResponse{ false };
         int32_t maxCollectedButtonCount{ 0 };
         bool getButtonDataForAll{ false };
         uint32_t maxTimeInMs{ 0 };
