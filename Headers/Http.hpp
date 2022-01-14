@@ -62,7 +62,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		HttpWorkloadType workloadType{ HttpWorkloadType::UNSET };
+		HttpWorkloadType workloadType{ HttpWorkloadType::Unset };
 		bool doWeHaveTotalTimePerTick{ false };
 		bool isTheBucketActive{ false };
 		int64_t totalTimePerTick{ 0 };

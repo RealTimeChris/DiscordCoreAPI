@@ -91,10 +91,6 @@ extern "C"
 #undef min
 #endif
 
-#ifdef DELETE
-#undef DELETE
-#endif
-
 /**
 * \defgroup main_endpoints Main Endpoints
 * \brief For all of the Discord API's endpoints.

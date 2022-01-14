@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
 
 	/// For starting a Thread, based on a Message. \brief For starting a Thread, based on a Message.
 	struct DiscordCoreAPI_Dll StartThreadWithMessageData {
-		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::SHORTEST };///< The duration before it is auto-archived, in minutes.
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		string threadName{ "" };///< The name of the new Thread.
 		string messageId{ "" };///< The Message Id to base the Thread off of.
 		string channelId{ "" };///< The Channel to start the Thread in.
@@ -27,8 +27,8 @@ namespace DiscordCoreAPI {
 
 	/// For starting a Thread, not based on a Message. \brief For starting a Thread, not based on a Message.
 	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData {
-		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::SHORTEST };///< The duration before it is auto-archived, in minutes.
-		ThreadType type{ ThreadType::GUILD_PUBLIC_THREAD };///< Type of Thread to create.
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
+		ThreadType type{ ThreadType::Guild_Public_Thread };///< Type of Thread to create.
 		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
 		string threadName{ "" };///< The name of the new Thread.
 		string channelId{ "" };///< The Channel to start the Thread in.

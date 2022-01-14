@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a Guild. \brief For creating a Guild.
 	struct DiscordCoreAPI_Dll CreateGuildData {
-		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::SHORTEST };///< Afk timeout in seconds.
+		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::Shortest };///< Afk timeout in seconds.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		int32_t systemChannelFlags{ 0 };///< System channel flags.

@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a GuildScheduledEvent. \brief For creating a GuildScheduledEvent.
 	struct DiscordCoreAPI_Dll CreateGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::GUILD_ONLY};///< The privacy level of the scheduled event.
+		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only};///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType	entityType{};///< The entity type of the scheduled event.
 		string scheduledStartTime{ "" };///< The time to schedule the scheduled event.
@@ -43,15 +43,15 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a single Guild Scheduled Event. \brief For modifying a single Guild Scheduled Event.
 	struct DiscordCoreAPI_Dll ModifyGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::GUILD_ONLY };///< The privacy level of the scheduled event.
-		GuildScheduledEventStatus status{ GuildScheduledEventStatus::ACTIVE };///< The status of the scheduled event.
+		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
+		GuildScheduledEventStatus status{ GuildScheduledEventStatus::Active };///< The status of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
 		string guildScheduledEventId{ "" };///< The id of the event to modify.
 		string scheduledStartTime{ "" };///< The time to schedule the scheduled event.
 		string scheduledEndTime{ "" };///< The time when the scheduled event is scheduled to end.
 		string description{ "" };///< The description of the scheduled event.
-		string channelId{ "" };///< The channel id of the scheduled event, set to null if changing entity type to EXTERNAL.
+		string channelId{ "" };///< The channel id of the scheduled event, set to null if changing entity type to External.
 		string guildId{ "" };///< The Guild within which to modify the event.
 		string name{ "" };///< The name of the scheduled event.
 	};

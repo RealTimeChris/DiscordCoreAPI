@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->responseType = InputEventResponseType::DEFERRED_RESPONSE;
+            this->responseType = InputEventResponseType::Deferred_Response;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->type = InteractionCallbackType::DeferredUpdateMessage;
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 
         CreateEphemeralInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+            if (dataPackage.eventType == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::UpdateMessage;
             }
             else {
@@ -215,7 +215,7 @@ namespace DiscordCoreAPI {
 
         CreateInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+            if (dataPackage.eventType == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::UpdateMessage;
             }
             else {
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
         }
 
         CreateInteractionResponseData(InteractionData dataPackage) {
-            if (dataPackage.type == InteractionType::MESSAGE_COMPONENT) {
+            if (dataPackage.type == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::UpdateMessage;
             }
             else {
@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
         friend class InputEvents;
 
         CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
-            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+            if (dataPackage.eventType == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::DeferredUpdateMessage;
             }
             else {
@@ -347,7 +347,7 @@ namespace DiscordCoreAPI {
 
         CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+            if (dataPackage.eventType == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::UpdateMessage;
             }
             else {
@@ -385,7 +385,7 @@ namespace DiscordCoreAPI {
 
         CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+            if (dataPackage.eventType == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::UpdateMessage;
             }
             else {
@@ -426,7 +426,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
-            if (dataPackage.eventType == InteractionType::MESSAGE_COMPONENT) {
+            if (dataPackage.eventType == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::UpdateMessage;
             }
             else {

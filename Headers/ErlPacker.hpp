@@ -15,35 +15,35 @@ namespace DiscordCoreInternal {
 		explicit ErlPackError(const string& message) : exception(message.c_str()) {}
 	};
 
-	constexpr uint8_t FORMAT_VERSION{ 131 };
+	constexpr uint8_t formatVersion{ 131 };
 
 	enum class ETFTokenType : uint8_t {
-		NEW_FLOAT = 70,
-		BIT_BINARY = 77,
-		COMPRESSED = 80,
-		SMALL_INTEGER = 97,
-		INTEGER = 98,
-		FLOAT = 99,
-		ATOM = 100,
-		REFERENCE = 101,
-		PORT = 102,
-		PID = 103,
-		SMALL_TUPLE = 104,
-		LARGE_TUPLE = 105,
-		NIL = 106,
-		STRING = 107,
-		LIST = 108,
-		BINARY = 109,
-		SMALL_BIGINT = 110,
-		LARGE_BIGINT = 111,
-		NEW_FUNCTION = 112,
-		EXPORT = 113,
-		NEW_REFERENCE = 114,
-		SMALL_ATOM = 115,
-		MAP = 116,
-		FUNCTION = 117,
-		UTF8_ATOM = 118,
-		SMALL_UTF8_ATOM = 119
+		New_Float = 70,
+		Bit_Binary= 77,
+		Comressed= 80,
+		Small_Integer= 97,
+		Integer = 98,
+		Float= 99,
+		Atom= 100,
+		Reference = 101,
+		Port = 102,
+		Pid = 103,
+		Small_Tuple = 104,
+		Large_Tuple = 105,
+		Nil = 106,
+		String = 107,
+		List = 108,
+		Binary = 109,
+		Small_BigInt = 110,
+		Large_BigInt = 111,
+		New_Function = 112,
+		Export = 113,
+		New_Reference = 114,
+		Small_Atom = 115,
+		Map = 116,
+		Function = 117,
+		Utf8_Atom = 118,
+		Small_Utf8_Atom = 119
 	};
 
 	struct DiscordCoreAPI_Dll ErlPackBuffer {

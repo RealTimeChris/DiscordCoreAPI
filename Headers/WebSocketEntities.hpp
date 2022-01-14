@@ -76,12 +76,12 @@ namespace DiscordCoreInternal {
 	};
 
 	enum class WebSocketOpCode : uint8_t {
-		WS_OP_CONTINUATION = 0x00,
-		WS_OP_TEXT = 0x01,
-		WS_OP_BINARY = 0x02,
-		WS_OP_CLOSE = 0x08,
-		WS_OP_PING = 0x09,
-		WS_OP_PONG = 0x0a
+		Ws_Op_Continuation = 0x00,
+		Op_Text = 0x01,
+		Op_Binary = 0x02,
+		Op_Close = 0x08,
+		Op_Ping = 0x09,
+		Op_Pong = 0x0a
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class VoiceSocketAgent;
 
-		BaseSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::WS_OP_BINARY);
+		BaseSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
 
 		BaseSocketAgent(nullptr_t);
 
@@ -220,7 +220,7 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
-		WebSocketOpCode dataOpcode{ WebSocketOpCode::WS_OP_TEXT };
+		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };

@@ -2591,7 +2591,7 @@ namespace DiscordCoreInternal {
                 pDataStructure->type = jsonObjectData["type"].get<DiscordCoreAPI::ApplicationCommandOptionType>();
             }
 
-            if (pDataStructure->type == DiscordCoreAPI::ApplicationCommandOptionType::SUB_COMMAND_GROUP || pDataStructure->type == DiscordCoreAPI::ApplicationCommandOptionType::SUB_COMMAND) {
+            if (pDataStructure->type == DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group || pDataStructure->type == DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command) {
                 if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
                     pDataStructure->options.reserve(jsonObjectData.at("options").size());
                     for (auto& value : jsonObjectData["options"]) {

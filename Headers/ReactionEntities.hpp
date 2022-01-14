@@ -76,9 +76,9 @@ namespace DiscordCoreAPI {
 	};
 
 	enum class ImageType {
-		JPG = 0,
-		PNG = 1,
-		GIF = 2,
+		Jpg = 0,
+		Png = 1,
+		Gif = 2,
 	};
 
 	/// For creating a new Guild Emoji.

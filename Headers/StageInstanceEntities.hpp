@@ -12,7 +12,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a StageInstance. \brief For creating a StageInstance.
 	struct DiscordCoreAPI_Dll CreateStageInstanceData {
-		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default GUILD_ONLY).
+		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
 		string channelId{ "" };///< The id of the Stage channel.
 		string reason{ "" };///< The reason for starting it.
 		string topic{ "" };///< The topic of the Stage instance(1 - 120 characters).

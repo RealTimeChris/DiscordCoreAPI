@@ -24,17 +24,17 @@ namespace DiscordCoreAPI {
 		bool afk{ false };///< Are we afk.
 	};
 
-	/// For adding a user to a group DM. \brief For adding a user to a group DM.
+	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		string token{ "" };///< The user's access token.
 		string nick{ "" };///< The user's nickname.
-		string channelId{ "" };///< The channel Id of the DM.
+		string channelId{ "" };///< The channel Id of the Dm.
 		string userId{ "" };///< The user's Id.
 	};
 
-	/// For removing a User from a group DM. \brief For removing a User from a group DM.
+	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		string channelId{ "" };///< The channel Id of the DM.
+		string channelId{ "" };///< The channel Id of the Dm.
 		string userId{ "" };///< The user's Id.
 	};
 
@@ -109,12 +109,12 @@ namespace DiscordCoreAPI {
 		friend class Users;
 		friend class Guild;
 
-		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
+		/// Adds a chosen recipient to a group Dm. \brief Adds a chosen recipient to a group Dm.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage);
 
-		/// Removes a chosen recipient from a group DM. \brief Removes a chosen recipient from a group DM.
+		/// Removes a chosen recipient from a group Dm. \brief Removes a chosen recipient from a group Dm.
 		/// \param dataPackage A RemoveRecipientFromGroupDMData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
