@@ -1858,7 +1858,12 @@ namespace DiscordCoreAPI {
         string targetId{ "" }; ///< The target Message's id.
     };
 
-    enum class ComponentType;
+    /// Component types. \brief Component types.
+    enum class ComponentType {
+        ActionRow = 1,///< Action row.
+        Button = 2,///< Button.
+        SelectMenu = 3///< Select-menu.
+    };
 
     /// Component Interaction data. \brief Component Interaction data.
     struct DiscordCoreAPI_Dll ComponentInteractionData {
@@ -1879,7 +1884,8 @@ namespace DiscordCoreAPI {
     enum class InteractionType {
         PING = 1,///< Ping.
         APPLICATION_COMMAND = 2,///< Application command.
-        MESSAGE_COMPONENT = 3///< Message component.
+        MESSAGE_COMPONENT = 3,///< Message component.
+        APPLICATION_COMMAND_AUTOCOMPLETE = 4///< Application command autocomplete.
     };
 
     /// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
@@ -1889,13 +1895,6 @@ namespace DiscordCoreAPI {
         string label{ "" };///< A visible label for the select-menu-option.
         string value{ "" };///< A value for identifying the option.
         EmojiData emoji{};///< An optional emoji to put on it.
-    };
-
-    /// Component types. \brief Component types.
-    enum class ComponentType {
-        ActionRow = 1,///< Action row.
-        Button = 2,///< Button.
-        SelectMenu = 3///< Select-menu.
     };
 
     /// Button styles. \brief Button styles.
@@ -2234,17 +2233,17 @@ namespace DiscordCoreAPI {
 
     /// Input event response types. \brief Input event response types.
     enum class InputEventResponseType {
-        Unset = 0,///< Unset.
-        DeferredResponse = 1,///< Deferred response.
-        InteractionResponse = 2,///< Interaction response.
-        InteractionResponseEdit = 3,///< Interaction response edit.
-        EphemeralInteractionResponse = 4,///< Ephemeral Interaction response.
-        RegularMessage = 5,///< Regular Message.
-        RegularMessageEdit = 6,///< Regular Message edit.
-        FollowUpMessage = 7,///< Follow-up Message.
-        FollowUpMessageEdit = 8,///< Follow-up Message edit.
-        EphemeralFollowUpMessage = 9,///< Ephemeral follow-up Message.
-        SendDM = 10///< Send Dm.
+        UNSET = 0,///< Unset.
+        DEFERRED_RESPONSE = 1,///< Deferred response.
+        INTERACTION_RESPONSE = 2,///< Interaction response.
+        INTERACTION_RESPONSE_EDIT = 3,///< Interaction response edit.
+        EPHEMERAL_INTERACTION_RESPONSE = 4,///< Ephemeral Interaction response.
+        REGULAR_MESSAGE = 5,///< Regular Message.
+        REGULAR_MESSAGE_EDIT = 6,///< Regular Message edit.
+        FOLLOW_UP_MESSAGE = 7,///< Follow-up Message.
+        FOLLOW_UP_MESSAGE_EDIT = 8,///< Follow-up Message edit.
+        EPHEMERAL_FOLLOW_UP_MESSAGE = 9,///< Ephemeral follow-up Message.
+        SEND_DM = 10///< Send Dm.
     };
 
     /// Input event types. \brief Input event types.
@@ -2294,7 +2293,7 @@ namespace DiscordCoreAPI {
         friend struct CommandData;
         friend class InputEvents;
 
-        InputEventResponseType inputEventResponseType{}; ///< The type of event response that is represented by this structure.
+        InputEventResponseType responseType{};///< The type of response that this input value represents.
         InputEventType eventType{}; ///< The type of input-event that is represented by this structure.
 
         InputEventData() {};
@@ -2577,11 +2576,11 @@ namespace DiscordCoreAPI {
 
         RespondToInputEventData(string channelIdNew) {
             this->channelId = channelIdNew;
-            this->type = InputEventResponseType::RegularMessage;
+            this->type = InputEventResponseType::REGULAR_MESSAGE;
         }
 
         RespondToInputEventData(InteractionData dataPackage) {
-            this->type = InputEventResponseType::InteractionResponse;
+            this->type = InputEventResponseType::INTERACTION_RESPONSE;
             this->applicationId = dataPackage.applicationId;
             this->requesterId = dataPackage.requesterId;
             this->interactionToken = dataPackage.token;
@@ -2598,14 +2597,7 @@ namespace DiscordCoreAPI {
             this->requesterId = dataPackage.getRequesterId();
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
-            if (dataPackage.eventType == InputEventType::BUTTON_INTERACTION || dataPackage.eventType == InputEventType::SELECT_MENU_INTERACTION) {
-                this->eventType = InteractionType::MESSAGE_COMPONENT;
-                this->type = InputEventResponseType::InteractionResponse;
-            }
-            else {
-                this->eventType = InteractionType::APPLICATION_COMMAND;
-                this->type = InputEventResponseType::InteractionResponse;
-            }
+            this->type = InputEventResponseType::INTERACTION_RESPONSE;
         }
 
         /// Adds a button to the response Message. \brief Adds a button to the response Message.

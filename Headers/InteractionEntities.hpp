@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
-            this->responseType = InputEventResponseType::DeferredResponse;
+            this->responseType = InputEventResponseType::DEFERRED_RESPONSE;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->type = InteractionCallbackType::DeferredUpdateMessage;
@@ -372,6 +372,8 @@ namespace DiscordCoreAPI {
     public:
 
         friend string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
+        friend class SelectMenuCollector;
+        friend class ButtonCollector;
         friend class Interactions;
         friend class InputEvents;
 
