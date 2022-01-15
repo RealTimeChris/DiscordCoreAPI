@@ -161,6 +161,7 @@ namespace DiscordCoreInternal {
 		struct SSLDeleter {
 			void operator()(SSL* other) {
 				if (other != nullptr) {
+					SSL_shutdown(other);
 					SSL_free(other);
 					other = nullptr;
 				}
@@ -251,11 +252,13 @@ namespace DiscordCoreInternal {
 
 		friend class HttpClient;
 
-		HttpSSLClient(string baseUrl, string* theVector);
+		HttpSSLClient() = default;
 
-		HttpSSLClient(nullptr_t);
+		HttpSSLClient(string* theVector);
 
 		bool writeData(string theData);
+
+		bool connect(string baseUrl);
 
 		string getInputBuffer();
 
@@ -272,8 +275,7 @@ namespace DiscordCoreInternal {
 		int32_t currentRecursionDepth{ 0 };
 		string* theInputVector{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		bool doWeReconnectBool{ true };
-		SSLWrapper ssl{ nullptr };		
+		SSLWrapper ssl{ nullptr };
 	};
 
 	template <typename T>

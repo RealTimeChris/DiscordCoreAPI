@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
         static void parseObject(json& jsonObjectData, vector<DiscordCoreAPI::User>* pDataStructure) {
             pDataStructure->reserve(jsonObjectData.size());
             for (auto& value : jsonObjectData) {
-                DiscordCoreAPI::User newData{};
+                DiscordCoreAPI::UserData newData{};
                 parseObject(value, &newData);
                 pDataStructure->push_back(move(newData));
             }

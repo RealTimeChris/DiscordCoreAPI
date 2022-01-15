@@ -65,22 +65,55 @@ namespace DiscordCoreAPI {
 		string username{ "" };///< User's username, if changed may cause the user's discriminator to be randomized.
 	};
 	
+	enum class UserFlags : int8_t {
+		Bot = 0b00000000'00000001,
+		MFAEnabled = 0b00000000'00000010,
+		System = 0b00000000'00000100,
+		Verified = 0b00000000'00001000
+	};
+
 	/// A single User. \brief A single User.
-	class DiscordCoreAPI_Dll User : public UserData {
+	class DiscordCoreAPI_Dll User : public DiscordEntity {
 	public:
+		string discriminator{ "" }; ///< The # next to their User name.
+		int32_t premiumType{ 0 };///< Their premium nitro status.
+		int32_t publicFlags{ 0 };///< Public flags.
+		string createdAt{ "" };///< When the User was created.
+		string userName{ "" };///< Their username.
+		string avatar{ "" };///< Their avatar url.
+		string locale{ "" };///< The region they are from/in.
+		string email{ "" };///< Their email address.
+		int32_t flags{ 0 };///< Flags.
+		int8_t flagsEnum{};///< Flags for enumerated boolean values.
 
 		User();
 
 		User(UserData dataNew);
+
+		bool getBot() {
+			return (this->flagsEnum & static_cast<int8_t>(UserFlags::Bot));
+		}
+
+		bool getSystem() {
+			return (this->flagsEnum & static_cast<int8_t>(UserFlags::System));
+		}
+
+		bool getVerified() {
+			return (this->flagsEnum & static_cast<int8_t>(UserFlags::Verified));
+		}
+
+		bool getMFAEnabled() {
+			return (this->flagsEnum & static_cast<int8_t>(UserFlags::MFAEnabled));
+		}
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
-	class DiscordCoreAPI_Dll BotUser : public UserData {
+	class DiscordCoreAPI_Dll BotUser : public User {
 	public:
 
 		friend class DiscordCoreClient;
 
-		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
+		BotUser(User dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes.
 		void updateVoiceStatus(UpdateVoiceStateData datdataPackageaPackage);
