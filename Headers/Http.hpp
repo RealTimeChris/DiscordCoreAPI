@@ -96,9 +96,6 @@ namespace DiscordCoreInternal {
 			if (headers.contains("x-ratelimit-remaining")) {
 				httpConnection->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
 			}
-			else {
-				httpConnection->getsRemaining = 0;
-			}
 			if (headers.contains("x-ratelimit-limit")) {
 				httpConnection->totalGets = stol(headers.at("x-ratelimit-limit").value.c_str());
 			}
@@ -145,6 +142,7 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
+				HttpClient::waitForMutex(1);
 				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>();
 				httpConnection->workloadType = workload.workloadType;
 				if (HttpClient::httpConnectionBucketValues.contains(httpConnection->workloadType)) {
@@ -180,6 +178,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
+				HttpClient::waitForMutex(2);
 				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>();
 				httpConnection->workloadType = workload.workloadType;
 				if (HttpClient::httpConnectionBucketValues.contains(httpConnection->workloadType)) {
@@ -212,6 +211,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
+				HttpClient::waitForMutex(3);
 				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>();
 				httpConnection->workloadType = workload.workloadType;
 				if (HttpClient::httpConnectionBucketValues.contains(httpConnection->workloadType)) {
@@ -269,14 +269,18 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		static atomic<shared_ptr<DiscordCoreAPI::StopWatch<microseconds>>> stopWatch;
 		static map<HttpWorkloadType, string> httpConnectionBucketValues;
 		static map<string, shared_ptr<HttpConnection>> httpConnections;
 		static atomic<shared_ptr<string>> botToken;
+		static mutex theMutex01;
+		static mutex theMutex02;
+		static mutex theMutex03;
 
 		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<HttpConnection> httpConnection, bool printResult);
 
 		static HttpData executeHttpRequest(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
-
+		
 		static HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
 		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<HttpConnection>, bool = false);
@@ -284,5 +288,7 @@ namespace DiscordCoreInternal {
 		static vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
 
 		static vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
+
+		static void waitForMutex(int8_t);
 	};
 }

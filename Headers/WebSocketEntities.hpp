@@ -138,7 +138,6 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
-		unique_ptr<vector<uint8_t>> inputBuffer{ make_unique<vector<uint8_t>>() };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
@@ -164,7 +163,8 @@ namespace DiscordCoreInternal {
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
-		WebSocketOpCode dataOpcode{};
+		vector<uint8_t> inputBuffer{};
+		WebSocketOpCode dataOpcode{};		
 		string relativePath{ "" };
 		mutex accessorMutex00{};
 		uint32_t closeCode{ 0 };
@@ -215,8 +215,6 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unique_ptr<vector<uint8_t>> inputBuffer00{ make_unique<vector<uint8_t>>() };
-		unique_ptr<vector<char>> inputBuffer01{ make_unique<vector<char>>() };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
@@ -240,9 +238,11 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		int32_t lastNumberReceived{ 0 };
+		vector<uint8_t> inputBuffer00{};
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
+		vector<char> inputBuffer01{};
 		string relativePath{ "" };
 		mutex accessorMutex00{};
 		uint32_t closeCode{ 0 };
