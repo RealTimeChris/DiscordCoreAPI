@@ -788,28 +788,28 @@ namespace DiscordCoreAPI {
         /// \param authorName The author's name.
         /// \param authorAvatarUrl The url to their avatar.
         /// \returns A pointer to this embed.
-        EmbedData* setAuthor(string authorName, string authorAvatarUrl = "") {
+        EmbedData& setAuthor(string authorName, string authorAvatarUrl = "") {
             this->author.name = authorName;
             this->author.iconUrl = authorAvatarUrl;
-            return this;
+            return *this;
         }
 
         /// Sets the footer's values for the embed. \brief Sets the footer's values for the embed.
         /// \param footerText The footer's text.
         /// \param footerIconUrlText Url to the footer's icon.
         /// \returns A pointer to this embed.
-        EmbedData* setFooter(string footerText, string footerIconUrlText = "") {
+        EmbedData& setFooter(string footerText, string footerIconUrlText = "") {
             this->footer.text = footerText;
             this->footer.iconUrl = footerIconUrlText;
-            return this;
+            return *this;
         }
 
         /// Sets the timestamp on the embed. \brief Sets the timestamp on the embed.
         /// \param timeStamp The timestamp to be set.
         /// \returns A pointer to this embed.
-        EmbedData* setTimeStamp(string timeStamp) {
+        EmbedData& setTimeStamp(string timeStamp) {
             this->timestamp = timeStamp;
-            return this;
+            return *this;
         }
 
         /// Adds a field to the embed. \brief Adds a field to the embed.
@@ -817,53 +817,53 @@ namespace DiscordCoreAPI {
         /// \param value The contents of the embed field.
         /// \param Inline Is it inline with the rest of the fields on the embed?
         /// \returns A pointer to this embed.
-        EmbedData* addField(string name, string value, bool Inline = true) {
+        EmbedData& addField(string name, string value, bool Inline = true) {
             EmbedFieldData embedFieldData;
             embedFieldData.name = name;
             embedFieldData.Inline = Inline;
             embedFieldData.value = value;
             this->fields.push_back(embedFieldData);
-            return this;
+            return *this;
         }
 
         /// Sets the description (the main contents) of the embed. \brief Sets the description (the main contents) of the embed.
         /// \param descriptionNew The contents of the description to set.
         /// \returns A pointer to this embed.
-        EmbedData* setDescription(string descriptionNew) {
+        EmbedData& setDescription(string descriptionNew) {
             this->description = descriptionNew;
-            return this;
+            return *this;
         }
 
         /// Sets the color of the embed, by applying a hex-color value. \brief Sets the color of the embed, by applying a hex-color value.
         /// \param hexColorValueNew A string containing a hex-number value (Between 0x00 and 0xFFFFFF).
         /// \returns A pointer to this embed.
-        EmbedData* setColor(string hexColorValueNew) {
+        EmbedData& setColor(string hexColorValueNew) {
             this->hexColorValue = hexColorValueNew;
-            return this;
+            return *this;
         }
 
         /// Sets the thumbnail of the embed. \brief Sets the thumbnail of the embed.
         /// \param thumbnailUrl The url to the thumbnail to be used.
         /// \returns A pointer to this embed.
-        EmbedData* setThumbnail(string thumbnailUrl) {
+        EmbedData& setThumbnail(string thumbnailUrl) {
             this->thumbnail.url = thumbnailUrl;
-            return this;
+            return *this;
         }
 
         /// Sets the title of the embed. \brief Sets the title of the embed.
         /// \param titleNew A string containing the desired title.
         /// \returns A pointer to this embed.
-        EmbedData* setTitle(string titleNew) {
+        EmbedData& setTitle(string titleNew) {
             this->title = titleNew;
-            return this;
+            return *this;
         }
 
         /// Sets the image of the embed. \brief Sets the image of the embed.
         /// \param imageUrl The url of the image to be set on the embed.
         /// \returns A pointer to this embed.
-        EmbedData* setImage(string imageUrl) {
+        EmbedData& setImage(string imageUrl) {
             this->image.url = imageUrl;
-            return this;
+            return *this;
         }
     };
 
@@ -2608,7 +2608,7 @@ namespace DiscordCoreAPI {
         /// \param emojiName An emoji name, if desired.        
         /// \param emojiId An emoji id, if desired.
         /// \param url A url, if applicable.
-        void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+        RespondToInputEventData& addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
             if (this->components.size() == 0) {
                 ActionRowData actionRowData;
                 this->components.push_back(actionRowData);
@@ -2631,6 +2631,7 @@ namespace DiscordCoreAPI {
                     this->components.push_back(actionRowData);
                 }
             }
+            return *this;
         }
 
         /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
@@ -2640,7 +2641,7 @@ namespace DiscordCoreAPI {
         /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
+        RespondToInputEventData& addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->components.size() == 0) {
                 ActionRowData actionRowData;
                 this->components.push_back(actionRowData);
@@ -2663,42 +2664,49 @@ namespace DiscordCoreAPI {
                 }
 
             }
+            return *this;
         }
 
         /// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
         /// \param dataPackage An AllowedMentionsData structure.
-        void addAllowedMentions(AllowedMentionsData dataPackage) {
+        RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage) {
             this->allowedMentions = dataPackage;
+            return *this;
         }
 
         /// For setting the components in a response. \brief For setting the components in a response. 
         /// \param dataPackage An ActionRowData structure.
-        void addComponentRow(ActionRowData dataPackage) {
+        RespondToInputEventData& addComponentRow(ActionRowData dataPackage) {
             this->components.push_back(dataPackage);
+            return *this;
         }
 
         /// For setting the embeds in a response. \brief For setting the embeds in a response.
         /// \param dataPackage An EmbedData structure.
-        void addMessageEmbed(EmbedData dataPackage) {
+        RespondToInputEventData& addMessageEmbed(EmbedData dataPackage) {
             this->embeds.push_back(dataPackage);
+            return *this;
         }
 
         /// For setting the Message content in a response. \brief For setting the Message content in a response.
         /// \param dataPackage A string, containing the content.
-        void addContent(string dataPackage) {
+        RespondToInputEventData& addContent(string dataPackage) {
             this->content = dataPackage;
+            return *this;
         }
 
         /// For setting the tts status of a response. \brief For setting the tts status of a response.
         /// \param enabledTTs A bool.
-        void setTTSStatus(bool enabledTTs) {
+        RespondToInputEventData& setTTSStatus(bool enabledTTs) {
             this->tts = enabledTTs;
+            return *this;
         }
 
         /// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
         /// \param targetUserIdNew A string, containging the target User's id.
-        void setTargetUserID(string targetUserIdNew) {
+        RespondToInputEventData& setTargetUserID(string targetUserIdNew) {
             this->targetUserId = targetUserIdNew;
+            return *this;
         }
 
     protected:

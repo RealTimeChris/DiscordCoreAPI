@@ -275,13 +275,13 @@ namespace DiscordCoreInternal {
 
 		static HttpData executeByRateLimitData(HttpWorkloadData& workload, shared_ptr<HttpConnection> httpConnection, bool printResult);
 
-		static HttpData executehttpRequest(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
+		static HttpData executeHttpRequest(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
 		static HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
 		static HttpData httpRequest(HttpWorkloadData&, shared_ptr<HttpConnection>, bool = false);
 		
-		static vector<HttpData> executehttpRequest(vector<HttpWorkloadData>& workloadData);
+		static vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
 
 		static vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
 	};
