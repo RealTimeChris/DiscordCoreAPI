@@ -60,9 +60,27 @@ namespace DiscordCoreInternal {
 
 		RateLimitData() = default;
 
+		void setData(RateLimitData other) {
+			this->doWeHaveTotalTimePerTick = other.doWeHaveTotalTimePerTick;
+			this->isTheBucketActive = other.isTheBucketActive;
+			this->totalTimePerTick = other.totalTimePerTick;
+			this->getsRemaining = other.getsRemaining;
+			this->workloadType = other.workloadType;
+			this->accessMutex = other.accessMutex;
+			this->tempBucket = other.tempBucket;
+			this->totalGets = other.totalGets;
+			this->msRemain = other.msRemain;
+			this->bucket = other.bucket;
+		}
+
+		RateLimitData getData() {
+			return *this;
+		}
+
 	protected:
 
 		HttpWorkloadType workloadType{ HttpWorkloadType::Unset };
+		shared_ptr<mutex> accessMutex{ make_shared<mutex>() };
 		bool doWeHaveTotalTimePerTick{ false };
 		bool isTheBucketActive{ false };
 		int64_t totalTimePerTick{ 0 };
@@ -70,14 +88,15 @@ namespace DiscordCoreInternal {
 		string tempBucket{ "" };
 		int32_t totalGets{ 0 };
 		int64_t msRemain{ 0 };
-		mutex accessMutex{};
 		string bucket{ "" };
 	};
 
 	class HttpConnection : public HttpSSLClient, public RateLimitData, public HttpRnRBuilder {
 	public:
 
-		HttpConnection() :HttpSSLClient(&this->rawInput) {};
+		HttpConnection(string baseUrl) : HttpSSLClient(baseUrl, &this->rawInput) {};
+
+		HttpConnection(nullptr_t nullPtr) : HttpSSLClient(nullPtr) {};
 
 		bool doWeConnect{ true };
 	};
@@ -145,7 +164,7 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
-				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>();
+				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>(nullptr);
 				httpConnection->workloadType = workload.workloadType;
 				if (HttpClient::httpConnectionBucketValues.contains(workload.workloadType)) {
 					httpConnection->bucket = HttpClient::httpConnectionBucketValues.at(workload.workloadType);
@@ -180,7 +199,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
-				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>();
+				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>(nullptr);
 				httpConnection->workloadType = workload.workloadType;
 				if (HttpClient::httpConnectionBucketValues.contains(workload.workloadType)) {
 					httpConnection->bucket = HttpClient::httpConnectionBucketValues.at(workload.workloadType);
@@ -212,7 +231,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
-				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>();
+				shared_ptr<HttpConnection> httpConnection = make_shared<HttpConnection>(nullptr);
 				httpConnection->workloadType = workload.workloadType;
 				if (HttpClient::httpConnectionBucketValues.contains(workload.workloadType)) {
 					httpConnection->bucket = HttpClient::httpConnectionBucketValues.at(workload.workloadType);

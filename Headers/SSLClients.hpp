@@ -251,13 +251,11 @@ namespace DiscordCoreInternal {
 
 		friend class HttpClient;
 
-		HttpSSLClient() = default;
+		HttpSSLClient(string baseUrl, string* theVector);
 
-		HttpSSLClient(string* theVector);
+		HttpSSLClient(nullptr_t);
 
 		bool writeData(string theData);
-
-		bool connect(string baseUrl);
 
 		string getInputBuffer();
 
