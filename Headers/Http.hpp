@@ -75,41 +75,49 @@ namespace DiscordCoreInternal {
 		string bucket{ "" };
 	};
 
+	template<typename ObjectType>
+	class AtomicWrapper {
+	public:
+
+		AtomicWrapper& operator=(ObjectType other) {
+			this->theValue.store(other);
+			return *this;
+		}
+
+		AtomicWrapper(ObjectType other) {
+			*this = other;
+		}
+
+		AtomicWrapper& operator=(AtomicWrapper& other) {
+			this->theValue.store(other.theValue.load());
+			return *this;
+		}
+
+		AtomicWrapper(AtomicWrapper& other) {
+			*this = other;
+		}
+
+		ObjectType getValue() {
+			return this->theValue.load();
+		}
+
+	protected:
+		atomic<ObjectType> theValue{};
+	};
+
 	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public RateLimitData, public HttpRnRBuilder {
 	public:
 
-		static map<string, shared_ptr<atomic<shared_ptr<HttpConnection>>>> httpConnections;
+		static map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections;
 		static map<HttpWorkloadType, string> httpConnectionBucketValues;
 
 		bool doWeConnect{ true };
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
-		static void storeConnection(HttpWorkloadData data) {
+		static void storeConnection(HttpWorkloadData data);
 
-			HttpConnection httpConnection{};
-			httpConnection.workloadType = data.workloadType;
-			if (HttpConnection::httpConnectionBucketValues.contains(data.workloadType)) {
-				httpConnection.bucket = HttpConnection::httpConnectionBucketValues.at(httpConnection.workloadType);
-				if (HttpConnection::httpConnections.contains(httpConnection.bucket)) {
-					httpConnection.resetValues();
-				}
-				else {
-					HttpConnection::httpConnections.insert_or_assign(httpConnection.bucket, make_shared<atomic<shared_ptr<HttpConnection>>>(make_shared<HttpConnection>()));
-				}
-			}
-			else {
-				httpConnection.tempBucket = to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
-				HttpConnection::httpConnectionBucketValues.insert_or_assign(httpConnection.workloadType, httpConnection.tempBucket);
-				HttpConnection::httpConnections.insert_or_assign(httpConnection.tempBucket, make_shared<atomic<shared_ptr<HttpConnection>>>(make_shared<HttpConnection>()));
-			}
-
-		}
-
-		static HttpConnection* getConnection(HttpWorkloadType type) {
-			string theKey = HttpConnection::httpConnectionBucketValues.at(type);
-			return HttpConnection::httpConnections.at(theKey).get()->load().get();
-		}
+		static shared_ptr<HttpConnection> getConnection(HttpWorkloadType type);
 
 	};
 
