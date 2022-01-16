@@ -169,6 +169,7 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
+				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
@@ -187,6 +188,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
+				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
@@ -202,6 +204,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
+				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
@@ -241,6 +244,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		static atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch;
 		static atomic<shared_ptr<string>> botToken;
 
 		static HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
