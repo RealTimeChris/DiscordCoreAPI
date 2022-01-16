@@ -132,7 +132,6 @@ namespace DiscordCoreInternal {
 		}
 
 		static void constructValues(HttpWorkloadType type, unordered_map<string, HttpHeader> headers) {
-			HttpConnection connection{};
 			if (headers.contains("x-ratelimit-remaining")) {
 				HttpConnection::getConnection(type)->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
 			}
@@ -182,13 +181,10 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
-				unique_lock<mutex> theLock{ HttpClient::theMutex01 };
-				HttpConnection httpConnection{};
-				httpConnection.storeConnection(workload);
+				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				theLock.unlock();
 				HttpData returnData = HttpClient::httpRequest(workload, true);
 				returnType returnObject{};
 				DataParser::parseObject(returnData.responseData, &returnObject);
@@ -204,13 +200,10 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
-				unique_lock<mutex> theLock{ HttpClient::theMutex02 };
-				HttpConnection httpConnection{};
-				httpConnection.storeConnection(workload);
+				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				theLock.unlock();
 				HttpClient::httpRequest(workload);
 				return;
 			}
@@ -223,15 +216,11 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
-				unique_lock<mutex> theLock{ HttpClient::theMutex03 };
-				HttpConnection httpConnection{};
-				httpConnection.storeConnection(workload);
+				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				theLock.unlock();
-				HttpData returnData = HttpClient::httpRequest(workload);
-				return returnData;
+				return HttpClient::httpRequest(workload);
 			}
 			catch (...) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
