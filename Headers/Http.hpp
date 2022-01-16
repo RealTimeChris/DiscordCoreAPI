@@ -110,6 +110,7 @@ namespace DiscordCoreInternal {
 
 		static map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections;
 		static map<HttpWorkloadType, string> httpConnectionBucketValues;
+		static mutex theMutex;
 
 		bool doWeConnect{ true };
 
@@ -181,6 +182,7 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
+				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
 				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
@@ -200,6 +202,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
+				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
 				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
@@ -216,6 +219,7 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
+				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
 				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
@@ -256,6 +260,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		static atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch;
 		static atomic<shared_ptr<string>> botToken;
 		static mutex theMutex01;
 		static mutex theMutex02;
