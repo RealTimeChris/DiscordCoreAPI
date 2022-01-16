@@ -3374,7 +3374,8 @@ namespace  DiscordCoreInternal {
        Delete_Webhook_Message = 158,
        Get_Application_Info = 159,
        Get_Authorization_Info = 160,
-       Get_Gateway_Bot = 161
+       Get_Gateway_Bot = 161,
+       LAST = 162
     };
 
     struct DiscordCoreAPI_Dll HttpWorkloadData {

@@ -28,7 +28,7 @@ namespace DiscordCoreInternal {
 		void resetValues();
 
 	protected:
-
+		unordered_map<string, HttpHeader> prevHeaders{};
 		unordered_map<string, HttpHeader> headers{};
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
@@ -63,14 +63,10 @@ namespace DiscordCoreInternal {
 	protected:
 
 		HttpWorkloadType workloadType{ HttpWorkloadType::Unset };
-		bool doWeHaveTotalTimePerTick{ false };
-		bool isTheBucketActive{ false };
 		recursive_mutex accessMutex{};
-		int64_t totalTimePerTick{ 0 };
-		uint64_t resetTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
+		int64_t sampledTime{ 0 };
 		string tempBucket{ "" };
-		int32_t totalGets{ 0 };
 		int64_t msRemain{ 0 };
 		string bucket{ "" };
 	};
@@ -116,9 +112,11 @@ namespace DiscordCoreInternal {
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
-		static void storeConnection(HttpWorkloadData data);
-
 		static shared_ptr<HttpConnection> getConnection(HttpWorkloadType type);
+
+		static void storeConnection(HttpWorkloadType data);
+
+		static void initialize();
 
 	};
 
@@ -136,23 +134,12 @@ namespace DiscordCoreInternal {
 			if (headers.contains("x-ratelimit-remaining")) {
 				HttpConnection::getConnection(type)->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
 			}
-			if (headers.contains("x-ratelimit-limit")) {
-				HttpConnection::getConnection(type)->totalGets = stol(headers.at("x-ratelimit-limit").value.c_str());
-			}
-			if (headers.contains("x-ratelimit-reset")) {
-				HttpConnection::getConnection(type)->resetTimeInMs = (stoull(headers.at("x-ratelimit-reset").value.c_str()) * 1000);
-			}
 			if (headers.contains("x-ratelimit-reset-after")) {
-				if (!HttpConnection::getConnection(type)->doWeHaveTotalTimePerTick) {
-					HttpConnection::getConnection(type)->doWeHaveTotalTimePerTick = true;
-				}
+				HttpConnection::getConnection(type)->sampledTime = duration_cast<milliseconds, int64_t>(system_clock::now().time_since_epoch()).count();
 				HttpConnection::getConnection(type)->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
 			}
 			if (headers.contains("x-ratelimit-bucket")) {
 				HttpConnection::getConnection(type)->bucket = headers.at("x-ratelimit-bucket").value;
-			}
-			else {
-				HttpConnection::getConnection(type)->bucket = string{};
 			}
 		};
 
@@ -168,6 +155,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpData {
 
+		unordered_map<string, HttpHeader> prevResponseHeaders{};
 		unordered_map<string, HttpHeader> responseHeaders{};
 		string responseMessage{ "" };
 		int64_t responseCode{ 0 };
@@ -182,8 +170,6 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
-				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
-				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
@@ -202,8 +188,6 @@ namespace DiscordCoreInternal {
 		template<>
 		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
-				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
-				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
@@ -219,8 +203,6 @@ namespace DiscordCoreInternal {
 		template<>
 		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
-				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
-				HttpConnection::storeConnection(workload);
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
@@ -260,11 +242,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		static atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch;
 		static atomic<shared_ptr<string>> botToken;
-		static mutex theMutex01;
-		static mutex theMutex02;
-		static mutex theMutex03;
 
 		static HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
@@ -276,9 +254,9 @@ namespace DiscordCoreInternal {
 
 		static HttpData executeHttpRequest(HttpWorkloadData& workloadData);
 		
-		static HttpData getResponse(HttpWorkloadData& workloadData);
-		
 		static HttpData httpRequest(HttpWorkloadData&, bool = false);
+
+		static HttpData getResponse(HttpWorkloadData& workloadData);
 
 	};
 }
