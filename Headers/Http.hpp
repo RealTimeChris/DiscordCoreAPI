@@ -28,7 +28,7 @@ namespace DiscordCoreInternal {
 		void resetValues();
 
 	protected:
-		unordered_map<string, HttpHeader> prevHeaders{};
+
 		unordered_map<string, HttpHeader> headers{};
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
@@ -155,7 +155,6 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpData {
 
-		unordered_map<string, HttpHeader> prevResponseHeaders{};
 		unordered_map<string, HttpHeader> responseHeaders{};
 		string responseMessage{ "" };
 		int64_t responseCode{ 0 };
@@ -191,7 +190,7 @@ namespace DiscordCoreInternal {
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				HttpClient::httpRequest(workload);
+				HttpClient::httpRequest(workload, true);
 				return;
 			}
 			catch (...) {
@@ -206,7 +205,7 @@ namespace DiscordCoreInternal {
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				return HttpClient::httpRequest(workload);
+				return HttpClient::httpRequest(workload, false);
 			}
 			catch (...) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
