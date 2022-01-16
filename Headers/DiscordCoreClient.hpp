@@ -80,7 +80,6 @@ namespace DiscordCoreAPI {
 
 		static unique_ptr<DiscordCoreClient> thisPointer;
 		static string commandPrefix;
-		static ThreadPool threads;
 
 		unique_ptr<EventManager> eventManager{ nullptr };
 

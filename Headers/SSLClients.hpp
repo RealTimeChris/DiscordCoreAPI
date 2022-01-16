@@ -319,7 +319,7 @@ namespace DiscordCoreInternal {
 		string port{ "" };
 		fd_set readSet{};
 	};
-
+	
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
