@@ -49,7 +49,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
 
-		unique_ptr<vector<uint8_t>> buffer{ make_unique<vector<uint8_t>>() };
+		vector<uint8_t> buffer{};
 
 		uint32_t offSet{};
 
@@ -60,6 +60,10 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
 		ErlPackBuffer(ErlPackBuffer&&) noexcept;
+
+		ErlPackBuffer& operator=(const ErlPackBuffer&) = delete;
+
+		ErlPackBuffer(const ErlPackBuffer&) = delete;
 
 		ErlPackBuffer& operator=(ErlPackBuffer&) = delete;
 
