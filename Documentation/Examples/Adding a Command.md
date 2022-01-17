@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 }
 #endif
 ```
-- Add the command to the library's command list by using the `DiscordCoreAPI::CommandCenter::registerFunction()` function.
+- Add the command to the library's command list by using the `DiscordCoreAPI::DiscordCoreClient::registerFunction()` function.
 
 ```cpp
 // Main.cpp - Main source file, for "the framework".
