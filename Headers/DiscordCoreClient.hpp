@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		unique_ptr<EventManager> eventManager{ nullptr };
 		string commandPrefix{};
 
-		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew);
+		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew = vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{});
 
 		DiscordCoreClient(nullptr_t);
 
