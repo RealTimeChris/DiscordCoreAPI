@@ -91,7 +91,7 @@ int main()
 {
     init_apartment();
     string botToken = "YOUR_BOT_TOKEN_HERE";
-    auto thePtr = make_shared<DiscordCoreAPI::DiscordCoreClient>(botToken, "!", functionVector, DiscordCoreAPI::CacheOptions{ .cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true });
+    auto thePtr = make_shared<DiscordCoreAPI::DiscordCoreClient>(botToken, "!");
     thePtr->registerFunction(vector<string>{"test"}, make_shared<DiscordCoreAPI::Test>());
     thePtr->runBot();
 }
