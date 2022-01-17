@@ -8,9 +8,11 @@
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
+#include "SSLClients.hpp"
 
 namespace DiscordCoreInternal {
 
+	class HttpConnectionManager;
 	class HttpConnection;
 	class HttpHeader;
 	struct HttpData;
@@ -21,7 +23,7 @@ namespace DiscordCoreInternal {
 		friend class HttpConnection;
 		friend class HttpClient;
 
-		HttpData handleHeaders(HttpWorkloadData& workloadData);
+		HttpData handleHeaders(HttpWorkloadData& workloadData, HttpConnectionManager& theConnection);
 
 		string buildRequest(HttpWorkloadData& workload);
 
@@ -104,21 +106,30 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public RateLimitData, public HttpRnRBuilder {
 	public:
 
-		static map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections;
-		static map<HttpWorkloadType, string> httpConnectionBucketValues;
-		static mutex theMutex;
+		friend class HttpConnectionManager;
+		friend class HttpClient;
+
 		bool doWeConnect{ true };
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
-		static shared_ptr<HttpConnection> getConnection(HttpWorkloadType type);
-
-		static void storeConnection(HttpWorkloadType data);
-
-		static void initialize();
-
 	};
 
+	class DiscordCoreAPI_Dll HttpConnectionManager {
+	public:
+
+		map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections;
+		map<HttpWorkloadType, string> httpConnectionBucketValues;
+		mutex theMutex;
+
+		shared_ptr<HttpConnection> getConnection(HttpWorkloadType type);
+
+		void storeConnection(HttpWorkloadType data);
+
+		void initialize();
+
+	};
+	
 	class DiscordCoreAPI_Dll HttpHeader {
 	public:
 
@@ -132,21 +143,17 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		static void constructValues(HttpWorkloadType type, unordered_map<string, HttpHeader> headers) {
+		static void constructValues(HttpWorkloadType type, unordered_map<string, HttpHeader> headers, HttpConnectionManager& theConnection) {
 			if (headers.contains("x-ratelimit-remaining")) {
-				HttpConnection::getConnection(type)->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
+				theConnection.getConnection(type)->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
 			}
 			if (headers.contains("x-ratelimit-reset-after")) {
-				HttpConnection::getConnection(type)->sampledTime = duration_cast<milliseconds, int64_t>(system_clock::now().time_since_epoch()).count();
-				HttpConnection::getConnection(type)->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
+				theConnection.getConnection(type)->sampledTime = duration_cast<milliseconds, int64_t>(system_clock::now().time_since_epoch()).count();
+				theConnection.getConnection(type)->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
 			}
 			if (headers.contains("x-ratelimit-bucket")) {
-				HttpConnection::getConnection(type)->bucket = headers.at("x-ratelimit-bucket").value;
+				theConnection.getConnection(type)->bucket = headers.at("x-ratelimit-bucket").value;
 			}
-		};
-
-		static HttpHeader getHeader(string key, string value) {
-			return HttpHeader(key, value);
 		};
 
 		virtual ~HttpHeader() {};
@@ -166,13 +173,13 @@ namespace DiscordCoreInternal {
 		friend class HttpRnRBuilder;
 
 		template<typename returnType>
-		static returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
+		returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
-				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
+				while (!this->theStopWatch.load().hasTimePassed()) {};
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				HttpData returnData = HttpClient::httpRequest(workload, true);
+				HttpData returnData = this->httpRequest(workload, true);
 				returnType returnObject{};
 				DataParser::parseObject(returnData.responseData, &returnObject);
 				return returnObject;
@@ -185,13 +192,13 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		static void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
+		void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
-				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
+				while (!this->theStopWatch.load().hasTimePassed()) {};
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				HttpClient::httpRequest(workload, true);
+				this->httpRequest(workload, true);
 				return;
 			}
 			catch (...) {
@@ -201,13 +208,13 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		static HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
+		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
-				while (!HttpClient::theStopWatch.load().hasTimePassed()) {};
+				while (!this->theStopWatch.load().hasTimePassed()) {};
 				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
-				return HttpClient::httpRequest(workload, false);
+				return this->httpRequest(workload, false);
 			}
 			catch (...) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
@@ -216,9 +223,9 @@ namespace DiscordCoreInternal {
 		}
 
 		template<typename returnType>
-		static returnType submitWorkloadAndGetResult(vector<HttpWorkloadData>& workload) {
+		returnType submitWorkloadAndGetResult(vector<HttpWorkloadData>& workload) {
 			try {
-				auto returnData = HttpClient::httpRequest(workload);
+				auto returnData = this->httpRequest(workload);
 				return returnData;
 			}
 			catch (...) {
@@ -228,9 +235,9 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		static vector<HttpData> submitWorkloadAndGetResult<vector<HttpData>>(vector<HttpWorkloadData>& workload) {
+		vector<HttpData> submitWorkloadAndGetResult<vector<HttpData>>(vector<HttpWorkloadData>& workload) {
 			try {
-				auto returnData = HttpClient::httpRequest(workload);
+				auto returnData = this->httpRequest(workload);
 				return returnData;
 			}
 			catch (...) {
@@ -239,25 +246,28 @@ namespace DiscordCoreInternal {
 			return vector<HttpData>();
 		}
 
-		static void initialize(string);
+		void initialize(string);
 
 	protected:
 
-		static atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch;
-		static atomic<shared_ptr<string>> botToken;
+		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch{ milliseconds{10} };
+		atomic<shared_ptr<string>> botToken{};
 
-		static HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
+		HttpConnectionManager theConnection{};
 
-		static HttpData executeByRateLimitData(HttpWorkloadData& workload, bool printResult);
+		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
-		static vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
+		HttpData executeByRateLimitData(HttpWorkloadData& workload, bool printResult);
 
-		static vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
+		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
 
-		static HttpData executeHttpRequest(HttpWorkloadData& workloadData);
+		vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
 
-		static HttpData httpRequest(HttpWorkloadData&, bool = false);
+		HttpData executeHttpRequest(HttpWorkloadData& workloadData);
 
-		static HttpData getResponse(HttpWorkloadData& workloadData);
+		HttpData httpRequest(HttpWorkloadData&, bool = false);
+
+		HttpData getResponse(HttpWorkloadData& workloadData);
 	};
+
 }

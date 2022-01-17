@@ -71,6 +71,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Stickers {
 	public:
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Gets a single Sticker item. \brief Gets a single Sticker item.
 		/// \param dataPackage A GetStickerData structure.
 		/// \returns A CoRoutine containing a Sticker.

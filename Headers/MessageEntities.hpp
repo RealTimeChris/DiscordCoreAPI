@@ -440,6 +440,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Messages {
 	public:
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
 		/// \param dataPackage A GetMessagesData structure.
 		/// \returns A CoRoutine containing a vector<Message>.

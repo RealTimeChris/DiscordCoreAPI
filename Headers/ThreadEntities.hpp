@@ -118,6 +118,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Threads {
 	public:
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Starts a Thread, based on a starting Message. \brief Starts a Thread, based on a starting Message.
 		/// \param dataPackage A StartThreadWithMessageData structure.
 		/// \returns A CoRoutine containing a Channel.

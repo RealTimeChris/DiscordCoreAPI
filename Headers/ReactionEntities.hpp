@@ -131,6 +131,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reactions {
 	public:
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Creates a Reaction on a Message. \brief Creates a Reaction on a Message.
 		/// \param dataPackage A CreateReactionData structure.
 		/// \returns A CoRoutine containing a Reaction.

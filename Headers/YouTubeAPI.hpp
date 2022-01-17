@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "CoRoutine.hpp"
+#include "FoundationEntities.hpp"
 #include "AudioEncoder.hpp"
 #include "AudioDecoder.hpp"
 
@@ -21,8 +22,11 @@ namespace DiscordCoreAPI {
 
 		static vector<YouTubeSong> constructFirstDownloadUrl(string theString);
 
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 	protected:
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
 		static string baseUrl;
 
 		static YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);

@@ -95,6 +95,9 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
 		/// \returns A CoRoutine containing a GuildMember.

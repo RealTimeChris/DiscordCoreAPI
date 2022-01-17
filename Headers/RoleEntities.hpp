@@ -121,6 +121,9 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
 		/// \param dataPackage An AddGuildMemberRoleData structure.
 		/// \returns A CoRoutine containing void.

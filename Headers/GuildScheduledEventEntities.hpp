@@ -91,6 +91,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildScheduledEvents {
 	public:
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Gets a list of a given Guild's scheduled events. \brief Gets a list of a given Guild's scheduled events.
 		/// \param dataPackage A GetGuildScheduledEventsDatastructure.
 		/// \returns A CoRoutine containing a vector<GuildScheduledEvent>.

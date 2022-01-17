@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -155,6 +156,8 @@ namespace DiscordCoreAPI {
 		friend class EventHandler;
 		friend class Guild;
 
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
@@ -231,11 +234,13 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
 		static unordered_map<string, Channel> cache;
 
 		static void insertChannel(Channel dataPackage);
 
 		static void removeChannel(string channelId);
+		
 	};
 	/**@}*/
 }

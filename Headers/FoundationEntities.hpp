@@ -1968,7 +1968,7 @@ namespace DiscordCoreAPI {
 
     /// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
     struct DiscordCoreAPI_Dll RepeatedFunctionData {
-        function<void()> function{ nullptr };///< The function pointer to be loaded.
+        function<void(shared_ptr<DiscordCoreClient>)> function{ nullptr };///< The function pointer to be loaded.
         int32_t intervalInMs{ 0 };  ///< The time interval at which to call the function.
         bool repeated{ false }; ///< Whether or not the function is repeating.
     };
@@ -2945,6 +2945,39 @@ namespace DiscordCoreAPI {
         bool isLoopAllEnabled{ false };///< Is looping of the entire Playlist currently enabled?
         vector<Song> songQueue{};///< The list of Songs that are stored to be played.
         Song currentSong{};///< The current Song that is playing.
+    };
+
+    /// Base arguments for the command classes. \brief Base arguments for the command classes.
+    struct DiscordCoreAPI_Dll BaseFunctionArguments {
+    public:
+
+        vector<string> argumentsArray{};///< A vector of string arguments.
+        InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+
+        BaseFunctionArguments() = default;
+
+        BaseFunctionArguments(InputEventData inputEventData, shared_ptr<DiscordCoreClient> thePtr) {
+            this->discordCoreClient = thePtr;
+            this->eventData = inputEventData;
+        }
+
+        virtual ~BaseFunctionArguments() {};
+    };
+
+    /// Base class for the command classes. \brief Base class for the command classes.
+    class DiscordCoreAPI_Dll BaseFunction {
+    public:
+        string helpDescription{ "" };///< Description of the command for the Help command.
+        string commandName{ "" };///< Name of the command for calling purposes.
+        EmbedData helpEmbed{};///< A Message embed for displaying the command via the Help command.
+
+        /// The base function for the command's execute function.
+        /// \param args A unique_ptr containing a copy of BaseFunctionArguments.
+        /// \returns A CoRoutine containing void.
+        virtual void execute(BaseFunctionArguments args) = 0;
+        virtual unique_ptr<BaseFunction> create() = 0;
+        virtual ~BaseFunction() = default;
     };
 
     /**@}*/

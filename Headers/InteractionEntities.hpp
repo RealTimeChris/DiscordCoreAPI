@@ -489,6 +489,9 @@ namespace DiscordCoreAPI {
         friend class EventHandler;
         friend class EventManager;        
 
+        static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+        static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
         /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.
         /// \param dataPackage A CreateDeferredInteractionResponseData structure.
         /// \returns A CoRoutine containing void.

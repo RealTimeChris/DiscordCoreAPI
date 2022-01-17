@@ -142,6 +142,9 @@ namespace DiscordCoreAPI {
 		friend class Users;
 		friend class Guild;
 
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+
 		/// Adds a chosen recipient to a group Dm. \brief Adds a chosen recipient to a group Dm.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.
 		/// \returns A CoRoutine containing void.

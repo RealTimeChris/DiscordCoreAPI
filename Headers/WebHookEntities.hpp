@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single WebHook. \brief A single WebHook.
-	struct DiscordCoreAPI_Dll WebHook : public WebHookData {
+	class DiscordCoreAPI_Dll WebHook : public WebHookData {
 	public:
 		WebHook();
 
@@ -342,6 +342,9 @@ namespace DiscordCoreAPI {
 	/// An interface class for the WebHook related Discord endpoints. \brief An interface class for the WebHook related Discord endpoints;
 	class DiscordCoreAPI_Dll WebHooks {
 	public:
+
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
 
 		/// Creates a new WebHook. \brief Creates a new WebHook.
 		/// \param dataPackage A GetMessageData structure.

@@ -10,6 +10,7 @@
 #include "EventEntities.hpp"
 #include "ApplicationCommandEntities.hpp"
 #include "Http.hpp"
+#include "CommandController.hpp"
 #include "ChannelEntities.hpp"
 #include "GuildEntities.hpp"
 #include "GuildMemberEntities.hpp"
@@ -34,10 +35,6 @@
 #include "SongAPI.hpp"
 
 DiscordCoreAPI_Dll void myPurecallHandler(void);
-
-DiscordCoreAPI_Dll BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType);
-
-DiscordCoreAPI_Dll void terminateWrapper();
 
 namespace DiscordCoreAPI {
 
@@ -70,38 +67,36 @@ namespace DiscordCoreAPI {
 
 		template <typename ...T>
 		friend void executeFunctionAfterTimePeriod(function<void(T...)>, int32_t, bool, T...);
-		friend BOOL WINAPI::HandlerRoutine(_In_ DWORD);
 		DiscordCoreAPI_Dll friend BotUser getBotUser();
-		friend void ::terminateWrapper();
 		friend class Interactions;
 		friend class Messages;
 		friend class Guild;
 		friend class Test;
 
-		static unique_ptr<DiscordCoreClient> thisPointer;
-		static string commandPrefix;
-
+		shared_ptr<DiscordCoreClient> thisPointer{ nullptr };
+		CommandController commandController{ "" , nullptr };
 		unique_ptr<EventManager> eventManager{ nullptr };
+		string commandPrefix{};
 
-		/// Sets up some resources for the library. \brief Sets up some resources for the library.
-		/// \param botTokenNew Your bot token. 
-		/// \param commandPrefixNew The prefix you would like to use for triggering command activiation via chat. 
-		/// \param functionVector A pointer to a vector of function pointers to be run on timers.
-		static void setup(string, string, vector<RepeatedFunctionData> = vector<RepeatedFunctionData>(), CacheOptions = CacheOptions());
+		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew);
+
+		DiscordCoreClient(nullptr_t);
+
+		void registerFunction(vector<string> functionNames, shared_ptr<BaseFunction> baseFunction);
+
+		BotUser getBotUser();
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
-		static void  runBot();
-
-		DiscordCoreClient(string, string, vector<RepeatedFunctionData>);
+		void runBot();
 
 		~DiscordCoreClient();
 
 	protected:
 
-		static vector<RepeatedFunctionData> functionsToExecute;
-
 		unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
-		DiscordCoreInternal::WSADATAWrapper wsaData{};
+		shared_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		vector<RepeatedFunctionData> functionsToExecute{};
+		DiscordCoreInternal::WSADATAWrapper wsaData{};		
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		BotUser currentUser{};
@@ -111,11 +106,7 @@ namespace DiscordCoreAPI {
 
 		void initialize();
 
-		void terminate();
-
 		void run();
 	};
 	/**@}*/
-
-	DiscordCoreAPI_Dll BotUser getBotUser();
 }

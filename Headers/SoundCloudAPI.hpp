@@ -15,6 +15,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	public:
 
+		friend class SoundCloudAPI;
+
 		SoundCloudRequestBuilder() = default;
 		
 		static SoundCloudSong constructFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
@@ -27,10 +29,12 @@ namespace DiscordCoreAPI {
 		
 		static string collectClientId();
 
-		static void initialize();
+		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);		
 
 	protected:
 		
+		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+
 		static string appVersion;
 		static string baseUrl02;
 		static string clientId;
