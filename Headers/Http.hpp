@@ -107,7 +107,6 @@ namespace DiscordCoreInternal {
 		static map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections;
 		static map<HttpWorkloadType, string> httpConnectionBucketValues;
 		static mutex theMutex;
-
 		bool doWeConnect{ true };
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
@@ -122,6 +121,9 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpHeader {
 	public:
+
+		string value{ "" };
+		string key{ "" };
 
 		HttpHeader(nullptr_t) {};
 
@@ -148,9 +150,6 @@ namespace DiscordCoreInternal {
 		};
 
 		virtual ~HttpHeader() {};
-
-		string value{ "" };
-		string key{ "" };
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {
@@ -256,10 +255,9 @@ namespace DiscordCoreInternal {
 		static vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
 
 		static HttpData executeHttpRequest(HttpWorkloadData& workloadData);
-		
+
 		static HttpData httpRequest(HttpWorkloadData&, bool = false);
 
 		static HttpData getResponse(HttpWorkloadData& workloadData);
-
 	};
 }
