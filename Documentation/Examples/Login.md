@@ -14,7 +14,7 @@
 int main()
 {
     std::string botToken{ "YOUR_BOT_TOKEN_HERE" };
-    auto thePtr = make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken, "!", functionVector, DiscordCoreAPI::CacheOptions{ .cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true });
+    auto thePtr = make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken, "!");
     thePtr->runBot();
     return 0;
 }
