@@ -56,6 +56,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll RateLimitData {
 	public:
 
+		friend class HttpConnectionManager;
 		friend class HttpRnRBuilder;
 		friend class HttpHeader;
 		friend class HttpClient;
@@ -106,9 +107,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public RateLimitData, public HttpRnRBuilder {
 	public:
 
-		friend class HttpConnectionManager;
-		friend class HttpClient;
-
 		bool doWeConnect{ true };
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
@@ -118,9 +116,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections;
-		map<HttpWorkloadType, string> httpConnectionBucketValues;
-		mutex theMutex;
+		map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections{};
+		map<HttpWorkloadType, string> httpConnectionBucketValues{};
+		mutex theMutex{};
 
 		shared_ptr<HttpConnection> getConnection(HttpWorkloadType type);
 
