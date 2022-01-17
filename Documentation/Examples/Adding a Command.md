@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 }
 #endif
 ```
-- Add the command to the library's command list by using the `DiscordCoreAPI::CommandCenter::registerFunction()` function.
+- Add the command to the library's command list by using the `DiscordCoreAPI::DiscordCoreClient::registerFunction()` function.
 
 ```cpp
 // Main.cpp - Main source file, for "the framework".
@@ -90,10 +90,10 @@ namespace DiscordCoreAPI {
 int main()
 {
     init_apartment();
-    string botToken = "ODYwMTA1MDY3MzYwMjg4ODA5.YN2ZRA.U8G-Y78hLhFzBfL-VH8v0-zHhzI";
-    DiscordCoreAPI::DiscordCoreClient::finalSetup(botToken);
-    DiscordCoreAPI::CommandController::registerFunction(vector<string>{"test"}, move(make_unique<DiscordCoreAPI::Test>()));
-    DiscordCoreAPI::DiscordCoreClient::runBot();
+    string botToken = "YOUR_BOT_TOKEN_HERE";
+    auto thePtr = make_shared<DiscordCoreAPI::DiscordCoreClient>(botToken, "!");
+    thePtr->registerFunction(vector<string>{"test"}, make_shared<DiscordCoreAPI::Test>());
+    thePtr->runBot();
 }
 ```
 - NOTE: By default, the format for triggering a command is `!COMMANDNAME = ARGUMENT1, ARGUMENT2, ARGUMENT3... ARGUMENT-N`. This prefix can be changed by changing the prefix value provided by your database. You can also modify this fundamental behavior by modifying the code within the Commands.hpp header file.

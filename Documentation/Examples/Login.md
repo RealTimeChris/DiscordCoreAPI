@@ -2,7 +2,7 @@
 ---
 - Install the dependencies, and `#include Index.hpp"`.
 - Create a string with your bot's token.
-- Run the `DiscordCoreAPI::DiscordCoreClient::setup()` function, using your bot token as an argument, as well as a string to act as a "command prefix" for accepting commands via message input.
+- Create a pointer of type `DiscordCoreAPI:DiscordCoreClient`, using your bot token as an argument, as well as a string to act as a "command prefix" for accepting commands via message input.
 - Run the `DiscordCoreAPI::DiscordCoreClient::runBot()` function.
 
 ```cpp
@@ -13,10 +13,9 @@
 
 int main()
 {
-    init_apartment();
-    string botToken = "YOUR_TOKEN_HERE";
-    DiscordCoreAPI::DiscordCoreClient::setup(botToken, "!");
-    DiscordCoreAPI::DiscordCoreClient::runBot();
+    std::string botToken{ "YOUR_BOT_TOKEN_HERE" };
+    auto thePtr = make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken, "!");
+    thePtr->runBot();
     return 0;
 }
 
