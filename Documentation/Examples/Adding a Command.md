@@ -92,27 +92,7 @@ int main()
     init_apartment();
     string botToken = "ODYwMTA1MDY3MzYwMjg4ODA5.YN2ZRA.U8G-Y78hLhFzBfL-VH8v0-zHhzI";
     auto thePtr = make_shared<DiscordCoreAPI::DiscordCoreClient>(botToken, "!", functionVector, DiscordCoreAPI::CacheOptions{ .cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true });
-    thePtr->registerFunction(std::vector<std::string>{"botinfo"}, std::make_shared<DiscordCoreAPI::BotInfo>());
-    thePtr->registerFunction(std::vector<std::string>{"clear"}, std::make_shared<DiscordCoreAPI::Clear>());
-    thePtr->registerFunction(std::vector<std::string>{"disconnect"}, std::make_shared<DiscordCoreAPI::Disconnect>());
-    thePtr->registerFunction(std::vector<std::string>{"displayguildsdata"}, std::make_shared<DiscordCoreAPI::DisplayGuildsData>());
-    thePtr->registerFunction(std::vector<std::string>{"help"}, std::make_shared<DiscordCoreAPI::Help>());
-    thePtr->registerFunction(std::vector<std::string>{"loopall"}, std::make_shared<DiscordCoreAPI::LoopAll>());
-    thePtr->registerFunction(std::vector<std::string>{"loopsong"}, std::make_shared<DiscordCoreAPI::LoopSong>());
-    thePtr->registerFunction(std::vector<std::string>{"np"}, std::make_shared<DiscordCoreAPI::Np>());
-    thePtr->registerFunction(std::vector<std::string>{"play"}, std::make_shared<DiscordCoreAPI::Play>());
-    thePtr->registerFunction(std::vector<std::string>{"playq"}, std::make_shared<DiscordCoreAPI::PlayQ>());
-    thePtr->registerFunction(std::vector<std::string>{"playrn"}, std::make_shared<DiscordCoreAPI::PlayRN>());
-    thePtr->registerFunction(std::vector<std::string>{"pause"}, std::make_shared<DiscordCoreAPI::Pause>());
-    thePtr->registerFunction(std::vector<std::string>{"queue"}, std::make_shared<DiscordCoreAPI::TheQueue>());
-    thePtr->registerFunction(std::vector<std::string>{"registerapplicationcommands"}, std::make_shared<DiscordCoreAPI::RegisterApplicationCommands>());
-    thePtr->registerFunction(std::vector<std::string>{"setbordercolor"}, std::make_shared<DiscordCoreAPI::SetBorderColor>());
-    thePtr->registerFunction(std::vector<std::string>{"setmusicchannel"}, std::make_shared<DiscordCoreAPI::SetMusicChannel>());
-    thePtr->registerFunction(std::vector<std::string>{"skip"}, std::make_shared<DiscordCoreAPI::Skip>());
-    thePtr->registerFunction(std::vector<std::string>{"stop"}, std::make_shared<DiscordCoreAPI::Stop>());
-    thePtr->registerFunction(std::vector<std::string>{"test"}, std::make_shared<DiscordCoreAPI::Test>());
-    thePtr->registerFunction(std::vector<std::string>{"user info"}, std::make_shared<DiscordCoreAPI::UserInfo>());
-    thePtr->registerFunction(vector<string>{"test"}, move(make_unique<DiscordCoreAPI::Test>()));
+    thePtr->registerFunction(vector<string>{"test"}, make_shared<DiscordCoreAPI::Test>());
     thePtr->runBot();
 }
 ```
