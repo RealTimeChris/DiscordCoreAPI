@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 int main()
 {
     init_apartment();
-    string botToken = "ODYwMTA1MDY3MzYwMjg4ODA5.YN2ZRA.U8G-Y78hLhFzBfL-VH8v0-zHhzI";
+    string botToken = "YOUR_BOT_TOKEN_HERE";
     auto thePtr = make_shared<DiscordCoreAPI::DiscordCoreClient>(botToken, "!", functionVector, DiscordCoreAPI::CacheOptions{ .cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true });
     thePtr->registerFunction(vector<string>{"test"}, make_shared<DiscordCoreAPI::Test>());
     thePtr->runBot();
