@@ -20,8 +20,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
-		friend class HttpConnection;
-		friend class HttpClient;
+		friend HttpClient;
 
 		HttpData handleHeaders(HttpWorkloadData& workloadData, HttpConnectionManager& theConnection);
 
@@ -56,10 +55,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll RateLimitData {
 	public:
 
-		friend class HttpConnectionManager;
-		friend class HttpRnRBuilder;
-		friend class HttpHeader;
 		friend class HttpClient;
+		friend class HttpHeader;
 
 		RateLimitData() = default;
 
@@ -167,8 +164,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
-
-		friend class HttpRnRBuilder;
 
 		template<typename returnType>
 		returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {

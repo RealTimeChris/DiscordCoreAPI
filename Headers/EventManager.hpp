@@ -319,8 +319,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EventManager {
 	public:
 
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreClient;
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnInputEventCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -771,8 +769,6 @@ namespace DiscordCoreAPI {
 		/// \param token An EventDelegateToken<void, from the original event registration.
 		
 		void onWebhookUpdate(EventDelegateToken token);
-
-	protected:
 
 		Event<void, OnInputEventCreationData> onInputEventCreationEvent{};
 

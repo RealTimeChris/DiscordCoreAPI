@@ -250,8 +250,6 @@ namespace DiscordCoreInternal {
 	class HttpSSLClient {
 	public:
 
-		friend class HttpClient;
-
 		HttpSSLClient() = default;
 
 		HttpSSLClient(string* theVector);

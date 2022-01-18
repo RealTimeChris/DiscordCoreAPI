@@ -255,12 +255,11 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll AudioDecoder {
     public:
 
-        friend class SoundCloudAPI;
-        friend class YouTubeAPI;
-
         AudioDecoder(BuildAudioDecoderData dataPackage);
 
         static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+
+        TSUnboundedMessageBlock<vector<uint8_t>>& getInputBuffer();
 
         void submitDataForDecoding(vector<uint8_t> dataToDecode);
 

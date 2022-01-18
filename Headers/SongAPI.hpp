@@ -20,10 +20,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SongAPI {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		friend class Guild;
-
 		Playlist playlist{};
 
 		SongAPI(string guildId);

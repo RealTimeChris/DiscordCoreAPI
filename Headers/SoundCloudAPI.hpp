@@ -8,6 +8,7 @@
 #include "IndexInitial.hpp"
 #include "CoRoutine.hpp"
 #include "AudioEncoder.hpp"
+#include "Http.hpp"
 #include "AudioDecoder.hpp"
 
 namespace DiscordCoreAPI {
@@ -15,11 +16,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	public:
 
-		friend class SoundCloudAPI;
-
 		SoundCloudRequestBuilder(shared_ptr<DiscordCoreInternal::HttpClient>);
 		
 		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
+
+		vector<DiscordCoreInternal::HttpData> submitWorkloadAndGetResult(vector<DiscordCoreInternal::HttpWorkloadData> httpData);
 
 		vector<SoundCloudSong> collectSearchResults(string theString);
 
@@ -42,13 +43,15 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		friend class SoundCloudAPI;
-		friend class SongAPI;
-		friend class Guild;
-
 		SoundCloudAPI(string guildId, shared_ptr<DiscordCoreInternal::HttpClient> httpClient);
+
+		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
+
+		vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
+
+		void sendNextSong(Song newSong);
+
+		bool stop();
 
 		~SoundCloudAPI();
 
@@ -61,19 +64,13 @@ namespace DiscordCoreAPI {
 		EventWaiter readyToQuitEventIn{};
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
-		mutex accessMutex{};
 
 		void sendEmptyingFrames(TSUnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
-		vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
-
-		void sendNextSong(Song newSong);
-
 		void cancelCurrentSong();
-
-		bool stop();
+		
 	};
 
 };

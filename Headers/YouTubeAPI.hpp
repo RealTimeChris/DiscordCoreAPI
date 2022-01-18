@@ -58,13 +58,15 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class VoiceConnection;
-		friend class YouTubeSong;
-		friend class SongAPI;
-		friend class Guild;
-
 		YouTubeAPI(string guildId, shared_ptr<DiscordCoreInternal::HttpClient> httpClient);
+
+		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
+
+		vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
+
+		void sendNextSong(Song newSong);
+
+		bool stop();
 
 		~YouTubeAPI();
 
@@ -77,19 +79,13 @@ namespace DiscordCoreAPI {
 		EventWaiter readyToQuitEventIn{};
 		YouTubeSong theSong{};
 		string guildId{ "" };
-		mutex accessMutex{};
 
 		void sendEmptyingFrames(TSUnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
-		vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
-
-		void sendNextSong(Song newSong);
-
-		void cancelCurrentSong();
+		void cancelCurrentSong();		
 		
-		bool stop();
 	};
 
 };

@@ -118,14 +118,15 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	public:
-
-		friend class DiscordCoreAPI::DiscordCoreClient;
+		
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class VoiceSocketAgent;
 
 		BaseSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
 
 		BaseSocketAgent(nullptr_t);
+
+		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& getWorkloadTarget();
 
 		void sendMessage(string& dataToSend);
 
@@ -200,7 +201,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll VoiceSocketAgent {
 	public:
 
-		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew);
