@@ -260,8 +260,6 @@ namespace DiscordCoreInternal {
 
 		bool connect(string baseUrl);
 
-		string getInputBuffer();
-
 		bool readData();
 
 	protected:
@@ -293,8 +291,6 @@ namespace DiscordCoreInternal {
 		WebSocketSSLClient(string, string, vector<uint8_t>*);
 
 		WebSocketSSLClient(nullptr_t);
-
-		vector<uint8_t>& getInputBuffer();
 
 		template<StringOrVector typeName>
 		void writeData(typeName& data) {
@@ -330,8 +326,6 @@ namespace DiscordCoreInternal {
 		DatagramSocketSSLClient(nullptr_t);
 
 		void writeData(string& dataToWrite);
-
-		vector<char>& getInputBuffer();
 
 		bool readData(bool doWeClear);
 
