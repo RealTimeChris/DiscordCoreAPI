@@ -131,29 +131,20 @@ namespace DiscordCoreInternal {
 	
 	class DiscordCoreAPI_Dll HttpHeader {
 	public:
+		
+		friend class DiscordCoreAPI::SoundCloudRequestBuilder;
+		friend class HttpRnRBuilder;
+
+		HttpHeader(nullptr_t);
+
+		HttpHeader(string key, string value);
+
+		static void constructValues(unordered_map<string, HttpHeader>& headers, shared_ptr<HttpConnection> theConnection);
+
+	protected:
 
 		string value{ "" };
 		string key{ "" };
-
-		HttpHeader(nullptr_t) {};
-
-		HttpHeader(string key, string value) {
-			this->value = value;
-			this->key = key;
-		}
-
-		static void constructValues(unordered_map<string, HttpHeader>& headers, shared_ptr<HttpConnection> theConnection) {
-			if (headers.contains("x-ratelimit-remaining")) {
-				theConnection->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
-			}
-			if (headers.contains("x-ratelimit-reset-after")) {
-				theConnection->sampledTimeInMs = duration_cast<milliseconds, int64_t>(system_clock::now().time_since_epoch()).count();
-				theConnection->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
-			}
-			if (headers.contains("x-ratelimit-bucket")) {
-				theConnection->bucket = headers.at("x-ratelimit-bucket").value;
-			}
-		};
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {
@@ -219,20 +210,7 @@ namespace DiscordCoreInternal {
 			return HttpData();
 		}
 
-		template<typename returnType>
-		returnType submitWorkloadAndGetResult(vector<HttpWorkloadData>& workload) {
-			try {
-				auto returnData = this->httpRequest(workload);
-				return returnData;
-			}
-			catch (...) {
-				DiscordCoreAPI::reportException(workload[0].callStack + "::HttpClient::submitWorkloadAndGetResult()");
-			}
-			return vector<HttpData>();
-		}
-
-		template<>
-		vector<HttpData> submitWorkloadAndGetResult<vector<HttpData>>(vector<HttpWorkloadData>& workload) {
+		vector<HttpData> submitWorkloadAndGetResult(vector<HttpWorkloadData>& workload) {
 			try {
 				auto returnData = this->httpRequest(workload);
 				return returnData;
@@ -247,12 +225,11 @@ namespace DiscordCoreInternal {
 
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch{ milliseconds{10} };
 		atomic<shared_ptr<string>> botToken{};
-
-		HttpConnectionManager theConnection{};
-
-		HttpData executeHttpRequest(HttpWorkloadData&, shared_ptr<HttpConnection> theConnection);
+		HttpConnectionManager connectionManager{};
 
 		HttpData executeByRateLimitData(HttpWorkloadData&, bool, shared_ptr<HttpConnection>);
+
+		HttpData executeHttpRequest(HttpWorkloadData&, shared_ptr<HttpConnection>);
 
 		HttpData getResponse(HttpWorkloadData&, shared_ptr<HttpConnection>);
 
@@ -260,7 +237,7 @@ namespace DiscordCoreInternal {
 
 		vector<HttpData> httpRequest(vector<HttpWorkloadData>&);
 
-		HttpData httpRequest(HttpWorkloadData&, bool = false);
+		HttpData httpRequest(HttpWorkloadData&, bool);
 		
 	};
 

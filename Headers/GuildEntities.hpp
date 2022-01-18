@@ -40,7 +40,8 @@ namespace DiscordCoreAPI {
 
 	/// For getting a Guild from the library's cache or a Discord server. \brief For getting a Guild from the library's cache or a Discord server.
 	struct DiscordCoreAPI_Dll GetGuildData {
-		string guildId{ "" };///< The id of the Guild to acquire.
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
+		string guildId{ "" };///< The id of the Guild to acquire.		
 	};
 
 	/// For acquiring a Guild preview of a chosen Guild. \brief For acquiring a Guild preview of a chosen Guild.
@@ -294,7 +295,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<DiscordCoreClient> thePtr{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		bool areWeConnectedBool{ false };
 
 		void initialize();
@@ -327,7 +328,7 @@ namespace DiscordCoreAPI {
 
 		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
 		/// \returns A CoRoutine containing a vector<Guild>.
-		static CoRoutine<vector<Guild>> getAllGuildsAsync();
+		static CoRoutine<vector<Guild>> getAllGuildsAsync(shared_ptr<DiscordCoreClient> discordCoreClient);
 
 		/// Collects a Guild from the Discord servers. \brief Collects a Guild from the Discord servers.
 		/// \param dataPackage A GetGuildData structure.
@@ -496,12 +497,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		static unordered_map<string, unordered_map<string, Guild>> cache;
 		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
-		static unordered_map<string, Guild> cache;
 
 		static void insertGuild(Guild Guild);
 
-		static void removeGuild(string GuildId);
+		static void removeGuild(Guild GuildId);
 
 	};
 	/**@}*/

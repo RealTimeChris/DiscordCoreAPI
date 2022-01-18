@@ -24,6 +24,7 @@ namespace DiscordCoreAPI {
     using namespace nlohmann;
     using namespace std;
 
+    class SoundCloudRequestBuilder;
     class Test;
     struct GetGuildMemberRolesData;
     template<typename returnType>
@@ -2957,8 +2958,8 @@ namespace DiscordCoreAPI {
 
         BaseFunctionArguments() = default;
 
-        BaseFunctionArguments(InputEventData inputEventData, shared_ptr<DiscordCoreClient> thePtr) {
-            this->discordCoreClient = thePtr;
+        BaseFunctionArguments(InputEventData inputEventData, shared_ptr<DiscordCoreClient> discordCoreClient) {
+            this->discordCoreClient = discordCoreClient;
             this->eventData = inputEventData;
         }
 
