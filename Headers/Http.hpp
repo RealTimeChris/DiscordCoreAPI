@@ -70,9 +70,7 @@ namespace DiscordCoreInternal {
 		recursive_mutex accessMutex{};
 		int64_t sampledTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
-		string tempBucket{ "" };
 		int64_t msRemain{ 0 };
-		string bucket{ "" };
 	};
 
 	template<typename ObjectType>
@@ -109,6 +107,8 @@ namespace DiscordCoreInternal {
 	public:
 
 		bool doWeConnect{ true };
+		string tempBucket{ "" };
+		string bucket{ "" };
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
