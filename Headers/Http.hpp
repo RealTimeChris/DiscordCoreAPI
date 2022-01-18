@@ -17,14 +17,60 @@ namespace DiscordCoreInternal {
 	class HttpHeader;
 	struct HttpData;
 
+	template<typename ObjectType>
+	class AtomicWrapper {
+	public:
+
+		AtomicWrapper& operator=(ObjectType& other) {
+			this->theValue.store(other);
+			return *this;
+		}
+
+		AtomicWrapper(ObjectType other) {
+			*this = other;
+		}
+
+		AtomicWrapper& operator=(const AtomicWrapper& other) {
+			this->theValue.store(other.theValue.load());
+			return *this;
+		}
+
+		AtomicWrapper(const AtomicWrapper& other) {
+			*this = other;
+		}
+
+		AtomicWrapper& operator=(AtomicWrapper& other) {
+			this->theValue.store(other.theValue.load());
+			return *this;
+		}
+
+		AtomicWrapper(AtomicWrapper& other) {
+			*this = other;
+		}
+
+		ObjectType getValue() {
+			return this->theValue.load();
+		}
+
+	protected:
+		atomic<ObjectType> theValue{};
+	};
+
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
+
 		friend HttpClient;
-		HttpData handleHeaders(HttpWorkloadData& workload, shared_ptr<HttpConnection> theConnection);
+
+		HttpData handleHeaders(HttpWorkloadData& workload, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
+
 		string buildRequest(HttpWorkloadData& workload);
+
 		void resetValues();
+
 		virtual ~HttpRnRBuilder() = default;
+
 	protected:
+
 		unordered_map<string, HttpHeader> headers{};
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
@@ -33,66 +79,60 @@ namespace DiscordCoreInternal {
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
 		string rawInput{};
+
 		bool checkForHeadersToParse();
+
 		void parseHeaders();
+
 		bool parseChunk();
+
 		void parseSize();
+
 		void clearCRLF();
+
 		void parseCode();
 	};
 
 	class DiscordCoreAPI_Dll RateLimitData {
 	public:
+
 		friend class HttpConnectionManager;
 		friend class HttpClient;
 		friend class HttpHeader;
+
 		RateLimitData() = default;
+
 		virtual ~RateLimitData() = default;
+
 	protected:
+
 		recursive_mutex accessMutex{};
 		int64_t sampledTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
+		string tempBucket{ "" };
 		int64_t msRemain{ 0 };
-	};
-
-	template<typename ObjectType>
-	class AtomicWrapper {
-	public:
-		AtomicWrapper& operator=(ObjectType& other) {
-			this->theValue.store(other);
-			return *this;
-		}
-		AtomicWrapper(ObjectType other) {
-			*this = other;
-		}
-		AtomicWrapper& operator=(AtomicWrapper& other) {
-			this->theValue.store(other.theValue.load());
-			return *this;
-		}
-		AtomicWrapper(AtomicWrapper& other) {
-			*this = other;
-		}
-		ObjectType getValue() {
-			return this->theValue.load();
-		}
-	protected:
-		atomic<ObjectType> theValue{};
+		string bucket{ "" };
 	};
 
 	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public RateLimitData, public HttpRnRBuilder {
 	public:
+
 		bool doWeConnect{ true };
-		string tempBucket{ "" };
-		string bucket{ "" };
+
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
+
 	};
+
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
+
 		map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections{};
 		map<HttpWorkloadType, string> httpConnectionBucketValues{};
-		mutex theMutex{};
-		shared_ptr<HttpConnection> getConnection(HttpWorkloadType type);
+
+		AtomicWrapper<shared_ptr<HttpConnection>>* getConnection(HttpWorkloadType type);
+
 		void storeConnection(HttpWorkloadType type);
+
 		void initialize();
 	};
 
@@ -101,12 +141,13 @@ namespace DiscordCoreInternal {
 
 		friend class DiscordCoreAPI::SoundCloudRequestBuilder;
 		friend class HttpRnRBuilder;
-
-		HttpHeader(nullptr_t);
+		friend class HttpClient;
 
 		HttpHeader(string key, string value);
 
-		static void constructValues(unordered_map<string, HttpHeader>& headers, shared_ptr<HttpConnection> theConnection);
+		HttpHeader(nullptr_t);
+
+		static void constructValues(unordered_map<string, HttpHeader>& headers, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
 
 	protected:
 
@@ -115,6 +156,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {
+
 		unordered_map<string, HttpHeader> responseHeaders{};
 		string responseMessage{ "" };
 		int64_t responseCode{ 0 };
@@ -190,14 +232,14 @@ namespace DiscordCoreInternal {
 	protected:
 
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch{ milliseconds{10} };
-		atomic<shared_ptr<string>> botToken{};
 		HttpConnectionManager connectionManager{};
+		atomic<shared_ptr<string>> botToken{};
 
-		HttpData executeByRateLimitData(HttpWorkloadData&, bool, shared_ptr<HttpConnection>);
+		HttpData executeByRateLimitData(HttpWorkloadData&, bool, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
 
-		HttpData executeHttpRequest(HttpWorkloadData&, shared_ptr<HttpConnection>);
+		HttpData executeHttpRequest(HttpWorkloadData&, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
 
-		HttpData getResponse(HttpWorkloadData&, shared_ptr<HttpConnection>);
+		HttpData getResponse(HttpWorkloadData&, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
 
 		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>&);
 
