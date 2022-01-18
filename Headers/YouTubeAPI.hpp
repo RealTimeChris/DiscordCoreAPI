@@ -16,44 +16,42 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	public:
 
-		YouTubeRequestBuilder() = default;
+		YouTubeRequestBuilder(shared_ptr<DiscordCoreInternal::HttpClient>);
 
-		static YouTubeSong constructFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
+		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
-		static vector<YouTubeSong> constructFirstDownloadUrl(string theString);
-
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		vector<YouTubeSong> collectSearchResults(string theString);
 
 	protected:
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
-		static string baseUrl;
+		shared_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		string baseUrl{ "https://www.youtube.com" };
 
-		static YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
+		YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
 
-		static YouTubeSong constructFinalDownloadUrl(Song newSong);
+		YouTubeSong constructFinalDownloadUrl(Song newSong);
 
-		static vector<char> sliceVector(vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
+		vector<char> sliceVector(vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
 		
-		static vector<char> swapHeadAndPosition(vector<char> inputVector, int32_t position);
+		vector<char> swapHeadAndPosition(vector<char> inputVector, int32_t position);
 		
-		static YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
+		YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
 
-		static string decipher(vector<string> tokens, string cipherSignature);
+		string decipher(vector<string> tokens, string cipherSignature);
 
-		static vector<string> extractActions(string html5PlayerPageBody);
+		vector<string> extractActions(string html5PlayerPageBody);
 
-		static vector<char> reverseString(vector<char> stringToReverse);
+		vector<char> reverseString(vector<char> stringToReverse);
 
-		static string between(string body, string left, string right);
+		string between(string body, string left, string right);
 
-		static vector<string> getTokens(string html5PlayerFile);
+		vector<string> getTokens(string html5PlayerFile);
 
-		static vector<char> splitString(string stringToSplit);
+		vector<char> splitString(string stringToSplit);
 
-		static string joinString(vector<char> stringToJoin);
+		string joinString(vector<char> stringToJoin);
 
-		static string setDownloadUrl(YouTubeFormat format);
+		string setDownloadUrl(YouTubeFormat format);
 
 	};
 
@@ -66,16 +64,17 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		YouTubeAPI(string guildId);
+		YouTubeAPI(string guildId, shared_ptr<DiscordCoreInternal::HttpClient> httpClient);
 
 		~YouTubeAPI();
 
 	protected:
 
-		EventWaiter readyToQuitEventOut{};
-		EventWaiter readyToQuitEventIn{};
+		YouTubeRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
 		CoRoutineWrapper theTask{ nullptr };
+		EventWaiter readyToQuitEventOut{};
+		EventWaiter readyToQuitEventIn{};
 		YouTubeSong theSong{};
 		string guildId{ "" };
 		mutex accessMutex{};
@@ -84,7 +83,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
-		static vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
+		vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
 
 		void sendNextSong(Song newSong);
 

@@ -17,28 +17,25 @@ namespace DiscordCoreAPI {
 
 		friend class SoundCloudAPI;
 
-		SoundCloudRequestBuilder() = default;
+		SoundCloudRequestBuilder(shared_ptr<DiscordCoreInternal::HttpClient>);
 		
-		static SoundCloudSong constructFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
+		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 
-		static vector<SoundCloudSong> constructFirstDownloadUrl(string theString);
-
-		static SoundCloudSong constructSecondDownloadUrl(SoundCloudSong newSong);
-
-		static SoundCloudSong constructFinalDownloadUrl(SoundCloudSong newSong);
-		
-		static string collectClientId();
-
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);		
+		vector<SoundCloudSong> collectSearchResults(string theString);
 
 	protected:
 		
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		shared_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		string baseUrl02{ "https://api-v2.soundcloud.com" };
+		string baseUrl{ "https://soundcloud.com" };
+		string appVersion{ "1631696495" };
+		string clientId{ "" };
 
-		static string appVersion;
-		static string baseUrl02;
-		static string clientId;
-		static string baseUrl;
+		SoundCloudSong constructSecondDownloadUrl(SoundCloudSong newSong);
+
+		SoundCloudSong constructFinalDownloadUrl(SoundCloudSong newSong);
+
+		string collectClientId();
 
 	};
 
@@ -51,16 +48,17 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 		friend class Guild;
 
-		SoundCloudAPI(string guildId) noexcept;
+		SoundCloudAPI(string guildId, shared_ptr<DiscordCoreInternal::HttpClient> httpClient);
 
 		~SoundCloudAPI();
 
 	protected:
 
-		EventWaiter readyToQuitEventOut{};
-		EventWaiter readyToQuitEventIn{};
+		SoundCloudRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
 		CoRoutineWrapper theTask{ nullptr };
+		EventWaiter readyToQuitEventOut{};
+		EventWaiter readyToQuitEventIn{};
 		SoundCloudSong theSong{ };
 		string guildId{ "" };
 		mutex accessMutex{};
@@ -69,7 +67,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
-		static vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
+		vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
 
 		void sendNextSong(Song newSong);
 
