@@ -273,7 +273,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		int64_t maxBufferSize{ 16 * 1024 };
 		int32_t currentRecursionDepth{ 0 };
-		string* inputBuffer{ nullptr };
+		string* theInputVector{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 	};
@@ -305,6 +305,8 @@ namespace DiscordCoreInternal {
 			};
 			data.clear();
 		}
+
+		vector<uint8_t> getData();
 
 		bool readData();
 

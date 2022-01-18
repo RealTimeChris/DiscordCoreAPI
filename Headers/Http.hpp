@@ -255,7 +255,7 @@ namespace DiscordCoreInternal {
 
 		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
 
-		HttpData executeByRateLimitData(HttpWorkloadData& workload, bool printResult);
+		HttpData executeByRateLimitData(HttpWorkloadData& workload, bool printResult, shared_ptr<HttpConnection> httpConnection);
 
 		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
 
@@ -264,8 +264,6 @@ namespace DiscordCoreInternal {
 		HttpData executeHttpRequest(HttpWorkloadData& workloadData);
 
 		HttpData httpRequest(HttpWorkloadData&, bool = false);
-
-		HttpData getResponse(HttpWorkloadData& workloadData);
 	};
 
 }
