@@ -22,11 +22,13 @@ namespace DiscordCoreInternal {
 
 		friend HttpClient;
 
-		HttpData handleHeaders(HttpWorkloadData& workloadData, HttpConnectionManager& theConnection);
+		HttpData handleHeaders(HttpWorkloadData& workload, shared_ptr<HttpConnection> theConnection);
 
 		string buildRequest(HttpWorkloadData& workload);
 
 		void resetValues();
+
+		virtual ~HttpRnRBuilder() = default;
 
 	protected:
 
@@ -60,12 +62,13 @@ namespace DiscordCoreInternal {
 
 		RateLimitData() = default;
 
+		virtual ~RateLimitData() = default;
+
 	protected:
 
-		HttpWorkloadType workloadType{ HttpWorkloadType::Unset };
 		recursive_mutex accessMutex{};
+		int64_t sampledTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
-		int64_t sampledTime{ 0 };
 		string tempBucket{ "" };
 		int64_t msRemain{ 0 };
 		string bucket{ "" };
@@ -75,7 +78,7 @@ namespace DiscordCoreInternal {
 	class AtomicWrapper {
 	public:
 
-		AtomicWrapper& operator=(ObjectType other) {
+		AtomicWrapper& operator=(ObjectType& other) {
 			this->theValue.store(other);
 			return *this;
 		}
@@ -119,7 +122,7 @@ namespace DiscordCoreInternal {
 
 		shared_ptr<HttpConnection> getConnection(HttpWorkloadType type);
 
-		void storeConnection(HttpWorkloadType data);
+		void storeConnection(HttpWorkloadType type);
 
 		void initialize();
 
@@ -138,20 +141,18 @@ namespace DiscordCoreInternal {
 			this->key = key;
 		}
 
-		static void constructValues(HttpWorkloadType type, unordered_map<string, HttpHeader> headers, HttpConnectionManager& theConnection) {
+		static void constructValues(unordered_map<string, HttpHeader>& headers, shared_ptr<HttpConnection> theConnection) {
 			if (headers.contains("x-ratelimit-remaining")) {
-				theConnection.getConnection(type)->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
+				theConnection->getsRemaining = stol(headers.at("x-ratelimit-remaining").value);
 			}
 			if (headers.contains("x-ratelimit-reset-after")) {
-				theConnection.getConnection(type)->sampledTime = duration_cast<milliseconds, int64_t>(system_clock::now().time_since_epoch()).count();
-				theConnection.getConnection(type)->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
+				theConnection->sampledTimeInMs = duration_cast<milliseconds, int64_t>(system_clock::now().time_since_epoch()).count();
+				theConnection->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after").value) * 1000.0f);
 			}
 			if (headers.contains("x-ratelimit-bucket")) {
-				theConnection.getConnection(type)->bucket = headers.at("x-ratelimit-bucket").value;
+				theConnection->bucket = headers.at("x-ratelimit-bucket").value;
 			}
 		};
-
-		virtual ~HttpHeader() {};
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {
@@ -164,6 +165,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
+
+		HttpClient(string);
 
 		template<typename returnType>
 		returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
@@ -239,8 +242,6 @@ namespace DiscordCoreInternal {
 			return vector<HttpData>();
 		}
 
-		void initialize(string);
-
 	protected:
 
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch{ milliseconds{10} };
@@ -248,17 +249,18 @@ namespace DiscordCoreInternal {
 
 		HttpConnectionManager theConnection{};
 
-		HttpData getResponse(HttpWorkloadData& workloadData, shared_ptr<HttpConnection> httpConnection);
+		HttpData executeHttpRequest(HttpWorkloadData&, shared_ptr<HttpConnection> theConnection);
 
-		HttpData executeByRateLimitData(HttpWorkloadData& workload, bool printResult, shared_ptr<HttpConnection> httpConnection);
+		HttpData executeByRateLimitData(HttpWorkloadData&, bool, shared_ptr<HttpConnection>);
 
-		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>& workloadData);
+		HttpData getResponse(HttpWorkloadData&, shared_ptr<HttpConnection>);
 
-		vector<HttpData> httpRequest(vector<HttpWorkloadData>& workloadData);
+		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>&);
 
-		HttpData executeHttpRequest(HttpWorkloadData& workloadData);
+		vector<HttpData> httpRequest(vector<HttpWorkloadData>&);
 
 		HttpData httpRequest(HttpWorkloadData&, bool = false);
+		
 	};
 
 }

@@ -260,6 +260,8 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
+		virtual ~HttpSSLClient() = default;
+
 	protected:
 
 		string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
