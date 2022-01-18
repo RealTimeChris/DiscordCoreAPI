@@ -14,10 +14,8 @@
 
 namespace DiscordCoreAPI {
 
-
 	class DiscordCoreAPI_Dll CommandController {
 	public:
-		friend class DiscordCoreClient;
 
 		map<vector<string>, shared_ptr<BaseFunction>> functions{};
 		
@@ -31,12 +29,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<DiscordCoreClient> thePtr{ nullptr };
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string commandPrefix{ "" };
 
-		unique_ptr<BaseFunction> getCommand(string commandName, CommandData commandData);
-
 		CoRoutine<void> executeCommand(unique_ptr<BaseFunction> ptrFunction, BaseFunctionArguments args);
+
+		unique_ptr<BaseFunction> getCommand(string commandName, CommandData commandData);
 
 		string parseCommandName(string messageContents, CommandData commandData);
 
