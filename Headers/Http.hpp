@@ -57,6 +57,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll RateLimitData {
 	public:
 
+		friend class HttpConnectionManager;
 		friend class HttpClient;
 		friend class HttpHeader;
 
