@@ -27,176 +27,149 @@ namespace DiscordCoreAPI {
 	*/
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		InputEventData inputEventData{};///< InputEventData representing the input-event.
 	};
 
 	/// Data that is received as part of an ApplicationCommand creation event. \brief Data that is received as part of an ApplicationCommand creation event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ApplicationCommand applicationCommand{}; ///< The new ApplicationCommand.
 	};
 
 	/// Data that is received as part of an ApplicationCommand update event. \brief Data that is received as part of an ApplicationCommand update event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ApplicationCommand applicationCommand{}; ///< The new ApplicationCommand.
 	};
 
 	/// Data that is received as part of an ApplicationCommand deletion event. \brief Data that is received as part of an ApplicationCommand deletion event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ApplicationCommand applicationCommand{}; ///< The deleted ApplicationCommand.
 	};
 
 	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
 	struct DiscordCoreAPI_Dll OnChannelCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Channel channel{}; ///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Channel channelOld{}; ///< The old Channel.
 		Channel channelNew{};	///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
 	struct DiscordCoreAPI_Dll OnChannelDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Channel channel{}; ///< The deleted Channel.
 	};
 	
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
 	struct DiscordCoreAPI_Dll OnChannelPinsUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ChannelPinsUpdateEventData dataPackage{}; ///< The Channel pins update responseData.
 	};
 
 	/// Data that is received as part of a Thread creation event. \brief Data that is received as part of a Thread creation event.
 	struct DiscordCoreAPI_Dll OnThreadCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Thread thread{}; ///< The new Thread's Channel.
 	};
 
 	/// Data that is received as part of a Thread update event. \brief Data that is received as part of a Thread update event.
 	struct DiscordCoreAPI_Dll OnThreadUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Thread thread{}; ///< The new Thread's Channel.
 	};
 
 	/// Data that is received as part of a Thread deletion event. \brief Data that is received as part of a Thread deletion event.
 	struct DiscordCoreAPI_Dll OnThreadDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Thread thread{}; ///< The deleted Thread's Channel.
 	};
 
 	/// Data that is received as part of a Thread list sync event. \brief Data that is received as part of a Thread list sync event.
 	struct DiscordCoreAPI_Dll OnThreadListSyncData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ThreadListSyncData threadListSyncData{}; ///< The Thread list sync responseData.
 	};
 
 	/// Data that is received as part of a Thread member update event. \brief Data that is received as part of a Thread member update event.
 	struct DiscordCoreAPI_Dll OnThreadMemberUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ThreadMemberData threadMember{}; ///< Thread member update responseData.
 	};
 
 	/// Data that is received as part of a Thread members update event. \brief Data that is received as part of a Thread members update event.
 	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ThreadMembersUpdateData threadMembersUpdateData{}; ///< Thread member's update responseData.
 	};
 
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Guild guild{}; ///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Guild guildOld{}; ///< The old Guild.
 		Guild guildNew{};	///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Guild guild{}; ///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanAddData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string guildId{ "" }; ///< The Guild they were banned from.
 		User user{};	///< The User id of the person who was banned.
 	};
 
 	/// Data that is received as part of a Guild ban remove event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanRemoveData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string guildId{ "" }; ///< The Guild they were un-banned from.
 		User user{};///< The User id of the person who was un-banned.
 	};
 
 	/// Data that is received as part of a Guild emojis update event. \brief Data that is received as part of a Guild emojis update event.
 	struct DiscordCoreAPI_Dll OnGuildEmojisUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		GuildEmojisUpdateEventData updateData{}; ///< The Guild emoji's update responseData.
 	};
 
 	/// Data that is received as part of a Guild sticker update event. \brief Data that is received as part of a Guild sticker update event.
 	struct DiscordCoreAPI_Dll OnGuildStickersUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		GuildStickersUpdateEventData updateData{}; ///< The GuildStickersUpdateEventData.
 	};
 
 	/// Data that is received as part of a Guild Integration update event. \brief Data that is received as part of a Guild Integration update event.
 	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string guildId{ "" }; ///< The id of the Guild for which the integrations were updated.
 	};
 
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
+		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		GuildMember guildMember{}; ///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		User user{}; ///< The User responseData of the removed GuildMember.
 		string guildId{ "" }; ///< The id of the Guild from which they were removed.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
 	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		GuildMember guildMemberOld{}; ///< The old GuildMember.
 		GuildMember guildMemberNew{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMembers chunk event. \brief Data that is received as part of a GuildMembers chunk event.
 	struct DiscordCoreAPI_Dll OnGuildMembersChunkData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		GuildMembersChunkEventData chunkEventData{}; ///< GuildMembersChunkEventData structure.
 	};
 
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Role role{}; ///< The new Role.
 		string guildId{ "" };///< The id of the Guild within which the Role was created.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string guildId{ "" }; ///< The id of the Guild within which the Role was updated.
 		Role roleOld{}; ///< The old Role.
 		Role roleNew{};	///< The new Role.
@@ -204,28 +177,24 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
 	struct DiscordCoreAPI_Dll OnRoleDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string guildId{ "" }; ///< The id of the Guild from which the Role was deleted.
 		Role roleOld{}; ///< The deleted Role.
 	};
 
 	/// Data that is received as part of an Integration creation event. \brief Data that is received as part of an Integration creation event.
 	struct DiscordCoreAPI_Dll OnIntegrationCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		IntegrationData integrationData{}; ///< The new IntegrationData structure.
 		string guildId{ "" };///< The id of the Guild for which this Integration was created.
 	};
 
 	/// Data that is received as part of an Integration update event. \brief Data that is received as part of an Integration update event.
 	struct DiscordCoreAPI_Dll OnIntegrationUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		IntegrationData integrationData{}; ///< New IntegrationData structure.
 		string guildId{ "" };///< The id of the Guild for which the Integration was updated.
 	};
 
 	/// Data that is received as part of an Integration deletion event. \brief Data that is received as part of an Integration deletion event.
 	struct DiscordCoreAPI_Dll OnIntegrationDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string applicationId{ "" }; ///< Application id of the current application.
 		string guildId{ "" };///< The id of the Guild for which the Integration was deleted.
 		string id{ "" };///< The id of the deleted Integration.
@@ -233,13 +202,11 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of an Invite creation event. \brief Data that is received as part of an Invite creation event.
 	struct DiscordCoreAPI_Dll OnInviteCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		InviteData invite{}; ///< Thew new InviteData structure.
 	};
 
 	/// Data that is received as part of an Invite deletion event. \brief Data that is received as part of an Invite deletion event.
 	struct DiscordCoreAPI_Dll OnInviteDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string channelId{ "" }; ///< The id of the Channel for which the Invite existed.
 		string guildId{ "" };	///< The id of the Guild for which the Invite existed.
 		string code{ "" }; ///< The code of the Invite.
@@ -247,25 +214,21 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of an Interaction creation event. \brief Data that is received as part of an Interaction creation event.
 	struct DiscordCoreAPI_Dll OnInteractionCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		InteractionData interactionData{};///< The InteractionData representing the Interaction.
 	};
 
 	/// Data that is received as part of a Message creation event. \brief Data that is received as part of a Message creation event.
 	struct DiscordCoreAPI_Dll OnMessageCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Message message{}; ///< The new Message.
 	};
 
 	/// Data that is received as part of a Message update event. \brief  Data that is received as part of a Message update event.
 	struct DiscordCoreAPI_Dll OnMessageUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Message messageNew{}; ///< The new Message.
 	};
 
 	/// Data that is received as part of a Message deletion event. \brief Data that is received as part of a Message deletion event.
 	struct DiscordCoreAPI_Dll OnMessageDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string messageId{ "" };///< The id of the Message which was deleted.
 		string channelId{ "" };///< The id of the Channel from which the Message was deleted.
 		string guildId{ "" };///< The id of the Guild from which the Message was deleted.
@@ -273,7 +236,6 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Message delete bulk event. \brief Data that is received as part of a Message delete bulk event.
 	struct DiscordCoreAPI_Dll OnMessageDeleteBulkData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string channelId{ "" };///< The id of the Channel from which the Message was deleted.
 		string guildId{ "" };///< The id of the Guild from which the Message was deleted.
 		vector<string> ids{};///< A vector containing the list of deleted Message ids.
@@ -281,19 +243,16 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Reaction add event. \brief Data that is received as part of a Reaction add event.
 	struct DiscordCoreAPI_Dll OnReactionAddData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		Reaction reaction{};///< The Reaction that was added.
 	};
 
 	/// Data that is received as part of a Reaction remove event. \brief Data that is received as part of a Reaction remove event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		ReactionRemoveData reactionRemoveData{}; ///< The ReactionRemoveData.
 	};
 
 	/// Data that is received as part of a Reaction remove all event. \brief Data that is received as part of a Reaction remove all event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveAllData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string channelId{ "" };///< The id of the Channel from which the Reactions were deleted.
 		string messageId{ "" };///< The id of the Message from which the Reactions were deleted.
 		string guildId{ "" };///< The id of the Guild from which the Reactions were deleted.
@@ -301,7 +260,6 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Reaction remove emoji event. \brief Data that is received as part of a Reaction remove emoji event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveEmojiData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string messageId{ "" };///< The id of the Message from which the Reactions were deleted.
 		string channelId{ "" };///< The id of the Channel from which the Reactions were deleted.
 		string guildId{ "" };///< The id of the Guild from which the Reactions were deleted.
@@ -310,50 +268,42 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a presence update event. \brief Data that is received as part of a presence update event.
 	struct DiscordCoreAPI_Dll OnPresenceUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		PresenceUpdateData presenceData{}; ///< PresenceUpdateData..
 	};
 
 	/// Data that is received as part of a StageInstance creation event. \brief Data that is received as part of a StageInstance creation event.
 	struct DiscordCoreAPI_Dll OnStageInstanceCreationData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		StageInstanceData stageInstance{}; ///< The new StageInstanceData.
 	};
 
 	/// Data that is received as part of a StageInstance update event. \brief Data that is received as part of a StageInstance update event.
 	struct DiscordCoreAPI_Dll OnStageInstanceUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		StageInstanceData stageInstance{}; ///< The new StageInstanceData.
 	};
 
 	/// Data that is received as part of a StageInstance deletion event. \brief Data that is received as part of a StageInstance deletion event.
 	struct DiscordCoreAPI_Dll OnStageInstanceDeletionData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		StageInstanceData stageInstance{}; ///< The deleted StageInstanceData.
 	};
 
 	/// Data that is received as part of a typing start event. \brief Data that is received as part of a typing start event.
 	struct DiscordCoreAPI_Dll OnTypingStartData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		TypingStartData typingStartData{}; ///< TypingStartData of the event.
 	};
 
 	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		User userOld{}; ///< The old User.
 		User userNew{};///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
 	};
 
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string endpoint{ "" };///< The new endpoint.
 		string guildId{ "" };///< The id of the Guild for which the server update is occurring.
 		string token{ "" };///< The token of the server update event.
@@ -361,7 +311,6 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.
 	struct DiscordCoreAPI_Dll OnWebhookUpdateData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };///< A pointer to the associated DiscordCoreClient.
 		string channelId{ "" };///< Id of the Channel for which the WebHook Update is occurring.
 		string guildId{ "" };///< Id of the Guild for which the WebHook Update is occurring.
 	};

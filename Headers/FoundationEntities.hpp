@@ -2958,8 +2958,8 @@ namespace DiscordCoreAPI {
 
         BaseFunctionArguments() = default;
 
-        BaseFunctionArguments(InputEventData inputEventData, shared_ptr<DiscordCoreClient> discordCoreClient) {
-            this->discordCoreClient = discordCoreClient;
+        BaseFunctionArguments(InputEventData inputEventData, shared_ptr<DiscordCoreClient> thePtr) {
+            this->discordCoreClient = thePtr;
             this->eventData = inputEventData;
         }
 
