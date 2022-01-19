@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
 		
-		friend class Guild;
+		friend Guild;
 
 		Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
 

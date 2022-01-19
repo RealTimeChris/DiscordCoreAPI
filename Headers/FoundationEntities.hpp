@@ -13,6 +13,7 @@ namespace DiscordCoreInternal {
     using namespace nlohmann;
     using namespace std;
 
+    class VoiceSocketAgent;
     class BaseSocketAgent;
     class HttpClient;
     class DataParser;
@@ -23,20 +24,62 @@ namespace DiscordCoreAPI {
     using namespace std::chrono;
     using namespace nlohmann;
     using namespace std;
-
-    class SoundCloudRequestBuilder;
-    class Test;
+    
+    struct RecurseThroughMessagePagesData;
+    struct DeleteInteractionResponseData;
+    struct DeleteFollowUpMessageData;
+    struct OnInteractionCreationData;
     struct GetGuildMemberRolesData;
+    struct BaseFunctionArguments;
+    struct GetRolesData;
+    struct CommandData;
+
+    class CreateEphemeralInteractionResponseData;
+    class CreateDeferredInteractionResponseData;
+    class CreateEphemeralFollowUpMessageData;
+    class CreateInteractionResponseData;
+    class EditInteractionResponseData;
+    class DeferComponentResponseData;
+    class CreateFollowUpMessageData;
+    class SoundCloudRequestBuilder;
+    class RespondToInputEventData;
+    class EditFollowUpMessageData;
+    class YouTubeRequestBuilder;
+    class DatabaseManagerAgent;
+    class SelectMenuCollector;
+    class DiscordCoreClient;
+    class CreateMessageData;
+    class VoiceConnection;
+    class EditMessageData;
+    class ButtonCollector;
+    class SoundCloudAPI;
+    class Interactions;
+    class EventManager;
+    class EventHandler;
+    class GuildMember;
+    class ChannelData;
+    class InputEvents;
+    class EventWaiter;
+    class SendDMData;
+    class YouTubeAPI;
+    class Reactions;
+    class Messages;
+    class WebHooks;
+    class SongAPI;
+    class BotUser;
+    class Guilds;
+    class Roles;
+    class Guild;
+    class Test;
+
+    template<typename ReturnType, typename ...ArgTypes>
+    class Event;
+    template<typename ReturnType, typename ...ArgTypes>
+    class EventDelegate;
     template<typename returnType>
     class CoRoutine;
     template<>
     class CoRoutine<void>;
-    class DiscordCoreClient;
-    class VoiceConnection;
-    struct GetRolesData;
-    class GuildMember;
-    class ChannelData;
-    class BotUser;
 
     /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
     enum class Permission : int64_t {
@@ -2285,14 +2328,14 @@ namespace DiscordCoreAPI {
     public:
 
         friend class DiscordCoreInternal::BaseSocketAgent;
-        friend struct RecurseThroughMessagePagesData;
-        friend struct OnInteractionCreationData;
-        friend class RespondToInputEventData;
-        friend struct BaseFunctionArguments;
-        friend class DiscordCoreClient;
-        friend class EventHandler;
-        friend struct CommandData;
-        friend class InputEvents;
+        friend RecurseThroughMessagePagesData;
+        friend OnInteractionCreationData;
+        friend RespondToInputEventData;
+        friend BaseFunctionArguments;
+        friend DiscordCoreClient;
+        friend EventHandler;
+        friend CommandData;
+        friend InputEvents;
 
         InputEventResponseType responseType{};///< The type of response that this input value represents.
         InputEventType eventType{}; ///< The type of input-event that is represented by this structure.
@@ -2557,21 +2600,21 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll RespondToInputEventData {
     public:
 
-        friend class CreateEphemeralInteractionResponseData;
         friend class DiscordCoreInternal::BaseSocketAgent;
-        friend class CreateDeferredInteractionResponseData;
-        friend class CreateEphemeralFollowUpMessageData;
-        friend struct DeleteInteractionResponseData;
-        friend class CreateInteractionResponseData;
-        friend class EditInteractionResponseData;
-        friend class DeferComponentResponseData;
-        friend struct DeleteFollowUpMessageData;
-        friend class CreateFollowUpMessageData;
-        friend class EditFollowUpMessageData;
-        friend class CreateMessageData;
-        friend class EditMessageData;
-        friend class InputEvents;
-        friend class SendDMData;
+        friend CreateEphemeralInteractionResponseData;
+        friend CreateDeferredInteractionResponseData;
+        friend CreateEphemeralFollowUpMessageData;
+        friend DeleteInteractionResponseData;
+        friend CreateInteractionResponseData;
+        friend EditInteractionResponseData;
+        friend DeferComponentResponseData;
+        friend DeleteFollowUpMessageData;
+        friend CreateFollowUpMessageData;
+        friend EditFollowUpMessageData;
+        friend CreateMessageData;
+        friend EditMessageData;
+        friend InputEvents;
+        friend SendDMData;
         
         InputEventResponseType type{}; ///< The type of response to make.
 
@@ -2890,15 +2933,15 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll Song {
     public:
 
-        friend class DiscordCoreInternal::DataParser;
-        friend class SoundCloudRequestBuilder;
-        friend class YouTubeRequestBuilder;
-        friend class DatabaseManagerAgent;
-        friend class SoundCloudSong;
-        friend class SoundCloudAPI;
-        friend class YouTubeSong;
-        friend class YouTubeAPI;
-        friend class SongAPI;
+        friend DiscordCoreInternal::DataParser;
+        friend SoundCloudRequestBuilder;
+        friend YouTubeRequestBuilder;
+        friend DatabaseManagerAgent;
+        friend SoundCloudSong;
+        friend SoundCloudAPI;
+        friend YouTubeSong;
+        friend YouTubeAPI;
+        friend SongAPI;
 
         SongType type{ SongType::SoundCloud };///< The type of song.
 
@@ -3009,7 +3052,7 @@ namespace DiscordCoreAPI {
     class ObjectCache {
     public:
 
-        friend class Guilds;
+        friend Guilds;
 
         ObjectCache<keyType, storageType>& operator=(ObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
@@ -3078,7 +3121,7 @@ namespace DiscordCoreAPI {
     class TSObjectCache {
     public:
 
-        friend class Guilds;
+        friend Guilds;
 
         TSObjectCache<keyType, storageType>& operator=(TSObjectCache<keyType, storageType>&& other) {
             if (this != &other) {
@@ -3154,7 +3197,7 @@ namespace DiscordCoreAPI {
     class ObjectMultiCache {
     public:
 
-        friend class Guilds;
+        friend Guilds;
 
         ObjectMultiCache<keyType, storageType>& operator=(ObjectMultiCache<keyType, storageType>&& other) {
             if (this != &other) {

@@ -91,9 +91,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
-		friend class Guild;
+		friend DiscordCoreClient;
+		friend EventHandler;
+		friend Guild;
 
 		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
 		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);

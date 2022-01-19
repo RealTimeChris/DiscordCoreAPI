@@ -152,9 +152,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channels {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
-		friend class Guild;
+		friend DiscordCoreClient;
+		friend EventHandler;
+		friend Guild;
 
 		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
 

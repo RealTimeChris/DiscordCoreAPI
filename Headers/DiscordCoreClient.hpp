@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
-		friend class Guild;
+		friend Guild;
 
 		shared_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		CommandController commandController{ "" , nullptr };

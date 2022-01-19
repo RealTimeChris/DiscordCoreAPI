@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	public:
 
-		friend class Guilds;
+		friend Guilds;
 
 		Guild();
 
@@ -310,8 +310,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guilds {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
+		friend DiscordCoreClient;
+		friend EventHandler;
 
 		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
 

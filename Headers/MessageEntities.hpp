@@ -36,8 +36,8 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
-		friend class InputEvents;
-		friend class Messages;
+		friend InputEvents;
+		friend Messages;
 
 		CreateMessageData(string channelIdNew) {
 			this->channelId = channelIdNew;
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 	/// For sending a direct-message. \brief For sending a direct-message.
 	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
 	public:
-		friend class InputEvents;
+		friend InputEvents;
 
 		SendDMData(RespondToInputEventData dataPackage) {
 			this->targetUserId = dataPackage.targetUserId;
@@ -208,8 +208,8 @@ namespace DiscordCoreAPI {
 	public:
 
 		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
-		friend class InputEvents;
-		friend class Messages;
+		friend InputEvents;
+		friend Messages;
 
 		EditMessageData(InputEventData dataPackage) {
 			this->requesterId = dataPackage.getRequesterId();
@@ -402,7 +402,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll MessageCollector {
 	public:
 
-		friend class DiscordCoreClient;
+		friend DiscordCoreClient;
 
 		MessageCollector();
 

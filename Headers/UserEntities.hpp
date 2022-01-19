@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll BotUser : public User {
 	public:
 
-		friend class DiscordCoreClient;
+		friend DiscordCoreClient;
 
 		BotUser(User dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
@@ -137,10 +137,10 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Users {
 	public:
 
-		friend class DiscordCoreClient;
-		friend class EventHandler;
-		friend class Users;
-		friend class Guild;
+		friend DiscordCoreClient;
+		friend EventHandler;
+		friend Users;
+		friend Guild;
 
 		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
 		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);

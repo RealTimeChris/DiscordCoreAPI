@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 	public:
 		
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class VoiceSocketAgent;
+		friend VoiceSocketAgent;
 
 		BaseSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
 

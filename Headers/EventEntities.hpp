@@ -14,10 +14,10 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll EventDelegateToken {
 
         template<typename ReturnType, typename ...ArgTypes>
-        friend class Event;
+        friend class EventDelegate;
 
         template<typename ReturnType, typename ...ArgTypes>
-        friend class EventDelegate;
+        friend class Event;
 
         friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
     class EventDelegate<void, ArgTypes...> {
     public:
 
-        friend class Event<void, ArgTypes...>;
+        friend Event<void, ArgTypes...>;
 
         EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>&& other) noexcept {
             if (this != &other) {
@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll EventCore {
 
-        friend class EventWaiter;
+        friend EventWaiter;
 
         EventCore& operator=(const EventCore&) = delete;
 
