@@ -97,6 +97,8 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend HttpConnectionManager;
+		friend HttpConnection;
+		friend HttpRnRBuilder;
 		friend HttpClient;
 		friend HttpHeader;
 
@@ -106,18 +108,21 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		recursive_mutex accessMutex{};
 		int64_t sampledTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
 		string tempBucket{ "" };
 		int64_t msRemain{ 0 };
 		string bucket{ "" };
+		mutex accessMutex{};
 	};
 
-	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public RateLimitData, public HttpRnRBuilder {
+	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	public:
 
+		shared_ptr<RateLimitData> rateLimitData{ make_shared<RateLimitData>() };
 		bool doWeConnect{ true };
+		string bucket{ "" };
+		mutex accessMutex{};
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
@@ -126,9 +131,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections{};
-		map<HttpWorkloadType, string> httpConnectionBucketValues{};
-		mutex accessMutex{};
+		atomic<shared_ptr<map<HttpWorkloadType, AtomicWrapper<shared_ptr<HttpConnection>>>>> httpConnections{ make_shared<map<HttpWorkloadType, AtomicWrapper<shared_ptr<HttpConnection>>>>() };
+		atomic<shared_ptr<map<string, AtomicWrapper<shared_ptr<RateLimitData>>>>> httpConnectionBucketValues{ make_shared<map<string, AtomicWrapper<shared_ptr<RateLimitData>>>>() };
 
 		AtomicWrapper<shared_ptr<HttpConnection>>* getConnection(HttpWorkloadType type);
 
@@ -148,7 +152,7 @@ namespace DiscordCoreInternal {
 
 		HttpHeader(nullptr_t);
 
-		static void constructValues(unordered_map<string, HttpHeader>& headers, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
+		static void constructValues(unordered_map<string, HttpHeader>& headers, shared_ptr<RateLimitData> theConnection);
 
 	protected:
 

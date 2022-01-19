@@ -166,7 +166,6 @@ namespace DiscordCoreInternal {
 		vector<uint8_t> inputBuffer{};
 		WebSocketOpCode dataOpcode{};		
 		string relativePath{ "" };
-		mutex accessorMutex00{};
 		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
 		WebSocketState state{};
