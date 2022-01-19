@@ -128,6 +128,7 @@ namespace DiscordCoreInternal {
 
 		map<string, AtomicWrapper<shared_ptr<HttpConnection>>> httpConnections{};
 		map<HttpWorkloadType, string> httpConnectionBucketValues{};
+		mutex accessMutex{};
 
 		AtomicWrapper<shared_ptr<HttpConnection>>* getConnection(HttpWorkloadType type);
 
