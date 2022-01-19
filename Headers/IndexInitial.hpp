@@ -68,6 +68,7 @@ extern "C"
 #include <curl/curl.h>
 #include <type_traits>
 #include <coroutine>
+#include <semaphore>
 #include <sodium.h>
 #include <iostream>
 #include <concepts>

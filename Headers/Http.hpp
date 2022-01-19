@@ -108,12 +108,12 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		binary_semaphore semaphore{ 1 };
 		int64_t sampledTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
 		string tempBucket{ "" };
 		int64_t msRemain{ 0 };
 		string bucket{ "" };
-		mutex accessMutex{};
 	};
 
 	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
