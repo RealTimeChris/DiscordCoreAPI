@@ -26,9 +26,9 @@ namespace DiscordCoreAPI {
 
         void storeThread(string theKey, unique_ptr<CoRoutine<void>> thread);
 
-        void stopThread(string theKey);
-
         CoRoutineStatus getThreadStatus(string theKey);
+
+        void stopThread(string theKey);        
 
         ~ThreadPool();
 
@@ -71,9 +71,9 @@ namespace DiscordCoreAPI {
 
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval);
 
-        void cancel();
-
         bool running();
+
+        void cancel();
 
     protected:
 

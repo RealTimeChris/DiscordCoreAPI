@@ -133,9 +133,9 @@ namespace DiscordCoreInternal {
 	public:
 
 		RateLimitData* rateLimitData{ nullptr };
+		recursive_mutex accessMutex{};
 		bool doWeConnect{ true };
 		string bucket{ "" };
-		mutex accessMutex{};
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
@@ -144,8 +144,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
+		unique_ptr<unordered_map<string, unique_ptr<RateLimitData>>> rateLimitValuesPtr{};
 		unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>> httpConnections{};
-		unordered_map<string, unique_ptr<RateLimitData>> httpConnectionBucketValues{};
+		atomic<unordered_map<string, unique_ptr<RateLimitData>>*> rateLimitValues{};
 		mutex accessMutex{};
 
 		HttpConnection* getConnection(HttpWorkloadType type);
