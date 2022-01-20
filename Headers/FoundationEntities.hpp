@@ -2995,9 +2995,9 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll BaseFunctionArguments {
     public:
 
+        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
         vector<string> argumentsArray{};///< A vector of string arguments.
         InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 
         BaseFunctionArguments() = default;
 
@@ -3019,7 +3019,7 @@ namespace DiscordCoreAPI {
         /// The base function for the command's execute function.
         /// \param args A unique_ptr containing a copy of BaseFunctionArguments.
         /// \returns A CoRoutine containing void.
-        virtual void execute(BaseFunctionArguments args) = 0;
+        virtual void execute(unique_ptr<BaseFunctionArguments> args) = 0;
         virtual unique_ptr<BaseFunction> create() = 0;
         virtual ~BaseFunction() = default;
     };

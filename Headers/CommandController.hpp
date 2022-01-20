@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
 
 		void registerFunction(vector<string> functionNames, shared_ptr<BaseFunction> baseFunction);
 
-		CoRoutine<void> checkForAndRunCommand(CommandData commandData);
+		CoRoutine<void> checkForAndRunCommand(unique_ptr<CommandData> commandData);
 
 		~CommandController();
 
@@ -32,15 +32,16 @@ namespace DiscordCoreAPI {
 		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
 		string commandPrefix{ "" };
 
-		CoRoutine<void> executeCommand(unique_ptr<BaseFunction> ptrFunction, BaseFunctionArguments args);
-
-		unique_ptr<BaseFunction> getCommand(string commandName, CommandData commandData);
-
-		string parseCommandName(string messageContents, CommandData commandData);
+		CoRoutine<void> executeCommand(unique_ptr<BaseFunction> ptrFunction, unique_ptr<BaseFunctionArguments> args);
 
 		unique_ptr<BaseFunction> createFunction(string functionName);
 
+		unique_ptr<BaseFunction> getCommand(string commandName);
+
 		vector<string> parseArguments(string messageContents);
+
+		string parseCommandName(string messageContents);
+		
 	};
 
 };
