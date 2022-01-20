@@ -440,8 +440,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Messages {
 	public:
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
 		/// \param dataPackage A GetMessagesData structure.
@@ -492,6 +491,12 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage An UnpinMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
+
+	protected:
+
+		static DiscordCoreInternal::HttpClient* httpClient;
+
+		static void deleteMessageToBeWrapped(DeleteMessageData dataPackage);
 	};
 	/**@}*/
 

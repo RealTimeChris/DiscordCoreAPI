@@ -17,11 +17,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll CommandController {
 	public:
 
-		map<vector<string>, shared_ptr<BaseFunction>> functions{};
+		map<vector<string>, UniquePtrWrapper<BaseFunction>> functions{};
 		
-		CommandController(string, shared_ptr<DiscordCoreClient>);
+		CommandController(string, DiscordCoreClient*);
 
-		void registerFunction(vector<string> functionNames, shared_ptr<BaseFunction> baseFunction);
+		void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
 
 		CoRoutine<void> checkForAndRunCommand(unique_ptr<CommandData> commandData);
 
@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		string commandPrefix{ "" };
 
 		CoRoutine<void> executeCommand(unique_ptr<BaseFunction> ptrFunction, unique_ptr<BaseFunctionArguments> args);

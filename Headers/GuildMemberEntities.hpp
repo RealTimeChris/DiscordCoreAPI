@@ -95,8 +95,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
@@ -139,6 +138,8 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
 	protected:
+
+		static DiscordCoreInternal::HttpClient* httpClient;
 		static unordered_map<string, GuildMember> cache;
 
 		static void insertGuildMember(GuildMember dataPackage);

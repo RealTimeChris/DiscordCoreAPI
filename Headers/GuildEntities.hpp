@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 
 		Guild();
 
-		Guild(GuildData dataNew, shared_ptr<DiscordCoreClient>);
+		Guild(GuildData dataNew, DiscordCoreClient*);
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
@@ -294,7 +294,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<DiscordCoreClient> thePtr{ nullptr };
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		bool areWeConnectedBool{ false };
 
 		void initialize();
@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 		friend DiscordCoreClient;
 		friend EventHandler;
 
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.
@@ -496,7 +496,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static DiscordCoreInternal::HttpClient* httpClient;
 		static unordered_map<string, Guild> cache;
 
 		static void insertGuild(Guild Guild);

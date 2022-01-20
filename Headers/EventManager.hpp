@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
-		shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		GuildMember guildMember{}; ///< The new GuildMember.
 	};
 

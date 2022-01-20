@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 
 		friend HttpClient;
 
-		HttpData handleHeaders(HttpWorkloadData& workload, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
+		HttpData handleHeaders(HttpWorkloadData& workload, HttpConnection* theConnection);
 
 		string buildRequest(HttpWorkloadData& workload);
 
@@ -102,6 +102,19 @@ namespace DiscordCoreInternal {
 		friend HttpClient;
 		friend HttpHeader;
 
+		RateLimitData& operator=(RateLimitData& other) {
+			this->sampledTimeInMs = other.sampledTimeInMs;
+			this->getsRemaining = other.getsRemaining;
+			this->tempBucket = other.tempBucket;
+			this->msRemain = other.msRemain;
+			this->bucket = other.bucket;
+			return *this;
+		}
+
+		RateLimitData(RateLimitData& other) {
+			*this = other;
+		}
+
 		RateLimitData() = default;
 
 		virtual ~RateLimitData() = default;
@@ -119,7 +132,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	public:
 
-		shared_ptr<RateLimitData> rateLimitData{ make_shared<RateLimitData>() };
+		RateLimitData* rateLimitData{ nullptr };
 		bool doWeConnect{ true };
 		string bucket{ "" };
 		mutex accessMutex{};
@@ -131,10 +144,11 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		atomic<shared_ptr<map<HttpWorkloadType, AtomicWrapper<shared_ptr<HttpConnection>>>>> httpConnections{ make_shared<map<HttpWorkloadType, AtomicWrapper<shared_ptr<HttpConnection>>>>() };
-		atomic<shared_ptr<map<string, AtomicWrapper<shared_ptr<RateLimitData>>>>> httpConnectionBucketValues{ make_shared<map<string, AtomicWrapper<shared_ptr<RateLimitData>>>>() };
+		map<HttpWorkloadType, unique_ptr<HttpConnection>> httpConnections{};
+		map<string, unique_ptr<RateLimitData>> httpConnectionBucketValues{};
+		mutex accessMutex{};
 
-		AtomicWrapper<shared_ptr<HttpConnection>>* getConnection(HttpWorkloadType type);
+		HttpConnection* getConnection(HttpWorkloadType type);
 
 		void storeConnection(HttpWorkloadType type);
 
@@ -152,7 +166,7 @@ namespace DiscordCoreInternal {
 
 		HttpHeader(nullptr_t);
 
-		static void constructValues(unordered_map<string, HttpHeader>& headers, shared_ptr<RateLimitData> theConnection);
+		static void constructValues(unordered_map<string, HttpHeader>& headers, RateLimitData* theConnection);
 
 	protected:
 
@@ -239,14 +253,15 @@ namespace DiscordCoreInternal {
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch01{ milliseconds{10} };
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch02{ milliseconds{10} };
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch03{ milliseconds{10} };
+		unique_ptr<string> botTokenHolder{ nullptr };
 		HttpConnectionManager connectionManager{};
-		atomic<shared_ptr<string>> botToken{};
+		atomic<string*> botToken{ nullptr };
 
-		HttpData executeByRateLimitData(HttpWorkloadData&, bool, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
+		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection* theConnection);
 
-		HttpData executeHttpRequest(HttpWorkloadData&, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
+		HttpData executeHttpRequest(HttpWorkloadData&, HttpConnection* theConnection);
 
-		HttpData getResponse(HttpWorkloadData&, AtomicWrapper<shared_ptr<HttpConnection>>* theConnection);
+		HttpData getResponse(HttpWorkloadData&, HttpConnection* theConnection);
 
 		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>&);
 

@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	public:
 
-		SoundCloudRequestBuilder(shared_ptr<DiscordCoreInternal::HttpClient>);
+		SoundCloudRequestBuilder(DiscordCoreInternal::HttpClient*);
 		
 		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 
@@ -26,7 +26,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 		
-		shared_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
 		string baseUrl02{ "https://api-v2.soundcloud.com" };
 		string baseUrl{ "https://soundcloud.com" };
 		string appVersion{ "1631696495" };
@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
-		SoundCloudAPI(string guildId, shared_ptr<DiscordCoreInternal::HttpClient> httpClient);
+		SoundCloudAPI(string guildId, DiscordCoreInternal::HttpClient* httpClient);
 
 		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 

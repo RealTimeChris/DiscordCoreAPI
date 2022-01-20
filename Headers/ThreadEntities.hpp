@@ -118,8 +118,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Threads {
 	public:
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Starts a Thread, based on a starting Message. \brief Starts a Thread, based on a starting Message.
 		/// \param dataPackage A StartThreadWithMessageData structure.
@@ -185,6 +184,10 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A ListActiveThreadsData structure.
 		/// \returns A CoRoutine containing a vector<Channel>.
 		static CoRoutine<ActiveThreadsData> getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage);
+
+	protected:
+
+		static DiscordCoreInternal::HttpClient* httpClient;
 	};
 	/**@}*/
 };

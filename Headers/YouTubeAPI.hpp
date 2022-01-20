@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	public:
 
-		YouTubeRequestBuilder(shared_ptr<DiscordCoreInternal::HttpClient>);
+		YouTubeRequestBuilder(DiscordCoreInternal::HttpClient*);
 
 		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		shared_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
 		string baseUrl{ "https://www.youtube.com" };
 
 		YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
-		YouTubeAPI(string guildId, shared_ptr<DiscordCoreInternal::HttpClient> httpClient);
+		YouTubeAPI(string guildId, DiscordCoreInternal::HttpClient* httpClient);
 
 		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 

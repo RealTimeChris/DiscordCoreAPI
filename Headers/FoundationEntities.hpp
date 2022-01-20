@@ -219,6 +219,58 @@ namespace DiscordCoreAPI {
 
     bool operator==(CURLCharWrapper& lhs, const  string& rhs);
 
+    template<typename ObjectType>
+    class UniquePtrWrapper {
+    public:
+
+        UniquePtrWrapper<ObjectType>& operator=(const UniquePtrWrapper<ObjectType>& other) {
+            this->thePtr.reset(other.thePtr.get());
+            other.thePtr.~unique_ptr();
+            return *this;
+        }
+
+        UniquePtrWrapper(const UniquePtrWrapper<ObjectType>& other) {
+            *this = other;
+        }
+
+        UniquePtrWrapper<ObjectType>& operator=(UniquePtrWrapper<ObjectType>& other) {
+            this->thePtr = move(other.thePtr);
+            return *this;
+        }
+
+        UniquePtrWrapper(UniquePtrWrapper<ObjectType>& other) {
+            *this = other;
+        }
+
+        UniquePtrWrapper<ObjectType>& operator=(unique_ptr<ObjectType> other) {
+            this->thePtr.reset(other.release());
+            return *this;
+        }
+
+        UniquePtrWrapper(unique_ptr<ObjectType> other) {
+            *this = move(other);
+        }
+
+        UniquePtrWrapper() = default;
+
+        ObjectType* operator->() {
+            return this->thePtr.get();
+        }
+
+        ObjectType* operator*() {
+            return this->thePtr.get();
+        }
+
+        ObjectType* get() {
+            return this->thePtr.get();
+        }
+
+    protected:
+
+        unique_ptr<ObjectType> thePtr{ nullptr };
+
+    };
+
     template<typename T>
     concept Copyable = copyable<T>;
 
@@ -2012,7 +2064,7 @@ namespace DiscordCoreAPI {
 
     /// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
     struct DiscordCoreAPI_Dll RepeatedFunctionData {
-        function<void(shared_ptr<DiscordCoreClient>)> function{ nullptr };///< The function pointer to be loaded.
+        function<void(DiscordCoreClient*)> function{ nullptr };///< The function pointer to be loaded.
         int32_t intervalInMs{ 0 };  ///< The time interval at which to call the function.
         bool repeated{ false }; ///< Whether or not the function is repeating.
     };
@@ -2995,14 +3047,14 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll BaseFunctionArguments {
     public:
 
-        shared_ptr<DiscordCoreClient> discordCoreClient{ nullptr };
+        DiscordCoreClient* discordCoreClient{ nullptr };
         vector<string> argumentsArray{};///< A vector of string arguments.
         InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
 
         BaseFunctionArguments() = default;
 
-        BaseFunctionArguments(InputEventData inputEventData, shared_ptr<DiscordCoreClient> thePtr) {
-            this->discordCoreClient = thePtr;
+        BaseFunctionArguments(InputEventData inputEventData, DiscordCoreClient* discordCoreClientNew) {
+            this->discordCoreClient = discordCoreClientNew;
             this->eventData = inputEventData;
         }
 
@@ -3015,6 +3067,8 @@ namespace DiscordCoreAPI {
         string helpDescription{ "" };///< Description of the command for the Help command.
         string commandName{ "" };///< Name of the command for calling purposes.
         EmbedData helpEmbed{};///< A Message embed for displaying the command via the Help command.
+
+        BaseFunction() = default;
 
         /// The base function for the command's execute function.
         /// \param args A unique_ptr containing a copy of BaseFunctionArguments.

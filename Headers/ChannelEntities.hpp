@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+		static DiscordCoreInternal::HttpClient* httpClient;
 		static unordered_map<string, Channel> cache;
 
 		static void insertChannel(Channel dataPackage);

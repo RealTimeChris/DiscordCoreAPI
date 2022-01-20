@@ -131,8 +131,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reactions {
 	public:
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Creates a Reaction on a Message. \brief Creates a Reaction on a Message.
 		/// \param dataPackage A CreateReactionData structure.
@@ -188,6 +187,10 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A DeleteGuildEmojiData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildEmojiAsync(DeleteGuildEmojiData dataPackage);
+
+	protected:
+
+		static DiscordCoreInternal::HttpClient* httpClient;
 	};
 	/**@}*/
 }

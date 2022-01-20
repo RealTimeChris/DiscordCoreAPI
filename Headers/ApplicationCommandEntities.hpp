@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ApplicationCommands {
     public:
 
-        static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+        static void initialize(DiscordCoreInternal::HttpClient*);
 
         /// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.
         /// \returns A CoRoutine containing a vector<ApplicationCommand>.
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+        static DiscordCoreInternal::HttpClient* httpClient;
     };
     /**@}*/
 

@@ -488,7 +488,7 @@ namespace DiscordCoreAPI {
         friend EventHandler;
         friend EventManager;
 
-        static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+        static void initialize(DiscordCoreInternal::HttpClient*);
 
         /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.
         /// \param dataPackage A CreateDeferredInteractionResponseData structure.
@@ -538,7 +538,7 @@ namespace DiscordCoreAPI {
     protected:
        
         static unordered_map<string, unique_ptr<UnboundedMessageBlock<MessageData>>> collectMessageDataBuffers;
-        static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
+        static DiscordCoreInternal::HttpClient* httpClient;
 
         static void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
 

@@ -343,8 +343,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll WebHooks {
 	public:
 
-		static shared_ptr<DiscordCoreInternal::HttpClient> httpClient;
-		static void initialize(shared_ptr<DiscordCoreInternal::HttpClient>);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Creates a new WebHook. \brief Creates a new WebHook.
 		/// \param dataPackage A GetMessageData structure.
@@ -410,6 +409,10 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage An DeleteWebHookMessageData structure.
 		/// \returns A CoRoutine containing a Message.
 		static CoRoutine<void> deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage);
+
+	protected:
+
+		static DiscordCoreInternal::HttpClient* httpClient;
 
 	};
 	/**@}*/

@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 
 		friend Guild;
 
-		shared_ptr<DiscordCoreClient> thisPointer{ nullptr };
+		unique_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		CommandController commandController{ "" , nullptr };
 		unique_ptr<EventManager> eventManager{ nullptr };
 		string commandPrefix{};
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreClient(nullptr_t);
 
-		void registerFunction(vector<string> functionNames, shared_ptr<BaseFunction> baseFunction);
+		void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
 
 		BotUser getBotUser();
 
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
-		shared_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		vector<RepeatedFunctionData> functionsToExecute{};
 		DiscordCoreInternal::WSADATAWrapper wsaData{};		
 		CacheOptions cacheOptions{};

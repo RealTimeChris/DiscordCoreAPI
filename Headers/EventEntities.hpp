@@ -262,8 +262,9 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll EventWaiter {
     public:
 
-        shared_ptr<EventCore> theEventCore{ nullptr };
+        unique_ptr<EventCore> theEventCoreMain{ nullptr };
         atomic<bool*> theEventState{ nullptr };
+        EventCore* theEventCore{ nullptr };
 
         EventWaiter& operator=(EventWaiter& other) {
             this->theEventState.store(other.theEventState.load());
@@ -276,22 +277,26 @@ namespace DiscordCoreAPI {
         }
 
         EventWaiter() {
-            this->theEventCore = make_shared<EventCore>();
+            this->theEventCoreMain = make_unique<EventCore>();
+            this->theEventCore = this->theEventCoreMain.get();
             this->theEventState.store(this->theEventCore->theEventState.get());
         }
 
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
             uint64_t millisecondsWaited{ 0 };
             while (true) {
+                int64_t startTime = duration_cast<milliseconds, int64_t>(steady_clock::now().time_since_epoch()).count();
                 if (*this->theEventState.load()) {
                     return 0;
                 }
-                else {
-                    int64_t startTime = duration_cast<milliseconds, int64_t>(steady_clock::now().time_since_epoch()).count();
-                    this_thread::sleep_for(milliseconds(1));
-                    int64_t endTime = duration_cast<milliseconds, int64_t>(steady_clock::now().time_since_epoch()).count();
-                    millisecondsWaited += endTime - startTime;
+                else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
+
                 }
+                else {
+                    this_thread::sleep_for(milliseconds(1));
+                }
+                int64_t endTime = duration_cast<milliseconds, int64_t>(steady_clock::now().time_since_epoch()).count();
+                millisecondsWaited += endTime - startTime;
                 if (millisecondsWaited >= millisecondsMaxToWait) {
                     return 1;
                 }
