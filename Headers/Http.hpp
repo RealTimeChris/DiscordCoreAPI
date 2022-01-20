@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 
 		friend HttpClient;
 
-		HttpData handleHeaders(HttpWorkloadData& workload, HttpConnection* theConnection);
+		HttpData handleHeaders(HttpWorkloadData& workload, HttpConnection& theConnection);
 
 		string buildRequest(HttpWorkloadData& workload);
 
@@ -137,34 +137,6 @@ namespace DiscordCoreInternal {
 		bool doWeConnect{ true };
 		string bucket{ "" };
 
-		HttpConnection& operator=(HttpConnection& other) {
-			this->bucket = other.bucket;
-			this->connectionBio = move(other.connectionBio);
-			this->contentFinal = other.contentFinal;
-			this->contentSize = other.contentSize;
-			this->context = move(other.context);
-			this->currentRecursionDepth = other.currentRecursionDepth;
-			this->defaultCertPath = other.defaultCertPath;
-			this->doWeConnect = other.doWeConnect;
-			this->doWeHaveContentSize = other.doWeHaveContentSize;
-			this->doWeHaveHeaders = other.doWeHaveHeaders;
-			this->googleCertPath = other.googleCertPath;
-			this->headers = other.headers;
-			this->isItChunked = other.isItChunked;
-			this->maxBufferSize = other.maxBufferSize;
-			this->rateLimitData = other.rateLimitData;
-			this->rawInput = other.rawInput;
-			this->responseCode = other.responseCode;
-			this->soundcloudCertPath = other.soundcloudCertPath;
-			this->ssl = move(other.ssl);
-			this->theInputVector = other.theInputVector;
-			return *this;
-		}
-
-		HttpConnection(HttpConnection& other) {
-			*this = other;
-		}
-
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
 	};
@@ -175,7 +147,7 @@ namespace DiscordCoreInternal {
 		unique_ptr<unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>>> httpConnections{ make_unique<unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>>>() };
 		unique_ptr<unordered_map<string, unique_ptr<RateLimitData>>> rateLimitValues{ make_unique<unordered_map<string, unique_ptr<RateLimitData>>>() };
 
-		HttpConnection* getConnection(HttpWorkloadType type);
+		HttpConnection& getConnection(HttpWorkloadType type);
 
 		void storeConnection(HttpWorkloadType type);
 
@@ -283,11 +255,11 @@ namespace DiscordCoreInternal {
 		HttpConnectionManager connectionManager{};
 		const string botToken{};
 
-		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection* theConnection);
+		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection& theConnection);
 
-		HttpData executeHttpRequest(HttpWorkloadData&, HttpConnection* theConnection);
+		HttpData executeHttpRequest(HttpWorkloadData&, HttpConnection& theConnection);
 
-		HttpData getResponse(HttpWorkloadData&, HttpConnection* theConnection);
+		HttpData getResponse(HttpWorkloadData&, HttpConnection& theConnection);
 
 		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>&);
 
