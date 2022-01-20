@@ -10,6 +10,28 @@
 
 namespace DiscordCoreAPI {
 
+    struct DiscordCoreAPI_Dll OpusEncoderWrapper {
+
+        struct DiscordCoreAPI_Dll OpusEncoderDeleter {
+            void operator()(OpusEncoder* other) {
+                opus_encoder_destroy(other);
+            }
+        };
+
+        OpusEncoderWrapper& operator=(OpusEncoder* other) {
+            this->thePtr.reset(other);
+            return *this;
+        }
+
+        operator OpusEncoder* () {
+            return this->thePtr.get();
+        }
+
+        OpusEncoderWrapper(nullptr_t) {};
+    protected:
+        unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr , OpusEncoderDeleter{} };
+    };
+
 	class DiscordCoreAPI_Dll AudioEncoder {
 	public:
 
