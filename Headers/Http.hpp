@@ -144,8 +144,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		map<HttpWorkloadType, unique_ptr<HttpConnection>> httpConnections{};
-		map<string, unique_ptr<RateLimitData>> httpConnectionBucketValues{};
+		unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>> httpConnections{};
+		unordered_map<string, unique_ptr<RateLimitData>> httpConnectionBucketValues{};
 		mutex accessMutex{};
 
 		HttpConnection* getConnection(HttpWorkloadType type);
@@ -191,7 +191,7 @@ namespace DiscordCoreInternal {
 		returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
 				while (!this->theStopWatch01.load().hasTimePassed()) {};
-				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
+				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
 				HttpData returnData = this->httpRequest(workload, true);
@@ -210,7 +210,7 @@ namespace DiscordCoreInternal {
 		void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
 				while (!this->theStopWatch02.load().hasTimePassed()) {};
-				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
+				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
 				this->httpRequest(workload, true);
@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
 				while (!this->theStopWatch03.load().hasTimePassed()) {};
-				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + *HttpClient::botToken.load()));
+				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
 				return this->httpRequest(workload, false);
@@ -253,9 +253,8 @@ namespace DiscordCoreInternal {
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch01{ milliseconds{10} };
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch02{ milliseconds{10} };
 		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch03{ milliseconds{10} };
-		unique_ptr<string> botTokenHolder{ nullptr };
 		HttpConnectionManager connectionManager{};
-		atomic<string*> botToken{ nullptr };
+		const string botToken{};
 
 		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection* theConnection);
 
