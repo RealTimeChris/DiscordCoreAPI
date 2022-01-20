@@ -92,7 +92,7 @@ int main()
     init_apartment();
     string botToken = "YOUR_BOT_TOKEN_HERE";
     auto thePtr = make_shared<DiscordCoreAPI::DiscordCoreClient>(botToken, "!");
-    thePtr->registerFunction(vector<string>{"test"}, make_shared<DiscordCoreAPI::Test>());
+    thePtr->registerFunction(vector<string>{"test"}, make_unique<DiscordCoreAPI::Test>());
     thePtr->runBot();
 }
 ```
