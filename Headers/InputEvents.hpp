@@ -34,6 +34,10 @@ namespace DiscordCoreAPI {
 
 		static InputEventData respondToEvent(CreateDeferredInteractionResponseData dataPackage);
 
+		static InputEventData respondToEvent(CreateEphemeralInteractionResponseData dataPackage);
+
+		static InputEventData respondToEvent(CreateEphemeralFollowUpMessageData dataPackage);
+
 		static InputEventData respondToEvent(CreateInteractionResponseData dataPackage);
 
 		static InputEventData respondToEvent(EditInteractionResponseData dataPackage);
@@ -42,17 +46,13 @@ namespace DiscordCoreAPI {
 
 		static InputEventData respondToEvent(EditFollowUpMessageData dataPackage);
 
-		static InputEventData respondToEvent(CreateEphemeralInteractionResponseData dataPackage);
-
-		static InputEventData respondToEvent(CreateEphemeralFollowUpMessageData dataPackage);
-
 		static InputEventData respondToEvent(CreateMessageData dataPackage);
 
-		static InputEventData respondToEvent(SendDMData dataPackage);
+		static void respondToEvent(DeferComponentResponseData dataPackage);
 
 		static InputEventData respondToEvent(EditMessageData dataPackage);
 
-		static void respondToEvent(DeferComponentResponseData dataPackage);
+		static InputEventData respondToEvent(SendDMData dataPackage);
 	};
 	/**@}*/
 }

@@ -37,8 +37,8 @@ namespace DiscordCoreAPI {
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
-		std::string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the Guild.
 		std::vector<std::string>roles{};///< Array of role ids the member is assigned.
+		std::string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the Guild.
 		std::string guildId{ "" };///< The Guild to add the new GuildMember to.
 		std::string userId{ "" };///< The User id of the user you wish to add.
 		std::string nick{ "" };///< Value to set users nickname to.
@@ -57,13 +57,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
 		std::string newVoiceChannelId{ "" }; ///< The new voice channel to std::move them into.
 		std::string currentChannelId{ "" }; ///< The current voice channel, if applicaple.
-		std::string guildMemberId{ "" };	///< The user id of the desired Guild memeber.
 		std::vector<std::string> roleIds{}; ///<A collection of role id's to be applied to them.
+		std::string guildMemberId{ "" };	///< The user id of the desired Guild memeber.		
 		std::string guildId{ "" }; ///< The id of the Guild for which you would like to modify a member.
 		std::string reason{ "" };///< Reason for modifying this GuildMember.
+		std::string nick{ "" };	///< Their new display/nick name.
 		bool mute{ false }; ///< Whether or not to mute them in voice.
 		bool deaf{ false };	///< Whether or not to deafen them, in voice.
-		std::string nick{ "" };	///< Their new display/nick name.
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.

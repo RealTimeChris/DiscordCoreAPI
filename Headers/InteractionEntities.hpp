@@ -553,9 +553,9 @@ namespace DiscordCoreAPI {
 
     /// Select menu response data. \brief Select menu response data.
     struct DiscordCoreAPI_Dll SelectMenuResponseData {
+        std::vector<std::string> values{};///< A std::vector of the chosen values.
         InteractionData interactionData{};///< Interaction data.
         std::string selectionId{ "" };///< Selection id.
-        std::vector<std::string> values{};///< A std::vector of the chosen values.
         std::string channelId{ "" };///< The Channel id where it took place.
         std::string messageId{ "" };///< The Message id where it took place.
         std::string userId{ "" };///< The User id who selected the menu options.
@@ -585,18 +585,18 @@ namespace DiscordCoreAPI {
     protected:
 
         std::unique_ptr<UnboundedMessageBlock<InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
-        InteractionData interactionData{};
         std::vector<SelectMenuResponseData> responseVector{};
         int32_t currentCollectedSelectMenuCount{ 0 };
         int32_t maxCollectedSelectMenuCount{ 0 };
         bool getSelectMenuDataForAll{ false };
-        uint32_t maxTimeInMs{ 0 };
-        std::string selectMenuId{ "" };
+        InteractionData interactionData{};
         std::vector<std::string> values{};
-        bool doWeQuit{ false };
+        std::string selectMenuId{ "" };
         std::string channelId{ "" };
         std::string messageId{ "" };
+        uint32_t maxTimeInMs{ 0 };
         std::string userId{ "" };
+        bool doWeQuit{ false };
 
         void run();
     };
@@ -640,18 +640,18 @@ namespace DiscordCoreAPI {
     protected:
 
         std::unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
-        InteractionData interactionData{};
         std::vector<ButtonResponseData> responseVector{};
         int32_t currentCollectedButtonCount{ 0 };
         int32_t maxCollectedButtonCount{ 0 };
+        InteractionData interactionData{};
         bool getButtonDataForAll{ false };
-        uint32_t maxTimeInMs{ 0 };
         std::vector<std::string> values{};
-        bool doWeQuit{ false };
         std::string channelId{ "" };
         std::string messageId{ "" };
         std::string buttonId{ "" };
+        uint32_t maxTimeInMs{ 0 };
         std::string userId{ "" };
+        bool doWeQuit{ false };
 
         void run();
     };

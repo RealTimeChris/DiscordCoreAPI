@@ -73,9 +73,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll ErlPacker {
 	public:
 
-		static std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
-
 		static nlohmann::json parseEtfToJson(std::unique_ptr<std::vector<uint8_t>>);
+
+		static std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
 
 	protected:
 
