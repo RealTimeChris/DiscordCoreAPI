@@ -137,6 +137,34 @@ namespace DiscordCoreInternal {
 		bool doWeConnect{ true };
 		string bucket{ "" };
 
+		HttpConnection& operator=(HttpConnection& other) {
+			this->bucket = other.bucket;
+			this->connectionBio = move(other.connectionBio);
+			this->contentFinal = other.contentFinal;
+			this->contentSize = other.contentSize;
+			this->context = move(other.context);
+			this->currentRecursionDepth = other.currentRecursionDepth;
+			this->defaultCertPath = other.defaultCertPath;
+			this->doWeConnect = other.doWeConnect;
+			this->doWeHaveContentSize = other.doWeHaveContentSize;
+			this->doWeHaveHeaders = other.doWeHaveHeaders;
+			this->googleCertPath = other.googleCertPath;
+			this->headers = other.headers;
+			this->isItChunked = other.isItChunked;
+			this->maxBufferSize = other.maxBufferSize;
+			this->rateLimitData = other.rateLimitData;
+			this->rawInput = other.rawInput;
+			this->responseCode = other.responseCode;
+			this->soundcloudCertPath = other.soundcloudCertPath;
+			this->ssl = move(other.ssl);
+			this->theInputVector = other.theInputVector;
+			return *this;
+		}
+
+		HttpConnection(HttpConnection& other) {
+			*this = other;
+		}
+
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
 	};
@@ -144,10 +172,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		unique_ptr<unordered_map<string, unique_ptr<RateLimitData>>> rateLimitValuesPtr{};
-		unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>> httpConnections{};
-		atomic<unordered_map<string, unique_ptr<RateLimitData>>*> rateLimitValues{};
-		mutex accessMutex{};
+		unique_ptr<unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>>> httpConnections{ make_unique<unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>>>() };
+		unique_ptr<unordered_map<string, unique_ptr<RateLimitData>>> rateLimitValues{ make_unique<unordered_map<string, unique_ptr<RateLimitData>>>() };
 
 		HttpConnection* getConnection(HttpWorkloadType type);
 
