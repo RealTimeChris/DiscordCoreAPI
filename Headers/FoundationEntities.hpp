@@ -2062,7 +2062,6 @@ namespace DiscordCoreAPI {
         virtual ~ApplicationCommandData() {}
     };
 
-
     /// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
     struct DiscordCoreAPI_Dll RepeatedFunctionData {
         function<void(DiscordCoreClient*)> function{ nullptr };///< The function pointer to be loaded.
