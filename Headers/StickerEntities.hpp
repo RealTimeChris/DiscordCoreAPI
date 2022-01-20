@@ -17,39 +17,39 @@ namespace DiscordCoreAPI {
 	*/
 	/// For getting a Sticker object for the given sticker ID. \brief For getting a Sticker object for the given sticker ID.
 	struct DiscordCoreAPI_Dll GetStickerData {
-		string stickerId{ "" };///< The chosen Sticker's Id.
+		std::string stickerId{ "" };///< The chosen Sticker's Id.
 	};
 
 	/// For collecting a list of Stickers from a chosen Guild. \brief For collecting a list of Stickers from a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildStickersData {
-		string guildId{ "" };///< The chosen Guild from which you would like to collect the Stickers from.
+		std::string guildId{ "" };///< The chosen Guild from which you would like to collect the Stickers from.
 	};
 
 	/// For creating a single Sticker. \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
-		string description{ "" };///< Description of the Sticker.
-		vector<uint8_t> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB
-		string guildId{ "" };///< The Guild within which to create the Sticker.
-		string reason{ "" };///< The reason for creating the Sticker.
-		string name{ "" };///< Name of the Sticker.
-		string tags{ "" };///< Autocomplete / suggestion tags for the sticker(max 200 characters).
+		std::string description{ "" };///< Description of the Sticker.
+		std::vector<uint8_t> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie nlohmann::json file, max 500 KB
+		std::string guildId{ "" };///< The Guild within which to create the Sticker.
+		std::string reason{ "" };///< The reason for creating the Sticker.
+		std::string name{ "" };///< Name of the Sticker.
+		std::string tags{ "" };///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
 	/// For modifying a single Sticker. \brief For modifying a single Sticker.
 	struct DiscordCoreAPI_Dll ModifyGuildStickerData {
-		string description{ "" };///< Description of the Sticker.
-		string stickerId{ "" };///< The Sticker you wish to modify.
-		string guildId{ "" };///< The Guild within which to modify the Sticker.
-		string reason{ "" };///< The reason for modifying the Sticker.
-		string name{ "" };///< Name of the Sticker.
-		string tags{ "" };///< Autocomplete / suggestion tags for the sticker(max 200 characters).
+		std::string description{ "" };///< Description of the Sticker.
+		std::string stickerId{ "" };///< The Sticker you wish to modify.
+		std::string guildId{ "" };///< The Guild within which to modify the Sticker.
+		std::string reason{ "" };///< The reason for modifying the Sticker.
+		std::string name{ "" };///< Name of the Sticker.
+		std::string tags{ "" };///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
 	/// For deleting a single Sticker. \brief For deleting a single Sticker.
 	struct DiscordCoreAPI_Dll DeleteGuildStickerData {
-		string stickerId{ "" };///< The Sticker you wish to delete.
-		string guildId{ "" };///< The Guild within which to delete the Sticker.
-		string reason{ "" };///< The reason for deleting the Sticker.
+		std::string stickerId{ "" };///< The Sticker you wish to delete.
+		std::string guildId{ "" };///< The Guild within which to delete the Sticker.
+		std::string reason{ "" };///< The reason for deleting the Sticker.
 	};
 
 	/// A single Sticker. \brief A single Sticker.
@@ -79,13 +79,13 @@ namespace DiscordCoreAPI {
 		static CoRoutine<Sticker> getStickerAsync(GetStickerData dataPackage);
 
 		/// Gets a list of nitro-available Sticker packs. \brief Gets a list of nitro-available Sticker packs.
-		/// \returns A CoRoutine containing a vector<StickerPackData>.
-		static CoRoutine<vector<StickerPackData>> getNitroStickerPacksAsync();
+		/// \returns A CoRoutine containing a std::vector<StickerPackData>.
+		static CoRoutine<std::vector<StickerPackData>> getNitroStickerPacksAsync();
 		
 		/// Gets a list of Stickers from a Guild. \brief Gets a list of Stickers from a Guild.
 		/// \param dataPackage A GetGuildStickersData structure.
-		/// \returns A CoRoutine containing a vector<Sticker>.
-		static CoRoutine<vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<Sticker>.
+		static CoRoutine<std::vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
 
 		/// Creates a new Sticker within a chosen Guild. \brief Creates a new Sticker within a chosen Guild.
 		/// \param dataPackage A CreateGuildStickerData structure.

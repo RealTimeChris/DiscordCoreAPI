@@ -87,14 +87,14 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
 
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
-		json payLoad{};
+		nlohmann::json payLoad{};
 
 		WebSocketWorkload() {}
 
 		WebSocketWorkload& operator=(WebSocketWorkload&& other) noexcept {
 			if (this != &other) {
-				this->payLoad = move(other.payLoad);
-				other.payLoad = json();
+				this->payLoad = std::move(other.payLoad);
+				other.payLoad = nlohmann::json();
 				this->eventType = other.eventType;
 				other.eventType = WebSocketEventType::Unset;
 			}
@@ -102,7 +102,7 @@ namespace DiscordCoreInternal {
 		}
 
 		WebSocketWorkload(WebSocketWorkload&& other) noexcept {
-			*this = move(other);
+			*this = std::move(other);
 		}
 
 		WebSocketWorkload& operator=(const WebSocketWorkload& other) noexcept {
@@ -122,15 +122,15 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(string botToken, string baseUrl, string port = "443", string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
+		BaseSocketAgent(std::string botToken, std::string baseUrl, std::string port = "443", std::string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
 
 		BaseSocketAgent(nullptr_t);
 
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& getWorkloadTarget();
 
-		void sendMessage(string& dataToSend);
+		void sendMessage(std::string& dataToSend);
 
-		void sendMessage(json& dataToSend);
+		void sendMessage(nlohmann::json& dataToSend);
 
 		~BaseSocketAgent();
 
@@ -146,11 +146,11 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
 		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
-		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
+		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
-		unordered_map<string, string> HttpHeaders{};
+		std::unordered_map<std::string, std::string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -159,25 +159,25 @@ namespace DiscordCoreInternal {
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
-		recursive_mutex accessorMutex01{};
+		std::recursive_mutex accessorMutex01{};
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
-		vector<uint8_t> inputBuffer{};
+		std::vector<uint8_t> inputBuffer{};
 		WebSocketOpCode dataOpcode{};		
-		string relativePath{ "" };
+		std::string relativePath{ "" };
 		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
 		WebSocketState state{};
-		string sessionId{ "" };
-		string botToken{ "" };
-		string baseUrl{ "" };
-		string authKey{ "" };
-		string port{ "" };
+		std::string sessionId{ "" };
+		std::string botToken{ "" };
+		std::string baseUrl{ "" };
+		std::string authKey{ "" };
+		std::string port{ "" };
 
-		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendLength, WebSocketOpCode opCode);
 
-		vector<string> tokenize(const string&, string = "\r\n");
+		std::vector<std::string> tokenize(const std::string&, std::string = "\r\n");
 
 		void getVoiceConnectionData(VoiceConnectInitData doWeCollect);
 
@@ -203,32 +203,32 @@ namespace DiscordCoreInternal {
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew);
 
-		void sendMessage(vector<uint8_t>& responseData);
+		void sendMessage(std::vector<uint8_t>& responseData);
 
-		void sendVoiceData(string& responseData);
+		void sendVoiceData(std::string& responseData);
 
-		void sendMessage(string& dataToSend);
+		void sendMessage(std::string& dataToSend);
 
 		~VoiceSocketAgent();
 
 	protected:
 
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-		unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
+		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
-		unique_ptr<bool> doWeReconnectPtr{ make_unique<bool>() };
+		std::unique_ptr<bool> doWeReconnectPtr{ std::make_unique<bool>() };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
 		WebSocketState state{ WebSocketState::Initializing };
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
-		unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
+		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		DiscordCoreAPI::EventWaiter connectionReadyEvent{};
-		unordered_map<string, string> HttpHeaders{};
+		std::unordered_map<std::string, std::string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
@@ -236,24 +236,24 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		int32_t lastNumberReceived{ 0 };
-		vector<uint8_t> inputBuffer00{};
+		std::vector<uint8_t> inputBuffer00{};
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
-		atomic<bool*> doWeReconnect{};
-		vector<char> inputBuffer01{};
-		string relativePath{ "" };
-		mutex accessorMutex00{};
+		std::atomic<bool*> doWeReconnect{};
+		std::vector<char> inputBuffer01{};
+		std::string relativePath{ "" };
+		std::mutex accessorMutex00{};
 		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
-		string baseUrl{ "" };
-		string port{ "443" };
-		string authKey{ "" };
-		string hostIp{ "" };
+		std::string baseUrl{ "" };
+		std::string port{ "443" };
+		std::string authKey{ "" };
+		std::string hostIp{ "" };
 
-		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendLength, WebSocketOpCode opCode);
 
-		vector<string> tokenize(const string&, string = "\r\n");
+		std::vector<std::string> tokenize(const std::string&, std::string = "\r\n");
 
 		DiscordCoreAPI::CoRoutine<void> run();
 

@@ -24,17 +24,17 @@ namespace DiscordCoreAPI {
 
         ThreadPool();
 
-        void storeThread(string theKey, unique_ptr<CoRoutine<void>> thread);
+        void storeThread(std::string theKey, std::unique_ptr<CoRoutine<void>> thread);
 
-        CoRoutineStatus getThreadStatus(string theKey);
+        CoRoutineStatus getThreadStatus(std::string theKey);
 
-        void stopThread(string theKey);        
+        void stopThread(std::string theKey);        
 
         ~ThreadPool();
 
     protected:
 
-        map<string, unique_ptr<CoRoutine<void>>> threads{};
+        std::map<std::string, std::unique_ptr<CoRoutine<void>>> threads{};
         CoRoutine<void> cleanupTask{};
         bool doWeQuit{ false };
 
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
     };
 
-    using TimeElapsedHandler = function<void(void)>;
+    using TimeElapsedHandler = std::function<void(void)>;
 
     using TimeElapsedHandlerTwo = void(*)(void);
 
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
         static ThreadPool threads;
 
-        string threadId{ "" };
+        std::string threadId{ "" };
 
         ThreadPoolTimer();
 
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
     };
 
     template <typename ...T>
-    void executeFunctionAfterTimePeriod(function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+    void executeFunctionAfterTimePeriod(std::function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
         if (timeDelayInMs > 0 && !isRepeating) {
             TimeElapsedHandler timeElapsedHandler = [=]()->void {
                 theFunction(args...);
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
             ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::createPeriodicTimer(timeElapsedHandler, timeDelayInMs);
         }
         else {
-            throw exception("Please enter a valid delay time!");
+            throw std::exception("Please enter a valid delay time!");
         }
         
     };

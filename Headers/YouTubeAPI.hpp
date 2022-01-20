@@ -20,49 +20,49 @@ namespace DiscordCoreAPI {
 
 		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
-		vector<YouTubeSong> collectSearchResults(string theString);
+		std::vector<YouTubeSong> collectSearchResults(std::string theString);
 
 	protected:
 
 		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
-		string baseUrl{ "https://www.youtube.com" };
+		std::string baseUrl{ "https://www.youtube.com" };
 
 		YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);
 
 		YouTubeSong constructFinalDownloadUrl(Song newSong);
 
-		vector<char> sliceVector(vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
+		std::vector<char> sliceVector(std::vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
 		
-		vector<char> swapHeadAndPosition(vector<char> inputVector, int32_t position);
+		std::vector<char> swapHeadAndPosition(std::vector<char> inputVector, int32_t position);
 		
-		YouTubeFormat decipherFormat(YouTubeFormat format, string html5playerFile);
+		YouTubeFormat decipherFormat(YouTubeFormat format, std::string html5playerFile);
 
-		string decipher(vector<string> tokens, string cipherSignature);
+		std::string decipher(std::vector<std::string> tokens, std::string cipherSignature);
 
-		vector<string> extractActions(string html5PlayerPageBody);
+		std::vector<std::string> extractActions(std::string html5PlayerPageBody);
 
-		vector<char> reverseString(vector<char> stringToReverse);
+		std::vector<char> reverseString(std::vector<char> stringToReverse);
 
-		string between(string body, string left, string right);
+		std::string between(std::string body, std::string left, std::string right);
 
-		vector<string> getTokens(string html5PlayerFile);
+		std::vector<std::string> getTokens(std::string html5PlayerFile);
 
-		vector<char> splitString(string stringToSplit);
+		std::vector<char> splitString(std::string stringToSplit);
 
-		string joinString(vector<char> stringToJoin);
+		std::string joinString(std::vector<char> stringToJoin);
 
-		string setDownloadUrl(YouTubeFormat format);
+		std::string setDownloadUrl(YouTubeFormat format);
 
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	public:
 
-		YouTubeAPI(string guildId, DiscordCoreInternal::HttpClient* httpClient);
+		YouTubeAPI(std::string guildId, DiscordCoreInternal::HttpClient* httpClient);
 
 		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
-		vector<YouTubeSong> searchForSong(string searchQuery, string guildId);
+		std::vector<YouTubeSong> searchForSong(std::string searchQuery, std::string guildId);
 
 		void sendNextSong(Song newSong);
 
@@ -78,9 +78,9 @@ namespace DiscordCoreAPI {
 		EventWaiter readyToQuitEventOut{};
 		EventWaiter readyToQuitEventIn{};
 		YouTubeSong theSong{};
-		string guildId{ "" };
+		std::string guildId{ "" };
 
-		void sendEmptyingFrames(TSUnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
+		void sendEmptyingFrames(TSUnboundedMessageBlock<std::vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 

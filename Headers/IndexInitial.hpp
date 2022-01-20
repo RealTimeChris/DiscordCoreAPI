@@ -76,6 +76,7 @@ extern "C"
 #include <regex>
 #include <mutex>
 #include <queue>
+#include <ios>
 
 #ifdef _WIN32
 #ifdef _DEBUG

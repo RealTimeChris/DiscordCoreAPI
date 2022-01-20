@@ -18,51 +18,51 @@ namespace DiscordCoreAPI {
 
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		vector<ActivityData> activities{};///< A vector of activities.
-		string status{ "" };///< Current status.
+		std::vector<ActivityData> activities{};///< A std::vector of activities.
+		std::string status{ "" };///< Current status.
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
 	};
 
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		string token{ "" };///< The user's access token.
-		string nick{ "" };///< The user's nickname.
-		string channelId{ "" };///< The channel Id of the Dm.
-		string userId{ "" };///< The user's Id.
+		std::string token{ "" };///< The user's access token.
+		std::string nick{ "" };///< The user's nickname.
+		std::string channelId{ "" };///< The channel Id of the Dm.
+		std::string userId{ "" };///< The user's Id.
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		string channelId{ "" };///< The channel Id of the Dm.
-		string userId{ "" };///< The user's Id.
+		std::string channelId{ "" };///< The channel Id of the Dm.
+		std::string userId{ "" };///< The user's Id.
 	};
 
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
-		string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
-		string channelId{ "" };///< The id of the channel the user is currently in.
+		std::string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
+		std::string channelId{ "" };///< The id of the channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
-		string guildId{ "" };///< The Guild within which to update the bot's voice state.
+		std::string guildId{ "" };///< The Guild within which to update the bot's voice state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
-		string channelId{ "" };///< The id of the channel the user is currently in.
+		std::string channelId{ "" };///< The id of the channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
-		string guildId{ "" };///< The Guild within which you would like to modify their voice state.
-		string userId{ "" };///< The user for which you would like to modify the voice state of.
+		std::string guildId{ "" };///< The Guild within which you would like to modify their voice state.
+		std::string userId{ "" };///< The user for which you would like to modify the voice state of.
 	};
 
 	/// For getting User responseData from the library's cache or the Discord server. \brief For getting User responseData from the library's cache or the Discord server.
 	struct DiscordCoreAPI_Dll GetUserData {
-		string userId{ "" };///< The id of the desired User.
+		std::string userId{ "" };///< The id of the desired User.
 	};
 
 	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
-		vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
-		string username{ "" };///< User's username, if changed may cause the user's discriminator to be randomized.
+		std::vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
+		std::string username{ "" };///< User's username, if changed may cause the user's discriminator to be randomized.
 	};
 	
 	enum class UserFlags : int8_t {
@@ -75,14 +75,14 @@ namespace DiscordCoreAPI {
 	/// A single User. \brief A single User.
 	class DiscordCoreAPI_Dll User : public DiscordEntity {
 	public:
-		string discriminator{ "" }; ///< The # next to their User name.
+		std::string discriminator{ "" }; ///< The # next to their User name.
 		int32_t premiumType{ 0 };///< Their premium nitro status.
 		int32_t publicFlags{ 0 };///< Public flags.
-		string createdAt{ "" };///< When the User was created.
-		string userName{ "" };///< Their username.
-		string avatar{ "" };///< Their avatar url.
-		string locale{ "" };///< The region they are from/in.
-		string email{ "" };///< Their email address.
+		std::string createdAt{ "" };///< When the User was created.
+		std::string userName{ "" };///< Their username.
+		std::string avatar{ "" };///< Their avatar url.
+		std::string locale{ "" };///< The region they are from/in.
+		std::string email{ "" };///< Their email address.
 		int32_t flags{ 0 };///< Flags.
 		int8_t flagsEnum{};///< Flags for enumerated boolean values.
 
@@ -184,8 +184,8 @@ namespace DiscordCoreAPI {
 		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
 
 		/// Collects the User's Connections. \brief Collects the User's Connections.
-		/// \returns A CoRoutine containing a vector<ConnectionData>.
-		static CoRoutine<vector<ConnectionData>> getUserConnections();
+		/// \returns A CoRoutine containing a std::vector<ConnectionData>.
+		static CoRoutine<std::vector<ConnectionData>> getUserConnections();
 
 		/// Collects the Application responseData associated with the current Bot. \brief Collects the Application responseData associated with the current Bot.
 		/// \returns A CoRoutine containing an ApplicationData.
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		static DiscordCoreInternal::HttpClient* httpClient;
-		static unordered_map<string, User> cache;
+		static std::unordered_map<std::string, User> cache;
 
 		static void insertUser(User user);
 	};

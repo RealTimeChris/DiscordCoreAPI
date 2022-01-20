@@ -40,23 +40,23 @@ namespace DiscordCoreAPI {
 
 	namespace Statics {
 		namespace {
-			unordered_map<string, TSUnboundedMessageBlock<AudioFrameData>*> audioBufferMap{};
-			unordered_map<string, unique_ptr<VoiceConnection>> voiceConnectionMap{};
-			unordered_map<string, unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
-			unordered_map<string, unique_ptr<YouTubeAPI>> youtubeAPIMap{};
-			unordered_map<string, unique_ptr<SongAPI>> songAPIMap{};
+			std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*> audioBufferMap{};
+			std::unordered_map<std::string, std::unique_ptr<VoiceConnection>> voiceConnectionMap{};
+			std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
+			std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>> youtubeAPIMap{};
+			std::unordered_map<std::string, std::unique_ptr<SongAPI>> songAPIMap{};
 		}
 	}
 
-	DiscordCoreAPI_Dll unordered_map<string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap();
+	DiscordCoreAPI_Dll std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap();
 
-	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
+	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 
-	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
+	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
 
-	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
+	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
 
-	DiscordCoreAPI_Dll unordered_map<string, unique_ptr<SongAPI>>* getSongAPIMap();
+	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<SongAPI>>* getSongAPIMap();
 
 	/**
 	* \addtogroup main_endpoints
@@ -67,16 +67,16 @@ namespace DiscordCoreAPI {
 
 		friend Guild;
 
-		unique_ptr<DiscordCoreClient> thisPointer{ nullptr };
+		std::unique_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		CommandController commandController{ "" , nullptr };
-		unique_ptr<EventManager> eventManager{ nullptr };
-		string commandPrefix{};
+		std::unique_ptr<EventManager> eventManager{ nullptr };
+		std::string commandPrefix{};
 
-		DiscordCoreClient(string botTokenNew, string commandPrefixNew, vector<RepeatedFunctionData> functionsToExecuteNew = vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{});
+		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{});
 
 		DiscordCoreClient(nullptr_t);
 
-		void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
 		BotUser getBotUser();
 
@@ -87,16 +87,16 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
-		unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
-		vector<RepeatedFunctionData> functionsToExecute{};
+		std::unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
+		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		std::vector<RepeatedFunctionData> functionsToExecute{};
 		DiscordCoreInternal::WSADATAWrapper wsaData{};		
 		CacheOptions cacheOptions{};
 		bool doWeQuit{ false };
 		BotUser currentUser{};
-		string botToken{ "" };
+		std::string botToken{ "" };
 
-		string getGateWayBot();
+		std::string getGateWayBot();
 
 		void initialize();
 

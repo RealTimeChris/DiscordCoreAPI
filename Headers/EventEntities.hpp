@@ -27,8 +27,8 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        string handlerId{ "" };
-        string eventId{ "" };
+        std::string handlerId{ "" };
+        std::string eventId{ "" };
 
     };
 
@@ -59,14 +59,14 @@ namespace DiscordCoreAPI {
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunction = move(other.theFunction);
-                other.theFunction = function<ReturnType(ArgTypes...)>{};
+                this->theFunction = std::move(other.theFunction);
+                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
             }
             return *this;
         }
 
         EventDelegate(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
-            *this = move(other);
+            *this = std::move(other);
         }
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 
         EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-        EventDelegate(function<ReturnType(ArgTypes...)> theFunctionNew) {
+        EventDelegate(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
         }
 
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        function<ReturnType(ArgTypes...)>theFunction{};
+        std::function<ReturnType(ArgTypes...)>theFunction{};
     };
 
     template<typename ReturnType, typename  ...ArgTypes>
@@ -95,16 +95,16 @@ namespace DiscordCoreAPI {
 
         Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunctions = move(other.theFunctions);
-                other.theFunctions = map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
-                this->eventId = move(other.eventId);
-                other.eventId = string{};
+                this->theFunctions = std::move(other.theFunctions);
+                other.theFunctions = std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
+                this->eventId = std::move(other.eventId);
+                other.eventId = std::string{};
             }
             return *this;
         }
 
         Event(Event<ReturnType, ArgTypes...>&& other) noexcept {
-            *this = move(other);
+            *this = std::move(other);
         }
 
         Event<ReturnType, ArgTypes...>& operator=(const Event<ReturnType, ArgTypes...>&) = delete;
@@ -116,14 +116,14 @@ namespace DiscordCoreAPI {
         Event(Event<ReturnType, ArgTypes...>&) = delete;
 
         Event() {
-            this->eventId = to_string(duration_cast<microseconds>(steady_clock::now().time_since_epoch()).count());
+            this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
         }
 
         EventDelegateToken add(EventDelegate<ReturnType, ArgTypes...> eventDelegate) {
             EventDelegateToken eventToken{};
-            eventToken.handlerId = to_string(duration_cast<microseconds>(steady_clock::now().time_since_epoch()).count());
+            eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
-            this->theFunctions.insert_or_assign(eventToken, move(eventDelegate));
+            this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
             return eventToken;
         }
 
@@ -140,8 +140,8 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
-        string eventId{ "" };
+        std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
+        std::string eventId{ "" };
     };
 
     template<typename ...ArgTypes>
@@ -152,14 +152,14 @@ namespace DiscordCoreAPI {
 
         EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunction = move(other.theFunction);
-                other.theFunction = function<void(ArgTypes...)>{};
+                this->theFunction = std::move(other.theFunction);
+                other.theFunction = std::function<void(ArgTypes...)>{};
             }
             return *this;
         }
 
         EventDelegate(EventDelegate<void, ArgTypes...>&& other) noexcept {
-            *this = move(other);
+            *this = std::move(other);
         }
 
         EventDelegate<void, ArgTypes...>& operator=(const EventDelegate<void, ArgTypes...>& other) = delete;
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 
         EventDelegate(EventDelegate<void, ArgTypes...>& other) = delete;
 
-        EventDelegate(function<void(ArgTypes...)> theFunctionNew) {
+        EventDelegate(std::function<void(ArgTypes...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
         }
 
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        function<void(ArgTypes...)>theFunction{};
+        std::function<void(ArgTypes...)>theFunction{};
     };
 
     template<typename ...ArgTypes>
@@ -188,16 +188,16 @@ namespace DiscordCoreAPI {
 
         Event<void, ArgTypes...>& operator=(Event<void, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunctions = move(other.theFunctions);
-                other.theFunctions = map<EventDelegateToken, EventDelegate<void, ArgTypes...>>{};
-                this->eventId = move(other.eventId);
-                other.eventId = string{};
+                this->theFunctions = std::move(other.theFunctions);
+                other.theFunctions = std::map<EventDelegateToken, EventDelegate<void, ArgTypes...>>{};
+                this->eventId = std::move(other.eventId);
+                other.eventId = std::string{};
             }
             return *this;
         }
 
         Event(Event<void, ArgTypes...>&& other) noexcept {
-            *this = move(other);
+            *this = std::move(other);
         }
 
         Event<void, ArgTypes...>& operator=(const Event<void, ArgTypes...>&) = delete;
@@ -209,14 +209,14 @@ namespace DiscordCoreAPI {
         Event(Event<void, ArgTypes...>&) = delete;
 
         Event() {
-            this->eventId = to_string(duration_cast<microseconds>(steady_clock::now().time_since_epoch()).count());
+            this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
         }
 
         EventDelegateToken add(EventDelegate<void, ArgTypes...> eventDelegate) {
             EventDelegateToken eventToken{};
-            eventToken.handlerId = to_string(duration_cast<microseconds>(steady_clock::now().time_since_epoch()).count());
+            eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
-            this->theFunctions.insert_or_assign(eventToken, move(eventDelegate));
+            this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
             return eventToken;
         }
 
@@ -234,8 +234,8 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        map<EventDelegateToken, EventDelegate<void, ArgTypes...>> theFunctions{};
-        string eventId{ "" };
+        std::map<EventDelegateToken, EventDelegate<void, ArgTypes...>> theFunctions{};
+        std::string eventId{ "" };
 
     };
 
@@ -255,15 +255,15 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        unique_ptr<bool> theEventState{ make_unique<bool>() };
+        std::unique_ptr<bool> theEventState{ std::make_unique<bool>() };
 
     };
 
     class DiscordCoreAPI_Dll EventWaiter {
     public:
 
-        unique_ptr<EventCore> theEventCoreMain{ nullptr };
-        atomic<bool*> theEventState{ nullptr };
+        std::unique_ptr<EventCore> theEventCoreMain{ nullptr };
+        std::atomic<bool*> theEventState{ nullptr };
         EventCore* theEventCore{ nullptr };
 
         EventWaiter& operator=(EventWaiter& other) {
@@ -277,7 +277,7 @@ namespace DiscordCoreAPI {
         }
 
         EventWaiter() {
-            this->theEventCoreMain = make_unique<EventCore>();
+            this->theEventCoreMain = std::make_unique<EventCore>();
             this->theEventCore = this->theEventCoreMain.get();
             this->theEventState.store(this->theEventCore->theEventState.get());
         }
@@ -285,7 +285,7 @@ namespace DiscordCoreAPI {
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
             uint64_t millisecondsWaited{ 0 };
             while (true) {
-                int64_t startTime = duration_cast<milliseconds, int64_t>(steady_clock::now().time_since_epoch()).count();
+                int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::steady_clock::now().time_since_epoch()).count();
                 if (*this->theEventState.load()) {
                     return 0;
                 }
@@ -293,9 +293,9 @@ namespace DiscordCoreAPI {
 
                 }
                 else {
-                    this_thread::sleep_for(milliseconds(1));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
-                int64_t endTime = duration_cast<milliseconds, int64_t>(steady_clock::now().time_since_epoch()).count();
+                int64_t endTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::steady_clock::now().time_since_epoch()).count();
                 millisecondsWaited += endTime - startTime;
                 if (millisecondsWaited >= millisecondsMaxToWait) {
                     return 1;

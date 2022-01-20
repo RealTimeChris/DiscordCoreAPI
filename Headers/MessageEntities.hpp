@@ -6,7 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "JSONIFier.hpp"
+#include "JSONifier.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -17,29 +17,29 @@ namespace DiscordCoreAPI {
 
 	/// For getting a collection of Messages. \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
-		string aroundThisId{ "" };///<Around this id.
-		string beforeThisId{ "" };///< Before this id.
-		string afterThisId{ "" };///< After this id.
-		string channelId{ "" };///< Channel from which to collect the Messages.
+		std::string aroundThisId{ "" };///<Around this id.
+		std::string beforeThisId{ "" };///< Before this id.
+		std::string afterThisId{ "" };///< After this id.
+		std::string channelId{ "" };///< Channel from which to collect the Messages.
 		 int32_t limit{ 0 };///< Limit of Messages to collect.		
 	};
 
 	/// For getting a Message. \brief For getting a Message.
 	struct DiscordCoreAPI_Dll GetMessageData {
-		string requesterId{ "" };///< The requester id.
-		string channelId{ "" };///< The Channel from which to collect the Message.
-		string id{ "" };///< The id of the Message to collect.
+		std::string requesterId{ "" };///< The requester id.
+		std::string channelId{ "" };///< The Channel from which to collect the Message.
+		std::string id{ "" };///< The id of the Message to collect.
 	};
 
 	/// For creating a Message. \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData {
 	public:
 
-		friend string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
+		friend std::string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
 		friend InputEvents;
 		friend Messages;
 
-		CreateMessageData(string channelIdNew) {
+		CreateMessageData(std::string channelIdNew) {
 			this->channelId = channelIdNew;
 		}
 
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.        
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+		void addButton(bool disabled, std::string customId, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -98,11 +98,11 @@ namespace DiscordCoreAPI {
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customId A custom id to give for identifying the select-menu.
-		/// \param options A vector of select-menu-options to offer.
+		/// \param options A std::vector of select-menu-options to offer.
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
+		void addSelectMenu(bool disabled, std::string customId, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -146,8 +146,8 @@ namespace DiscordCoreAPI {
 		}
 
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
-		/// \param dataPackage A string, containing the content.
-		void addContent(string dataPackage) {
+		/// \param dataPackage A std::string, containing the content.
+		void addContent(std::string dataPackage) {
 			this->content = dataPackage;
 		}
 
@@ -161,12 +161,12 @@ namespace DiscordCoreAPI {
 
 		MessageReferenceData messageReference{};
 		AllowedMentionsData allowedMentions{};
-		vector<ActionRowData> components{};
-		vector<string> stickerIds{};
-		vector<EmbedData> embeds{};
-		string requesterId{ "" };
-		string channelId{ "" };
-		string content{ "" };
+		std::vector<ActionRowData> components{};
+		std::vector<std::string> stickerIds{};
+		std::vector<EmbedData> embeds{};
+		std::string requesterId{ "" };
+		std::string channelId{ "" };
+		std::string content{ "" };
 		bool tts{ false };
 
 		CreateMessageData() {};
@@ -193,21 +193,21 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		string targetUserId{ "" };
+		std::string targetUserId{ "" };
 
 	};
 
 	/// For crossposting a Message. \brief For crossposting a Message.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
-		string messageId{ "" };///< Id of the message to be crossposted.
-		string channelId{ "" };///< Channel within which to crosspost the Message from.
+		std::string messageId{ "" };///< Id of the message to be crossposted.
+		std::string channelId{ "" };///< Channel within which to crosspost the Message from.
 	};
 
 	/// For editing a Message. \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData {
 	public:
 
-		friend string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
+		friend std::string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
 		friend InputEvents;
 		friend Messages;
 
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.        
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+		void addButton(bool disabled, std::string customId, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -267,11 +267,11 @@ namespace DiscordCoreAPI {
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customId A custom id to give for identifying the select-menu.
-		/// \param options A vector of select-menu-options to offer.
+		/// \param options A std::vector of select-menu-options to offer.
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
+		void addSelectMenu(bool disabled, std::string customId, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -315,8 +315,8 @@ namespace DiscordCoreAPI {
 		}
 
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
-		/// \param dataPackage A string, containing the content.
-		void addContent(string dataPackage) {
+		/// \param dataPackage A std::string, containing the content.
+		void addContent(std::string dataPackage) {
 			this->content = dataPackage;
 		}
 
@@ -329,13 +329,13 @@ namespace DiscordCoreAPI {
 	protected:
 
 		AllowedMentionsData allowedMentions{};
-		vector<AttachmentData> attachments{};
-		vector<ActionRowData> components{};
-		vector<EmbedData> embeds{};
-		string requesterId{ "" };
-		string channelId{ "" };
-		string messageId{ "" };
-		string content{ "" };
+		std::vector<AttachmentData> attachments{};
+		std::vector<ActionRowData> components{};
+		std::vector<EmbedData> embeds{};
+		std::string requesterId{ "" };
+		std::string channelId{ "" };
+		std::string messageId{ "" };
+		std::string content{ "" };
 		int32_t flags{ 0 };
 		bool tts{ false };
 
@@ -346,35 +346,35 @@ namespace DiscordCoreAPI {
 	/// For deleting a Message. \brief For deleting a Message.
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	public:
-		 int32_t timeDelay{ 0 }; ///< Number of milliseconds to wait before deleting the Message.
+		 int32_t timeDelay{ 0 }; ///< Number of std::chrono::milliseconds to wait before deleting the Message.
 		MessageData messageData;///< The Message to delete.
-		string reason{ "" };///< The reason for deleting the Message.
+		std::string reason{ "" };///< The reason for deleting the Message.
 	};
 
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
-		vector<string> messageIds{}; ///< Array of Message ids to delete.
-		string channelId{ "" };///< Channel within which to delete the Messages.
-		string reason{ "" };///< The reason for deleting the Messages.
+		std::vector<std::string> messageIds{}; ///< Array of Message ids to delete.
+		std::string channelId{ "" };///< Channel within which to delete the Messages.
+		std::string reason{ "" };///< The reason for deleting the Messages.
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
-		string channelId{ "" };///< The Channel from which to collect pinned Messages.
+		std::string channelId{ "" };///< The Channel from which to collect pinned Messages.
 	};
 
 	/// For pinning a single Message. \brief For pinning a single Message.
 	struct DiscordCoreAPI_Dll PinMessageData {
-		string channelId{ "" };///< The Channel within which to pin the Message.
-		string messageId{ "" };///< The Message which you would like to pin.
-		string reason{ "" };///< Reason for pinning this Message.
+		std::string channelId{ "" };///< The Channel within which to pin the Message.
+		std::string messageId{ "" };///< The Message which you would like to pin.
+		std::string reason{ "" };///< Reason for pinning this Message.
 	};
 
 	/// For unpinning a single Message. \brief For unpinning a single Message.
 	struct DiscordCoreAPI_Dll UnpinMessageData {
-		string channelId{ "" };///< The Channel within which to unpin the Message.
-		string messageId{ "" };///< The Message which you would like to unpin.
-		string reason{ "" };///< Reason for pinning this Message.
+		std::string channelId{ "" };///< The Channel within which to unpin the Message.
+		std::string messageId{ "" };///< The Message which you would like to unpin.
+		std::string reason{ "" };///< Reason for pinning this Message.
 	};
 
 	/// A single Message. \brief A single Message.
@@ -395,7 +395,7 @@ namespace DiscordCoreAPI {
 
 	/// MessageCollectorReturn responseData. \brief MessageCollectorReturn responseData.
 	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
-		vector<Message> messages{}; ///< A vector of collected Messages.
+		std::vector<Message> messages{}; ///< A std::vector of collected Messages.
 	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
@@ -408,24 +408,24 @@ namespace DiscordCoreAPI {
 
 		/// Begin waiting for Messages. \brief Begin waiting for Messages.
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
-		/// \param msToCollectForNew Maximum number of milliseconds to wait for Messages before returning the results.
+		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Messages before returning the results.
 		/// \param userIdNew User id to set for possible comparison.
-		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
+		/// \param filteringFunctionNew A filter std::function to apply to new Messages, where returning "true" from the std::function results in a Message being stored.
 		/// \returns A MessageCollectorReturnData structure.
-		MessageCollectorReturnData  collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, string userIdNew, function<bool(Message)> filteringFunctionNew);
+		MessageCollectorReturnData  collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, std::string userIdNew, std::function<bool(Message)> filteringFunctionNew);
 
 		~MessageCollector();
 
 	protected:
-		static unordered_map<string, UnboundedMessageBlock<Message>*> messagesBufferMap;
-		unique_ptr<UnboundedMessageBlock<Message>> messagesBuffer{ nullptr };
-		function<bool(Message)> filteringFunction{ nullptr };
+		static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> messagesBufferMap;
+		std::unique_ptr<UnboundedMessageBlock<Message>> messagesBuffer{ nullptr };
+		std::function<bool(Message)> filteringFunction{ nullptr };
 		MessageCollectorReturnData messageReturnData{};
 		int32_t quantityOfMessageToCollect{ 0 };
 		int32_t msToCollectFor{ 0 };
 		int32_t startingTime{ 0 };
 		int32_t elapsedTime{ 0 };
-		string userId{ "" };
+		std::string userId{ "" };
 
 		CoRoutine<void> run();
 
@@ -444,8 +444,8 @@ namespace DiscordCoreAPI {
 
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
 		/// \param dataPackage A GetMessagesData structure.
-		/// \returns A CoRoutine containing a vector<Message>.
-		static CoRoutine<vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<Message>.
+		static CoRoutine<std::vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
 		/// \param dataPackage A GetMessageData structure.
@@ -479,8 +479,8 @@ namespace DiscordCoreAPI {
 
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
-		/// \returns A CoRoutine containing a vector<Message>.
-		static CoRoutine<vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<Message>.
+		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.
 		/// \param dataPackage A PinMessageData structure.

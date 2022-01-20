@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		atomic<ObjectType> theValue{};
+		std::atomic<ObjectType> theValue{};
 	};
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 
 		HttpData handleHeaders(HttpWorkloadData& workload, HttpConnection& theConnection);
 
-		string buildRequest(HttpWorkloadData& workload);
+		std::string buildRequest(HttpWorkloadData& workload);
 
 		void resetValues();
 
@@ -71,14 +71,14 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		unordered_map<string, HttpHeader> headers{};
+		std::unordered_map<std::string, HttpHeader> headers{};
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
 		int64_t responseCode{ -1 };
-		string contentFinal{ "" };
+		std::string contentFinal{ "" };
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
-		string rawInput{};
+		std::string rawInput{};
 
 		bool checkForHeadersToParse();
 
@@ -121,21 +121,21 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		binary_semaphore semaphore{ 1 };
+		std::binary_semaphore semaphore{ 1 };
 		int64_t sampledTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
-		string tempBucket{ "" };
+		std::string tempBucket{ "" };
 		int64_t msRemain{ 0 };
-		string bucket{ "" };
+		std::string bucket{ "" };
 	};
 
 	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	public:
 
 		RateLimitData* rateLimitData{ nullptr };
-		recursive_mutex accessMutex{};
+		std::recursive_mutex accessMutex{};
 		bool doWeConnect{ true };
-		string bucket{ "" };
+		std::string bucket{ "" };
 
 		HttpConnection() : HttpSSLClient(&this->rawInput) {};
 
@@ -144,8 +144,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		unique_ptr<unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>>> httpConnections{ make_unique<unordered_map<HttpWorkloadType, unique_ptr<HttpConnection>>>() };
-		unique_ptr<unordered_map<string, unique_ptr<RateLimitData>>> rateLimitValues{ make_unique<unordered_map<string, unique_ptr<RateLimitData>>>() };
+		std::unique_ptr<std::unordered_map<HttpWorkloadType, std::unique_ptr<HttpConnection>>> httpConnections{ std::make_unique<std::unordered_map<HttpWorkloadType, std::unique_ptr<HttpConnection>>>() };
+		std::unique_ptr<std::unordered_map<std::string, std::unique_ptr<RateLimitData>>> rateLimitValues{ std::make_unique<std::unordered_map<std::string, std::unique_ptr<RateLimitData>>>() };
 
 		HttpConnection& getConnection(HttpWorkloadType type);
 
@@ -161,38 +161,38 @@ namespace DiscordCoreInternal {
 		friend HttpRnRBuilder;
 		friend HttpClient;
 
-		HttpHeader(string key, string value);
+		HttpHeader(std::string key, std::string value);
 
 		HttpHeader(nullptr_t);
 
-		static void constructValues(unordered_map<string, HttpHeader>& headers, RateLimitData* theConnection);
+		static void constructValues(std::unordered_map<std::string, HttpHeader>& headers, RateLimitData* theConnection);
 
 	protected:
 
-		string value{ "" };
-		string key{ "" };
+		std::string value{ "" };
+		std::string key{ "" };
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {
 
-		unordered_map<string, HttpHeader> responseHeaders{};
-		string responseMessage{ "" };
+		std::unordered_map<std::string, HttpHeader> responseHeaders{};
+		std::string responseMessage{ "" };
 		int64_t responseCode{ 0 };
-		json responseData{};
+		nlohmann::json responseData{};
 	};
 
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
-		HttpClient(string);
+		HttpClient(std::string);
 
 		template<typename returnType>
 		returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
 				while (!this->theStopWatch01.load().hasTimePassed()) {};
-				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + HttpClient::botToken));
-				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
-				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
+				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
+				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 				HttpData returnData = this->httpRequest(workload, true);
 				returnType returnObject{};
 				DataParser::parseObject(returnData.responseData, &returnObject);
@@ -209,9 +209,9 @@ namespace DiscordCoreInternal {
 		void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
 				while (!this->theStopWatch02.load().hasTimePassed()) {};
-				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + HttpClient::botToken));
-				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
-				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
+				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
+				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 				this->httpRequest(workload, true);
 				return;
 			}
@@ -225,9 +225,9 @@ namespace DiscordCoreInternal {
 		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
 				while (!this->theStopWatch03.load().hasTimePassed()) {};
-				workload.headersToInsert.insert(make_pair("Authorization", "Bot " + HttpClient::botToken));
-				workload.headersToInsert.insert(make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
-				workload.headersToInsert.insert(make_pair("Content-Type", "application/json"));
+				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
+				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 				return this->httpRequest(workload, false);
 			}
 			catch (...) {
@@ -236,7 +236,7 @@ namespace DiscordCoreInternal {
 			return HttpData();
 		}
 
-		vector<HttpData> submitWorkloadAndGetResult(vector<HttpWorkloadData>& workload) {
+		std::vector<HttpData> submitWorkloadAndGetResult(std::vector<HttpWorkloadData>& workload) {
 			try {
 				auto returnData = this->httpRequest(workload);
 				return returnData;
@@ -244,16 +244,16 @@ namespace DiscordCoreInternal {
 			catch (...) {
 				DiscordCoreAPI::reportException(workload[0].callStack + "::HttpClient::submitWorkloadAndGetResult()");
 			}
-			return vector<HttpData>();
+			return std::vector<HttpData>();
 		}
 
 	protected:
 
-		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch01{ milliseconds{10} };
-		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch02{ milliseconds{10} };
-		atomic<DiscordCoreAPI::StopWatch<milliseconds>> theStopWatch03{ milliseconds{10} };
+		std::atomic<DiscordCoreAPI::StopWatch<std::chrono::milliseconds>> theStopWatch01{ std::chrono::milliseconds{10} };
+		std::atomic<DiscordCoreAPI::StopWatch<std::chrono::milliseconds>> theStopWatch02{ std::chrono::milliseconds{10} };
+		std::atomic<DiscordCoreAPI::StopWatch<std::chrono::milliseconds>> theStopWatch03{ std::chrono::milliseconds{10} };
 		HttpConnectionManager connectionManager{};
-		const string botToken{};
+		const std::string botToken{};
 
 		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection& theConnection);
 
@@ -261,9 +261,9 @@ namespace DiscordCoreInternal {
 
 		HttpData getResponse(HttpWorkloadData&, HttpConnection& theConnection);
 
-		vector<HttpData> executeHttpRequest(vector<HttpWorkloadData>&);
+		std::vector<HttpData> executeHttpRequest(std::vector<HttpWorkloadData>&);
 
-		vector<HttpData> httpRequest(vector<HttpWorkloadData>&);
+		std::vector<HttpData> httpRequest(std::vector<HttpWorkloadData>&);
 
 		HttpData httpRequest(HttpWorkloadData&, bool);
 

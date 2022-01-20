@@ -17,30 +17,30 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll CommandController {
 	public:
 
-		map<vector<string>, UniquePtrWrapper<BaseFunction>> functions{};
+		std::map<std::vector<std::string>, UniquePtrWrapper<BaseFunction>> functions{};
 		
-		CommandController(string, DiscordCoreClient*);
+		CommandController(std::string, DiscordCoreClient*);
 
-		void registerFunction(vector<string> functionNames, unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
-		CoRoutine<void> checkForAndRunCommand(unique_ptr<CommandData> commandData);
+		CoRoutine<void> checkForAndRunCommand(std::unique_ptr<CommandData> commandData);
 
 		~CommandController();
 
 	protected:
 
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		string commandPrefix{ "" };
+		std::string commandPrefix{ "" };
 
-		CoRoutine<void> executeCommand(unique_ptr<BaseFunction> ptrFunction, unique_ptr<BaseFunctionArguments> args);
+		CoRoutine<void> executeCommand(std::unique_ptr<BaseFunction> ptrFunction, std::unique_ptr<BaseFunctionArguments> args);
 
-		unique_ptr<BaseFunction> createFunction(string functionName);
+		std::unique_ptr<BaseFunction> createFunction(std::string functionName);
 
-		unique_ptr<BaseFunction> getCommand(string commandName);
+		std::unique_ptr<BaseFunction> getCommand(std::string commandName);
 
-		vector<string> parseArguments(string messageContents);
+		std::vector<std::string> parseArguments(std::string messageContents);
 
-		string parseCommandName(string messageContents);
+		std::string parseCommandName(std::string messageContents);
 		
 	};
 

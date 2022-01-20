@@ -10,9 +10,9 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlPackError : public exception {
+	struct DiscordCoreAPI_Dll ErlPackError : public std::exception {
 	public:
-		explicit ErlPackError(const string& message) : exception(message.c_str()) {}
+		explicit ErlPackError(const std::string& message) : std::exception(message.c_str()) {}
 	};
 
 	constexpr uint8_t formatVersion{ 131 };
@@ -49,13 +49,13 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
 
-		vector<uint8_t> buffer{};
+		std::vector<uint8_t> buffer{};
 
 		uint32_t offSet{};
 
 		ErlPackBuffer() = default;
 
-		ErlPackBuffer(unique_ptr<vector<uint8_t>>);
+		ErlPackBuffer(std::unique_ptr<std::vector<uint8_t>>);
 
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
@@ -73,9 +73,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll ErlPacker {
 	public:
 
-		static vector<uint8_t> parseJsonToEtf(json&);
+		static std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
 
-		static json parseEtfToJson(unique_ptr<vector<uint8_t>>);
+		static nlohmann::json parseEtfToJson(std::unique_ptr<std::vector<uint8_t>>);
 
 	protected:
 
@@ -83,11 +83,11 @@ namespace DiscordCoreInternal {
 		static void etfByteOrder(returnType, returnType&);
 
 		template<typename returnType>
-		static void storeBits(vector<uint8_t>&, returnType&, uint32_t&);
+		static void storeBits(std::vector<uint8_t>&, returnType&, uint32_t&);
 
-		static void singleValueJsonToETF(ErlPackBuffer&, json&);
+		static void singleValueJsonToEtf(ErlPackBuffer&, nlohmann::json&);
 
-		static void writeToBuffer(ErlPackBuffer&, vector<uint8_t>);
+		static void writeToBuffer(ErlPackBuffer&, std::vector<uint8_t>);
 
 		static void appendVersion(ErlPackBuffer&);
 
@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 
 		static void appendDouble(ErlPackBuffer&, double&);
 
-		static void appendBinary(ErlPackBuffer&, vector<uint8_t>&, uint32_t&);
+		static void appendBinary(ErlPackBuffer&, std::vector<uint8_t>&, uint32_t&);
 
 		static void appendTupleHeader(ErlPackBuffer&, uint32_t&);
 
@@ -120,49 +120,49 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static void readBits(ErlPackBuffer&, returnType&);
 
-		static void readString(ErlPackBuffer&, uint32_t&, vector<char>&);
+		static void readString(ErlPackBuffer&, uint32_t&, std::vector<char>&);
 
-		static json singleValueETFToJson(ErlPackBuffer&);
+		static nlohmann::json singleValueETFToJson(ErlPackBuffer&);
 
-		static json processAtom(ErlPackBuffer&, vector<char>&, uint32_t&);
+		static nlohmann::json processAtom(ErlPackBuffer&, std::vector<char>&, uint32_t&);
 
-		static json parseAtom(ErlPackBuffer&);
+		static nlohmann::json parseAtom(ErlPackBuffer&);
 
-		static json parseSmallAtom(ErlPackBuffer&);
+		static nlohmann::json parseSmallAtom(ErlPackBuffer&);
 
-		static json parseSmallInteger(ErlPackBuffer&);
+		static nlohmann::json parseSmallInteger(ErlPackBuffer&);
 
-		static json parseInteger(ErlPackBuffer&);
+		static nlohmann::json parseInteger(ErlPackBuffer&);
 
-		static json parseArray(ErlPackBuffer&, uint32_t&);
+		static nlohmann::json parseArray(ErlPackBuffer&, uint32_t&);
 
-		static json parseList(ErlPackBuffer&);
+		static nlohmann::json parseList(ErlPackBuffer&);
 
-		static json parseTuple(ErlPackBuffer&, uint32_t&);
+		static nlohmann::json parseTuple(ErlPackBuffer&, uint32_t&);
 
-		static json parseNil(ErlPackBuffer&);
+		static nlohmann::json parseNil(ErlPackBuffer&);
 
-		static json parseMap(ErlPackBuffer&);
+		static nlohmann::json parseMap(ErlPackBuffer&);
 
-		static json parseFloat(ErlPackBuffer&);
+		static nlohmann::json parseFloat(ErlPackBuffer&);
 
-		static json parseNewFloat(ErlPackBuffer&);
+		static nlohmann::json parseNewFloat(ErlPackBuffer&);
 
-		static json parseBigint(ErlPackBuffer&, uint32_t&);
+		static nlohmann::json parseBigint(ErlPackBuffer&, uint32_t&);
 
-		static json parseSmallBigint(ErlPackBuffer&);
+		static nlohmann::json parseSmallBigint(ErlPackBuffer&);
 
-		static json parseLargeBigint(ErlPackBuffer&);
+		static nlohmann::json parseLargeBigint(ErlPackBuffer&);
 
-		static json parseBinary(ErlPackBuffer&);
+		static nlohmann::json parseBinary(ErlPackBuffer&);
 
-		static json parseString(ErlPackBuffer&);
+		static nlohmann::json parseString(ErlPackBuffer&);
 
-		static json parseStringAsList(ErlPackBuffer&);
+		static nlohmann::json parseStringAsList(ErlPackBuffer&);
 
-		static json parseSmallTuple(ErlPackBuffer&);
+		static nlohmann::json parseSmallTuple(ErlPackBuffer&);
 
-		static json parseLargeTuple(ErlPackBuffer&);
+		static nlohmann::json parseLargeTuple(ErlPackBuffer&);
 
 	}; 
 }

@@ -40,15 +40,15 @@ namespace DiscordCoreAPI {
 
 		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 
-		/// For de-registering the event-handler function that was previously registered. \brief For de-registering the event-handler function that was previously registered.
-		/// \param token The event_token that was returned from the registration function.
+		/// For de-registering the event-handler std::function that was previously registered. \brief For de-registering the event-handler std::function that was previously registered.
+		/// \param token The event_token that was returned from the registration std::function.
 		void onSongCompletion(EventDelegateToken token);
 
 		bool areWeCurrentlyPlaying();
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
-		/// \returns A string containing the Channel's id. 
-		string getChannelId();
+		/// \returns A std::string containing the Channel's id. 
+		std::string getChannelId();
 
 		void pauseToggle();
 
@@ -60,13 +60,13 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
+		std::unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
-		unique_ptr<AudioEncoder> encoder{ nullptr };
-		atomic<bool*> doWeReconnect{ nullptr };
+		std::unique_ptr<AudioEncoder> encoder{ nullptr };
+		std::atomic<bool*> doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
 		bool areWeConnectedBool{ false };
@@ -88,9 +88,9 @@ namespace DiscordCoreAPI {
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 
-		vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
+		std::vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 
-		void sendSingleAudioFrame(string& audioDataPacketNew);
+		void sendSingleAudioFrame(std::string& audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 

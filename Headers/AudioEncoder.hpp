@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 
         OpusEncoderWrapper(nullptr_t) {};
     protected:
-        unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr , OpusEncoderDeleter{} };
+        std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr , OpusEncoderDeleter{} };
     };
 
 	class DiscordCoreAPI_Dll AudioEncoder {
@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 		AudioEncoder();
 
-		vector<AudioFrameData> encodeFrames(vector<RawFrameData>& rawFrames);
+		std::vector<AudioFrameData> encodeFrames(std::vector<RawFrameData>& rawFrames);
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
 

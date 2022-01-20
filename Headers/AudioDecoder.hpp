@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
         AVFrameWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr , AVFrameDeleter{} };
+        std::unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr , AVFrameDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll AVCodecContextWrapper {
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
         AVCodecContextWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr , AVCodecContextDeleter{} };
+        std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr , AVCodecContextDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll AVFormatContextWrapper01 {
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
         AVFormatContextWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
+        std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll SwrContextWrapper {
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
         SwrContextWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr , SwrContextDeleter{} };
+        std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr , SwrContextDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll AVIOContextWrapper {
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
         AVIOContextWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr , AVIOContextDeleter{} };
+        std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr , AVIOContextDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll AVPacketWrapper {
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
         AVPacketWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr , AVPacketDeleter{} };
+        std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr , AVPacketDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll AVCodecWrapper {
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
         AVCodecWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr , AVCodecDeleter{} };
+        std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr , AVCodecDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll AVStreamWrapper {
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
         AVStreamWrapper(nullptr_t) {};
 
     protected:
-        unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr , AVStreamDeleter{} };
+        std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr , AVStreamDeleter{} };
     };
 
     struct DiscordCoreAPI_Dll BuildAudioDecoderData {
@@ -259,9 +259,9 @@ namespace DiscordCoreAPI {
 
         static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 
-        TSUnboundedMessageBlock<vector<uint8_t>>& getInputBuffer();
+        TSUnboundedMessageBlock<std::vector<uint8_t>>& getInputBuffer();
 
-        void submitDataForDecoding(vector<uint8_t> dataToDecode);
+        void submitDataForDecoding(std::vector<uint8_t> dataToDecode);
 
         void updateBufferRefreshTime(int32_t newRefreshTime);
 
@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
     protected:
 
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        TSUnboundedMessageBlock<vector<uint8_t>> inputDataBuffer{};
+        TSUnboundedMessageBlock<std::vector<uint8_t>> inputDataBuffer{};
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
         AVCodecContextWrapper audioDecodeContext{ nullptr };
@@ -286,12 +286,12 @@ namespace DiscordCoreAPI {
         AVIOContextWrapper ioContext{ nullptr };
         SwrContextWrapper swrContext{ nullptr };
         AVStreamWrapper audioStream{ nullptr };
-        atomic<bool> haveWeFailedBool{ false };
+        std::atomic<bool> haveWeFailedBool{ false };
         int32_t refreshTimeForBuffer{ 10000 };
         CoRoutineWrapper theTask{ nullptr };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
-        vector<uint8_t> currentBuffer{};
+        std::vector<uint8_t> currentBuffer{};
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };

@@ -7,7 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-#include "JSONIFier.hpp"
+#include "JSONifier.hpp"
 #include "MessageEntities.hpp"
 
 namespace DiscordCoreAPI {
@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
         /// \param emojiName An emoji name, if desired.        
         /// \param emojiId An emoji id, if desired.
         /// \param url A url, if applicable.
-        void addButton(bool disabled, string customId, string buttonLabel, ButtonStyle buttonStyle, string emojiName = "", string emojiId = "", string url = "") {
+        void addButton(bool disabled, std::string customId, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -55,11 +55,11 @@ namespace DiscordCoreAPI {
         /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
         /// \param disabled Whether the select-menu is active or not.
         /// \param customId A custom id to give for identifying the select-menu.
-        /// \param options A vector of select-menu-options to offer.
+        /// \param options A std::vector of select-menu-options to offer.
         /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
-        void addSelectMenu(bool disabled, string customId, vector<SelectOptionData> options, string placeholder, int32_t maxValues, int32_t minValues) {
+        void addSelectMenu(bool disabled, std::string customId, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->data.data.components.size() == 0) {
                 ActionRowData actionRowData;
                 this->data.data.components.push_back(actionRowData);
@@ -109,8 +109,8 @@ namespace DiscordCoreAPI {
         }
 
         /// For setting the Message content in a response. \brief For setting the Message content in a response.
-        /// \param dataPackage A string, containing the content.
-        void addContent(string dataPackage) {
+        /// \param dataPackage A std::string, containing the content.
+        void addContent(std::string dataPackage) {
             this->data.data.content = dataPackage;
         }
 
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
         InteractionPackageData interactionPackage{};
         MessagePackageData messagePackage{};
         InteractionResponseData data{};
-        string requesterId{ "" };
+        std::string requesterId{ "" };
     };
 
     /// For deferring a component response. \brief For deferring a component response.
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
+        friend std::string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
         friend SelectMenuCollector;
         friend ButtonCollector;
         friend Interactions;
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
+        friend std::string DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
         friend Interactions;
         friend InputEvents;
 
@@ -285,20 +285,20 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        string channelId{ "" };
+        std::string channelId{ "" };
     };
 
     /// For getting an Interaction response. \brief For getting an Interaction response.
     struct DiscordCoreAPI_Dll GetInteractionResponseData {
-        string interactionToken{ "" }; ///< Interaction token.
-        string applicationId{ "" }; ///< application id.
+        std::string interactionToken{ "" }; ///< Interaction token.
+        std::string applicationId{ "" }; ///< application id.
     };
 
     /// For editing an Interaction response. \brief For editing an Interaction response.
     class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
+        friend std::string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
         friend Interactions;
         friend InputEvents;
 
@@ -372,7 +372,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
+        friend std::string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
         friend SelectMenuCollector;
         friend ButtonCollector;
         friend Interactions;
@@ -409,16 +409,16 @@ namespace DiscordCoreAPI {
 
     /// For getting a follow-up Message. \brief For getting a follow-up Message.
     struct DiscordCoreAPI_Dll GetFollowUpMessageData {
-        string messageId{ "" };///< Message id.
-        string interactionToken{ "" }; ///< Interaction token.
-        string applicationId{ "" }; ///< application id.
+        std::string messageId{ "" };///< Message id.
+        std::string interactionToken{ "" }; ///< Interaction token.
+        std::string applicationId{ "" }; ///< application id.
     };
 
     /// For editing a follow up Message. \brief For editing a follow up Message.
     class DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
     public:
 
-        friend string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
+        friend std::string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
         friend Interactions;
         friend InputEvents;
 
@@ -537,7 +537,7 @@ namespace DiscordCoreAPI {
 
     protected:
        
-        static unordered_map<string, unique_ptr<UnboundedMessageBlock<MessageData>>> collectMessageDataBuffers;
+        static std::unordered_map<std::string, std::unique_ptr<UnboundedMessageBlock<MessageData>>> collectMessageDataBuffers;
         static DiscordCoreInternal::HttpClient* httpClient;
 
         static void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
@@ -554,11 +554,11 @@ namespace DiscordCoreAPI {
     /// Select menu response data. \brief Select menu response data.
     struct DiscordCoreAPI_Dll SelectMenuResponseData {
         InteractionData interactionData{};///< Interaction data.
-        string selectionId{ "" };///< Selection id.
-        vector<string> values{};///< A vector of the chosen values.
-        string channelId{ "" };///< The Channel id where it took place.
-        string messageId{ "" };///< The Message id where it took place.
-        string userId{ "" };///< The User id who selected the menu options.
+        std::string selectionId{ "" };///< Selection id.
+        std::vector<std::string> values{};///< A std::vector of the chosen values.
+        std::string channelId{ "" };///< The Channel id where it took place.
+        std::string messageId{ "" };///< The Message id where it took place.
+        std::string userId{ "" };///< The User id who selected the menu options.
     };
 
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
@@ -566,7 +566,7 @@ namespace DiscordCoreAPI {
     public:
         friend DiscordCoreClient;
 
-        static unordered_map<string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
+        static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -574,29 +574,29 @@ namespace DiscordCoreAPI {
 
         /// Used to collect the select-menu inputs from one or more users. \brief Used to collect the select-menu inputs from one or more users.
         /// \param getSelectMenuDataForAllNew Whether or not to collect select-menu input from a single target User or all potential users.
-        /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
+        /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in std::chrono::milliseconds.
         /// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping
         /// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
-        /// \returns A vector of SelectMenuResponseData.
-        CoRoutine<vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, string targetUserId = "");
+        /// \returns A std::vector of SelectMenuResponseData.
+        CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, std::string targetUserId = "");
 
         ~SelectMenuCollector();
 
     protected:
 
-        unique_ptr<UnboundedMessageBlock<InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
+        std::unique_ptr<UnboundedMessageBlock<InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
         InteractionData interactionData{};
-        vector<SelectMenuResponseData> responseVector{};
+        std::vector<SelectMenuResponseData> responseVector{};
         int32_t currentCollectedSelectMenuCount{ 0 };
         int32_t maxCollectedSelectMenuCount{ 0 };
         bool getSelectMenuDataForAll{ false };
         uint32_t maxTimeInMs{ 0 };
-        string selectMenuId{ "" };
-        vector<string> values{};
+        std::string selectMenuId{ "" };
+        std::vector<std::string> values{};
         bool doWeQuit{ false };
-        string channelId{ "" };
-        string messageId{ "" };
-        string userId{ "" };
+        std::string channelId{ "" };
+        std::string messageId{ "" };
+        std::string userId{ "" };
 
         void run();
     };
@@ -609,11 +609,11 @@ namespace DiscordCoreAPI {
         }
 
         InteractionData interactionData{};///< Interaction data.
-        string emojiName{ "" };///< The emoji name, if applicable.
-        string channelId{ "" };///< The Channel id where it took place.
-        string messageId{ "" };///< The Message id where it took place.
-        string buttonId{ "" };///< The id of the button, for identification.
-        string userId{ "" };///< The User id who selected the menu options.
+        std::string emojiName{ "" };///< The emoji name, if applicable.
+        std::string channelId{ "" };///< The Channel id where it took place.
+        std::string messageId{ "" };///< The Message id where it took place.
+        std::string buttonId{ "" };///< The id of the button, for identification.
+        std::string userId{ "" };///< The User id who selected the menu options.
     };
 
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
@@ -621,7 +621,7 @@ namespace DiscordCoreAPI {
     public:
         friend DiscordCoreClient;
 
-        static unordered_map<string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
+        static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -629,29 +629,29 @@ namespace DiscordCoreAPI {
 
         /// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
         /// \param getButtonDataForAllNew Whether or not to collect input from a single target User or all potential users.
-        /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
+        /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in std::chrono::milliseconds.
         /// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
         /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
-        /// \returns A vector of ButtonResponseData.
-        CoRoutine<vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, string targetUserId = "");
+        /// \returns A std::vector of ButtonResponseData.
+        CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, std::string targetUserId = "");
 
         ~ButtonCollector();
 
     protected:
 
-        unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
+        std::unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         InteractionData interactionData{};
-        vector<ButtonResponseData> responseVector{};
+        std::vector<ButtonResponseData> responseVector{};
         int32_t currentCollectedButtonCount{ 0 };
         int32_t maxCollectedButtonCount{ 0 };
         bool getButtonDataForAll{ false };
         uint32_t maxTimeInMs{ 0 };
-        vector<string> values{};
+        std::vector<std::string> values{};
         bool doWeQuit{ false };
-        string channelId{ "" };
-        string messageId{ "" };
-        string buttonId{ "" };
-        string userId{ "" };
+        std::string channelId{ "" };
+        std::string messageId{ "" };
+        std::string buttonId{ "" };
+        std::string userId{ "" };
 
         void run();
     };

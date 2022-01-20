@@ -20,34 +20,34 @@ namespace DiscordCoreAPI {
 		
 		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 
-		vector<DiscordCoreInternal::HttpData> submitWorkloadAndGetResult(vector<DiscordCoreInternal::HttpWorkloadData> httpData);
+		std::vector<DiscordCoreInternal::HttpData> submitWorkloadAndGetResult(std::vector<DiscordCoreInternal::HttpWorkloadData> httpData);
 
-		vector<SoundCloudSong> collectSearchResults(string theString);
+		std::vector<SoundCloudSong> collectSearchResults(std::string theString);
 
 	protected:
 		
 		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
-		string baseUrl02{ "https://api-v2.soundcloud.com" };
-		string baseUrl{ "https://soundcloud.com" };
-		string appVersion{ "1631696495" };
-		string clientId{ "" };
+		std::string baseUrl02{ "https://api-v2.soundcloud.com" };
+		std::string baseUrl{ "https://soundcloud.com" };
+		std::string appVersion{ "1631696495" };
+		std::string clientId{ "" };
 
 		SoundCloudSong constructSecondDownloadUrl(SoundCloudSong newSong);
 
 		SoundCloudSong constructFinalDownloadUrl(SoundCloudSong newSong);
 
-		string collectClientId();
+		std::string collectClientId();
 
 	};
 
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	public:
 
-		SoundCloudAPI(string guildId, DiscordCoreInternal::HttpClient* httpClient);
+		SoundCloudAPI(std::string guildId, DiscordCoreInternal::HttpClient* httpClient);
 
 		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 
-		vector<SoundCloudSong> searchForSong(string searchQuery, string guildId);
+		std::vector<SoundCloudSong> searchForSong(std::string searchQuery, std::string guildId);
 
 		void sendNextSong(Song newSong);
 
@@ -63,9 +63,9 @@ namespace DiscordCoreAPI {
 		EventWaiter readyToQuitEventOut{};
 		EventWaiter readyToQuitEventIn{};
 		SoundCloudSong theSong{ };
-		string guildId{ "" };
+		std::string guildId{ "" };
 
-		void sendEmptyingFrames(TSUnboundedMessageBlock<vector<uint8_t>>& sendAudioDataBufferNew);
+		void sendEmptyingFrames(TSUnboundedMessageBlock<std::vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 

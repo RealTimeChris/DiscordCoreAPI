@@ -23,19 +23,19 @@ namespace DiscordCoreInternal {
 		};
 
 		BIOWrapper& operator=(BIOWrapper&& other) noexcept {
-			this->thePtr = move(other.thePtr);
-			other.thePtr = unique_ptr<BIO, BIODeleter>{};
+			this->thePtr = std::move(other.thePtr);
+			other.thePtr = std::unique_ptr<BIO, BIODeleter>{};
 			return *this;
 		}
 
 		BIOWrapper(BIOWrapper&& other) noexcept {
-			*this = move(other);
+			*this = std::move(other);
 		}
 
 		BIOWrapper& operator=(BIO* other) {
 			this->thePtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
-				cout << "BIO_up_ref() Error: " << ERR_get_error() << endl;
+				std::cout << "BIO_up_ref() Error: " << ERR_get_error() << std::endl;
 			};
 			return *this;
 		}
@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper(nullptr_t) {};
 
 	protected:
-		unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
+		std::unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_METHODWrapper {
@@ -57,13 +57,13 @@ namespace DiscordCoreInternal {
 		};
 
 		SSL_METHODWrapper& operator=(SSL_METHODWrapper&& other) noexcept {
-			this->thePtr = move(other.thePtr);
-			other.thePtr = unique_ptr<SSL_METHOD, SSL_METHODDeleter>{};
+			this->thePtr = std::move(other.thePtr);
+			other.thePtr = std::unique_ptr<SSL_METHOD, SSL_METHODDeleter>{};
 			return *this;
 		}
 
 		SSL_METHODWrapper(SSL_METHODWrapper&& other) noexcept {
-			*this = move(other);
+			*this = std::move(other);
 		}
 
 		SSL_METHODWrapper& operator=(const SSL_METHOD* other) {
@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 		}
 
 	protected:
-		unique_ptr<const SSL_METHOD, SSL_METHODDeleter> thePtr{ nullptr, SSL_METHODDeleter{} };
+		std::unique_ptr<const SSL_METHOD, SSL_METHODDeleter> thePtr{ nullptr, SSL_METHODDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
@@ -114,7 +114,7 @@ namespace DiscordCoreInternal {
 		};
 
 	protected:
-		unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo, addrinfoDeleter{} };
+		std::unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo, addrinfoDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
@@ -129,19 +129,19 @@ namespace DiscordCoreInternal {
 		};
 
 		SSL_CTXWrapper& operator=(SSL_CTXWrapper&& other) noexcept {
-			this->thePtr = move(other.thePtr);
-			other.thePtr = unique_ptr<SSL_CTX, SSL_CTXDeleter>{};
+			this->thePtr = std::move(other.thePtr);
+			other.thePtr = std::unique_ptr<SSL_CTX, SSL_CTXDeleter>{};
 			return *this;
 		}
 
 		SSL_CTXWrapper(SSL_CTXWrapper&& other) noexcept {
-			*this = move(other);
+			*this = std::move(other);
 		}
 
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
 			this->thePtr.reset(other);
 			if (SSL_CTX_up_ref(other) != 1) {
-				cout << "SSL_CTX_up_ref() Error: " << ERR_get_error() << endl;
+				std::cout << "SSL_CTX_up_ref() Error: " << ERR_get_error() << std::endl;
 			}
 			return *this;
 		}
@@ -153,7 +153,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper(nullptr_t) {};
 
 	protected:
-		unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr , SSL_CTXDeleter{} };
+		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr , SSL_CTXDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
@@ -169,19 +169,19 @@ namespace DiscordCoreInternal {
 		};
 
 		SSLWrapper& operator=(SSLWrapper&& other) noexcept {
-			this->thePtr = move(other.thePtr);
-			other.thePtr = unique_ptr<SSL, SSLDeleter>{};
+			this->thePtr = std::move(other.thePtr);
+			other.thePtr = std::unique_ptr<SSL, SSLDeleter>{};
 			return *this;
 		}
 
 		SSLWrapper(SSLWrapper&& other) noexcept {
-			*this = move(other);
+			*this = std::move(other);
 		}
 
 		SSLWrapper& operator=(SSL* other) {
 			this->thePtr.reset(other);
 			if (SSL_up_ref(other) != 1) {
-				cout << "SSL_up_ref() Error: " << ERR_get_error() << endl;
+				std::cout << "SSL_up_ref() Error: " << ERR_get_error() << std::endl;
 			}
 			return *this;
 		}
@@ -193,7 +193,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper(nullptr_t) {};
 
 	protected:
-		unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
+		std::unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
@@ -225,7 +225,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper(nullptr_t) {}
 
 	protected:
-		unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{}, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll WSADATAWrapper {
@@ -239,12 +239,12 @@ namespace DiscordCoreInternal {
 		WSADATAWrapper() {
 			int32_t errorCode = WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
 			if (errorCode != 0) {
-				cout << "WSAStartup Error: " << errorCode << endl;
+				std::cout << "WSAStartup Error: " << errorCode << std::endl;
 			};
 		}
 
 	protected:
-		unique_ptr<WSADATA, WSADATADeleter> thePtr{ new WSADATA{}, WSADATADeleter{} };
+		std::unique_ptr<WSADATA, WSADATADeleter> thePtr{ new WSADATA{}, WSADATADeleter{} };
 	};
 
 	class HttpSSLClient {
@@ -252,11 +252,11 @@ namespace DiscordCoreInternal {
 
 		HttpSSLClient() = default;
 
-		HttpSSLClient(string* theVector);
+		HttpSSLClient(std::string* theVector);
 
-		bool writeData(string theData);
+		bool writeData(std::string theData);
 
-		bool connect(string baseUrl);
+		bool connect(std::string baseUrl);
 
 		bool readData();
 
@@ -264,14 +264,14 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
-		string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
-		string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
+		std::string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
+		std::string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
+		std::string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
 		const int32_t maxRecursionDepth{ 25 };
 		BIOWrapper connectionBio{ nullptr };
 		int64_t maxBufferSize{ 16 * 1024 };
 		int32_t currentRecursionDepth{ 0 };
-		string* theInputVector{ nullptr };
+		std::string* theInputVector{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 	};
@@ -279,16 +279,16 @@ namespace DiscordCoreInternal {
 	template <typename T>
 	concept StringOrVector = requires(T v)
 	{
-		{v.data() }-> convertible_to<char*>;
+		{v.data() }-> std::convertible_to<char*>;
 	} || requires(T v)
 	{
-		{v.data()}-> convertible_to<uint8_t*>;
+		{v.data()}-> std::convertible_to<uint8_t*>;
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		WebSocketSSLClient(string, string, vector<uint8_t>*);
+		WebSocketSSLClient(std::string, std::string, std::vector<uint8_t>*);
 
 		WebSocketSSLClient(nullptr_t);
 
@@ -296,13 +296,13 @@ namespace DiscordCoreInternal {
 		void writeData(typeName& data) {
 			int32_t result = SSL_write(this->ssl, data.data(), static_cast<uint32_t>(data.size()));
 			if (result <= 0) {
-				cout << "SSL_write() Error: " << SSL_get_error(this->ssl, result) << endl;
+				std::cout << "SSL_write() Error: " << SSL_get_error(this->ssl, result) << std::endl;
 				return;
 			};
 			data.clear();
 		}
 
-		vector<uint8_t> getData();
+		std::vector<uint8_t> getData();
 
 		bool readData();
 
@@ -311,46 +311,46 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		vector<uint8_t>* inputBuffer{};
+		std::vector<uint8_t>* inputBuffer{};
 		SSLWrapper ssl{ nullptr };
-		string baseUrl{ "" };
-		string port{ "" };
+		std::string baseUrl{ "" };
+		std::string port{ "" };
 		fd_set readSet{};
 	};
 	
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramSocketSSLClient(string hostName, string post, vector<char>*);
+		DatagramSocketSSLClient(std::string hostName, std::string post, std::vector<char>*);
 
 		DatagramSocketSSLClient(nullptr_t);
 
-		void writeData(string& dataToWrite);
+		void writeData(std::string& dataToWrite);
 
 		bool readData(bool doWeClear);
 
-		vector<uint8_t> getData();
+		std::vector<uint8_t> getData();
 
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
-		vector<char>* inputBuffer{};
-		string baseUrl{ "" };
-		string port{ "" };
+		std::vector<char>* inputBuffer{};
+		std::string baseUrl{ "" };
+		std::string port{ "" };
 		fd_set readSet{};
 	};
 
 	class DiscordCoreAPI_Dll StreamSocketSSLClient {
 	public:
 
-		StreamSocketSSLClient(string hostName, string post, int32_t bufferSize);
+		StreamSocketSSLClient(std::string hostName, std::string post, int32_t bufferSize);
 
 		StreamSocketSSLClient(nullptr_t);
 
-		void writeData(vector<uint8_t>& dataToWrite);
+		void writeData(std::vector<uint8_t>& dataToWrite);
 
-		vector<uint8_t> getData();
+		std::vector<uint8_t> getData();
 
 		int64_t getBytesRead();
 
@@ -361,11 +361,11 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper  context{ nullptr };
 		const int32_t maxBufferSize{ 0 };
-		vector<char> inputBuffer{};
+		std::vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		int64_t bytesRead{ 0 };
-		string baseUrl{ "" };
-		string port{ "" };
+		std::string baseUrl{ "" };
+		std::string port{ "" };
 		fd_set readSet{};
 	};
 
