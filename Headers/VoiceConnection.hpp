@@ -13,6 +13,19 @@
 
 namespace DiscordCoreAPI {
 
+	class DiscordCoreAPI_Dll AudioEncrypter {
+	public:
+
+		AudioEncrypter();
+
+		std::vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, std::string keys);
+
+	protected:
+
+		int32_t sequenceIndex{ 0 };
+		int32_t timeStamp{ 0 };
+	};
+
 	/**
 	* \addtogroup voice_connection
 	* @{
@@ -59,7 +72,7 @@ namespace DiscordCoreAPI {
 		bool play();
 
 	protected:
-
+		
 		std::unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
@@ -70,6 +83,7 @@ namespace DiscordCoreAPI {
 		const int32_t maxBufferSize{ 1276 };
 		CoRoutine<void> theTask{ nullptr };
 		bool areWeConnectedBool{ false };
+		AudioEncrypter audioEncrypter{};
 		bool areWeInstantiated{ false };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
@@ -87,8 +101,6 @@ namespace DiscordCoreAPI {
 		bool doWeQuit{ false };
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
-
-		std::vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend);
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew);
 
