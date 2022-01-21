@@ -7,6 +7,7 @@
 
 #include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include "VoiceConnection.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -179,13 +180,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetGuildVanityInviteData {
 		std::string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
 	};
-	
+
 	/// For collecting a Guild's widget image. \brief For collecting a Guild's widget image.
 	struct DiscordCoreAPI_Dll GetGuildWidgetImageData {
 		WidgetStyleOptions widgetStlye{};///< The style of widget image to collect.
 		std::string guildId{ "" };///< The Guild for which to collect the widget image from.		
 	};
-	
+
 	/// For collecting a Guild's welcome screen. \brief For collecting a Guild's welcome screen.
 	struct DiscordCoreAPI_Dll GetGuildWelcomeScreenData {
 		std::string guildId{ "" };///< The Guild for which to collect the widget image from.		
@@ -295,6 +296,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		DiscordCoreClient* discordCoreClient{ nullptr };
+		VoiceConnection* voiceConnectionPtr{ nullptr };
 		bool areWeConnectedBool{ false };
 
 		void initialize();
@@ -306,14 +308,14 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
+
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	public:
-
 		friend DiscordCoreClient;
 		friend EventHandler;
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClient*, DiscordCoreClient*);
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.
@@ -373,7 +375,7 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A RemoveGuildBanData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeGuildBanAsync(RemoveGuildBanData dataPackage);
-		
+
 		/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
 		/// \param dataPackage A GetGuildPruneCountData structure.
 		/// \returns A CoRoutine containing GuildPruneCountData.
@@ -448,7 +450,7 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateGuildFromGuildTemplateData structure.
 		/// \returns A CoRoutine containing a Guild.
 		static CoRoutine<Guild> createGuildFromGuildTemplateAsync(CreateGuildFromGuildTemplateData dataPackage);
-		
+
 		/// Collects a list of Guild Templates from a chosen Guild. \brief Collects a list of Guild Templates from a chosen Guild.
 		/// \param dataPackage A GetGuildTemplatesData structure.
 		/// \returns A CoRoutine containing a std::vector<GuiildTemplateData>.
@@ -458,7 +460,7 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A CreateGuildTemplateData structure.
 		/// \returns A CoRoutine containing a GuiildTemplateData.
 		static CoRoutine<GuildTemplateData> createGuildTemplateAsync(CreateGuildTemplateData dataPackage);
-		
+
 		/// Syncs a Guild Template. \brief Syncs a Guild Template.
 		/// \param dataPackage A SyncGuildTemplateData structure.
 		/// \returns A CoRoutine containing a GuiildTemplateData.
@@ -496,14 +498,13 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
 		static std::unordered_map<std::string, Guild> cache;
+		static DiscordCoreInternal::HttpClient* httpClient;
 
 		static void insertGuild(Guild Guild);
 
 		static void removeGuild(std::string GuildId);
-
 	};
 	/**@}*/
-
 }
