@@ -283,15 +283,15 @@ namespace DiscordCoreAPI {
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
         AVCodecContextWrapper audioDecodeContext{ nullptr };
         AVFormatContextWrapper formatContext{ nullptr };
-        std::atomic<bool> haveWeFailedBool{ false };
         AVIOContextWrapper ioContext{ nullptr };
         SwrContextWrapper swrContext{ nullptr };
         AVStreamWrapper audioStream{ nullptr };
+        std::atomic<bool> haveWeFailedBool{ false };
         int32_t refreshTimeForBuffer{ 10000 };
-        std::vector<uint8_t> currentBuffer{};
         CoRoutineWrapper theTask{ nullptr };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
+        std::vector<uint8_t> currentBuffer{};
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };

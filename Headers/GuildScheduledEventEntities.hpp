@@ -65,11 +65,11 @@ namespace DiscordCoreAPI {
 	/// For collecting a list of Guild Scheduled Event Users. \brief For collecting a list of Guild Scheduled Event Users.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
 		std::string guildScheduledEventId{ "" };///< The id of the event to modify.
-		std::string guildId{ "" };///< The Guild within which to modify the event.
 		bool withMember{ false };///< Include Guild member responseData if it exists.
+		std::string guildId{ "" };///< The Guild within which to modify the event.
+		uint32_t limit{ 0 };///< How many users to receive from the event.
 		std::string before{ "" };///< Consider only users before given user id.
 		std::string after{ "" };///< Consider only users after given user id.
-		uint32_t limit{ 0 };///< How many users to receive from the event.
 	};
 
 	/// A single GuildScheduledEvent responseData structure. \brief A single GuildScheduledEvent responseData structure.

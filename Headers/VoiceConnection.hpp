@@ -40,14 +40,14 @@ namespace DiscordCoreAPI {
 
 		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 
-		/// For de-registering the event-handler function that was previously registered. \brief For de-registering the event-handler function that was previously registered.
-		/// \param token The event_token that was returned from the registration function.
+		/// For de-registering the event-handler std::function that was previously registered. \brief For de-registering the event-handler std::function that was previously registered.
+		/// \param token The event_token that was returned from the registration std::function.
 		void onSongCompletion(EventDelegateToken token);
 
 		bool areWeCurrentlyPlaying();
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
-		/// \returns A string containing the Channel's id. 
+		/// \returns A std::string containing the Channel's id. 
 		std::string getChannelId();
 
 		void pauseToggle();

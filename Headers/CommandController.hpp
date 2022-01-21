@@ -36,9 +36,9 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<BaseFunction> createFunction(std::string functionName);
 
-		std::vector<std::string> parseArguments(std::string messageContents);
-
 		std::unique_ptr<BaseFunction> getCommand(std::string commandName);
+
+		std::vector<std::string> parseArguments(std::string messageContents);
 
 		std::string parseCommandName(std::string messageContents);
 		

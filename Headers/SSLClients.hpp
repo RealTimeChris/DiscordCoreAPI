@@ -279,10 +279,10 @@ namespace DiscordCoreInternal {
 	template <typename T>
 	concept StringOrVector = requires(T v)
 	{
-		{v.data() }-> std::convertible_to<char*>;
+		{v.data() }->std::convertible_to<char*>;
 	} || requires(T v)
 	{
-		{v.data()}-> std::convertible_to<uint8_t*>;
+		{v.data()}->std::convertible_to<uint8_t*>;
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {

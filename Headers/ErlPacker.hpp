@@ -19,12 +19,12 @@ namespace DiscordCoreInternal {
 
 	enum class ETFTokenType : uint8_t {
 		New_Float = 70,
-		Bit_Binary= 77,
-		Comressed= 80,
-		Small_Integer= 97,
+		Bit_Binary = 77,
+		Comressed = 80,
+		Small_Integer = 97,
 		Integer = 98,
-		Float= 99,
-		Atom= 100,
+		Float = 99,
+		Atom = 100,
 		Reference = 101,
 		Port = 102,
 		Pid = 103,
@@ -73,9 +73,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll ErlPacker {
 	public:
 
-		static nlohmann::json parseEtfToJson(std::unique_ptr<std::vector<uint8_t>>);
-
 		static std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
+
+		static nlohmann::json parseEtfToJson(std::unique_ptr<std::vector<uint8_t>>);
 
 	protected:
 
@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 		template<typename returnType>
 		static void storeBits(std::vector<uint8_t>&, returnType&, uint32_t&);
 
-		static void singleValueJsonToEtf(ErlPackBuffer&, nlohmann::json&);
+		static void singleValueJsonToETF(ErlPackBuffer&, nlohmann::json&);
 
 		static void writeToBuffer(ErlPackBuffer&, std::vector<uint8_t>);
 

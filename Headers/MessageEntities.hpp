@@ -6,7 +6,7 @@
 #pragma once
 
 #include "IndexInitial.hpp"
-#include "JSONifier.hpp"
+#include "JSONIFier.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -160,8 +160,8 @@ namespace DiscordCoreAPI {
 	protected:
 
 		MessageReferenceData messageReference{};
-		std::vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
+		std::vector<ActionRowData> components{};
 		std::vector<std::string> stickerIds{};
 		std::vector<EmbedData> embeds{};
 		std::string requesterId{ "" };
@@ -328,9 +328,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		AllowedMentionsData allowedMentions{};
 		std::vector<AttachmentData> attachments{};
 		std::vector<ActionRowData> components{};
-		AllowedMentionsData allowedMentions{};
 		std::vector<EmbedData> embeds{};
 		std::string requesterId{ "" };
 		std::string channelId{ "" };
@@ -410,13 +410,14 @@ namespace DiscordCoreAPI {
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
 		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Messages before returning the results.
 		/// \param userIdNew User id to set for possible comparison.
-		/// \param filteringFunctionNew A filter std::function to apply to new Messages, where returning "true" from the std::function results in a Message being stored.
+		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
 		/// \returns A MessageCollectorReturnData structure.
 		MessageCollectorReturnData  collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, std::string userIdNew, std::function<bool(Message)> filteringFunctionNew);
 
 		~MessageCollector();
 
 	protected:
+
 		static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> messagesBufferMap;
 		std::unique_ptr<UnboundedMessageBlock<Message>> messagesBuffer{ nullptr };
 		std::function<bool(Message)> filteringFunction{ nullptr };
@@ -444,7 +445,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers.
 		/// \param dataPackage A GetMessagesData structure.
-		/// \returns A CoRoutine containing a std::vector<Message>.
+		/// \returns A CoRoutine containing a vector<Message>.
 		static CoRoutine<std::vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
@@ -479,7 +480,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
-		/// \returns A CoRoutine containing a std::vector<Message>.
+		/// \returns A CoRoutine containing a vector<Message>.
 		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.

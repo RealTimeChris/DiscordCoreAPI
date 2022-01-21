@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
     class CreateEphemeralFollowUpMessageData;
     class CreateInteractionResponseData;
     class EditInteractionResponseData;
-    class DeferComponentResponseData;
+    class DeferComponentResponseData; 
     class CreateFollowUpMessageData;
     class SoundCloudRequestBuilder;
     class RespondToInputEventData;
@@ -3244,12 +3244,10 @@ namespace DiscordCoreAPI {
         ObjectMultiCache() = default;
 
         auto end() {
-            std::lock_guard<std::mutex> std::endlock{ this->accessMutex };
             return this->cache.end();
         }
 
         auto begin() {
-            std::lock_guard<std::mutex> beginLock{ this->accessMutex };
             return this->cache.begin();
         }
 
@@ -3257,7 +3255,6 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns storageType The typed item that is stored.
         storageType& at(keyType valueId) {
-            std::lock_guard<std::mutex> returnLock{ this->accessMutex };
             return ref(this->cache.extract(valueId));
         }
 
@@ -3265,14 +3262,12 @@ namespace DiscordCoreAPI {
         /// \param valueId The chosen item's key.
         /// \returns bool Whether or not the item is present at the given key.
         bool contains(keyType valueId) {
-            std::lock_guard<std::mutex> containsLock{ this->accessMutex };
             return this->cache.contains(valueId);
         }
 
         /// Erases an item at a chosen item-id. \brief Erases an item at a chosen item-id.
         /// \param valueId The chosen item's key.
         void erase(keyType valueId) {
-            std::lock_guard<std::mutex> eraseLock{ this->accessMutex };
             if (this->cache.contains(valueId)) {
                 this->cache.erase(valueId);
             }
@@ -3282,13 +3277,10 @@ namespace DiscordCoreAPI {
         /// \param valueId The item's id to store it at.
         /// \param storageValue The item to store in the object-cache.
         void insert_or_assign(keyType valueId, storageType storageValue) {
-            std::lock_guard<std::mutex> storeLock{ *this->accessMutex };
             this->cache.insert_or_assign(std::move(valueId), std::move(storageValue));
         }
 
     protected:
-
-        std::mutex accessMutex{};
 
         std::multimap<keyType, storageType> cache{};
     };

@@ -141,41 +141,41 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
-		std::unordered_map<std::string, std::string> HttpHeaders{};
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
-		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
 		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
+		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
+		std::unordered_map<std::string, std::string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		std::recursive_mutex accessorMutex01{};
 		const int32_t maxReconnectTries{ 10 };
 		bool serverUpdateCollected{ false };
-		std::vector<uint8_t> inputBuffer{};
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
+		std::recursive_mutex accessorMutex01{};
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
-		std::string relativePath{ "" };
 		int32_t heartbeatInterval{ 0 };
+		std::vector<uint8_t> inputBuffer{};
 		WebSocketOpCode dataOpcode{};		
+		std::string relativePath{ "" };
+		uint32_t closeCode{ 0 };
+		bool doWeQuit{ false };
+		WebSocketState state{};
 		std::string sessionId{ "" };
 		std::string botToken{ "" };
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
-		uint32_t closeCode{ 0 };
-		bool doWeQuit{ false };
-		WebSocketState state{};
 		std::string port{ "" };
 
-		uint64_t createHeader(char* outbuf, uint64_t sendLength, WebSocketOpCode opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
 
 		std::vector<std::string> tokenize(const std::string&, std::string = "\r\n");
 
@@ -213,45 +213,45 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::unique_ptr<bool> doWeReconnectPtr{ std::make_unique<bool>() };
-		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-		std::unordered_map<std::string, std::string> HttpHeaders{};
+		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
-		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
+		std::unique_ptr<bool> doWeReconnectPtr{ std::make_unique<bool>() };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
 		WebSocketState state{ WebSocketState::Initializing };
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
+		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		DiscordCoreAPI::EventWaiter connectionReadyEvent{};
+		std::unordered_map<std::string, std::string> HttpHeaders{};
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
 		const int32_t maxReconnectTries{ 10 };
-		std::vector<uint8_t> inputBuffer00{};
 		int32_t currentReconnectTries{ 0 };
-		std::atomic<bool*> doWeReconnect{};
-		std::vector<char> inputBuffer01{};
 		int32_t lastNumberReceived{ 0 };
+		std::vector<uint8_t> inputBuffer00{};
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
+		std::atomic<bool*> doWeReconnect{};
+		std::vector<char> inputBuffer01{};
 		std::string relativePath{ "" };
 		std::mutex accessorMutex00{};
+		uint32_t closeCode{ 0 };
+		bool doWeQuit{ false };
 		std::string baseUrl{ "" };
 		std::string port{ "443" };
 		std::string authKey{ "" };
 		std::string hostIp{ "" };
-		uint32_t closeCode{ 0 };
-		bool doWeQuit{ false };
 
-		uint64_t createHeader(char* outbuf, uint64_t sendLength, WebSocketOpCode opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
 
 		std::vector<std::string> tokenize(const std::string&, std::string = "\r\n");
 

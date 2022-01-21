@@ -39,7 +39,7 @@
 #pragma comment(lib, "User32")
 #pragma comment(lib, "Kernel32")
 #ifdef _DEBUG
-#define _CRTDBG_unordered_map_ALLOC
+#define _CRTDBG_unordered_std::map_ALLOC
 #include "crtdbg.h"
 #endif
 #endif

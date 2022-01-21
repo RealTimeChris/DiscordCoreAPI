@@ -68,8 +68,8 @@ namespace DiscordCoreAPI {
 		friend Guild;
 
 		std::unique_ptr<DiscordCoreClient> thisPointer{ nullptr };
-		std::unique_ptr<EventManager> eventManager{ nullptr };
 		CommandController commandController{ "" , nullptr };
+		std::unique_ptr<EventManager> eventManager{ nullptr };
 		std::string commandPrefix{};
 
 		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{});
@@ -90,11 +90,11 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
-		DiscordCoreInternal::WSADATAWrapper wsaData{};
+		DiscordCoreInternal::WSADATAWrapper wsaData{};		
 		CacheOptions cacheOptions{};
-		std::string botToken{ "" };
 		bool doWeQuit{ false };
 		BotUser currentUser{};
+		std::string botToken{ "" };
 
 		std::string getGateWayBot();
 

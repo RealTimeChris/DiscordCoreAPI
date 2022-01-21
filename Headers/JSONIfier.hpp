@@ -1,4 +1,4 @@
-// JSONifier.hpp - For all things related to nlohmann::json parsing etc.
+// JSONifier.hpp - For all things related to JSON parsing etc.
 // Apr 21, 2021
 // Chris M.
 // https://github.com/RealTimeChris
