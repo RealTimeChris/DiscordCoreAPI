@@ -50,41 +50,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll SSL_METHODWrapper {
-
-		struct SSL_METHODDeleter {
-			void operator()(const SSL_METHOD*) {}
-		};
-
-		SSL_METHODWrapper& operator=(SSL_METHODWrapper&& other) noexcept {
-			this->thePtr = std::move(other.thePtr);
-			other.thePtr = std::unique_ptr<SSL_METHOD, SSL_METHODDeleter>{};
-			return *this;
-		}
-
-		SSL_METHODWrapper(SSL_METHODWrapper&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		SSL_METHODWrapper& operator=(const SSL_METHOD* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
-
-		operator const SSL_METHOD*() {
-			return this->thePtr.get();
-		}
-
-		SSL_METHODWrapper(nullptr_t) {};
-
-		SSL_METHODWrapper(const SSL_METHOD* other) {
-			*this = other;
-		}
-
-	protected:
-		std::unique_ptr<const SSL_METHOD, SSL_METHODDeleter> thePtr{ nullptr, SSL_METHODDeleter{} };
-	};
-
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 
 		struct addrinfoDeleter {
