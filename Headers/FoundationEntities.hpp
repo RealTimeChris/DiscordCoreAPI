@@ -263,8 +263,8 @@ namespace DiscordCoreAPI {
 
     };
 
-    template<typename T>
-    concept Copyable = std::copyable<T>;
+    template<typename ObjectType>
+    concept Copyable = std::copyable<ObjectType>;
 
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
    /// \param objectType The type of object that will be sent over the message block.
@@ -508,8 +508,8 @@ namespace DiscordCoreAPI {
 
     };
 
-    template <typename T>
-    bool waitForTimeToPass(UnboundedMessageBlock<T>& outBuffer, T& argOne, int32_t timeInMsNew) {
+    template <typename ObjectType>
+    bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
         StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {
@@ -522,8 +522,8 @@ namespace DiscordCoreAPI {
         return doWeBreak;
     }
 
-    template <typename T>
-    bool waitForTimeToPass(TSUnboundedMessageBlock<T>& outBuffer, T& argOne, int32_t timeInMsNew) {
+    template <typename ObjectType>
+    bool waitForTimeToPass(TSUnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
         StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {

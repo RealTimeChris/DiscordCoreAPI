@@ -32,6 +32,10 @@ namespace DiscordCoreInternal {
 			*this = std::move(other);
 		}
 
+		BIOWrapper& operator=(BIOWrapper& other) = delete;
+
+		BIOWrapper(BIOWrapper& other) = delete;
+
 		BIOWrapper& operator=(BIO* other) {
 			this->thePtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
@@ -60,6 +64,15 @@ namespace DiscordCoreInternal {
 				}
 			}
 		};
+
+		addrinfoWrapper& operator=(addrinfoWrapper& other) {
+			this->thePtr.reset(other.thePtr.release());
+			return *this;
+		}
+
+		addrinfoWrapper(addrinfoWrapper& other) {
+			*this = other;
+		}
 
 		addrinfoWrapper& operator=(addrinfo* other) {
 			this->thePtr.reset(other);
@@ -241,11 +254,11 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{ nullptr };
 	};
 
-	template <typename T>
-	concept StringOrVector = requires(T v)
+	template <typename ObjectType>
+	concept StringOrVector = requires(ObjectType v)
 	{
 		{v.data() }->std::convertible_to<char*>;
-	} || requires(T v)
+	} || requires(ObjectType v)
 	{
 		{v.data()}->std::convertible_to<uint8_t*>;
 	};
@@ -274,9 +287,9 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
+		std::vector<uint8_t>* inputBuffer{};
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		std::vector<uint8_t>* inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		std::string baseUrl{ "" };
 		std::string port{ "" };
@@ -300,7 +313,10 @@ namespace DiscordCoreInternal {
 
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
+		SSL_CTXWrapper context{ nullptr };
 		std::vector<char>* inputBuffer{};
+		BIOWrapper dgramBio{ nullptr };
+		SSLWrapper ssl{ nullptr };
 		std::string baseUrl{ "" };
 		std::string port{ "" };
 		fd_set readSet{};
@@ -327,10 +343,10 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper  context{ nullptr };
 		const int32_t maxBufferSize{ 0 };
 		std::vector<char> inputBuffer{};
-		SSLWrapper ssl{ nullptr };
-		int64_t bytesRead{ 0 };
 		std::string baseUrl{ "" };
+		SSLWrapper ssl{ nullptr };
 		std::string port{ "" };
+		int64_t bytesRead{ 0 };
 		fd_set readSet{};
 	};
 

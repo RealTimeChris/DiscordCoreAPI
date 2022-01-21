@@ -89,8 +89,8 @@ namespace DiscordCoreAPI {
 
     };
 
-    template <typename ...T>
-    void executeFunctionAfterTimePeriod(std::function<void(T...)>theFunction, int32_t timeDelayInMs, bool isRepeating, T... args) {
+    template <typename ...ArgTypes>
+    void executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)>theFunction, int32_t timeDelayInMs, bool isRepeating, ArgTypes... args) {
         if (timeDelayInMs > 0 && !isRepeating) {
             TimeElapsedHandler timeElapsedHandler = [=]()->void {
                 theFunction(args...);

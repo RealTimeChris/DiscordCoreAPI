@@ -17,45 +17,6 @@ namespace DiscordCoreInternal {
 	class HttpHeader;
 	struct HttpData;
 
-	template<typename ObjectType>
-	class AtomicWrapper {
-	public:
-
-		AtomicWrapper& operator=(ObjectType& other) {
-			this->theValue.store(other);
-			return *this;
-		}
-
-		AtomicWrapper(ObjectType other) {
-			*this = other;
-		}
-
-		AtomicWrapper& operator=(const AtomicWrapper& other) {
-			this->theValue.store(other.theValue.load());
-			return *this;
-		}
-
-		AtomicWrapper(const AtomicWrapper& other) {
-			*this = other;
-		}
-
-		AtomicWrapper& operator=(AtomicWrapper& other) {
-			this->theValue.store(other.theValue.load());
-			return *this;
-		}
-
-		AtomicWrapper(AtomicWrapper& other) {
-			*this = other;
-		}
-
-		ObjectType getValue() {
-			return this->theValue.load();
-		}
-
-	protected:
-		std::atomic<ObjectType> theValue{};
-	};
-
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
