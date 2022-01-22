@@ -72,13 +72,13 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		YouTubeRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
-		CoRoutineWrapper theTask{ nullptr };
 		EventWaiter readyToQuitEventOut{};
 		EventWaiter readyToQuitEventIn{};
-		YouTubeSong theSong{};
 		std::string guildId{ "" };
+		YouTubeSong theSong{};
 
 		void sendEmptyingFrames(TSUnboundedMessageBlock<std::vector<uint8_t>>& sendAudioDataBufferNew);
 

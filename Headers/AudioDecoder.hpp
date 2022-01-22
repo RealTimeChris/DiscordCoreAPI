@@ -282,6 +282,7 @@ namespace DiscordCoreAPI {
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
         AVCodecContextWrapper audioDecodeContext{ nullptr };
+        std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
         AVFormatContextWrapper formatContext{ nullptr };
         std::atomic<bool> haveWeFailedBool{ false };
         AVIOContextWrapper ioContext{ nullptr };
@@ -289,7 +290,6 @@ namespace DiscordCoreAPI {
         AVStreamWrapper audioStream{ nullptr };
         int32_t refreshTimeForBuffer{ 10000 };
         std::vector<uint8_t> currentBuffer{};
-        CoRoutineWrapper theTask{ nullptr };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
         bool areWeQuitting{ false };
