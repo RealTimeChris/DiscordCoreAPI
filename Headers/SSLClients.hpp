@@ -313,10 +313,8 @@ namespace DiscordCoreInternal {
 
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
-		SSL_CTXWrapper context{ nullptr };
 		std::vector<char>* inputBuffer{};
 		BIOWrapper dgramBio{ nullptr };
-		SSLWrapper ssl{ nullptr };
 		std::string baseUrl{ "" };
 		std::string port{ "" };
 		fd_set readSet{};
