@@ -301,7 +301,7 @@ namespace DiscordCoreAPI {
         public:
 
             template<typename ReturnType>
-            friend auto NewThreadAwaitable<void>();
+            friend auto NewThreadAwaitable();
             friend CoRoutine<void>;
 
             promise_type() {};
