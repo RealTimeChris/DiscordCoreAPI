@@ -78,13 +78,14 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
+		std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<AudioEncoder> encoder{ nullptr };
 		std::atomic<bool*> doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
-		CoRoutine<void> theTask{ nullptr };
 		bool areWeConnectedBool{ false };
 		AudioEncrypter audioEncrypter{};
 		bool areWeInstantiated{ false };
+		bool didWeJustConnect{ true };
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		uint16_t sequenceIndex{ 0 };

@@ -407,36 +407,36 @@ namespace DiscordCoreAPI {
         };
         
         CoRoutineWrapper& operator=(CoRoutine<void> other) {
-            this->thePtr.reset(&other);
+            this->theCoroutine.reset(&other);
             return *this;
         }
 
         CoRoutineWrapper& operator=(CoRoutine<void>* other) {
-            this->thePtr.reset(other);
+            this->theCoroutine.reset(other);
             return *this;
         }
 
         operator CoRoutine<void>*() {
-            return this->thePtr.get();
+            return this->theCoroutine.get();
         }
 
         CoRoutine<void>*  operator->() {
-            return this->thePtr.get();
+            return this->theCoroutine.get();
         }
 
         std::unique_ptr<CoRoutine<void>, CoRoutineDeleter> operator*() {
-            return std::move(this->thePtr);
+            return std::move(this->theCoroutine);
         }
 
         CoRoutineWrapper(nullptr_t) {};
 
         CoRoutineWrapper(CoRoutine<void>* other) {
-            this->thePtr.reset(other);
+            this->theCoroutine.reset(other);
         }
 
     protected:
 
-        std::unique_ptr<CoRoutine<void>, CoRoutineDeleter> thePtr{ nullptr, CoRoutineDeleter{} };
+        std::unique_ptr<CoRoutine<void>, CoRoutineDeleter> theCoroutine{ nullptr, CoRoutineDeleter{} };
     };
 
     /**@}*/
