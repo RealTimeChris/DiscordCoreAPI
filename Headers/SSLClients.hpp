@@ -252,11 +252,9 @@ namespace DiscordCoreInternal {
 		std::string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
 		std::string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
 		std::string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
-		const int32_t maxRecursionDepth{ 25 };
 		BIOWrapper connectionBio{ nullptr };
 		std::string* inputBuffer{ nullptr };
 		int32_t maxBufferSize{ 16 * 1024 };
-		int32_t currentRecursionDepth{ 0 };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 	};
@@ -301,8 +299,6 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
-		std::string baseUrl{ "" };
-		std::string port{ "" };
 	};
 	
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
@@ -324,8 +320,6 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 		std::vector<char>* inputBuffer{};
-		std::string baseUrl{ "" };
-		std::string port{ "" };
 	};
 
 	class DiscordCoreAPI_Dll StreamSocketSSLClient {
@@ -350,8 +344,6 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 0 };
 		std::vector<char> inputBuffer{};
 		SSLWrapper ssl{ nullptr };
-		std::string baseUrl{ "" };
-		std::string port{ "" };
 		int64_t bytesRead{ 0 };
 	};
 
