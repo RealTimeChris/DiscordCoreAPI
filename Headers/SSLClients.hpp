@@ -279,12 +279,11 @@ namespace DiscordCoreInternal {
 
 		template<StringOrVector typeName>
 		void writeData(typeName& data) {
-			int32_t result = SSL_write(this->ssl, data.data(), static_cast<uint32_t>(data.size()));
-			if (result <= 0) {
-				std::cout << "SSL_write() Error: " << SSL_get_error(this->ssl, result) << std::endl;
+			int32_t returnValue = SSL_write(this->ssl, data.data(), static_cast<uint32_t>(data.size()));
+			if (returnValue <= 0) {
+				std::cout << "SSL_write() Error: " << SSL_get_error(this->ssl, static_cast<int>(returnValue)) << std::endl;
 				ERR_print_errors_fp(stdout);
-				std::unique_ptr<char[]> theString{ std::make_unique<char[]>(1024) };
-				std::cout << ERR_error_string(ERR_get_error(), theString.get()) << std::endl;
+				std::cout << std::endl;
 				return;
 			};
 			data.clear();
