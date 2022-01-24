@@ -271,7 +271,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		WebSocketSSLClient(std::string baseUrl, std::string port, std::vector<uint8_t>* inputBuffer);
+		WebSocketSSLClient(std::string baseUrl, std::string port, std::vector<uint8_t>* inputBuffer, int64_t maxBufferSize = 16 * 1024);
 
 		WebSocketSSLClient(nullptr_t);
 
@@ -290,6 +290,8 @@ namespace DiscordCoreInternal {
 
 		std::vector<uint8_t> getData();
 
+		int64_t getBytesRead();
+
 		bool readData();
 
 	protected:
@@ -299,6 +301,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
+		int64_t bytesRead{ 0 };
 	};
 	
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
@@ -320,31 +323,6 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 		std::vector<char>* inputBuffer{};
-	};
-
-	class DiscordCoreAPI_Dll StreamSocketSSLClient {
-	public:
-
-		StreamSocketSSLClient(std::string hostName, std::string port, int32_t bufferSize);
-
-		StreamSocketSSLClient(nullptr_t);
-
-		bool writeData(std::vector<uint8_t>& dataToWrite);
-
-		std::vector<uint8_t> getData();
-
-		int64_t getBytesRead();
-
-		bool readData();
-
-	protected:
-
-		SOCKETWrapper theSocket{ nullptr };
-		SSL_CTXWrapper context{ nullptr };
-		const int32_t maxBufferSize{ 0 };
-		std::vector<char> inputBuffer{};
-		SSLWrapper ssl{ nullptr };
-		int64_t bytesRead{ 0 };
 	};
 
 }
