@@ -252,10 +252,10 @@ namespace DiscordCoreInternal {
 		std::string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
 		std::string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
 		std::string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
-		std::string* theInputVector{ nullptr };
 		const int32_t maxRecursionDepth{ 25 };
 		BIOWrapper connectionBio{ nullptr };
-		int64_t maxBufferSize{ 16 * 1024 };
+		std::string* inputBuffer{ nullptr };
+		int32_t maxBufferSize{ 16 * 1024 };
 		int32_t currentRecursionDepth{ 0 };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
@@ -278,15 +278,16 @@ namespace DiscordCoreInternal {
 		WebSocketSSLClient(nullptr_t);
 
 		template<StringOrVector typeName>
-		void writeData(typeName& data) {
+		bool writeData(typeName& data) {
 			int32_t returnValue = SSL_write(this->ssl, data.data(), static_cast<uint32_t>(data.size()));
 			if (returnValue <= 0) {
 				std::cout << "SSL_write() Error: " << SSL_get_error(this->ssl, static_cast<int>(returnValue)) << std::endl;
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
-				return;
+				return false;
 			};
 			data.clear();
+			return true;
 		}
 
 		std::vector<uint8_t> getData();
@@ -311,9 +312,9 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketSSLClient(nullptr_t);
 
-		void writeData(std::string& dataToWrite);
+		bool writeData(std::string& dataToWrite);
 
-		bool readData(bool doWeClear);
+		void readData(bool doWeClear);
 
 		std::vector<uint8_t> getData();
 
@@ -334,7 +335,7 @@ namespace DiscordCoreInternal {
 
 		StreamSocketSSLClient(nullptr_t);
 
-		void writeData(std::vector<uint8_t>& dataToWrite);
+		bool writeData(std::vector<uint8_t>& dataToWrite);
 
 		std::vector<uint8_t> getData();
 
