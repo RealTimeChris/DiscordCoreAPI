@@ -212,11 +212,9 @@ namespace DiscordCoreInternal {
 	class HttpSSLClient {
 	public:
 
-		HttpSSLClient() = default;
+		HttpSSLClient(std::string baseUrl, std::string* theVector, std::string portNew = "443");
 
-		HttpSSLClient(std::string* theVector);
-
-		bool connect(std::string baseUrl, std::string portNew = "443");
+		HttpSSLClient(nullptr_t);
 
 		bool writeData(std::string& theData);
 
