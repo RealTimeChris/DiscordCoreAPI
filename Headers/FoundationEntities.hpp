@@ -210,15 +210,15 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
+        CURLWrapper(CURL* other) {
+            *this = other;
+        }
+
         operator CURL*() {
             return this->thePtr.get();
         }
 
         CURLWrapper(nullptr_t) {};
-
-        CURLWrapper(CURL* other) {
-            this->thePtr.reset(other);
-        }
 
     protected:
         std::unique_ptr<CURL, CURLDeleter> thePtr{ nullptr , CURLDeleter{} };
@@ -240,15 +240,15 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
+        CURLUWrapper(CURLU* other) {
+            *this = other;
+        }
+
         operator CURLU*() {
             return this->thePtr.get();
         }
 
         CURLUWrapper(nullptr_t) {};
-
-        CURLUWrapper(CURLU* other) {
-            this->thePtr.reset(other);
-        }
 
     protected:
         std::unique_ptr<CURLU, CURLUDeleter> thePtr{ nullptr , CURLUDeleter{} };
@@ -270,16 +270,16 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
+        CURLCharWrapper(char* other) {
+            *this = other;
+        }
+
         operator std::string() {
             std::string returnValue = this->thePtr.get();
             return returnValue;
         }
 
         CURLCharWrapper(nullptr_t) {};
-
-        CURLCharWrapper(char* other) {
-            this->thePtr.reset(other);
-        }
 
     protected:
         std::unique_ptr<char, CURLCharDeleter> thePtr{ nullptr, CURLCharDeleter{} };
