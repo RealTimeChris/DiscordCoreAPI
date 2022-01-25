@@ -177,7 +177,7 @@ namespace DiscordCoreInternal {
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
 
-		std::vector<std::string> tokenize(const std::string&, std::string = "\r\n");
+		std::vector<std::string> tokenize(std::string&, std::string = "\r\n");
 
 		void getVoiceConnectionData(VoiceConnectInitData doWeCollect);
 
@@ -252,7 +252,7 @@ namespace DiscordCoreInternal {
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
 
-		std::vector<std::string> tokenize(const std::string&, std::string = "\r\n");
+		std::vector<std::string> tokenize(std::string&, std::string = "\r\n");
 
 		DiscordCoreAPI::CoRoutine<void> run();
 
