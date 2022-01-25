@@ -7,18 +7,17 @@
   <PropertyGroup>
     <ExternalIncludePath>$(VcPkgFolder)\lib\glib-2.0\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(ProjectDir)\Headers;C:\Program Files\OpenSSL-Win64\include;$(IncludePath)</IncludePath>
-    <LibraryDirectory>"C:\Program Files\OpenSSL-Win64\lib"</LibraryDirectory>
+    <IncludePath>$(ProjectDir)\Headers;C:\OpenSSL\include;$(IncludePath)</IncludePath>
+    <LibraryDirectory>"C:\OpenSSL"</LibraryDirectory>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Program Files\OpenSSL-Win64\lib\openssl.lib;C:\Program Files\OpenSSL-Win64\lib\libssl.lib;$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>4194304</StackReserveSize>
+      <AdditionalDependencies>$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -27,7 +26,10 @@
 			</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)$(Platform)\$(Configuration)
+      <Command>
+		  cd $(SolutionDir)$(Platform)\$(Configuration)
+		  xcopy "$(VcPkgFolder)bin\libcurl.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
+		  xcopy "$(VcPkgFolder)bin\zlib1.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  xcopy "$(VCToolsRedistInstallDir)x64\Microsoft.VC143.CRT\concrt140.dll" "$(SolutionDir)$(Platform)\$(Configuration)" /e /y
 		  cd $(SolutionDir)$(Platform)\$(Configuration)
 		  Ren "concrt140.dll" "concrt140_app.dll"
