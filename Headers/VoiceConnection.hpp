@@ -9,6 +9,7 @@
 #include "WebSocketEntities.hpp"
 #include "AudioEncoder.hpp"
 #include "CoRoutine.hpp"
+#include <sodium.h>
 
 namespace DiscordCoreAPI {
 

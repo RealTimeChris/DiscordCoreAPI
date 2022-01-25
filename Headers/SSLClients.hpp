@@ -19,7 +19,6 @@
 #endif
 
 #include "FoundationEntities.hpp"
-#include "EventEntities.hpp"
 #include <openssl/x509v3.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -224,9 +223,9 @@ namespace DiscordCoreInternal {
 
 		HttpSSLClient(std::string* theVector);
 
-		bool writeData(std::string theData);
+		bool connect(std::string baseUrl, std::string portNew = "443");
 
-		bool connect(std::string baseUrl);
+		bool writeData(std::string theData);
 
 		bool readData();
 
@@ -260,8 +259,8 @@ namespace DiscordCoreInternal {
 
 		WebSocketSSLClient(nullptr_t);
 
-		template<StringOrVector typeName>
-		bool writeData(typeName& data) {
+		template<StringOrVector TypeName>
+		bool writeData(TypeName& data) {
 			size_t writtenBytes{ 0 };
 			int32_t returnValue = SSL_write_ex(this->ssl, data.data(), static_cast<uint32_t>(data.size()), &writtenBytes);
 			if (returnValue != 1) {

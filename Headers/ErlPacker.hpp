@@ -78,11 +78,11 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		template<typename returnType>
-		void etfByteOrder(returnType, returnType&);
+		template<typename ReturnType>
+		void etfByteOrder(ReturnType, ReturnType&);
 
-		template<typename returnType>
-		void storeBits(std::vector<uint8_t>&, returnType&, uint32_t&);
+		template<typename ReturnType>
+		void storeBits(std::vector<uint8_t>&, ReturnType&, uint32_t&);
 
 		void singleValueJsonToETF(ErlPackBuffer&, nlohmann::json&);
 
@@ -116,8 +116,8 @@ namespace DiscordCoreInternal {
 
 		void appendMapHeader(ErlPackBuffer&, uint32_t&);
 
-		template<typename returnType>
-		void readBits(ErlPackBuffer&, returnType&);
+		template<typename ReturnType>
+		void readBits(ErlPackBuffer&, ReturnType&);
 
 		void readString(ErlPackBuffer&, uint32_t&, std::vector<char>&);
 

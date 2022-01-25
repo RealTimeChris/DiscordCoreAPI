@@ -34,7 +34,6 @@
 #include <type_traits>
 #include <coroutine>
 #include <semaphore>
-#include <sodium.h>
 #include <iostream>
 #include <concepts>
 #include <memory>
@@ -144,7 +143,7 @@ namespace DiscordCoreAPI {
     class Event;
     template<typename ReturnType, typename ...ArgTypes>
     class EventDelegate;
-    template<typename returnType>
+    template<typename ReturnType>
     class CoRoutine;
     template<>
     class CoRoutine<void>;
@@ -343,40 +342,40 @@ namespace DiscordCoreAPI {
     concept Copyable = std::copyable<ObjectType>;
 
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
-   /// \param objectType The type of object that will be sent over the message block.
-    template<Copyable objectType>
+   /// \param ObjectType The type of object that will be sent over the message block.
+    template<Copyable ObjectType>
     class UnboundedMessageBlock {
     public:
 
-        UnboundedMessageBlock<objectType>& operator=(UnboundedMessageBlock<objectType>&& other) {
+        UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) {
             this->theArray = std::move(other.theArray);
-            other.theArray = std::queue<objectType>{};
+            other.theArray = std::queue<ObjectType>{};
             return *this;
         }
 
-        UnboundedMessageBlock(UnboundedMessageBlock<objectType>&& other) {
+        UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&& other) {
             *this = std::move(other);
         }
 
-        UnboundedMessageBlock<objectType>& operator=(const UnboundedMessageBlock<objectType>&) = delete;
+        UnboundedMessageBlock<ObjectType>& operator=(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-        UnboundedMessageBlock(const UnboundedMessageBlock<objectType>&) = delete;
+        UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-        UnboundedMessageBlock<objectType>& operator=(UnboundedMessageBlock<objectType>&) = delete;
+        UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&) = delete;
 
-        UnboundedMessageBlock(UnboundedMessageBlock<objectType>&) = delete;
+        UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&) = delete;
 
         UnboundedMessageBlock() = default;
 
-        void send(objectType theObject) {
+        void send(ObjectType theObject) {
             this->theArray.push(theObject);
         }
 
         void clearContents() {
-            this->theArray = std::queue<objectType>{};
+            this->theArray = std::queue<ObjectType>{};
         }
 
-        bool tryReceive(objectType& theObject) {
+        bool tryReceive(ObjectType& theObject) {
             if (this->theArray.size() == 0) {
                 return false;
             }
@@ -389,47 +388,47 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        std::queue<objectType> theArray{};
+        std::queue<ObjectType> theArray{};
 
     };
 
     /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-    /// \param objectType The type of object that will be sent over the message block.
-    template<Copyable objectType>
+    /// \param ObjectType The type of object that will be sent over the message block.
+    template<Copyable ObjectType>
     class TSUnboundedMessageBlock {
     public:
 
-        TSUnboundedMessageBlock<objectType>& operator=(TSUnboundedMessageBlock<objectType>&& other) noexcept {
+        TSUnboundedMessageBlock<ObjectType>& operator=(TSUnboundedMessageBlock<ObjectType>&& other) noexcept {
             this->theArray = std::move(other.theArray);
-            other.theArray = std::queue<objectType>{};
+            other.theArray = std::queue<ObjectType>{};
             return *this;
         }
 
-        TSUnboundedMessageBlock(TSUnboundedMessageBlock<objectType>&& other) noexcept {
+        TSUnboundedMessageBlock(TSUnboundedMessageBlock<ObjectType>&& other) noexcept {
             *this = std::move(other);
         }
 
-        TSUnboundedMessageBlock<objectType>& operator=(const TSUnboundedMessageBlock<objectType>&) = delete;
+        TSUnboundedMessageBlock<ObjectType>& operator=(const TSUnboundedMessageBlock<ObjectType>&) = delete;
 
-        TSUnboundedMessageBlock(const TSUnboundedMessageBlock<objectType>&) = delete;
+        TSUnboundedMessageBlock(const TSUnboundedMessageBlock<ObjectType>&) = delete;
 
-        TSUnboundedMessageBlock<objectType>& operator=(TSUnboundedMessageBlock<objectType>&) = delete;
+        TSUnboundedMessageBlock<ObjectType>& operator=(TSUnboundedMessageBlock<ObjectType>&) = delete;
 
-        TSUnboundedMessageBlock(TSUnboundedMessageBlock<objectType>&) = delete;
+        TSUnboundedMessageBlock(TSUnboundedMessageBlock<ObjectType>&) = delete;
 
         TSUnboundedMessageBlock() = default;
 
-        void send(objectType theObject) {
+        void send(ObjectType theObject) {
             std::lock_guard<std::mutex> accessLock{ this->accessMutex };
             this->theArray.push(theObject);
         }
 
         void clearContents() {
             std::lock_guard<std::mutex> accessLock{ this->accessMutex };
-            this->theArray = std::queue<objectType>{};
+            this->theArray = std::queue<ObjectType>{};
         }
 
-        bool tryReceive(objectType& theObject) {
+        bool tryReceive(ObjectType& theObject) {
             std::lock_guard<std::mutex> accessLock{ this->accessMutex };
             if (this->theArray.size() == 0) {
                 return false;
@@ -444,7 +443,7 @@ namespace DiscordCoreAPI {
     protected:
 
         std::mutex accessMutex{ std::mutex() };
-        std::queue<objectType> theArray{};
+        std::queue<ObjectType> theArray{};
 
     };
 
@@ -545,25 +544,25 @@ namespace DiscordCoreAPI {
         const int64_t secondsPerDay{ 60 * 60 * 24 };
     };
 
-    template<typename timeType>
+    template<typename TimeType>
     class DiscordCoreAPI_Dll StopWatch {
     public:
 
         StopWatch() = delete;
 
-        StopWatch(timeType maxNumberOfMsNew) {
+        StopWatch(TimeType maxNumberOfMsNew) {
             this->maxNumberOfMs = maxNumberOfMsNew.count();
-            this->startTime = static_cast<int64_t>(std::chrono::duration_cast<timeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            this->startTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
         }
 
         int64_t totalTimePassed() {
-            int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<timeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
             return elapsedTime;
         }
 
         bool hasTimePassed() {
-            int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<timeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
             int64_t elapsedTime = currentTime - this->startTime;
             if (elapsedTime >= this->maxNumberOfMs) {
                 return true;
@@ -574,7 +573,7 @@ namespace DiscordCoreAPI {
         }
 
         void resetTimer() {
-            this->startTime = static_cast<int64_t>(std::chrono::duration_cast<timeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            this->startTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
         }
 
     protected:

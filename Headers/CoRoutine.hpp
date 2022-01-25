@@ -23,14 +23,14 @@ namespace DiscordCoreAPI {
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
-    /// \param returnType The type of parameter that is returned by the CoRoutine.
-    template<typename returnType>
+    /// \param ReturnType The type of parameter that is returned by the CoRoutine.
+    template<typename ReturnType>
     class CoRoutine {
     public:
 
         class promise_type;
 
-        CoRoutine<returnType>& operator=(CoRoutine<returnType>&& other) noexcept {
+        CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
             if (this != &other) {
                 this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
                 other.coroutineHandle = std::coroutine_handle<promise_type>();
@@ -40,24 +40,24 @@ namespace DiscordCoreAPI {
             return *this;
         };
 
-        CoRoutine(CoRoutine<returnType>&& other) noexcept {
+        CoRoutine(CoRoutine<ReturnType>&& other) noexcept {
             *this = std::move(other);
         };
 
-        CoRoutine<returnType>& operator=(const CoRoutine<returnType>& other) = delete;
+        CoRoutine<ReturnType>& operator=(const CoRoutine<ReturnType>& other) = delete;
 
-        CoRoutine(const CoRoutine<returnType>& other) = delete;
+        CoRoutine(const CoRoutine<ReturnType>& other) = delete;
 
-        CoRoutine<returnType>& operator=(CoRoutine<returnType>& other) = delete;
+        CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>& other) = delete;
 
-        CoRoutine(CoRoutine<returnType>& other) = delete;
+        CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
-        CoRoutine<returnType>() {
+        CoRoutine<ReturnType>() {
             this->currentStatus = CoRoutineStatus::Idle;
             this->coroutineHandle = nullptr;
         }
 
-        CoRoutine<returnType>(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine<ReturnType>(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
@@ -89,8 +89,8 @@ namespace DiscordCoreAPI {
         }
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
-        /// \returns returnType The return value of the CoRoutine.
-        returnType get() {
+        /// \returns ReturnType The return value of the CoRoutine.
+        ReturnType get() {
             if (this != nullptr) {
                 if (this->coroutineHandle.promise().newThread != nullptr) {
                     if (this->coroutineHandle.promise().newThread->joinable()) {
@@ -105,12 +105,12 @@ namespace DiscordCoreAPI {
                 this->currentStatus = this->coroutineHandle.promise().currentStatus;
                 return this->coroutineHandle.promise().result;
             }
-            return returnType{};
+            return ReturnType{};
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
-        /// \returns returnType The object to be returned.
-        returnType cancel() {
+        /// \returns ReturnType The object to be returned.
+        ReturnType cancel() {
             if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
                 if (this->coroutineHandle.promise().newThread->joinable()) {
                     this->coroutineHandle.promise().requestStop();
@@ -128,14 +128,14 @@ namespace DiscordCoreAPI {
                 return this->coroutineHandle.promise().result;
 
             }
-            return returnType{};
+            return ReturnType{};
         }
 
         class promise_type {
         public:
 
-            friend auto NewThreadAwaitable<returnType>();
-            friend CoRoutine<returnType>;
+            friend auto NewThreadAwaitable<ReturnType>();
+            friend CoRoutine<ReturnType>;
 
             promise_type() {};
 
@@ -152,12 +152,12 @@ namespace DiscordCoreAPI {
                 this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
             }
 
-            void return_value(returnType at) {
+            void return_value(ReturnType at) {
                 this->result = at;
             }
 
             auto get_return_object() {
-                return CoRoutine<returnType>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine<ReturnType>{ std::coroutine_handle<promise_type>::from_promise(*this) };
             }
 
             std::suspend_never initial_suspend() {
@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
             UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
             std::unique_ptr<std::jthread> newThread{ nullptr };
             std::condition_variable condVar{};
-            returnType result;
+            ReturnType result;
             std::mutex lockMutex{};
 
         };
@@ -365,14 +365,14 @@ namespace DiscordCoreAPI {
     };
 
     /// For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation. \brief For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation.
-    /// \param returnType The type of the value returned by the containing CoRoutine.
-    /// \returns A std::coroutine_handle<CoRoutine<returnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
-    template<typename returnType>
+    /// \param ReturnType The type of the value returned by the containing CoRoutine.
+    /// \returns A std::coroutine_handle<CoRoutine<ReturnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
+    template<typename ReturnType>
     auto NewThreadAwaitable() {
         class NewThreadAwaitableClass {
         public:
 
-            std::coroutine_handle<CoRoutine<returnType>::promise_type> waiterHandle{ nullptr };
+            std::coroutine_handle<CoRoutine<ReturnType>::promise_type> waiterHandle{ nullptr };
 
             NewThreadAwaitableClass() {};
 
@@ -380,7 +380,7 @@ namespace DiscordCoreAPI {
                 return false;
             }
 
-            bool await_suspend(std::coroutine_handle<CoRoutine<returnType>::promise_type>handle) {
+            bool await_suspend(std::coroutine_handle<CoRoutine<ReturnType>::promise_type>handle) {
                 this->waiterHandle = handle;
                 this->waiterHandle.promise().newThread = std::make_unique<std::jthread>([=] { this->waiterHandle.resume(); });
                 return true;

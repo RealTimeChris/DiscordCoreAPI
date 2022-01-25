@@ -129,22 +129,22 @@ namespace DiscordCoreInternal {
 
 		HttpClient(std::string);
 
-		template<typename returnType>
-		returnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
+		template<typename ReturnType>
+		ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
 				while (!this->theStopWatch01.load().hasTimePassed()) {};
 				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 				HttpData returnData = this->httpRequest(workload, true);
-				returnType returnObject{};
+				ReturnType returnObject{};
 				DataParser::parseObject(returnData.responseData, &returnObject);
 				return returnObject;
 			}
 			catch (...) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
 			}
-			returnType returnObject{};
+			ReturnType returnObject{};
 			return returnObject;
 		}
 
