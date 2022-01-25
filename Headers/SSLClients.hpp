@@ -283,7 +283,7 @@ namespace DiscordCoreInternal {
 
 		std::vector<uint8_t> getData();
 
-		bool readData(bool doWeClear);
+		void readData(bool doWeClear);
 
 	protected:
 
