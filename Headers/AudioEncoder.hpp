@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
+#include <opus/opus.h>
 
 namespace DiscordCoreAPI {
 

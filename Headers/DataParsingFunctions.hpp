@@ -5,9 +5,7 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
-
 
 namespace DiscordCoreInternal {
 

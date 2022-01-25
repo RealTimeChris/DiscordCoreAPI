@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
 #include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
 #include "AudioEncoder.hpp"

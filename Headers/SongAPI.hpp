@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "GuildMemberEntities.hpp"
 #include "EventEntities.hpp"

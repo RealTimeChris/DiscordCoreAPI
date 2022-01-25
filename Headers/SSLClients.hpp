@@ -5,9 +5,27 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
+#ifndef OPENSSL_NO_DEPRECATED
+#define OPENSSL_NO_DEPRECATED
+#endif
+
+#ifdef _WIN32
+#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#pragma comment(lib, "ws2_32")
+#endif
+
 #include "FoundationEntities.hpp"
 #include "EventEntities.hpp"
+#include <openssl/x509v3.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+#pragma comment(lib, "libcrypto")
+#pragma comment(lib, "libssl")
 
 namespace DiscordCoreInternal {
 

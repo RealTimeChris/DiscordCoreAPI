@@ -5,10 +5,14 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
 #include "EventEntities.hpp"
+extern "C"
+{
+#include <libswresample/swresample.h>
+#include <libavformat/avformat.h>
+}
 
 namespace DiscordCoreAPI {
 

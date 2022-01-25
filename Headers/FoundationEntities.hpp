@@ -5,7 +5,83 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
+#ifdef _WIN32
+#ifdef DISCORDCOREAPIDLL_EXPORTS
+#define DiscordCoreAPI_Dll __declspec(dllexport)
+#else
+#define DiscordCoreAPI_Dll __declspec(dllimport)
+#endif
+#ifndef WINRT_LEAN_AND_MEAN
+#define WINRT_LEAN_AND_MEAN
+#endif
+#ifndef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
+#define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
+#endif
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#endif
+#pragma comment(lib, "libcurl")
+
+#pragma warning(push)
+#pragma warning(disable : 4251 4275)
+
+#include <cpp-base64/base64.h>
+#include <nlohmann/json.hpp>
+#include <glib-2.0/glib.h>
+#define CURL_STATICLIB
+#include <curl/curl.h>
+#include <type_traits>
+#include <coroutine>
+#include <semaphore>
+#include <sodium.h>
+#include <iostream>
+#include <concepts>
+#include <memory>
+#include <regex>
+#include <mutex>
+#include <queue>
+#include <ios>
+
+#ifdef _WIN32
+#ifdef _DEBUG
+#define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DBG_NEW
+#endif
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+/**
+* \defgroup main_endpoints Main Endpoints
+* \brief For all of the Discord API's endpoints.
+*/
+
+/**
+* \defgroup voice_connection Voice Connection
+* \brief For all of the voice connection related stuff.
+*/
+
+/**
+* \defgroup discord_events Discord Events
+* \brief For all of the events that could be sent by the Discord API.
+*/
+
+/**
+* \defgroup utilities Utilities
+* \brief For utility classes/functions.
+*/
+
+/**
+* \defgroup foundation_entities Foundation Entities
+* \brief For all of the building blocks of the main endpoints.
+*/
 
 namespace DiscordCoreInternal {
 

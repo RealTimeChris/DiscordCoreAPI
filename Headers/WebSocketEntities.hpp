@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "IndexInitial.hpp"
 #include "AudioDecoder.hpp"
 #include "FoundationEntities.hpp"
 #include "ErlPacker.hpp"
