@@ -40,30 +40,30 @@ namespace DiscordCoreInternal {
 		};
 
 		BIOWrapper& operator=(BIO* other) {
-			this->thePtr.reset(other);
+			this->bioPtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
 				std::cout << "BIO_up_ref() Error: ";
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
 			};
-			auto thePtrNew = this->thePtr.get();
-			this->thePtrTwo = &thePtrNew;
+			auto thePtrNew = this->bioPtr.get();
+			this->bioPtrTwo = &thePtrNew;
 			return *this;
 		}
 
-		explicit operator BIO** () {
-			return this->thePtrTwo;
+		explicit operator BIO**() {
+			return this->bioPtrTwo;
 		}
 
 		operator BIO*() {
-			return this->thePtr.get();
+			return this->bioPtr.get();
 		}
 
 		BIOWrapper(nullptr_t) {};
 
 	protected:
-		std::unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
-		BIO** thePtrTwo{ nullptr };
+		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
+		BIO** bioPtrTwo{ nullptr };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
@@ -77,25 +77,25 @@ namespace DiscordCoreInternal {
 			}
 		};
 
-		addrinfoWrapper& operator=(addrinfo* other) {
-			this->thePtr.reset(other);
-			return *this;
+		addrinfo* operator->() {
+			return this->addrinfoPtrTwo;
 		}
 
-		addrinfo* operator->() {
-			return this->thePtr.get();
+		operator addrinfo**() {
+			return &this->addrinfoPtrTwo;
 		}
 
 		operator addrinfo*() {
-			return this->thePtr.get();
+			return this->addrinfoPtrTwo;
 		}
 
 		addrinfoWrapper(nullptr_t) {
-			ZeroMemory(this->thePtr.get(), sizeof(addrinfo));
+			this->addrinfoPtrTwo = this->addrinfoPtr.get();
 		};
 
 	protected:
-		std::unique_ptr<addrinfo, addrinfoDeleter> thePtr{ new addrinfo, addrinfoDeleter{} };
+		std::unique_ptr<addrinfo, addrinfoDeleter> addrinfoPtr{ new addrinfo{}, addrinfoDeleter{} };
+		addrinfo* addrinfoPtrTwo{ nullptr };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		};
 
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
-			this->thePtr.reset(other);
+			this->sslCTXPtr.reset(other);
 			if (SSL_CTX_up_ref(other) != 1) {
 				std::cout << "SSL_CTX_up_ref() Error: ";
 				ERR_print_errors_fp(stdout);
@@ -120,13 +120,13 @@ namespace DiscordCoreInternal {
 		}
 
 		operator SSL_CTX*() {
-			return this->thePtr.get();
+			return this->sslCTXPtr.get();
 		}
 
 		SSL_CTXWrapper(nullptr_t) {};
 
 	protected:
-		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr , SSL_CTXDeleter{} };
+		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr , SSL_CTXDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
@@ -142,7 +142,7 @@ namespace DiscordCoreInternal {
 		};
 
 		SSLWrapper& operator=(SSL* other) {
-			this->thePtr.reset(other);
+			this->sslPtr.reset(other);
 			if (SSL_up_ref(other) != 1) {
 				std::cout << "SSL_up_ref() Error: ";
 				ERR_print_errors_fp(stdout);
@@ -152,13 +152,13 @@ namespace DiscordCoreInternal {
 		}
 
 		operator SSL*() {
-			return this->thePtr.get();
+			return this->sslPtr.get();
 		}
 
 		SSLWrapper(nullptr_t) {};
 
 	protected:
-		std::unique_ptr<SSL, SSLDeleter> thePtr{ nullptr , SSLDeleter{} };
+		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr , SSLDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
@@ -179,22 +179,22 @@ namespace DiscordCoreInternal {
 		};
 
 		SOCKETWrapper& operator=(SOCKET other) {
-			*this->thePtr = other;
+			*this->socketPtr = other;
 			return *this;
 		}
 
-		operator int() {
-			return static_cast<int>(*this->thePtr);
+		operator int32_t() {
+			return static_cast<int32_t>(*this->socketPtr);
 		}
 
 		operator SOCKET() {
-			return *this->thePtr;
+			return *this->socketPtr;
 		}
 
 		SOCKETWrapper(nullptr_t) {}
 
 	protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{}, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll WSADATAWrapper {
@@ -206,14 +206,14 @@ namespace DiscordCoreInternal {
 		};
 
 		WSADATAWrapper() {
-			int32_t errorCode = WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
+			int32_t errorCode = WSAStartup(MAKEWORD(2, 2), this->wsaDataPtr.get());
 			if (errorCode != 0) {
 				std::cout << "WSAStartup Error: " << errorCode << std::endl;
 			};
 		}
 
 	protected:
-		std::unique_ptr<WSADATA, WSADATADeleter> thePtr{ new WSADATA{}, WSADATADeleter{} };
+		std::unique_ptr<WSADATA, WSADATADeleter> wsaDataPtr{ new WSADATA{}, WSADATADeleter{} };
 	};
 
 	class HttpSSLClient {

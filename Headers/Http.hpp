@@ -11,16 +11,13 @@
 
 namespace DiscordCoreInternal {
 
-	class HttpConnectionManager;
 	struct HttpConnection;
 	struct RateLimitData;
-	class HttpHeader;
 	struct HttpData;
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
-		friend HttpConnection;
 		friend HttpClient;
 
 		void constructHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
@@ -29,7 +26,13 @@ namespace DiscordCoreInternal {
 
 		std::string buildRequest(HttpWorkloadData& workload);
 
+		bool checkForHeadersToParse();
+
+		void parseHeaders();
+
 		void resetValues();
+
+		bool parseChunk();
 
 		virtual ~HttpRnRBuilder() = default;
 
@@ -41,14 +44,8 @@ namespace DiscordCoreInternal {
 		bool doWeHaveHeaders{ false };
 		int64_t responseCode{ -1 };
 		int64_t contentSize{ -1 };
-		bool isItChunked{ false };
 		std::string inputBuffer{};
-
-		bool checkForHeadersToParse();
-
-		void parseHeaders();
-
-		bool parseChunk();
+		bool isItChunked{ false };
 
 		void parseSize();
 
@@ -60,11 +57,8 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll RateLimitData {
 	public:
 
-		friend HttpConnectionManager;
-		struct  HttpConnection;
 		friend HttpRnRBuilder;
 		friend HttpClient;
-		friend HttpHeader;
 
 		RateLimitData& operator=(RateLimitData& other) {
 			this->sampledTimeInMs = other.sampledTimeInMs;
@@ -89,6 +83,7 @@ namespace DiscordCoreInternal {
 		int32_t getsRemaining{ 0 };
 		std::string bucket{ "" };
 		int64_t msRemain{ 0 };
+
 	};
 
 	struct DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
