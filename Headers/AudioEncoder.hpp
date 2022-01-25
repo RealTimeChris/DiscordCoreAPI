@@ -5,6 +5,8 @@
 
 #pragma once
 
+#pragma comment(lib, "opus.lib")
+
 #include "FoundationEntities.hpp"
 #include <opus/opus.h>
 

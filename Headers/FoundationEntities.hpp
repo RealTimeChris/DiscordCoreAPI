@@ -21,7 +21,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 #endif
-#pragma comment(lib, "libcurl")
+#pragma comment(lib, "libcurl.lib")
+#pragma comment(lib, "glib-2.0.lib")
 
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)

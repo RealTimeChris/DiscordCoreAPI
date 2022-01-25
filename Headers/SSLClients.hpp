@@ -5,6 +5,9 @@
 
 #pragma once
 
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
+
 #ifndef OPENSSL_NO_DEPRECATED
 #define OPENSSL_NO_DEPRECATED
 #endif
@@ -22,9 +25,6 @@
 #include <openssl/x509v3.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-
-#pragma comment(lib, "libcrypto")
-#pragma comment(lib, "libssl")
 
 namespace DiscordCoreInternal {
 
