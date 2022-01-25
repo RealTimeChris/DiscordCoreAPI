@@ -127,9 +127,11 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& getWorkloadTarget();
 
+		void sendMessage(nlohmann::json& dataToSend);
+
 		void sendMessage(std::string& dataToSend);
 
-		void sendMessage(nlohmann::json& dataToSend);
+		void onClosedExternal();
 
 		~BaseSocketAgent();
 
@@ -152,6 +154,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		VoiceConnectionData voiceConnectionData{};
+		std::atomic<bool> doWeReconnect{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
 		std::recursive_mutex accessorMutex01{};
 		const int32_t maxReconnectTries{ 10 };
@@ -185,13 +188,13 @@ namespace DiscordCoreInternal {
 
 		bool onMessageReceived();
 
+		void onClosedInternal();
+
 		void sendHeartBeat();
 
 		void handleBuffer();
 
-		bool parseHeader();
-
-		void onClosed();
+		bool parseHeader();	
 
 		void connect();
 	};
@@ -208,6 +211,8 @@ namespace DiscordCoreInternal {
 		void sendVoiceData(std::string& responseData);
 
 		void sendMessage(std::string& dataToSend);
+
+		void onClosedExternal();
 
 		~VoiceSocketAgent();
 
@@ -228,6 +233,7 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		DiscordCoreAPI::EventWaiter connectionReadyEvent{};
+		std::atomic<bool*> doWeReconnect{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
@@ -236,13 +242,12 @@ namespace DiscordCoreInternal {
 		std::vector<uint8_t> inputBuffer00{};
 		std::vector<uint8_t> inputBuffer01{};
 		int32_t currentReconnectTries{ 0 };
-		std::atomic<bool*> doWeReconnect{};
-		bool doWeReconnectBool{ false };
 		int32_t lastNumberReceived{ 0 };
+		bool doWeReconnectBool{ false };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
-		std::string relativePath{ "" };		
+		std::string relativePath{ "" };
 		std::string baseUrl{ "" };
 		std::string port{ "443" };
 		std::string authKey{ "" };
@@ -260,6 +265,8 @@ namespace DiscordCoreInternal {
 
 		void onMessageReceived();
 
+		void onClosedInternal();
+
 		void sendHeartBeat();
 
 		void voiceConnect();
@@ -267,8 +274,6 @@ namespace DiscordCoreInternal {
 		void handleBuffer();
 
 		bool parseHeader();
-
-		void onClosed();
 
 		void connect();
 	};
