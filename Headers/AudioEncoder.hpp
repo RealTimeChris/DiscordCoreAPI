@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
             return *this;
         }
 
-        operator OpusEncoder* () {
+        operator OpusEncoder*() {
             return this->thePtr.get();
         }
 

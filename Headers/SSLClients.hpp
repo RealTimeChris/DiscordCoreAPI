@@ -22,28 +22,14 @@ namespace DiscordCoreInternal {
 			}
 		};
 
-		BIOWrapper& operator=(BIOWrapper&& other) noexcept {
-			this->thePtr = std::move(other.thePtr);
-			other.thePtr = std::unique_ptr<BIO, BIODeleter>{};
-			return *this;
-		}
-
-		BIOWrapper(BIOWrapper&& other) noexcept {
-			*this = std::move(other);
-		}
-
 		BIOWrapper& operator=(BIO* other) {
 			this->thePtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
-				std::cout << "BIO_up_ref() Error: " << ERR_get_error() << std::endl;
+				std::cout << "BIO_up_ref() Error: ";
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl;
 			};
-			auto thePtrNew = this->thePtr.get();
-			this->thePtrTwo = &thePtrNew;
 			return *this;
-		}
-
-		explicit operator BIO** () {
-			return this->thePtrTwo;
 		}
 
 		operator BIO*() {
@@ -54,7 +40,6 @@ namespace DiscordCoreInternal {
 
 	protected:
 		std::unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
-		BIO** thePtrTwo{ nullptr };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
@@ -100,20 +85,12 @@ namespace DiscordCoreInternal {
 			}
 		};
 
-		SSL_CTXWrapper& operator=(SSL_CTXWrapper&& other) noexcept {
-			this->thePtr = std::move(other.thePtr);
-			other.thePtr = std::unique_ptr<SSL_CTX, SSL_CTXDeleter>{};
-			return *this;
-		}
-
-		SSL_CTXWrapper(SSL_CTXWrapper&& other) noexcept {
-			*this = std::move(other);
-		}
-
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
 			this->thePtr.reset(other);
 			if (SSL_CTX_up_ref(other) != 1) {
-				std::cout << "SSL_CTX_up_ref() Error: " << ERR_get_error() << std::endl;
+				std::cout << "SSL_CTX_up_ref() Error: ";
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl;
 			}
 			return *this;
 		}
@@ -140,20 +117,12 @@ namespace DiscordCoreInternal {
 			}
 		};
 
-		SSLWrapper& operator=(SSLWrapper&& other) noexcept {
-			this->thePtr = std::move(other.thePtr);
-			other.thePtr = std::unique_ptr<SSL, SSLDeleter>{};
-			return *this;
-		}
-
-		SSLWrapper(SSLWrapper&& other) noexcept {
-			*this = std::move(other);
-		}
-
 		SSLWrapper& operator=(SSL* other) {
 			this->thePtr.reset(other);
 			if (SSL_up_ref(other) != 1) {
-				std::cout << "SSL_up_ref() Error: " << ERR_get_error() << std::endl;
+				std::cout << "SSL_up_ref() Error: ";
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl;
 			}
 			return *this;
 		}
