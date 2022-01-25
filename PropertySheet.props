@@ -5,16 +5,15 @@
 		<VcPkgFolder>C:\vcpkg\installed\x64-windows\</VcPkgFolder>
 	</PropertyGroup>
 	<PropertyGroup>
-		<ExternalIncludePath>$(VcPkgFolder)\lib\glib-2.0\include;$(ExternalIncludePath)</ExternalIncludePath>
 		<OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-		<IncludePath>$(ProjectDir)\Headers;C:\OpenSSL\include;$(IncludePath)</IncludePath>
-		<LibraryDirectory>"C:\OpenSSL"</LibraryDirectory>
+		<IncludePath>$(ProjectDir)\Headers;C:\OpenSSL\include;$(VcPkgFolder)\lib\glib-2.0\include;$(IncludePath)</IncludePath>
+		<LibraryDirectory>"C:\OpenSSL";$(VcPkgFolder)lib;</LibraryDirectory>
 	</PropertyGroup>
 	<ItemDefinitionGroup>
 		<ClCompile>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 			<LanguageStandard>stdcpplatest</LanguageStandard>
 			<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			<Optimization>MaxSpeed</Optimization>
 		</ClCompile>
 		<Link>
 			<AdditionalDependencies>$(ProjectDir)Library Files\$(Configuration)\DiscordCoreAPI-DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
