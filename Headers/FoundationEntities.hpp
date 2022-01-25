@@ -3489,15 +3489,14 @@ namespace  DiscordCoreInternal {
 
     struct DiscordCoreAPI_Dll VoiceConnectionData {
         std::string voiceEncryptionMode{ "" };
-        std::vector<uint8_t> secretKey{};
-        uint32_t audioSSRC{ 0 };
         std::string externalIp{ "" };
+        std::string secretKey{ "" };
         std::string voicePort{ "" };
         std::string sessionId{ "" };
         std::string endPoint{ "" };
         std::string voiceIp{ "" };
         std::string token{ "" };
-        std::string keys{ "" };
+        uint32_t audioSSRC{ 0 };        
     };
 
 };
