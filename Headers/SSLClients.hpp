@@ -218,7 +218,7 @@ namespace DiscordCoreInternal {
 
 		bool connect(std::string baseUrl, std::string portNew = "443");
 
-		bool writeData(std::string theData);
+		bool writeData(std::string& theData);
 
 		bool readData();
 
@@ -255,6 +255,9 @@ namespace DiscordCoreInternal {
 		template<StringOrVector TypeName>
 		bool writeData(TypeName& data) {
 			size_t writtenBytes{ 0 };
+			if (this->ssl == nullptr) {
+				return false;
+			}
 			int32_t returnValue = SSL_write_ex(this->ssl, data.data(), static_cast<uint32_t>(data.size()), &writtenBytes);
 			if (returnValue != 1) {
 				std::cout << "SSL_write_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
