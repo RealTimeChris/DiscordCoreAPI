@@ -235,9 +235,9 @@ namespace DiscordCoreInternal {
 		bool haveWeReceivedHeartbeatAck{ true };
 		const int32_t maxReconnectTries{ 10 };
 		std::vector<uint8_t> inputBuffer00{};
+		std::vector<uint8_t> inputBuffer01{};
 		int32_t currentReconnectTries{ 0 };
 		std::atomic<bool*> doWeReconnect{};
-		std::vector<char> inputBuffer01{};
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };

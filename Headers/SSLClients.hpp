@@ -267,22 +267,22 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<char>*);
+		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<uint8_t>*);
 
 		DatagramSocketSSLClient(nullptr_t);
 
 		bool writeData(std::string& dataToWrite);
 
-		void readData(bool doWeClear);
-
 		std::vector<uint8_t> getData();
+
+		void readData(bool doWeClear);
 
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
 		BIOWrapper connectionBio{ nullptr };
+		std::vector<uint8_t>* inputBuffer{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<char>* inputBuffer{};
 	};
 
 }
