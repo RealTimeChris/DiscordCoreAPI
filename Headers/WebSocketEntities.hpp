@@ -174,6 +174,7 @@ namespace DiscordCoreInternal {
 		bool doWeQuit{ false };
 		WebSocketState state{};
 		std::string port{ "" };
+		ErlPacker erlPacker{};
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
 
@@ -213,7 +214,6 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::unique_ptr<bool> doWeReconnectPtr{ std::make_unique<bool>() };
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		std::unordered_map<std::string, std::string> HttpHeaders{};
@@ -238,11 +238,12 @@ namespace DiscordCoreInternal {
 		std::vector<uint8_t> inputBuffer01{};
 		int32_t currentReconnectTries{ 0 };
 		std::atomic<bool*> doWeReconnect{};
+		bool doWeReconnectBool{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
-		std::string relativePath{ "" };
+		std::string relativePath{ "" };		
 		std::string baseUrl{ "" };
 		std::string port{ "443" };
 		std::string authKey{ "" };

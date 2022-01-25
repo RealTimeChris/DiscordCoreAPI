@@ -29,7 +29,13 @@ namespace DiscordCoreInternal {
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
 			};
+			auto thePtrNew = this->thePtr.get();
+			this->thePtrTwo = &thePtrNew;
 			return *this;
+		}
+
+		explicit operator BIO** () {
+			return this->thePtrTwo;
 		}
 
 		operator BIO*() {
@@ -40,6 +46,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 		std::unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
+		BIO** thePtrTwo{ nullptr };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {

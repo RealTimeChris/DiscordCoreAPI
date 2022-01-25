@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 
 		ErlPackBuffer() = default;
 
-		ErlPackBuffer(std::unique_ptr<std::vector<uint8_t>>);
+		ErlPackBuffer(std::vector<uint8_t>*);
 
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
@@ -73,96 +73,96 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll ErlPacker {
 	public:
 
-		static std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
+		std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
 
-		static nlohmann::json parseEtfToJson(std::unique_ptr<std::vector<uint8_t>>);
+		nlohmann::json parseEtfToJson(std::vector<uint8_t>*);
 
 	protected:
 
 		template<typename returnType>
-		static void etfByteOrder(returnType, returnType&);
+		void etfByteOrder(returnType, returnType&);
 
 		template<typename returnType>
-		static void storeBits(std::vector<uint8_t>&, returnType&, uint32_t&);
+		void storeBits(std::vector<uint8_t>&, returnType&, uint32_t&);
 
-		static void singleValueJsonToETF(ErlPackBuffer&, nlohmann::json&);
+		void singleValueJsonToETF(ErlPackBuffer&, nlohmann::json&);
 
-		static void writeToBuffer(ErlPackBuffer&, std::vector<uint8_t>);
+		void writeToBuffer(ErlPackBuffer&, std::vector<uint8_t>);
 
-		static void appendVersion(ErlPackBuffer&);
+		void appendVersion(ErlPackBuffer&);
 
-		static void appendNil(ErlPackBuffer&);
+		void appendNil(ErlPackBuffer&);
 
-		static void appendFalse(ErlPackBuffer&);
+		void appendFalse(ErlPackBuffer&);
 
-		static void appendTrue(ErlPackBuffer&);
+		void appendTrue(ErlPackBuffer&);
 
-		static void appendSmallInteger(ErlPackBuffer&, uint8_t&);
+		void appendSmallInteger(ErlPackBuffer&, uint8_t&);
 
-		static void appendInteger(ErlPackBuffer&, uint32_t&);
+		void appendInteger(ErlPackBuffer&, uint32_t&);
 
-		static void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
+		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
-		static void appendLongLong(ErlPackBuffer&, int64_t&);
+		void appendLongLong(ErlPackBuffer&, int64_t&);
 
-		static void appendDouble(ErlPackBuffer&, double&);
+		void appendDouble(ErlPackBuffer&, double&);
 
-		static void appendBinary(ErlPackBuffer&, std::vector<uint8_t>&, uint32_t&);
+		void appendBinary(ErlPackBuffer&, std::vector<uint8_t>&, uint32_t&);
 
-		static void appendTupleHeader(ErlPackBuffer&, uint32_t&);
+		void appendTupleHeader(ErlPackBuffer&, uint32_t&);
 
-		static void appendNilExt(ErlPackBuffer&);
+		void appendNilExt(ErlPackBuffer&);
 
-		static void appendListHeader(ErlPackBuffer&, uint32_t&);
+		void appendListHeader(ErlPackBuffer&, uint32_t&);
 
-		static void appendMapHeader(ErlPackBuffer&, uint32_t&);
+		void appendMapHeader(ErlPackBuffer&, uint32_t&);
 
 		template<typename returnType>
-		static void readBits(ErlPackBuffer&, returnType&);
+		void readBits(ErlPackBuffer&, returnType&);
 
-		static void readString(ErlPackBuffer&, uint32_t&, std::vector<char>&);
+		void readString(ErlPackBuffer&, uint32_t&, std::vector<char>&);
 
-		static nlohmann::json singleValueETFToJson(ErlPackBuffer&);
+		nlohmann::json singleValueETFToJson(ErlPackBuffer&);
 
-		static nlohmann::json processAtom(ErlPackBuffer&, std::vector<char>&, uint32_t&);
+		nlohmann::json processAtom(ErlPackBuffer&, std::vector<char>&, uint32_t&);
 
-		static nlohmann::json parseAtom(ErlPackBuffer&);
+		nlohmann::json parseAtom(ErlPackBuffer&);
 
-		static nlohmann::json parseSmallAtom(ErlPackBuffer&);
+		nlohmann::json parseSmallAtom(ErlPackBuffer&);
 
-		static nlohmann::json parseSmallInteger(ErlPackBuffer&);
+		nlohmann::json parseSmallInteger(ErlPackBuffer&);
 
-		static nlohmann::json parseInteger(ErlPackBuffer&);
+		nlohmann::json parseInteger(ErlPackBuffer&);
 
-		static nlohmann::json parseArray(ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseArray(ErlPackBuffer&, uint32_t&);
 
-		static nlohmann::json parseList(ErlPackBuffer&);
+		nlohmann::json parseList(ErlPackBuffer&);
 
-		static nlohmann::json parseTuple(ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseTuple(ErlPackBuffer&, uint32_t&);
 
-		static nlohmann::json parseNil(ErlPackBuffer&);
+		nlohmann::json parseNil(ErlPackBuffer&);
 
-		static nlohmann::json parseMap(ErlPackBuffer&);
+		nlohmann::json parseMap(ErlPackBuffer&);
 
-		static nlohmann::json parseFloat(ErlPackBuffer&);
+		nlohmann::json parseFloat(ErlPackBuffer&);
 
-		static nlohmann::json parseNewFloat(ErlPackBuffer&);
+		nlohmann::json parseNewFloat(ErlPackBuffer&);
 
-		static nlohmann::json parseBigint(ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseBigint(ErlPackBuffer&, uint32_t&);
 
-		static nlohmann::json parseSmallBigint(ErlPackBuffer&);
+		nlohmann::json parseSmallBigint(ErlPackBuffer&);
 
-		static nlohmann::json parseLargeBigint(ErlPackBuffer&);
+		nlohmann::json parseLargeBigint(ErlPackBuffer&);
 
-		static nlohmann::json parseBinary(ErlPackBuffer&);
+		nlohmann::json parseBinary(ErlPackBuffer&);
 
-		static nlohmann::json parseString(ErlPackBuffer&);
+		nlohmann::json parseString(ErlPackBuffer&);
 
-		static nlohmann::json parseStringAsList(ErlPackBuffer&);
+		nlohmann::json parseStringAsList(ErlPackBuffer&);
 
-		static nlohmann::json parseSmallTuple(ErlPackBuffer&);
+		nlohmann::json parseSmallTuple(ErlPackBuffer&);
 
-		static nlohmann::json parseLargeTuple(ErlPackBuffer&);
+		nlohmann::json parseLargeTuple(ErlPackBuffer&);
 
 	}; 
 }
