@@ -212,8 +212,8 @@ namespace DiscordCoreInternal {
 		std::string soundcloudCertPath{ "C:/SSL/certs/SoundCloudCert.pem" };
 		std::string defaultCertPath{ "C:/SSL/certs/DiscordCert.pem" };
 		std::string googleCertPath{ "C:/SSL/certs/GoogleCert.pem" };
+		std::string* inputBufferPtr{ nullptr };
 		BIOWrapper connectionBio{ nullptr };
-		std::string* inputBuffer{ nullptr };
 		int32_t maxBufferSize{ 16 * 1024 };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
@@ -257,7 +257,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int64_t maxBufferSize{ 1024 * 16 };
-		std::vector<uint8_t>* inputBuffer{};
+		std::vector<uint8_t>* inputBufferPtr{};
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
@@ -280,8 +280,8 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
+		std::vector<uint8_t>* inputBufferPtr{};
 		BIOWrapper connectionBio{ nullptr };
-		std::vector<uint8_t>* inputBuffer{};
 		SOCKETWrapper theSocket{ nullptr };
 	};
 

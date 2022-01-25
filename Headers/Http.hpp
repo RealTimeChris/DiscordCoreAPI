@@ -13,14 +13,18 @@
 namespace DiscordCoreInternal {
 
 	class HttpConnectionManager;
-	class HttpConnection;
+	struct HttpConnection;
+	struct RateLimitData;
 	class HttpHeader;
 	struct HttpData;
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
+		friend HttpConnection;
 		friend HttpClient;
+
+		void constructHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
 
 		HttpData handleHeaders(HttpWorkloadData& workload, HttpConnection& theConnection);
 
@@ -32,14 +36,14 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::unordered_map<std::string, HttpHeader> headers{};
+		std::unordered_map<std::string, std::string> headers{};
 		bool doWeHaveContentSize{ false };
+		std::string contentFinal{ "" };
 		bool doWeHaveHeaders{ false };
 		int64_t responseCode{ -1 };
-		std::string contentFinal{ "" };
 		int64_t contentSize{ -1 };
 		bool isItChunked{ false };
-		std::string rawInput{};
+		std::string inputBuffer{};
 
 		bool checkForHeadersToParse();
 
@@ -58,7 +62,7 @@ namespace DiscordCoreInternal {
 	public:
 
 		friend HttpConnectionManager;
-		friend HttpConnection;
+		struct  HttpConnection;
 		friend HttpRnRBuilder;
 		friend HttpClient;
 		friend HttpHeader;
@@ -78,19 +82,17 @@ namespace DiscordCoreInternal {
 
 		RateLimitData() = default;
 
-		virtual ~RateLimitData() = default;
-
 	protected:
 
 		std::binary_semaphore semaphore{ 1 };
 		int64_t sampledTimeInMs{ 0 };
-		int32_t getsRemaining{ 0 };
 		std::string tempBucket{ "" };
-		int64_t msRemain{ 0 };
+		int32_t getsRemaining{ 0 };
 		std::string bucket{ "" };
+		int64_t msRemain{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
+	struct DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	public:
 
 		RateLimitData* rateLimitData{ nullptr };
@@ -98,7 +100,7 @@ namespace DiscordCoreInternal {
 		bool doWeConnect{ true };
 		std::string bucket{ "" };
 
-		HttpConnection() : HttpSSLClient(&this->rawInput) {};
+		HttpConnection() : HttpSSLClient(&this->inputBuffer) {};
 
 	};
 
@@ -115,31 +117,12 @@ namespace DiscordCoreInternal {
 		void initialize();
 	};
 
-	class DiscordCoreAPI_Dll HttpHeader {
-	public:
-
-		friend class DiscordCoreAPI::SoundCloudRequestBuilder;
-		friend HttpRnRBuilder;
-		friend HttpClient;
-
-		HttpHeader(std::string key, std::string value);
-
-		HttpHeader(nullptr_t);
-
-		static void constructValues(std::unordered_map<std::string, HttpHeader>& headers, RateLimitData* theConnection);
-
-	protected:
-
-		std::string value{ "" };
-		std::string key{ "" };
-	};
-
 	struct DiscordCoreAPI_Dll HttpData {
 
-		std::unordered_map<std::string, HttpHeader> responseHeaders{};
+		std::unordered_map<std::string, std::string> responseHeaders{};
 		std::string responseMessage{ "" };
-		int64_t responseCode{ 0 };
 		nlohmann::json responseData{};
+		int64_t responseCode{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll HttpClient {
@@ -220,9 +203,9 @@ namespace DiscordCoreInternal {
 
 		HttpData executeHttpRequest(HttpWorkloadData&, HttpConnection& theConnection);
 
-		HttpData getResponse(HttpWorkloadData&, HttpConnection& theConnection);
-
 		std::vector<HttpData> executeHttpRequest(std::vector<HttpWorkloadData>&);
+
+		HttpData getResponse(HttpWorkloadData&, HttpConnection& theConnection);
 
 		std::vector<HttpData> httpRequest(std::vector<HttpWorkloadData>&);
 

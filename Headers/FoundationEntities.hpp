@@ -2349,7 +2349,6 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll InputEventData {
     public:
 
-        friend class DiscordCoreInternal::BaseSocketAgent;
         friend RecurseThroughMessagePagesData;
         friend OnInteractionCreationData;
         friend RespondToInputEventData;
@@ -2622,7 +2621,6 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll RespondToInputEventData {
     public:
 
-        friend class DiscordCoreInternal::BaseSocketAgent;
         friend CreateEphemeralInteractionResponseData;
         friend CreateDeferredInteractionResponseData;
         friend CreateEphemeralFollowUpMessageData;
