@@ -91,10 +91,9 @@ namespace DiscordCoreAPI {
 		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		uint16_t sequenceIndex{ 0 };
-		EventWaiter playWaitEvent{};
 		EventWaiter stopWaitEvent{};
 		EventWaiter playSetEvent{};
-		EventWaiter stopSetEvent{};		
+		EventWaiter stopSetEvent{};
 		bool areWePlaying{ false };
 		bool areWeWaiting{ false };
 		AudioFrameData audioData{};

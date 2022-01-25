@@ -238,14 +238,11 @@ namespace DiscordCoreInternal {
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		const int32_t maxReconnectTries{ 10 };
 		std::vector<uint8_t> inputBuffer00{};
 		std::vector<uint8_t> inputBuffer01{};
-		int32_t currentReconnectTries{ 0 };
 		int32_t lastNumberReceived{ 0 };
 		bool doWeReconnectBool{ false };
 		int32_t heartbeatInterval{ 0 };
-		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
 		std::string relativePath{ "" };
 		std::string baseUrl{ "" };
