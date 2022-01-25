@@ -243,7 +243,6 @@ namespace DiscordCoreInternal {
 		bool areWeTerminating{ false };
 		bool areWeWaitingForIp{ true };
 		std::string relativePath{ "" };
-		std::mutex accessorMutex00{};
 		std::string baseUrl{ "" };
 		std::string port{ "443" };
 		std::string authKey{ "" };

@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        std::map<std::string, std::unique_ptr<CoRoutine<void>>> threads{};
+        std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>> threads{};
         CoRoutine<void> cleanupTask{};
         bool doWeQuit{ false };
 

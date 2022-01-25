@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 	public:
 
 		RateLimitData* rateLimitData{ nullptr };
-		std::recursive_mutex accessMutex{};
+		std::mutex accessMutex{};
 		bool doWeConnect{ true };
 		std::string bucket{ "" };
 
