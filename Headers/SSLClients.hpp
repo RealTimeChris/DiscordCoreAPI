@@ -32,10 +32,6 @@ namespace DiscordCoreInternal {
 			*this = std::move(other);
 		}
 
-		BIOWrapper& operator=(BIOWrapper& other) = delete;
-
-		BIOWrapper(BIOWrapper& other) = delete;
-
 		BIOWrapper& operator=(BIO* other) {
 			this->thePtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
@@ -71,15 +67,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 		};
-
-		addrinfoWrapper& operator=(addrinfoWrapper& other) {
-			this->thePtr.reset(other.thePtr.release());
-			return *this;
-		}
-
-		addrinfoWrapper(addrinfoWrapper& other) {
-			*this = other;
-		}
 
 		addrinfoWrapper& operator=(addrinfo* other) {
 			this->thePtr.reset(other);
@@ -201,6 +188,10 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper& operator=(SOCKET other) {
 			*this->thePtr = other;
 			return *this;
+		}
+
+		operator int() {
+			return static_cast<int>(*this->thePtr);
 		}
 
 		operator SOCKET() {
