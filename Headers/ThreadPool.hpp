@@ -34,8 +34,8 @@ namespace DiscordCoreAPI {
         ~ThreadPool();
 
     protected:
-
-        std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>> threads{};
+        std::unique_ptr< std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>>>threadsPtr{ std::make_unique<std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>>>() };
+        std::atomic<std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>>*> threads{};
         CoRoutine<void> cleanupTask{};
         bool doWeQuit{ false };
 
@@ -87,13 +87,13 @@ namespace DiscordCoreAPI {
                 TimeElapsedHandler timeElapsedHandler = [=]()->void {
                     theFunction(args...);
                 };
-                ThreadPoolTimer::threads.load()->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, false)));
+                ThreadPoolTimer::threads.load(std::memory_order_consume)->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, false)));
             }
             else if (timeDelayInMs >= 0 && isItRepeating) {
                 TimeElapsedHandler timeElapsedHandler = [=]()->void {
                     theFunction(args...);
                 };
-                ThreadPoolTimer::threads.load()->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, true)));
+                ThreadPoolTimer::threads.load(std::memory_order_consume)->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, true)));
             }
             else {
                 throw std::exception("Please enter a valid delay time!");

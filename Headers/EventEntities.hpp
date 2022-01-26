@@ -266,7 +266,7 @@ namespace DiscordCoreAPI {
         ReferenceCountingPtr<EventCore> theEventCore{ nullptr };
 
         EventWaiter& operator=(const EventWaiter& other) {
-            this->theEventState.store(other.theEventState.load());
+            this->theEventState.store(other.theEventState.load(std::memory_order_consume), std::memory_order_release);
             this->theEventCore = other.theEventCore;
             return *this;
         }
@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
         }
 
         EventWaiter& operator=(EventWaiter& other) {
-            this->theEventState.store(other.theEventState.load());
+            this->theEventState.store(other.theEventState.load(std::memory_order_consume), std::memory_order_release);
             this->theEventCore = other.theEventCore;
             return *this;
         }
@@ -287,14 +287,14 @@ namespace DiscordCoreAPI {
 
         EventWaiter() {
             this->theEventCore = new EventCore{};
-            this->theEventState.store(this->theEventCore->getEventState());
+            this->theEventState.store(this->theEventCore->getEventState(), std::memory_order_release);
         }
 
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
             uint64_t millisecondsWaited{ 0 };
             while (true) {
                 int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                if (*this->theEventState.load()) {
+                if (*this->theEventState.load(std::memory_order_consume)) {
                     return 0;
                 }
                 else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
@@ -312,15 +312,15 @@ namespace DiscordCoreAPI {
         }
 
         void set() {
-            auto thePtr = this->theEventState.load();
+            auto thePtr = this->theEventState.load(std::memory_order_consume);
             *thePtr = true;
-            this->theEventState.store(thePtr);
+            this->theEventState.store(thePtr, std::memory_order_release);
         }
 
         void reset() {
-            auto thePtr = this->theEventState.load();
+            auto thePtr = this->theEventState.load(std::memory_order_consume);
             *thePtr = false;
-            this->theEventState.store(thePtr);
+            this->theEventState.store(thePtr, std::memory_order_release);
         }
     };
 

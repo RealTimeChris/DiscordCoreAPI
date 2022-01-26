@@ -11,9 +11,10 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll HttpConnection;
-	struct DiscordCoreAPI_Dll RateLimitData;
-	struct DiscordCoreAPI_Dll HttpData;
+	class HttpConnectionManager;
+	struct HttpConnection;
+	struct RateLimitData;
+	struct HttpData;
 
 	class SemaphoreWrapper :public DiscordCoreAPI::ReferenceCountingBase {
 	public:
@@ -97,7 +98,7 @@ namespace DiscordCoreInternal {
 		RateLimitData() = default;
 
 	protected:
-
+		
 		std::unique_ptr<SemaphoreWrapper> semaphore{ std::make_unique<SemaphoreWrapper>() };
 		int64_t sampledTimeInMs{ 0 };
 		std::string tempBucket{ "" };
@@ -147,7 +148,7 @@ namespace DiscordCoreInternal {
 		template<typename ReturnType>
 		ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
-				while (!this->theStopWatch01.load().hasTimePassed()) {};
+				while (!this->theStopWatch01.load(std::memory_order_consume).hasTimePassed()) {};
 				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
@@ -166,7 +167,7 @@ namespace DiscordCoreInternal {
 		template<>
 		void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
 			try {
-				while (!this->theStopWatch02.load().hasTimePassed()) {};
+				while (!this->theStopWatch02.load(std::memory_order_consume).hasTimePassed()) {};
 				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
@@ -182,7 +183,7 @@ namespace DiscordCoreInternal {
 		template<>
 		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
 			try {
-				while (!this->theStopWatch03.load().hasTimePassed()) {};
+				while (!this->theStopWatch03.load(std::memory_order_consume).hasTimePassed()) {};
 				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
