@@ -660,7 +660,7 @@ namespace DiscordCoreAPI {
         StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds{1});
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;
@@ -674,7 +674,7 @@ namespace DiscordCoreAPI {
         StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds(timeInMsNew) };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds{1});
             if (stopWatch.hasTimePassed()) {
                 doWeBreak = true;
                 break;
