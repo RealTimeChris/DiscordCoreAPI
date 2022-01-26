@@ -189,7 +189,7 @@ namespace DiscordCoreInternal {
 	protected:
 		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
-
+#ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADATAWrapper {
 
 		struct DiscordCoreAPI_Dll WSADATADeleter {
@@ -208,7 +208,7 @@ namespace DiscordCoreInternal {
 	protected:
 		std::unique_ptr<WSADATA, WSADATADeleter> wsaDataPtr{ new WSADATA{}, WSADATADeleter{} };
 	};
-
+#endif
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	public:
 

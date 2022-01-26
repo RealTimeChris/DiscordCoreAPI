@@ -90,10 +90,12 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 		std::unique_ptr<BotUser> currentUser{ nullptr };
+#ifdef _WIN32
 		DiscordCoreInternal::WSADATAWrapper wsaData{};
+#endif
 		CacheOptions cacheOptions{};
 		std::string botToken{ "" };
-		bool doWeQuit{ false };		
+		bool doWeQuit{ false };
 
 		std::string getGateWayBot();
 
