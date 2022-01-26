@@ -3151,6 +3151,18 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
     /**@}*/
+
+    /**
+    * \addtogroup discord_events
+    * @{
+    */
+
+    /// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
+    struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
+        VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
+    };
+
+    /**@}*/
 };
 
 namespace  DiscordCoreInternal {

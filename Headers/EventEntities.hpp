@@ -10,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-    struct DiscordCoreAPI_Dll EventDelegateToken {
+    struct EventDelegateToken {
 
         template<typename ReturnType, typename ...ArgTypes>
         friend class EventDelegate;
@@ -53,13 +53,13 @@ namespace DiscordCoreAPI {
     class EventDelegate {
     public:
 
-        template<typename ReturnType, typename... A>
+        template<typename ReturnType, typename... ArgTypes>
         friend class Event;
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunction = std::move(other.theFunction);
-                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
+                this->theFunction.reset(other.theFunction.release());
+                other.theFunction = nullptr;
             }
             return *this;
         }
@@ -68,24 +68,16 @@ namespace DiscordCoreAPI {
             *this = std::move(other);
         }
 
-        EventDelegate<ReturnType, ArgTypes...>& operator=(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
-
-        EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
-
-        EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
-
-        EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
-
         EventDelegate(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
-            this->theFunction = theFunctionNew;
+            this->theFunction.reset(&theFunctionNew);
         }
 
         EventDelegate(ReturnType(*theFunctionNew)(ArgTypes...)) {
-            this->theFunction = theFunctionNew;
+            this->theFunction.reset(&theFunctionNew);
         }
 
     protected:
-        std::function<ReturnType(ArgTypes...)>theFunction{};
+        std::unique_ptr<std::function<ReturnType(ArgTypes...)>> theFunction{ nullptr };
     };
 
     template<typename ReturnType, typename  ...ArgTypes>
@@ -134,7 +126,7 @@ namespace DiscordCoreAPI {
 
         void operator()(ArgTypes... args) {
             for (auto& [key, value] : this->theFunctions) {
-                value.theFunction(args...);
+                (*value.theFunction)(args...);
             }
         }
 
@@ -152,7 +144,7 @@ namespace DiscordCoreAPI {
         EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>&& other) noexcept {
             if (this != &other) {
                 this->theFunction = std::move(other.theFunction);
-                other.theFunction = std::function<void(ArgTypes...)>{};
+                other.theFunction = nullptr;
             }
             return *this;
         }
@@ -161,13 +153,13 @@ namespace DiscordCoreAPI {
             *this = std::move(other);
         }
 
-        EventDelegate<void, ArgTypes...>& operator=(const EventDelegate<void, ArgTypes...>& other) = delete;
+        EventDelegate& operator=(const EventDelegate<void, ArgTypes...>& ) = delete;
 
-        EventDelegate(const EventDelegate<void, ArgTypes...>& other) = delete;
+        EventDelegate(const EventDelegate<void, ArgTypes...>&) = delete;
 
-        EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>& other) = delete;
+        EventDelegate& operator=(EventDelegate<void, ArgTypes...>&) = delete;
 
-        EventDelegate(EventDelegate<void, ArgTypes...>& other) = delete;
+        EventDelegate(EventDelegate<void, ArgTypes...>&) = delete;
 
         EventDelegate(std::function<void(ArgTypes...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
@@ -178,7 +170,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        std::function<void(ArgTypes...)>theFunction{};
+        std::function<void(ArgTypes...)> theFunction{ nullptr };
     };
 
     template<typename ...ArgTypes>

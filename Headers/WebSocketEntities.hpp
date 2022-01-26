@@ -153,6 +153,7 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
+		std::atomic<bool> areWeConnected{ false };
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic<bool> doWeReconnect{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
