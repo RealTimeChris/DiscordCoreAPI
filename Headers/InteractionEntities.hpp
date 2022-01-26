@@ -288,7 +288,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For getting an Interaction response. \brief For getting an Interaction response.
-    struct DiscordCoreAPI_Dll GetInteractionResponseData {
+  struct DiscordCoreAPI_Dll GetInteractionResponseData {
         std::string interactionToken{ "" }; ///< Interaction token.
         std::string applicationId{ "" }; ///< application id.
     };
@@ -320,7 +320,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For deleting an Interaction response. \brief For deleting an Interaction response.
-    struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
+  struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
 
         friend void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
         friend InputEvents;
@@ -407,7 +407,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For getting a follow-up Message. \brief For getting a follow-up Message.
-    struct DiscordCoreAPI_Dll GetFollowUpMessageData {
+  struct DiscordCoreAPI_Dll GetFollowUpMessageData {
         std::string messageId{ "" };///< Message id.
         std::string interactionToken{ "" }; ///< Interaction token.
         std::string applicationId{ "" }; ///< application id.
@@ -446,7 +446,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For deleting a follow up Message. \brief For deleting a follow up Message.
-    struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
+  struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 
         friend void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
         friend InputEvents;
@@ -466,7 +466,7 @@ namespace DiscordCoreAPI {
     };
 
     /// A single Interaction.
-    struct DiscordCoreAPI_Dll Interaction : public InteractionData {
+  struct DiscordCoreAPI_Dll Interaction : public InteractionData {
     public:
         
         Interaction(InteractionData dataPackage);
@@ -551,7 +551,7 @@ namespace DiscordCoreAPI {
     */
 
     /// Select menu response data. \brief Select menu response data.
-    struct DiscordCoreAPI_Dll SelectMenuResponseData {
+  struct DiscordCoreAPI_Dll SelectMenuResponseData {
         InteractionData interactionData{};///< Interaction data.
         std::string selectionId{ "" };///< Selection id.
         std::vector<std::string> values{};///< A std::vector of the chosen values.
@@ -601,7 +601,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Button response data. \brief Button response data.
-    struct DiscordCoreAPI_Dll ButtonResponseData {
+  struct DiscordCoreAPI_Dll ButtonResponseData {
         operator InteractionData() {
 
             return this->interactionData;

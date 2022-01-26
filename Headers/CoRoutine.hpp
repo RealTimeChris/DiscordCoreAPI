@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
     */
 
     /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
-    enum class CoRoutineStatus {
+   enum class CoRoutineStatus {
         Idle = 0,///< Idle.
         Running = 1,///< Running.
         Complete = 2,///< Complete.
@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
     class CoRoutine {
     public:
 
-        class promise_type;
+        class DiscordCoreAPI_Dll promise_type;
 
         CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
             if (this != &other) {
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
             return ReturnType{};
         }
 
-        class promise_type {
+        class DiscordCoreAPI_Dll promise_type {
         public:
 
             template<typename ReturnType>
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
     class CoRoutine<void> {
     public:
 
-        class promise_type;
+        class DiscordCoreAPI_Dll promise_type;
 
         CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
             if (this != &other) {
@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
             }
         }
 
-        class promise_type {
+        class DiscordCoreAPI_Dll promise_type {
         public:
 
             template<typename ReturnType>
@@ -371,7 +371,7 @@ namespace DiscordCoreAPI {
     /// \returns A std::coroutine_handle<CoRoutine<ReturnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
     template<typename ReturnType>
     auto NewThreadAwaitable() {
-        class NewThreadAwaitableClass {
+        class DiscordCoreAPI_Dll NewThreadAwaitableClass {
         public:
 
             std::coroutine_handle<CoRoutine<ReturnType>::promise_type> waiterHandle{ nullptr };
@@ -395,9 +395,9 @@ namespace DiscordCoreAPI {
         return NewThreadAwaitableClass();
     }
 
-    struct DiscordCoreAPI_Dll CoRoutineWrapper {
+  struct DiscordCoreAPI_Dll CoRoutineWrapper {
 
-        struct CoRoutineDeleter {
+      struct DiscordCoreAPI_Dll CoRoutineDeleter {
             void operator()(CoRoutine<void>* other) {
                 if (other != nullptr) {
                     other->cancel();

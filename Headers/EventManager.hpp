@@ -297,9 +297,9 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
-	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
-		VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
-	};
+    struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
+        VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
+    };
 
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {

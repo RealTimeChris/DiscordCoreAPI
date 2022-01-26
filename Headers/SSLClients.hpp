@@ -30,7 +30,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll BIOWrapper {
 
-		struct BIODeleter {
+		struct DiscordCoreAPI_Dll BIODeleter {
 			void operator()(BIO* other) {
 				if (other != nullptr) {
 					BIO_free(other);
@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 
-		struct addrinfoDeleter {
+		struct DiscordCoreAPI_Dll addrinfoDeleter {
 			void operator()(addrinfo* other) {
 				if (other != nullptr) {
 					freeaddrinfo(other);
@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 
-		struct SSL_CTXDeleter {
+		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
 			void operator()(SSL_CTX* other) {
 				if (other != nullptr) {
 					SSL_CTX_free(other);
@@ -124,7 +124,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
 
-		struct SSLDeleter {
+		struct DiscordCoreAPI_Dll SSLDeleter {
 			void operator()(SSL* other) {
 				if (other != nullptr) {
 					SSL_shutdown(other);
@@ -156,7 +156,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 
-		struct SOCKETDeleter {
+		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
 				if (other != nullptr) {
 #ifdef _WIN32
@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll WSADATAWrapper {
 
-		struct WSADATADeleter {
+		struct DiscordCoreAPI_Dll WSADATADeleter {
 			void operator()(WSADATA*) {
 				WSACleanup();
 			}
@@ -209,12 +209,14 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<WSADATA, WSADATADeleter> wsaDataPtr{ new WSADATA{}, WSADATADeleter{} };
 	};
 
-	class HttpSSLClient {
+	class DiscordCoreAPI_Dll HttpSSLClient {
 	public:
 
-		HttpSSLClient(std::string baseUrl, std::string* theVector, std::string portNew = "443");
+		HttpSSLClient(std::string* theVector);
 
 		HttpSSLClient(nullptr_t);
+
+		bool connect(std::string baseUrl, std::string portNew = "443");
 
 		bool writeData(std::string& theData);
 

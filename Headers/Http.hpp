@@ -11,9 +11,9 @@
 
 namespace DiscordCoreInternal {
 
-	struct HttpConnection;
-	struct RateLimitData;
-	struct HttpData;
+	struct DiscordCoreAPI_Dll HttpConnection;
+	struct DiscordCoreAPI_Dll RateLimitData;
+	struct DiscordCoreAPI_Dll HttpData;
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
@@ -86,18 +86,15 @@ namespace DiscordCoreInternal {
 
 	};
 
-	struct DiscordCoreAPI_Dll HttpConnection : public HttpRnRBuilder {
+	struct DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	public:
 
-		friend HttpClient;
-
-		std::unique_ptr<HttpSSLClient> httpSSlClient{ nullptr };
 		RateLimitData* rateLimitData{ nullptr };
-		std::mutex accessMutex{};
-		bool doWeConnect{ true };
 		std::string bucket{ "" };
+		bool doWeConnect{ true };
+		std::mutex accessMutex{};
 
-		HttpConnection() = default;
+		HttpConnection() : HttpSSLClient(&this->inputBuffer) {};
 
 	};
 

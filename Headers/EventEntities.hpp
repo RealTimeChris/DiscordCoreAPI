@@ -10,7 +10,7 @@
 
 namespace DiscordCoreAPI {
 
-    struct EventDelegateToken {
+   struct DiscordCoreAPI_Dll EventDelegateToken {
 
         template<typename ReturnType, typename ...ArgTypes>
         friend class EventDelegate;
@@ -58,8 +58,8 @@ namespace DiscordCoreAPI {
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunction.reset(other.theFunction.release());
-                other.theFunction = nullptr;
+                this->theFunction = std::move(other.theFunction);
+                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
             }
             return *this;
         }
@@ -68,16 +68,24 @@ namespace DiscordCoreAPI {
             *this = std::move(other);
         }
 
+        EventDelegate<ReturnType, ArgTypes...>& operator=(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+
+        EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+
+        EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+
+        EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+
         EventDelegate(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
-            this->theFunction.reset(&theFunctionNew);
+            this->theFunction = theFunctionNew;
         }
 
         EventDelegate(ReturnType(*theFunctionNew)(ArgTypes...)) {
-            this->theFunction.reset(&theFunctionNew);
+            this->theFunction = theFunctionNew;
         }
 
     protected:
-        std::unique_ptr<std::function<ReturnType(ArgTypes...)>> theFunction{ nullptr };
+        std::function<ReturnType(ArgTypes...)>theFunction{};
     };
 
     template<typename ReturnType, typename  ...ArgTypes>
@@ -126,7 +134,7 @@ namespace DiscordCoreAPI {
 
         void operator()(ArgTypes... args) {
             for (auto& [key, value] : this->theFunctions) {
-                (*value.theFunction)(args...);
+                value.theFunction(args...);
             }
         }
 
@@ -144,7 +152,7 @@ namespace DiscordCoreAPI {
         EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>&& other) noexcept {
             if (this != &other) {
                 this->theFunction = std::move(other.theFunction);
-                other.theFunction = nullptr;
+                other.theFunction = std::function<void(ArgTypes...)>{};
             }
             return *this;
         }
@@ -153,13 +161,13 @@ namespace DiscordCoreAPI {
             *this = std::move(other);
         }
 
-        EventDelegate& operator=(const EventDelegate<void, ArgTypes...>& ) = delete;
+        EventDelegate<void, ArgTypes...>& operator=(const EventDelegate<void, ArgTypes...>& other) = delete;
 
-        EventDelegate(const EventDelegate<void, ArgTypes...>&) = delete;
+        EventDelegate(const EventDelegate<void, ArgTypes...>& other) = delete;
 
-        EventDelegate& operator=(EventDelegate<void, ArgTypes...>&) = delete;
+        EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>& other) = delete;
 
-        EventDelegate(EventDelegate<void, ArgTypes...>&) = delete;
+        EventDelegate(EventDelegate<void, ArgTypes...>& other) = delete;
 
         EventDelegate(std::function<void(ArgTypes...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
@@ -170,7 +178,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        std::function<void(ArgTypes...)> theFunction{ nullptr };
+        std::function<void(ArgTypes...)>theFunction{};
     };
 
     template<typename ...ArgTypes>
@@ -230,9 +238,29 @@ namespace DiscordCoreAPI {
 
     };
 
-    struct DiscordCoreAPI_Dll EventCore {
+    class DiscordCoreAPI_Dll ReferenceCountingBase {
+    public:
+        ReferenceCountingBase() = default;
 
-        friend EventWaiter;
+        void incrementCount() const { 
+            this->refCount += 1;
+        }
+
+        void release() const {
+            assert(this->refCount > 0);
+            this->refCount -= 1;
+            if (this->refCount == 0) {
+                delete this;
+            };
+        }
+
+        virtual ~ReferenceCountingBase() {}
+
+    private:
+        mutable int refCount{ 0 };
+    };
+
+   struct DiscordCoreAPI_Dll EventCore :public ReferenceCountingBase {
 
         EventCore& operator=(const EventCore&) = delete;
 
@@ -242,20 +270,81 @@ namespace DiscordCoreAPI {
 
         EventCore(EventCore&) = delete;
 
+        bool* getEventState() {
+            return this->theEventState.get();
+        }
+
         EventCore() = default;
 
     protected:
-
+        
         std::unique_ptr<bool> theEventState{ std::make_unique<bool>() };
+    };
 
+    template<typename ObjectType>
+    class ReferenceCountingPtr {
+    public:
+
+        ReferenceCountingPtr(ObjectType* ptr = nullptr) {
+            if (ptr != nullptr) {
+                this->thePtr = ptr;
+                ptr->incrementCount();
+            }
+        }
+
+        ReferenceCountingPtr& operator=(ObjectType* ptr) {
+            if (ptr != nullptr) {
+                ptr->incrementCount();
+            }
+            if (this->thePtr != nullptr) {
+                this->thePtr->release();
+            }
+            this->thePtr = ptr;
+            return *this;
+        }
+
+        ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
+            *this = ptr.thePtr;
+            return *this;
+        }
+
+        ObjectType* get() const {
+            return this->thePtr;
+        }
+
+        ObjectType* operator->() const {
+            return this->thePtr;
+        }
+
+        ObjectType& operator*() const {
+            return *this->thePtr;
+        }
+
+        ~ReferenceCountingPtr() {
+            if (this->thePtr != nullptr) {
+                this->thePtr->release();
+            }
+        }
+
+    private:
+        ObjectType* thePtr{ nullptr };
     };
 
     class DiscordCoreAPI_Dll EventWaiter {
     public:
 
-        std::unique_ptr<EventCore> theEventCoreMain{ nullptr };
         std::atomic<bool*> theEventState{ nullptr };
-        EventCore* theEventCore{ nullptr };
+        ReferenceCountingPtr<EventCore> theEventCore{ nullptr };
+
+        EventWaiter& operator=(const EventWaiter& other) {
+            this->theEventState.store(other.theEventState.load());
+            this->theEventCore = other.theEventCore;
+            return *this;
+        }
+
+        EventWaiter(const EventWaiter& other) {
+            *this = other;
+        }
 
         EventWaiter& operator=(EventWaiter& other) {
             this->theEventState.store(other.theEventState.load());
@@ -268,9 +357,8 @@ namespace DiscordCoreAPI {
         }
 
         EventWaiter() {
-            this->theEventCoreMain = std::make_unique<EventCore>();
-            this->theEventCore = this->theEventCoreMain.get();
-            this->theEventState.store(this->theEventCore->theEventState.get());
+            this->theEventCore = new EventCore{};
+            this->theEventState.store(this->theEventCore->getEventState());
         }
 
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {

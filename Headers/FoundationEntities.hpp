@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll CURLWrapper {
 
-        struct CURLDeleter {
+        struct DiscordCoreAPI_Dll CURLDeleter {
             void operator()(CURL* other) {
                 if (other != nullptr) {
                     curl_easy_cleanup(other);
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll CURLUWrapper {
 
-        struct CURLUDeleter {
+        struct DiscordCoreAPI_Dll CURLUDeleter {
             void operator()(CURLU* other) {
                 if (other != nullptr) {
                     curl_url_cleanup(other);
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll CURLCharWrapper {
 
-        struct CURLCharDeleter {
+        struct DiscordCoreAPI_Dll CURLCharDeleter {
             void operator()(char* other) {
                 if (other != nullptr) {
                     curl_free(other);
@@ -613,7 +613,7 @@ namespace DiscordCoreAPI {
     }
 
     /// Time formatting methods. \brief Time formatting methods.
-    enum class TimeFormat {
+   enum class TimeFormat {
         LongDate = 'D',		/// "20 April 2021" - Long Date
         LongDateTime = 'F',		/// "Tuesday, 20 April 2021 16:20" - Long Date/Time
         LongTime = 'T',		/// "16:20:30" - Long Time
@@ -840,7 +840,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Sticker format types. \brief Sticker format types.
-    enum class StickerFormatType {
+   enum class StickerFormatType {
         Png = 1,///< Png.
         Apng = 2,///< Apng.
         Lottie = 3///< Lottie
@@ -899,7 +899,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Embed types. \brief Embed types.
-    enum class EmbedType {
+   enum class EmbedType {
         Rich = 0,///< Rich.
         Image = 1,///< Image.
         Video = 2,///< Video.
@@ -1018,7 +1018,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Permission overwrites types. \brief Permission overwrites types.
-    enum class PermissionOverwritesType {
+   enum class PermissionOverwritesType {
         Role = 0,///< Role.
         User = 1///< User.
     };
@@ -1035,7 +1035,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Channel types. \brief Channel types.
-    enum class ChannelType {
+   enum class ChannelType {
         Guild_Text = 0,///< Guild text.
         Dm = 1,///< Direct-Message.
         Guild_Voice = 2,/// Guild voice.
@@ -1069,14 +1069,14 @@ namespace DiscordCoreAPI {
     };
 
     /// Thread types. \brief Thread types.
-    enum class ThreadType {
+   enum class ThreadType {
         Guild_News_Thread = 10,///< Guild news Thread.
         Guild_Public_Thread = 11,///< Guild public Thread.
         Guild_Private_Thread = 12///< Guild private Thread.
     };
 
     /// Automatic Thread archiving durations. \brief Automatic Thread archiving durations.
-    enum class ThreadAutoArchiveDuration :int32_t {
+   enum class ThreadAutoArchiveDuration :int32_t {
         Shortest = 60,///< Shortest.
         Short = 1440,///< Short.
         Long = 4320,///< Long.
@@ -1193,7 +1193,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll ArchivedThreadsData : public ActiveThreadsData {};
 
     /// Application command-option types. \brief Application command-option types.
-    enum class ApplicationCommandOptionType {
+   enum class ApplicationCommandOptionType {
         Sub_Command = 1,///< Sub-command.
         Sub_Command_Group = 2,///< Sub-command group.
         String = 3,///< String.
@@ -1207,7 +1207,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Application command permission-types. \brief Application command permission-types.
-    enum class ApplicationCommandPermissionType {
+   enum class ApplicationCommandPermissionType {
         Role = 1,///< Role.
         User = 2///< User.
     };
@@ -1287,7 +1287,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Message activity types. \brief Message activity types.
-    enum class MessageActivityType {
+   enum class MessageActivityType {
         Join = 1,///< Join.
         Spectate = 2,///< Spectate.
         Listen = 3,///< Listen.
@@ -1379,7 +1379,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Widget style options. \brief Widget style options.
-    enum class WidgetStyleOptions {
+   enum class WidgetStyleOptions {
         Shield = 0,///< Shield
         Banner1 = 1,///< Banner1
         Banner2 = 2,///< Banner2
@@ -1414,7 +1414,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Audit log events. \brief Audit log events.
-    enum class AuditLogEvent {
+   enum class AuditLogEvent {
        Guild_Update = 1,
        Channel_Create = 10,
        Channel_Update = 11,
@@ -1544,7 +1544,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Activity types. \brief Activity types.
-    enum class ActivityType {
+   enum class ActivityType {
         Game = 0,///< Game.
         Streaming = 1,///< Streaming.
         Listening = 2,///< Listening.
@@ -1580,7 +1580,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Premium tier levels. \brief Premium tier levels.
-    enum class PremiumTier {
+   enum class PremiumTier {
         None = 0,///< None.
         Tier_1 = 1,///< Tier 1.
         Tier_2 = 2,///< Tier 2.
@@ -1588,26 +1588,26 @@ namespace DiscordCoreAPI {
     };
 
     /// Default Message notification levels. \brief Default Message notification levels.
-    enum class DefaultMessageNotificationLevel {
+   enum class DefaultMessageNotificationLevel {
         All_Messages = 0,///< All messages.
         Only_Mentions = 1///< Only mentions.
     };
 
     /// Explicit content filter levels. \brief Explicit content filter levels.
-    enum class ExplicitContentFilterLevel {
+   enum class ExplicitContentFilterLevel {
         Disabled = 0,///< Disabled.
         Members_Without_Roles = 1,///< Members without roles.
         All_Members = 2///< All members.
     };
 
     /// MFA levels. \brief MFA levels.
-    enum class MFALevel {
+   enum class MFALevel {
         None = 0,///< None.
         Elevated = 1///< Elevated.
     };
 
     /// Verification levels. \brief /// Verification levels.
-    enum class VerificationLevel {
+   enum class VerificationLevel {
         None = 0,///< None.
         Low = 1,///< Low.
         Medium = 2,///< Medium.
@@ -1639,7 +1639,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Stage instance privacy levels. \brief Stage instance privacy levels.
-    enum class StageInstancePrivacyLevel {
+   enum class StageInstancePrivacyLevel {
         Public = 1,///< Public.
         Guild_Only = 2///< Guild only.
     };
@@ -1657,7 +1657,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Sticker types. \brief Sticker types.
-    enum class StickerType {
+   enum class StickerType {
         Standard = 1,///< Standard.
         Guild = 2///< Guild.
     };
@@ -1696,7 +1696,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Afk timeout durations. \brief Afk timeout durations.
-    enum class AfkTimeOutDurations {
+   enum class AfkTimeOutDurations {
         Shortest = 60,///< Shortest.
         Short = 300,///< Short.
         Medium = 900,///< Medium.
@@ -1764,13 +1764,13 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
-    enum class GuildScheduledEventPrivacyLevel {
+   enum class GuildScheduledEventPrivacyLevel {
         Public = 1,///< Public.
         Guild_Only = 2///< Guild only.
     };
 
     /// GuildScheduledEventStatus. \brief GuildScheduledEventStatus.
-    enum class GuildScheduledEventStatus {
+   enum class GuildScheduledEventStatus {
         Scheduled = 1,///< Scheduled.
         Active = 2,///< Active.
         Completed = 3,///< Completed.
@@ -1778,7 +1778,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Guild scheduled event entity types. /brief Guild scheduled event entity types.
-    enum class GuildScheduledEventEntityType {
+   enum class GuildScheduledEventEntityType {
         None = 0,///< None.
         State_Instance = 1,///< Stage instance.
         Voice = 2,///< Voice.
@@ -1856,13 +1856,13 @@ namespace DiscordCoreAPI {
     };
 
     /// Invite target types. \brief Invite target types.
-    enum class InviteTargetTypes {
+   enum class InviteTargetTypes {
         Stream = 1,///< Stream.
         Embedded_Application = 2///< Embedded application.
     };
 
     /// WebHook types. \brief WebHook types.
-    enum class WebHookType {
+   enum class WebHookType {
         Incoming = 1,///< Incoming.
         Channel_Follower = 2,///< Channel follower.
         Application = 3///< Application.
@@ -1984,7 +1984,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Application command types. \brief Application command types.
-    enum class ApplicationCommandType {
+   enum class ApplicationCommandType {
         Chat_Input = 1,///< Chat input.
         User = 2,///< User.
         Message = 3///< Message.
@@ -2001,7 +2001,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Component types. \brief Component types.
-    enum class ComponentType {
+   enum class ComponentType {
         ActionRow = 1,///< Action row.
         Button = 2,///< Button.
         SelectMenu = 3///< Select-menu.
@@ -2023,7 +2023,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Interaction types. \brief Interaction types.
-    enum class InteractionType {
+   enum class InteractionType {
         Ping = 1,///< Ping.
         Application_Command = 2,///< Application command.
         Message_Component = 3,///< Message component.
@@ -2040,7 +2040,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Button styles. \brief Button styles.
-    enum class ButtonStyle {
+   enum class ButtonStyle {
         Primary = 1,///< Primary.
         Success = 3,///< Success.
         Secondary = 2,///< Secondary.
@@ -2069,7 +2069,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Interaction callback types. \brief Interaction callback types.
-    enum class InteractionCallbackType {
+   enum class InteractionCallbackType {
         Pong = 1,///< Pong.
         ChannelMessageWithSource = 4,///< Channel Message with source.
         DeferredChannelMessageWithSource = 5,///< Deferred Channel Message with source.
@@ -2162,7 +2162,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Message types. \brief Message types.
-    enum class MessageType {
+   enum class MessageType {
         Default = 0,///< Default.
         Recipient_Add = 1,///< Recipient add.
         Recipient_Remove = 2,///< Recipient remove.
@@ -2189,7 +2189,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Message flags. \brief Message flags.
-    enum class MessageFlags {
+   enum class MessageFlags {
         Crossposted = 1ull << 0,///< Crossposted.
         Is_Crosspost = 1ull << 1,///< Is crosspost.
         Suppress_Embeds = 1ull << 2,///< Supress embeds.
@@ -2201,7 +2201,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Sticker item types. \brief Sticker item types.
-    enum class StickerItemType {
+   enum class StickerItemType {
         Png = 1,///< Png.
         Apng = 2,///< Apng.
         Lottie = 3///< Lottie.
@@ -2287,7 +2287,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Connection visibility types. \brief Connection visibility types.
-    enum class ConnectionVisibilityTypes {
+   enum class ConnectionVisibilityTypes {
         None = 0,///< None.
         Everyone = 1///< Everyone.
     };
@@ -2374,7 +2374,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Input event response types. \brief Input event response types.
-    enum class InputEventResponseType {
+   enum class InputEventResponseType {
         Unset = 0,///< Unset.
         Deferred_Response = 1,///< Deferred response.
         Interaction_Response = 2,///< Interaction response.
@@ -2389,7 +2389,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Input event types. \brief Input event types.
-    enum class InputEventType {
+   enum class InputEventType {
         Unset    = 0,///< Unset.
         Application_Command_Interaction = 1,///< Slash-command Interaction.
         Button_Interaction = 2,///< Button Interaction.
@@ -2913,7 +2913,7 @@ namespace DiscordCoreAPI {
 
 
     /// Song types. \brief Song types.
-    enum class SongType {
+   enum class SongType {
         YouTube = 0,///< YouTube.
         SoundCloud = 1///< SoundCloud.
     };
@@ -2984,7 +2984,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Audio frame types. \brief Audio frame types.
-    enum class AudioFrameType {
+   enum class AudioFrameType {
         Unset = 0,///< Unset.
         Encoded = 1,///< Encoded.
         RawPCM = 2,///< Raw PCM.
@@ -3156,7 +3156,7 @@ namespace DiscordCoreAPI {
 
 namespace  DiscordCoreInternal {
 
-    enum class HttpWorkloadClass {
+   enum class HttpWorkloadClass {
         Get = 0,
         Put = 1,
         Post = 2,
@@ -3164,7 +3164,7 @@ namespace  DiscordCoreInternal {
         Delete = 4
     };
 
-    enum class HttpWorkloadType {
+   enum class HttpWorkloadType {
        Unset = 0,
        Get_Global_Application_Commands = 1,
        Post_Global_Application_Command = 2,
