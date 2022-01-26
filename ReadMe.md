@@ -13,6 +13,9 @@
 ## [Example "Music" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-MusicHouse-Cpp)
 ## [Example "Game" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-GameHouse-Cpp)
 ## Features
+### CPU Efficient
+----
+- It only uses about 0.1% of an i7 9750h to stream audio in high quality (@Opus 48Khz 16-bit Stereo) to a single server.
 ### Entire Discord API Covered
 ----
 - All of the Discord API endpoints are covered in this library, including voice communication.
