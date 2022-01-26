@@ -138,6 +138,7 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		std::unique_ptr<std::recursive_mutex> accessorMutex01{ std::make_unique<std::recursive_mutex>() };
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
@@ -157,7 +158,6 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic<bool> doWeReconnect{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
-		std::recursive_mutex accessorMutex01{};
 		const int32_t maxReconnectTries{ 10 };
 		bool serverUpdateCollected{ false };
 		std::vector<uint8_t> inputBuffer{};

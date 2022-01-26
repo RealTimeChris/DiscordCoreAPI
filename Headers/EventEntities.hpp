@@ -238,28 +238,6 @@ namespace DiscordCoreAPI {
 
     };
 
-    class DiscordCoreAPI_Dll ReferenceCountingBase {
-    public:
-        ReferenceCountingBase() = default;
-
-        void incrementCount() const { 
-            this->refCount += 1;
-        }
-
-        void release() const {
-            assert(this->refCount > 0);
-            this->refCount -= 1;
-            if (this->refCount == 0) {
-                delete this;
-            };
-        }
-
-        virtual ~ReferenceCountingBase() {}
-
-    private:
-        mutable int refCount{ 0 };
-    };
-
    struct DiscordCoreAPI_Dll EventCore :public ReferenceCountingBase {
 
         EventCore& operator=(const EventCore&) = delete;
@@ -279,55 +257,6 @@ namespace DiscordCoreAPI {
     protected:
         
         std::unique_ptr<bool> theEventState{ std::make_unique<bool>() };
-    };
-
-    template<typename ObjectType>
-    class ReferenceCountingPtr {
-    public:
-
-        ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-            if (ptr != nullptr) {
-                this->thePtr = ptr;
-                ptr->incrementCount();
-            }
-        }
-
-        ReferenceCountingPtr& operator=(ObjectType* ptr) {
-            if (ptr != nullptr) {
-                ptr->incrementCount();
-            }
-            if (this->thePtr != nullptr) {
-                this->thePtr->release();
-            }
-            this->thePtr = ptr;
-            return *this;
-        }
-
-        ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
-            *this = ptr.thePtr;
-            return *this;
-        }
-
-        ObjectType* get() const {
-            return this->thePtr;
-        }
-
-        ObjectType* operator->() const {
-            return this->thePtr;
-        }
-
-        ObjectType& operator*() const {
-            return *this->thePtr;
-        }
-
-        ~ReferenceCountingPtr() {
-            if (this->thePtr != nullptr) {
-                this->thePtr->release();
-            }
-        }
-
-    private:
-        ObjectType* thePtr{ nullptr };
     };
 
     class DiscordCoreAPI_Dll EventWaiter {

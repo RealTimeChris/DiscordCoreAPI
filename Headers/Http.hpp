@@ -15,6 +15,27 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll RateLimitData;
 	struct DiscordCoreAPI_Dll HttpData;
 
+	class SemaphoreWrapper :public DiscordCoreAPI::ReferenceCountingBase {
+	public:
+
+		SemaphoreWrapper() = default;
+
+		void acquire() {
+			this->semaphore.acquire();
+		}
+
+		void release() {
+			this->semaphore.release();
+		}
+
+		~SemaphoreWrapper() {
+			this->semaphore.release();
+		}
+
+	protected:
+		std::binary_semaphore semaphore{ 1 };
+	};
+
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 
@@ -77,19 +98,18 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::binary_semaphore semaphore{ 1 };
+		std::unique_ptr<SemaphoreWrapper> semaphore{ std::make_unique<SemaphoreWrapper>() };
 		int64_t sampledTimeInMs{ 0 };
 		std::string tempBucket{ "" };
 		int32_t getsRemaining{ 0 };
 		std::string bucket{ "" };
 		int64_t msRemain{ 0 };
-
 	};
 
 	struct DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	public:
 
-		RateLimitData* rateLimitData{ nullptr };
+		RateLimitData* rateLimitDataPtr{ nullptr };
 		std::string bucket{ "" };
 		bool doWeConnect{ true };
 		std::mutex accessMutex{};

@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 
         CoRoutineStatus getThreadStatus(std::string theKey);
 
-        void stopThread(std::string theKey);        
+        void stopThread(std::string theKey);
 
         ~ThreadPool();
 
@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
-        
+
         ThreadPoolTimer& operator=(ThreadPoolTimer&& other) noexcept;
 
         ThreadPoolTimer(ThreadPoolTimer&& other) noexcept;
@@ -72,48 +72,49 @@ namespace DiscordCoreAPI {
 
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval);
 
+        static void initialize();
+
         void awaitResult();
 
         bool running();
 
         void cancel();
 
+        template <typename ...ArgTypes>
+        static CoRoutine<void> executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)>theFunction, int32_t timeDelayInMs, bool isItRepeating, ArgTypes... args) {
+            co_await NewThreadAwaitable<void>();
+            if (timeDelayInMs >= 0 && !isItRepeating) {
+                TimeElapsedHandler timeElapsedHandler = [=]()->void {
+                    theFunction(args...);
+                };
+                ThreadPoolTimer::threads.load()->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, false)));
+            }
+            else if (timeDelayInMs >= 0 && isItRepeating) {
+                TimeElapsedHandler timeElapsedHandler = [=]()->void {
+                    theFunction(args...);
+                };
+                ThreadPoolTimer::threads.load()->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, true)));
+            }
+            else {
+                throw std::exception("Please enter a valid delay time!");
+            }
+
+        };
+
         ~ThreadPoolTimer();
 
     protected:
 
-        static ThreadPool threads;
+        static std::unique_ptr<ThreadPool> threadsPtr;
+        static std::atomic<ThreadPool*> threads;
 
         std::string threadId{ "" };
 
         ThreadPoolTimer();
 
-        CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating);
+        static CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating);
 
-        CoRoutine<void> run(int64_t theInterval, TimeElapsedHandlerTwo theFunction, bool repeating);
+        static CoRoutine<void> run(int64_t theInterval, TimeElapsedHandlerTwo theFunction, bool repeating);
 
-    };
-
-    template <typename ...ArgTypes>
-    CoRoutine<void> executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)>theFunction, int32_t timeDelayInMs, bool isItRepeating, ArgTypes&... args) {
-        co_await NewThreadAwaitable<void>();
-        if (timeDelayInMs >= 0 && !isItRepeating) {
-            TimeElapsedHandler timeElapsedHandler = [=]()->void {
-                theFunction(args...);
-            };
-            ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::createTimer(timeElapsedHandler, timeDelayInMs);
-            threadPoolTimer.awaitResult();
-        }
-        else if (timeDelayInMs >= 0 && isItRepeating) {
-            TimeElapsedHandler timeElapsedHandler = [=]()->void {
-                theFunction(args...);
-            };
-            ThreadPoolTimer threadPoolTimer = ThreadPoolTimer::createPeriodicTimer(timeElapsedHandler, timeDelayInMs);
-            threadPoolTimer.awaitResult();
-        }
-        else {
-            throw std::exception("Please enter a valid delay time!");
-        }
-        
     };
 }
