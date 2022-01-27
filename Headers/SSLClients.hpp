@@ -11,7 +11,6 @@
 #ifndef OPENSSL_NO_DEPRECATED
 #define OPENSSL_NO_DEPRECATED
 #endif
-
 #ifdef _WIN32
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -49,7 +48,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		operator BIO*() {
+		operator BIO* () {
 			return this->bioPtr.get();
 		}
 
@@ -74,11 +73,11 @@ namespace DiscordCoreInternal {
 			return this->addrinfoPtrTwo;
 		}
 
-		operator addrinfo**() {
+		operator addrinfo** () {
 			return &this->addrinfoPtrTwo;
 		}
 
-		operator addrinfo*() {
+		operator addrinfo* () {
 			return this->addrinfoPtrTwo;
 		}
 
@@ -112,7 +111,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		operator SSL_CTX*() {
+		operator SSL_CTX* () {
 			return this->sslCTXPtr.get();
 		}
 
@@ -144,7 +143,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		operator SSL*() {
+		operator SSL* () {
 			return this->sslPtr.get();
 		}
 
@@ -168,7 +167,6 @@ namespace DiscordCoreInternal {
 					other = nullptr;
 				}
 			}
-
 		};
 
 		SOCKETWrapper& operator=(SOCKET other) {
@@ -189,6 +187,7 @@ namespace DiscordCoreInternal {
 	protected:
 		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
+
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADATAWrapper {
 
@@ -209,6 +208,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<WSADATA, WSADATADeleter> wsaDataPtr{ new WSADATA{}, WSADATADeleter{} };
 	};
 #endif
+
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	public:
 
@@ -275,6 +275,8 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
+		void shutdown();
+
 	protected:
 
 		const int64_t maxBufferSize{ 1024 * 16 };
@@ -284,7 +286,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{ nullptr };
 		int64_t bytesRead{ 0 };
 	};
-	
+
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
@@ -305,5 +307,4 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 	};
-
 }

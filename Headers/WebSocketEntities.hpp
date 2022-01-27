@@ -84,12 +84,9 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
-
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		nlohmann::json payLoad{};
-
 		WebSocketWorkload() {}
-
 		WebSocketWorkload& operator=(WebSocketWorkload&& other) noexcept {
 			if (this != &other) {
 				this->payLoad = std::move(other.payLoad);
@@ -99,17 +96,14 @@ namespace DiscordCoreInternal {
 			}
 			return *this;
 		}
-
 		WebSocketWorkload(WebSocketWorkload&& other) noexcept {
 			*this = std::move(other);
 		}
-
 		WebSocketWorkload& operator=(const WebSocketWorkload& other) noexcept {
 			this->eventType = other.eventType;
 			this->payLoad = other.payLoad;
 			return *this;
 		}
-
 		WebSocketWorkload(const WebSocketWorkload& other) noexcept {
 			*this = other;
 		}
@@ -117,7 +111,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	public:
-		
+
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
@@ -138,13 +132,12 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
-		
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
+		std::unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		std::unordered_map<std::string, std::string> HttpHeaders{};
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
-		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
@@ -171,6 +164,7 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCode dataOpcode{};
 		std::string sessionId{ "" };
+		bool areWeResuming{ false };
 		std::string botToken{ "" };
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
@@ -196,7 +190,7 @@ namespace DiscordCoreInternal {
 
 		void handleBuffer();
 
-		bool parseHeader();	
+		bool parseHeader();;
 
 		void connect();
 	};
@@ -276,5 +270,4 @@ namespace DiscordCoreInternal {
 
 		void connect();
 	};
-
 }
