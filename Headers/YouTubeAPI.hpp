@@ -74,8 +74,6 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		YouTubeRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
-		EventWaiter readyToQuitEventOut{};
-		EventWaiter readyToQuitEventIn{};
 		std::string guildId{ "" };
 		YouTubeSong theSong{};
 

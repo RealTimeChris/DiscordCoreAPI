@@ -35,6 +35,7 @@
 #include <type_traits>
 #include <coroutine>
 #include <semaphore>
+#include <exception>
 #include <iostream>
 #include <concepts>
 #include <memory>

@@ -220,6 +220,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
 		std::unordered_map<std::string, std::string> HttpHeaders{};
@@ -233,7 +234,6 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
-		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		DiscordCoreAPI::EventWaiter connectionReadyEvent{};
 		std::atomic<bool*> doWeReconnect{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
