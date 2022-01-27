@@ -182,6 +182,8 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::CoRoutine<void> run();
 
+		void sendClosedMessage();
+
 		bool onMessageReceived();
 
 		void onClosedInternal();

@@ -718,7 +718,7 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll std::string urlEncode(std::string inputString);
 
-    DiscordCoreAPI_Dll std::string generateX64BaseEncodedKey();
+    std::string generateX64BaseEncodedKey();
 
     class DiscordCoreAPI_Dll TimeStamp {
     public:
