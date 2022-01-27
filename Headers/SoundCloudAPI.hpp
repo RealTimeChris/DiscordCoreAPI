@@ -56,7 +56,6 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		SoundCloudRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };

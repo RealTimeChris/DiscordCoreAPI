@@ -19,6 +19,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SongAPI {
 	public:
 
+		friend class SoundCloudAPI;
+		friend class YouTubeAPI;
+
 		Playlist playlist{};
 
 		SongAPI(std::string guildId);
@@ -116,6 +119,8 @@ namespace DiscordCoreAPI {
 		static void setCurrentSong(Song song, std::string guildId);
 
 	protected:
+
+		std::unique_ptr<CoRoutine<void>>theTask{ nullptr };
 
 		std::string guildId{ "" };
 
