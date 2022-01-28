@@ -67,7 +67,7 @@ build CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj: CXX_COMPILER__DiscordCoreA
   OBJECT_DIR = CMakeFiles\DiscordCoreAPI-Bot.dir
   OBJECT_FILE_DIR = CMakeFiles\DiscordCoreAPI-Bot.dir
   TARGET_COMPILE_PDB = CMakeFiles\DiscordCoreAPI-Bot.dir\
-  TARGET_PDB = DiscordCoreAPI-Bot.pdb
+  TARGET_PDB = ..\Release\DiscordCoreAPI-Bot.pdb
 
 
 # =============================================================================
@@ -75,9 +75,9 @@ build CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj: CXX_COMPILER__DiscordCoreA
 
 
 #############################################
-# Link the executable DiscordCoreAPI-Bot.exe
+# Link the executable ..\Release\DiscordCoreAPI-Bot.exe
 
-build DiscordCoreAPI-Bot.exe: CXX_EXECUTABLE_LINKER__DiscordCoreAPI-Bot_Debug CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj | ..\Release\DiscordCoreAPI-DLL.lib DiscordCoreAPI-DLL.lib C$:\vcpkg\installed\x64-windows\lib\libcurl.lib C$:\vcpkg\installed\x64-windows\lib\glib-2.0.lib C$:\vcpkg\installed\x64-windows\lib\libsodium.lib C$:\vcpkg\installed\x64-windows\lib\avutil.lib C$:\vcpkg\installed\x64-windows\lib\avcodec.lib C$:\vcpkg\installed\x64-windows\lib\swresample.lib C$:\vcpkg\installed\x64-windows\lib\avformat.lib C$:\vcpkg\installed\x64-windows\lib\opus.lib C$:\OpenSSL\libcrypto.lib C$:\OpenSSL\libssl.lib
+build ..\Release\DiscordCoreAPI-Bot.exe: CXX_EXECUTABLE_LINKER__DiscordCoreAPI-Bot_Debug CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj | ..\Release\DiscordCoreAPI-DLL.lib DiscordCoreAPI-DLL.lib C$:\vcpkg\installed\x64-windows\lib\libcurl.lib C$:\vcpkg\installed\x64-windows\lib\glib-2.0.lib C$:\vcpkg\installed\x64-windows\lib\libsodium.lib C$:\vcpkg\installed\x64-windows\lib\avutil.lib C$:\vcpkg\installed\x64-windows\lib\avcodec.lib C$:\vcpkg\installed\x64-windows\lib\swresample.lib C$:\vcpkg\installed\x64-windows\lib\avformat.lib C$:\vcpkg\installed\x64-windows\lib\opus.lib C$:\OpenSSL\libcrypto.lib C$:\OpenSSL\libssl.lib
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = ..\Release\DiscordCoreAPI-DLL.lib  DiscordCoreAPI-DLL.lib  C:\vcpkg\installed\x64-windows\lib\libcurl.lib  C:\vcpkg\installed\x64-windows\lib\glib-2.0.lib  C:\vcpkg\installed\x64-windows\lib\libsodium.lib  C:\vcpkg\installed\x64-windows\lib\avutil.lib  C:\vcpkg\installed\x64-windows\lib\avcodec.lib  C:\vcpkg\installed\x64-windows\lib\swresample.lib  C:\vcpkg\installed\x64-windows\lib\avformat.lib  C:\vcpkg\installed\x64-windows\lib\opus.lib  C:\OpenSSL\libcrypto.lib  C:\OpenSSL\libssl.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
@@ -85,9 +85,9 @@ build DiscordCoreAPI-Bot.exe: CXX_EXECUTABLE_LINKER__DiscordCoreAPI-Bot_Debug CM
   POST_BUILD = cd .
   PRE_LINK = cd .
   TARGET_COMPILE_PDB = CMakeFiles\DiscordCoreAPI-Bot.dir\
-  TARGET_FILE = DiscordCoreAPI-Bot.exe
+  TARGET_FILE = ..\Release\DiscordCoreAPI-Bot.exe
   TARGET_IMPLIB = DiscordCoreAPI-Bot.lib
-  TARGET_PDB = DiscordCoreAPI-Bot.pdb
+  TARGET_PDB = ..\Release\DiscordCoreAPI-Bot.pdb
 
 
 #############################################
@@ -104,7 +104,9 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build DiscordCoreAPI-Bot: phony DiscordCoreAPI-Bot.exe
+build DiscordCoreAPI-Bot: phony ..\Release\DiscordCoreAPI-Bot.exe
+
+build DiscordCoreAPI-Bot.exe: phony ..\Release\DiscordCoreAPI-Bot.exe
 
 # =============================================================================
 # Folder targets.
@@ -114,7 +116,7 @@ build DiscordCoreAPI-Bot: phony DiscordCoreAPI-Bot.exe
 #############################################
 # Folder: C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Debug
 
-build all: phony DiscordCoreAPI-Bot.exe
+build all: phony ..\Release\DiscordCoreAPI-Bot.exe
 
 # =============================================================================
 # Unknown Build Time Dependencies.

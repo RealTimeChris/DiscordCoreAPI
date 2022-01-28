@@ -32,6 +32,8 @@ if (CMAKE_BUILD_CONFIGURATION STREQUAL "Release")
 add_compile_options(/O2)
 endif()
 
+set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release" )
+
 include_directories(${VcPkgFolder}/include)
 include_directories(${VcPkgFolder}/lib/glib-2.0/include)
 include_directories(${OpenSSLFolder}/include)
