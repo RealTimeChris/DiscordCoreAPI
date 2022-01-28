@@ -1,2 +1,9 @@
-
+out/
+.vs/
 Library Files/Release/DiscordCoreAPI-DLL.ilk
+Output Files/Debug/Testing/
+Output Files/Debug/CMakeFiles/
+Output Files/Debug/.cmake/
+Output Files/Release/.cmake/
+Output Files/Release/Testing/
+Output Files/Release/CMakeFiles/
