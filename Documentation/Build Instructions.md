@@ -1,12 +1,10 @@
 # DiscordCoreAPI - Build Instructions
 ----
 - ### Install the [dependencies](https://github.com/RealTimeChris/DiscordCoreAPI#dependencies).
-- ### Create a new WinRT Console Window project in Visual Studio.
-- ### Unzip the contents of this repo into the project folder of the solution.
-- ### Install the Properties.props file into the project/solution.
-- ### Disable "Using Precompiled Headers".
-- ### Remove pch.h and pch.cpp from the project/solution.
-- ### Under Properties -> User Macros, set the value of VcPkgFolder to wherever your vcpkg installed x64 windows folder is, for example in my case it is set to `C:\vcpkg\installed\x64-windows\`.
-- ### Set the configuration in Visual Studio to x64.
+- ### Clone this git repository into a folder.
+- ### Set the VcPkgFolder and OpenSSLFolder targets in CMakeLists.txt to be wherever you have vcpkg and OpenSSL installed/built - basically where their "include" and "lib" folders are.
 - ### Set up a main.cpp like [this one](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Main.cpp).
-- ### BUILD!
+- ### Open a terminal inside the git repo's folder.
+- ### Run cmake -S . -B 'BUILD_TARGET_FOLDER', where 'BUILD_TARGET_FOLDER' is a chosen folder for the solution's build results.
+- ### Navigate into the build folder and run the solution to build the executable to use.
+- ### Run the bot!
