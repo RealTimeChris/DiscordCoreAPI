@@ -20,6 +20,8 @@
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+#else
+#define DiscordCoreAPI_Dll
 #endif
 #pragma comment(lib, "libcurl.lib")
 #pragma comment(lib, "glib-2.0.lib")
