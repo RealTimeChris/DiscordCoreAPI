@@ -26,3 +26,7 @@ Output Files/Release/VSInheritEnvironments.txt
 Output Files/Release/CMakeCache.txt
 Output Files/Release/cmake_install.cmake
 Output Files/Release/build.ninja
+Output Files/Debug/VSInheritEnvironments.txt
+Output Files/Debug/CMakeCache.txt
+Output Files/Debug/cmake_install.cmake
+Output Files/Debug/build.ninja
