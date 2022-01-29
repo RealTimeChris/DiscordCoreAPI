@@ -60,29 +60,23 @@ namespace DiscordCoreAPI {
         CoRoutine<ReturnType>(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
-            if (this->coroutineHandle) {
+            if (this->coroutineHandle && this->coroutineHandle.done()) {
                 this->coroutineHandle.destroy();
             }
         }
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
-            if (this != nullptr) {
-                if (this->coroutineHandle) {
-                    if (this->coroutineHandle.promise().newThread != nullptr) {
-                        this->coroutineHandle.promise().newThread->detach();
-                    }
-                }
+            if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
+                this->coroutineHandle.promise().newThread->detach();
             }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
         /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
-            if (this != nullptr) {
-                if (this->coroutineHandle) {
-                    this->currentStatus = coroutineHandle.promise().currentStatus;
-                }
+            if (this != nullptr && this->coroutineHandle) {
+                this->currentStatus = coroutineHandle.promise().currentStatus;
                 return this->currentStatus;
             }
             return CoRoutineStatus();
@@ -91,11 +85,9 @@ namespace DiscordCoreAPI {
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns ReturnType The return value of the CoRoutine.
         ReturnType get() {
-            if (this != nullptr) {
-                if (this->coroutineHandle.promise().newThread != nullptr) {
-                    if (this->coroutineHandle.promise().newThread->joinable()) {
-                        this->coroutineHandle.promise().newThread->join();
-                    }
+            if (this != nullptr && this->coroutineHandle.promise().newThread != nullptr) {
+                if (this->coroutineHandle.promise().newThread->joinable()) {
+                    this->coroutineHandle.promise().newThread->join();
                 }
                 std::exception_ptr exceptionPtr{};
                 while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
@@ -234,19 +226,15 @@ namespace DiscordCoreAPI {
         CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
-            if (this->coroutineHandle) {
+            if (this->coroutineHandle && this->coroutineHandle.done()) {
                 this->coroutineHandle.destroy();
             }
         }
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
-            if (this != nullptr) {
-                if (this->coroutineHandle) {
-                    if (this->coroutineHandle.promise().newThread != nullptr) {
-                        this->coroutineHandle.promise().newThread->detach();
-                    }
-                }
+            if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
+                this->coroutineHandle.promise().newThread->detach();
             }
         }
 
