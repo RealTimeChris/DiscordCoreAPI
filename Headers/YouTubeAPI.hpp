@@ -15,6 +15,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	public:
 
+		YouTubeRequestBuilder() = default;
+
 		YouTubeRequestBuilder(DiscordCoreInternal::HttpClient*);
 
 		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
@@ -71,12 +73,10 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		YouTubeRequestBuilder requestBuilder;
+		YouTubeRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
 		std::string guildId{ "" };
 		YouTubeSong theSong{};
-
-		void sendEmptyingFrames(TSUnboundedMessageBlock<std::vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
