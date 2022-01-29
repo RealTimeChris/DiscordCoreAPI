@@ -33,13 +33,8 @@ add_compile_options(/MP)
 add_compile_options(/bigobj)
 include_directories(${CMAKE_SOURCE_DIR}/Headers)
 
-message("special note about target…")
-
 target_compile_definitions(DiscordCoreAPI-Bot PRIVATE
-  $<$<CONFIG:Debug>:DEBUG_BUILD>
-
-message("special note about target…")
-)
+  $<$<CONFIG:Debug>:DEBUG_BUILD>)
 
 if ($<$<CONFIG:Debug>:DEBUG_BUILD)
 add_compile_options(/O2)
