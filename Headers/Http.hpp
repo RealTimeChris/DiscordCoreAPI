@@ -16,7 +16,7 @@ namespace DiscordCoreInternal {
 	struct RateLimitData;
 	struct HttpData;
 
-	class SemaphoreWrapper : public DiscordCoreAPI::ReferenceCountingBase {
+	class SemaphoreWrapper {
 	public:
 
 		SemaphoreWrapper() = default;

@@ -290,65 +290,78 @@ namespace DiscordCoreAPI {
 
     bool operator==(CURLCharWrapper& lhs, const  std::string& rhs);
 
-    class DiscordCoreAPI_Dll ReferenceCountingBase {
-    public:
-        ReferenceCountingBase() = default;
-
-        void incrementCount() const {
-            this->refCount += 1;
-        }
-
-        void release() const {
-            assert(this->refCount > 0);
-            this->refCount -= 1;
-            if (this->refCount == 0) {
-                delete this;
-            };
-        }
-
-        virtual ~ReferenceCountingBase() {}
-
-    private:
-        mutable int refCount{ 0 };
-    };
-
     template<typename ObjectType>
     class ReferenceCountingPtr {
     public:
 
+        struct ObjectTypeNew {
+        public:
+            ObjectType* thePtr{ nullptr };
+
+            ObjectTypeNew() = default;
+
+            ObjectTypeNew& operator=(ObjectType* other) {
+                this->thePtr = other;
+                return *this;
+            }
+
+            ObjectTypeNew(ObjectType* other) {
+                *this = other;
+            }
+
+            void incrementCount() const {
+                this->refCount += 1;
+            }
+
+            void release() const {
+                assert(this->refCount > 0);
+                this->refCount -= 1;
+                if (this->refCount == 0) {
+                    delete this;
+                };
+            }
+
+            virtual ~ObjectTypeNew() {};
+
+        private:
+            mutable int refCount{ 0 };
+        };
+
         ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-            if (ptr != nullptr) {
-                this->thePtr = ptr;
-                ptr->incrementCount();
+            ObjectTypeNew* newObject{ new ObjectTypeNew{ptr} };
+            if (newObject != nullptr) {
+                this->thePtr = newObject;
+                newObject->incrementCount();
             }
         }
 
         ReferenceCountingPtr& operator=(ObjectType* ptr) {
-            if (ptr != nullptr) {
-                ptr->incrementCount();
+            ObjectTypeNew* newObject{ new ObjectTypeNew{ptr} };
+            if (newObject != nullptr) {
+                newObject->incrementCount();
             }
             if (this->thePtr != nullptr) {
                 this->thePtr->release();
             }
-            this->thePtr = ptr;
+            this->thePtr = newObject;
             return *this;
         }
 
         ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
-            *this = ptr.thePtr;
+            *this = ptr.thePtr->thePtr;
             return *this;
         }
 
         ObjectType* get() const {
-            return this->thePtr;
+            return this->thePtr->thePtr;
         }
 
         ObjectType* operator->() const {
-            return this->thePtr;
+            return this->thePtr->thePtr;
         }
 
         ObjectType& operator*() const {
-            return *this->thePtr;
+            return *this->thePtr->thePtr;
         }
 
         ~ReferenceCountingPtr() {
@@ -358,7 +371,7 @@ namespace DiscordCoreAPI {
         }
 
     private:
-        ObjectType* thePtr{ nullptr };
+        ObjectTypeNew* thePtr{ nullptr };
     };
 
     template<typename ObjectType>

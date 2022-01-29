@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 
     };
 
-   struct DiscordCoreAPI_Dll EventCore :public ReferenceCountingBase {
+   struct DiscordCoreAPI_Dll EventCore {
 
         EventCore& operator=(const EventCore&) = delete;
 
