@@ -5,6 +5,8 @@ add_compile_definitions(DiscordCoreAPI-Bot)
 
 add_executable(DiscordCoreAPI-Bot ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
+set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Output Files")
+
 set(VcPkgFolder "C:/vcpkg/installed/x64-windows")
 set(OpenSSLFolder "C:/OpenSSL")
 set(VCToolsRedistInstallDir "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64")
@@ -31,10 +33,7 @@ set(DebugString <$CONFIG>:Debug )
 
 if (CMAKE_BUILD_CONFIGURATION STREQUAL "Release")
 add_compile_options(/O2)
-set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release")
 endif()
-
-
 
 include_directories(${VcPkgFolder}/include)
 include_directories(${VcPkgFolder}/lib/glib-2.0/include)
