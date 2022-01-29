@@ -8,7 +8,8 @@ if (WIN32)
 set(VcPkgFolder "C:/vcpkg/installed/x64-windows")
 set(OpenSSLFolder "C:/OpenSSL")
 elseif (UNIX)
-
+set(VcPkgFolder "opt/vcpkg/installed/x64-windows")
+set(OpenSSLFolder "opt/OpenSSL")
 endif()
 set(VCToolsRedistInstallDir "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64")
 
