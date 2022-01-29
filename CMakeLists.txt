@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21.21)
+cmake_minimum_required(VERSION 3.21.2)
 project(DiscordCoreAPI-Bot)
 
 add_compile_definitions(DiscordCoreAPI-Bot)
@@ -33,7 +33,15 @@ add_compile_options(/MP)
 add_compile_options(/bigobj)
 include_directories(${CMAKE_SOURCE_DIR}/Headers)
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
+message("special note about target…")
+
+target_compile_definitions(DiscordCoreAPI-Bot PRIVATE
+  $<$<CONFIG:Debug>:DEBUG_BUILD>
+
+message("special note about target…")
+)
+
+if ($<$<CONFIG:Debug>:DEBUG_BUILD)
 add_compile_options(/O2)
 endif()
 set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Output Files")
