@@ -22,3 +22,7 @@ Output Files/Debug/zlib1.dll
 Output Files/Debug/libssl-3-x64.dll
 Output Files/Debug/libcurl.dll
 Output Files/Debug/libcrypto-3-x64.dll
+Output Files/Release/VSInheritEnvironments.txt
+Output Files/Release/CMakeCache.txt
+Output Files/Release/cmake_install.cmake
+Output Files/Release/build.ninja
