@@ -4,7 +4,7 @@ elseif(UNIX)
 cmake_minimum_required(VERSION 3.16.1)
 endif()
 project(DiscordCoreAPI-Bot)
-add_compile_definitions(DiscordCoreAPI-Bot)
+
 add_executable(DiscordCoreAPI-Bot ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
 if (WIN32)
