@@ -62,12 +62,12 @@ build cmake_object_order_depends_target_DiscordCoreAPI-Bot: phony || CMakeFiles\
 
 build CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj: CXX_COMPILER__DiscordCoreAPI-Bot_Release C$:\Users\Chris\source\repos\DiscordCoreAPI\main.cpp || cmake_object_order_depends_target_DiscordCoreAPI-Bot
   DEFINES = -DDiscordCoreAPI-Bot -DRELEASE_BUILD
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -std:c++latest
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -MD -std:c++latest
   INCLUDES = -IC:\Users\Chris\source\repos\DiscordCoreAPI\Headers -IC:\vcpkg\installed\x64-windows\include -IC:\vcpkg\installed\x64-windows\lib\glib-2.0\include -IC:\OpenSSL\include
   OBJECT_DIR = CMakeFiles\DiscordCoreAPI-Bot.dir
   OBJECT_FILE_DIR = CMakeFiles\DiscordCoreAPI-Bot.dir
   TARGET_COMPILE_PDB = CMakeFiles\DiscordCoreAPI-Bot.dir\
-  TARGET_PDB = DiscordCoreAPI-Bot.pdb
+  TARGET_PDB = ..\DiscordCoreAPI-Bot.pdb
 
 
 # =============================================================================
@@ -75,19 +75,19 @@ build CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj: CXX_COMPILER__DiscordCoreA
 
 
 #############################################
-# Link the executable DiscordCoreAPI-Bot.exe
+# Link the executable ..\DiscordCoreAPI-Bot.exe
 
-build DiscordCoreAPI-Bot.exe: CXX_EXECUTABLE_LINKER__DiscordCoreAPI-Bot_Release CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj | C$:\vcpkg\installed\x64-windows\lib\libcurl.lib C$:\vcpkg\installed\x64-windows\lib\glib-2.0.lib C$:\vcpkg\installed\x64-windows\lib\libsodium.lib C$:\vcpkg\installed\x64-windows\lib\avutil.lib C$:\vcpkg\installed\x64-windows\lib\avcodec.lib C$:\vcpkg\installed\x64-windows\lib\swresample.lib C$:\vcpkg\installed\x64-windows\lib\avformat.lib C$:\vcpkg\installed\x64-windows\lib\opus.lib C$:\OpenSSL\libcrypto.lib C$:\OpenSSL\libssl.lib DiscordCoreAPI-DLL.lib
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG
+build ..\DiscordCoreAPI-Bot.exe: CXX_EXECUTABLE_LINKER__DiscordCoreAPI-Bot_Release CMakeFiles\DiscordCoreAPI-Bot.dir\main.cpp.obj | C$:\vcpkg\installed\x64-windows\lib\libcurl.lib C$:\vcpkg\installed\x64-windows\lib\glib-2.0.lib C$:\vcpkg\installed\x64-windows\lib\libsodium.lib C$:\vcpkg\installed\x64-windows\lib\avutil.lib C$:\vcpkg\installed\x64-windows\lib\avcodec.lib C$:\vcpkg\installed\x64-windows\lib\swresample.lib C$:\vcpkg\installed\x64-windows\lib\avformat.lib C$:\vcpkg\installed\x64-windows\lib\opus.lib C$:\OpenSSL\libcrypto.lib C$:\OpenSSL\libssl.lib DiscordCoreAPI-DLL.lib
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -MD
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
   LINK_LIBRARIES = C:\vcpkg\installed\x64-windows\lib\libcurl.lib  C:\vcpkg\installed\x64-windows\lib\glib-2.0.lib  C:\vcpkg\installed\x64-windows\lib\libsodium.lib  C:\vcpkg\installed\x64-windows\lib\avutil.lib  C:\vcpkg\installed\x64-windows\lib\avcodec.lib  C:\vcpkg\installed\x64-windows\lib\swresample.lib  C:\vcpkg\installed\x64-windows\lib\avformat.lib  C:\vcpkg\installed\x64-windows\lib\opus.lib  C:\OpenSSL\libcrypto.lib  C:\OpenSSL\libssl.lib  DiscordCoreAPI-DLL.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = CMakeFiles\DiscordCoreAPI-Bot.dir
-  POST_BUILD = cmd.exe /C "cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/msvcp140.dll" "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/msvcp140_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/msvcp140_atomic_wait.dll" "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/msvcp140_atomic_wait_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/vcruntime140.dll" "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/vcruntime140_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/vcruntime140_1.dll" "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/vcruntime140_1_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Certs/SoundCloudCert.pem" C:/SSL/Certs/SoundCloudCert.pem && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Certs/GoogleCert.pem" C:/SSL/Certs/GoogleCert.pem && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Certs/DiscordCert.pem" C:/SSL/Certs/DiscordCert.pem"
+  POST_BUILD = cmd.exe /C "cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/msvcp140.dll" "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/msvcp140_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/msvcp140_atomic_wait.dllC:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/msvcp140_atomic_wait_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/vcruntime140.dll" "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/vcruntime140_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/vcruntime140_1.dll" "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release/vcruntime140_1_app.dll" && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Certs/SoundCloudCert.pem" C:/SSL/Certs/SoundCloudCert.pem && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Certs/GoogleCert.pem" C:/SSL/Certs/GoogleCert.pem && cd /D "C:\Users\Chris\source\repos\DiscordCoreAPI\Output Files\Release" && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy "C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Certs/DiscordCert.pem" C:/SSL/Certs/DiscordCert.pem"
   PRE_LINK = cd .
   TARGET_COMPILE_PDB = CMakeFiles\DiscordCoreAPI-Bot.dir\
-  TARGET_FILE = DiscordCoreAPI-Bot.exe
+  TARGET_FILE = ..\DiscordCoreAPI-Bot.exe
   TARGET_IMPLIB = DiscordCoreAPI-Bot.lib
-  TARGET_PDB = DiscordCoreAPI-Bot.pdb
+  TARGET_PDB = ..\DiscordCoreAPI-Bot.pdb
 
 
 #############################################
@@ -104,7 +104,9 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build DiscordCoreAPI-Bot: phony DiscordCoreAPI-Bot.exe
+build DiscordCoreAPI-Bot: phony ..\DiscordCoreAPI-Bot.exe
+
+build DiscordCoreAPI-Bot.exe: phony ..\DiscordCoreAPI-Bot.exe
 
 # =============================================================================
 # Folder targets.
@@ -114,12 +116,7 @@ build DiscordCoreAPI-Bot: phony DiscordCoreAPI-Bot.exe
 #############################################
 # Folder: C:/Users/Chris/source/repos/DiscordCoreAPI/Output Files/Release
 
-build all: phony DiscordCoreAPI-Bot.exe
-
-# =============================================================================
-# Unknown Build Time Dependencies.
-# Tell Ninja that they may appear as side effects of build rules
-# otherwise ordered by order-only dependencies.
+build all: phony ..\DiscordCoreAPI-Bot.exe
 
 # =============================================================================
 # Built-in targets

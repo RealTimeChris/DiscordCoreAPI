@@ -1,5 +1,5 @@
 # ninja log v5
-1	9642	6651231585440132	CMakeFiles/DiscordCoreAPI-Bot.dir/main.cpp.obj	54eca323667747d8
-9648	10204	6651231588398438	DiscordCoreAPI-Bot.exe	55f8b14abfd01382
-3	468	6651247269793309	../DiscordCoreAPI-Bot.exe	f8150013ba9eeaa4
+3	7653	6651424342014270	CMakeFiles/DiscordCoreAPI-Bot.dir/main.cpp.obj	54eca323667747d8
 3	839	6651247633676209	DiscordCoreAPI-Bot.exe	22bc402169f60be4
+3	468	6651247269793309	../DiscordCoreAPI-Bot.exe	f8150013ba9eeaa4
+3	7886	6651428661062319	CMakeFiles/DiscordCoreAPI-Bot.dir/main.cpp.obj	738c4ca534decdce
