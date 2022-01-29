@@ -5,7 +5,7 @@ add_compile_definitions(DiscordCoreAPI-Bot)
 
 add_executable(DiscordCoreAPI-Bot ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
-set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Output Files")
+set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release")
 
 set(VcPkgFolder "C:/vcpkg/installed/x64-windows")
 set(OpenSSLFolder "C:/OpenSSL")
