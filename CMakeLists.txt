@@ -65,3 +65,6 @@ SET(VCRuntime140ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release/vcrunti
 ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsRedistInstallDir}/vcruntime140.dll ${VCRuntime140ToPath})
 SET(VCRuntime1401ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release/vcruntime140_1_app.dll")
 ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsRedistInstallDir}/vcruntime140_1.dll ${VCRuntime1401ToPath})
+ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Certs/SoundCloudCert.pem" "C:/SSL/Certs/SoundCloudCert.pem")
+ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Certs/GoogleCert.pem" "C:/SSL/Certs/GoogleCert.pem")
+ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Certs/DiscordCert.pem" "C:/SSL/Certs/DiscordCert.pem")
