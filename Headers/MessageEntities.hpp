@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "JSONIFier.hpp"
+#include "JSONIfier.hpp"
 
 namespace DiscordCoreAPI {
 

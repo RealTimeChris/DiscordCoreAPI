@@ -231,15 +231,14 @@ namespace DiscordCoreInternal {
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::EventWaiter connectionReadyEvent{};
-		std::atomic<bool*> doWeReconnect{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
-		VoiceConnectionData voiceConnectionData{};
-		bool haveWeReceivedHeartbeatAck{ true };
+		VoiceConnectionData voiceConnectionData{};		
+		std::atomic<bool> doWeReconnect{ false };
+		bool haveWeReceivedHeartbeatAck{ true };		
 		std::vector<uint8_t> inputBuffer00{};
 		std::vector<uint8_t> inputBuffer01{};
 		int32_t lastNumberReceived{ 0 };
-		bool doWeReconnectBool{ false };
 		int32_t heartbeatInterval{ 0 };
 		bool areWeWaitingForIp{ true };
 		std::string relativePath{ "" };
