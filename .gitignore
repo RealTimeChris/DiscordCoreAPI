@@ -14,3 +14,11 @@ Output Files/Debug/DiscordCoreAPI-Bot.exe
 Build/
 Output Files/Debug/Release/DiscordCoreAPI-Bot.exe
 Output Files/DiscordCoreAPI-Bot.exe.manifest
+Output Files/Release/zlib1.dll
+Output Files/Release/libssl-3-x64.dll
+Output Files/Release/libcurl.dll
+Output Files/Release/libcrypto-3-x64.dll
+Output Files/Debug/zlib1.dll
+Output Files/Debug/libssl-3-x64.dll
+Output Files/Debug/libcurl.dll
+Output Files/Debug/libcrypto-3-x64.dll
