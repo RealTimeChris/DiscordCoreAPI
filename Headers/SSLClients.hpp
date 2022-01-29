@@ -275,7 +275,7 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
-		void shutdown();
+		~WebSocketSSLClient();
 
 	protected:
 
@@ -285,6 +285,8 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 		int64_t bytesRead{ 0 };
+
+		void shutdown();
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
