@@ -7,6 +7,7 @@ add_executable(DiscordCoreAPI-Bot ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
 set(VcPkgFolder "C:/vcpkg/installed/x64-windows")
 set(OpenSSLFolder "C:/OpenSSL")
+set(VCToolsRedistInstallDir "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64")
 
 add_link_options(/LTCG)
 add_compile_options(/sdl)
@@ -30,9 +31,10 @@ set(DebugString <$CONFIG>:Debug )
 
 if (CMAKE_BUILD_CONFIGURATION STREQUAL "Release")
 add_compile_options(/O2)
+set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release")
 endif()
 
-set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release" )
+
 
 include_directories(${VcPkgFolder}/include)
 include_directories(${VcPkgFolder}/lib/glib-2.0/include)
@@ -56,3 +58,11 @@ file(COPY ${OpenSSLFolder}/libcrypto-3-x64.dll DESTINATION "${CMAKE_CURRENT_SOUR
 file(COPY ${OpenSSLFolder}/libssl-3-x64.dll DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release")
 file(COPY ${OpenSSLFolder}/libcrypto-3-x64.dll DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Debug")
 file(COPY ${OpenSSLFolder}/libssl-3-x64.dll DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Debug")
+SET(Msvcp140ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release/msvcp140_app.dll")
+ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsRedistInstallDir}/msvcp140.dll ${Msvcp140ToPath})
+SET(Msvcp140AtomicWaitToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release/msvcp140_atomic_wait_app.dll")
+ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsRedistInstallDir}/msvcp140_atomic_wait.dll ${Msvcp140AtomicWaitToPath})
+SET(VCRuntime140ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release/vcruntime140_app.dll")
+ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsRedistInstallDir}/vcruntime140.dll ${VCRuntime140ToPath})
+SET(VCRuntime1401ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Release/vcruntime140_1_app.dll")
+ADD_CUSTOM_COMMAND(TARGET test DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsRedistInstallDir}/vcruntime140_1.dll ${VCRuntime1401ToPath})
