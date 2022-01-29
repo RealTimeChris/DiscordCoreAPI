@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef USER_ENTITIES
+#define USER_ENTITIES
 
 #include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"
@@ -205,3 +206,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }
+#endif

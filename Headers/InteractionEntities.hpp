@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef INTERACTION_ENTITIES
+#define INTERACTION_ENTITIES
 
 #include "FoundationEntities.hpp"
 #include "JSONIfier.hpp"
@@ -656,3 +657,4 @@ namespace DiscordCoreAPI {
     };
     /**@}*/
 };
+#endif

@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef THREAD_POOL
+#define THREAD_POOL
 
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -118,3 +119,4 @@ namespace DiscordCoreAPI {
 
     };
 }
+#endif

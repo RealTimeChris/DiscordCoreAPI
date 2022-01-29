@@ -3,10 +3,8 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
-#pragma once
-
-#pragma comment(lib, "libcrypto.lib")
-#pragma comment(lib, "libssl.lib")
+#ifndef SSL_CLIENTS
+#define SSL_CLIENTS
 
 #ifndef OPENSSL_NO_DEPRECATED
 #define OPENSSL_NO_DEPRECATED
@@ -15,6 +13,8 @@
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #endif
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #pragma comment(lib, "ws2_32")
@@ -306,3 +306,4 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 	};
 }
+#endif

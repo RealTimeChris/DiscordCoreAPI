@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef STAGE_INSTANCE_ENTITIES
+#define STAGE_INSTANCE_ENTITIES
 
 #include "FoundationEntities.hpp"
 
@@ -83,3 +84,4 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 }
+#endif

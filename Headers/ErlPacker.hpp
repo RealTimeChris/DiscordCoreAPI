@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef ERL_PACKER
+#define ERL_PACKER
 
 #include "FoundationEntities.hpp"
 
@@ -165,3 +166,4 @@ namespace DiscordCoreInternal {
 
 	}; 
 }
+#endif

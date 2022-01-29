@@ -3,9 +3,11 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef FOUNDATION_ENTITIES
+#define FOUNDATION_ENTITIES
 
 #ifdef _WIN32
+#pragma once
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #else
@@ -20,14 +22,13 @@
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+#pragma comment(lib, "libcurl.lib")
+#pragma comment(lib, "glib-2.0.lib")
+#pragma warning(push)
+#pragma warning(disable : 4251 4275)
 #else
 #define DiscordCoreAPI_Dll
 #endif
-#pragma comment(lib, "libcurl.lib")
-#pragma comment(lib, "glib-2.0.lib")
-
-#pragma warning(push)
-#pragma warning(disable : 4251 4275)
 
 #include <cpp-base64/base64.h>
 #include <nlohmann/json.hpp>
@@ -3446,3 +3447,4 @@ namespace  DiscordCoreInternal {
     };
 
 };
+#endif
