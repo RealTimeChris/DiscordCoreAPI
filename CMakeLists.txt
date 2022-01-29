@@ -78,7 +78,7 @@ SET(Msvcp140ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Debug/msvcp140D_app
 ADD_CUSTOM_COMMAND(TARGET DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsNonRedistInstallDir}/msvcp140d.${OS_SUFFIX02} ${Msvcp140ToPath})
 SET(Msvcp140AtomicWaitToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Debug/msvcp140D_atomic_wait_app.${OS_SUFFIX02}")
 ADD_CUSTOM_COMMAND(TARGET DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsNonRedistInstallDir}/msvcp140d_atomic_wait.${OS_SUFFIX02} ${Msvcp140AtomicWaitToPath})
-SET(VCRuntime140ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Debug/vcruntime140_app.${OS_SUFFIX02}")
+SET(VCRuntime140ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Debug/vcruntime140D_app.${OS_SUFFIX02}")
 ADD_CUSTOM_COMMAND(TARGET DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsNonRedistInstallDir}/vcruntime140d.${OS_SUFFIX02} ${VCRuntime140ToPath})
 SET(VCRuntime1401ToPath "${CMAKE_CURRENT_SOURCE_DIR}/Output Files/Debug/vcruntime140_1D_app.${OS_SUFFIX02}")
 ADD_CUSTOM_COMMAND(TARGET DiscordCoreAPI-Bot COMMAND ${CMAKE_COMMAND} -E copy ${VCToolsNonRedistInstallDir}/vcruntime140_1d.${OS_SUFFIX02} ${VCRuntime1401ToPath})
