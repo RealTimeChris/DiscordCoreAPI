@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
         CoRoutine<ReturnType>(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
-            if (this->coroutineHandle && this->coroutineHandle.done()) {
+            if (this->coroutineHandle) {
                 this->coroutineHandle.destroy();
             }
         }
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
         CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
-            if (this->coroutineHandle && this->coroutineHandle.done()) {
+            if (this->coroutineHandle) {
                 this->coroutineHandle.destroy();
             }
         }
@@ -318,12 +318,6 @@ namespace DiscordCoreAPI {
             void waitForTime(uint64_t timeToWaitForInMs) {
                 std::unique_lock<std::mutex> timedLock{ this->lockMutex };
                 this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
-            }
-
-            std::unique_ptr<std::stop_token> getStopToken() {
-                auto thePtr = this->newThread->get_stop_token();
-                std::unique_ptr<std::stop_token> thePtr02(&thePtr);
-                return thePtr02;
             }
 
             void return_void() {}
