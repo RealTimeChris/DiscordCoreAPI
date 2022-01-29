@@ -28,9 +28,9 @@ target_compile_definitions(DiscordCoreAPI-Bot PRIVATE $<$<CONFIG:Debug>:DEBUG_BU
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
 add_compile_options(/O2)
-set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Output Files/Release")
+set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Output Files")
 else()
-set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Output Files/Debug")
+set_target_properties(DiscordCoreAPI-Bot PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Output Files")
 endif()
 
 include_directories(${VcPkgFolder}/include)
