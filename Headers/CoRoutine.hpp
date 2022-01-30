@@ -26,8 +26,11 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     /// \param ReturnType The type of parameter that is returned by the CoRoutine.
     template<typename ReturnType>
-    struct CoRoutine {
-        struct DiscordCoreAPI_Dll promise_type {
+    class CoRoutine {
+    public:
+
+        class DiscordCoreAPI_Dll promise_type{
+        public:
             template<typename ReturnType02>
             friend auto NewThreadAwaitable();
             template<typename ReturnType02>
@@ -186,8 +189,10 @@ namespace DiscordCoreAPI {
     /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
     /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
-    struct CoRoutine<void> {
-        struct DiscordCoreAPI_Dll promise_type {
+    class CoRoutine<void> {
+    public:
+        class DiscordCoreAPI_Dll promise_type {
+            public:
             template<typename void02>
             friend auto NewThreadAwaitable();
             template<typename void02>
