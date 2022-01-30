@@ -35,7 +35,8 @@ elseif(UNIX)
     set(OUTPUT_FOLDER ${CMAKE_SOURCE_DIR}/Output Files/Linux/Release)
     set(CMAKE_CXX_STANDARD 23)
 	set(CMAKE_CXX_STANDARD_REQUIRED True)
-	
+	add_compile_options(DiscordCoreAPI_Dll)
+	add_compile_definitions(LINUX)
 endif()
 
 add_link_options(/LTCG)
