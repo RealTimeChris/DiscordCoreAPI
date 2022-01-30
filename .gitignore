@@ -30,3 +30,5 @@ Output Files/Debug/VSInheritEnvironments.txt
 Output Files/Debug/CMakeCache.txt
 Output Files/Debug/cmake_install.cmake
 Output Files/Debug/build.ninja
+Output Files/Windows/Debug/DiscordCoreAPI-Bot.exe
+Output Files/Windows/Release/DiscordCoreAPI-Bot.exe
