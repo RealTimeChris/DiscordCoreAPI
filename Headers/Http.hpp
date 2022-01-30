@@ -165,7 +165,7 @@ namespace DiscordCoreInternal {
 		}
 
 		template<>
-		void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
+		void submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			try {
 				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
@@ -179,8 +179,8 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		template<>
-		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
+		template<typename HttpDataType, typename ArgType = HttpWorkloadData>
+		HttpData submitWorkloadAndGetResult(ArgType& workload) {
 			try {
 				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
 				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));

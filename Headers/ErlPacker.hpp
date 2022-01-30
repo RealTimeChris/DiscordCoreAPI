@@ -10,9 +10,9 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlPackError : public std::exception {
+	struct DiscordCoreAPI_Dll ErlPackError : public std::runtime_error {
 	public:
-		explicit ErlPackError(const std::string& message) : std::exception(message.c_str()) {}
+		explicit ErlPackError(const std::string& message) : std::runtime_error(message.c_str()) {};
 	};
 
 	constexpr uint8_t formatVersion{ 131 };

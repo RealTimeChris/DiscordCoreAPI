@@ -18,6 +18,11 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #pragma comment(lib, "ws2_32")
+#elif LINUX
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
 #endif
 
 #include "FoundationEntities.hpp"
@@ -26,6 +31,8 @@
 #include <openssl/err.h>
 
 namespace DiscordCoreInternal {
+
+	using SOCKET = int;
 
 	struct DiscordCoreAPI_Dll BIOWrapper {
 
@@ -172,10 +179,6 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper& operator=(SOCKET other) {
 			*this->socketPtr = other;
 			return *this;
-		}
-
-		operator int32_t() {
-			return static_cast<int32_t>(*this->socketPtr);
 		}
 
 		operator SOCKET() {

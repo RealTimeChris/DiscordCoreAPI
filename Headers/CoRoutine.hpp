@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
         CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
             if (this != &other) {
                 this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-                other.coroutineHandle = std::coroutine_handle<promise_type>();
+                other.coroutineHandle = std::coroutine_handle<CoRoutine<ReturnType>::promise_type::promise_type>();
                 this->currentStatus = other.currentStatus;
                 other.currentStatus = CoRoutineStatus::Cancelled;
             }            
@@ -53,12 +53,12 @@ namespace DiscordCoreAPI {
 
         CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
-        CoRoutine<ReturnType>() {
+        CoRoutine() {
             this->currentStatus = CoRoutineStatus::Idle;
             this->coroutineHandle = nullptr;
         }
 
-        CoRoutine<ReturnType>(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
             return ReturnType{};
         }
 
-        class DiscordCoreAPI_Dll promise_type {
+        class DiscordCoreAPI_Dll promise_type{
         public:
 
             template<typename ReturnType>
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
             }
 
             auto get_return_object() {
-                return CoRoutine<ReturnType>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine<ReturnType>{ std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this) };
             }
 
             std::suspend_never initial_suspend() {
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
+        std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandle{ nullptr };
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
         CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
             if (this != &other) {
                 this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-                other.coroutineHandle = std::coroutine_handle<promise_type>();
+                other.coroutineHandle = std::coroutine_handle<CoRoutine::promise_type>();
                 this->currentStatus = other.currentStatus;
                 other.currentStatus = CoRoutineStatus::Cancelled;
             }
@@ -287,12 +287,13 @@ namespace DiscordCoreAPI {
             }
         }
 
-        class DiscordCoreAPI_Dll promise_type {
+        class promise_type {
         public:
 
             template<typename ReturnType>
             friend auto NewThreadAwaitable();
-            friend CoRoutine<void>;
+            friend auto NewThreadAwaitable<void>();
+            friend class CoRoutine<void>;
 
             promise_type() {};
 
@@ -343,7 +344,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
+        std::coroutine_handle<CoRoutine::promise_type> coroutineHandle{ nullptr };
 
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
 
@@ -365,7 +366,7 @@ namespace DiscordCoreAPI {
                 return false;
             }
 
-            bool await_suspend(std::coroutine_handle<CoRoutine<ReturnType>::promise_type>handle) {
+            bool await_suspend(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> handle) {
                 this->waiterHandle = handle;
                 this->waiterHandle.promise().newThread = std::make_unique<std::jthread>([=] { this->waiterHandle.resume(); });
                 return true;
@@ -375,7 +376,7 @@ namespace DiscordCoreAPI {
                 return this->waiterHandle;
             }
         };
-        return NewThreadAwaitableClass();
+        return NewThreadAwaitableClass{};
     }
 
   struct DiscordCoreAPI_Dll CoRoutineWrapper {

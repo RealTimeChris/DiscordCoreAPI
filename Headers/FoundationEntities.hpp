@@ -31,6 +31,7 @@
 #endif
 
 #include <cpp-base64/base64.h>
+#include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
 #define CURL_STATICLIB
@@ -41,6 +42,7 @@
 #include <exception>
 #include <iostream>
 #include <concepts>
+#include <thread>
 #include <memory>
 #include <regex>
 #include <mutex>
