@@ -59,6 +59,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
 		SoundCloudRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };

@@ -26,8 +26,10 @@
 #pragma comment(lib, "glib-2.0.lib")
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
-#else
+#include <regex>
+#elif LINUX
 #define DiscordCoreAPI_Dll
+#include <regex>
 #endif
 
 #include <cpp-base64/base64.h>
@@ -37,16 +39,18 @@
 #define CURL_STATICLIB
 #include <curl/curl.h>
 #include <type_traits>
+#include <stop_token>
 #include <coroutine>
 #include <semaphore>
 #include <exception>
 #include <iostream>
 #include <concepts>
 #include <thread>
+#include <time.h>
 #include <memory>
-#include <regex>
 #include <mutex>
 #include <queue>
+#include <ctime>
 #include <ios>
 
 #ifdef _WIN32
@@ -91,6 +95,8 @@
 
 namespace DiscordCoreInternal {
 
+    typedef void* HANDLE;
+
     class VoiceSocketAgent;
     class BaseSocketAgent;
     class HttpClient;
@@ -99,6 +105,8 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
     
+    typedef void* HANDLE;
+
     struct RecurseThroughMessagePagesData;
     struct DeleteInteractionResponseData;
     struct DeleteFollowUpMessageData;
@@ -797,10 +805,6 @@ namespace DiscordCoreAPI {
 
         operator const char*() {
             return this->data();
-        }
-
-        operator std::string() {
-            return *this;
         }
 
         /// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
@@ -3217,14 +3221,12 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll YouTubeSong : public Song {
     public:
 
-        operator Song();
 
     };
 
     class DiscordCoreAPI_Dll SoundCloudSong : public Song {
     public:
 
-        operator Song();
 
     };
 

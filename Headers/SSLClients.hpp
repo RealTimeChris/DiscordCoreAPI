@@ -9,6 +9,12 @@
 #ifndef OPENSSL_NO_DEPRECATED
 #define OPENSSL_NO_DEPRECATED
 #endif
+
+#include "FoundationEntities.hpp"
+#include <openssl/x509v3.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 #ifdef _WIN32
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -23,12 +29,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #endif
-
-#include "FoundationEntities.hpp"
-#include <openssl/x509v3.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 
 namespace DiscordCoreInternal {
 
