@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
     /// \param ReturnType The type of parameter that is returned by the CoRoutine.
     template<typename ReturnType>
     struct CoRoutine {
-        struct promise_type {
+        struct DiscordCoreAPI_Dll promise_type {
             template<typename ReturnType02>
             friend auto NewThreadAwaitable();
             template<typename ReturnType02>
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
     /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
     struct CoRoutine<void> {
-        struct promise_type {
+        struct DiscordCoreAPI_Dll promise_type {
             template<typename void02>
             friend auto NewThreadAwaitable();
             template<typename void02>
@@ -345,7 +345,7 @@ namespace DiscordCoreAPI {
     /// \returns A std::coroutine_handle<CoRoutine<ReturnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
     template<typename ReturnType>
     auto NewThreadAwaitable() {
-        struct NewThreadAwaitableClass {
+        struct DiscordCoreAPI_Dll NewThreadAwaitableClass {
 
             std::coroutine_handle<class CoRoutine<ReturnType>::promise_type> coroHandle{ nullptr };
             std::jthread* threadOut{ nullptr };
@@ -355,28 +355,6 @@ namespace DiscordCoreAPI {
             };
 
             void await_suspend(std::coroutine_handle<class CoRoutine<ReturnType>::promise_type> handle) {
-                this->coroHandle = handle;
-                this->coroHandle.promise().newThread = std::make_unique<std::jthread>([handle] { handle.resume(); });
-            }
-            auto await_resume() {
-                return this->coroHandle;
-            }
-        };
-        return NewThreadAwaitableClass{};
-    }
-
-    template<>
-    auto NewThreadAwaitable<void>() {
-        struct NewThreadAwaitableClass {
-
-            std::coroutine_handle<class CoRoutine<void>::promise_type> coroHandle{ nullptr };
-            std::jthread* threadOut{ nullptr };
-
-            bool await_ready() {
-                return false;
-            };
-
-            void await_suspend(std::coroutine_handle<class CoRoutine<void>::promise_type> handle) {
                 this->coroHandle = handle;
                 this->coroHandle.promise().newThread = std::make_unique<std::jthread>([handle] { handle.resume(); });
             }
