@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef WEBHOOK_ENTITIES
-#define WEBHOOK_ENTITIES
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "JSONIfier.hpp"
@@ -418,4 +417,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 	
 }
-#endif

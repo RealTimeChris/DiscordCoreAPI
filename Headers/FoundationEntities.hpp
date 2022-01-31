@@ -3,11 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef FOUNDATION_ENTITIES
-#define FOUNDATION_ENTITIES
+#pragma once
 
 #ifdef _WIN32
-#pragma once
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #else
@@ -22,35 +20,28 @@
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+#endif
 #pragma comment(lib, "libcurl.lib")
 #pragma comment(lib, "glib-2.0.lib")
+
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
-#include <regex>
-#elif LINUX
-#define DiscordCoreAPI_Dll
-#include <regex>
-#endif
 
 #include <cpp-base64/base64.h>
-#include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
 #define CURL_STATICLIB
 #include <curl/curl.h>
 #include <type_traits>
-#include <stop_token>
 #include <coroutine>
 #include <semaphore>
 #include <exception>
 #include <iostream>
 #include <concepts>
-#include <thread>
-#include <time.h>
 #include <memory>
+#include <regex>
 #include <mutex>
 #include <queue>
-#include <ctime>
 #include <ios>
 
 #ifdef _WIN32
@@ -95,8 +86,6 @@
 
 namespace DiscordCoreInternal {
 
-    typedef void* HANDLE;
-
     class VoiceSocketAgent;
     class BaseSocketAgent;
     class HttpClient;
@@ -105,8 +94,6 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
     
-    typedef void* HANDLE;
-
     struct RecurseThroughMessagePagesData;
     struct DeleteInteractionResponseData;
     struct DeleteFollowUpMessageData;
@@ -301,78 +288,65 @@ namespace DiscordCoreAPI {
 
     bool operator==(CURLCharWrapper& lhs, const  std::string& rhs);
 
+    class DiscordCoreAPI_Dll ReferenceCountingBase {
+    public:
+        ReferenceCountingBase() = default;
+
+        void incrementCount() const {
+            this->refCount += 1;
+        }
+
+        void release() const {
+            assert(this->refCount > 0);
+            this->refCount -= 1;
+            if (this->refCount == 0) {
+                delete this;
+            };
+        }
+
+        virtual ~ReferenceCountingBase() {}
+
+    private:
+        mutable int refCount{ 0 };
+    };
+
     template<typename ObjectType>
     class ReferenceCountingPtr {
     public:
 
-        struct ObjectTypeNew {
-        public:
-            ObjectType* thePtr{ nullptr };
-
-            ObjectTypeNew() = default;
-
-            ObjectTypeNew& operator=(ObjectType* other) {
-                this->thePtr = other;
-                return *this;
-            }
-
-            ObjectTypeNew(ObjectType* other) {
-                *this = other;
-            }
-
-            void incrementCount() const {
-                this->refCount += 1;
-            }
-
-            void release() const {
-                assert(this->refCount > 0);
-                this->refCount -= 1;
-                if (this->refCount == 0) {
-                    delete this;
-                };
-            }
-
-            virtual ~ObjectTypeNew() {};
-
-        private:
-            mutable int refCount{ 0 };
-        };
-
         ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-            ObjectTypeNew* newObject{ new ObjectTypeNew{ptr} };
-            if (newObject != nullptr) {
-                this->thePtr = newObject;
-                newObject->incrementCount();
+            if (ptr != nullptr) {
+                this->thePtr = ptr;
+                ptr->incrementCount();
             }
         }
 
         ReferenceCountingPtr& operator=(ObjectType* ptr) {
-            ObjectTypeNew* newObject{ new ObjectTypeNew{ptr} };
-            if (newObject != nullptr) {
-                newObject->incrementCount();
+            if (ptr != nullptr) {
+                ptr->incrementCount();
             }
             if (this->thePtr != nullptr) {
                 this->thePtr->release();
             }
-            this->thePtr = newObject;
+            this->thePtr = ptr;
             return *this;
         }
 
         ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
-            *this = ptr.thePtr->thePtr;
+            *this = ptr.thePtr;
             return *this;
         }
 
         ObjectType* get() const {
-            return this->thePtr->thePtr;
+            return this->thePtr;
         }
 
         ObjectType* operator->() const {
-            return this->thePtr->thePtr;
+            return this->thePtr;
         }
 
         ObjectType& operator*() const {
-            return *this->thePtr->thePtr;
+            return *this->thePtr;
         }
 
         ~ReferenceCountingPtr() {
@@ -382,7 +356,7 @@ namespace DiscordCoreAPI {
         }
 
     private:
-        ObjectTypeNew* thePtr{ nullptr };
+        ObjectType* thePtr{ nullptr };
     };
 
     template<typename ObjectType>
@@ -805,6 +779,10 @@ namespace DiscordCoreAPI {
 
         operator const char*() {
             return this->data();
+        }
+
+        operator std::string() {
+            return *this;
         }
 
         /// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
@@ -3221,12 +3199,14 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll YouTubeSong : public Song {
     public:
 
+        operator Song();
 
     };
 
     class DiscordCoreAPI_Dll SoundCloudSong : public Song {
     public:
 
+        operator Song();
 
     };
 
@@ -3451,4 +3431,3 @@ namespace  DiscordCoreInternal {
     };
 
 };
-#endif

@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef SOUNDCLOUD_API
-#define SOUNDCLOUD_API
+#pragma once
 
 #include "CoRoutine.hpp"
 #include "AudioEncoder.hpp"
@@ -15,8 +14,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	public:
-
-		SoundCloudRequestBuilder() = default;
 
 		SoundCloudRequestBuilder(DiscordCoreInternal::HttpClient*);
 		
@@ -59,11 +56,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
-		SoundCloudRequestBuilder requestBuilder{};
+		SoundCloudRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };
 		std::string guildId{ "" };
+
+		void sendEmptyingFrames(TSUnboundedMessageBlock<std::vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
@@ -72,4 +70,3 @@ namespace DiscordCoreAPI {
 	};
 
 };
-#endif

@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef YOUTUBE_API
-#define YOUTUBE_API
+#pragma once
 
 #include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
@@ -15,8 +14,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	public:
-
-		YouTubeRequestBuilder() = default;
 
 		YouTubeRequestBuilder(DiscordCoreInternal::HttpClient*);
 
@@ -74,10 +71,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		YouTubeRequestBuilder requestBuilder{};
+		YouTubeRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
 		std::string guildId{ "" };
 		YouTubeSong theSong{};
+
+		void sendEmptyingFrames(TSUnboundedMessageBlock<std::vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
@@ -86,4 +85,3 @@ namespace DiscordCoreAPI {
 	};
 
 };
-#endif

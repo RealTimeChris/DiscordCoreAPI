@@ -3,16 +3,15 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef ERL_PACKER
-#define ERL_PACKER
+#pragma once
 
 #include "FoundationEntities.hpp"
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlPackError : public std::runtime_error {
+	struct DiscordCoreAPI_Dll ErlPackError : public std::exception {
 	public:
-		explicit ErlPackError(const std::string& message) : std::runtime_error(message.c_str()) {};
+		explicit ErlPackError(const std::string& message) : std::exception(message.c_str()) {}
 	};
 
 	constexpr uint8_t formatVersion{ 131 };
@@ -166,4 +165,3 @@ namespace DiscordCoreInternal {
 
 	}; 
 }
-#endif

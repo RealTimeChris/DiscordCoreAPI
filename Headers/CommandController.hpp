@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef COMMAND_CONTROLLER
-#define COMMAND_CONTROLLER
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -45,4 +44,3 @@ namespace DiscordCoreAPI {
 	};
 
 };
-#endif

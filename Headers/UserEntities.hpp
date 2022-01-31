@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef USER_ENTITIES
-#define USER_ENTITIES
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"
@@ -139,6 +138,7 @@ namespace DiscordCoreAPI {
 
 		friend DiscordCoreClient;
 		friend EventHandler;
+		friend Users;
 		friend Guild;
 
 		static void initialize(DiscordCoreInternal::HttpClient*);
@@ -205,4 +205,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }
-#endif

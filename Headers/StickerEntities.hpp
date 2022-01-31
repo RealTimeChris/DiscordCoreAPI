@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef STICKER_ENTITIES
-#define STICKER_ENTITIES
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -108,4 +107,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };
-#endif

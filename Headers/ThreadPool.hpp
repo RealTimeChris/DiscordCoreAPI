@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef THREAD_POOL
-#define THREAD_POOL
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -97,7 +96,7 @@ namespace DiscordCoreAPI {
                 ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, true)));
             }
             else {
-                throw std::runtime_error("Please enter a valid delay time!");
+                throw std::exception("Please enter a valid delay time!");
             }
 
         };
@@ -119,4 +118,3 @@ namespace DiscordCoreAPI {
 
     };
 }
-#endif

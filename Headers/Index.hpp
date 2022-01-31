@@ -3,9 +3,6 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef INDEX
-#define INDEX
+#pragma once
 
 #include "DiscordCoreClient.hpp"
-
-#endif

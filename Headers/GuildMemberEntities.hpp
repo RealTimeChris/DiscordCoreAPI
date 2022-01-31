@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef GUILD_MEMBER_ENTITIES
-#define GUILD_MEMBER_ENTITIES
+#pragma once
 
 #include "FoundationEntities.hpp"
 
@@ -148,4 +147,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };
-#endif

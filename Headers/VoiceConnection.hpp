@@ -3,12 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef VOICE_CONNECTION
-#define VOICE_CONNECTION
+#pragma once
 
-#ifdef _WIN32
 #pragma comment(lib, "libsodium.lib")
-#endif
 
 #include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"
@@ -38,10 +35,7 @@ namespace DiscordCoreAPI {
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
 	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
-
-		friend SoundCloudAPI;
-		friend YouTubeAPI;
-		friend SongAPI;
+		
 		friend Guild;
 
 		Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
@@ -59,13 +53,25 @@ namespace DiscordCoreAPI {
 		/// \returns An event_token for later de-registering the event. 
 		EventDelegateToken onSongCompletion(EventDelegate<CoRoutine<void>, SongCompletionEventData> handler);
 
+		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
+
 		/// For de-registering the event-handler std::function that was previously registered. \brief For de-registering the event-handler std::function that was previously registered.
 		/// \param token The event_token that was returned from the registration std::function.
 		void onSongCompletion(EventDelegateToken token);
 
+		bool areWeCurrentlyPlaying();
+
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns A std::string containing the Channel's id. 
 		std::string getChannelId();
+
+		void pauseToggle();
+
+		bool stop();
+
+		bool skip();
+
+		bool play();
 
 	protected:
 		
@@ -76,7 +82,7 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<AudioEncoder> encoder{ nullptr };
-		std::atomic<bool>* doWeReconnect{ nullptr };
+		std::atomic<bool*> doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		bool areWeConnectedBool{ false };
 		AudioEncrypter audioEncrypter{};
@@ -96,13 +102,9 @@ namespace DiscordCoreAPI {
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 
-		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
-
 		void sendSingleAudioFrame(std::string& audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
-
-		bool areWeCurrentlyPlaying();
 
 		bool areWeConnected();
 		
@@ -110,21 +112,12 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> run();
 
-		void pauseToggle();
-
 		void sendSilence();
 
 		void disconnect();
 
 		void reconnect();
-
-		bool stop();
-
-		bool skip();
-
-		bool play();
 	};
 	/**@}*/
 
 };
-#endif

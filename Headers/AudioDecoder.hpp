@@ -3,16 +3,13 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef AUDIO_DECODER
-#define AUDIO_DECODER
+#pragma once
 
-#ifdef _WIN32
 #pragma comment(lib, "avutil.lib")
 #pragma comment(lib, "avcodec.lib")
 #pragma comment(lib, "swresample.lib")
 #pragma comment(lib, "avformat.lib")
 #pragma comment(lib, "swresample.lib")
-#endif
 
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -271,11 +268,19 @@ namespace DiscordCoreAPI {
 
         AudioDecoder(BuildAudioDecoderData dataPackage);
 
+        static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+
+        TSUnboundedMessageBlock<std::vector<uint8_t>>& getInputBuffer();
+
         void submitDataForDecoding(std::vector<uint8_t> dataToDecode);
+
+        void updateBufferRefreshTime(int32_t newRefreshTime);
 
         bool getFrame(RawFrameData& dataPackage);
 
         bool haveWeFailed();
+
+        void cancelMe();
 
         void startMe();
 
@@ -302,12 +307,7 @@ namespace DiscordCoreAPI {
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };
 
-        static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
-
         CoRoutine<void> run();
-
-        void cancelMe();
     };
 
 }
-#endif

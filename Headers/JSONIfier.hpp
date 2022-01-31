@@ -1,10 +1,9 @@
-// JSONIfier.hpp - For all things related to JSON parsing etc.
+// JSONifier.hpp - For all things related to JSON parsing etc.
 // Apr 21, 2021
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef JSONIFIER
-#define JSONIFIER
+#pragma once
 
 #include "FoundationEntities.hpp"
 
@@ -159,4 +158,3 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll std::string JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage);
 }
-#endif

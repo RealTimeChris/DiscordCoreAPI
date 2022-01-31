@@ -3,8 +3,7 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
-#ifndef EVENT_ENTITIES
-#define EVENT_ENTITIES
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -54,7 +53,7 @@ namespace DiscordCoreAPI {
     class EventDelegate {
     public:
 
-        template<typename ReturnType02, typename... ArgTypes02>
+        template<typename ReturnType, typename... ArgTypes>
         friend class Event;
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
@@ -239,7 +238,7 @@ namespace DiscordCoreAPI {
 
     };
 
-   struct DiscordCoreAPI_Dll EventCore {
+   struct DiscordCoreAPI_Dll EventCore :public ReferenceCountingBase {
 
         EventCore& operator=(const EventCore&) = delete;
 
@@ -327,4 +326,3 @@ namespace DiscordCoreAPI {
 
 
 }
-#endif

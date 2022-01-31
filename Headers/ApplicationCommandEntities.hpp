@@ -3,8 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef APPLICATION_COMMAND_ENTITIES
-#define APPLICATION_COMMAND_ENTITIES
+#pragma once
+
 
 #include "FoundationEntities.hpp"
 
@@ -241,4 +241,3 @@ namespace DiscordCoreAPI {
     /**@}*/
 
 }
-#endif

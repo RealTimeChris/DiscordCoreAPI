@@ -3,11 +3,21 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
-#ifndef SSL_CLIENTS
-#define SSL_CLIENTS
+#pragma once
+
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
 
 #ifndef OPENSSL_NO_DEPRECATED
 #define OPENSSL_NO_DEPRECATED
+#endif
+#ifdef _WIN32
+#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#pragma comment(lib, "ws2_32")
 #endif
 
 #include "FoundationEntities.hpp"
@@ -15,27 +25,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-#ifdef _WIN32
-#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#endif
-#pragma comment(lib, "libcrypto.lib")
-#pragma comment(lib, "libssl.lib")
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#pragma comment(lib, "ws2_32")
-#elif LINUX
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#endif
-
 namespace DiscordCoreInternal {
-
-	using SOCKET = int;
 
 	struct DiscordCoreAPI_Dll BIOWrapper {
 
@@ -184,6 +174,10 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
+		operator int32_t() {
+			return static_cast<int32_t>(*this->socketPtr);
+		}
+
 		operator SOCKET() {
 			return *this->socketPtr;
 		}
@@ -281,6 +275,8 @@ namespace DiscordCoreInternal {
 
 		bool readData();
 
+		void shutdown();
+
 	protected:
 
 		const int64_t maxBufferSize{ 1024 * 16 };
@@ -312,4 +308,3 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 	};
 }
-#endif

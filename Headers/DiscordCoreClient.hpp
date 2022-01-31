@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef DISCORD_CORE_CLIENT
-#define DISCORD_CORE_CLIENT
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "EventEntities.hpp"
@@ -106,4 +105,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }
-#endif

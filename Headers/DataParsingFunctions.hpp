@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef DATA_PARSING_FUNCTIONS
-#define DATA_PARSING_FUNCTIONS
+#pragma once
 
 #include "FoundationEntities.hpp"
 
@@ -13,8 +12,7 @@ namespace DiscordCoreInternal {
     class DiscordCoreAPI_Dll DataParser {
     public:
         template<typename Type>
-        static void parseObject(nlohmann::json const&, Type*);
+        static void parseObject(nlohmann::json&, Type*);
     };
 
 }
-#endif
