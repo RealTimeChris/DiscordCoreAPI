@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// For handling User input - Messages or Interactions. \brief For handling User input - Messages or Interactions.
-	class DiscordCoreAPI_Dll InputEvents {
+	class InputEvents {
 	public:
 
 		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".

@@ -11,9 +11,9 @@
 
 namespace DiscordCoreAPI {
 
-    struct DiscordCoreAPI_Dll OpusEncoderWrapper {
+    struct OpusEncoderWrapper {
 
-        struct DiscordCoreAPI_Dll OpusEncoderDeleter {
+        struct OpusEncoderDeleter {
             void operator()(OpusEncoder* other) {
                 opus_encoder_destroy(other);
             }
@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
         std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr , OpusEncoderDeleter{} };
     };
 
-	class DiscordCoreAPI_Dll AudioEncoder {
+	class AudioEncoder {
 	public:
 
 		AudioEncoder();

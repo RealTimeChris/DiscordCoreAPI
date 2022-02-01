@@ -14,7 +14,7 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll AudioEncrypter {
+	class AudioEncrypter {
 	public:
 
 		AudioEncrypter();
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
-	class DiscordCoreAPI_Dll VoiceConnection {
+	class VoiceConnection {
 	public:
 
 		friend SoundCloudAPI;

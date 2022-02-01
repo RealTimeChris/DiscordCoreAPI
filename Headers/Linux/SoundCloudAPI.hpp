@@ -13,7 +13,7 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
+	class SoundCloudRequestBuilder {
 	public:
 
 		SoundCloudRequestBuilder() = default;
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 	};
 
-	class DiscordCoreAPI_Dll SoundCloudAPI {
+	class SoundCloudAPI {
 	public:
 
 		SoundCloudAPI(std::string guildId, DiscordCoreInternal::HttpClient* httpClient);

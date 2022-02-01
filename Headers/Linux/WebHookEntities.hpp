@@ -18,35 +18,35 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For creating a new WebHook. \brief For creating a new WebHook.
-	struct DiscordCoreAPI_Dll CreateWebHookData{
+	struct CreateWebHookData{
 		std::vector<uint8_t>avatar{};///< Image for the default webhook avatar.
 		std::string channelId{ "" };///< The Channel within which to create the WebHook.
 		std::string name{ "" };///< Name of the webhook(1 - 80 characters).
 	};
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.
-	struct DiscordCoreAPI_Dll GetChannelWebHooksData {
+	struct GetChannelWebHooksData {
 		std::string channelId{ "" };///< The Channel from which to collect the WebHooks.
 	};
 
 	/// For collecting a list of WebHooks from a chosen Guild. \brief For collecting a list of WebHooks from a chosen Guild.
-	struct DiscordCoreAPI_Dll GetGuildWebHooksData {
+	struct GetGuildWebHooksData {
 		std::string guildId{ "" };///< The Guild from which to collect the WebHooks.
 	};
 
 	/// Collects a single WebHook. \brief Collects a single WebHook.
-	struct DiscordCoreAPI_Dll GetWebHookData {
+	struct GetWebHookData {
 		std::string webhookId{ "" };///< Id of the desired WebHook to collect.
 	};
 
 	/// Collects a single WebHook, using the Token and Id. \brief Collects a single WebHook, using the Token and Id.
-	struct DiscordCoreAPI_Dll GetWebHookWithTokenData {
+	struct GetWebHookWithTokenData {
 		std::string webhookToken{ "" };///< Token of the desired WebHook.
 		std::string webhookId{ "" };///< Id of the desired WebHook.
 	};
 		
 	/// For modifying a WebHook. \brief For modifying a WebHook.
-	struct DiscordCoreAPI_Dll ModifyWebHookData {
+	struct ModifyWebHookData {
 		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
 		std::string channelId{ "" };///< The new channel id this webhook should be moved to.
 		std::string webhookId{ "" };///< The WebHook to be modified.
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying a WebHook. \brief For modifying a WebHook.
-	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
+	struct ModifyWebHookWithTokenData {
 		std::string webhookToken{ "" };///< Token of the desired WebHook.
 		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
 		std::string channelId{ "" };///< The new channel id this webhook should be moved to.
@@ -63,18 +63,18 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a WebHook. \brief For deleting a WebHook.
-	struct DiscordCoreAPI_Dll DeleteWebHookData {
+	struct DeleteWebHookData {
 		std::string webhookId{ "" };///< The desired WebHook to delete.
 	};
 
 	/// For deleting a WebHook, using its Token. \brief For deleting a WebHook, using its Token.
-	struct DiscordCoreAPI_Dll DeleteWebHookWithTokenData {
+	struct DeleteWebHookWithTokenData {
 		std::string webhookToken{ "" };///< Token of the desired WebHook.
 		std::string webhookId{ "" };///< The desired WebHook to delete.
 	};
 
 	/// For executing a WebHook. \brief For executing a WebHook.
-	class DiscordCoreAPI_Dll ExecuteWebHookData {
+	class ExecuteWebHookData {
 	public:
 		
 		friend std::string DiscordCoreInternal::JSONIFY(ExecuteWebHookData dataPackage);
@@ -197,14 +197,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For getting a WebHook Message. \brief For getting a WebHook Message.
-	struct DiscordCoreAPI_Dll GetWebHookMessageData {
+	struct GetWebHookMessageData {
 		std::string webhookToken{ "" };///< The WebHook token you would like to collect.
 		std::string webhookId{ "" };///< The WebHook you would like to collect.
 		std::string messageId{ "" };///< The Message Id to collect.
 		std::string threadId{ "" };///< The thread that the Message is in.
 	};
 
-	class DiscordCoreAPI_Dll EditWebHookMessageData {
+	class EditWebHookMessageData {
 	public:
 		 
 		friend std::string DiscordCoreInternal::JSONIFY(EditWebHookMessageData dataPackage);
@@ -319,7 +319,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a WebHook Message. \brief For deleting a WebHook Message.
-	struct DiscordCoreAPI_Dll DeleteWebHookMessageData {
+	struct DeleteWebHookMessageData {
 		std::string webhookToken{ "" };///< The WebHook token you would like to collect.
 		std::string webhookId{ "" };///< The WebHook you would like to collect.
 		std::string messageId{ "" };///< The Message Id to collect.
@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single WebHook. \brief A single WebHook.
-	class DiscordCoreAPI_Dll WebHook : public WebHookData {
+	class WebHook : public WebHookData {
 	public:
 		WebHook();
 
@@ -340,7 +340,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the WebHook related Discord endpoints. \brief An interface class for the WebHook related Discord endpoints;
-	class DiscordCoreAPI_Dll WebHooks {
+	class WebHooks {
 	public:
 
 		static void initialize(DiscordCoreInternal::HttpClient*);

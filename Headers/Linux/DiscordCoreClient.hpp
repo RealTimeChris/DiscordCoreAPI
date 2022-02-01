@@ -34,7 +34,7 @@
 #include "WebHookEntities.hpp"
 #include "SongAPI.hpp"
 
-DiscordCoreAPI_Dll void myPurecallHandler(void);
+void myPurecallHandler(void);
 
 namespace DiscordCoreAPI {
 
@@ -48,21 +48,21 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreAPI_Dll std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap();
+	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap();
 
-	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
+	std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>* getVoiceConnectionMap();
 
-	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
+	std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap();
 
-	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
+	std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>* getYouTubeAPIMap();
 
-	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<SongAPI>>* getSongAPIMap();
+	std::unordered_map<std::string, std::unique_ptr<SongAPI>>* getSongAPIMap();
 
 	/**
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	class DiscordCoreAPI_Dll DiscordCoreClient {
+	class DiscordCoreClient {
 	public:
 
 		friend Guild;

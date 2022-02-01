@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For adding a Role to a GuildMember. \brief For addin a Role to a GuildMember.
-	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
+	struct AddGuildMemberRoleData {
 		std::string guildId{ "" };///< The id of the Guild within which to assign the Role.
 		std::string userId{ "" };///< The id of the User to whom to assign the Role.
 		std::string roleId{ "" };///< The id of the Role to be assigned.
@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For removing a Role from a GuildMember. \brief For removing a Role from a GuildMember.
-	struct DiscordCoreAPI_Dll RemoveGuildMemberRoleData {
+	struct RemoveGuildMemberRoleData {
 		std::string guildId{ "" };///< The id of the Guild within which to remove the Role.
 		std::string userId{ "" };///< The id of the User from whom to remove the Role.
 		std::string roleId{ "" };///< The id of the Role to be removed.
@@ -33,12 +33,12 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For getting a chosen Guild's Roles. \brief For getting a chosen Guild's Roles.
-	struct DiscordCoreAPI_Dll GetGuildRolesData {
+	struct GetGuildRolesData {
 		std::string guildId{ "" };///< Guild id for which Guild to get the roles from.
 	};
 
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
-	struct DiscordCoreAPI_Dll CreateGuildRoleData {
+	struct CreateGuildRoleData {
 		Permissions permissions{ "0" };///< The base permissions to give the Role.
 		std::string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild.
@@ -50,13 +50,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For updating the positions of the roles. \brief For updating the positions of the roles.
-	struct DiscordCoreAPI_Dll RolePositionData {
+	struct RolePositionData {
 		int32_t rolePosition{ 0 };///< The new Role position.
 		std::string roleId{ "" };///< The Role to update.
 	};
 
 	/// For updating the Role positions. \brief For updating the Role positions.
-	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
+	struct ModifyGuildRolePositionsData {
 		friend std::string DiscordCoreInternal::JSONIFY(ModifyGuildRolePositionsData dataPackage);
 		friend Roles;
 		int32_t newPosition{ 0 };///< The new position of the Role.
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For updating a Role's options within a chosen Guild. \brief For updating a Role's options within a chosen Guild.
-	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
+	struct ModifyGuildRoleData {
 		std::string hexColorValue{ "" };///< A hex-color value between 0x00 and 0xFFFFFF.
 		std::string permissions{ "0" };///< Base Guild permissions for the Role.
 		bool mentionable{ false };///< Is it mentionable?
@@ -80,26 +80,26 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For removing a Role from a chosen Guild. \brief For removing a Role from a chosen Guild.
-	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
+	struct RemoveGuildRoleData {
 		std::string guildId{ "" };///< The id of the Guild from which to remove the Role.
 		std::string roleId{ "" };///< The id of the Role to remove.
 		std::string reason{ "" };///< Reason for removing this Role.
 	};
 
 	/// For getting a chosen GuildMember's Roles. \brief For getting a chosen GuildMember's Roles.
-	struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
+	struct GetGuildMemberRolesData {
 		GuildMember guildMember{};///< Which Guild member to collect the roles from.
 		std::string guildId{ "" };///< Which Guild to collect their roles from.
 	};
 
 	/// For getting a Role from the library's cache, or the Discord server. \brief For getting a Role from the library's cache, or the Discord server.
-	struct DiscordCoreAPI_Dll GetRoleData {
+	struct GetRoleData {
 		std::string guildId{ "" };///<Which Guild to collect the Role from.
 		std::string roleId{ "" };///< Which Role to collect.
 	};
 
 	/// A single Role.
-	class DiscordCoreAPI_Dll Role : public RoleData {
+	class Role : public RoleData {
 	public:
 
 		Role();
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
-	class DiscordCoreAPI_Dll Roles {
+	class Roles {
 	public:
 
 		friend DiscordCoreClient;

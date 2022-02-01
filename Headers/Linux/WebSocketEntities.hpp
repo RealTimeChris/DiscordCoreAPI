@@ -84,7 +84,7 @@ namespace DiscordCoreInternal {
 		Op_Pong = 0x0a
 	};
 
-	struct DiscordCoreAPI_Dll WebSocketWorkload {
+	struct WebSocketWorkload {
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		nlohmann::json payLoad{};
 		WebSocketWorkload() {}
@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class DiscordCoreAPI_Dll BaseSocketAgent {
+	class BaseSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 		void connect();
 	};
 
-	class DiscordCoreAPI_Dll VoiceSocketAgent {
+	class VoiceSocketAgent {
 	public:
 
 		friend class DiscordCoreAPI::VoiceConnection;

@@ -31,7 +31,7 @@ namespace DiscordCoreInternal {
 	protected:
 		std::binary_semaphore semaphore{ 1 };
 	};
-	class DiscordCoreAPI_Dll HttpRnRBuilder {
+	class HttpRnRBuilder {
 	public:
 		friend HttpClient;
 		void constructHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 		void clearCRLF();
 		void parseCode();
 	};
-	struct DiscordCoreAPI_Dll RateLimitData {
+	struct RateLimitData {
 	public:
 		friend HttpRnRBuilder;
 		friend HttpClient;
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 		std::string bucket{ "" };
 		int64_t msRemain{ 0 };
 	};
-	struct DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
+	struct HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	public:
 		RateLimitData* rateLimitDataPtr{ nullptr };
 		std::string bucket{ "" };
@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 		std::mutex accessMutex{};
 		HttpConnection() : HttpSSLClient(&this->inputBuffer) {};
 	};
-	class DiscordCoreAPI_Dll HttpConnectionManager {
+	class HttpConnectionManager {
 	public:
 		std::unordered_map<HttpWorkloadType, DiscordCoreAPI::UniquePtrWrapper<HttpConnection>> httpConnections{};
 		std::unordered_map<std::string, DiscordCoreAPI::UniquePtrWrapper<RateLimitData>> rateLimitValues{};
@@ -97,13 +97,13 @@ namespace DiscordCoreInternal {
 		void storeConnection(HttpWorkloadType type);
 		void initialize();
 	};
-	struct DiscordCoreAPI_Dll HttpData {
+	struct HttpData {
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		std::string responseMessage{ "" };
 		nlohmann::json responseData{};
 		int64_t responseCode{ 0 };
 	};
-	class DiscordCoreAPI_Dll HttpClient {
+	class HttpClient {
 	public:
 
 		template<typename ReturnType>

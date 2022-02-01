@@ -10,7 +10,7 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlPackError : public std::runtime_error {
+	struct ErlPackError : public std::runtime_error {
 	public:
 		explicit ErlPackError(const std::string& message) : std::runtime_error(message.c_str()) {};
 	};
@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 		Small_Utf8_Atom = 119
 	};
 
-	struct DiscordCoreAPI_Dll ErlPackBuffer {
+	struct ErlPackBuffer {
 	public:
 
 		std::vector<uint8_t> buffer{};
@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer(ErlPackBuffer&) = delete;
 	};
 
-	class DiscordCoreAPI_Dll ErlPacker {
+	class ErlPacker {
 	public:
 
 		std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);

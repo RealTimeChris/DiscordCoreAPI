@@ -26,9 +26,9 @@ namespace DiscordCoreInternal {
 
 	using SOCKET = int;
 
-	struct DiscordCoreAPI_Dll BIOWrapper {
+	struct BIOWrapper {
 
-		struct DiscordCoreAPI_Dll BIODeleter {
+		struct BIODeleter {
 			void operator()(BIO* other) {
 				if (other != nullptr) {
 					BIO_free(other);
@@ -57,9 +57,9 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll addrinfoWrapper {
+	struct addrinfoWrapper {
 
-		struct DiscordCoreAPI_Dll addrinfoDeleter {
+		struct addrinfoDeleter {
 			void operator()(addrinfo* other) {
 				if (other != nullptr) {
 					freeaddrinfo(other);
@@ -89,9 +89,9 @@ namespace DiscordCoreInternal {
 		addrinfo* addrinfoPtrTwo{ nullptr };
 	};
 
-	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
+	struct SSL_CTXWrapper {
 
-		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
+		struct SSL_CTXDeleter {
 			void operator()(SSL_CTX* other) {
 				if (other != nullptr) {
 					SSL_CTX_free(other);
@@ -120,9 +120,9 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr , SSL_CTXDeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll SSLWrapper {
+	struct SSLWrapper {
 
-		struct DiscordCoreAPI_Dll SSLDeleter {
+		struct SSLDeleter {
 			void operator()(SSL* other) {
 				if (other != nullptr) {
 					SSL_shutdown(other);
@@ -152,9 +152,9 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr , SSLDeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll SOCKETWrapper {
+	struct SOCKETWrapper {
 
-		struct DiscordCoreAPI_Dll SOCKETDeleter {
+		struct SOCKETDeleter {
 			void operator()(SOCKET* other) {
 				if (other != nullptr) {
 					close(*other);
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
-	class DiscordCoreAPI_Dll HttpSSLClient {
+	class HttpSSLClient {
 	public:
 
 		HttpSSLClient(std::string* theVector);
@@ -214,7 +214,7 @@ namespace DiscordCoreInternal {
 		{v.data()}->std::convertible_to<uint8_t*>;
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLClient {
+	class WebSocketSSLClient {
 	public:
 
 		WebSocketSSLClient(std::string baseUrl, std::string port, std::vector<uint8_t>* inputBuffer, int64_t maxBufferSize = 16 * 1024);
@@ -254,7 +254,7 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
+	class DatagramSocketSSLClient {
 	public:
 
 		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<uint8_t>*);

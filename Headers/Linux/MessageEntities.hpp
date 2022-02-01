@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For getting a collection of Messages. \brief For getting a collection of Messages.
-	struct DiscordCoreAPI_Dll GetMessagesData {
+	struct GetMessagesData {
 		std::string aroundThisId{ "" };///<Around this id.
 		std::string beforeThisId{ "" };///< Before this id.
 		std::string afterThisId{ "" };///< After this id.
@@ -25,14 +25,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For getting a Message. \brief For getting a Message.
-	struct DiscordCoreAPI_Dll GetMessageData {
+	struct GetMessageData {
 		std::string requesterId{ "" };///< The requester id.
 		std::string channelId{ "" };///< The Channel from which to collect the Message.
 		std::string id{ "" };///< The id of the Message to collect.
 	};
 
 	/// For creating a Message. \brief For creating a Message.
-	class DiscordCoreAPI_Dll CreateMessageData {
+	class CreateMessageData {
 	public:
 
 		friend std::string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For sending a direct-message. \brief For sending a direct-message.
-	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
+	class SendDMData : public CreateMessageData {
 	public:
 		friend InputEvents;
 
@@ -198,13 +198,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For crossposting a Message. \brief For crossposting a Message.
-	struct DiscordCoreAPI_Dll CrosspostMessageData {
+	struct CrosspostMessageData {
 		std::string messageId{ "" };///< Id of the message to be crossposted.
 		std::string channelId{ "" };///< Channel within which to crosspost the Message from.
 	};
 
 	/// For editing a Message. \brief For editing a Message.
-	class DiscordCoreAPI_Dll EditMessageData {
+	class EditMessageData {
 	public:
 
 		friend std::string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
@@ -344,7 +344,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a Message. \brief For deleting a Message.
-	struct DiscordCoreAPI_Dll DeleteMessageData {
+	struct DeleteMessageData {
 	public:
 		 int32_t timeDelay{ 0 }; ///< Number of std::chrono::milliseconds to wait before deleting the Message.
 		MessageData messageData;///< The Message to delete.
@@ -352,33 +352,33 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
-	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
+	struct DeleteMessagesBulkData {
 		std::vector<std::string> messageIds{}; ///< Array of Message ids to delete.
 		std::string channelId{ "" };///< Channel within which to delete the Messages.
 		std::string reason{ "" };///< The reason for deleting the Messages.
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.
-	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
+	struct GetPinnedMessagesData {
 		std::string channelId{ "" };///< The Channel from which to collect pinned Messages.
 	};
 
 	/// For pinning a single Message. \brief For pinning a single Message.
-	struct DiscordCoreAPI_Dll PinMessageData {
+	struct PinMessageData {
 		std::string channelId{ "" };///< The Channel within which to pin the Message.
 		std::string messageId{ "" };///< The Message which you would like to pin.
 		std::string reason{ "" };///< Reason for pinning this Message.
 	};
 
 	/// For unpinning a single Message. \brief For unpinning a single Message.
-	struct DiscordCoreAPI_Dll UnpinMessageData {
+	struct UnpinMessageData {
 		std::string channelId{ "" };///< The Channel within which to unpin the Message.
 		std::string messageId{ "" };///< The Message which you would like to unpin.
 		std::string reason{ "" };///< Reason for pinning this Message.
 	};
 
 	/// A single Message. \brief A single Message.
-	class DiscordCoreAPI_Dll Message : public MessageData {
+	class Message : public MessageData {
 	public:
 
 		Message();
@@ -394,12 +394,12 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// MessageCollectorReturn responseData. \brief MessageCollectorReturn responseData.
-	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
+	struct MessageCollectorReturnData {
 		std::vector<Message> messages{}; ///< A std::vector of collected Messages.
 	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
-	class DiscordCoreAPI_Dll MessageCollector {
+	class MessageCollector {
 	public:
 
 		friend DiscordCoreClient;
@@ -438,7 +438,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
-	class DiscordCoreAPI_Dll Messages {
+	class Messages {
 	public:
 
 		static void initialize(DiscordCoreInternal::HttpClient*);

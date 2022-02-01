@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
     * @{
     */
 
-    class DiscordCoreAPI_Dll InteractionResponse {
+    class InteractionResponse {
     public:
 
         /// Adds a button to the response Message. \brief Adds a button to the response Message.
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For deferring a component response. \brief For deferring a component response.
-    class DiscordCoreAPI_Dll DeferComponentResponseData : public InteractionResponse {
+    class DeferComponentResponseData : public InteractionResponse {
     public:
 
         friend CreateInteractionResponseData;
@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
-    class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
+    class CreateEphemeralInteractionResponseData : public InteractionResponse {
     public:
 
         friend CreateInteractionResponseData;
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For creating an Interaction response. \brief For creating an Interaction response.
-    class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
+    class CreateInteractionResponseData : public InteractionResponse {
     public:
 
         friend std::string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
-    class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
+    class CreateDeferredInteractionResponseData : public InteractionResponse {
     public:
 
         friend std::string DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
@@ -289,13 +289,13 @@ namespace DiscordCoreAPI {
     };
 
     /// For getting an Interaction response. \brief For getting an Interaction response.
-  struct DiscordCoreAPI_Dll GetInteractionResponseData {
+  struct GetInteractionResponseData {
         std::string interactionToken{ "" }; ///< Interaction token.
         std::string applicationId{ "" }; ///< application id.
     };
 
     /// For editing an Interaction response. \brief For editing an Interaction response.
-    class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
+    class EditInteractionResponseData : public InteractionResponse {
     public:
 
         friend std::string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For deleting an Interaction response. \brief For deleting an Interaction response.
-  struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
+  struct DeleteInteractionResponseData {
 
         friend void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
         friend InputEvents;
@@ -339,7 +339,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
-    class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public InteractionResponse {
+    class CreateEphemeralFollowUpMessageData : public InteractionResponse {
     public:
 
         friend CreateFollowUpMessageData;
@@ -369,7 +369,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For creating a follow up Message. \brief For creating a follow up Message.
-    class DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
+    class CreateFollowUpMessageData : public InteractionResponse {
     public:
 
         friend std::string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
@@ -408,14 +408,14 @@ namespace DiscordCoreAPI {
     };
 
     /// For getting a follow-up Message. \brief For getting a follow-up Message.
-  struct DiscordCoreAPI_Dll GetFollowUpMessageData {
+  struct GetFollowUpMessageData {
         std::string messageId{ "" };///< Message id.
         std::string interactionToken{ "" }; ///< Interaction token.
         std::string applicationId{ "" }; ///< application id.
     };
 
     /// For editing a follow up Message. \brief For editing a follow up Message.
-    class DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
+    class EditFollowUpMessageData : public InteractionResponse {
     public:
 
         friend std::string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
@@ -447,7 +447,7 @@ namespace DiscordCoreAPI {
     };
 
     /// For deleting a follow up Message. \brief For deleting a follow up Message.
-  struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
+  struct DeleteFollowUpMessageData {
 
         friend void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
         friend InputEvents;
@@ -467,7 +467,7 @@ namespace DiscordCoreAPI {
     };
 
     /// A single Interaction.
-  struct DiscordCoreAPI_Dll Interaction : public InteractionData {
+  struct Interaction : public InteractionData {
     public:
         
         Interaction(InteractionData dataPackage);
@@ -481,7 +481,7 @@ namespace DiscordCoreAPI {
     * @{
     */
     /// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
-    class DiscordCoreAPI_Dll Interactions {
+    class Interactions {
     public:
 
         friend DiscordCoreClient;
@@ -552,7 +552,7 @@ namespace DiscordCoreAPI {
     */
 
     /// Select menu response data. \brief Select menu response data.
-  struct DiscordCoreAPI_Dll SelectMenuResponseData {
+  struct SelectMenuResponseData {
         InteractionData interactionData{};///< Interaction data.
         std::string selectionId{ "" };///< Selection id.
         std::vector<std::string> values{};///< A std::vector of the chosen values.
@@ -562,7 +562,7 @@ namespace DiscordCoreAPI {
     };
 
     /// SelectMenuCollector, for collecting select-menu input from one or more Users. \brief SelectMenuCollector, for collecting select-menu input from one or more Users.
-    class DiscordCoreAPI_Dll SelectMenuCollector {
+    class SelectMenuCollector {
     public:
         friend DiscordCoreClient;
 
@@ -602,7 +602,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Button response data. \brief Button response data.
-  struct DiscordCoreAPI_Dll ButtonResponseData {
+  struct ButtonResponseData {
         operator InteractionData() {
 
             return this->interactionData;
@@ -617,7 +617,7 @@ namespace DiscordCoreAPI {
     };
 
     /// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
-    class DiscordCoreAPI_Dll ButtonCollector {
+    class ButtonCollector {
     public:
         friend DiscordCoreClient;
 

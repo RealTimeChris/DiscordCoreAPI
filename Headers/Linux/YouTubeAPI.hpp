@@ -13,7 +13,7 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
+	class YouTubeRequestBuilder {
 	public:
 
 		YouTubeRequestBuilder() = default;
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 
 	};
 
-	class DiscordCoreAPI_Dll YouTubeAPI {
+	class YouTubeAPI {
 	public:
 
 		YouTubeAPI(std::string guildId, DiscordCoreInternal::HttpClient* httpClient);

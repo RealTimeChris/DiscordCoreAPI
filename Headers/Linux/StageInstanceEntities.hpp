@@ -11,7 +11,7 @@
 namespace DiscordCoreAPI {
 
 	/// For creating a StageInstance. \brief For creating a StageInstance.
-	struct DiscordCoreAPI_Dll CreateStageInstanceData {
+	struct CreateStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
 		std::string channelId{ "" };///< The id of the Stage channel.
 		std::string reason{ "" };///< The reason for starting it.
@@ -19,12 +19,12 @@ namespace DiscordCoreAPI {
 	};
 	
 	/// For collecting a single StageInstance. \brief For collecting a single StageInstance.
-	struct DiscordCoreAPI_Dll GetStageInstanceData {
+	struct GetStageInstanceData {
 		std::string channelId{ "" };///< The channel id from which you would like to collect the StageInstance.
 	};
 
 	/// For modifying a single StageInstance. \brief For modifying a single StageInstance.
-	struct DiscordCoreAPI_Dll ModifyStageInstanceData {
+	struct ModifyStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance.
 		std::string channelId{ "" };///< The channel Id of the StageInstance.
 		std::string reason{ "" };///< Reason for modifying the StageInstance.
@@ -32,13 +32,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a single StageInstance. \brief For deleting a single StageInstance.
-	struct DiscordCoreAPI_Dll DeleteStageInstanceData {
+	struct DeleteStageInstanceData {
 		std::string channelId{ "" };///< The channel Id of the StageInstance.
 		std::string reason{ "" };///< Reason for deleting the StageInstance.
 	};
 
 	/// A single StageInstance. \brief A single StageInstance.
-	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
+	class StageInstance : public StageInstanceData {
 	public:
 
 		StageInstance();
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the StageInstance related Discord endpoints. \brief An interface class for the StageInstance related Discord endpoints.
-	class DiscordCoreAPI_Dll StageInstances {
+	class StageInstances {
 	public:
 
 		static void initialize(DiscordCoreInternal::HttpClient*);

@@ -11,7 +11,7 @@
 
 namespace DiscordCoreAPI {
 
-    class DiscordCoreAPI_Dll ThreadPool {
+    class ThreadPool {
     public:
 
         ThreadPool& operator=(const ThreadPool&) = delete;
@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 
     using TimeElapsedHandlerTwo = void(*)(void);
 
-    class DiscordCoreAPI_Dll ThreadPoolTimer {
+    class ThreadPoolTimer {
     public:
 
         ThreadPoolTimer& operator=(ThreadPoolTimer&& other) noexcept;

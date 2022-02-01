@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// A class representing the Song APIs. \brief A class representing the Song APIs.
-	class DiscordCoreAPI_Dll SongAPI {
+	class SongAPI {
 	public:
 
 		friend class SoundCloudAPI;

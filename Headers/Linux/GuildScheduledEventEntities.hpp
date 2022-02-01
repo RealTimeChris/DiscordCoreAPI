@@ -16,13 +16,13 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// For collecting a list of a Guild's scheduled events. \brief For collecting a list of a Guild's scheduled events.
-	struct DiscordCoreAPI_Dll GetGuildScheduledEventsData {
+	struct GetGuildScheduledEventsData {
 		bool withUserCount{ false };///< Do we collect the user counts?
 		std::string guildId{ "" };///< Guild from which we would like to collect the events.
 	};
 
 	/// For creating a GuildScheduledEvent. \brief For creating a GuildScheduledEvent.
-	struct DiscordCoreAPI_Dll CreateGuildScheduledEventData {
+	struct CreateGuildScheduledEventData {
 		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only};///< The privacy level of the scheduled event
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType	entityType{};///< The entity type of the scheduled event.
@@ -35,14 +35,14 @@ namespace DiscordCoreAPI {
 	};
 	
 	/// For collecting a single Guild scheduled event. \brief For collecting a single Guild scheduled event.
-	struct DiscordCoreAPI_Dll GetGuildScheduledEventData {
+	struct GetGuildScheduledEventData {
 		std::string guildScheduledEventId{ "" };///< The id of the desired scheduled event.
 		bool withUserCount{ false };///< Do we collect the user counts?
 		std::string guildId{ "" };///< Guild from which we would like to collect the events.
 	};
 
 	/// For modifying a single Guild Scheduled Event. \brief For modifying a single Guild Scheduled Event.
-	struct DiscordCoreAPI_Dll ModifyGuildScheduledEventData {
+	struct ModifyGuildScheduledEventData {
 		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
 		GuildScheduledEventStatus status{ GuildScheduledEventStatus::Active };///< The status of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
@@ -57,13 +57,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a single Guild Scheduled Event. \brief For deleting a single Guild Scheduled Event.
-	struct DiscordCoreAPI_Dll DeleteGuildScheduledEventData {
+	struct DeleteGuildScheduledEventData {
 		std::string guildScheduledEventId{ "" };///< The id of the event to modify.
 		std::string guildId{ "" };///< The Guild within which to modify the event.
 	};
 
 	/// For collecting a list of Guild Scheduled Event Users. \brief For collecting a list of Guild Scheduled Event Users.
-	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
+	struct GetGuildScheduledEventUsersData {
 		std::string guildScheduledEventId{ "" };///< The id of the event to modify.
 		bool withMember{ false };///< Include Guild member responseData if it exists.
 		std::string guildId{ "" };///< The Guild within which to modify the event.
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single GuildScheduledEvent responseData structure. \brief A single GuildScheduledEvent responseData structure.
-	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
+	class GuildScheduledEvent : public GuildScheduledEventData {
 	public:
 
 		GuildScheduledEvent();
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the GuildScheduledEvent related Discord endpoints. \brief An interface class for the GuildScheduledEvent related Discord endpoints.
-	class DiscordCoreAPI_Dll GuildScheduledEvents {
+	class GuildScheduledEvents {
 	public:
 
 		static void initialize(DiscordCoreInternal::HttpClient*);

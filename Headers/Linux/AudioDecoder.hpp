@@ -18,9 +18,9 @@ extern "C"
 
 namespace DiscordCoreAPI {
 
-    struct DiscordCoreAPI_Dll AVFrameWrapper {
+    struct AVFrameWrapper {
 
-        struct DiscordCoreAPI_Dll AVFrameDeleter {
+        struct AVFrameDeleter {
             void operator()(AVFrame* other) {
                 if (other != nullptr) {
                     av_frame_unref(other);
@@ -48,9 +48,9 @@ namespace DiscordCoreAPI {
         std::unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr , AVFrameDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll AVCodecContextWrapper {
+    struct AVCodecContextWrapper {
 
-        struct DiscordCoreAPI_Dll AVCodecContextDeleter {
+        struct AVCodecContextDeleter {
             void operator()(AVCodecContext* other) {
                 if (other != nullptr) {
                     avcodec_free_context(&other);
@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
         std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr , AVCodecContextDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll AVFormatContextWrapper01 {
+    struct AVFormatContextWrapper01 {
 
         AVFormatContextWrapper01() {};
 
@@ -86,9 +86,9 @@ namespace DiscordCoreAPI {
 
     };
 
-    struct DiscordCoreAPI_Dll AVFormatContextWrapper {
+    struct AVFormatContextWrapper {
 
-        struct DiscordCoreAPI_Dll AVFormatContextDeleter {
+        struct AVFormatContextDeleter {
             void operator()(AVFormatContextWrapper01* other) {
                 if (other->didItInitialize) {
                     avformat_close_input(&other->theContext);
@@ -123,9 +123,9 @@ namespace DiscordCoreAPI {
         std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll SwrContextWrapper {
+    struct SwrContextWrapper {
 
-        struct DiscordCoreAPI_Dll SwrContextDeleter {
+        struct SwrContextDeleter {
             void operator()(SwrContext* other) {
                 if (other != nullptr) {
                     swr_free(&other);
@@ -148,9 +148,9 @@ namespace DiscordCoreAPI {
         std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr , SwrContextDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll AVIOContextWrapper {
+    struct AVIOContextWrapper {
 
-        struct DiscordCoreAPI_Dll AVIOContextDeleter {
+        struct AVIOContextDeleter {
             void operator()(AVIOContext* other) {
                 if (other != nullptr) {
                     av_freep(&other);
@@ -177,9 +177,9 @@ namespace DiscordCoreAPI {
         std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr , AVIOContextDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll AVPacketWrapper {
+    struct AVPacketWrapper {
 
-        struct DiscordCoreAPI_Dll AVPacketDeleter {
+        struct AVPacketDeleter {
             void operator()(AVPacket* other) {
                 if (other != nullptr) {
                     av_packet_free(&other);
@@ -206,9 +206,9 @@ namespace DiscordCoreAPI {
         std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr , AVPacketDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll AVCodecWrapper {
+    struct AVCodecWrapper {
 
-        struct DiscordCoreAPI_Dll AVCodecDeleter {
+        struct AVCodecDeleter {
             void operator()(AVCodec*) {};
         };
 
@@ -227,9 +227,9 @@ namespace DiscordCoreAPI {
         std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr , AVCodecDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll AVStreamWrapper {
+    struct AVStreamWrapper {
 
-        struct DiscordCoreAPI_Dll AVStreamDeleter {
+        struct AVStreamDeleter {
             void operator()(AVStream*) {};
         };
 
@@ -252,13 +252,13 @@ namespace DiscordCoreAPI {
         std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr , AVStreamDeleter{} };
     };
 
-    struct DiscordCoreAPI_Dll BuildAudioDecoderData {
+    struct BuildAudioDecoderData {
     public:
         int64_t totalFileSize{ 0 };
         int32_t bufferMaxSize{ 0 };
     };
 
-    class DiscordCoreAPI_Dll AudioDecoder {
+    class AudioDecoder {
     public:
 
         AudioDecoder(BuildAudioDecoderData dataPackage);

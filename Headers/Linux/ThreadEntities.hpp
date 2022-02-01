@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For starting a Thread, based on a Message. \brief For starting a Thread, based on a Message.
-	struct DiscordCoreAPI_Dll StartThreadWithMessageData {
+	struct StartThreadWithMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		std::string threadName{ "" };///< The name of the new Thread.
 		std::string messageId{ "" };///< The Message Id to base the Thread off of.
@@ -26,7 +26,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For starting a Thread, not based on a Message. \brief For starting a Thread, not based on a Message.
-	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData {
+	struct StartThreadWithoutMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		ThreadType type{ ThreadType::Guild_Public_Thread };///< Type of Thread to create.
 		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
@@ -36,71 +36,71 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.
-	struct DiscordCoreAPI_Dll JoinThreadData {
+	struct JoinThreadData {
 		std::string channelId{ "" };///< The id of the Thread to join.
 	};
 
 	/// For adding a chosen User to a chosen Thread. \brief For adding a chosen User to a chosen Thread.
-	struct DiscordCoreAPI_Dll AddThreadMemberData {
+	struct AddThreadMemberData {
 		std::string channelId{ "" };///< The id of the Thread to join.
 		std::string userId{ "" };///< The id of the User to add to the Thread.
 	};
 
 	/// For leaving a Thread. \brief For leaving a Thread.
-	struct DiscordCoreAPI_Dll LeaveThreadData {
+	struct LeaveThreadData {
 		std::string channelId{ "" };///< The id of the Thread to leave.
 	};
 
 	/// For removing a chosen User from a Thread. \brief For removing a chosen User from a Thread.
-	struct DiscordCoreAPI_Dll RemoveThreadMemberData {
+	struct RemoveThreadMemberData {
 		std::string channelId{ "" };///< The id of the Thread to remove them from.
 		std::string userId{ "" };///< The id of the User to remove from the Thread.
 	};
 
 	/// For collecting a ThreadMember responseData structure for a given ThreadMember. \brief For collecting a ThreadMember responseData structure for a given ThreadMember.
-	struct DiscordCoreAPI_Dll GetThreadMemberData {
+	struct GetThreadMemberData {
 		std::string channelId{ "" };///< The id of the Thread to collect them from.
 		std::string userId{ "" };///< The id of the User to collect from the Thread.
 	};
 
 	/// For collecting the list of ThreadMembers from a Thread. \brief For collecting the list of ThreadMembers from a Thread.
-	struct DiscordCoreAPI_Dll GetThreadMembersData {
+	struct GetThreadMembersData {
 		std::string channelId{ "" };///< The id of the Thread to collect them from.
 	};
 
 	/// For collecting the list of active Threads. \brief For collecting the list of active Threads.
-	struct DiscordCoreAPI_Dll GetActiveThreadsData {
+	struct GetActiveThreadsData {
 		std::string channelId{ "" };///< The id of the Channel to collect the Threads from.
 	};
 
 	/// For collecting puiblic archived Threads from a given Channel. \brief For collecting puiblic archived Threads from a given Channel.
-	struct DiscordCoreAPI_Dll GetPublicArchivedThreadsData {
+	struct GetPublicArchivedThreadsData {
 		std::string channelId{ "" };///< The Channel to acquire the Threads from.
 		std::string before{ "" };///< Returns threads before this timestamp.
 		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting private archived Threads from a given Channel. \brief For collecting private archived Threads from a given Channel.
-	struct DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
+	struct GetPrivateArchivedThreadsData {
 		std::string channelId{ "" };///< The Channel to acquire the Threads from.
 		std::string before{ "" };///< Returns threads before this timestamp.
 		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting joined private archived Threads from a given Channel. \brief For collecting joined private archived Threads from a given Channel.
-	struct DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
+	struct GetJoinedPrivateArchivedThreadsData {
 		std::string channelId{ "" };///< The Channel to acquire the Threads from.
 		std::string before{ "" };///< Returns threads before this timestamp.
 		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For listing the active Threads in a chosen Guild. \brief For listing the active Threads in a chosen Guild.
-	struct DiscordCoreAPI_Dll GetActiveGuildThreadsData {
+	struct GetActiveGuildThreadsData {
 		std::string guildId{ "" };///< The Guild from which to list the Threads from.
 	};
 
 	/// Represents a single Thread. \brief Represents a single Thread.
-	class DiscordCoreAPI_Dll Thread : public ChannelData {
+	class Thread : public ChannelData {
 	public:
 
 		Thread();
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the Thread related endpoints. \brief An interface class for the Thread related endpoints.
-	class DiscordCoreAPI_Dll Threads {
+	class Threads {
 	public:
 
 		static void initialize(DiscordCoreInternal::HttpClient*);

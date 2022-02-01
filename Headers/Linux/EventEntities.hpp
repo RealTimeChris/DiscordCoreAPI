@@ -11,7 +11,7 @@
 
 namespace DiscordCoreAPI {
 
-   struct DiscordCoreAPI_Dll EventDelegateToken {
+   struct EventDelegateToken {
 
         template<typename ReturnType, typename ...ArgTypes>
         friend class EventDelegate;
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 
     };
 
-   struct DiscordCoreAPI_Dll EventCore {
+   struct EventCore {
 
         EventCore& operator=(const EventCore&) = delete;
 
@@ -260,7 +260,7 @@ namespace DiscordCoreAPI {
         std::unique_ptr<bool> theEventState{ std::make_unique<bool>() };
     };
 
-    class DiscordCoreAPI_Dll EventWaiter {
+    class EventWaiter {
     public:
 
         std::atomic<bool*> theEventState{ nullptr };

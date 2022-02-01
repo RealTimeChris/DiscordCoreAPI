@@ -17,12 +17,12 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For collecting a Channel from Discord's servers. \brief For collecting a Channel from Discord's servers.
-	struct DiscordCoreAPI_Dll GetChannelData {
+	struct GetChannelData {
 		std::string channelId{ "" }; ///< The id of the Channel to acquire.
 	};
 
 	/// For modifying a channel's properties. \brief For modifying a channel's properties.
-	struct DiscordCoreAPI_Dll ModifyChannelData {
+	struct ModifyChannelData {
 		ModifyChannelData(ChannelData newData) {
 			this->channelData.permissionOverwrites = newData.permissionOverwrites;
 			this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
@@ -41,13 +41,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
-	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
+	struct DeleteOrCloseChannelData {
 		std::string channelId{ "" };
 		std::string reason{ "" };
 	};
 
 	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
-	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
+	struct EditChannelPermissionOverwritesData {
 		PermissionOverwritesType type{}; ///< The type of overwrite.
 		std::string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
 		std::string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
@@ -57,12 +57,12 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
-	struct DiscordCoreAPI_Dll GetChannelInvitesData {
+	struct GetChannelInvitesData {
 		std::string channelId{ "" };
 	};
 
 	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
-	struct DiscordCoreAPI_Dll CreateChannelInviteData {
+	struct CreateChannelInviteData {
 		std::string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
 		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
 		std::string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
@@ -75,30 +75,30 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
-	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
+	struct DeleteChannelPermissionOverwritesData {
 		std::string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
 		std::string channelId{ "" }; ///< The id of the Channel to modify permissions for.
 		std::string reason{ "" };///< Reason for deleting these permission overwrites.
 	};
 
 	/// For following a news Channel. \brief For following a news Channel.
-	struct DiscordCoreAPI_Dll FollowNewsChannelData {
+	struct FollowNewsChannelData {
 		std::string targetChannelId{ "" };
 		std::string channelId{ "" };
 	};
 
 	/// For triggering the typing indicator in a given Channel. \brief For triggering the typing indicator in a given Channel.
-	struct DiscordCoreAPI_Dll TriggerTypingIndicatorData {
+	struct TriggerTypingIndicatorData {
 		std::string channelId{ "" };
 	};
 
 	/// For acquiring a list of Channels from a chosen Guild. /brief For acquiring a list of Channels from a chosen Guild.
-	struct DiscordCoreAPI_Dll GetGuildChannelsData {
+	struct GetGuildChannelsData {
 		std::string guildId{ "" };///< The Guild from which to collect the Channels from.
 	};
 
 	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
-	struct DiscordCoreAPI_Dll CreateGuildChannelData {
+	struct CreateGuildChannelData {
 		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the channel's permission overwrites.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
 		int32_t userLimit{ 0 };///< The user limit of the voice channel(voice only).
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
-	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
+	struct ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
 		std::string parentId{ "" };///< The new parent ID for the channel that is moved.
 		int32_t position{ 0 };///< Sorting position of the channel.
@@ -122,19 +122,19 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
-	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
+	struct ModifyGuildChannelPositionsData {
 		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
 		std::string guildId{ "" };///< Guild within which to re-order the Channel positions.
 		std::string reason{ "" };///< Reason for re-ordering the Channel positions.
 	};
 
 	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
-	struct DiscordCoreAPI_Dll CreateDMChannelData {
+	struct CreateDMChannelData {
 		std::string userId{ "" }; ///< The User for whom to collect the direct-messaging Channel to.
 	};
 
 	/// A Channel object. \brief A Channel object.
-	class DiscordCoreAPI_Dll Channel : public ChannelData {
+	class Channel : public ChannelData {
 	public:
 
 		Channel();
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
-	class DiscordCoreAPI_Dll Channels {
+	class Channels {
 	public:
 
 		friend DiscordCoreClient;

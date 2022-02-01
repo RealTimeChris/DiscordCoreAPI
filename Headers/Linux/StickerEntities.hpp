@@ -16,17 +16,17 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// For getting a Sticker object for the given sticker ID. \brief For getting a Sticker object for the given sticker ID.
-	struct DiscordCoreAPI_Dll GetStickerData {
+	struct GetStickerData {
 		std::string stickerId{ "" };///< The chosen Sticker's Id.
 	};
 
 	/// For collecting a list of Stickers from a chosen Guild. \brief For collecting a list of Stickers from a chosen Guild.
-	struct DiscordCoreAPI_Dll GetGuildStickersData {
+	struct GetGuildStickersData {
 		std::string guildId{ "" };///< The chosen Guild from which you would like to collect the Stickers from.
 	};
 
 	/// For creating a single Sticker. \brief For creating a single Sticker.
-	struct DiscordCoreAPI_Dll CreateGuildStickerData {
+	struct CreateGuildStickerData {
 		std::string description{ "" };///< Description of the Sticker.
 		std::vector<uint8_t> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB
 		std::string guildId{ "" };///< The Guild within which to create the Sticker.
@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying a single Sticker. \brief For modifying a single Sticker.
-	struct DiscordCoreAPI_Dll ModifyGuildStickerData {
+	struct ModifyGuildStickerData {
 		std::string description{ "" };///< Description of the Sticker.
 		std::string stickerId{ "" };///< The Sticker you wish to modify.
 		std::string guildId{ "" };///< The Guild within which to modify the Sticker.
@@ -46,14 +46,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For deleting a single Sticker. \brief For deleting a single Sticker.
-	struct DiscordCoreAPI_Dll DeleteGuildStickerData {
+	struct DeleteGuildStickerData {
 		std::string stickerId{ "" };///< The Sticker you wish to delete.
 		std::string guildId{ "" };///< The Guild within which to delete the Sticker.
 		std::string reason{ "" };///< The reason for deleting the Sticker.
 	};
 
 	/// A single Sticker. \brief A single Sticker.
-	class DiscordCoreAPI_Dll Sticker : public StickerData {
+	class Sticker : public StickerData {
 	public:
 
 		Sticker();
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the Sticker related Discord endpoints. \brief An interface class for the Sticker related Discord endpoints.
-	class DiscordCoreAPI_Dll Stickers {
+	class Stickers {
 	public:
 
 		static void initialize(DiscordCoreInternal::HttpClient*);

@@ -16,27 +16,27 @@ namespace DiscordCoreAPI {
 	*/
 
 	/// For getting a GuildMember, from the library's cache or Discord server. \brief For getting a GuildMember, from the library's cache or Discord server.
-	struct DiscordCoreAPI_Dll GetGuildMemberData {
+	struct GetGuildMemberData {
 		std::string guildMemberId{ "" };///< The user id of the desired GuildMember.
 		std::string guildId{ "" };///< The id of the Guild from which you would like to acquire a member.
 	};
 
 	/// For listing the GuildMembers of a chosen Guild. \brief For listing the GuildMembers of a chosen Guild.
-	struct DiscordCoreAPI_Dll ListGuildMembersData {
+	struct ListGuildMembersData {
 		std::string guildId{ "" };///< Guild from which to list the GuildMembers.
 		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
 		std::string after{ "" };///< The highest user id in the previous page.
 	};
 
 	/// For searching for one or more GuildMembers within a chosen Guild. \brief For searching for one or more GuildMembers within a chosen Guild.
-	struct DiscordCoreAPI_Dll SearchGuildMembersData {
+	struct SearchGuildMembersData {
 		std::string guildId{ "" };///< Guild within which to search for the GuildMembers.
 		std::string query{ "" };///< Query std::string to match username(s) and nickname(s) against.
 		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
-	struct DiscordCoreAPI_Dll AddGuildMemberData {
+	struct AddGuildMemberData {
 		std::string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the Guild.
 		std::vector<std::string>roles{};///< Array of role ids the member is assigned.
 		std::string guildId{ "" };///< The Guild to add the new GuildMember to.
@@ -47,14 +47,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For modifying the Current GuildMember's values. \brief For modifying the Current GuildMember's values.
-	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
+	struct ModifyCurrentGuildMemberData {
 		std::string guildId{ "" };///< The Guild within which to modify the current user's values.
 		std::string reason{ "" };///< A reason for modifying the current user's values.
 		std::string nick{ "" };///< A new nickname for the current user.
 	};
 
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
-	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
+	struct ModifyGuildMemberData {
 		std::string newVoiceChannelId{ "" }; ///< The new voice channel to std::move them into.
 		std::string currentChannelId{ "" }; ///< The current voice channel, if applicaple.
 		std::string guildMemberId{ "" };	///< The user id of the desired Guild memeber.
@@ -67,14 +67,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.
-	struct DiscordCoreAPI_Dll RemoveGuildMemberData {
+	struct RemoveGuildMemberData {
 		std::string guildMemberId{ "" };///< Id of the chosen GuildMember to kick.
 		std::string guildId{ "" };///< Guild from which to kick the chosen GuildMember.
 		std::string reason{ "" };///< Reason for kicking the GuildMember.
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
-	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
+	class GuildMember : public GuildMemberData {
 	public:
 
 		GuildMember();
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
-	class DiscordCoreAPI_Dll GuildMembers {
+	class GuildMembers {
 	public:
 
 		friend DiscordCoreClient;
