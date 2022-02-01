@@ -6,7 +6,7 @@
 #ifndef VOICE_CONNECTION
 #define VOICE_CONNECTION
 
-#ifdef WIN32
+#ifdef _WIN32
 #pragma comment(lib, "libsodium.lib")
 #endif
 

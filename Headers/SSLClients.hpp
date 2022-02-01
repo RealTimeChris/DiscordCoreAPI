@@ -6,9 +6,6 @@
 #ifndef SSL_CLIENTS
 #define SSL_CLIENTS
 
-#pragma comment(lib, "libcrypto.lib")
-#pragma comment(lib, "libssl.lib")
-
 #ifndef OPENSSL_NO_DEPRECATED
 #define OPENSSL_NO_DEPRECATED
 #endif
@@ -16,6 +13,8 @@
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #endif
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #pragma comment(lib, "ws2_32")

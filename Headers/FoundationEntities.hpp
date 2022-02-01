@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef FOUNDATION_ENTITIES
+#define FOUNDATION_ENTITIES
 
 #ifdef _WIN32
 #ifdef DISCORDCOREAPIDLL_EXPORTS
@@ -3432,3 +3433,4 @@ namespace  DiscordCoreInternal {
     };
 
 };
+#endif

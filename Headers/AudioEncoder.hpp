@@ -6,7 +6,7 @@
 #ifndef AUDIO_ENCODER
 #define AUDIO_ENCODER
 
-#ifdef WIN32
+#ifdef _WIN32
 #pragma comment(lib, "opus.lib")
 #endif
 

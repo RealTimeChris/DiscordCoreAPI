@@ -6,7 +6,7 @@
 #ifndef AUDIO_DECODER
 #define AUDIO_DECODER
 
-#ifdef WIN32
+#ifdef _WIN32
 #pragma comment(lib, "avutil.lib")
 #pragma comment(lib, "avcodec.lib")
 #pragma comment(lib, "swresample.lib")
