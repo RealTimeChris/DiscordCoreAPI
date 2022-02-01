@@ -393,7 +393,7 @@ namespace DiscordCoreAPI {
                 return this->waiterHandle;
             }
         };
-        return NewThreadAwaitableClass();
+        return NewThreadAwaitableClass{};
     }
 
   struct DiscordCoreAPI_Dll CoRoutineWrapper {
