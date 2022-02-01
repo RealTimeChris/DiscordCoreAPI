@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
     */
 
     /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
-   enum class CoRoutineStatus {
+    enum class CoRoutineStatus {
         Idle = 0,///< Idle.
         Running = 1,///< Running.
         Complete = 2,///< Complete.
@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
     class CoRoutine {
     public:
 
-        class DiscordCoreAPI_Dll promise_type {
+        class promise_type {
         public:
 
             template<typename ReturnType02>
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
                 this->exceptionBuffer.send(std::current_exception());
             }
 
-            ~promise_type() {}
+            ~promise_type() {};
 
         protected:
 
@@ -82,9 +82,8 @@ namespace DiscordCoreAPI {
             UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
             std::unique_ptr<std::jthread> newThread{ nullptr };
             std::condition_variable condVar{};
-            ReturnType result;
             std::mutex lockMutex{};
-
+            ReturnType result;
         };
 
         CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
@@ -93,7 +92,7 @@ namespace DiscordCoreAPI {
                 other.coroutineHandle = std::coroutine_handle<promise_type>();
                 this->currentStatus = other.currentStatus;
                 other.currentStatus = CoRoutineStatus::Cancelled;
-            }            
+            }
             return *this;
         };
 
@@ -114,9 +113,7 @@ namespace DiscordCoreAPI {
             this->coroutineHandle = nullptr;
         }
 
-        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) {
-            this->coroutineHandle = coroutineHandleNew;
-        };
+        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
@@ -126,22 +123,16 @@ namespace DiscordCoreAPI {
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
-            if (this != nullptr) {
-                if (this->coroutineHandle) {
-                    if (this->coroutineHandle.promise().newThread != nullptr) {
-                        this->coroutineHandle.promise().newThread->detach();
-                    }
-                }
+            if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
+                this->coroutineHandle.promise().newThread->detach();
             }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
         /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
-            if (this != nullptr) {
-                if (this->coroutineHandle) {
-                    this->currentStatus = coroutineHandle.promise().currentStatus;
-                }
+            if (this != nullptr && this->coroutineHandle) {
+                this->currentStatus = coroutineHandle.promise().currentStatus;
                 return this->currentStatus;
             }
             return CoRoutineStatus();
@@ -150,11 +141,9 @@ namespace DiscordCoreAPI {
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         /// \returns ReturnType The return value of the CoRoutine.
         ReturnType get() {
-            if (this != nullptr) {
-                if (this->coroutineHandle.promise().newThread != nullptr) {
-                    if (this->coroutineHandle.promise().newThread->joinable()) {
-                        this->coroutineHandle.promise().newThread->join();
-                    }
+            if (this != nullptr && this->coroutineHandle.promise().newThread != nullptr) {
+                if (this->coroutineHandle.promise().newThread->joinable()) {
+                    this->coroutineHandle.promise().newThread->join();
                 }
                 std::exception_ptr exceptionPtr{};
                 while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
@@ -185,30 +174,30 @@ namespace DiscordCoreAPI {
                 this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
                 this->currentStatus = this->coroutineHandle.promise().currentStatus;
                 return this->coroutineHandle.promise().result;
-
             }
             return ReturnType{};
         }
 
     protected:
-
         std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
-
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
     /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
     /// \param void The type of parameter that is returned by the CoRoutine.
+    /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
+    /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
     class CoRoutine<void> {
     public:
 
-        class DiscordCoreAPI_Dll promise_type {
+        class promise_type {
         public:
 
-            template<typename ReturnType>
+            template<typename void02>
             friend auto NewThreadAwaitable();
-            friend CoRoutine<void>;
+            template<typename void02>
+            friend class CoRoutine;
 
             promise_type() {};
 
@@ -225,13 +214,9 @@ namespace DiscordCoreAPI {
                 this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
             }
 
-            std::unique_ptr<std::stop_token> getStopToken() {
-                auto thePtr = this->newThread->get_stop_token();
-                std::unique_ptr<std::stop_token> thePtr02(&thePtr);
-                return thePtr02;
+            void return_void() {
+                return;
             }
-
-            void return_void() {}
 
             auto get_return_object() {
                 return CoRoutine<void>{ std::coroutine_handle<promise_type>::from_promise(*this) };
@@ -251,7 +236,7 @@ namespace DiscordCoreAPI {
                 this->exceptionBuffer.send(std::current_exception());
             }
 
-            ~promise_type() {}
+            ~promise_type() {};
 
         protected:
 
@@ -260,7 +245,6 @@ namespace DiscordCoreAPI {
             std::unique_ptr<std::jthread> newThread{ nullptr };
             std::condition_variable condVar{};
             std::mutex lockMutex{};
-
         };
 
         CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
@@ -300,34 +284,27 @@ namespace DiscordCoreAPI {
 
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
-            if (this != nullptr) {
-                if (this->coroutineHandle) {
-                    if (this->coroutineHandle.promise().newThread != nullptr) {
-                        this->coroutineHandle.promise().newThread->detach();
-                    }
-                }
+            if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
+                this->coroutineHandle.promise().newThread->detach();
             }
         }
 
         /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
         /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
-            if (this != nullptr) {
-                if (this->coroutineHandle) {
-                    this->currentStatus = coroutineHandle.promise().currentStatus;
-                }
+            if (this != nullptr && this->coroutineHandle) {
+                this->currentStatus = coroutineHandle.promise().currentStatus;
                 return this->currentStatus;
             }
             return CoRoutineStatus();
         }
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+        /// \returns void The return value of the CoRoutine.
         void get() {
-            if (this != nullptr) {
-                if (this->coroutineHandle.promise().newThread != nullptr) {
-                    if (this->coroutineHandle.promise().newThread->joinable()) {
-                        this->coroutineHandle.promise().newThread->join();
-                    }
+            if (this != nullptr && this->coroutineHandle.promise().newThread != nullptr) {
+                if (this->coroutineHandle.promise().newThread->joinable()) {
+                    this->coroutineHandle.promise().newThread->join();
                 }
                 std::exception_ptr exceptionPtr{};
                 while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
@@ -335,10 +312,13 @@ namespace DiscordCoreAPI {
                 }
                 this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
                 this->currentStatus = this->coroutineHandle.promise().currentStatus;
+                return;
             }
+            return;
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
+        /// \returns void The object to be returned.
         void cancel() {
             if (this != nullptr && this->coroutineHandle && this->coroutineHandle.promise().newThread != nullptr) {
                 if (this->coroutineHandle.promise().newThread->joinable()) {
@@ -354,15 +334,14 @@ namespace DiscordCoreAPI {
                 }
                 this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Cancelled;
                 this->currentStatus = this->coroutineHandle.promise().currentStatus;
+                return;
             }
+            return;
         }
 
     protected:
-
         std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
-
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-
     };
 
     /// For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation. \brief For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation.
@@ -370,33 +349,52 @@ namespace DiscordCoreAPI {
     /// \returns A std::coroutine_handle<CoRoutine<ReturnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
     template<typename ReturnType>
     auto NewThreadAwaitable() {
-        class DiscordCoreAPI_Dll NewThreadAwaitableClass {
-        public:
 
-            std::coroutine_handle<CoRoutine<ReturnType>::promise_type> waiterHandle{ nullptr };
+        struct NewThreadAwaitableClass {
 
-            NewThreadAwaitableClass() {};
+            std::coroutine_handle<class CoRoutine<ReturnType>::promise_type> coroHandle{ nullptr };
 
-            bool await_ready() const noexcept {
+            bool await_ready() {
                 return false;
-            }
+            };
 
-            bool await_suspend(std::coroutine_handle<CoRoutine<ReturnType>::promise_type>handle) {
-                this->waiterHandle = handle;
-                this->waiterHandle.promise().newThread = std::make_unique<std::jthread>([=] { this->waiterHandle.resume(); });
-                return true;
+            void await_suspend(std::coroutine_handle<class CoRoutine<ReturnType>::promise_type> handle) {
+                this->coroHandle = handle;
+                this->coroHandle.promise().newThread = std::make_unique<std::jthread>([=, this] { this->coroHandle.resume(); });
             }
 
             auto await_resume() {
-                return this->waiterHandle;
+                return this->coroHandle;
             }
         };
         return NewThreadAwaitableClass{};
     }
 
-  struct DiscordCoreAPI_Dll CoRoutineWrapper {
+    template<>
+    auto NewThreadAwaitable<void>() {
+        struct NewThreadAwaitableClass {
 
-      struct DiscordCoreAPI_Dll CoRoutineDeleter {
+            std::coroutine_handle<class CoRoutine<void>::promise_type> coroHandle{ nullptr };
+
+            bool await_ready() {
+                return false;
+            };
+
+            void await_suspend(std::coroutine_handle<class CoRoutine<void>::promise_type> handle) {
+                this->coroHandle = handle;
+                this->coroHandle.promise().newThread = std::make_unique<std::jthread>([=, this] { this->coroHandle.resume(); });
+            }
+
+            auto await_resume() {
+                return this->coroHandle;
+            }
+        };
+        return NewThreadAwaitableClass{};
+    }
+
+    struct CoRoutineWrapper {
+
+        struct CoRoutineDeleter {
             void operator()(CoRoutine<void>* other) {
                 if (other != nullptr) {
                     other->cancel();
@@ -405,40 +403,31 @@ namespace DiscordCoreAPI {
                 }
             }
         };
-        
+
         CoRoutineWrapper& operator=(CoRoutine<void> other) {
             this->theCoroutine.reset(&other);
             return *this;
         }
-
         CoRoutineWrapper& operator=(CoRoutine<void>* other) {
             this->theCoroutine.reset(other);
             return *this;
         }
-
-        operator CoRoutine<void>*() {
+        operator CoRoutine<void>* () {
             return this->theCoroutine.get();
         }
-
-        CoRoutine<void>*  operator->() {
+        CoRoutine<void>* operator->() {
             return this->theCoroutine.get();
         }
-
         std::unique_ptr<CoRoutine<void>, CoRoutineDeleter> operator*() {
             return std::move(this->theCoroutine);
         }
-
         CoRoutineWrapper(nullptr_t) {};
-
         CoRoutineWrapper(CoRoutine<void>* other) {
             this->theCoroutine.reset(other);
         }
-
     protected:
-
         std::unique_ptr<CoRoutine<void>, CoRoutineDeleter> theCoroutine{ nullptr, CoRoutineDeleter{} };
     };
-
     /**@}*/
 };
 #endif
