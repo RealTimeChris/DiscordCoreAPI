@@ -29,7 +29,63 @@ namespace DiscordCoreAPI {
     class CoRoutine {
     public:
 
-        class DiscordCoreAPI_Dll promise_type;
+        class DiscordCoreAPI_Dll promise_type {
+        public:
+
+            template<typename ReturnType02>
+            friend auto NewThreadAwaitable();
+            template<typename ReturnType02>
+            friend class CoRoutine;
+
+            promise_type() {};
+
+            void requestStop() {
+                this->newThread->get_stop_source().request_stop();
+            }
+
+            bool isItStopped() {
+                return this->newThread->get_stop_token().stop_requested();
+            }
+
+            void waitForTime(uint64_t timeToWaitForInMs) {
+                std::unique_lock<std::mutex> timedLock{ this->lockMutex };
+                this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
+            }
+
+            void return_value(ReturnType at) {
+                this->result = at;
+            }
+
+            auto get_return_object() {
+                return CoRoutine<ReturnType>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+            }
+
+            std::suspend_never initial_suspend() {
+                this->currentStatus = CoRoutineStatus::Running;
+                return{};
+            }
+
+            std::suspend_always final_suspend() noexcept {
+                this->currentStatus = CoRoutineStatus::Complete;
+                return{};
+            }
+
+            void unhandled_exception() {
+                this->exceptionBuffer.send(std::current_exception());
+            }
+
+            ~promise_type() {}
+
+        protected:
+
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+            UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
+            std::unique_ptr<std::jthread> newThread{ nullptr };
+            std::condition_variable condVar{};
+            ReturnType result;
+            std::mutex lockMutex{};
+
+        };
 
         CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
             if (this != &other) {
@@ -134,13 +190,25 @@ namespace DiscordCoreAPI {
             return ReturnType{};
         }
 
+    protected:
+
+        std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
+
+        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+    };
+
+    /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
+    /// \param void The type of parameter that is returned by the CoRoutine.
+    template<>
+    class CoRoutine<void> {
+    public:
+
         class DiscordCoreAPI_Dll promise_type {
         public:
 
-            template<typename ReturnType02>
+            template<typename ReturnType>
             friend auto NewThreadAwaitable();
-            template<typename ReturnType02>
-            friend class CoRoutine;
+            friend CoRoutine<void>;
 
             promise_type() {};
 
@@ -157,12 +225,16 @@ namespace DiscordCoreAPI {
                 this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
             }
 
-            void return_value(ReturnType at) {
-                this->result = at;
+            std::unique_ptr<std::stop_token> getStopToken() {
+                auto thePtr = this->newThread->get_stop_token();
+                std::unique_ptr<std::stop_token> thePtr02(&thePtr);
+                return thePtr02;
             }
 
+            void return_void() {}
+
             auto get_return_object() {
-                return CoRoutine<ReturnType>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine<void>{ std::coroutine_handle<promise_type>::from_promise(*this) };
             }
 
             std::suspend_never initial_suspend() {
@@ -187,25 +259,9 @@ namespace DiscordCoreAPI {
             UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
             std::unique_ptr<std::jthread> newThread{ nullptr };
             std::condition_variable condVar{};
-            ReturnType result;
             std::mutex lockMutex{};
 
         };
-
-    protected:
-
-        std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
-
-        CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-    };
-
-    /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
-    /// \param void The type of parameter that is returned by the CoRoutine.
-    template<>
-    class CoRoutine<void> {
-    public:
-
-        class DiscordCoreAPI_Dll promise_type;
 
         CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
             if (this != &other) {
@@ -300,66 +356,6 @@ namespace DiscordCoreAPI {
                 this->currentStatus = this->coroutineHandle.promise().currentStatus;
             }
         }
-
-        class DiscordCoreAPI_Dll promise_type {
-        public:
-
-            template<typename ReturnType>
-            friend auto NewThreadAwaitable();
-            friend CoRoutine<void>;
-
-            promise_type() {};
-
-            void requestStop() {
-                this->newThread->get_stop_source().request_stop();
-            }
-
-            bool isItStopped() {
-                return this->newThread->get_stop_token().stop_requested();
-            }
-
-            void waitForTime(uint64_t timeToWaitForInMs) {
-                std::unique_lock<std::mutex> timedLock{ this->lockMutex };
-                this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
-            }
-
-            std::unique_ptr<std::stop_token> getStopToken() {
-                auto thePtr = this->newThread->get_stop_token();
-                std::unique_ptr<std::stop_token> thePtr02(&thePtr);
-                return thePtr02;
-            }
-
-            void return_void() {}
-
-            auto get_return_object() {
-                return CoRoutine<void>{ std::coroutine_handle<promise_type>::from_promise(*this) };
-            }
-
-            std::suspend_never initial_suspend() {
-                this->currentStatus = CoRoutineStatus::Running;
-                return{};
-            }
-
-            std::suspend_always final_suspend() noexcept {
-                this->currentStatus = CoRoutineStatus::Complete;
-                return{};
-            }
-
-            void unhandled_exception() {
-                this->exceptionBuffer.send(std::current_exception());
-            }
-
-            ~promise_type() {}
-
-        protected:
-
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-            UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-            std::unique_ptr<std::jthread> newThread{ nullptr };
-            std::condition_variable condVar{};
-            std::mutex lockMutex{};
-
-        };
 
     protected:
 
