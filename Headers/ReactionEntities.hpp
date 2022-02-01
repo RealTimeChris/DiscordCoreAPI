@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef REACTION_ENTITIES
-#define REACTION_ENTITIES
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "UserEntities.hpp"
@@ -194,4 +193,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }
-#endif

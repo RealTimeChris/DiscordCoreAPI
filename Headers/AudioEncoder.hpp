@@ -3,12 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef AUDIO_ENCODER
-#define AUDIO_ENCODER
+#pragma once
 
-#ifdef WIN32
 #pragma comment(lib, "opus.lib")
-#endif
 
 #include "FoundationEntities.hpp"
 #include <opus/opus.h>
@@ -56,4 +53,3 @@ namespace DiscordCoreAPI {
 	};
 
 }
-#endif

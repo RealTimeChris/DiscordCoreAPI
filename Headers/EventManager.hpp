@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef EVENT_MANAGER
-#define EVENT_MANAGER
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "EventEntities.hpp"
@@ -907,4 +906,3 @@ namespace DiscordCoreAPI {
 		
 	};
 }
-#endif

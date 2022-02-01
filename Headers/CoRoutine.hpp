@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef COROUTINE
-#define COROUTINE
+#pragma once
 
 #include "FoundationEntities.hpp"
 
@@ -394,4 +393,3 @@ namespace DiscordCoreAPI {
 
     /**@}*/
 };
-#endif

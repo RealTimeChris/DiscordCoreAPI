@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef SOUNDCLOUD_API
-#define SOUNDCLOUD_API
+#pragma once
 
 #include "CoRoutine.hpp"
 #include "AudioEncoder.hpp"
@@ -71,4 +70,3 @@ namespace DiscordCoreAPI {
 	};
 
 };
-#endif

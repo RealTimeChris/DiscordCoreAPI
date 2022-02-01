@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef HTTP
-#define HTTP
+#pragma once
 
 #include "FoundationEntities.hpp"
 #include "DataParsingFunctions.hpp"
@@ -224,4 +223,3 @@ namespace DiscordCoreInternal {
 	};
 
 }
-#endif

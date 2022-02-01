@@ -3,12 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef VOICE_CONNECTION
-#define VOICE_CONNECTION
+#pragma once
 
-#ifdef WIN32
 #pragma comment(lib, "libsodium.lib")
-#endif
 
 #include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"
@@ -124,4 +121,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };
-#endif

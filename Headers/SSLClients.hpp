@@ -3,8 +3,7 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
-#ifndef SSL_CLIENTS
-#define SSL_CLIENTS
+#pragma once
 
 #pragma comment(lib, "libcrypto.lib")
 #pragma comment(lib, "libssl.lib")
@@ -309,4 +308,3 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 	};
 }
-#endif
