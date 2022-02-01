@@ -1,4 +1,4 @@
-// Http.hpp - Header file for the "Http Stuff".
+// Http.hpp - Header for the Http class.
 // May 12, 2021
 // Chris M.
 // https://github.com/RealTimeChris
@@ -17,7 +17,7 @@ namespace DiscordCoreInternal {
 	struct RateLimitData;
 	struct HttpData;
 
-	class SemaphoreWrapper {
+	class SemaphoreWrapper : public DiscordCoreAPI::ReferenceCountingBase {
 	public:
 
 		SemaphoreWrapper() = default;
@@ -99,7 +99,7 @@ namespace DiscordCoreInternal {
 		RateLimitData() = default;
 
 	protected:
-
+		
 		std::unique_ptr<SemaphoreWrapper> semaphore{ std::make_unique<SemaphoreWrapper>() };
 		int64_t sampledTimeInMs{ 0 };
 		std::string tempBucket{ "" };
@@ -144,13 +144,65 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
-		template<typename ReturnType>
-		friend ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
-		friend void submitWorkloadAndGetResult(HttpWorkloadData& workload, HttpClient& httpClient);
-		friend std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
-		friend HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
-
 		HttpClient(std::string);
+
+		template<typename ReturnType>
+		ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
+			try {
+				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
+				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+				HttpData returnData = this->httpRequest(workload, true);
+				ReturnType returnObject{};
+				DataParser::parseObject(returnData.responseData, &returnObject);
+				return returnObject;
+			}
+			catch (...) {
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
+			}
+			ReturnType returnObject{};
+			return returnObject;
+		}
+
+		template<>
+		void submitWorkloadAndGetResult<void>(HttpWorkloadData& workload) {
+			try {
+				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
+				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+				this->httpRequest(workload, true);
+				return;
+			}
+			catch (...) {
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
+			}
+			return;
+		}
+
+		template<>
+		HttpData submitWorkloadAndGetResult<HttpData>(HttpWorkloadData& workload) {
+			try {
+				workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + HttpClient::botToken));
+				workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+				return this->httpRequest(workload, false);
+			}
+			catch (...) {
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
+			}
+			return HttpData();
+		}
+
+		std::vector<HttpData> submitWorkloadAndGetResult(std::vector<HttpWorkloadData>& workload) {
+			try {
+				auto returnData = this->httpRequest(workload);
+				return returnData;
+			}
+			catch (...) {
+				DiscordCoreAPI::reportException(workload[0].callStack + "::HttpClient::submitWorkloadAndGetResult()");
+			}
+			return std::vector<HttpData>();
+		}
 
 	protected:
 

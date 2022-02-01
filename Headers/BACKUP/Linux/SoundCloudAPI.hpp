@@ -16,8 +16,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	public:
 
-		SoundCloudRequestBuilder() = default;
-
 		SoundCloudRequestBuilder(DiscordCoreInternal::HttpClient*);
 		
 		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
@@ -59,11 +57,12 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
-		SoundCloudRequestBuilder requestBuilder{};
+		SoundCloudRequestBuilder requestBuilder;
 		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };
 		std::string guildId{ "" };
+
+		void sendEmptyingFrames(TSUnboundedMessageBlock<std::vector<uint8_t>>& sendAudioDataBufferNew);
 
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 

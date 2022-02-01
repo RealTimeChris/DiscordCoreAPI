@@ -139,6 +139,7 @@ namespace DiscordCoreAPI {
 
 		friend DiscordCoreClient;
 		friend EventHandler;
+		friend Users;
 		friend Guild;
 
 		static void initialize(DiscordCoreInternal::HttpClient*);
