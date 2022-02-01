@@ -6,7 +6,7 @@
 #pragma once
 
 #include "FoundationEntities.hpp"
-#include "JSONIFier.hpp"
+#include "JSONIfier.hpp"
 #include "MessageEntities.hpp"
 
 namespace DiscordCoreAPI {
