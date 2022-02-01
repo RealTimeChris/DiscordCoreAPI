@@ -53,12 +53,14 @@ namespace DiscordCoreAPI {
 
         CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
-        CoRoutine<ReturnType>() {
+        CoRoutine() {
             this->currentStatus = CoRoutineStatus::Idle;
             this->coroutineHandle = nullptr;
         }
 
-        CoRoutine<ReturnType>(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) {
+            this->coroutineHandle = coroutineHandleNew;
+        };
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
