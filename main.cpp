@@ -3,7 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "Headers/Index.hpp"
+#include "Index.hpp"
 
 void onBoot01(DiscordCoreAPI::DiscordCoreClient* thePtr) {
     auto botUser = thePtr->getBotUser();
