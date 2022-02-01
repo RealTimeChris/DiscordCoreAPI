@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
             }
 
             auto get_return_object() {
-                return CoRoutine<ReturnType>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine<ReturnType>{ std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this) };
             }
 
             std::suspend_never initial_suspend() {
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
         CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
             if (this != &other) {
                 this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-                other.coroutineHandle = std::coroutine_handle<promise_type>();
+                other.coroutineHandle = std::coroutine_handle<CoRoutine<ReturnType>::promise_type>();
                 this->currentStatus = other.currentStatus;
                 other.currentStatus = CoRoutineStatus::Cancelled;
             }
@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
             this->coroutineHandle = nullptr;
         }
 
-        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
+        std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandle{ nullptr };
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
             }
 
             auto get_return_object() {
-                return CoRoutine<void>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+                return CoRoutine<void>{ std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
             }
 
             std::suspend_never initial_suspend() {
@@ -250,7 +250,7 @@ namespace DiscordCoreAPI {
         CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
             if (this != &other) {
                 this->coroutineHandle = other.coroutineHandle.from_address(other.coroutineHandle.address());
-                other.coroutineHandle = std::coroutine_handle<promise_type>();
+                other.coroutineHandle = std::coroutine_handle<CoRoutine<void>::promise_type>();
                 this->currentStatus = other.currentStatus;
                 other.currentStatus = CoRoutineStatus::Cancelled;
             }
@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
             this->coroutineHandle = nullptr;
         }
 
-        CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
+        CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
             if (this->coroutineHandle && this->coroutineHandle.done()) {
@@ -340,7 +340,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
+        std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandle{ nullptr };
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
@@ -352,13 +352,13 @@ namespace DiscordCoreAPI {
 
         struct NewThreadAwaitableClass {
 
-            std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroHandle{ nullptr };
+            std::coroutine_handle<class CoRoutine<ReturnType>::promise_type> coroHandle{ nullptr };
 
             bool await_ready() {
                 return false;
             };
 
-            void await_suspend(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> handle) {
+            void await_suspend(std::coroutine_handle<class CoRoutine<ReturnType>::promise_type> handle) {
                 this->coroHandle = handle;
                 this->coroHandle.promise().newThread = std::make_unique<std::jthread>([=, this] { this->coroHandle.resume(); });
             }
