@@ -392,42 +392,6 @@ namespace DiscordCoreAPI {
         return NewThreadAwaitableClass{};
     }
 
-    struct CoRoutineWrapper {
-
-        struct CoRoutineDeleter {
-            void operator()(CoRoutine<void>* other) {
-                if (other != nullptr) {
-                    other->cancel();
-                    other->get();
-                    other = nullptr;
-                }
-            }
-        };
-
-        CoRoutineWrapper& operator=(CoRoutine<void> other) {
-            this->theCoroutine.reset(&other);
-            return *this;
-        }
-        CoRoutineWrapper& operator=(CoRoutine<void>* other) {
-            this->theCoroutine.reset(other);
-            return *this;
-        }
-        operator CoRoutine<void>* () {
-            return this->theCoroutine.get();
-        }
-        CoRoutine<void>* operator->() {
-            return this->theCoroutine.get();
-        }
-        std::unique_ptr<CoRoutine<void>, CoRoutineDeleter> operator*() {
-            return std::move(this->theCoroutine);
-        }
-        CoRoutineWrapper(nullptr_t) {};
-        CoRoutineWrapper(CoRoutine<void>* other) {
-            this->theCoroutine.reset(other);
-        }
-    protected:
-        std::unique_ptr<CoRoutine<void>, CoRoutineDeleter> theCoroutine{ nullptr, CoRoutineDeleter{} };
-    };
     /**@}*/
 };
 #endif
