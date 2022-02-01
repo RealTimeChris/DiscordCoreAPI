@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef INPUT_EVENTS
+#define INPUT_EVENTS
 
 #include "FoundationEntities.hpp"
 #include "MessageEntities.hpp"
@@ -55,3 +56,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }
+#endif

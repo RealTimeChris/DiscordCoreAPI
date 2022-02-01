@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef MESSAGE_ENTITIES
+#define MESSAGE_ENTITIES
 
 #include "JSONIfier.hpp"
 
@@ -501,3 +502,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }
+#endif

@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef JSONIFIER
+#define JSONIFIER
 
 #include "FoundationEntities.hpp"
 
@@ -158,3 +159,4 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI_Dll std::string JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage);
 }
+#endif

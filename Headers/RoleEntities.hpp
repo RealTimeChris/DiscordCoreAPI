@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef ROLE_ENTITIES
+#define ROLE_ENTITIES
 
 #include "GuildMemberEntities.hpp"
 #include "JSONIfier.hpp"
@@ -184,3 +185,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }
+#endif

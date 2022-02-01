@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef CHANNEL_ENTITIES
+#define CHANNEL_ENTITIES
 
 #include "FoundationEntities.hpp"
 #include "Http.hpp"
@@ -243,3 +244,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }
+#endif

@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef WEBSOCKET_ENTITIES
+#define WEBSOCKET_ENTITIES
 
 #include "AudioDecoder.hpp"
 #include "FoundationEntities.hpp"
@@ -273,3 +274,4 @@ namespace DiscordCoreInternal {
 		void connect();
 	};
 }
+#endif

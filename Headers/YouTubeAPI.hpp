@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef YOUTUBE_API
+#define YOUTUBE_API
 
 #include "CoRoutine.hpp"
 #include "FoundationEntities.hpp"
@@ -85,3 +86,4 @@ namespace DiscordCoreAPI {
 	};
 
 };
+#endif

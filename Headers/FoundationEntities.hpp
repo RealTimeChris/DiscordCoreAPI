@@ -3,8 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef FOUNDATION_ENTITIES
-#define FOUNDATION_ENTITIES
+#pragma once
 
 #ifdef _WIN32
 #ifdef DISCORDCOREAPIDLL_EXPORTS
@@ -30,7 +29,6 @@
 #endif
 
 #include <cpp-base64/base64.h>
-#include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
 #define CURL_STATICLIB
@@ -42,7 +40,6 @@
 #include <iostream>
 #include <concepts>
 #include <memory>
-#include <thread>
 #include <regex>
 #include <mutex>
 #include <queue>
@@ -3435,4 +3432,3 @@ namespace  DiscordCoreInternal {
     };
 
 };
-#endif
