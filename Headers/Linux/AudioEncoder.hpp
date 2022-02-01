@@ -6,10 +6,6 @@
 #ifndef AUDIO_ENCODER
 #define AUDIO_ENCODER
 
-#ifdef _WIN32
-#pragma comment(lib, "opus.lib")
-#endif
-
 #include "FoundationEntities.hpp"
 #include <opus/opus.h>
 

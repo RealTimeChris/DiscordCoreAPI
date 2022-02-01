@@ -15,23 +15,12 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-#ifdef _WIN32
-#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#endif
-#pragma comment(lib, "libcrypto.lib")
-#pragma comment(lib, "libssl.lib")
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#pragma comment(lib, "ws2_32")
-#elif LINUX
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#endif
 
 namespace DiscordCoreInternal {
 
@@ -168,12 +157,7 @@ namespace DiscordCoreInternal {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
 				if (other != nullptr) {
-#ifdef _WIN32
-					shutdown(*other, 2);
-					closesocket(*other);
-#else
 					close(*other);
-#endif
 					other = nullptr;
 				}
 			}
@@ -193,27 +177,6 @@ namespace DiscordCoreInternal {
 	protected:
 		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
-
-#ifdef _WIN32
-	struct DiscordCoreAPI_Dll WSADATAWrapper {
-
-		struct DiscordCoreAPI_Dll WSADATADeleter {
-			void operator()(WSADATA*) {
-				WSACleanup();
-			}
-		};
-
-		WSADATAWrapper() {
-			int32_t errorCode = WSAStartup(MAKEWORD(2, 2), this->wsaDataPtr.get());
-			if (errorCode != 0) {
-				std::cout << "WSAStartup Error: " << errorCode << std::endl;
-			};
-		}
-
-	protected:
-		std::unique_ptr<WSADATA, WSADATADeleter> wsaDataPtr{ new WSADATA{}, WSADATADeleter{} };
-	};
-#endif
 
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	public:

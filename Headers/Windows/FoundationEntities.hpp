@@ -6,7 +6,6 @@
 #ifndef FOUNDATION_ENTITIES
 #define FOUNDATION_ENTITIES
 
-#ifdef _WIN32
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #else
@@ -25,10 +24,6 @@
 #pragma comment(lib, "glib-2.0.lib")
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
-#elif LINUX
-#define DiscordCoreAPI_Dll
-#include <regex>
-#endif
 
 #include <cpp-base64/base64.h>
 #include <condition_variable>
@@ -49,11 +44,9 @@
 #include <queue>
 #include <ios>
 
-#ifdef _WIN32
 #ifdef _DEBUG
 #define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW
-#endif
 #endif
 
 #ifdef max

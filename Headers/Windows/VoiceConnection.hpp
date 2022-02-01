@@ -6,9 +6,7 @@
 #ifndef VOICE_CONNECTION
 #define VOICE_CONNECTION
 
-#ifdef _WIN32
 #pragma comment(lib, "libsodium.lib")
-#endif
 
 #include "FoundationEntities.hpp"
 #include "WebSocketEntities.hpp"

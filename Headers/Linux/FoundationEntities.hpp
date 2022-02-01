@@ -6,31 +6,6 @@
 #ifndef FOUNDATION_ENTITIES
 #define FOUNDATION_ENTITIES
 
-#ifdef _WIN32
-#pragma once
-#ifdef DISCORDCOREAPIDLL_EXPORTS
-#define DiscordCoreAPI_Dll __declspec(dllexport)
-#else
-#define DiscordCoreAPI_Dll __declspec(dllimport)
-#endif
-#ifndef WINRT_LEAN_AND_MEAN
-#define WINRT_LEAN_AND_MEAN
-#endif
-#ifndef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
-#define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
-#endif
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-#pragma comment(lib, "libcurl.lib")
-#pragma comment(lib, "glib-2.0.lib")
-#pragma warning(push)
-#pragma warning(disable : 4251 4275)
-#include <regex>
-#elif LINUX
-#define DiscordCoreAPI_Dll
-#include <regex>
-#endif
 
 #include <cpp-base64/base64.h>
 #include <condition_variable>
@@ -49,17 +24,11 @@
 #include <time.h>
 #include <memory>
 #include <thread>
+#include <regex>
 #include <mutex>
 #include <queue>
 #include <ctime>
 #include <ios>
-
-#ifdef _WIN32
-#ifdef _DEBUG
-#define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DBG_NEW
-#endif
-#endif
 
 #ifdef max
 #undef max
