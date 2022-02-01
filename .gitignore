@@ -1,34 +1,19 @@
 out/
 .vs/
 Library Files/Release/DiscordCoreAPI-DLL.ilk
-Output Files/Debug/Testing/
-Output Files/Debug/CMakeFiles/
-Output Files/Debug/.cmake/
-Output Files/Release/.cmake/
-Output Files/Release/Testing/
-Output Files/Release/CMakeFiles/
-Output Files/Release/DiscordCoreAPI-Bot.exe
 Output Files/DiscordCoreAPI-Bot.exe
-Output Files/Debug/DiscordCoreAPI-Bot.exe
-Output Files/Debug/DiscordCoreAPI-Bot.exe
-Build/
-Output Files/Debug/Release/DiscordCoreAPI-Bot.exe
 Output Files/DiscordCoreAPI-Bot.exe.manifest
-Output Files/Release/zlib1.dll
-Output Files/Release/libssl-3-x64.dll
-Output Files/Release/libcurl.dll
-Output Files/Release/libcrypto-3-x64.dll
-Output Files/Debug/zlib1.dll
-Output Files/Debug/libssl-3-x64.dll
-Output Files/Debug/libcurl.dll
-Output Files/Debug/libcrypto-3-x64.dll
-Output Files/Release/VSInheritEnvironments.txt
-Output Files/Release/CMakeCache.txt
-Output Files/Release/cmake_install.cmake
-Output Files/Release/build.ninja
-Output Files/Debug/VSInheritEnvironments.txt
-Output Files/Debug/CMakeCache.txt
-Output Files/Debug/cmake_install.cmake
-Output Files/Debug/build.ninja
+Output Files/Release
+Output Files/Debug
 Output Files/Windows/Debug/DiscordCoreAPI-Bot.exe
+Output Files/Windows/Debug/DiscordCoreAPI-DLL.ilk
 Output Files/Windows/Release/DiscordCoreAPI-Bot.exe
+Output Files/Windows/Release/DiscordCoreAPI-DLL.ilk
+Output Files/Windows/Debug/msvcp140.dll
+Output Files/Windows/Debug/msvcp140_atomic_wait.dll
+Output Files/Windows/Debug/vcruntime140.dll
+Output Files/Windows/Debug/vcruntime140_1.dll
+Build/
+Output Files/Windows/DiscordCoreAPI-Bot.exe.manifest
+Output Files/Windows/DiscordCoreAPI-Bot.exe
+Output Files/Windows/Release/DiscordCoreAPI-Bot.exe.manifest

@@ -22,7 +22,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a GuildScheduledEvent. \brief For creating a GuildScheduledEvent.
 	struct DiscordCoreAPI_Dll CreateGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only};///< The privacy level of the scheduled event.
+		GuildScheduledEventPrivacyLevel	privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only};///< The privacy level of the scheduled event
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType	entityType{};///< The entity type of the scheduled event.
 		std::string scheduledStartTime{ "" };///< The time to schedule the scheduled event.
