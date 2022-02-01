@@ -96,6 +96,7 @@ ADD_CUSTOM_COMMAND(TARGET DiscordCoreAPI-Bot COMMAND POST_BUILD ${CMAKE_COMMAND}
 ADD_CUSTOM_COMMAND(TARGET DiscordCoreAPI-Bot COMMAND POST_BUILD ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/Output Files/Certs/GoogleCert.pem" "C:/SSL/Certs/GoogleCert.pem")
 ADD_CUSTOM_COMMAND(TARGET DiscordCoreAPI-Bot COMMAND POST_BUILD ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/Output Files/Certs/DiscordCert.pem" "C:/SSL/Certs/DiscordCert.pem")
 elseif (UNIX)
+add_compile_options("-DCMAKE_TOOLCHAIN_FILE=$ENV{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 include_directories("${CMAKE_SOURCE_DIR}/Headers/Linux")
 include_directories("/usr/include/x86_64-linux-gnu/")
 link_libraries(DiscordCoreAPI-Bot "/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1.${OS_SUFFIX01}")
