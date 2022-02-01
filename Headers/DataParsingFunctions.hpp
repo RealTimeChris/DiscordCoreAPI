@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef DATA_PARSING_FUNCTIONS
+#define DATA_PARSING_FUNCTIONS
 
 #include "FoundationEntities.hpp"
 
@@ -16,3 +17,4 @@ namespace DiscordCoreInternal {
     };
 
 }
+#endif

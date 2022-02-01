@@ -3,13 +3,16 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef AUDIO_DECODER
+#define AUDIO_DECODER
 
+#ifdef WIN32
 #pragma comment(lib, "avutil.lib")
 #pragma comment(lib, "avcodec.lib")
 #pragma comment(lib, "swresample.lib")
 #pragma comment(lib, "avformat.lib")
 #pragma comment(lib, "swresample.lib")
+#endif
 
 #include "FoundationEntities.hpp"
 #include "CoRoutine.hpp"
@@ -311,3 +314,4 @@ namespace DiscordCoreAPI {
     };
 
 }
+#endif

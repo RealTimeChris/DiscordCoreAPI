@@ -3,7 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef SONG_API
+#define SONG_API
 
 #include "FoundationEntities.hpp"
 #include "GuildMemberEntities.hpp"
@@ -128,3 +129,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };
+#endif
