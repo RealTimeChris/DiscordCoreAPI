@@ -116,7 +116,28 @@ add_compile_options("-DCMAKE_TOOLCHAIN_FILE=$ENV{HOME}/vcpkg/scripts/buildsystem
 include_directories("${CMAKE_SOURCE_DIR}/Headers/Linux")
 include_directories("/usr/include/x86_64-linux-gnu/")
 target_include_directories(DiscordCoreAPI-DLL PUBLIC "${VcPkgFolder/include}" "${OpenSSLFolder}/include")
+
+	add_library(DiscordCoreAPI-DLL "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/DllMain.cpp" "${VcPkgFolder}/include/cpp-base64/base64.cpp"				"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/ApplicationCommandEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/AudioDecoder.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/AudioEncoder.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/ChannelEntities.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/CommandController.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/DataParsingFunctions.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/DiscordCoreClient.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/DiscordCoreClient.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/ErlPacker.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/EventManager.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/FoundationEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/GuildEntities.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/GuildMemberEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/GuildScheduledEventEntities.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/Http.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/InputEvents.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/InteractionEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/JSONIfier.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/MessageEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/ReactionEntities.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/RoleEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/SongAPI.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/SoundCloudAPI.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/SSLClients.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/StageInstanceEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/StickerEntities.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/ThreadEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/ThreadPool.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/UserEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/VoiceConnection.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/WebHookEntities.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/WebSocketEntities.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux/YouTubeAPI.cpp"
+	)
 	
+	target_include_directories(DiscordCoreAPI-DLL PUBLIC "${VcPkgFolder/include}" "${OpenSSLFolder}")	
+
 	target_link_directories(DiscordCoreAPI-DLL PUBLIC "${VcPkgFolder/lib}" "${OpenSSLFolder}")
 	add_library(libcrypto SHARED IMPORTED GLOBAL)
 	set_property(TARGET libcrypto PROPERTY IMPORTED_LOCATION "${OpenSSLFolder}/libcrypto.so")
