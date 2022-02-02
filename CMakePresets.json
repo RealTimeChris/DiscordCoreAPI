@@ -14,7 +14,7 @@
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] },
-        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "${sourceDir}/Source" }
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "${sourceDir}/Source/Linux" }
       }
     },
     {
@@ -30,7 +30,7 @@
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] },
-        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "${sourceDir}/Source" }
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "${sourceDir}/Source/Linux" }
       }
     },
     {
