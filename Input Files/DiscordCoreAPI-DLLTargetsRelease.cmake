@@ -49,7 +49,7 @@ add_library(DiscordCoreAPI-DLL SHARED IMPORTED)
 
 set_target_properties(DiscordCoreAPI-DLL PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "C:/vcpkg/installed/x64-windows//include;C:/OpenSSL/include;C:/DiscordCoreAPI-DLL/Windows/Include"
-  INTERFACE_LINK_LIBRARIES "libssl;libcrypto;libcurl;libsodium;libglib;libavutil;libavcodec;libswresample;libavformat;libopus"
+  INTERFACE_LINK_LIBRARIES "nlohmann_json;nlohmann_json::nlohmann_json;libssl;libcrypto;unofficial-sodium::sodium;libcurl;libglib;libavutil;libavcodec;libswresample;libavformat;libopus"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
