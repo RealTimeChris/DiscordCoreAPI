@@ -370,28 +370,6 @@ namespace DiscordCoreAPI {
         return NewThreadAwaitableClass{};
     }
 
-    template<>
-    auto NewThreadAwaitable<void>() {
-        struct NewThreadAwaitableClass {
-
-            std::coroutine_handle<class CoRoutine<void>::promise_type> coroHandle{ nullptr };
-
-            bool await_ready() {
-                return false;
-            };
-
-            void await_suspend(std::coroutine_handle<class CoRoutine<void>::promise_type> handle) {
-                this->coroHandle = handle;
-                this->coroHandle.promise().newThread = std::make_unique<std::jthread>([=, this] { this->coroHandle.resume(); });
-            }
-
-            auto await_resume() {
-                return this->coroHandle;
-            }
-        };
-        return NewThreadAwaitableClass{};
-    }
-
     /**@}*/
 };
 #endif
