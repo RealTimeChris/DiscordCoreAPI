@@ -32,3 +32,16 @@ Output Files/Windows/Release/opus.dll
 Output Files/Windows/Release/pcre.dll
 Output Files/Windows/Release/swresample-3.dll
 Output Files/Windows/Release/zlib1.dll
+Output Files/Windows/Debug/avcodec-58.dll
+Output Files/Windows/Debug/avformat-58.dll
+Output Files/Windows/Debug/avutil-56.dll
+Output Files/Windows/Debug/DiscordCoreAPI-Bot.exp
+Output Files/Windows/Debug/DiscordCoreAPI-Bot.lib
+Output Files/Windows/Debug/DiscordCoreAPI-Bot.pdb
+Output Files/Windows/Debug/libcrypto-3-x64.dll
+Output Files/Windows/Debug/libssl-3-x64.dll
+Output Files/Windows/Debug/msvcp140d_atomic_wait.dll
+Output Files/Windows/Debug/opus.dll
+Output Files/Windows/Debug/swresample-3.dll
+Output Files/Windows/Release/DiscordCoreAPI-Bot.exp
+Output Files/Windows/Release/DiscordCoreAPI-Bot.lib
