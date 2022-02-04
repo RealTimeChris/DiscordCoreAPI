@@ -14,7 +14,7 @@
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] },
-        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "${sourceDir}/Source/Linux" }
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "./Source/Linux" }
       }
     },
     {
@@ -30,7 +30,7 @@
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] },
-        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "${sourceDir}/Source/Linux" }
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "./Source/Linux" }
       }
     },
     {
@@ -41,7 +41,7 @@
       "binaryDir": "${sourceDir}/Output Files/Release",
       "architecture": {
         "value": "x64",
-        "strategy": "external"
+        "strategy": "external",
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
