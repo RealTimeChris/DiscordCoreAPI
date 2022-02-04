@@ -200,7 +200,7 @@ elseif (UNIX)
 	set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLED_DIR}")
 	find_package(OpenSSL REQUIRED)
   
-	add_executable(DiscordCoreAPI-Bot SHARED "${CMAKE_SOURCE_DIR}/Main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp"
+	add_executable(DiscordCoreAPI-Bot "${CMAKE_SOURCE_DIR}/Main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp"
 	"${CMAKE_SOURCE_DIR}/Source/Linux/ApplicationCommandEntities.cpp" "${CMAKE_SOURCE_DIR}/Source/Linux/AudioDecoder.cpp"
 	"${CMAKE_SOURCE_DIR}/Source/Linux/AudioEncoder.cpp" "${CMAKE_SOURCE_DIR}/Source/Linux/ChannelEntities.cpp"
 	"${CMAKE_SOURCE_DIR}/Source/Linux/CommandController.cpp" "${CMAKE_SOURCE_DIR}/Source/Linux/DataParsingFunctions.cpp"
