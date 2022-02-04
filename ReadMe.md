@@ -71,6 +71,7 @@ newEvent = InputEvents::respondToEvent(dataPackage);
 InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 ## Dependencies
+- [CMake](https://cmake.org/)
 - [OpenSSL](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) (Compiled with [these](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) instructions.)
 
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
