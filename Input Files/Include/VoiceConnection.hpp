@@ -36,9 +36,9 @@ namespace DiscordCoreAPI {
 	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
 	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
-
+		
 		friend SoundCloudAPI;
-		friend YouTubeAPI;
+		friend YouTubeAPI;		
 		friend SongAPI;
 		friend Guild;
 
@@ -47,10 +47,6 @@ namespace DiscordCoreAPI {
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew);
 
 		VoiceConnection() = default;
-
-		/// Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this. \brief Send a single frame of audio data. Be sure to send one frame every x ms apart where x is the duration of each frame, and also be sure to call SongAPI::play() before calling this.
-		/// \param frameData A single frame worth of audio data.
-		void sendSingleFrame(AudioFrameData frameData);
 
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song.
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
@@ -94,23 +90,25 @@ namespace DiscordCoreAPI {
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 
-		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
-
 		void sendSingleAudioFrame(std::string& audioDataPacketNew);
 
-		void sendSpeakingMessage(bool isSpeaking);
+		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 
+		void sendSingleFrame(AudioFrameData frameData);
+
+		void sendSpeakingMessage(bool isSpeaking);
+		
 		bool areWeCurrentlyPlaying();
 
-		bool areWeConnected();
-		
 		void clearAudioData();
 
 		CoRoutine<void> run();
 
-		void pauseToggle();
+		bool areWeConnected();
 
-		void sendSilence();
+		void sendSilence();		
+
+		void pauseToggle();
 
 		void disconnect();
 

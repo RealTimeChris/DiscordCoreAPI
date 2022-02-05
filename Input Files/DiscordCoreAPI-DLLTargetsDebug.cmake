@@ -48,7 +48,7 @@ set(_IMPORT_PREFIX "C:/Program Files (x86)/DiscordCoreAPI-DLL")
 add_library(DiscordCoreAPI-DLL SHARED IMPORTED)
 
 set_target_properties(DiscordCoreAPI-DLL PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "C:/vcpkg/installed/x64-windows/include;C:/vcpkg/installed/x64-windows/include;C:/DiscordCoreAPI-DLL/Windows/Include;C:/DiscordCoreAPI-DLL/Windows/Include"
+  INTERFACE_INCLUDE_DIRECTORIES "C:/vcpkg/installed/x64-windows/include;C:/vcpkg/installed/x64-windows/include;C:/DiscordCoreAPI-DLL/Include;C:/DiscordCoreAPI-DLL/Include"
   INTERFACE_LINK_LIBRARIES "libssl;libcrypto;libsodium;libcurl;libglib;libavutil;libavcodec;libswresample;libavformat;libopus"
 )
 

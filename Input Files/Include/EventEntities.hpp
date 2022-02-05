@@ -27,8 +27,8 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        std::string handlerId{ "" };
-        std::string eventId{ "" };
+        std::string handlerId{};
+        std::string eventId{};
 
     };
 
