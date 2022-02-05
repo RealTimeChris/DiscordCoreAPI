@@ -61,8 +61,11 @@ namespace DiscordCoreAPI {
 		/// \returns A std::string containing the Channel's id. 
 		std::string getChannelId();
 
+		~VoiceConnection();
+
 	protected:
-		
+
+		std::unique_ptr<DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>> voiceConnectionBuffer{ std::make_unique<DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>>() };
 		std::unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};

@@ -2,12 +2,8 @@
 // Jun 17, 2021
 // Chris M.
 // https://github.com/RealTimeChris
-#ifdef WIN32
-#define PREFIX "./Headers/Windows/Index.hpp"
-#elif LINUX
-#define PREFIX "./Headers/Linux/Index.hpp"
-#endif
-#include PREFIX
+
+#include "./Headers/Index.hpp"
 
 void onBoot01(DiscordCoreAPI::DiscordCoreClient* thePtr) {
     auto botUser = thePtr->getBotUser();
