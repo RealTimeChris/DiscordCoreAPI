@@ -72,10 +72,8 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 ## Dependencies
 - [CMake](https://cmake.org/)
-- [OpenSSL](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) (Compiled with [these](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) instructions.)
-
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
-
+- [OpenSSL](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) (.\vcpkg install openssl:x64-windows/x64-linux)
 - [Nlohmann Json](https://github.com/nlohmann/json) (.\vcpkg install nlohmann-json:x64-windows/x64-linux)
 - [LibCurl](https://github.com/curl/curl) (.\vcpkg install curl:x64-windows/x64-linux)
 - [LibSodium](https://github.com/jedisct1/libsodium) (.\vcpkg install libsodium:x64-windows/x64-linux)
