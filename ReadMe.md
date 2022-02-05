@@ -7,6 +7,7 @@
 ## A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 ## [Build Instructions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Build%20Instructions.md)
 ## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
+## [Linux Version of the Library](https://github.com/RealTimeChris/DiscordCoreAPI-Linux)
 ## [Doxygen-Generated Documentation](https://realtimechris.github.io/DiscordCoreAPI-Docs/)
 ## [Raw DLL Source](https://github.com/RealTimeChris/DiscordCoreAPI-DLL)
 ## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/e4wZNMg62q)
