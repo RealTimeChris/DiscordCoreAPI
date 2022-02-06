@@ -903,6 +903,8 @@ namespace DiscordCoreAPI {
 
 		static void onRoleDeletion(OnRoleDeletionData dataPackage);
 		
+		static void onPresenceUpdate(OnPresenceUpdateData dataPackage);
+
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
 		
 	};
