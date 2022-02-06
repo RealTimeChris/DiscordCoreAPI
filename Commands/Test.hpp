@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 			msgEmbed.setTitle("__**Test Embed**__");
 			RespondToInputEventData dataResponse{ args->eventData };
 			if (args->eventData.eventType == InputEventType::Regular_Message) {
-				dataResponse.type = InputEventResponseType::Regular_Messag;
+				dataResponse.type = InputEventResponseType::Regular_Message;
 			}
 			else {
 				dataResponse.type = InputEventResponseType::Interaction_Response;
