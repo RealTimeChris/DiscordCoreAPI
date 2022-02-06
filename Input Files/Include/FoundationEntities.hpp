@@ -290,18 +290,18 @@ namespace DiscordCoreAPI {
     class ReferenceCountingPtr {
     public:
 
-        struct ObjectTypeNew {
+        struct ObjectTypeWrapper {
         public:
             ObjectType* thePtr{ nullptr };
 
-            ObjectTypeNew() = default;
+            ObjectTypeWrapper() = default;
 
-            ObjectTypeNew& operator=(ObjectType* other) {
+            ObjectTypeWrapper& operator=(ObjectType* other) {
                 this->thePtr = other;
                 return *this;
             }
 
-            ObjectTypeNew(ObjectType* other) {
+            ObjectTypeWrapper(ObjectType* other) {
                 *this = other;
             }
 
@@ -317,14 +317,14 @@ namespace DiscordCoreAPI {
                 };
             }
 
-            virtual ~ObjectTypeNew() {};
+            virtual ~ObjectTypeWrapper() {};
 
         private:
             mutable int refCount{ 0 };
         };
 
         ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-            ObjectTypeNew* newObject{ new ObjectTypeNew{ptr} };
+            ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ptr} };
             if (newObject != nullptr) {
                 this->thePtr = newObject;
                 newObject->incrementCount();
@@ -332,7 +332,7 @@ namespace DiscordCoreAPI {
         }
 
         ReferenceCountingPtr& operator=(ObjectType* ptr) {
-            ObjectTypeNew* newObject{ new ObjectTypeNew{ptr} };
+            ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ptr} };
             if (newObject != nullptr) {
                 newObject->incrementCount();
             }
@@ -367,7 +367,7 @@ namespace DiscordCoreAPI {
         }
 
     private:
-        ObjectTypeNew* thePtr{ nullptr };
+        ObjectTypeWrapper* thePtr{ nullptr };
     };
 
     template<typename ObjectType>
