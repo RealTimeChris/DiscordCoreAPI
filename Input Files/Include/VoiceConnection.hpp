@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 
 		bool areWeConnected();
 
-		void sendSilence();		
+		void sendSilence();
 
 		void pauseToggle();
 
@@ -117,8 +117,6 @@ namespace DiscordCoreAPI {
 		void reconnect();
 
 		bool stop();
-
-		bool skip();
 
 		bool play();
 	};

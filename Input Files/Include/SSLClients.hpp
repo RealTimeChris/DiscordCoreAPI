@@ -223,6 +223,7 @@ namespace DiscordCoreInternal {
 		std::string* inputBufferPtr{ nullptr };
 		BIOWrapper connectionBio{ nullptr };
 		int32_t maxBufferSize{ 16 * 1024 };
+		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 	};
@@ -273,6 +274,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
+		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
 
