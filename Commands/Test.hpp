@@ -21,8 +21,8 @@ namespace DiscordCoreAPI {
 			this->helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<BaseFunction> create() {
-			return make_unique<Test>();
+		std::unique_ptr<BaseFunction> create() {
+			return std::make_unique<Test>();
 		}
 
 		virtual void execute(std::unique_ptr<BaseFunctionArguments> args) {
