@@ -6,7 +6,7 @@
 #ifndef REGISTER_APPLICATION_COMMANDS
 #define REGISTER_APPLICATION_COMMANDS
 
-#include "../Include/Index.hpp"
+#include "../Input Files/Include/Index.hpp"
 #include "HelperFunctions.hpp"
 
 namespace DiscordCoreAPI {

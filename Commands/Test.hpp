@@ -4,7 +4,7 @@
 #ifndef TEST
 #define TEST
 
-#include "Index.hpp"
+#include "../Input Files/Include/Index.hpp"
 
 namespace DiscordCoreAPI {
 
