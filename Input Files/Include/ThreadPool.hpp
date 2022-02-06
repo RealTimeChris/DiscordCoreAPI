@@ -26,7 +26,7 @@ namespace DiscordCoreAPI {
 
         void awaitThreadResult(std::string theKey);
 
-        void storeThread(std::string theKey, std::unique_ptr<CoRoutine<void>> thread);
+        void storeThread(std::string theKey, CoRoutine<void> thread);
 
         CoRoutineStatus getThreadStatus(std::string theKey);
 
@@ -35,8 +35,8 @@ namespace DiscordCoreAPI {
         ~ThreadPool();
 
     protected:
-        std::unique_ptr< std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>>>threadsPtr{ std::make_unique<std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>>>() };
-        std::atomic<std::unordered_map<std::string, UniquePtrWrapper<CoRoutine<void>>>*> threads{};
+        std::unique_ptr< std::unordered_map<std::string, CoRoutine<void>>>threadsPtr{ std::make_unique<std::unordered_map<std::string, CoRoutine<void>>>() };
+        std::atomic<std::unordered_map<std::string, CoRoutine<void>>*> threads{};
         CoRoutine<void> cleanupTask{};
         bool doWeQuit{ false };
 
