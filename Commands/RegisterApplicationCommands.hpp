@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 				testCommandData.description = "Reports a test message!";
 				testCommandData.name = "test";
 				ApplicationCommandOptionData testCommandDataOptionOne{};
-				testCommandDataOptionOne.name = "Output text.";
+				testCommandDataOptionOne.name = "outputtext";
 				testCommandDataOptionOne.type = ApplicationCommandOptionType::String;
 				testCommandDataOptionOne.description = "The test message you would like to have relayed.";
 				testCommandDataOptionOne.required = true;
