@@ -297,7 +297,6 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnection* voiceConnectionPtr{ nullptr };
-		bool areWeConnectedBool{ false };
 
 		void initialize();
 	};

@@ -135,10 +135,9 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		std::unordered_map<std::string, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
-		std::unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-		std::unordered_map<std::string, std::string> HttpHeaders{};
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
+		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
@@ -217,10 +216,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-		std::unordered_map<std::string, std::string> HttpHeaders{};
 		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
@@ -232,11 +229,12 @@ namespace DiscordCoreInternal {
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::EventWaiter connectionReadyEvent{};
+		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		bool haveWeReceivedHeartbeatAck{ true };		
+		bool haveWeReceivedHeartbeatAck{ true };
 		std::vector<uint8_t> inputBuffer00{};
 		std::vector<uint8_t> inputBuffer01{};
 		int32_t lastNumberReceived{ 0 };
@@ -244,7 +242,6 @@ namespace DiscordCoreInternal {
 		bool areWeWaitingForIp{ true };
 		std::string relativePath{ "" };
 		std::string baseUrl{ "" };
-		std::string port{ "443" };
 		std::string authKey{ "" };
 		std::string hostIp{ "" };
 		uint32_t closeCode{ 0 };

@@ -79,7 +79,6 @@ namespace DiscordCoreAPI {
 		AudioEncrypter audioEncrypter{};
 		bool areWeInstantiated{ false };
 		bool didWeJustConnect{ true };
-		bool hasTerminateRun{ false };
 		bool areWeStopping{ false };
 		uint16_t sequenceIndex{ 0 };
 		EventWaiter playSetEvent{};
