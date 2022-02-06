@@ -3,6 +3,10 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef COMMANDS_LIST
+#define COMMANDS_LIST
 
+#include "RegisterApplicationCommands.hpp"
 #include "Test.hpp"
+
+#endif

@@ -1,7 +1,8 @@
 // Test.hpp - Header for the "test" command.
 // https://github.com/RealTimeChris
 
-#pragma once
+#ifndef TEST
+#define TEST
 
 #include "Index.hpp"
 
@@ -24,10 +25,10 @@ namespace DiscordCoreAPI {
 			return make_unique<Test>();
 		}
 
-		virtual CoRoutine<void> executeAsync(BaseFunctionArguments args) {
+		virtual void execute(std::unique_ptr<BaseFunctionArguments> args) {
 			try {
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");
@@ -36,3 +37,4 @@ namespace DiscordCoreAPI {
 		virtual ~Test() {};
 	};
 }
+#endif
