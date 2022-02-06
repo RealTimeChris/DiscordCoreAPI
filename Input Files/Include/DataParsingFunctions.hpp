@@ -12,8 +12,8 @@ namespace DiscordCoreInternal {
 
     class DiscordCoreAPI_Dll DataParser {
     public:
-        template<typename Type>
-        static void parseObject(nlohmann::json&, Type*);
+        template<typename ReturnType>
+        static void parseObject(nlohmann::json const&, ReturnType&);
     };
 
 }

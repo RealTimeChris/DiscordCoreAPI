@@ -134,7 +134,7 @@ namespace DiscordCoreInternal {
 				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 				HttpData returnData = this->httpRequest(workload, true);
 				ReturnType returnObject{};
-				DataParser::parseObject(returnData.responseData, &returnObject);
+				DataParser::parseObject(returnData.responseData, returnObject);
 				return returnObject;
 			}
 			catch (...) {

@@ -86,11 +86,12 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient();
 
 	protected:
-
+		
 		std::unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 		std::unique_ptr<BotUser> currentUser{ nullptr };
+		std::vector<ThreadPoolTimer> threadPoolTimers{};
 		DiscordCoreInternal::WSADATAWrapper wsaData{};
 		CacheOptions cacheOptions{};
 		std::string botToken{ "" };

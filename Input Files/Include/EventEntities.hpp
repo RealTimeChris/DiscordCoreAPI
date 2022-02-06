@@ -116,12 +116,12 @@ namespace DiscordCoreAPI {
         Event(Event<ReturnType, ArgTypes...>&) = delete;
 
         Event() {
-            this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         }
 
         EventDelegateToken add(EventDelegate<ReturnType, ArgTypes...> eventDelegate) {
             EventDelegateToken eventToken{};
-            eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
             this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
             return eventToken;
@@ -209,12 +209,12 @@ namespace DiscordCoreAPI {
         Event(Event<void, ArgTypes...>&) = delete;
 
         Event() {
-            this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         }
 
         EventDelegateToken add(EventDelegate<void, ArgTypes...> eventDelegate) {
             EventDelegateToken eventToken{};
-            eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+            eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
             this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
             return eventToken;
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
         uint32_t wait(uint64_t millisecondsMaxToWait = UINT64_MAX) {
             uint64_t millisecondsWaited{ 0 };
             while (true) {
-                int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
                 if (*this->theEventState.load(std::memory_order_consume)) {
                     return 0;
                 }
@@ -296,7 +296,7 @@ namespace DiscordCoreAPI {
                 else {
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
-                int64_t endTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                int64_t endTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
                 millisecondsWaited += endTime - startTime;
                 if (millisecondsWaited >= millisecondsMaxToWait) {
                     return 1;

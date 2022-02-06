@@ -69,10 +69,6 @@ namespace DiscordCoreAPI {
 
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval);
 
-        static ThreadPoolTimer createTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeDelay);
-
-        static ThreadPoolTimer createTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeDelay);
-
         static void initialize();
 
         void awaitResult();
@@ -82,24 +78,17 @@ namespace DiscordCoreAPI {
         void cancel();
 
         template <typename ...ArgTypes>
-        static CoRoutine<void> executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)>theFunction, int32_t timeDelayInMs, bool isItRepeating, ArgTypes... args) {
+        static CoRoutine<void> executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)>theFunction, int32_t timeDelayInMs, ArgTypes... args) {
             co_await NewThreadAwaitable<void>();
-            if (timeDelayInMs >= 0 && !isItRepeating) {
+            if (timeDelayInMs >= 0) {
                 TimeElapsedHandler timeElapsedHandler = [=]()->void {
                     theFunction(args...);
                 };
-                ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, false)));
-            }
-            else if (timeDelayInMs >= 0 && isItRepeating) {
-                TimeElapsedHandler timeElapsedHandler = [=]()->void {
-                    theFunction(args...);
-                };
-                ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, true)));
+                ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, false)));
             }
             else {
                 throw std::runtime_error("Please enter a valid delay time!");
             }
-
         };
 
         ~ThreadPoolTimer();
