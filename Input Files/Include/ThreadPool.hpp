@@ -81,10 +81,8 @@ namespace DiscordCoreAPI {
         static CoRoutine<void> executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)>theFunction, int32_t timeDelayInMs, ArgTypes... args) {
             co_await NewThreadAwaitable<void>();
             if (timeDelayInMs >= 0) {
-                TimeElapsedHandler timeElapsedHandler = [=]()->void {
-                    theFunction(args...);
-                };
-                ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->storeThread(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()), std::make_unique<CoRoutine<void>>(ThreadPoolTimer::run(timeDelayInMs, timeElapsedHandler, false)));
+                std::this_thread::sleep_for(std::chrono::milliseconds{ timeDelayInMs });
+                theFunction(args...);
             }
             else {
                 throw std::runtime_error("Please enter a valid delay time!");
