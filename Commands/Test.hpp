@@ -26,13 +26,8 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual void execute(std::unique_ptr<BaseFunctionArguments> args) {
-			try {
 
-				return;
-			}
-			catch (...) {
-				rethrowException("Test::executeAsync Error: ");
-			}
+			return;
 		}
 		virtual ~Test() {};
 	};
