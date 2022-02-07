@@ -1,5 +1,6 @@
 if (WIN32)
 add_compile_definitions(DISCORDCOREAPIDLL_EXPORTS)
+add_compile_options(/bigobj)
 set(ZLIB_LIBRARY "${VCPKG_INSTALLED_DIR}/bin/libz.dll")
 set(ZLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
 set(CURL_ROOT_DIR "${VCPKG_INSTALLED_DIR}")
