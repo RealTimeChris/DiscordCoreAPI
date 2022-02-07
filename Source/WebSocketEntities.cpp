@@ -41,25 +41,6 @@ namespace DiscordCoreInternal {
 		return this->webSocketWorkloadTarget;
 	}
 
-	void BaseSocketAgent::sendClosedMessage() {
-		try {
-			std::lock_guard<std::recursive_mutex> accessLock{ this->accessorMutex01 };
-			std::vector<uint8_t> theVector{};
-			std::vector<char> out{};
-			out.resize(this->maxHeaderSize);
-			size_t size = this->createHeader(out.data(), theVector.size(), WebSocketOpCode::Op_Close);
-			std::string header(out.data(), size);
-			std::vector<uint8_t> theVectorNew{};
-			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
-			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
-			this->webSocket->writeData(theVectorNew);
-		}
-		catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
-			this->onClosedExternal();
-		}
-	}
-
 	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) {
 		try {
 			std::lock_guard<std::recursive_mutex> accessLock{ this->accessorMutex01 };
@@ -683,6 +664,7 @@ namespace DiscordCoreInternal {
 			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+			this->webSocket->writeData(sendVector);
 			this->sendMessage(sendVector);
 		}
 		catch (...) {
