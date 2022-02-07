@@ -71,6 +71,9 @@ else {
 newEvent = InputEvents::respondToEvent(dataPackage);
 InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
+## Supported Platforms
+- This library currently supports being built within Visual Studio 2022/MSVC on the Windows platform as well as g++-11 on the Linux platform.
+
 ## Dependencies
 - [CMake](https://cmake.org/)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
