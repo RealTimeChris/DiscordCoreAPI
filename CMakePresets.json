@@ -2,6 +2,38 @@
   "version": 2,
   "configurePresets": [
     {
+      "name": "linux-default",
+      "displayName": "Linux Release",
+      "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Output Files/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Release",
+        "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] },
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "/home/realtimechris/DiscordCoreAPI-DLL/" }
+      }
+    },
+    {
+      "name": "linux-dbg-default",
+      "displayName": "Linux Debug",
+      "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Output Files/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Debug",
+        "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] },
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": { "sourceDir": "/home/realtimechris/DiscordCoreAPI-DLL/" }
+      }
+    },
+    {
       "name": "windows-default",
       "displayName": "Windows x64 Release",
       "description": "Target Windows with the Visual Studio development environment.",
@@ -9,7 +41,7 @@
       "binaryDir": "${sourceDir}/Output Files/Release",
       "architecture": {
         "value": "x64",
-        "strategy": "external",
+        "strategy": "external"
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
