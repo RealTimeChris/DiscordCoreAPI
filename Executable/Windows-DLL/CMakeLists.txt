@@ -1,9 +1,5 @@
 if (WIN32)
 add_compile_definitions(DISCORDCOREAPIDLL_EXPORTS)
-add_compile_options(/bigobj)
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-	add_compile_options(/O2)
-endif()
 set(ZLIB_LIBRARY "${VCPKG_INSTALLED_DIR}/bin/libz.dll")
 set(ZLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
 set(CURL_ROOT_DIR "${VCPKG_INSTALLED_DIR}")
@@ -16,6 +12,10 @@ list(APPEND CMAKE_MODULE_PATH "${VCPKG_INSTALLED_DIR}/share/ffmpeg")
 find_package(FFMPEG REQUIRED)
 set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLED_DIR}")
 find_package(OpenSSL REQUIRED)
+if ($<CONFIG:Debug>)
+message(STATUS "THIS IS THE MESSAGE: ${CMAKE_BUILD_TYPE}")
+add_compile_options(/O2)
+endif()
 
 add_library(DiscordCoreAPI-DLL SHARED "../../Source/DllMain.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp" "../../Include/Index.hpp" "../../Source/ApplicationCommandEntities.cpp" "../../Source/AudioDecoder.cpp"
 	"../../Source/AudioEncoder.cpp" "../../Source/ChannelEntities.cpp"
