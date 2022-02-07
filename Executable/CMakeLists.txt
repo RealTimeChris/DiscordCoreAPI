@@ -1,6 +1,3 @@
-
-set(VCPKG_BASE_DIR "C:/vcpkg" )
-
 if (UNIX)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Linux/${CMAKE_BUILD_TYPE}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Linux/${CMAKE_BUILD_TYPE}")
@@ -81,13 +78,15 @@ add_subdirectory(Windows-DLL)
 add_executable(DiscordCoreAPI-Bot "main.cpp")
 
 FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2019/Community/VCRedist/MSCV")
-FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2022/Community/VCRedist/MSVC")
+FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atoic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2022/Community/VCRedist/MSVC")
 if (EXISTS ${MSVCP_ATOMIC_WAIT})
 configure_file("${MSVCP_ATOMIC_WAIT}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/msvcp140_atomic_wait.dll" COPYONLY)
 endif()
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC DiscordCoreAPI-DLL)
-
-
+message(STATUS "Copying a file...")
+configure_file("${VCPKG_INSTALLED_DIR}/bin/zlib1.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/zlib1.dll" COPYONLY)
+message(STATUS "Copying a file...")
+configure_file("${VCPKG_INSTALLED_DIR}/bin/libcurl.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libcurl.dll" COPYONLY)
 message(STATUS "Copying a file...")
 configure_file("${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" "C:/SSL/Certs/SoundCloudCert.pem" COPYONLY)
 message(STATUS "Copying a file...")
