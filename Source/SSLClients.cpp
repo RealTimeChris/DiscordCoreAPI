@@ -416,6 +416,9 @@ namespace DiscordCoreInternal {
 					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 					if (print) {
 						std::cout << "READ AMOUNT: " << readBytes << std::endl;
+						std::string theString{};
+						theString.insert(theString.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
+						std::cout << "THE STRING: " << theString << std::endl;
 					}
 					this->bytesRead += readBytes;
 				}
