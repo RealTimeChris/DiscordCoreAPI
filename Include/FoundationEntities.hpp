@@ -3002,7 +3002,6 @@ namespace DiscordCoreAPI {
 
     /**@}*/
 
-
     /// Song types. \brief Song types.
     enum class SongType {
         YouTube = 0,///< YouTube.
@@ -3013,6 +3012,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll DownloadUrl {
         InputEventData eventData{};
         int32_t contentSize{ 0 };
+        std::string urlPath{ "" };
     };
 
     /**
