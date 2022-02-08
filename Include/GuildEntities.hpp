@@ -28,10 +28,10 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::Shortest };///< Afk timeout in seconds.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		int32_t systemChannelFlags{ 0 };///< System channel flags.
 		std::vector<ChannelData> channels{};///< Array of partial channel objects.
-		int32_t verificationLevel{ 0 };///< Verification level.
 		std::string systemChannelId{ "" };///< The id of the channel where Guild notices such as welcome messages and boost events are posted.
+		int32_t systemChannelFlags{ 0 };///< System channel flags.
+		int32_t verificationLevel{ 0 };///< Verification level.
 		std::string afkChannelId{ "" };///< Id for afk channel.
 		std::vector<RoleData> roles{};///< Array of role objects.
 		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
@@ -69,20 +69,20 @@ namespace DiscordCoreAPI {
 		}
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
+		std::string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
 		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
-		std::string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
-		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash(when the server has the INVITE_SPLASH feature).
-		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner(when the server has the BANNER feature).
-		int32_t systemChannelFlags{ 0 };///< System channel flags.
-		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
+		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		std::string preferredLocale{ "" };///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
 		std::string systemChannelId{ "" };///< The id of the channel where Guild notices such as welcome messages and boost events are posted.
 		std::string rulesChannelId{ "" };///< The id of the channel where Community guilds display rules and /or guidelines.
+		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
+		int32_t systemChannelFlags{ 0 };///< System channel flags.
 		std::string afkChannelId{ "" };///< Id for afk channels.
-		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
+		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash(when the server has the INVITE_SPLASH feature).
 		std::string description{ "" };///< The description for the Guild, if the Guild is discoverable.
+		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner(when the server has the BANNER feature).
+		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
 		std::string ownerId{ "" };///< User id to transfer Guild ownership to(must be owner).
 		std::string guildId{ "" };///< Id of the chosen Guild to modify.
 		std::string reason{ "" };///< Reason for modifying the Guild.
@@ -107,8 +107,8 @@ namespace DiscordCoreAPI {
 
 	/// For banning a current GuildMember. \brief For banning a current GuildMember.
 	struct DiscordCoreAPI_Dll CreateGuildBanData {
-		int32_t deleteMessageDays{ 0 };///< The number of days of their Messages to delete.
 		std::string guildMemberId{ "" };///< The id of the member to be banned.
+		int32_t deleteMessageDays{ 0 };///< The number of days of their Messages to delete.
 		std::string guildId{ "" };///< The id of the Guild from which to ban the member.
 		std::string reason{ "" };///< The reason for the ban.
 	};
@@ -129,8 +129,8 @@ namespace DiscordCoreAPI {
 
 	/// For pruning a number of GuildMembers from the Guild. \brief For pruning a number of GuildMembers from the Guild.
 	struct DiscordCoreAPI_Dll BeginGuildPruneData {
-		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
 		std::vector<std::string> includeRoles{};/// Roles to be included in the prune.
+		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
 		std::string guildId{ "" };///< Guild within which to perform the prune.
 		std::string reason{ "" };///< Reason for pruning the GuildMembers.
 		int32_t days{ 0 };/// Number of days after which to prune a given GuildMember.
@@ -195,9 +195,9 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData {
 		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
 		std::string description{ "" };///< The description of the welcome screen.
-		bool enabled{ false };///< Is it enabled?
 		std::string guildId{ "" };///< The Guild for which to modify the welcome screen of.
 		std::string reason{ "" };///< The reason for modifying the welcome screen.
+		bool enabled{ false };///< Is it enabled?
 	};
 
 	/// For collecting a Guild's template. \brief For collecting a Guild's template.
@@ -208,8 +208,8 @@ namespace DiscordCoreAPI {
 	/// For creating a Guild from a Guild template. \brief For creating a Guild from a Guild template.
 	struct DiscordCoreAPI_Dll CreateGuildFromGuildTemplateData {
 		std::string templateCode{ "" };///< Code for the desired Template to use.
-		std::string name{ "" };///< Desired name of the Guild.
 		std::vector<uint8_t> imageData{};///< base64 128x128 image for the Guild icon.
+		std::string name{ "" };///< Desired name of the Guild.
 	};
 
 	/// For collecting a list of Guild Templates from a chosen Guild. \brief For collecting a list of Guild Templates from a chosen Guild.
