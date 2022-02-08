@@ -34,10 +34,13 @@
 
 namespace DiscordCoreInternal {
 
-	typedef uintptr_t        SOCKET;
-
+	using SOCKET = uintptr_t;
+#ifndef INVALID_SOCKET
 #define INVALID_SOCKET  (SOCKET)(~0)
+#endif
+#ifndef SOCKET_ERROR
 #define SOCKET_ERROR            (-1)
+#endif
 
 	struct DiscordCoreAPI_Dll BIOWrapper {
 		struct DiscordCoreAPI_Dll BIODeleter {

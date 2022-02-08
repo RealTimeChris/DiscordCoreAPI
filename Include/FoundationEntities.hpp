@@ -4,6 +4,7 @@
 // https://github.com/RealTimeChris
 
 #pragma once
+
 #ifdef _WIN32
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
