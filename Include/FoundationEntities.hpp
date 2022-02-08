@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
         struct DiscordCoreAPI_Dll ObjectTypeWrapper {
         public:
 
-            template<typename ObjectType>
+            template<typename ObjectType02>
             friend class ReferenceCountingPtr;
 
             ObjectTypeWrapper() = default;
