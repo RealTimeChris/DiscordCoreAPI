@@ -3011,8 +3011,8 @@ namespace DiscordCoreAPI {
     /// Represents a download Url. \brief Represents a download Url.
     struct DiscordCoreAPI_Dll DownloadUrl {
         InputEventData eventData{};
-        int32_t contentSize{ 0 };
         std::string urlPath{ "" };
+        int32_t contentSize{ 0 };
     };
 
     /**
