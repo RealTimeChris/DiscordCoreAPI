@@ -182,6 +182,7 @@ namespace DiscordCoreInternal {
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
 			if (this->ssl == nullptr) {
+				std::cout << "ssl is nullptr. " << std::endl;
 				return false;
 			}
 			int32_t returnValue = SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes);
@@ -192,6 +193,9 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
+				std::cout << "SSL_write_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl;
 				return false;
 			}
 			case SSL_ERROR_WANT_READ: {
@@ -227,6 +231,9 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
+				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl;
 				return false;
 			}
 			case SSL_ERROR_WANT_READ: {
@@ -356,6 +363,7 @@ namespace DiscordCoreInternal {
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
 			if (this->ssl == nullptr) {
+				std::cout << "ssl is nullptr. " << std::endl;
 				return false;
 			}
 			int32_t returnValue = SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes);
@@ -366,6 +374,9 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
+				std::cout << "SSL_write_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl;
 				return false;
 			}
 			case SSL_ERROR_WANT_READ: {
@@ -397,11 +408,14 @@ namespace DiscordCoreInternal {
 			case SSL_ERROR_NONE: {
 				if (readBytes > 0) {
 					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					this->bytesRead += readBytes;
 				}
-				this->bytesRead += readBytes;
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
+				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl;
 				return false;
 			}
 			case SSL_ERROR_WANT_READ: {
