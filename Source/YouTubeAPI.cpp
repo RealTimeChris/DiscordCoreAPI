@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 			std::string newString00 = "https://";
 			downloadBaseUrl = newSong.finalDownloadUrls.at(0).urlPath.substr(newSong.finalDownloadUrls.at(0).urlPath.find("https://") + newString00.length(), newSong.finalDownloadUrls.at(0).urlPath.find("/videoplayback?") - newString00.length());
 		}
-		std::string request = "GET " + newSong.finalDownloadUrls.at(0).urlPath + " HTTP/1.1\n\ruser-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Mobile Safari/537.36\n\r" +
+		std::string request = "GET " + newSong.finalDownloadUrls.at(0).urlPath + " HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Mobile Safari/537.36\n\r" +
 			"Host: " + newSong.finalDownloadUrls.at(0).urlPath.substr(0, newSong.finalDownloadUrls.at(0).urlPath.find(".com") + 4) + "\n\r\n\r";
 		DownloadUrl downloadUrl01{};
 		downloadUrl01.contentSize = 0;
