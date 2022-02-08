@@ -78,7 +78,7 @@ add_subdirectory(Windows-DLL)
 add_executable(DiscordCoreAPI-Bot "main.cpp")
 
 FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2019/Community/VCRedist/MSCV")
-FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atoic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2022/Community/VCRedist/MSVC")
+FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2022/Community/VCRedist/MSVC")
 if (EXISTS ${MSVCP_ATOMIC_WAIT})
 configure_file("${MSVCP_ATOMIC_WAIT}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/msvcp140_atomic_wait.dll" COPYONLY)
 endif()
