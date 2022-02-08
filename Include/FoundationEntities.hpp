@@ -303,7 +303,6 @@ namespace DiscordCoreAPI {
 
         struct DiscordCoreAPI_Dll ObjectTypeWrapper {
         public:
-            ObjectType* thePtr{ nullptr };
 
             ObjectTypeWrapper() = default;
 
@@ -331,16 +330,9 @@ namespace DiscordCoreAPI {
             virtual ~ObjectTypeWrapper() {};
 
         private:
+            ObjectType* thePtr{ nullptr };
             mutable int refCount{ 0 };
         };
-
-        ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-            ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ptr} };
-            if (newObject != nullptr) {
-                this->thePtr = newObject;
-                newObject->incrementCount();
-            }
-        }
 
         ReferenceCountingPtr& operator=(ObjectType* ptr) {
             ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ptr} };
@@ -352,6 +344,14 @@ namespace DiscordCoreAPI {
             }
             this->thePtr = newObject;
             return *this;
+        }
+
+        ReferenceCountingPtr(ObjectType* ptr = nullptr) {
+            ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ptr} };
+            if (newObject != nullptr) {
+                this->thePtr = newObject;
+                newObject->incrementCount();
+            }
         }
 
         ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
