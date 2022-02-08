@@ -23,26 +23,9 @@
 #pragma comment(lib, "glib-2.0.lib")
 #pragma warning(push)
 #pragma warning(disable : 4251 4275)
-
-#include <cpp-base64/base64.h>
-#include <condition_variable>
-#include <nlohmann/json.hpp>
-#include <glib-2.0/glib.h>
+#ifndef CURL_STATICLIB
 #define CURL_STATICLIB
-#include <curl/curl.h>
-#include <type_traits>
-#include <coroutine>
-#include <semaphore>
-#include <exception>
-#include <iostream>
-#include <concepts>
-#include <memory>
-#include <thread>
-#include <regex>
-#include <mutex>
-#include <queue>
-#include <ios>
-
+#endif
 #ifdef _DEBUG
 #define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW
@@ -51,30 +34,31 @@
 #ifndef DiscordCoreAPI_Dll
 #define DiscordCoreAPI_Dll
 #endif
+#include <sys/time.h>
+#include <pthread.h>
+#include <time.h>
+#include <ctime>
+#endif
+
 #include <cpp-base64/base64.h>
 #include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <glib-2.0/glib.h>
 #include <curl/curl.h>
 #include <type_traits>
-#include <sys/time.h>
 #include <stop_token>
 #include <coroutine>
 #include <semaphore>
 #include <exception>
-#include <pthread.h>
 #include <iostream>
 #include <concepts>
-#include <thread>
-#include <time.h>
 #include <memory>
 #include <thread>
 #include <regex>
 #include <mutex>
 #include <queue>
-#include <ctime>
 #include <ios>
-#endif
+
 #ifdef max
 #undef max
 #endif

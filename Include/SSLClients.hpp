@@ -17,20 +17,19 @@
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #endif
-
 #pragma comment(lib, "libcrypto.lib")
 #pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "ws2_32")
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-#pragma comment(lib, "ws2_32")
 #else
-#include <sys/types.h>
+#include <netinet/tcp.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
 #endif
 
 namespace DiscordCoreInternal {
