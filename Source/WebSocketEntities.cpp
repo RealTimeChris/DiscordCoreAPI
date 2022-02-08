@@ -664,7 +664,7 @@ namespace DiscordCoreInternal {
 			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
-			this->webSocket->writeData(sendVector);
+			std::cout << "Connecting: " << sendVector << std::endl;
 			this->sendMessage(sendVector);
 		}
 		catch (...) {
