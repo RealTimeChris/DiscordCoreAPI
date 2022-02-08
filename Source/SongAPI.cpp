@@ -132,14 +132,10 @@ namespace DiscordCoreAPI {
 
 	bool SongAPI::skip(GuildMember guildMember) {
 		if (SongAPI::getCurrentSong(guildMember.guildId).type == SongType::SoundCloud) {
-			if (!getSoundCloudAPIMap()->at(guildMember.guildId)->stop()) {
-				return false;
-			}
+			getSoundCloudAPIMap()->at(guildMember.guildId)->stop();
 		}
 		else {
-			if (!getYouTubeAPIMap()->at(guildMember.guildId)->stop()) {
-				return false;
-			}
+			getYouTubeAPIMap()->at(guildMember.guildId)->stop();
 		}
 		if (SongAPI::isLoopAllEnabled(guildMember.guildId) || SongAPI::isLoopSongEnabled(guildMember.guildId)) {
 			getSongAPIMap()->at(guildMember.guildId)->playlist.songQueue.push_back(getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
@@ -157,14 +153,10 @@ namespace DiscordCoreAPI {
 
 	bool SongAPI::stop(std::string guildId) {
 		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
-			if (!getSoundCloudAPIMap()->at(guildId)->stop()) {
-				return false;
-			}
+			getSoundCloudAPIMap()->at(guildId)->stop();
 		}
 		else {
-			if (!getYouTubeAPIMap()->at(guildId)->stop()) {
-				return false;
-			}
+			getYouTubeAPIMap()->at(guildId)->stop();
 		}
 		std::vector<Song> newVector02;
 		if (getSongAPIMap()->at(guildId)->playlist.currentSong.description != "") {
