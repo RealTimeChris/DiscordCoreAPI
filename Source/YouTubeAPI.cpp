@@ -254,8 +254,8 @@ namespace DiscordCoreAPI {
 
 	std::vector<std::string> YouTubeRequestBuilder::extractActions(std::string html5PlayerPageBody) {
 		std::string jsVarStr{ "[a-zA-Z_\\$][a-zA-Z_0-9]*" };
-		std::string jsSingleQuoteStr{ "'[^'\\]*(:?\\[\\s\\s][^'\\]*)*'" };
-		std::string jsDoubleQuoteStr{ "\"[^\"\\]*(:?\\[\\s\\s][^\"\\]*)*\"" };
+		std::string jsSingleQuoteStr{ "'[^']*(:?[\\s\\s][^']*)*'" };
+		std::string jsDoubleQuoteStr{ "\"[^\"]*(:?[\\s\\s][^\"]*)*\"" };
 		std::string jsQuoteStr{ "(?:" + jsSingleQuoteStr + "|" + jsDoubleQuoteStr + ")" };
 		std::string jsKeyStr{ "(?:" + jsVarStr + "|" + jsQuoteStr + ")" };
 		std::string jsPropStr{ "(?:\\." + jsVarStr + "|" + "\\[" + jsQuoteStr + "\\])" };
@@ -280,7 +280,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::regex actionsFuncRegexp("function(?:[a-zA-Z_\\$][a-zA-Z_0-9]*)?\\(a\\)\\{a=a\\.split\\((?:''|\"\")\\);\\s*((?:(?:a=)?[a-zA-Z_\\$][a-zA-Z_0-9]*(?:\\.[a-zA-Z_\\$][a-zA-Z_0-9]*|\\[(?:'[^'\\]*(:?\\[\\s\\s][^'\\]*)*'|\"[^\"\\]*(:?\\[\\s\\s][^\"\\]*)*\")\\])\\(a,\\d+\\);)+)return a\\.join\\((?:''|\"\")\\)\\}", std::regex_constants::ECMAScript);
+		std::regex actionsFuncRegexp("function(?:[a-zA-Z_\\$][a-zA-Z_0-9]*)?\\(a\\)\\{a=a\\.split\\((?:''|\"\")\\);\\s*((?:(?:a=)?[a-zA-Z_\\$][a-zA-Z_0-9]*(?:\\.[a-zA-Z_\\$][a-zA-Z_0-9]*|\\[(?:'[^']*(:?[\\s\\s][^']*)*'|\"[^\"]*(:?[\\s\\s][^\"]*)*\")\\])\\(a,\\d+\\);)+)return a\\.join\\((?:''|\"\")\\)\\}", std::regex_constants::ECMAScript);
 		std::smatch actionFuncRegexMatch{};
 		regex_search(newString, actionFuncRegexMatch, actionsFuncRegexp);
 		for (auto const& value : actionFuncRegexMatch) {
