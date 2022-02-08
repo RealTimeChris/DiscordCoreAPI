@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpWorkloadData dataPackage{};
 		dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + urlEncode(searchQuery.c_str());
-		dataPackage.workloadClass= DiscordCoreInternal::HttpWorkloadClass::Get;
+		dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
 		std::vector<DiscordCoreInternal::HttpData> returnData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
@@ -49,10 +49,9 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::HttpWorkloadData dataPackage{};
 					dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
 					dataPackage.relativePath = "/watch?v=" + searchResult.songId + "&hl=en";
-					dataPackage.workloadClass= DiscordCoreInternal::HttpWorkloadClass::Get;
+					dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 					workloadVector.push_back(dataPackage);
 				}
-				
 			}
 			responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector);
 		}
@@ -255,8 +254,8 @@ namespace DiscordCoreAPI {
 
 	std::vector<std::string> YouTubeRequestBuilder::extractActions(std::string html5PlayerPageBody) {
 		std::string jsVarStr{ "[a-zA-Z_\\$][a-zA-Z_0-9]*" };
-		std::string jsSingleQuoteStr{ "'[^'\\\\]*(:?\\\\[\\s\\S][^'\\\\]*)*'" };
-		std::string jsDoubleQuoteStr{ "\"[^\"\\\\]*(:?\\\\[\\s\\S][^\"\\\\]*)*\"" };
+		std::string jsSingleQuoteStr{ "'[^'\\]*(:?\\[\\s\\s][^'\\]*)*'" };
+		std::string jsDoubleQuoteStr{ "\"[^\"\\]*(:?\\[\\s\\s][^\"\\]*)*\"" };
 		std::string jsQuoteStr{ "(?:" + jsSingleQuoteStr + "|" + jsDoubleQuoteStr + ")" };
 		std::string jsKeyStr{ "(?:" + jsVarStr + "|" + jsQuoteStr + ")" };
 		std::string jsPropStr{ "(?:\\." + jsVarStr + "|" + "\\[" + jsQuoteStr + "\\])" };
@@ -281,7 +280,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::regex actionsFuncRegexp("function(?:[a-zA-Z_\\$][a-zA-Z_0-9]*)?\\(a\\)\\{a=a\\.split\\((?:''|\"\")\\);\\s*((?:(?:a=)?[a-zA-Z_\\$][a-zA-Z_0-9]*(?:\\.[a-zA-Z_\\$][a-zA-Z_0-9]*|\\[(?:'[^'\\\\]*(:?\\\\[\\s\\S][^'\\\\]*)*'|\"[^\"\\\\]*(:?\\\\[\\s\\S][^\"\\\\]*)*\")\\])\\(a,\\d+\\);)+)return a\\.join\\((?:''|\"\")\\)\\}", std::regex_constants::ECMAScript);
+		std::regex actionsFuncRegexp("function(?:[a-zA-Z_\\$][a-zA-Z_0-9]*)?\\(a\\)\\{a=a\\.split\\((?:''|\"\")\\);\\s*((?:(?:a=)?[a-zA-Z_\\$][a-zA-Z_0-9]*(?:\\.[a-zA-Z_\\$][a-zA-Z_0-9]*|\\[(?:'[^'\\]*(:?\\[\\s\\s][^'\\]*)*'|\"[^\"\\]*(:?\\[\\s\\s][^\"\\]*)*\")\\])\\(a,\\d+\\);)+)return a\\.join\\((?:''|\"\")\\)\\}", std::regex_constants::ECMAScript);
 		std::smatch actionFuncRegexMatch{};
 		regex_search(newString, actionFuncRegexMatch, actionsFuncRegexp);
 		for (auto const& value : actionFuncRegexMatch) {
