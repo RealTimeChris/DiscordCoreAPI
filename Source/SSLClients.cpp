@@ -338,17 +338,20 @@ namespace DiscordCoreInternal {
 	bool WebSocketSSLClient::processIO() {
 		fd_set writeSet{};
 		fd_set readSet{};
+		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 		if ((this->writeBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
+			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
 		else {
 			FD_SET(this->theSocket, &readSet);
+			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
 		timeval checkTime{};
 		checkTime.tv_sec = 1;
-		auto resultValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime);
+		auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime);
 		if (resultValue == SOCKET_ERROR) {
 			std::cout << "select() Error: " << resultValue + ", ";
 #ifdef _WIN32
