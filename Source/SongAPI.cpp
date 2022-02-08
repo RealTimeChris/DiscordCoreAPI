@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 		return getVoiceConnectionMap()->at(guildId)->areWeCurrentlyPlaying();
 	}
 
-	bool SongAPI::skip(GuildMember guildMember) {
+	void SongAPI::skip(GuildMember guildMember) {
 		if (SongAPI::getCurrentSong(guildMember.guildId).type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()->at(guildMember.guildId)->stop();
 		}
@@ -148,10 +148,9 @@ namespace DiscordCoreAPI {
 		while (getAudioBufferMap()->at(guildMember.guildId)->tryReceive(frameData)) {};
 		frameData.type = AudioFrameType::Cancel;
 		getAudioBufferMap()->at(guildMember.guildId)->send(frameData);
-		return true;
 	}
 
-	bool SongAPI::stop(std::string guildId) {
+	void SongAPI::stop(std::string guildId) {
 		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()->at(guildId)->stop();
 		}
@@ -172,7 +171,6 @@ namespace DiscordCoreAPI {
 		if (resultValue != nullptr) {
 			resultValue->onSongCompletion(getSongAPIMap()->at(guildId)->eventDelegateToken, guildId);
 		}
-		return true;
 	}
 
 	std::vector<Song> SongAPI::searchForSong(std::string searchQuery, std::string guildId) {

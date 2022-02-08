@@ -67,12 +67,12 @@ namespace DiscordCoreAPI {
 		/// Skips to the next Song in the UnboundedMessageBlock, if applicable. \brief Skips to the next Song in the UnboundedMessageBlock, if applicable.
 		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
 		/// \returns A bool suggesting the success or failure of the skip command.
-		static bool skip(GuildMember guildMember);
+		static void skip(GuildMember guildMember);
 
 		/// Stops the currently playing Song. \brief Stops the currently playing Song.
 		/// \param guildId The id of the Guild within which to stop the currently playing music.
 		/// \returns A bool suggesting the success or failure of the stop command.
-		static bool stop(std::string guildId);
+		static void stop(std::string guildId);
 
 		/// Toggles pausing on and off. \brief Toggles pausing on and off.
 		/// \param guildId The id of the Guild which you would like to pause the Song for.
