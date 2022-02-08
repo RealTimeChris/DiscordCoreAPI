@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 				tokenActions.push_back(actionsObjectResult);
 			}
 		}
-
+		std::cout << "THE STRING: " << newString << std::endl;
 		std::regex actionsFuncRegexp("function(?:[a-zA-Z_\\$][a-zA-Z_0-9]*)?\\(a\\)\\{a=a\\.split\\((?:''|\"\")\\);\\s*((?:(?:a=)?[a-zA-Z_\\$][a-zA-Z_0-9]*(?:\\.[a-zA-Z_\\$][a-zA-Z_0-9]*|\\[(?:'[^']*(:?[\\s\\s][^']*)*'|\"[^\"]*(:?[\\s\\s][^\"]*)*\")\\])\\(a,\\d+\\);)+)return a\\.join\\((?:''|\"\")\\)\\}", std::regex_constants::ECMAScript);
 		std::smatch actionFuncRegexMatch{};
 		regex_search(newString, actionFuncRegexMatch, actionsFuncRegexp);
@@ -288,6 +288,10 @@ namespace DiscordCoreAPI {
 			if (actionFuncResult != "") {
 				tokenActions.push_back(actionFuncResult);
 			}
+		}
+		std::cout << "THE TOKEN ACTIONS: " << std::endl;
+		for (auto& value : tokenActions) {
+			std::cout << value << std::endl;
 		}
 		std::string object{ tokenActions[1] };
 		std::string objectBody{ tokenActions[2] };
