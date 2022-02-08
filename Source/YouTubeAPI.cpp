@@ -294,21 +294,21 @@ namespace DiscordCoreAPI {
 		std::string functionBody{ tokenActions[3] };
 		std::smatch matchResultsNew01{};
 		std::string reverseKey{};
-		regex_search(objectBody, matchResultsNew01, reverseRegexp, std::regex_constants::match_any | std::regex_constants::match_prev_avail | std::regex_constants::match_not_null);
+		regex_search(objectBody, matchResultsNew01, reverseRegexp);
 		if (!matchResultsNew01.empty() && matchResultsNew01.size() > 0) {
 			reverseKey = regex_replace(matchResultsNew01[1].str(), std::regex("/g,'\\$"), "");
 			reverseKey = regex_replace(reverseKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew02{};
 		std::string sliceKey{};
-		regex_search(objectBody, matchResultsNew02, sliceRegexp, std::regex_constants::match_any | std::regex_constants::match_prev_avail | std::regex_constants::match_not_null);
+		regex_search(objectBody, matchResultsNew02, sliceRegexp);
 		if (!matchResultsNew02.empty() && matchResultsNew02.size() > 0) {
 			sliceKey = regex_replace(matchResultsNew02[1].str(), std::regex("/g,'\\$"), "");
 			sliceKey = regex_replace(sliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew03{};
 		std::string spliceKey{};
-		regex_search(objectBody, matchResultsNew03, spliceRegexp, std::regex_constants::match_any | std::regex_constants::match_prev_avail | std::regex_constants::match_not_null);
+		regex_search(objectBody, matchResultsNew03, spliceRegexp);
 	
 		if (!matchResultsNew03.empty() && matchResultsNew03.size() > 0) {
 			spliceKey = regex_replace(matchResultsNew03[1].str(), std::regex("/g,'\\$"), "");
@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
 		}
 		std::smatch matchResultsNew04{};
 		std::string swapKey{};
-		regex_search(objectBody, matchResultsNew04, swapRegexp, std::regex_constants::match_any | std::regex_constants::match_prev_avail | std::regex_constants::match_not_null);
+		regex_search(objectBody, matchResultsNew04, swapRegexp);
 		if (!matchResultsNew04.empty() && matchResultsNew04.size() > 0) {
 			swapKey = regex_replace(matchResultsNew04[1].str(), std::regex("/g,'\\$"), "");
 			swapKey = regex_replace(swapKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 		std::smatch tokenMatchResults{};
 		std::vector<std::string> tokens{};
 		std::string::const_iterator text_iter{ functionBody.cbegin() };
-		while (regex_search(text_iter, functionBody.cend(), tokenMatchResults, tokenizeRegexp, std::regex_constants::match_any | std::regex_constants::match_prev_avail | std::regex_constants::match_not_null)) {
+		while (regex_search(text_iter, functionBody.cend(), tokenMatchResults, tokenizeRegexp, std::regex_constants::match_not_null | std::regex_constants::match_prev_avail | std::regex_constants::format_no_copy)) {
 			std::string newString02 = std::string(tokenMatchResults[0].first, tokenMatchResults[0].second);
 			if (newString02.find(reverseKey) != std::string::npos) {
 				tokens.push_back("r");
