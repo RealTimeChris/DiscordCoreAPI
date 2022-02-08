@@ -362,6 +362,7 @@ namespace DiscordCoreInternal {
 		else if (resultValue == 0) {
 			return true;
 		}
+		std::cout << "THE COUNT: " << resultValue << std::endl;
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
