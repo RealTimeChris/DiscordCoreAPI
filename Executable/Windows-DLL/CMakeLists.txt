@@ -34,7 +34,7 @@ add_library(DiscordCoreAPI-DLL SHARED "../../Source/DllMain.cpp" "${VCPKG_INSTAL
 )
 
 target_link_libraries(DiscordCoreAPI-DLL PUBLIC OpenSSL::SSL OpenSSL::Crypto)
-target_link_libraries(DiscordCoreAPI-DLL PUBLIC ${FFMPEG_LIBRARIES})
+target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${FFMPEG_LIBRARIES}")
 target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libcurl.lib")
 target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libsodium.lib")
 target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/glib-2.0.lib")
