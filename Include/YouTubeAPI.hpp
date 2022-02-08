@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 
 		void sendNextSong(Song newSong);
 
-		bool stop();
+		void stop();
 
 		~YouTubeAPI();
 

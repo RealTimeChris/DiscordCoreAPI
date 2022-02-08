@@ -200,22 +200,15 @@ namespace DiscordCoreAPI {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
-	bool SoundCloudAPI::stop() {
+	void SoundCloudAPI::stop() {
 		try {
-			if (getVoiceConnectionMap()->at(this->guildId)->areWeCurrentlyPlaying()) {
-				this->cancelCurrentSong();
-				AudioFrameData dataFrame{};
-				while (getAudioBufferMap()->at(this->guildId)->tryReceive(dataFrame)) {};
-				return true;
-			}
-			else {
-				return false;
-			}
+			this->cancelCurrentSong();
+			AudioFrameData dataFrame{};
+			while (getAudioBufferMap()->at(this->guildId)->tryReceive(dataFrame)) {};
 		}
 		catch (...) {
 			reportException("SoundCloudAPI::stop()");
 		}
-		return false;
 	}
 
 	void SoundCloudAPI::cancelCurrentSong() {

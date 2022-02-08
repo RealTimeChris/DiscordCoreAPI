@@ -43,6 +43,8 @@ namespace DiscordCoreAPI {
 				if (getSongAPIMap()->contains(this->id)) {
 					SongAPI::stop(this->id);
 				}
+				getSoundCloudAPIMap()->at(this->id)->stop();
+				getYouTubeAPIMap()->at(this->id)->stop();				
 				UpdateVoiceStateData updateVoiceData{};
 				updateVoiceData.channelId = "";
 				updateVoiceData.selfDeaf = false;
