@@ -356,13 +356,15 @@ namespace DiscordCoreInternal {
 			std::cout << "select() Error: " << resultValue + ", ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return false;
 		}
 		else if (resultValue == 0) {
 			return true;
 		}
-		std::cout << "THE COUNT: " << resultValue << std::endl;
+
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
@@ -418,6 +420,11 @@ namespace DiscordCoreInternal {
 			}
 			case SSL_ERROR_ZERO_RETURN: {
 				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
+#ifdef _WIN32
+				std::cout << WSAGetLastError() << std::endl;
+#else
+				std::cout << errno << std::endl;
+#endif
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
 				return false;
@@ -432,6 +439,11 @@ namespace DiscordCoreInternal {
 			}
 			default: {
 				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
+#ifdef _WIN32
+				std::cout << WSAGetLastError() << std::endl;
+#else
+				std::cout << errno << std::endl;
+#endif
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
 				return false;
