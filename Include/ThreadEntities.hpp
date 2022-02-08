@@ -28,10 +28,10 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		ThreadType type{ ThreadType::Guild_Public_Thread };///< Type of Thread to create.
-		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
 		std::string threadName{ "" };///< The name of the new Thread.
 		std::string channelId{ "" };///< The Channel to start the Thread in.
 		std::string reason{ "" };///< Reason for starting the Thread.
+		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.

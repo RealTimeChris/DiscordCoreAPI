@@ -584,18 +584,18 @@ namespace DiscordCoreAPI {
     protected:
 
         std::unique_ptr<UnboundedMessageBlock<InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
-        InteractionData interactionData{};
         std::vector<SelectMenuResponseData> responseVector{};
         int32_t currentCollectedSelectMenuCount{ 0 };
         int32_t maxCollectedSelectMenuCount{ 0 };
         bool getSelectMenuDataForAll{ false };
-        uint32_t maxTimeInMs{ 0 };
-        std::string selectMenuId{ "" };
+        InteractionData interactionData{};
         std::vector<std::string> values{};
-        bool doWeQuit{ false };
+        std::string selectMenuId{ "" };
         std::string channelId{ "" };
         std::string messageId{ "" };
+        uint32_t maxTimeInMs{ 0 };
         std::string userId{ "" };
+        bool doWeQuit{ false };
 
         void run();
     };
@@ -639,18 +639,18 @@ namespace DiscordCoreAPI {
     protected:
 
         std::unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
-        InteractionData interactionData{};
         std::vector<ButtonResponseData> responseVector{};
         int32_t currentCollectedButtonCount{ 0 };
         int32_t maxCollectedButtonCount{ 0 };
-        bool getButtonDataForAll{ false };
-        uint32_t maxTimeInMs{ 0 };
+        InteractionData interactionData{};
         std::vector<std::string> values{};
-        bool doWeQuit{ false };
+        bool getButtonDataForAll{ false };
         std::string channelId{ "" };
         std::string messageId{ "" };
         std::string buttonId{ "" };
+        uint32_t maxTimeInMs{ 0 };
         std::string userId{ "" };
+        bool doWeQuit{ false };
 
         void run();
     };

@@ -9,11 +9,6 @@
 #define OPENSSL_NO_DEPRECATED
 #endif
 
-#include "FoundationEntities.hpp"
-#include <openssl/x509v3.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <algorithm>
 #ifdef _WIN32
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -33,6 +28,12 @@
 #include <netdb.h>
 #endif
 
+#include "FoundationEntities.hpp"
+#include <openssl/x509v3.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <algorithm>
+
 namespace DiscordCoreInternal {
 
 	using SOCKET = uintptr_t;
@@ -44,6 +45,7 @@ namespace DiscordCoreInternal {
 #endif
 
 	struct DiscordCoreAPI_Dll BIOWrapper {
+
 		struct DiscordCoreAPI_Dll BIODeleter {
 			void operator()(BIO* other) {
 				if (other != nullptr) {
@@ -52,6 +54,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		};
+
 		BIOWrapper& operator=(BIO* other) {
 			this->bioPtr.reset(other);
 			if (BIO_up_ref(other) != 1) {
@@ -61,15 +64,19 @@ namespace DiscordCoreInternal {
 			};
 			return *this;
 		}
+
 		operator BIO* () {
 			return this->bioPtr.get();
 		}
+
 		BIOWrapper(nullptr_t) {};
+
 	protected:
 		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
+
 		struct DiscordCoreAPI_Dll addrinfoDeleter {
 			void operator()(addrinfo* other) {
 				if (other != nullptr) {
@@ -78,24 +85,30 @@ namespace DiscordCoreInternal {
 				}
 			}
 		};
+
 		addrinfo* operator->() {
 			return this->addrinfoPtrTwo;
 		}
+
 		operator addrinfo** () {
 			return &this->addrinfoPtrTwo;
 		}
+
 		operator addrinfo* () {
 			return this->addrinfoPtrTwo;
 		}
+
 		addrinfoWrapper(nullptr_t) {
 			this->addrinfoPtrTwo = this->addrinfoPtr.get();
 		};
+
 	protected:
 		std::unique_ptr<addrinfo, addrinfoDeleter> addrinfoPtr{ new addrinfo{}, addrinfoDeleter{} };
 		addrinfo* addrinfoPtrTwo{ nullptr };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
+
 		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
 			void operator()(SSL_CTX* other) {
 				if (other != nullptr) {
@@ -104,6 +117,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		};
+
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
 			this->sslCTXPtr.reset(other);
 			if (SSL_CTX_up_ref(other) != 1) {
@@ -113,15 +127,19 @@ namespace DiscordCoreInternal {
 			}
 			return *this;
 		}
+
 		operator SSL_CTX* () {
 			return this->sslCTXPtr.get();
 		}
+
 		SSL_CTXWrapper(nullptr_t) {};
+
 	protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr , SSL_CTXDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
+
 		struct DiscordCoreAPI_Dll SSLDeleter {
 			void operator()(SSL* other) {
 				if (other != nullptr) {
@@ -131,6 +149,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		};
+
 		SSLWrapper& operator=(SSL* other) {
 			this->sslPtr.reset(other);
 			if (SSL_up_ref(other) != 1) {
@@ -140,10 +159,13 @@ namespace DiscordCoreInternal {
 			}
 			return *this;
 		}
+
 		operator SSL* () {
 			return this->sslPtr.get();
 		}
+
 		SSLWrapper(nullptr_t) {};
+
 	protected:
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr , SSLDeleter{} };
 	};

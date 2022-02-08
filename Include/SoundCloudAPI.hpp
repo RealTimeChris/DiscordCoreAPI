@@ -27,8 +27,8 @@ namespace DiscordCoreAPI {
 
 	protected:
 		
-		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
 		std::string baseUrl02{ "https://api-v2.soundcloud.com" };
+		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
 		std::string baseUrl{ "https://soundcloud.com" };
 		std::string appVersion{ "1631696495" };
 		std::string clientId{ "" };

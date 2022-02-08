@@ -25,10 +25,10 @@ namespace DiscordCoreAPI {
 
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		std::string token{ "" };///< The user's access token.
-		std::string nick{ "" };///< The user's nickname.
 		std::string channelId{ "" };///< The channel Id of the Dm.
 		std::string userId{ "" };///< The user's Id.
+		std::string token{ "" };///< The user's access token.
+		std::string nick{ "" };///< The user's nickname.
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
@@ -41,16 +41,16 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
 		std::string channelId{ "" };///< The id of the channel the user is currently in.
-		bool suppress{ false };///< Toggles the user's suppress state.
 		std::string guildId{ "" };///< The Guild within which to update the bot's voice state.
+		bool suppress{ false };///< Toggles the user's suppress state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
 		std::string channelId{ "" };///< The id of the channel the user is currently in.
-		bool suppress{ false };///< Toggles the user's suppress state.
 		std::string guildId{ "" };///< The Guild within which you would like to modify their voice state.
 		std::string userId{ "" };///< The user for which you would like to modify the voice state of.
+		bool suppress{ false };///< Toggles the user's suppress state.
 	};
 
 	/// For getting User responseData from the library's cache or the Discord server. \brief For getting User responseData from the library's cache or the Discord server.
@@ -75,16 +75,16 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll User : public DiscordEntity {
 	public:
 		std::string discriminator{ "" }; ///< The # next to their User name.
+		std::string createdAt{ "" };///< When the User was created.
+		std::string userName{ "" };///< Their username.
 		bool mfaEnabled{ false };///< MFA enabled?
 		int32_t premiumType{ 0 };///< Their premium nitro status.
 		int32_t publicFlags{ 0 };///< Public flags.
-		bool verified{ false };///< Verified?
-		std::string createdAt{ "" };///< When the User was created.
-		std::string userName{ "" };///< Their username.
-		bool system{ false };///< Are they a partof the system?        
 		std::string avatar{ "" };///< Their avatar url.
 		std::string locale{ "" };///< The region they are from/in.
 		std::string email{ "" };///< Their email address.
+		bool verified{ false };///< Verified?
+		bool system{ false };///< Are they a partof the system?
 		int32_t flags{ 0 };///< Flags.
 		bool bot{ false };///< Are they a bot?
 

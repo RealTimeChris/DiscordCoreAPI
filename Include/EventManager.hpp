@@ -235,9 +235,9 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Message delete bulk event. \brief Data that is received as part of a Message delete bulk event.
 	struct DiscordCoreAPI_Dll OnMessageDeleteBulkData {
+		std::vector<std::string> ids{};///< A std::vector containing the list of deleted Message ids.
 		std::string channelId{ "" };///< The id of the Channel from which the Message was deleted.
 		std::string guildId{ "" };///< The id of the Guild from which the Message was deleted.
-		std::vector<std::string> ids{};///< A std::vector containing the list of deleted Message ids.
 	};
 
 	/// Data that is received as part of a Reaction add event. \brief Data that is received as part of a Reaction add event.

@@ -50,9 +50,9 @@ namespace DiscordCoreAPI {
 		PermissionOverwritesType type{}; ///< The type of overwrite.
 		std::string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
 		std::string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
+		std::string reason{ "" };///< Reason for editing the permission overwrites.
 		std::string allow{ "" };	///< The permissions to list as "allowed".
 		std::string deny{ "" };	///< The permissions to list as "deny".
-		std::string reason{ "" };///< Reason for editing the permission overwrites.
 	};
 
 	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
@@ -65,12 +65,12 @@ namespace DiscordCoreAPI {
 		std::string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
 		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
 		std::string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
-		bool temporary{ false };///< Whether this invite only grants temporary membership	false.
 		std::string channelId{ "" };///< The id of the Channel to create the invite for.
+		std::string reason{ "" };///< Reason for creating the invite.
+		bool temporary{ false };///< Whether this invite only grants temporary membership.
 		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
 		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
 		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
-		std::string reason{ "" };///< Reason for creating the invite.
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
@@ -100,16 +100,16 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CreateGuildChannelData {
 		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the channel's permission overwrites.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
-		int32_t userLimit{ 0 };///< The user limit of the voice channel(voice only).
 		std::string parentId{ "" };///< Id of the parent category for a channel.
-		int32_t position{ 0 };///< Sorting position of the channel.
-		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice channel(voice only).
 		std::string guildId{ "" };///< The Guild within which to create the Channel.
 		std::string reason{ "" };///< Reason for creating the channel.
-		ChannelType type{};///< The type of channel.
 		std::string topic{ "" };///< Channel topic(0 - 1024 characters).
-		bool nsfw{ false };///<  Whether the channel is nsfw.
+		int32_t userLimit{ 0 };///< The user limit of the voice channel(voice only).
 		std::string name{ "" };///< The name of the Channel.
+		int32_t position{ 0 };///< Sorting position of the channel.
+		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice channel(voice only).		
+		ChannelType type{};///< The type of channel.
+		bool nsfw{ false };///<  Whether the channel is nsfw.
 	};
 
 	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
@@ -233,8 +233,8 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::unordered_map<std::string, Channel> cache;
+		static DiscordCoreInternal::HttpClient* httpClient;
 
 		static void insertChannel(Channel dataPackage);
 

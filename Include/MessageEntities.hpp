@@ -159,8 +159,8 @@ namespace DiscordCoreAPI {
 	protected:
 
 		MessageReferenceData messageReference{};
-		AllowedMentionsData allowedMentions{};
 		std::vector<ActionRowData> components{};
+		AllowedMentionsData allowedMentions{};
 		std::vector<std::string> stickerIds{};
 		std::vector<EmbedData> embeds{};
 		std::string requesterId{ "" };
@@ -327,9 +327,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		AllowedMentionsData allowedMentions{};
 		std::vector<AttachmentData> attachments{};
 		std::vector<ActionRowData> components{};
+		AllowedMentionsData allowedMentions{};
 		std::vector<EmbedData> embeds{};
 		std::string requesterId{ "" };
 		std::string channelId{ "" };
