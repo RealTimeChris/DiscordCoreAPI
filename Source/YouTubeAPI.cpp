@@ -260,10 +260,10 @@ namespace DiscordCoreAPI {
 		std::string jsKeyStr{ "(?:" + jsVarStr + "|" + jsQuoteStr + ")" };
 		std::string jsPropStr{ "(?:\\." + jsVarStr + "|" + "\\[" + jsQuoteStr + "\\])" };
 		std::string jsEmptyStr{ "(?:''|\"\")" };
-		std::string reverseStr{ ":function\\(a\\)\\{(?:return)?a\\.reverse\\(\\)\\}" };
+		std::string reverseStr{ ":function\\(a\\)\\{a\\.reverse\\(\\)\\}" };
 		std::string sliceStr{ ":function\\(a,b\\)\\{return a\\.slice\\(b\\)\\}" };
 		std::string spliceStr{ ":function\\(a,b\\)\\{a\\.splice\\(0,b\\)\\}" };
-		std::string swapStr{ ":function\\(a,b\\)\\{var c=a\\[0\\];a\\[0\\]=a\\[b(?:%a\\.length)?\\];a\\[b(?:%a\\.length)?\\]=c(?:;return a)?\\}" };
+		std::string swapStr{ ":function\\(a,b\\)\\{var c=a\\[0\\];a\\[0\\]=a\\[b%a\\.length\\];a\\[b%a\\.length\\]=c\\}" };
 		std::regex reverseRegexp{ "(?:^|,)(" + jsKeyStr + ")" + reverseStr };
 		std::regex sliceRegexp{ "(?:^|,)(" + jsKeyStr + ")" + sliceStr };
 		std::regex spliceRegexp{ "(?:^|,)(" + jsKeyStr + ")" + spliceStr };
