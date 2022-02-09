@@ -274,6 +274,8 @@ namespace DiscordCoreInternal {
 			std::cout << "getaddrinfo() Error: " << returnValue + ", ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return;
 		}
@@ -282,6 +284,8 @@ namespace DiscordCoreInternal {
 			std::cout << "socket() Error: ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return;
 		}
@@ -290,6 +294,8 @@ namespace DiscordCoreInternal {
 			std::cout << "connect() Error: ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return;
 		}
@@ -467,6 +473,8 @@ namespace DiscordCoreInternal {
 			std::cout << "getaddrinfo() Error: ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return;
 		}
@@ -476,6 +484,8 @@ namespace DiscordCoreInternal {
 			std::cout << "socket() Error: ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return;
 		}
@@ -485,6 +495,8 @@ namespace DiscordCoreInternal {
 			std::cout << "connect() Error: ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return;
 		}
