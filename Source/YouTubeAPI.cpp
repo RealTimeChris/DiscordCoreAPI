@@ -254,8 +254,8 @@ namespace DiscordCoreAPI {
 
 	std::vector<std::string> YouTubeRequestBuilder::extractActions(std::string html5PlayerPageBody) {
 		std::string jsVarStr{ "[a-zA-Z_\\$][a-zA-Z_0-9]*" };
-		std::string jsSingleQuoteStr{ "'[^'\\]*(:?\\[\\s\\s][^'\\]*)*'" };
-		std::string jsDoubleQuoteStr{ "\"[^\"\\]*(:?\\[\\s\\s][^\"\\]*)*\"" };
+		std::string jsSingleQuoteStr{ "'[^']*(:?[\\s\\s][^']*)*'" };
+		std::string jsDoubleQuoteStr{ "\"[^\"]*(:?[\\s\\s][^\"]*)*\"" };
 		std::string jsQuoteStr{ "(?:" + jsSingleQuoteStr + "|" + jsDoubleQuoteStr + ")" };
 		std::string jsKeyStr{ "(?:" + jsVarStr + "|" + jsQuoteStr + ")" };
 		std::string jsPropStr{ "(?:\\." + jsVarStr + "|" + "\\[" + jsQuoteStr + "\\])" };
@@ -269,7 +269,6 @@ namespace DiscordCoreAPI {
 		std::regex spliceRegexp{ "(?:^|,)(" + jsKeyStr + ")" + spliceStr };
 		std::regex swapRegexp{ "(?:^|,)(" + jsKeyStr + ")" + swapStr };
 		std::string newString{ html5PlayerPageBody };
-
 		std::vector<std::string> tokenActions{};
 		std::regex actionsObjRegexp{ "var (" + jsVarStr + ")=\\{((?:(?:" + jsKeyStr + reverseStr + "|" + jsKeyStr + sliceStr + "|" + jsKeyStr + spliceStr + "|" + jsKeyStr + swapStr + "),?\\r?\\n?)+)\\};", std::regex_constants::ECMAScript };
 		std::smatch actionsObjectRegexMatch{};
