@@ -13,7 +13,6 @@ namespace DiscordCoreAPI {
 	class PlayRN : public BaseFunction {
 	public:
 
-		static int64_t timeOfLastPlay;
 		PlayRN() {
 			this->commandName = "playrn";
 			this->helpDescription = "Add a song to the front of the queue and play it if nothing is playing.";
@@ -43,34 +42,11 @@ namespace DiscordCoreAPI {
 
 				Guild guild = Guilds::getCachedGuildAsync({ args->eventData.getGuildId() }).get();
 
+
+
 				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
-				std::shared_ptr<InputEventData> newEvent = std::make_shared<InputEventData>(args->eventData);
-
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-				if (currentTime - PlayRN::timeOfLastPlay < 5000) {
-					EmbedData newEmbed;
-					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
-					newEmbed.setDescription("------\n__**Sorry, but please wait a total of 5 seconds in between plays!**__\n------");
-					newEmbed.setTimeStamp(getTimeAndDate());
-					newEmbed.setTitle("__**Timing Issue:**__");
-					newEmbed.setColor("FeFeFe");
-					if (args->eventData.eventType == InputEventType::Regular_Message) {
-						RespondToInputEventData dataPackage(args->eventData);
-						dataPackage.type = InputEventResponseType::Regular_Message;
-						dataPackage.addMessageEmbed(newEmbed);
-						*newEvent = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(*newEvent, 20000).get();
-					}
-					else {
-						RespondToInputEventData dataPackage(args->eventData);
-						dataPackage.type = InputEventResponseType::Ephemeral_Interaction_Response;
-						dataPackage.addMessageEmbed(newEmbed);
-						*newEvent = InputEvents::respondToEvent(dataPackage);
-					}
-					return;
-				}
+				std::unique_ptr<InputEventData> newEvent = std::make_unique<InputEventData>(args->eventData);
 
 				if (args->eventData.eventType == InputEventType::Application_Command_Interaction) {
 					RespondToInputEventData dataPackage(args->eventData);
@@ -82,8 +58,6 @@ namespace DiscordCoreAPI {
 				if (args->argumentsArray.size() > 0) {
 					searchResults = SongAPI::searchForSong(args->argumentsArray[0], guild.id);
 				}
-
-				PlayRN::timeOfLastPlay = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
 
@@ -209,7 +183,7 @@ namespace DiscordCoreAPI {
 				}
 				BaseFunctionArguments newArgs = *args;
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::function<CoRoutine<void>(SongCompletionEventData)>theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
+					std::function<CoRoutine<void>(SongCompletionEventData)>theTask=[=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();
 						if (SongAPI::isThereAnySongs(guild.id)) {
 							EmbedData newEmbed;
@@ -326,8 +300,8 @@ namespace DiscordCoreAPI {
 							dataPackage.addMessageEmbed(newEmbed);
 							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 						}
-					};
-					SongAPI::onSongCompletion(std::move(theTask), guild.id);
+						};
+						SongAPI::onSongCompletion(theTask, guild.id);
 				}
 				if (SongAPI::isThereAnySongs(guild.id)) {
 					if (!SongAPI::sendNextSong(guildMember)) {
@@ -375,11 +349,9 @@ namespace DiscordCoreAPI {
 			catch (...) {
 				reportException("PlayRN::executeAsync Error: ");
 			}
-
+			
 		};
 		virtual ~PlayRN() {};
 	};
-
-	int64_t PlayRN::timeOfLastPlay{};
 
 }
