@@ -675,6 +675,8 @@ namespace DiscordCoreInternal {
 
 	BaseSocketAgent::~BaseSocketAgent() {
 		this->doWeQuit = true;
+		this->theTask.cancel();
+		this->theTask.get();
 		this->heartbeatTimer.cancel();
 	}
 
@@ -1090,6 +1092,8 @@ namespace DiscordCoreInternal {
 
 	VoiceSocketAgent::~VoiceSocketAgent() {
 		this->doWeQuit = true;
+		this->theTask.cancel();
+		this->theTask.get();
 		this->heartbeatTimer.cancel();
 	};
 }
