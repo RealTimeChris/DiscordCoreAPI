@@ -295,13 +295,14 @@ namespace DiscordCoreAPI {
 		}
 		std::string object{ tokenActions[1] };
 		std::string objectBody{ tokenActions[2] };
+		std::cout << "THE STRING: " << objectBody << std::endl;
 		std::string functionBody{ tokenActions[3] };
 		std::smatch matchResultsNew01{};
 		std::string reverseKey{};
 		regex_search(objectBody, matchResultsNew01, reverseRegexp);
 		if (!matchResultsNew01.empty() && matchResultsNew01.size() > 0) {
 			std::cout << "MATCH 01" << matchResultsNew01.str() << std::endl;
-			reverseKey = regex_replace(matchResultsNew01[1].str(), std::regex("/g,'\\$"), "");
+			reverseKey = regex_replace(matchResultsNew01[1].str(), std::regex("\\g,'\\$"), "");
 			reverseKey = regex_replace(reverseKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew02{};
@@ -309,7 +310,7 @@ namespace DiscordCoreAPI {
 		regex_search(objectBody, matchResultsNew02, sliceRegexp);
 		if (!matchResultsNew02.empty() && matchResultsNew02.size() > 0) {
 			std::cout << "MATCH 01" << matchResultsNew01.str() << std::endl;
-			sliceKey = regex_replace(matchResultsNew02[1].str(), std::regex("/g,'\\$"), "");
+			sliceKey = regex_replace(matchResultsNew02[1].str(), std::regex("\\g,'\\$"), "");
 			sliceKey = regex_replace(sliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew03{};
@@ -318,7 +319,7 @@ namespace DiscordCoreAPI {
 	
 		if (!matchResultsNew03.empty() && matchResultsNew03.size() > 0) {
 			std::cout << "MATCH 01" << matchResultsNew01.str() << std::endl;
-			spliceKey = regex_replace(matchResultsNew03[1].str(), std::regex("/g,'\\$"), "");
+			spliceKey = regex_replace(matchResultsNew03[1].str(), std::regex("\\g,'\\$"), "");
 			spliceKey = regex_replace(spliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew04{};
@@ -326,7 +327,7 @@ namespace DiscordCoreAPI {
 		regex_search(objectBody, matchResultsNew04, swapRegexp);
 		if (!matchResultsNew04.empty() && matchResultsNew04.size() > 0) {
 			std::cout << "MATCH 01" << matchResultsNew01.str() << std::endl;
-			swapKey = regex_replace(matchResultsNew04[1].str(), std::regex("/g,'\\$"), "");
+			swapKey = regex_replace(matchResultsNew04[1].str(), std::regex("\\g,'\\$"), "");
 			swapKey = regex_replace(swapKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::vector<std::string> keys{};
