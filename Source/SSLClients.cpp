@@ -160,7 +160,7 @@ namespace DiscordCoreInternal {
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
-		if ((this->writeBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
+		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
@@ -185,7 +185,6 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
 			if (this->ssl == nullptr) {
 				std::cout << "ssl is nullptr. " << std::endl;
@@ -205,12 +204,11 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			case SSL_ERROR_WANT_READ: {
-				this->wantWrite = true;
+				this->wantRead = true;
 				this->writeBuffer.clear();
 				return true;
 			}
 			case SSL_ERROR_WANT_WRITE: {
-				this->wantWrite = true;
 				this->writeBuffer.clear();
 				return true;
 			}
@@ -353,7 +351,7 @@ namespace DiscordCoreInternal {
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
-		if ((this->writeBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
+		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
@@ -378,7 +376,6 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
 			if (this->ssl == nullptr) {
 				std::cout << "ssl is nullptr. " << std::endl;
@@ -398,12 +395,11 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			case SSL_ERROR_WANT_READ: {
-				this->wantWrite = true;
+				this->wantRead = true;
 				this->writeBuffer.clear();
 				return true;
 			}
 			case SSL_ERROR_WANT_WRITE: {
-				this->wantWrite = true;
 				this->writeBuffer.clear();
 				return true;
 			}

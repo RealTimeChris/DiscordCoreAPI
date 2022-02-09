@@ -228,7 +228,6 @@ namespace DiscordCoreInternal {
 		std::string defaultCertPath{};
 		std::string googleCertPath{};
 		SSLWrapper ssl{ nullptr };
-		bool wantWrite{ false };
 		bool wantRead{ false };
 	};
 
@@ -267,7 +266,6 @@ namespace DiscordCoreInternal {
 		std::vector<uint8_t> writeBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
-		bool wantWrite{ false };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
