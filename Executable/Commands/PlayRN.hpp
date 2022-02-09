@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 
 				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
-				std::shared_ptr<InputEventData> newEvent = std::make_shared<InputEventData>(args->eventData);
+				std::unique_ptr<InputEventData> newEvent = std::make_unique<InputEventData>(args->eventData);
 
 				if (args->eventData.eventType == InputEventType::Application_Command_Interaction) {
 					RespondToInputEventData dataPackage(args->eventData);
