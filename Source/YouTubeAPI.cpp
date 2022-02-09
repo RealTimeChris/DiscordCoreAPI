@@ -289,6 +289,10 @@ namespace DiscordCoreAPI {
 				tokenActions.push_back(actionFuncResult);
 			}
 		}
+		std::cout << "THE STRING: " << std::endl;
+		for (auto& value : tokenActions) {
+			std::cout<< value<< std::endl
+		}
 		std::string object{ tokenActions[1] };
 		std::string objectBody{ tokenActions[2] };
 		std::string functionBody{ tokenActions[3] };
