@@ -1,4 +1,4 @@
-// dllmain.cpp : Defines the entry point for the DLL application..
+// DllMain.cpp : Defines the entry point for the DLL application.
 #include "Index.hpp"
 
 #ifdef _WIN32
