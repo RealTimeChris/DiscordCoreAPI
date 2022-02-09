@@ -415,10 +415,8 @@ namespace DiscordCoreInternal {
 				if (readBytes > 0) {
 					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 					if (print) {
-						std::cout << "READ AMOUNT: " << readBytes << std::endl;
 						std::string theString{};
 						theString.insert(theString.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
-						std::cout << "THE STRING: " << theString << std::endl;
 					}
 					this->bytesRead += readBytes;
 				}
@@ -514,7 +512,6 @@ namespace DiscordCoreInternal {
 			std::cout << std::endl;
 			return;
 		}
-		std::cout << "WERE HERE CONNECTION!" << std::endl;
 		timeval timeout{};
 		timeout.tv_sec = 1;
 		timeout.tv_usec = 0;
