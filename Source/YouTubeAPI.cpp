@@ -264,10 +264,10 @@ namespace DiscordCoreAPI {
 		std::string sliceStr{ ":function\\(a,b\\)\\{return a\\.slice\\(b\\)\\}" };
 		std::string spliceStr{ ":function\\(a,b\\)\\{a\\.splice\\(0,b\\)\\}" };
 		std::string swapStr{ ":function\\(a,b\\)\\{var c=a\\[0\\];a\\[0\\]=a\\[b%a\\.length\\];a\\[b%a\\.length\\]=c\\}" };
-		std::regex reverseRegexp{ "(?:^|,)(" + jsKeyStr + ")" + reverseStr };
-		std::regex sliceRegexp{ "(?:^|,)(" + jsKeyStr + ")" + sliceStr };
-		std::regex spliceRegexp{ "(?:^|,)(" + jsKeyStr + ")" + spliceStr };
-		std::regex swapRegexp{ "(?:^|,)(" + jsKeyStr + ")" + swapStr };
+		std::regex reverseRegexp{ jsVarStr + reverseStr };
+		std::regex sliceRegexp{ jsVarStr + sliceStr };
+		std::regex spliceRegexp{ jsVarStr + spliceStr };
+		std::regex swapRegexp{ jsVarStr + swapStr };
 		std::string newString{ html5PlayerPageBody };
 		std::vector<std::string> tokenActions{};
 		std::regex actionsObjRegexp{ "var (" + jsVarStr + ")=\\{((?:(?:" + jsKeyStr + reverseStr + "|" + jsKeyStr + sliceStr + "|" + jsKeyStr + spliceStr + "|" + jsKeyStr + swapStr + "),?\\r?\\n?)+)\\};", std::regex_constants::ECMAScript };
@@ -302,16 +302,16 @@ namespace DiscordCoreAPI {
 		std::string reverseKey{};
 		regex_search(objectBody, matchResultsNew01, reverseRegexp, std::regex_constants::match_not_null | std::regex_constants::match_any);
 		if (!matchResultsNew01.empty() && matchResultsNew01.size() > 0) {
-			std::cout << "MATCH 01" << matchResultsNew01[1].str() << std::endl;
-			reverseKey = regex_replace(matchResultsNew01[1].str(), std::regex("/g,'\\$"), "");
+			std::cout << "MATCH 01" << matchResultsNew01.str() << std::endl;
+			reverseKey = regex_replace(matchResultsNew01.str().substr(0, matchResultsNew01.str().find(":")), std::regex("/g,'\\$"), "");
 			reverseKey = regex_replace(reverseKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew02{};
 		std::string sliceKey{};
 		regex_search(objectBody, matchResultsNew02, sliceRegexp, std::regex_constants::match_not_null | std::regex_constants::match_any);
 		if (!matchResultsNew02.empty() && matchResultsNew02.size() > 0) {
-			std::cout << "MATCH 02" << matchResultsNew02[1].str() << std::endl;
-			sliceKey = regex_replace(matchResultsNew02[1].str(), std::regex("/g,'\\$"), "");
+			std::cout << "MATCH 02" << matchResultsNew02.str() << std::endl;
+			sliceKey = regex_replace(matchResultsNew02.str().substr(0, matchResultsNew02.str().find(":")), std::regex("/g,'\\$"), "");
 			sliceKey = regex_replace(sliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew03{};
@@ -319,16 +319,16 @@ namespace DiscordCoreAPI {
 		regex_search(objectBody, matchResultsNew03, spliceRegexp, std::regex_constants::match_not_null | std::regex_constants::match_any);
 	
 		if (!matchResultsNew03.empty() && matchResultsNew03.size() > 0) {
-			std::cout << "MATCH 03" << matchResultsNew03[1].str() << std::endl;
-			spliceKey = regex_replace(matchResultsNew03[1].str(), std::regex("/g,'\\$"), "");
+			std::cout << "MATCH 03" << matchResultsNew03.str() << std::endl;
+			spliceKey = regex_replace(matchResultsNew03.str().substr(0, matchResultsNew03.str().find(":")), std::regex("/g,'\\$"), "");
 			spliceKey = regex_replace(spliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew04{};
 		std::string swapKey{};
 		regex_search(objectBody, matchResultsNew04, swapRegexp, std::regex_constants::match_not_null | std::regex_constants::match_any);
 		if (!matchResultsNew04.empty() && matchResultsNew04.size() > 0) {
-			std::cout << "MATCH 04" << matchResultsNew04[1].str() << std::endl;
-			swapKey = regex_replace(matchResultsNew04[1].str(), std::regex("/g,'\\$"), "");
+			std::cout << "MATCH 04" << matchResultsNew04.str() << std::endl;
+			swapKey = regex_replace(matchResultsNew04.str().substr(0, matchResultsNew04.str().find(":")), std::regex("/g,'\\$"), "");
 			swapKey = regex_replace(swapKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::vector<std::string> keys{};
