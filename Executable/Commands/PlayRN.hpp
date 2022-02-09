@@ -48,8 +48,6 @@ namespace DiscordCoreAPI {
 
 				std::shared_ptr<InputEventData> newEvent = std::make_shared<InputEventData>(args->eventData);
 
-				__int64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
 				if (args->eventData.eventType == InputEventType::Application_Command_Interaction) {
 					RespondToInputEventData dataPackage(args->eventData);
 					dataPackage.type = InputEventResponseType::Deferred_Response;
