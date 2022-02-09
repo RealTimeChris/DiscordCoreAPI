@@ -13,6 +13,7 @@ namespace DiscordCoreAPI {
 	class PlayRN : public BaseFunction {
 	public:
 
+		static int64_t timeOfLastPlay;
 		PlayRN() {
 			this->commandName = "playrn";
 			this->helpDescription = "Add a song to the front of the queue and play it if nothing is playing.";
@@ -42,11 +43,34 @@ namespace DiscordCoreAPI {
 
 				Guild guild = Guilds::getCachedGuildAsync({ args->eventData.getGuildId() }).get();
 
-
-
 				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId(),.guildId = args->eventData.getGuildId() }).get();
 
-				std::unique_ptr<InputEventData> newEvent = std::make_unique<InputEventData>(args->eventData);
+				std::shared_ptr<InputEventData> newEvent = std::make_shared<InputEventData>(args->eventData);
+
+				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+				if (currentTime - PlayRN::timeOfLastPlay < 5000) {
+					EmbedData newEmbed;
+					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
+					newEmbed.setDescription("------\n__**Sorry, but please wait a total of 5 seconds in between plays!**__\n------");
+					newEmbed.setTimeStamp(getTimeAndDate());
+					newEmbed.setTitle("__**Timing Issue:**__");
+					newEmbed.setColor("FeFeFe");
+					if (args->eventData.eventType == InputEventType::Regular_Message) {
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = InputEventResponseType::Regular_Message;
+						dataPackage.addMessageEmbed(newEmbed);
+						*newEvent = InputEvents::respondToEvent(dataPackage);
+						InputEvents::deleteInputEventResponseAsync(*newEvent, 20000).get();
+					}
+					else {
+						RespondToInputEventData dataPackage(args->eventData);
+						dataPackage.type = InputEventResponseType::Ephemeral_Interaction_Response;
+						dataPackage.addMessageEmbed(newEmbed);
+						*newEvent = InputEvents::respondToEvent(dataPackage);
+					}
+					return;
+				}
 
 				if (args->eventData.eventType == InputEventType::Application_Command_Interaction) {
 					RespondToInputEventData dataPackage(args->eventData);
@@ -58,6 +82,8 @@ namespace DiscordCoreAPI {
 				if (args->argumentsArray.size() > 0) {
 					searchResults = SongAPI::searchForSong(args->argumentsArray[0], guild.id);
 				}
+
+				PlayRN::timeOfLastPlay = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
 
@@ -183,13 +209,13 @@ namespace DiscordCoreAPI {
 				}
 				BaseFunctionArguments newArgs = *args;
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::function<CoRoutine<void>(SongCompletionEventData)>theTask=[=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
+					std::function<CoRoutine<void>(SongCompletionEventData)>theTask = [=](SongCompletionEventData eventData) -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();
 						if (SongAPI::isThereAnySongs(guild.id)) {
 							EmbedData newEmbed;
 							if (!eventData.wasItAFail) {
 								if (!SongAPI::sendNextSong(guildMember)) {
-									InputEvents::deleteInputEventResponseAsync(newArgs.eventData);
+									InputEvents::deleteInputEventResponseAsync(*newEvent);
 									SongAPI::play(guildMember.guildId);
 									co_return;
 								}
@@ -212,17 +238,12 @@ namespace DiscordCoreAPI {
 								if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 									newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 								}
-								RespondToInputEventData dataPackage(newArgs.eventData.getChannelId());
+								RespondToInputEventData dataPackage(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
 								dataPackage.type = InputEventResponseType::Regular_Message;
 								dataPackage.addMessageEmbed(newEmbed);
 								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
-								SongAPI::play(guild.id);
 							}
 							else {
-
-								auto playList = SongAPI::getPlaylist(guild.id);
-								playList.currentSong = Song{};
-								SongAPI::setPlaylist(playList, guild.id);
 								SongAPI::sendNextSong(guildMember);
 								newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 								newEmbed.setDescription("__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" + eventData.previousSong.songTitle + "](" + eventData.previousSong.viewUrl + ")" + "\n__**Description:**__ " + eventData.previousSong.description + "\n__**Duration:**__ " +
@@ -243,7 +264,7 @@ namespace DiscordCoreAPI {
 								if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 									newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 								}
-								RespondToInputEventData dataPackage(newArgs.eventData.getChannelId());
+								RespondToInputEventData dataPackage(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
 								dataPackage.type = InputEventResponseType::Regular_Message;
 								dataPackage.addMessageEmbed(newEmbed);
 								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
@@ -268,10 +289,10 @@ namespace DiscordCoreAPI {
 									if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 										newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 									}
-									RespondToInputEventData dataPackage02(newArgs.eventData.getChannelId());
-									dataPackage02.type = InputEventResponseType::Regular_Message;
-									dataPackage02.addMessageEmbed(newEmbed);
-									InputEvents::respondToEvent(dataPackage02);
+									RespondToInputEventData dataPackage02(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
+									dataPackage.type = InputEventResponseType::Regular_Message;
+									dataPackage.addMessageEmbed(newEmbed);
+									InputEvents::respondToEvent(dataPackage);
 								}
 							}
 							SongAPI::play(guild.id);
@@ -295,13 +316,13 @@ namespace DiscordCoreAPI {
 							else if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 							}
-							RespondToInputEventData dataPackage(newArgs.eventData.getChannelId());
+							RespondToInputEventData dataPackage(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
 							dataPackage.type = InputEventResponseType::Regular_Message;
 							dataPackage.addMessageEmbed(newEmbed);
 							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 						}
-						};
-						SongAPI::onSongCompletion(theTask, guild.id);
+					};
+					SongAPI::onSongCompletion(theTask, guild.id);
 				}
 				if (SongAPI::isThereAnySongs(guild.id)) {
 					if (!SongAPI::sendNextSong(guildMember)) {
@@ -349,9 +370,11 @@ namespace DiscordCoreAPI {
 			catch (...) {
 				reportException("PlayRN::executeAsync Error: ");
 			}
-			
+
 		};
 		virtual ~PlayRN() {};
 	};
+
+	int64_t PlayRN::timeOfLastPlay{};
 
 }
