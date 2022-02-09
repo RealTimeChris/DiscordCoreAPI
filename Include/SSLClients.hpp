@@ -257,7 +257,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead();
 
-		bool processIO(bool printAmount = false);
+		bool processIO();
 
 	protected:
 

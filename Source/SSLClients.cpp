@@ -335,7 +335,7 @@ namespace DiscordCoreInternal {
 		return newVector;
 	}
 
-	bool WebSocketSSLClient::processIO(bool print) {
+	bool WebSocketSSLClient::processIO() {
 		fd_set writeSet{};
 		fd_set readSet{};
 		int32_t nfds{ 0 };
@@ -414,10 +414,6 @@ namespace DiscordCoreInternal {
 			case SSL_ERROR_NONE: {
 				if (readBytes > 0) {
 					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-					if (print) {
-						std::string theString{};
-						theString.insert(theString.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
-					}
 					this->bytesRead += readBytes;
 				}
 				return true;
