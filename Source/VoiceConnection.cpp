@@ -383,6 +383,8 @@ namespace DiscordCoreAPI {
 	};
 
 	VoiceConnection::~VoiceConnection() {
+		this->theTask->cancel();
+		this->theTask->get();
 		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
 	}
 

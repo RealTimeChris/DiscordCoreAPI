@@ -157,27 +157,33 @@ namespace DiscordCoreInternal {
 	bool HttpSSLClient::processIO() {
 		fd_set writeSet{};
 		fd_set readSet{};
+		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 		if ((this->writeBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
+			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
 		else {
 			FD_SET(this->theSocket, &readSet);
+			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
 		timeval checkTime{};
 		checkTime.tv_sec = 1;
-		auto resultValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime);
+		auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime);
 		if (resultValue == SOCKET_ERROR) {
 			std::cout << "select() Error: " << resultValue + ", ";
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
+#else
+			std::cout << errno << std::endl;
 #endif
 			return false;
 		}
 		else if (resultValue == 0) {
 			return true;
 		}
+
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
@@ -420,11 +426,6 @@ namespace DiscordCoreInternal {
 			}
 			case SSL_ERROR_ZERO_RETURN: {
 				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
-#ifdef _WIN32
-				std::cout << WSAGetLastError() << std::endl;
-#else
-				std::cout << errno << std::endl;
-#endif
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
 				return false;
@@ -439,11 +440,6 @@ namespace DiscordCoreInternal {
 			}
 			default: {
 				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
-#ifdef _WIN32
-				std::cout << WSAGetLastError() << std::endl;
-#else
-				std::cout << errno << std::endl;
-#endif
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
 				return false;
