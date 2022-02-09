@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
 						}
 					};
-					SongAPI::onSongCompletion(theTask, guild.id);
+					SongAPI::onSongCompletion(std::move(theTask), guild.id);
 				}
 				if (SongAPI::isThereAnySongs(guild.id)) {
 					if (!SongAPI::sendNextSong(guildMember)) {
