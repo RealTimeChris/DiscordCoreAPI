@@ -295,8 +295,9 @@ namespace DiscordCoreAPI {
 		}
 		std::string object{ tokenActions[1] };
 		std::string objectBody{ tokenActions[2] };
-		std::cout << "THE STRING: " << objectBody << std::endl;
+		std::cout << "THE OBJECT: " << object << std::endl;
 		std::string functionBody{ tokenActions[3] };
+		std::cout << "THE FUNCTION BODY: " << functionBody << std::endl;
 		std::smatch matchResultsNew01{};
 		std::string reverseKey{};
 		regex_search(objectBody, matchResultsNew01, reverseRegexp, std::regex_constants::match_not_null | std::regex_constants::match_any);
