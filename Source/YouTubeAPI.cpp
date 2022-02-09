@@ -460,9 +460,9 @@ namespace DiscordCoreAPI {
 			BuildAudioDecoderData dataPackage{};
 			std::vector<uint8_t> requestNew{};
 			requestNew.insert(requestNew.begin(), newSong.finalDownloadUrls[1].urlPath.begin(), newSong.finalDownloadUrls[1].urlPath.end());
-			streamSocket.processIO(true);
+			streamSocket.processIO();
 			streamSocket.writeData(requestNew);
-			streamSocket.processIO(true);
+			streamSocket.processIO();
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength) - static_cast<int64_t>(581);
 			dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
@@ -520,7 +520,7 @@ namespace DiscordCoreAPI {
 							goto breakOut;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-						streamSocket.processIO(true);
+						streamSocket.processIO();
 						auto newData = streamSocket.getData();
 						int64_t headerLength = newData.size();
 						if (!coroutineHandle.promise().isItStopped()) {
@@ -536,7 +536,7 @@ namespace DiscordCoreAPI {
 						goto breakOut;
 					}
 					if (counter == 0) {
-						streamSocket.processIO(true);
+						streamSocket.processIO();
 						auto streamBuffer = streamSocket.getData();
 						audioDecoder->submitDataForDecoding(streamBuffer);
 						audioDecoder->startMe();
@@ -548,7 +548,7 @@ namespace DiscordCoreAPI {
 							}
 							bytesReadTotal01 = streamSocket.getBytesRead();
 							remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-							streamSocket.processIO(true);
+							streamSocket.processIO();
 							auto streamBuffer = streamSocket.getData();
 							std::vector<uint8_t> newVector{};
 							for (uint32_t x = 0; x < streamBuffer.size(); x += 1) {
