@@ -209,13 +209,13 @@ namespace DiscordCoreAPI {
 				}
 				BaseFunctionArguments newArgs = *args;
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::function<CoRoutine<void>(SongCompletionEventData)>theTask = [=](SongCompletionEventData eventData) -> CoRoutine<void> {
+					std::function<CoRoutine<void>(SongCompletionEventData)>theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();
 						if (SongAPI::isThereAnySongs(guild.id)) {
 							EmbedData newEmbed;
 							if (!eventData.wasItAFail) {
 								if (!SongAPI::sendNextSong(guildMember)) {
-									InputEvents::deleteInputEventResponseAsync(*newEvent);
+									InputEvents::deleteInputEventResponseAsync(newArgs.eventData);
 									SongAPI::play(guildMember.guildId);
 									co_return;
 								}
@@ -238,12 +238,17 @@ namespace DiscordCoreAPI {
 								if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 									newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 								}
-								RespondToInputEventData dataPackage(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
+								RespondToInputEventData dataPackage(newArgs.eventData.getChannelId());
 								dataPackage.type = InputEventResponseType::Regular_Message;
 								dataPackage.addMessageEmbed(newEmbed);
 								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+								SongAPI::play(guild.id);
 							}
 							else {
+
+								auto playList = SongAPI::getPlaylist(guild.id);
+								playList.currentSong = Song{};
+								SongAPI::setPlaylist(playList, guild.id);
 								SongAPI::sendNextSong(guildMember);
 								newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 								newEmbed.setDescription("__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" + eventData.previousSong.songTitle + "](" + eventData.previousSong.viewUrl + ")" + "\n__**Description:**__ " + eventData.previousSong.description + "\n__**Duration:**__ " +
@@ -264,7 +269,7 @@ namespace DiscordCoreAPI {
 								if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 									newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 								}
-								RespondToInputEventData dataPackage(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
+								RespondToInputEventData dataPackage(newArgs.eventData.getChannelId());
 								dataPackage.type = InputEventResponseType::Regular_Message;
 								dataPackage.addMessageEmbed(newEmbed);
 								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
@@ -289,12 +294,13 @@ namespace DiscordCoreAPI {
 									if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 										newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 									}
-									RespondToInputEventData dataPackage02(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
-									dataPackage.type = InputEventResponseType::Regular_Message;
-									dataPackage.addMessageEmbed(newEmbed);
-									InputEvents::respondToEvent(dataPackage);
+									RespondToInputEventData dataPackage02(newArgs.eventData.getChannelId());
+									dataPackage02.type = InputEventResponseType::Regular_Message;
+									dataPackage02.addMessageEmbed(newEmbed);
+									InputEvents::respondToEvent(dataPackage02);
 								}
 							}
+							SongAPI::play(guild.id);
 						}
 						else {
 							EmbedData newEmbed;
@@ -315,7 +321,7 @@ namespace DiscordCoreAPI {
 							else if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 							}
-							RespondToInputEventData dataPackage(const_cast<InputEventData*>(&newArgs.eventData)->getChannelId());
+							RespondToInputEventData dataPackage(newArgs.eventData.getChannelId());
 							dataPackage.type = InputEventResponseType::Regular_Message;
 							dataPackage.addMessageEmbed(newEmbed);
 							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
