@@ -5,13 +5,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Linux/${CMAKE
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Linux/${CMAKE_BUILD_TYPE}")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-<<<<<<< HEAD
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
 add_compile_options(/O2)
 endif()
-=======
 set(VCPKG_INSTALLED_DIR "${VCPKG_BASE_DIR}/installed/x64-linux")
->>>>>>> parent of 9b6b010d (Update CMakeLists.txt)
 add_compile_options(-std=gnu++2a)
 add_compile_options(-fcoroutines)
 add_compile_options(-lpthread)
