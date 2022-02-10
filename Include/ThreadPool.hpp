@@ -23,8 +23,6 @@ namespace DiscordCoreAPI {
 
         ThreadPool();
 
-        void awaitThreadResult(std::string theKey);
-
         void storeThread(std::string theKey, CoRoutine<void> thread);
 
         CoRoutineStatus getThreadStatus(std::string theKey);
@@ -36,10 +34,7 @@ namespace DiscordCoreAPI {
     protected:
         std::unique_ptr< std::unordered_map<std::string, CoRoutine<void>>>threadsPtr{ std::make_unique<std::unordered_map<std::string, CoRoutine<void>>>() };
         std::atomic<std::unordered_map<std::string, CoRoutine<void>>*> threads{};
-        CoRoutine<void> cleanupTask{};
         bool doWeQuit{ false };
-
-        CoRoutine<void> theTask();
 
     };
 
@@ -50,17 +45,17 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
 
-        ThreadPoolTimer& operator=(ThreadPoolTimer&& other) noexcept;
+        ThreadPoolTimer& operator=(ThreadPoolTimer&&) noexcept;
 
-        ThreadPoolTimer(ThreadPoolTimer&& other) noexcept;
+        ThreadPoolTimer(ThreadPoolTimer&&) noexcept;
 
-        ThreadPoolTimer& operator=(const ThreadPoolTimer& other) = delete;
+        ThreadPoolTimer& operator=(const ThreadPoolTimer&) = delete;
 
-        ThreadPoolTimer(const ThreadPoolTimer& other) = delete;
+        ThreadPoolTimer(const ThreadPoolTimer&) = delete;
 
-        ThreadPoolTimer& operator=(ThreadPoolTimer& other) = delete;
+        ThreadPoolTimer& operator=(ThreadPoolTimer&) = delete;
 
-        ThreadPoolTimer(ThreadPoolTimer& other) = delete;
+        ThreadPoolTimer(ThreadPoolTimer&) = delete;
 
         ThreadPoolTimer(nullptr_t);
 
@@ -69,8 +64,6 @@ namespace DiscordCoreAPI {
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval);
 
         static void initialize();
-
-        void awaitResult();
 
         bool running();
 

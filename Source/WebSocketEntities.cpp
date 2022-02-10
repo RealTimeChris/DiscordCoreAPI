@@ -11,14 +11,12 @@
 
 namespace DiscordCoreInternal {
 
-	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, std::string port, std::string relativePath, WebSocketOpCode opCode) {
+	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, WebSocketOpCode opCode) {
 		this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
 		this->state = WebSocketState::Initializing;
-		this->relativePath = relativePath;
 		this->botToken = botToken;
 		this->dataOpcode = opCode;
 		this->baseUrl = baseUrl;
-		this->port = port;
 		this->doWeReconnect.set();
 		this->theTask = this->run();
 	}

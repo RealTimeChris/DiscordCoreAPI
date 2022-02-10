@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(std::string botToken, std::string baseUrl, std::string port = "443", std::string relativePath = "", WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
+		BaseSocketAgent(std::string botToken, std::string baseUrl, WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
 
 		BaseSocketAgent(nullptr_t);
 
@@ -134,8 +134,8 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		std::unordered_map<std::string, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
-		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
+		unsigned char webSocketPayloadLengthMagicLarge{ 126 };
+		unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
@@ -145,6 +145,7 @@ namespace DiscordCoreInternal {
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
+		std::string relativePath{ "/?v=9&encoding=etf" };
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};
 		std::atomic<bool> areWeConnected{ false };
@@ -159,7 +160,6 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
-		std::string relativePath{ "" };
 		int32_t heartbeatInterval{ 0 };
 		WebSocketOpCode dataOpcode{};
 		std::string sessionId{ "" };
@@ -167,10 +167,10 @@ namespace DiscordCoreInternal {
 		std::string botToken{ "" };
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
+		std::string port{ "443" };
 		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
 		WebSocketState state{};
-		std::string port{ "" };
 		ErlPacker erlPacker{};
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);

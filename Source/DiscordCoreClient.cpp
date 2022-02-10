@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 			Users::initialize(this->httpClient.get());
 			WebHooks::initialize(this->httpClient.get());
 			this->commandController = CommandController(this->commandPrefix, this->thisPointer.get());
-			this->baseSocketAgent = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->getGateWayBot(), "443", "/?v=9&encoding=etf");
+			this->baseSocketAgent = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->getGateWayBot());
 			this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->baseSocketAgent.get());
 		}
 		catch (...) {

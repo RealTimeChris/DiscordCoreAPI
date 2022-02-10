@@ -9,7 +9,6 @@ namespace DiscordCoreAPI {
 
     ThreadPool::ThreadPool() {
         this->threads.store(this->threadsPtr.get(), std::memory_order_release);
-        this->cleanupTask = this->theTask();
     }
 
     void ThreadPool::storeThread(std::string theKey, CoRoutine<void> thread) {
@@ -28,14 +27,6 @@ namespace DiscordCoreAPI {
         this->threads.store(thePtr, std::memory_order_release);
     }
 
-    void ThreadPool::awaitThreadResult(std::string theKey) {
-        auto thePtr = this->threads.load(std::memory_order_consume);
-        if (thePtr->contains(theKey)) {
-            thePtr->at(theKey).get();
-        }
-        this->threads.store(thePtr, std::memory_order_release);
-    }
-
     CoRoutineStatus ThreadPool::getThreadStatus(std::string theKey) {
         if (this->threads.load(std::memory_order_consume)->contains(theKey)) {
             return this->threads.load(std::memory_order_consume)->at(theKey).getStatus();
@@ -47,22 +38,6 @@ namespace DiscordCoreAPI {
 
     ThreadPool::~ThreadPool() {
         this->doWeQuit = true;
-    }
-
-    CoRoutine<void> ThreadPool::theTask() {
-        co_await NewThreadAwaitable<void>();
-        while (!this->doWeQuit) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(30000));
-            auto thePtr = this->threads.load(std::memory_order_consume);
-            for (auto& [key, value] : *thePtr) {
-                if (value.getStatus() != CoRoutineStatus::Running) {
-                    thePtr->at(key).get();
-                    thePtr->erase(key);
-                }
-            }
-            this->threads.store(thePtr, std::memory_order_release);
-        }
-        co_return;
     }
 
     void ThreadPoolTimer::initialize() {
@@ -95,10 +70,6 @@ namespace DiscordCoreAPI {
         threadPoolPtr->storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
         ThreadPoolTimer::threadsAtomic.store(threadPoolPtr, std::memory_order_release);
         return threadPoolTimer;
-    }
-
-    void ThreadPoolTimer::awaitResult() {
-        ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->awaitThreadResult(this->threadId);
     }
 
     bool ThreadPoolTimer::running() {
