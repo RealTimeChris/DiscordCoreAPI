@@ -31,8 +31,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		std::string commandPrefix{ "" };
 
-		CoRoutine<void> executeCommand(std::unique_ptr<BaseFunction> ptrFunction, std::unique_ptr<BaseFunctionArguments> args);
-
 		std::unique_ptr<BaseFunction> createFunction(std::string functionName);
 
 		std::unique_ptr<BaseFunction> getCommand(std::string commandName);

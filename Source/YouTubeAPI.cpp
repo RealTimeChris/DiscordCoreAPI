@@ -457,7 +457,7 @@ namespace DiscordCoreAPI {
 			int64_t bytesReadTotal01{ 0 };
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			std::string requestNew{};
+			std::vector<uint8_t> requestNew{};
 			requestNew.insert(requestNew.begin(), newSong.finalDownloadUrls[1].urlPath.begin(), newSong.finalDownloadUrls[1].urlPath.end());
 			streamSocket.processIO();
 			streamSocket.writeData(requestNew);
@@ -478,7 +478,10 @@ namespace DiscordCoreAPI {
 				frameData.encodedFrameData.data.clear();
 				getAudioBufferMap()->at(youtubeAPI->guildId)->send(std::move(frameData));
 				SongCompletionEventData eventData{};
-				eventData.previousSong = getSongAPIMap()->at(youtubeAPI->guildId)->getCurrentSong(youtubeAPI->guildId);
+				auto resultValue = getSongAPIMap()->at(youtubeAPI->guildId).get();
+				if (resultValue != nullptr) {
+					eventData.previousSong = resultValue->getCurrentSong(youtubeAPI->guildId);
+				}
 				eventData.voiceConnection = getVoiceConnectionMap()->at(youtubeAPI->guildId).get();
 				eventData.wasItAFail = true;
 				getSongAPIMap()->at(youtubeAPI->guildId)->onSongCompletionEvent(eventData);
@@ -486,7 +489,6 @@ namespace DiscordCoreAPI {
 			}
 		breakOut:
 			if (coroutineHandle.promise().isItStopped()) {
-				audioDecoder.~unique_ptr();
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(youtubeAPI->guildId)->tryReceive(frameData)) {};
@@ -590,6 +592,7 @@ namespace DiscordCoreAPI {
 			}
 			RawFrameData frameData01{};
 			while (audioDecoder->getFrame(frameData01)) {};
+			audioDecoder.reset(nullptr);
 			AudioFrameData frameData{};
 			frameData.type = AudioFrameType::Cancel;
 			frameData.rawFrameData.sampleCount = 0;

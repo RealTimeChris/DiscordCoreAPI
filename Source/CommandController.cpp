@@ -8,8 +8,6 @@
 
 namespace DiscordCoreAPI {
 
-	thread_local CoRoutine<void> theTask;
-
 	CommandController::CommandController(std::string commandPrefix, DiscordCoreClient* discordCoreClientNew) {
 		this->commandPrefix = commandPrefix;
 		this->discordCoreClient = discordCoreClientNew;
@@ -57,24 +55,12 @@ namespace DiscordCoreAPI {
 			else if (messageOption == false) {
 				args->argumentsArray = commandData->optionsArgs;
 			}
-			DiscordCoreAPI::theTask = this->executeCommand(std::move(functionPointer), std::move(args));
+			functionPointer->execute(std::move(args));
 			co_return;
 		}
 		catch (...) {
 			reportException("CommandController::checkForAndRunCommand()");
 		}
-	}
-
-	CoRoutine<void> CommandController::executeCommand(std::unique_ptr<BaseFunction> ptrFunction, std::unique_ptr<BaseFunctionArguments> args) {
-		try {
-			co_await NewThreadAwaitable<void>();
-			ptrFunction.get()->execute(std::move(args));
-			co_return;
-		}
-		catch (...) {
-			reportException("CommandController::executeCommand()");
-		}
-		co_return;
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::getCommand(std::string commandName) {

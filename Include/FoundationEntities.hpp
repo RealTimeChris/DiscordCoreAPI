@@ -3208,9 +3208,9 @@ namespace DiscordCoreAPI {
 
         BaseFunction() = default;
 
-        /// The base std::function for the command's execute std::function.
-        /// \param args A std::unique_ptr containing a copy of BaseFunctionArguments.
-        /// \returns A CoRoutine containing void.
+        /// The base function for the command's execute function.
+        /// \param args A unique_ptr containing a copy of BaseFunctionArguments.
+        /// \returns void.
         virtual void execute(std::unique_ptr<BaseFunctionArguments> args) = 0;
         virtual std::unique_ptr<BaseFunction> create() = 0;
         virtual ~BaseFunction() = default;
