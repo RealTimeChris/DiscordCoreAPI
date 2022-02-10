@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return false;
 		}
@@ -261,7 +261,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return;
 		}
@@ -271,7 +271,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return;
 		}
@@ -281,19 +281,21 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return;
 		}
-#ifdef _WIN32
+
 		char optionValue{ true };
 		returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "setsockopt() Error: ";
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
-			return;
-		}
+#else
+			std::cout << strerror(errno) << std::endl;
 #endif
+		}
 		this->context = SSL_CTX_new(TLS_client_method());
 		if (this->context == nullptr) {
 			std::cout << "SSL_CTX_new() Error: ";
@@ -354,7 +356,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return false;
 		}
@@ -446,7 +448,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return;
 		}
@@ -457,7 +459,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return;
 		}
@@ -468,7 +470,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
-			std::cout << errno << std::endl;
+			std::cout << strerror(errno) << std::endl;
 #endif
 			return;
 		}
