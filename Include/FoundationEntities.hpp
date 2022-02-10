@@ -27,10 +27,6 @@
 #ifndef CURL_STATICLIB
 #define CURL_STATICLIB
 #endif
-#ifdef _DEBUG
-#define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DBG_NEW
-#endif
 #else
 #ifndef DiscordCoreAPI_Dll
 #define DiscordCoreAPI_Dll
@@ -59,6 +55,13 @@
 #include <mutex>
 #include <queue>
 #include <ios>
+
+#ifdef _WIN32
+#ifdef _DEBUG
+#define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DBG_NEW
+#endif
+#endif
 
 #ifdef max
 #undef max
