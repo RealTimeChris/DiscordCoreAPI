@@ -387,61 +387,55 @@ namespace DiscordCoreAPI {
         ObjectTypeWrapper* thePtr{ nullptr };
     };
 
-    template<typename ObjectType, typename ...ConstructorArgs>
-    class UniquePtr {
+    template<typename ObjectType>
+    class UniquePtrWrapper {
     public:
 
-        UniquePtr<ObjectType>& operator=(const UniquePtr<ObjectType>& other) {
-            this->thePtr = other.thePtr;
+        UniquePtrWrapper<ObjectType>& operator=(const UniquePtrWrapper<ObjectType>& other) {
+            this->thePtr.reset(other.thePtr.get());
+            other.thePtr.~unique_ptr();
             return *this;
         }
 
-        UniquePtr(const UniquePtr<ObjectType>& other) {
+        UniquePtrWrapper(const UniquePtrWrapper<ObjectType>& other) {
             *this = other;
         }
 
-        UniquePtr<ObjectType>& operator=(UniquePtr<ObjectType>& other)  {
-            this->thePtr = other.thePtr;
-            other.thePtr = nullptr;
+        UniquePtrWrapper<ObjectType>& operator=(UniquePtrWrapper<ObjectType>& other) {
+            this->thePtr.reset(other.thePtr.release());
             return *this;
         }
 
-        UniquePtr(UniquePtr<ObjectType>& other) {
+        UniquePtrWrapper(UniquePtrWrapper<ObjectType>& other) {
             *this = other;
         }
 
-        UniquePtr<ObjectType>& operator=(std::unique_ptr<ObjectType> other) {
-            this->thePtr = other.release();
+        UniquePtrWrapper<ObjectType>& operator=(std::unique_ptr<ObjectType> other) {
+            this->thePtr.reset(other.release());
             return *this;
         }
 
-        UniquePtr(std::unique_ptr<ObjectType> other) {
-            this->thePtr = other.get();
+        UniquePtrWrapper(std::unique_ptr<ObjectType> other) {
+            *this = std::move(other);
         }
 
-        UniquePtr(ConstructorArgs...args) {
-            this->thePtr = new ObjectType{ args... };
-        }
+        UniquePtrWrapper() = default;
 
         ObjectType* operator->() {
-            return this->thePtr;
+            return this->thePtr.get();
         }
 
         ObjectType* operator*() {
-            return this->thePtr;
+            return this->thePtr.get();
         }
 
         ObjectType* get() {
-            return this->thePtr;
-        }
-
-        ~UniquePtr() {
-            delete this->thePtr;
+            return this->thePtr.get();
         }
 
     protected:
 
-        ObjectType* thePtr{ nullptr };
+        std::unique_ptr<ObjectType> thePtr{ nullptr };
 
     };
 

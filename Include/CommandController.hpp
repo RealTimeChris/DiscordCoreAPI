@@ -16,7 +16,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll CommandController {
 	public:
 
-		std::map<std::vector<std::string>, UniquePtr<BaseFunction>> functions{};
+		std::map<std::vector<std::string>, UniquePtrWrapper<BaseFunction>> functions{};
 		
 		CommandController(std::string, DiscordCoreClient*);
 

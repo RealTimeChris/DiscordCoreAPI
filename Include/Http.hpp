@@ -100,8 +100,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		std::unordered_map<HttpWorkloadType, DiscordCoreAPI::UniquePtr<HttpConnection>> httpConnections{};
-		std::unordered_map<std::string, DiscordCoreAPI::UniquePtr<RateLimitData>> rateLimitValues{};
+		std::unordered_map<HttpWorkloadType, DiscordCoreAPI::UniquePtrWrapper<HttpConnection>> httpConnections{};
+		std::unordered_map<std::string, DiscordCoreAPI::UniquePtrWrapper<RateLimitData>> rateLimitValues{};
 
 		HttpConnection& getConnection(HttpWorkloadType type);
 
