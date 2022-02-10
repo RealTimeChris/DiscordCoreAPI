@@ -6,7 +6,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Linux/${CMAKE
 set(VCPKG_INSTALLED_DIR "${VCPKG_BASE_DIR}/installed/x64-linux")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-add_link_options(/LTCG)
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
 add_compile_options(/O2)
 endif()
