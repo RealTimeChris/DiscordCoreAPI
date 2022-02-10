@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     }
 
     bool nanoSleep(int64_t ns) {
-#ifdef _WIN32
+#ifdef WIN32
         HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
         LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
         if (!timer) {
