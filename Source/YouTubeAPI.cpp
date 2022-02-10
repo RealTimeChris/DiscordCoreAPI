@@ -549,7 +549,7 @@ namespace DiscordCoreAPI {
 							remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
 							streamSocket.processIO();
 							auto streamBuffer = streamSocket.getData();
-							std::vector<uint8_t> newVector{};
+							std::string newVector{};
 							for (uint32_t x = 0; x < streamBuffer.size(); x += 1) {
 								newVector.push_back(streamBuffer.data()[x]);
 							}
