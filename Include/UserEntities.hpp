@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 	/// A single User. \brief A single User.
 	class DiscordCoreAPI_Dll User : public DiscordEntity {
 	public:
-		std::string discriminator{ "" }; ///< The # next to their User name.
+		std::string discriminator{ "" };///< The # next to their User name.
 		std::string createdAt{ "" };///< When the User was created.
 		std::string userName{ "" };///< Their username.
 		bool mfaEnabled{ false };///< MFA enabled?

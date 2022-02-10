@@ -22,17 +22,17 @@ namespace DiscordCoreAPI {
     /// For collecting a single global ApplicationCommand. \brief For collecting a single global ApplicationCommand.
   struct DiscordCoreAPI_Dll GetGlobalApplicationCommandData {
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string commandId{ "" }; ///< The id of the command which you would like to collect.
+        std::string commandId{ "" };///< The id of the command which you would like to collect.
     };
 
     /// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
   struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData {
-        std::vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
+        std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
         std::string applicationId{ "" };///< Application id.
-        bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild.
-        ApplicationCommandType type{}; ///< The type of ApplicationCommand.
+        bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
+        ApplicationCommandType type{};///< The type of ApplicationCommand.
         std::string description{ "" };   ///< A description of the command.
-        std::string name{ "" }; ///< A name for the new command.
+        std::string name{ "" };///< A name for the new command.
     };
 
     /// For editing a single global ApplicationCommand. \brief For editing a single global ApplicationCommand.
@@ -41,13 +41,13 @@ namespace DiscordCoreAPI {
         bool defaultPermission{ false };///< Whether the command is enabled by default when the bot is added to a Guild.
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
         std::string description{ "" };   ///< A description of the command.
-        std::string name{ "" }; ///< A name for the new command.
+        std::string name{ "" };///< A name for the new command.
     };
 
     /// For deleting a single global ApplicationCommand. \brief For deleting a single global ApplicationCommand.
   struct DiscordCoreAPI_Dll DeleteGlobalApplicationCommandData {
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string name{ "" }; ///< The name of the command to delete.
+        std::string name{ "" };///< The name of the command to delete.
     };
 
     /// For bulk-overwriting a collection of global ApplicationCommands. \brief For bulk-overwriting a collection of global ApplicationCommands.
@@ -59,18 +59,18 @@ namespace DiscordCoreAPI {
     /// For acquiring all of the Guild ApplicationCommands of a single Guild. \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
   struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string guildId{ "" }; ///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
+        std::string guildId{ "" };///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
     };
 
     /// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
   struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData {
-        std::vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
+        std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
         std::string applicationId{ "" };///< Application Id.
-        bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild.
+        bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
         std::string description{ "" };   ///< A description of the command.
-        ApplicationCommandType type{}; ///< The type of ApplicationCommand.
-        std::string guildId{ "" }; ///< The id of the Guild which you would like to add the new command to.
-        std::string name{ "" }; ///< A name for the new command.
+        ApplicationCommandType type{};///< The type of ApplicationCommand.
+        std::string guildId{ "" };///< The id of the Guild which you would like to add the new command to.
+        std::string name{ "" };///< A name for the new command.
     };
 
     /// For acquiring a single Guild ApplicationCommand. \brief For acquiring a single Guild ApplicationCommand.
@@ -82,19 +82,19 @@ namespace DiscordCoreAPI {
 
     /// For editing a single Guild ApplicationCommand. \brief For editing a single Guild ApplicationCommand.
   struct DiscordCoreAPI_Dll EditGuildApplicationCommandData {
-        std::vector<ApplicationCommandOptionData> options{}; ///< The options for the ApplicationCommand.
+        std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        bool defaultPermission{ true }; ///< Whether the command is enabled by default when the bot is added to a Guild.
+        bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
         std::string description{ "" };   ///< A description of the command.
-        std::string guildId{ "" }; ///< The id of the Guild which you would like to add the new command to.
-        std::string name{ "" }; ///< A name for the new command.
+        std::string guildId{ "" };///< The id of the Guild which you would like to add the new command to.
+        std::string name{ "" };///< A name for the new command.
     };
 
     /// For deleting a single Guild ApplicationCommand. \brief For deleting a single Guild ApplicationCommand.
   struct DiscordCoreAPI_Dll DeleteGuildApplicationCommandData {
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string guildId{ "" }; ///< The id of the Guild which you would like to delete the command from.
-        std::string name{ "" }; ///< A name of the command which you would like to delete.
+        std::string guildId{ "" };///< The id of the Guild which you would like to delete the command from.
+        std::string name{ "" };///< A name of the command which you would like to delete.
     };
 
     /// For bulk-overwriting a collection of Guild ApplicationCommands. \brief For bulk-overwriting a collection of Guild ApplicationCommands.
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
     /// For acquiring the permissions of a collection of Guild ApplicationCommands. \brief For acquiring the permissions of a collection of Guild ApplicationCommands.
   struct DiscordCoreAPI_Dll GetGuildApplicationCommandPermissionsData {
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string guildId{ "" }; ///< The id of the Guild from which you would like to acquire the command permissions.
+        std::string guildId{ "" };///< The id of the Guild from which you would like to acquire the command permissions.
     };
 
     /// For acquiring the permissions of a single Guild ApplicationCommand. \brief For acquiring the permissions of a single Guild ApplicationCommand.
@@ -119,16 +119,16 @@ namespace DiscordCoreAPI {
 
     /// For editing the permissions of a single Guild ApplicationCommand. \brief For editing the permissions of a single Guild ApplicationCommand.
   struct DiscordCoreAPI_Dll EditGuildApplicationCommandPermissionsData {
-        std::vector<ApplicationCommandPermissionData> permissions{}; ///< A std::vector of ApplicationCommand permissions.
+        std::vector<ApplicationCommandPermissionData> permissions{};///< A std::vector of ApplicationCommand permissions.
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string commandName{ "" }; ///< The command name which you would like to edit the permissions of.
+        std::string commandName{ "" };///< The command name which you would like to edit the permissions of.
         std::string commandId{ "" };///< The command id which you would like to edit the permissions of.
         std::string guildId{ "" };///< The Guild id of the Guild for which you would like to edit the command permissions.
     };
 
     /// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
   struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
-        std::vector<GuildApplicationCommandPermissionsData> permissions{}; ///< A std::vector of edit-Guild-application-permissions responseData to edit.
+        std::vector<GuildApplicationCommandPermissionsData> permissions{};///< A std::vector of edit-Guild-application-permissions responseData to edit.
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
         std::string guildId{ "" };///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
     };

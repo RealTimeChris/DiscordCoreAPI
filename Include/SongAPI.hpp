@@ -30,11 +30,13 @@ namespace DiscordCoreAPI {
 
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song.
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
+		/// \param guildId The id of the guild for which you would like to instantiate this event.
 		/// \returns An event_token for later de-registering the event. 
 		static EventDelegateToken onSongCompletion(EventDelegate<CoRoutine<void>, SongCompletionEventData> handler, std::string guildId);
 
 		/// For de-registering the event-handler std::function that was previously registered. \brief For de-registering the event-handler std::function that was previously registered.
 		/// \param token The event_token that was returned from the registration std::function.
+		/// \param guildId The id of the guild for which you would like to remove this event.
 		static void onSongCompletion(EventDelegateToken token, std::string guildId);
 
 		/// Search for a Song to play. \brief Search for a Song to play.
@@ -66,12 +68,10 @@ namespace DiscordCoreAPI {
 
 		/// Skips to the next Song in the UnboundedMessageBlock, if applicable. \brief Skips to the next Song in the UnboundedMessageBlock, if applicable.
 		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
-		/// \returns A bool suggesting the success or failure of the skip command.
 		static void skip(GuildMember guildMember);
 
 		/// Stops the currently playing Song. \brief Stops the currently playing Song.
 		/// \param guildId The id of the Guild within which to stop the currently playing music.
-		/// \returns A bool suggesting the success or failure of the stop command.
 		static void stop(std::string guildId);
 
 		/// Toggles pausing on and off. \brief Toggles pausing on and off.

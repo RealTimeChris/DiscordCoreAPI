@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a Channel from Discord's servers. \brief For collecting a Channel from Discord's servers.
 	struct DiscordCoreAPI_Dll GetChannelData {
-		std::string channelId{ "" }; ///< The id of the Channel to acquire.
+		std::string channelId{ "" };///< The id of the Channel to acquire.
 	};
 
 	/// For modifying a channel's properties. \brief For modifying a channel's properties.
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
-		PermissionOverwritesType type{}; ///< The type of overwrite.
+		PermissionOverwritesType type{};///< The type of overwrite.
 		std::string roleOrUserId{ "" };	///< The role or User Id to modify the permissions for.
 		std::string channelId{ "" };	///< The Channel id of the desired Channel to modify the permissions for.
 		std::string reason{ "" };///< Reason for editing the permission overwrites.
@@ -75,8 +75,8 @@ namespace DiscordCoreAPI {
 
 	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		std::string roleOrUserId{ "" }; ///< The role or User id for whom to delete the Permission overwrites.
-		std::string channelId{ "" }; ///< The id of the Channel to modify permissions for.
+		std::string roleOrUserId{ "" };///< The role or User id for whom to delete the Permission overwrites.
+		std::string channelId{ "" };///< The id of the Channel to modify permissions for.
 		std::string reason{ "" };///< Reason for deleting these permission overwrites.
 	};
 
@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
 	struct DiscordCoreAPI_Dll CreateDMChannelData {
-		std::string userId{ "" }; ///< The User for whom to collect the direct-messaging Channel to.
+		std::string userId{ "" };///< The User for whom to collect the direct-messaging Channel to.
 	};
 
 	/// A Channel object. \brief A Channel object.

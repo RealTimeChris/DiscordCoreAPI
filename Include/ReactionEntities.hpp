@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 
 	/// For deleting one's own Reaction. \brief For deleting one's own Reaction.
 	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
-		std::string channelId{ "" }; ///< The Channel from which to remove the Reaction.
+		std::string channelId{ "" };///< The Channel from which to remove the Reaction.
 		std::string messageId{ "" };///< The Message from which to remove the Reaction.
 		std::string emojiName{ "" };///< The emoji name for which to remove the emoji.
 		std::string emojiId{ "" };///< The emoji id for which to remove the emoji.

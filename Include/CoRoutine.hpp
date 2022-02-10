@@ -297,7 +297,6 @@ namespace DiscordCoreAPI {
         }
 
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
-        /// \returns void The return value of the CoRoutine.
         void get() {
             if (this != nullptr) {
                 if (this->coroutineHandle.promise().newThread.joinable()) {
@@ -315,7 +314,6 @@ namespace DiscordCoreAPI {
         }
 
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
-        /// \returns void The object to be returned.
         void cancel() {
             if (this != nullptr && this->coroutineHandle) {
                 if (this->coroutineHandle.promise().newThread.joinable()) {

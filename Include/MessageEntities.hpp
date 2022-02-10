@@ -345,14 +345,14 @@ namespace DiscordCoreAPI {
 	/// For deleting a Message. \brief For deleting a Message.
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	public:
-		 int32_t timeDelay{ 0 }; ///< Number of std::chrono::milliseconds to wait before deleting the Message.
+		 int32_t timeDelay{ 0 };///< Number of std::chrono::milliseconds to wait before deleting the Message.
 		MessageData messageData;///< The Message to delete.
 		std::string reason{ "" };///< The reason for deleting the Message.
 	};
 
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
-		std::vector<std::string> messageIds{}; ///< Array of Message ids to delete.
+		std::vector<std::string> messageIds{};///< Array of Message ids to delete.
 		std::string channelId{ "" };///< Channel within which to delete the Messages.
 		std::string reason{ "" };///< The reason for deleting the Messages.
 	};
@@ -394,7 +394,7 @@ namespace DiscordCoreAPI {
 
 	/// MessageCollectorReturn responseData. \brief MessageCollectorReturn responseData.
 	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
-		std::vector<Message> messages{}; ///< A std::vector of collected Messages.
+		std::vector<Message> messages{};///< A std::vector of collected Messages.
 	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
