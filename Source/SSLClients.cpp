@@ -258,7 +258,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(std::string baseUrlNew, std::string portNew, std::string* theInputBuffer, int64_t maxBufferSizeNew) :
+	WebSocketSSLClient::WebSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<uint8_t>* theInputBuffer, int64_t maxBufferSizeNew) :
 		inputBufferPtr(theInputBuffer),
 		maxBufferSize(maxBufferSizeNew)
 	{
@@ -411,7 +411,7 @@ namespace DiscordCoreInternal {
 		}
 		else if (FD_ISSET(this->theSocket, &readSet)) {
 			this->wantRead = false;
-			std::string serverToClientBuffer{};
+			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), static_cast<int32_t>(this->maxBufferSize), &readBytes) };
@@ -453,7 +453,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string baseUrlNew, std::string portNew, std::string* theInputBuffer) :
+	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<uint8_t>* theInputBuffer) :
 		inputBufferPtr(theInputBuffer)
 	{
 		addrinfoWrapper  resultAddress{ nullptr }, hints{ nullptr };
@@ -518,7 +518,7 @@ namespace DiscordCoreInternal {
 
 	DatagramSocketSSLClient::DatagramSocketSSLClient(nullptr_t) {};
 
-	bool DatagramSocketSSLClient::writeData(std::string& data) {
+	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
 		size_t writtenBytes{ 0 };
 		if (this->connectionBio == nullptr) {
 			std::cout << "DatagramSocketSSLClient() Error: Missing connectionBio!";
@@ -535,15 +535,15 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::string DatagramSocketSSLClient::getData() {
-		std::string newVector{};
+	std::vector<uint8_t> DatagramSocketSSLClient::getData() {
+		std::vector<uint8_t> newVector{};
 		newVector.insert(newVector.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
 		this->inputBufferPtr->clear();
 		return newVector;
 	}
 
 	void DatagramSocketSSLClient::readData(bool doWeClear) {
-		std::string serverToClientBuffer{};
+		std::vector<uint8_t>  serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		size_t readBytes{ 0 };
 		auto returnValue{ BIO_read_ex(this->connectionBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };

@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::string AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, std::string keys) {
+	std::vector<uint8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, std::string keys) {
 		const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 		const int32_t headerSize{ 12 };
 		const uint8_t byteSize{ 8 };
@@ -61,9 +61,7 @@ namespace DiscordCoreAPI {
 		this->sequenceIndex += 1;
 		this->timeStamp += static_cast<int32_t>(bufferToSend.sampleCount);
 		audioDataPacket.shrink_to_fit();
-		std::string audioDataPacketReal{};
-		audioDataPacketReal.insert(audioDataPacketReal.begin(), audioDataPacket.begin(), audioDataPacket.end());
-		return audioDataPacketReal;
+		return audioDataPacket;
 	}
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew) {
@@ -205,7 +203,7 @@ namespace DiscordCoreAPI {
 		while (this->audioBuffer.tryReceive(frameData)) {};
 	}
 
-	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) {
+	void VoiceConnection::sendSingleAudioFrame(std::vector<uint8_t>& audioDataPacketNew) {
 		if (this->voiceSocketAgent != nullptr) {
 			if (this->voiceSocketAgent->voiceSocket != nullptr) {
 				this->voiceSocketAgent->sendVoiceData(audioDataPacketNew);
@@ -240,7 +238,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
 		if (!this->doWeQuit && this->voiceSocketAgent != nullptr) {
 			this->voiceConnectionData.audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
-			std::string newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData.audioSSRC, 0);
+			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData.audioSSRC, 0);
 			if (this->voiceSocketAgent->webSocket != nullptr) {
 				this->voiceSocketAgent->sendMessage(newString);
 			}
@@ -321,7 +319,7 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
-						std::string newFrame{};
+						std::vector<uint8_t> newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto newFrames = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(newFrames, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);

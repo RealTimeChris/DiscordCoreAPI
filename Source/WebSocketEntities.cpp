@@ -49,12 +49,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 			std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
-			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
+			std::vector<uint8_t> theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			std::string out{};
 			out.resize(this->maxHeaderSize);
 			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
 			std::string header(out.data(), size);
-			std::string theVectorNew{};
+			std::vector<uint8_t> theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
 			this->webSocket->writeData(theVectorNew);
@@ -551,7 +551,7 @@ namespace DiscordCoreInternal {
 
 	bool BaseSocketAgent::parseHeader() {
 		try {
-			std::string newVector = this->inputBuffer;
+			std::vector<uint8_t> newVector = this->inputBuffer;
 			if (this->inputBuffer.size() < 4) {
 				return false;
 			}
@@ -594,7 +594,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					else {
-						std::string newerVector{};
+						std::vector<uint8_t> newerVector{};
 						newerVector.reserve(length02);
 						for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
 							newerVector.push_back(this->inputBuffer[x]);
@@ -687,7 +687,7 @@ namespace DiscordCoreInternal {
 		this->theTask = this->run();
 	}
 
-	void VoiceSocketAgent::sendVoiceData(std::string& responseData) {
+	void VoiceSocketAgent::sendVoiceData(std::vector<uint8_t>& responseData) {
 		try {
 			if (responseData.size() == 0) {
 				std::cout << "Please specify voice data to send" << std::endl << std::endl;
@@ -708,7 +708,14 @@ namespace DiscordCoreInternal {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
 			std::cout << "Sending Voice WebSocket Message: " << newString << std::endl << std::endl;
-			this->webSocket->writeData(dataToSend);
+			std::vector<char> out{};
+			out.resize(this->maxHeaderSize);
+			size_t size = this->createHeader(out.data(), dataToSend.size(), this->dataOpcode);
+			std::string header(out.data(), size);
+			std::vector<uint8_t> theVectorNew{};
+			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
+			theVectorNew.insert(theVectorNew.begin() + header.size(), dataToSend.begin(), dataToSend.end());
+			this->webSocket->writeData(theVectorNew);
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("VoiceSocketAgent::sendMessage()");
@@ -719,14 +726,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) {
 		try {
 			std::cout << "Sending Voice WebSocket Message: " << std::endl << dataToSend;
-			std::vector<char> out{};
-			out.resize(this->maxHeaderSize);
-			size_t size = this->createHeader(out.data(), dataToSend.size(), this->dataOpcode);
-			std::string header(out.data(), size);
-			std::vector<uint8_t> theVectorNew{};
-			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
-			theVectorNew.insert(theVectorNew.begin() + header.size(), dataToSend.begin(), dataToSend.end());
-			this->webSocket->writeData(theVectorNew);
+			this->webSocket->writeData(dataToSend);
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("VoiceSocketAgent::sendMessage()");
@@ -837,7 +837,7 @@ namespace DiscordCoreInternal {
 					this->voiceConnect();
 					this->collectExternalIP();
 					int32_t counterValue{ 0 };
-					std::string protocolPayloadSelectString = JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
+					std::vector<uint8_t> protocolPayloadSelectString = JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
 					if (this->webSocket != nullptr) {
 						this->sendMessage(protocolPayloadSelectString);
 					}
@@ -858,7 +858,7 @@ namespace DiscordCoreInternal {
 					} };
 					this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer{ DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval) };
 					this->haveWeReceivedHeartbeatAck = true;
-					std::string identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
+					std::vector<uint8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
 					if (this->webSocket != nullptr) {
 						this->sendMessage(identifyPayload);
 					}
@@ -873,7 +873,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::collectExternalIP() {
 		try {
-			std::string packet{};
+			std::vector<uint8_t> packet{};
 			packet.resize(74);
 			uint16_t val1601{ 0x01 };
 			uint16_t val1602{ 70 };
@@ -906,7 +906,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendHeartBeat() {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
-				std::string heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				std::vector<uint8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				if (this->webSocket != nullptr) {
 					this->sendMessage(heartbeatPayload);
 				}
@@ -971,7 +971,7 @@ namespace DiscordCoreInternal {
 
 	bool VoiceSocketAgent::parseHeader() {
 		try {
-			std::string newVector = this->inputBuffer00;
+			std::vector<uint8_t> newVector = this->inputBuffer00;
 			if (this->inputBuffer00.size() < 4) {
 				return false;
 			}
@@ -1014,7 +1014,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					else {
-						std::string newerVector{};
+						std::vector<uint8_t> newerVector{};
 						newerVector.reserve(length02);
 						for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
 							newerVector.push_back(this->inputBuffer00[x]);

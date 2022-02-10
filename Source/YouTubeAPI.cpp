@@ -449,7 +449,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> YouTubeAPI::downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI) {
 		try {
 			auto coroutineHandle = co_await NewThreadAwaitable<void>();
-			std::string theVector{};
+			std::vector<uint8_t> theVector{};
 			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath,"443", &theVector, this->maxBufferSize };
 			bool areWeDoneHeaders{ false };
 			int64_t remainingDownloadContentLength{ newSong.contentLength };
@@ -457,7 +457,7 @@ namespace DiscordCoreAPI {
 			int64_t bytesReadTotal01{ 0 };
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			std::string requestNew{};
+			std::vector<uint8_t> requestNew{};
 			requestNew.insert(requestNew.begin(), newSong.finalDownloadUrls[1].urlPath.begin(), newSong.finalDownloadUrls[1].urlPath.end());
 			streamSocket.processIO();
 			streamSocket.writeData(requestNew);

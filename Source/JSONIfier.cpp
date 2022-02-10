@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
+	std::vector<uint8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
 		nlohmann::json data;
 		if (isSpeaking) {
 			data = {
@@ -96,7 +96,11 @@ namespace DiscordCoreInternal {
 		{"ssrc" , ssrc}} }
 			};
 		}
-		return data.dump();
+		std::vector<uint8_t> newVector{};
+		std::string newString = data.dump();
+		newString.shrink_to_fit();
+		newVector.insert(newVector.begin(), newString.begin(), newString.end());
+		return newVector;
 	};
 
 	nlohmann::json JSONIFY(int32_t lastReceivedNumber) {
@@ -107,12 +111,16 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::string JSONIFY(int64_t nonce) {
+	std::vector<uint8_t> JSONIFY(int64_t nonce) {
 		nlohmann::json data = {
 			{"d", nonce},
 			{"op", int32_t(3)}
 		};
-		return data.dump();
+		std::vector<uint8_t> newVector{};
+		std::string newString = data.dump();
+		newString.shrink_to_fit();
+		newVector.insert(newVector.begin(), newString.begin(), newString.end());
+		return newVector;
 	};
 
 	nlohmann::json JSONIFY(DiscordCoreAPI::UpdatePresenceData dataPackage) {
@@ -160,7 +168,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	std::string JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
+	std::vector<uint8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
 		nlohmann::json data = {
 			{"d" , {
 			{"user_id" , dataPackage02.userId},
@@ -169,7 +177,11 @@ namespace DiscordCoreInternal {
 			{"token" , dataPackage.token}
 			}},{"op", 0}
 		};
-		return data.dump();
+		std::vector<uint8_t> newVector{};
+		std::string newString = data.dump();
+		newString.shrink_to_fit();
+		newVector.insert(newVector.begin(), newString.begin(), newString.end());
+		return newVector;
 	}
 
 	nlohmann::json JSONIFY(std::string serverId, std::string sessionId, std::string token, std::string testString) {
@@ -183,7 +195,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	std::string JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t testValue) {
+	std::vector<uint8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t testValue) {
 		nlohmann::json data = {
 			{"op", 1},
 			{"d" , {
@@ -194,7 +206,11 @@ namespace DiscordCoreInternal {
 			{"mode" , encryptionMode}
 
 		}} } } };
-		return data.dump();
+		std::vector<uint8_t> newVector{};
+		std::string newString = data.dump();
+		newString.shrink_to_fit();
+		newVector.insert(newVector.begin(), newString.begin(), newString.end());
+		return newVector;
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage) {
