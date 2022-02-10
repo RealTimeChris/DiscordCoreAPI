@@ -35,7 +35,12 @@ add_library(DiscordCoreAPI-DLL SHARED "../../Source/DllMain.cpp" "${VCPKG_INSTAL
 
 FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2019/Community/VC/Redist/MSVC/*/x64/Microsoft.VC${MSVC_TOOLSET_VERSION}.CRT")
 FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Redist/MSVC/*/x64/Microsoft.VC${MSVC_TOOLSET_VERSION}.CRT")
-configure_file("${MSVCP_ATOMIC_WAIT}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/msvcp140_atomic_wait.dll" COPYONLY)
+foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+	if (${OUTPUTCONFIG} STREQUAL "Release" OR ${OUTPUTCONFIG} STREQUAL "Debug")
+		message(STATUS "Copying a file...")
+		add_custom_command(TARGET DiscordCoreAPI-DLL PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${MSVCP_ATOMIC_WAIT}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${OUTPUTCONFIG}/msvcp140_atomic_wait.dll")
+	endif()
+endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 target_link_libraries(DiscordCoreAPI-DLL PUBLIC OpenSSL::SSL OpenSSL::Crypto)
 target_link_libraries(DiscordCoreAPI-DLL PUBLIC ${FFMPEG_LIBRARIES})
 target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libcurl.lib")
