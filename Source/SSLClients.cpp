@@ -197,16 +197,11 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
-				std::cout << "SSL_write_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
-				ERR_print_errors_fp(stdout);
-				std::cout << std::endl;
 				return false;
 			}
-			case SSL_ERROR_WANT_READ: {
+			case SSL_ERROR_WANT_READ: 
 				this->wantRead = true;
-				this->writeBuffer.clear();
-				return true;
-			}
+				[[fallthrough]];
 			case SSL_ERROR_WANT_WRITE: {
 				this->writeBuffer.clear();
 				return true;
@@ -234,16 +229,10 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
-				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
-				ERR_print_errors_fp(stdout);
-				std::cout << std::endl;
 				return false;
 			}
+			case SSL_ERROR_WANT_WRITE:
 			case SSL_ERROR_WANT_READ: {
-				this->wantRead = true;
-				return true;
-			}
-			case SSL_ERROR_WANT_WRITE: {
 				this->wantRead = true;
 				return true;
 			}
@@ -387,16 +376,11 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
-				std::cout << "SSL_write_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
-				ERR_print_errors_fp(stdout);
-				std::cout << std::endl;
 				return false;
 			}
-			case SSL_ERROR_WANT_READ: {
+			case SSL_ERROR_WANT_READ:
 				this->wantRead = true;
-				this->writeBuffer.clear();
-				return true;
-			}
+				[[fallthrough]];
 			case SSL_ERROR_WANT_WRITE: {
 				this->writeBuffer.clear();
 				return true;
@@ -425,16 +409,10 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
-				std::cout << "SSL_read_ex() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
-				ERR_print_errors_fp(stdout);
-				std::cout << std::endl;
 				return false;
 			}
+			case SSL_ERROR_WANT_WRITE:
 			case SSL_ERROR_WANT_READ: {
-				this->wantRead = true;
-				return true;
-			}
-			case SSL_ERROR_WANT_WRITE: {
 				this->wantRead = true;
 				return true;
 			}

@@ -65,7 +65,7 @@ namespace DiscordCoreInternal {
 		ReturnType newVal{};
 		ErlPacker::etfByteOrder(num, newVal);
 		for (uint32_t x = 0; x < sizeof(ReturnType); x += 1) {
-			to[offSet + x] = static_cast<uint8_t>(newVal >> (byteSize * x));
+			to[offSet + static_cast<size_t>(x)] = static_cast<uint8_t>(newVal >> (byteSize * x));
 		}
 	}
 
@@ -190,7 +190,7 @@ namespace DiscordCoreInternal {
 		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Small_BigInt);
 		uint8_t bytesToEncode = 0;
 		while (value > 0) {
-			bufferNew[3 + bytesToEncode] = value & 0xF;
+			bufferNew[static_cast<size_t>(3) + bytesToEncode] = value & 0xF;
 			value >>= 8;
 			bytesToEncode++;
 		}
@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 		uint64_t unsignedLongLong = value < 0 ? -value : value;
 		uint8_t bytesToEncode = 0;
 		while (unsignedLongLong > 0) {
-			bufferNew[3 + bytesToEncode] = unsignedLongLong & 0xFF;
+			bufferNew[static_cast<size_t>(3) + bytesToEncode] = unsignedLongLong & 0xFF;
 			unsignedLongLong >>= 8;
 			bytesToEncode++;
 		}
