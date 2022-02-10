@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 
-		void sendSingleAudioFrame(std::string& audioDataPacketNew);
+		void sendSingleAudioFrame(std::vector<uint8_t>& audioDataPacketNew);
 
 		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 

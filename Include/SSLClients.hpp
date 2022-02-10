@@ -272,11 +272,12 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
+
 		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<uint8_t>*);
 
 		DatagramSocketSSLClient(nullptr_t);
 
-		bool writeData(std::string& dataToWrite);
+		bool writeData(std::vector<uint8_t>& dataToWrite);
 
 		std::vector<uint8_t> getData();
 

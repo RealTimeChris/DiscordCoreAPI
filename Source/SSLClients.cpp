@@ -522,7 +522,7 @@ namespace DiscordCoreInternal {
 
 	DatagramSocketSSLClient::DatagramSocketSSLClient(nullptr_t) {};
 
-	bool DatagramSocketSSLClient::writeData(std::string& data) {
+	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
 		size_t writtenBytes{ 0 };
 		if (this->connectionBio == nullptr) {
 			std::cout << "DatagramSocketSSLClient() Error: Missing connectionBio!";

@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 		while (this->audioBuffer.tryReceive(frameData)) {};
 	}
 
-	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) {
+	void VoiceConnection::sendSingleAudioFrame(std::vector<uint8_t>& audioDataPacketNew) {
 		if (this->voiceSocketAgent != nullptr) {
 			if (this->voiceSocketAgent->voiceSocket != nullptr) {
 				this->voiceSocketAgent->sendVoiceData(audioDataPacketNew);
@@ -227,9 +227,7 @@ namespace DiscordCoreAPI {
 		}
 		for (auto& value : frameData) {
 			auto newerFrame = this->audioEncrypter.encryptSingleAudioFrame(value, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
-			std::string theVector{};
-			theVector.insert(theVector.begin(), newerFrame.begin(), newerFrame.end());
-			this->sendSingleAudioFrame(theVector);
+			this->sendSingleAudioFrame(newerFrame);
 		}
 	}
 
@@ -325,8 +323,6 @@ namespace DiscordCoreAPI {
 						else {
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
 						}
-						std::string newerFrame{};
-						newerFrame.insert(newerFrame.begin(), newFrame.begin(), newFrame.end());
 						nanoSleep(18000000);
 						if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
 							break;
@@ -335,7 +331,7 @@ namespace DiscordCoreAPI {
 						int64_t  waitTime = intervalCount - timeCounter;
 						spinLock(waitTime);
 						startingValue = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-						this->sendSingleAudioFrame(newerFrame);
+						this->sendSingleAudioFrame(newFrame);
 						totalTime += static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
 						intervalCount = 20000000 - (totalTime / frameCounter);
 						this->audioData.type = AudioFrameType::Unset;

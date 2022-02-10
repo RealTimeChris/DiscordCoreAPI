@@ -28,9 +28,8 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(std::string& dataToSend) {
 		try {
 			std::lock_guard<std::recursive_mutex> accessLock{ this->accessorMutex01 };
-			std::string newString = dataToSend;
 			std::cout << "Sending WebSocket Message: " << std::endl << dataToSend;
-			this->webSocket->writeData(newString);
+			this->webSocket->writeData(dataToSend);
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
@@ -53,7 +52,7 @@ namespace DiscordCoreInternal {
 			}
 			std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
 			std::vector<uint8_t> theVector = this->erlPacker.parseJsonToEtf(dataToSend);
-			std::vector<char> out{};
+			std::string out{};
 			out.resize(this->maxHeaderSize);
 			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
 			std::string header(out.data(), size);
@@ -690,7 +689,7 @@ namespace DiscordCoreInternal {
 		this->theTask = this->run();
 	}
 
-	void VoiceSocketAgent::sendVoiceData(std::string& responseData) {
+	void VoiceSocketAgent::sendVoiceData(std::vector<uint8_t>& responseData) {
 		try {
 			if (responseData.size() == 0) {
 				std::cout << "Please specify voice data to send" << std::endl << std::endl;
@@ -711,14 +710,13 @@ namespace DiscordCoreInternal {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
 			std::cout << "Sending Voice WebSocket Message: " << newString << std::endl << std::endl;
-			std::vector<uint8_t> theVector = dataToSend;
 			std::vector<char> out{};
 			out.resize(this->maxHeaderSize);
-			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
+			size_t size = this->createHeader(out.data(), dataToSend.size(), this->dataOpcode);
 			std::string header(out.data(), size);
 			std::vector<uint8_t> theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
-			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
+			theVectorNew.insert(theVectorNew.begin() + header.size(), dataToSend.begin(), dataToSend.end());
 			this->webSocket->writeData(theVectorNew);
 		}
 		catch (...) {
@@ -730,8 +728,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) {
 		try {
 			std::cout << "Sending Voice WebSocket Message: " << std::endl << dataToSend;
-			std::string newString = dataToSend;
-			this->webSocket->writeData(newString);
+			this->webSocket->writeData(dataToSend);
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("VoiceSocketAgent::sendMessage()");
@@ -881,7 +878,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::collectExternalIP() {
 		try {
-			std::string packet{};
+			std::vector<uint8_t> packet{};
 			packet.resize(74);
 			uint16_t val1601{ 0x01 };
 			uint16_t val1602{ 70 };

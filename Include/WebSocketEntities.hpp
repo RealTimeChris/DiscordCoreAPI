@@ -201,9 +201,9 @@ namespace DiscordCoreInternal {
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew);
 
-		void sendMessage(std::vector<uint8_t>& responseData);
+		void sendVoiceData(std::vector<uint8_t>& responseData);
 
-		void sendVoiceData(std::string& responseData);
+		void sendMessage(std::vector<uint8_t>& responseData);
 
 		void sendMessage(std::string& dataToSend);
 
