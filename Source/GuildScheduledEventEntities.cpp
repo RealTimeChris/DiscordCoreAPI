@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 				if (dataPackage.before != "") {
 					workload.relativePath += "&before=" + dataPackage.before;
 				}
-				if (dataPackage.withMember != false) {
+				if (dataPackage.withMember) {
 					workload.relativePath += "&with_member=true";
 				}
 			}
@@ -138,17 +138,17 @@ namespace DiscordCoreAPI {
 				if (dataPackage.before != "") {
 					workload.relativePath += "&before=" + dataPackage.before;
 				}
-				if (dataPackage.withMember!= false) {
+				if (dataPackage.withMember) {
 					workload.relativePath += "&with_member=true";
 				}
 			}
 			if (dataPackage.before != "") {
 				workload.relativePath += "?before=" + dataPackage.before;
-				if (dataPackage.withMember != false) {
+				if (dataPackage.withMember) {
 					workload.relativePath += "&with_member=true";
 				}
 			}
-			if (dataPackage.withMember != false) {
+			if (dataPackage.withMember) {
 				workload.relativePath += "?with_member=true";
 			}
 			workload.callStack = "GuildScheduledEvents::getGuildScheduledEventUsersAsync";

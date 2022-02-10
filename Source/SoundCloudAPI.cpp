@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 				int64_t amountToSubmitRemainingFinal{ 0 };
 				int64_t amountSubmitted{ 0 };
 				while (amountToSubmitRemaining > 0) {
-					auto newerVector = std::vector<uint8_t>();
+					auto newerVector = std::string();
 					if (amountToSubmitRemaining >= 8192) {
 						for (int64_t x = 0; x < 8192; x += 1) {
 							newerVector.push_back(newVector[amountSubmitted]);

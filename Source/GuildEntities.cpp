@@ -794,16 +794,16 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Invite;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/invites/" + dataPackage.inviteId;
-			if (dataPackage.withCount != false) {
+			if (dataPackage.withCount) {
 				workload.relativePath += "?with_counts=true";
-				if (dataPackage.withExpiration != false) {
+				if (dataPackage.withExpiration) {
 					workload.relativePath += "&with_expiration=true";
 				}
 				if (dataPackage.guildScheduledEventId != "") {
 					workload.relativePath += "&guild_scheduled_event_id=" + dataPackage.guildScheduledEventId;
 				}
 			}
-			else if (dataPackage.withExpiration != false) {
+			else if (dataPackage.withExpiration) {
 				workload.relativePath += "?with_expiration=true";
 				if (dataPackage.guildScheduledEventId != "") {
 					workload.relativePath += "&guild_scheduled_event_id=" + dataPackage.guildScheduledEventId;

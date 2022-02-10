@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/webhooks/" + dataPackage.webhookId + "/" + dataPackage.webhookToken;
 			workload.callStack = "WebHooks::executeWebHookAsync";
-			if (dataPackage.wait != false) {
+			if (dataPackage.wait) {
 				workload.relativePath += "?wait=true";
 				if (dataPackage.threadId != "") {
 					workload.relativePath += "&thread_id=" + dataPackage.threadId;

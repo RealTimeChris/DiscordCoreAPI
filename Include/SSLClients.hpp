@@ -252,9 +252,9 @@ namespace DiscordCoreInternal {
 			this->writeBuffer.insert(this->writeBuffer.end(), data.begin(), data.end());
 		}
 
-		std::vector<uint8_t> getData();
-
 		int64_t getBytesRead();
+
+		std::string getData();
 
 		bool processIO();
 

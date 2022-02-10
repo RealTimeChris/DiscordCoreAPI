@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 
 		ErlPackBuffer() = default;
 
-		ErlPackBuffer(std::vector<uint8_t>*);
+		ErlPackBuffer(std::string*);
 
 		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
 
@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 
 		std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(std::vector<uint8_t>*);
+		nlohmann::json parseEtfToJson(std::string*);
 
 	protected:
 

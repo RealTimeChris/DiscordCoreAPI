@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 
         AudioDecoder(BuildAudioDecoderData dataPackage);
 
-        void submitDataForDecoding(std::vector<uint8_t> dataToDecode);
+        void submitDataForDecoding(std::string dataToDecode);
 
         bool getFrame(RawFrameData& dataPackage);
 
@@ -275,7 +275,7 @@ namespace DiscordCoreAPI {
     protected:
 
         int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
-        TSUnboundedMessageBlock<std::vector<uint8_t>> inputDataBuffer{};
+        TSUnboundedMessageBlock<std::string> inputDataBuffer{};
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
         AVCodecContextWrapper audioDecodeContext{ nullptr };
@@ -286,9 +286,9 @@ namespace DiscordCoreAPI {
         SwrContextWrapper swrContext{ nullptr };
         AVStreamWrapper audioStream{ nullptr };
         int32_t refreshTimeForBuffer{ 10000 };
-        std::vector<uint8_t> currentBuffer{};
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
+        std::string currentBuffer{};
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };

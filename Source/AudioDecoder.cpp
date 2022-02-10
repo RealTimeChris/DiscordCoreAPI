@@ -12,7 +12,7 @@ namespace DiscordCoreAPI {
         this->totalFileSize = dataPackage.totalFileSize;
     }
 
-    void AudioDecoder::submitDataForDecoding(std::vector<uint8_t> dataToDecode) {
+    void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
         this->inputDataBuffer.send(dataToDecode);
     }
 
@@ -30,11 +30,11 @@ namespace DiscordCoreAPI {
     void AudioDecoder::cancelMe() {
         this->refreshTimeForBuffer = 10;
         this->inputDataBuffer.clearContents();
-        this->inputDataBuffer.send(std::vector<uint8_t>());
-        this->inputDataBuffer.send(std::vector<uint8_t>());
-        this->inputDataBuffer.send(std::vector<uint8_t>());
-        this->inputDataBuffer.send(std::vector<uint8_t>());
-        this->inputDataBuffer.send(std::vector<uint8_t>());
+        this->inputDataBuffer.send(std::string());
+        this->inputDataBuffer.send(std::string());
+        this->inputDataBuffer.send(std::string());
+        this->inputDataBuffer.send(std::string());
+        this->inputDataBuffer.send(std::string());
         this->areWeQuitting = true;
         this->theTask->cancel();
         this->theTask->get();
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
     int32_t AudioDecoder::FileStreamRead(void* opaque, uint8_t* buf, int32_t) {
         AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
         stream->bytesRead = 0;
-        stream->currentBuffer = std::vector<uint8_t>();
+        stream->currentBuffer = std::string();
         if (stream->areWeQuitting) {
             RawFrameData frameData{};
             frameData.sampleCount = 0;

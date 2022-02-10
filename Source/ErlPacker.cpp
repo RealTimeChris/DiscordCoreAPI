@@ -7,8 +7,8 @@
 
 namespace DiscordCoreInternal {
 
-	ErlPackBuffer::ErlPackBuffer(std::vector<uint8_t>* theBuffer) {
-		this->buffer = std::move(*theBuffer);
+	ErlPackBuffer::ErlPackBuffer(std::string* theBuffer) {
+		this->buffer.insert(this->buffer.begin(), theBuffer->begin(), theBuffer->end());
 	};
 
 	ErlPackBuffer& ErlPackBuffer::operator=(ErlPackBuffer&& other) noexcept {
@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 		return std::vector<uint8_t>();
 	}
 
-	nlohmann::json ErlPacker::parseEtfToJson(std::vector<uint8_t>* dataToParse) {
+	nlohmann::json ErlPacker::parseEtfToJson(std::string* dataToParse) {
 		try {
 			ErlPackBuffer buffer{ dataToParse };
 			uint8_t version{};

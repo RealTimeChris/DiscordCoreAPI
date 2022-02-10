@@ -169,7 +169,7 @@ namespace DiscordCoreInternal {
 
 	bool BaseSocketAgent::onMessageReceived() {
 		try {
-			std::vector<uint8_t> messageNew = this->webSocket->getData();
+			std::string messageNew = this->webSocket->getData();
 			nlohmann::json payload{};
 			try {
 				payload = this->erlPacker.parseEtfToJson(&messageNew);
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			if (this->areWeCollectingData && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
-				if (this->serverUpdateCollected != true && this->stateUpdateCollected != true) {
+				if (!this->serverUpdateCollected && !this->stateUpdateCollected) {
 					this->voiceConnectionData = VoiceConnectionData();
 					this->voiceConnectionData.endPoint = payload.at("d").at("endpoint").get<std::string>();
 					this->voiceConnectionData.token = payload.at("d").at("token").get<std::string>();
@@ -194,7 +194,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (this->areWeCollectingData && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload.at("d").at("member").at("user").at("id") == this->voiceConnectInitData.userId) {
-				if (this->stateUpdateCollected != true && this->serverUpdateCollected != true) {
+				if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
 					this->voiceConnectionData = VoiceConnectionData();
 					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<std::string>();
 					this->stateUpdateCollected = true;
@@ -818,9 +818,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::onMessageReceived() {
 		try {
-			std::string message{};
-			std::vector<uint8_t> theVector = this->webSocket->getData();
-			message.insert(message.begin(), theVector.begin(), theVector.end());
+			std::string message = this->webSocket->getData();
 			nlohmann::json payload = payload.parse(message);
 			std::cout << "Message received from Voice WebSocket: " << message << std::endl << std::endl;
 			if (payload.contains("op")) {
@@ -850,8 +848,7 @@ namespace DiscordCoreInternal {
 					}
 					this->connectionReadyEvent.set();
 				}
-				if (payload.at("op") == 9) {}
-				if (payload.at("op") == 13) {}
+				if (payload.at("op") == 9) {};
 				if (payload.at("op") == 8) {
 					if (payload.at("d").contains("heartbeat_interval")) {
 						this->heartbeatInterval = static_cast<int32_t>(payload.at("d").at("heartbeat_interval").get<float>());

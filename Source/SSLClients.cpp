@@ -337,8 +337,8 @@ namespace DiscordCoreInternal {
 
 	WebSocketSSLClient::WebSocketSSLClient(nullptr_t) {};
 
-	std::vector<uint8_t>WebSocketSSLClient::getData() {
-		std::vector<uint8_t> newVector{};
+	std::string WebSocketSSLClient::getData() {
+		std::string newVector{};
 		newVector.insert(newVector.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
 		this->inputBufferPtr->clear();
 		return newVector;
