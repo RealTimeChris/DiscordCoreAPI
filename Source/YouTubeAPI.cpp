@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 			for (auto& value : partialSearchResultsJson.at("contents").at("twoColumnSearchResultsRenderer").at("primaryContents").at("sectionListRenderer").at("contents").at(0).at("itemSectionRenderer").at("contents")) {
 				YouTubeSong searchResult{};
 				if (value.contains("videoRenderer") && !value.at("videoRenderer").is_null()) {
-					DiscordCoreInternal::DataParser::parseObject(value.at("videoRenderer"), &searchResult);
+					DiscordCoreInternal::DataParser::parseObject(value.at("videoRenderer"), searchResult);
 					searchResult.type = SongType::YouTube;
 					searchResult.viewUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.push_back(searchResult);
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 				jsonObject = nlohmann::json::parse(searchResults[x].playerResponse);
 			}
 			std::vector<YouTubeFormat> theVector{};
-			DiscordCoreInternal::DataParser::parseObject(jsonObject, &theVector);
+			DiscordCoreInternal::DataParser::parseObject(jsonObject, theVector);
 			YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value : theVector) {
@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 			jsonObject = nlohmann::json::parse(newSong.playerResponse);
 		}
 		std::vector<YouTubeFormat> theVector{};
-		DiscordCoreInternal::DataParser::parseObject(jsonObject, &theVector);
+		DiscordCoreInternal::DataParser::parseObject(jsonObject, theVector);
 		YouTubeFormat format{};
 		bool isOpusFound{ false };
 		for (auto& value : theVector) {

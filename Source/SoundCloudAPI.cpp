@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			if (data.contains("collection") && !data.at("collection").is_null()) {
 				for (auto& value : data.at("collection")) {
 					SoundCloudSong newSong{};
-					DiscordCoreInternal::DataParser::parseObject(value, &newSong);
+					DiscordCoreInternal::DataParser::parseObject(value, newSong);
 					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 						continue;
 					}
