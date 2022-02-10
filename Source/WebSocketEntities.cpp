@@ -171,12 +171,14 @@ namespace DiscordCoreInternal {
 		try {
 			std::string messageNew = this->webSocket->getData();
 			nlohmann::json payload{};
+
 			try {
 				payload = this->erlPacker.parseEtfToJson(&messageNew);
 			}
 			catch (...) {
 				return false;
 			}
+
 			if (this->areWeCollectingData && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
 				if (!this->serverUpdateCollected && !this->stateUpdateCollected) {
 					this->voiceConnectionData = VoiceConnectionData();
@@ -193,6 +195,7 @@ namespace DiscordCoreInternal {
 					this->areWeCollectingData = false;
 				}
 			}
+
 			if (this->areWeCollectingData && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload.at("d").at("member").at("user").at("id") == this->voiceConnectInitData.userId) {
 				if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
 					this->voiceConnectionData = VoiceConnectionData();
@@ -207,14 +210,17 @@ namespace DiscordCoreInternal {
 					this->areWeCollectingData = false;
 				}
 			}
+
 			if (payload.at("s") >= 0) {
 				this->lastNumberReceived = payload.at("s");
 			}
+
 			if (payload.at("t") == "RESUMED") {
 				this->areWeConnected.store(true, std::memory_order_release);
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
 			}
+
 			if (payload.at("t") == "READY") {
 				this->areWeConnected.store(true, std::memory_order_release);
 				this->sessionId = payload.at("d").at("session_id");
@@ -222,9 +228,11 @@ namespace DiscordCoreInternal {
 				this->areWeReadyToConnectEvent.set();
 				this->areWeAuthenticated = true;
 			}
+
 			if (payload.at("op") == 1) {
 				this->sendHeartBeat();
 			}
+
 			if (payload.at("op") == 7) {
 				std::cout << "Reconnecting (Type 7)!" << std::endl << std::endl;
 				this->areWeResuming = true;
@@ -234,6 +242,7 @@ namespace DiscordCoreInternal {
 				this->webSocket.reset(nullptr);
 				this->connect();
 			}
+
 			if (payload.at("op") == 9) {
 				std::cout << "Reconnecting (Type 9)!" << std::endl << std::endl;
 				srand(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
@@ -253,6 +262,7 @@ namespace DiscordCoreInternal {
 					this->connect();
 				}
 			}
+
 			if (payload.at("op") == 10) {
 				this->heartbeatInterval = payload.at("d").at("heartbeat_interval");
 				DiscordCoreAPI::TimeElapsedHandler onHeartBeat = [this]() {
@@ -269,9 +279,11 @@ namespace DiscordCoreInternal {
 					this->sendMessage(resumePayload);
 				}
 			}
+
 			if (payload.at("op") == 11) {
 				this->haveWeReceivedHeartbeatAck = true;
 			}
+
 			if (payload.contains("d") && !payload.at("d").is_null() && payload.contains("t") && !payload.at("t").is_null()) {
 				WebSocketWorkload webSocketWorkload{};
 				webSocketWorkload.payLoad.update(std::move(payload.at("d")));
