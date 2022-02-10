@@ -293,6 +293,7 @@ namespace DiscordCoreInternal {
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "setsockopt() Error: ";
 			std::cout << WSAGetLastError() << std::endl;
+			return;
 		}
 #else
 		int optionValue{ 1 };
@@ -300,6 +301,7 @@ namespace DiscordCoreInternal {
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "setsockopt() Error: ";
 			std::cout << strerror(errno) << std::endl;
+			return;
 		}
 #endif
 		
