@@ -345,8 +345,8 @@ namespace DiscordCoreInternal {
 				fields.push_back(field);
 			}
 
-			 int32_t colorValInt = stol(value.hexColorValue, 0, 16);
-			std::stringstream stream;
+			int32_t colorValInt = stol(value.hexColorValue, 0, 16);
+			std::stringstream stream{};
 			stream << std::setbase(10) << colorValInt;
 			std::string realColorVal = stream.str();
 
