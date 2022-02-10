@@ -299,7 +299,6 @@ namespace DiscordCoreInternal {
 		returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "setsockopt() Error: ";
-			std::cout << WSAGetLastError() << std::endl;
 			std::cout << strerror(errno) << std::endl;
 		}
 #endif
