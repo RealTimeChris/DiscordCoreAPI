@@ -381,6 +381,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::~VoiceConnection() {
 		this->theTask->cancel();
 		this->theTask->get();
+		getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletion(getSongAPIMap()->at(this->voiceConnectInitData.guildId)->eventDelegateToken, this->voiceConnectInitData.guildId);
 		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
 	}
 
