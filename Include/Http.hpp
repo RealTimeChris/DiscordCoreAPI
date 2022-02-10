@@ -167,8 +167,6 @@ namespace DiscordCoreInternal {
 	template<>
 	void submitWorkloadAndGetResult<void>(HttpClient* httpClient, HttpWorkloadData& workload);
 
-	void submitWorkloadAndGetResult(HttpWorkloadData& workload, HttpClient& httpClient);
-
 	HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 
 	std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
