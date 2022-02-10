@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 			dataPackage01.guildId = this->voiceConnectInitData.guildId;
 			dataPackage01.selfDeaf = false;
 			dataPackage01.selfMute = false;
-			nlohmann::json newString01{ JSONIFY(dataPackage01) };
+			nlohmann::json newString01 = JSONIFY(dataPackage01);
 			this->sendMessage(newString01);
 			std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 			dataPackage.guildId = doWeCollect.guildId;
 			dataPackage.selfDeaf = false;
 			dataPackage.selfMute = false;
-			nlohmann::json newString{ JSONIFY(dataPackage) };
+			nlohmann::json newString = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newString);
 		}
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 				int32_t numOfMsToWait{ static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f))) };
 				std::this_thread::sleep_for(std::chrono::milliseconds(numOfMsToWait));
 				if (payload.at("d") == true) {
-					nlohmann::json identityJson{ JSONIFY(this->botToken, this->intentsValue) };
+					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
 					this->sendMessage(identityJson);
 				}
 				else {
@@ -498,7 +498,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::recursive_mutex> accesLock{ this->accessorMutex01 };
 			if (this->haveWeReceivedHeartbeatAck) {
-				nlohmann::json heartbeat{ JSONIFY(this->lastNumberReceived) };
+				nlohmann::json heartbeat = JSONIFY(this->lastNumberReceived);
 				this->sendMessage(heartbeat);
 				this->haveWeReceivedHeartbeatAck = false;
 			}
@@ -839,7 +839,7 @@ namespace DiscordCoreInternal {
 					this->voiceConnect();
 					this->collectExternalIP();
 					int32_t counterValue{ 0 };
-					std::vector<uint8_t> protocolPayloadSelectString{ JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0) };
+					std::vector<uint8_t> protocolPayloadSelectString = JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
 					if (this->webSocket != nullptr) {
 						this->sendMessage(protocolPayloadSelectString);
 					}
@@ -861,7 +861,7 @@ namespace DiscordCoreInternal {
 					} };
 					this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer{ DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval) };
 					this->haveWeReceivedHeartbeatAck = true;
-					std::vector<uint8_t> identifyPayload{ JSONIFY(this->voiceConnectionData, this->voiceConnectInitData) };
+					std::vector<uint8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
 					if (this->webSocket != nullptr) {
 						this->sendMessage(identifyPayload);
 					}
@@ -909,7 +909,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendHeartBeat() {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
-				std::vector<uint8_t> heartbeatPayload{ JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
+				std::vector<uint8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				if (this->webSocket != nullptr) {
 					this->sendMessage(heartbeatPayload);
 				}
