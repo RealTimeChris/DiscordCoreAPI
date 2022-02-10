@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 			reverseKey = regex_replace(matchResultsNew01[1].str(), std::regex("/g,'\\$"), "");
 #else
-			reverseKey = regex_replace(matchResultsNew01[0].str().substr(0, matchResultsNew01[0].str().find(":"), std::regex("/g,'\\$"), "");
+			reverseKey = regex_replace(matchResultsNew01[0].str().substr(0, matchResultsNew01[0].str().find(":")), std::regex("/g,'\\$"), "");
 #endif
 			reverseKey = regex_replace(reverseKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
@@ -317,7 +317,7 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 			sliceKey = regex_replace(matchResultsNew02[1].str(), std::regex("/g,'\\$"), "");
 #else
-			sliceKey = regex_replace(matchResultsNew02[0].str().substr(0, matchResultsNew02[0].str().find(":"), std::regex("/g,'\\$"), "");
+			sliceKey = regex_replace(matchResultsNew02[0].str().substr(0, matchResultsNew02[0].str().find(":")), std::regex("/g,'\\$"), "");
 #endif
 			sliceKey = regex_replace(sliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
@@ -330,7 +330,7 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 			spliceKey = regex_replace(matchResultsNew03[1].str(), std::regex("/g,'\\$"), "");
 #else
-			spliceKey = regex_replace(matchResultsNew03[0].str().substr(0, matchResultsNew03[0].str().find(":"), std::regex("/g,'\\$"), "");
+			spliceKey = regex_replace(matchResultsNew03[0].str().substr(0, matchResultsNew03[0].str().find(":")), std::regex("/g,'\\$"), "");
 #endif
 			spliceKey = regex_replace(spliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 			swapKey = regex_replace(matchResultsNew04[1].str(), std::regex("/g,'\\$"), "");
 #else
-			swapKey = regex_replace(matchResultsNew04[0].str().substr(0, matchResultsNew04[0].str().find(":"), std::regex("/g,'\\$"), "");
+			swapKey = regex_replace(matchResultsNew04[0].str().substr(0, matchResultsNew04[0].str().find(":")), std::regex("/g,'\\$"), "");
 #endif
 			swapKey = regex_replace(swapKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
