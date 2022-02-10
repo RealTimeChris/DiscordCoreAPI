@@ -260,12 +260,12 @@ namespace DiscordCoreInternal {
 				};
 				this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval);
 				if (!this->areWeAuthenticated) {
-					nlohmann::json identityJson{ JSONIFY(this->botToken, this->intentsValue) };
+					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
 					this->sendMessage(identityJson);
 				}
 				if (this->areWeResuming) {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
-					nlohmann::json resumePayload{ JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived) };
+					nlohmann::json resumePayload = JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived);
 					this->sendMessage(resumePayload);
 				}
 			}
