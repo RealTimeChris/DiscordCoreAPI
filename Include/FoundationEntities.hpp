@@ -126,7 +126,6 @@ namespace DiscordCoreAPI {
     class RespondToInputEventData;
     class EditFollowUpMessageData;
     class YouTubeRequestBuilder;
-    class DatabaseManagerAgent;
     class SelectMenuCollector;
     class DiscordCoreClient;
     class CreateMessageData;
@@ -3129,7 +3128,6 @@ namespace DiscordCoreAPI {
         friend DiscordCoreInternal::DataParser;
         friend SoundCloudRequestBuilder;
         friend YouTubeRequestBuilder;
-        friend DatabaseManagerAgent;
         friend SoundCloudSong;
         friend SoundCloudAPI;
         friend YouTubeSong;
