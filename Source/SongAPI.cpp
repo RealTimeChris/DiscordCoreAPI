@@ -17,18 +17,21 @@ namespace DiscordCoreAPI {
 
 	EventDelegateToken SongAPI::onSongCompletion(EventDelegate<CoRoutine<void>, SongCompletionEventData> handler, std::string guildId) {
 		auto returnValue = getSongAPIMap()->at(guildId).get();
-		if (returnValue != nullptr) {
-			if (!returnValue->areWeCurrentlyPlaying(guildId)) {
-				auto theToken = getSongAPIMap()->at(guildId)->onSongCompletionEvent.add(std::move(handler));
-				getSongAPIMap()->at(guildId)->eventDelegateToken = theToken;
-				return theToken;
-			}
+		if (returnValue != nullptr && !returnValue->areWeInstantiated) {
+			auto theToken = returnValue->onSongCompletionEvent.add(std::move(handler));
+			returnValue->areWeInstantiated = true;
+			returnValue->eventDelegateToken = theToken;
+			return theToken;
 		}
 		return EventDelegateToken{};
 	}
 
 	void SongAPI::onSongCompletion(EventDelegateToken token, std::string guildId) {
-		getSongAPIMap()->at(guildId)->onSongCompletionEvent.remove(token);
+		auto returnValue = getSongAPIMap()->at(guildId).get();
+		if (returnValue != nullptr) {
+			returnValue->onSongCompletionEvent.remove(token);
+			returnValue->areWeInstantiated = false;
+		}
 	}
 
 	bool SongAPI::sendNextSong() {

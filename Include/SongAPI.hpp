@@ -132,6 +132,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		std::unique_ptr<CoRoutine<void>>theTask{ nullptr };
+		bool areWeInstantiated{ false };
 
 		std::string guildId{ "" };
 
