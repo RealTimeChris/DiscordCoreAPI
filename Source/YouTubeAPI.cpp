@@ -301,16 +301,24 @@ namespace DiscordCoreAPI {
 		std::string reverseKey;
 		regex_search(objectBody, matchResultsNew01, reverseRegexp, std::regex_constants::match_not_null);
 		if (!matchResultsNew01.empty() && matchResultsNew01.size() > 0) {
-			std::cout << "THE STRING: " << matchResultsNew01[1].str() << std::endl;
+			std::cout << "THE STRING: " << matchResultsNew01[0].str() << std::endl;
+#ifdef _WIN32
 			reverseKey = regex_replace(matchResultsNew01[1].str(), std::regex("/g,'\\$"), "");
+#else
+			reverseKey = regex_replace(matchResultsNew01[0].str(), std::regex("/g,'\\$"), "");
+#endif
 			reverseKey = regex_replace(reverseKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew02;
 		std::string sliceKey;
 		regex_search(objectBody, matchResultsNew02, sliceRegexp, std::regex_constants::match_not_null);
 		if (!matchResultsNew02.empty() && matchResultsNew02.size() > 0) {
-			std::cout << "THE STRING: " << matchResultsNew02[1].str() << std::endl;
+			std::cout << "THE STRING: " << matchResultsNew02[0].str() << std::endl;
+#ifdef _WIN32
 			sliceKey = regex_replace(matchResultsNew02[1].str(), std::regex("/g,'\\$"), "");
+#else
+			sliceKey = regex_replace(matchResultsNew02[0].str(), std::regex("/g,'\\$"), "");
+#endif
 			sliceKey = regex_replace(sliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew03;
@@ -318,16 +326,24 @@ namespace DiscordCoreAPI {
 		regex_search(objectBody, matchResultsNew03, spliceRegexp, std::regex_constants::match_not_null);
 
 		if (!matchResultsNew03.empty() && matchResultsNew03.size() > 0) {
-			std::cout << "THE STRING: " << matchResultsNew03[1].str() << std::endl;
+			std::cout << "THE STRING: " << matchResultsNew03[0].str() << std::endl;
+#ifdef _WIN32
 			spliceKey = regex_replace(matchResultsNew03[1].str(), std::regex("/g,'\\$"), "");
+#else
+			spliceKey = regex_replace(matchResultsNew03[0].str(), std::regex("/g,'\\$"), "");
+#endif
 			spliceKey = regex_replace(spliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::smatch matchResultsNew04;
 		std::string swapKey;
 		regex_search(objectBody, matchResultsNew04, swapRegexp, std::regex_constants::match_not_null);
 		if (!matchResultsNew04.empty() && matchResultsNew04.size() > 0) {
-			std::cout << "THE STRING: " << matchResultsNew04[1].str() << std::endl;
+			std::cout << "THE STRING: " << matchResultsNew04[0].str() << std::endl;
+#ifdef _WIN32
 			swapKey = regex_replace(matchResultsNew04[1].str(), std::regex("/g,'\\$"), "");
+#else
+			swapKey = regex_replace(matchResultsNew04[0].str(), std::regex("/g,'\\$"), "");
+#endif
 			swapKey = regex_replace(swapKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::vector<std::string> keys{};
