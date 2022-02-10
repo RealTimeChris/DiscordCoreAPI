@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 			lastElement = static_cast<int32_t>(vectorToSlice.size());
 		}
 		if (lastElement > vectorToSlice.size()) {
-			throw std::exception("Sorry, but you've claimed a size for the std::vector that is larger than the input std::vector!");
+			throw std::runtime_error("Sorry, but you've claimed a size for the std::vector that is larger than the input std::vector!");
 		}
 		for (int32_t x = firstElement; x < lastElement; x += 1) {
 			newVector.push_back(vectorToSlice[x]);
@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 	std::vector<std::string> YouTubeRequestBuilder::getTokens(std::string html5PlayerFile) {
 		std::vector<std::string> tokens = YouTubeRequestBuilder::extractActions(html5PlayerFile);
 		if (tokens.size() == 0) {
-			throw std::exception("Could not extract signature deciphering actions");
+			throw std::runtime_error("Could not extract signature deciphering actions");
 		}
 		return tokens;
 	}
