@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 			}
 			else if (commandData->eventData.eventType == InputEventType::Application_Command_Interaction) {
 				auto jsonValue = commandData->eventData.getInteractionData().rawData;
-				DiscordCoreInternal::DataParser::parseObject(jsonValue, commandData.get());
+				DiscordCoreInternal::DataParser::parseObject(jsonValue, *commandData.get());
 				std::string newCommandName = this->commandPrefix + commandData->commandName;
 				functionPointer = this->getCommand(convertToLowerCase(newCommandName));
 				messageOption = false;
