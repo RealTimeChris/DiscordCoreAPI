@@ -314,7 +314,7 @@ namespace DiscordCoreInternal {
 			int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
 			if (theConnection.bucket != "" && this->connectionManager.rateLimitValues.contains(theConnection.bucket)) {
 				theConnection.rateLimitDataPtr = this->connectionManager.rateLimitValues.at(theConnection.bucket).get();
-				auto semaphorePtr = theConnection.rateLimitDataPtr->semaphore.get();
+				auto semaphorePtr = &theConnection.rateLimitDataPtr->semaphore;
 				semaphorePtr->acquire();
 				if (this->connectionManager.rateLimitValues.at(theConnection.bucket)->getsRemaining <= 0) {
 					int64_t targetTime = this->connectionManager.rateLimitValues.at(theConnection.bucket)->msRemain +
@@ -376,7 +376,6 @@ namespace DiscordCoreInternal {
 		try {
 			theConnection.resetValues();
 			if (theConnection.doWeConnect) {
-				std::cout << "We're connecting!" << std::endl;
 				if (!theConnection.connect(workload.baseUrl)) {
 					return HttpData{};
 				};

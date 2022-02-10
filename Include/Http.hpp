@@ -16,23 +16,6 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll RateLimitData;
 	struct DiscordCoreAPI_Dll HttpData;
 
-	class DiscordCoreAPI_Dll SemaphoreWrapper {
-	public:
-
-		SemaphoreWrapper() = default;
-		void acquire() {
-			this->semaphore.acquire();
-		}
-		void release() {
-			this->semaphore.release();
-		}
-		~SemaphoreWrapper() {
-			this->semaphore.release();
-		}
-	protected:
-		std::binary_semaphore semaphore{ 1 };
-	};
-
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
 		friend HttpClient;
@@ -54,6 +37,7 @@ namespace DiscordCoreInternal {
 		virtual ~HttpRnRBuilder() = default;
 
 	protected:
+
 		std::unordered_map<std::string, std::string> headers{};
 		bool doWeHaveContentSize{ false };
 		std::string contentFinal{ "" };
@@ -62,8 +46,11 @@ namespace DiscordCoreInternal {
 		int64_t contentSize{ -1 };
 		std::string inputBuffer{};
 		bool isItChunked{ false };
+
 		void parseSize();
+
 		void clearCRLF();
+
 		void parseCode();
 	};
 
@@ -90,7 +77,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::unique_ptr<SemaphoreWrapper> semaphore{ std::make_unique<SemaphoreWrapper>() };
+		std::binary_semaphore semaphore{ 1 };
 		int64_t sampledTimeInMs{ 0 };
 		std::string tempBucket{ "" };
 		int32_t getsRemaining{ 0 };
