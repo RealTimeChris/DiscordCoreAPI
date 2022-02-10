@@ -14,7 +14,7 @@
 ## Features
 ### CPU Efficient
 ----
-- It only uses about 0.1% of an i7 9750h to stream audio in high quality (@Opus 48Khz 16-bit Stereo) to a single server.
+- It only uses about 0.1% of an Intel i7 9750h to stream audio in high quality (@Opus 48Khz 16-bit Stereo) to a single server.
 ### Entire Discord API Covered
 ----
 - All of the Discord API endpoints are covered in this library, including voice communication.
