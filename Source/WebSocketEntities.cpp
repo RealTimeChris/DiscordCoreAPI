@@ -845,7 +845,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 				if (payload.at("op") == 4) {
-					for (uint32_t x{ 0 }; x < payload.at("d").at("secret_key").size(); x += 1) {
+					for (uint32_t x = 0; x < payload.at("d").at("secret_key").size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload.at("d").at("secret_key").at(x).get<uint8_t>());
 					}
 					this->connectionReadyEvent.set();
