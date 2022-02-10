@@ -5,7 +5,7 @@
 
 #pragma once
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #else
@@ -56,7 +56,7 @@
 #include <queue>
 #include <ios>
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef _DEBUG
 #define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW

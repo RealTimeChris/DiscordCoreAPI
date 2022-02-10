@@ -11,7 +11,7 @@ namespace DiscordCoreInternal {
 
 	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) :
 		inputBufferPtr(theInputBuffer) {
-#ifdef WIN32
+#ifdef _WIN32
 		this->soundcloudCertPath = "C:/SSL/certs/SoundCloudCert.pem";
 		this->defaultCertPath = "C:/SSL/certs/DiscordCert.pem";
 		this->googleCertPath = "C:/SSL/certs/GoogleCert.pem";
@@ -172,7 +172,7 @@ namespace DiscordCoreInternal {
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			std::cout << "select() Error: " << resultValue + ", ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;
@@ -269,7 +269,7 @@ namespace DiscordCoreInternal {
 		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "getaddrinfo() Error: " << returnValue + ", ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;
@@ -279,7 +279,7 @@ namespace DiscordCoreInternal {
 		this->theSocket = static_cast<DiscordCoreInternal::SOCKET>(socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol));
 		if (static_cast<SOCKET>(this->theSocket) == INVALID_SOCKET) {
 			std::cout << "socket() Error: ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;
@@ -289,14 +289,14 @@ namespace DiscordCoreInternal {
 		returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "connect() Error: ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;
 #endif
 			return;
 		}
-#ifdef WIN32
+#ifdef _WIN32
 		char optionValue{ true };
 		returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool));
 		if (returnValue == SOCKET_ERROR) {
@@ -362,7 +362,7 @@ namespace DiscordCoreInternal {
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			std::cout << "select() Error: " << resultValue + ", ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;
@@ -465,7 +465,7 @@ namespace DiscordCoreInternal {
 		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "getaddrinfo() Error: ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;
@@ -476,7 +476,7 @@ namespace DiscordCoreInternal {
 		this->theSocket = static_cast<DiscordCoreInternal::SOCKET>(socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol));
 		if (static_cast<SOCKET>(this->theSocket) == INVALID_SOCKET) {
 			std::cout << "socket() Error: ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;
@@ -487,7 +487,7 @@ namespace DiscordCoreInternal {
 		returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "connect() Error: ";
-#ifdef WIN32
+#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
 #else
 			std::cout << errno << std::endl;

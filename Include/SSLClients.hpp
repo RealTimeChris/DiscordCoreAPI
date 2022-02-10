@@ -9,7 +9,7 @@
 #define OPENSSL_NO_DEPRECATED
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #endif
@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
 				if (other != nullptr) {
-#ifdef WIN32
+#ifdef _WIN32
 					shutdown(*other, 2);
 					closesocket(*other);
 #else

@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
     }
 
     bool nanoSleep(int64_t ns) {
-#ifdef WIN32
+#ifdef _WIN32
         HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
         LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
         if (!timer) {
@@ -154,6 +154,7 @@ namespace DiscordCoreAPI {
             return false;
         }
     }
+
     std::string convertMsToDurationString(int32_t durationInMs) {
         std::string newString{ "" };
         int32_t msPerSecond{ 1000 };
