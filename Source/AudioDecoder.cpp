@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
                             this->newFrame->pts = frame->pts;
                             swr_convert_frame(this->swrContext, this->newFrame, this->frame);
                             int32_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
-                            std::vector<uint8_t> newVector{};
+                            std::string newVector{};
                             newVector.resize(unpadded_linesize);
                             for (int32_t x = 0; x < unpadded_linesize; x += 1) {
                                 newVector[x] = this->newFrame->extended_data[0][x];
@@ -259,7 +259,7 @@ namespace DiscordCoreAPI {
                                     swr_init(this->swrContext);
                                 }
                                 swr_convert_frame(this->swrContext, this->newFrame, nullptr);
-                                std::vector<uint8_t> newVector02{};
+                                std::string newVector02{};
                                 newVector02.resize(*this->newFrame->linesize);
                                 for (int32_t x = 0; x < *this->newFrame->linesize; x += 1) {
                                     newVector02[x] = this->newFrame->extended_data[0][x];

@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 				std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector{};
 				workloadVector.push_back(dataPackage03);
 				auto result = this->requestBuilder.submitWorkloadAndGetResult(workloadVector);
-				std::vector<uint8_t> newVector{};
+				std::string newVector{};
 				for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
 					newVector.push_back(result[0].responseMessage[x]);
 				}

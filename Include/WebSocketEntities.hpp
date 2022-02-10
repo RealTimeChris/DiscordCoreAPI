@@ -154,7 +154,6 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex accessorMutex01{};
 		const int32_t maxReconnectTries{ 10 };
 		bool serverUpdateCollected{ false };
-		std::vector<uint8_t> inputBuffer{};
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
@@ -168,6 +167,7 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
 		std::string port{ "443" };
+		std::string inputBuffer{};
 		uint32_t closeCode{ 0 };
 		bool doWeQuit{ false };
 		WebSocketState state{};
@@ -201,9 +201,9 @@ namespace DiscordCoreInternal {
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew);
 
-		void sendVoiceData(std::vector<uint8_t>& responseData);
-
 		void sendMessage(std::vector<uint8_t>& responseData);
+
+		void sendVoiceData(std::string& responseData);
 
 		void sendMessage(std::string& dataToSend);
 
@@ -232,11 +232,11 @@ namespace DiscordCoreInternal {
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		std::vector<uint8_t> inputBuffer00{};
-		std::vector<uint8_t> inputBuffer01{};
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::string relativePath{ "" };
+		std::string inputBuffer00{};
+		std::string inputBuffer01{};
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
 		std::string hostIp{ "" };

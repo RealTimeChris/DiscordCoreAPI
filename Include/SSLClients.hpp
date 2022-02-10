@@ -222,7 +222,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		int32_t maxBufferSize{ 16 * 1024 };
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> writeBuffer{};
+		std::string writeBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		std::string soundcloudCertPath{};
 		std::string defaultCertPath{};
@@ -243,7 +243,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		WebSocketSSLClient(std::string baseUrl, std::string port, std::vector<uint8_t>* inputBuffer, int64_t maxBufferSize = 16 * 1024);
+		WebSocketSSLClient(std::string baseUrl, std::string port, std::string* inputBuffer, int64_t maxBufferSize = 16 * 1024);
 
 		WebSocketSSLClient(nullptr_t);
 
@@ -261,9 +261,9 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int64_t maxBufferSize{ 1024 * 16 };
-		std::vector<uint8_t>* inputBufferPtr{};
+		std::string* inputBufferPtr{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> writeBuffer{};
+		std::string writeBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };
@@ -273,20 +273,20 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<uint8_t>*);
+		DatagramSocketSSLClient(std::string hostName, std::string port, std::string*);
 
 		DatagramSocketSSLClient(nullptr_t);
 
-		bool writeData(std::vector<uint8_t>& dataToWrite);
-
-		std::vector<uint8_t> getData();
+		bool writeData(std::string& dataToWrite);
 
 		void readData(bool doWeClear);
+
+		std::string getData();
 
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::vector<uint8_t>* inputBufferPtr{};
+		std::string* inputBufferPtr{};
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 	};
