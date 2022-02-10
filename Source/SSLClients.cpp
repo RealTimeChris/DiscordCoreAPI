@@ -16,7 +16,7 @@ namespace DiscordCoreInternal {
 		this->defaultCertPath = "C:/SSL/certs/DiscordCert.pem";
 		this->googleCertPath = "C:/SSL/certs/GoogleCert.pem";
 #else 
-		std::string userName = getenv("USER");
+		std::string userName{ getenv("USER") };
 		this->soundcloudCertPath = "/home/" + userName + "/SSL/Certs/SoundCloudCert.pem";
 		this->defaultCertPath = "/home/" + userName + "/SSL/Certs/DiscordCert.pem";
 		this->googleCertPath = "/home/" + userName + "/SSL/Certs/GoogleCert.pem";
@@ -49,8 +49,8 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
-			int32_t options = static_cast<int32_t>(SSL_CTX_get_options(this->context));
-			int32_t returnValue = static_cast<int32_t>(SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION));
+			auto options{ SSL_CTX_get_options(this->context) };
+			auto returnValue{ SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) };
 			if (returnValue != (options | SSL_OP_NO_COMPRESSION)) {
 				std::cout << "SSL_CTX_set_options() Error: ";
 				ERR_print_errors_fp(stdout);
@@ -116,7 +116,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
-			X509* cert = SSL_get_peer_certificate(this->ssl);
+			X509* cert{ SSL_get_peer_certificate(this->ssl) };
 			if (cert == nullptr) {
 				std::cout << "SSL_get_peer_certificate() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
 				ERR_print_errors_fp(stdout);
@@ -168,9 +168,8 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &readSet);
 			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
-		timeval checkTime{};
-		checkTime.tv_sec = 1;
-		auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime);
+		timeval checkTime{ .tv_sec = 1 };
+		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			std::cout << "select() Error: " << resultValue + ", ";
 #ifdef _WIN32
@@ -190,8 +189,8 @@ namespace DiscordCoreInternal {
 				std::cout << "ssl is nullptr. " << std::endl;
 				return false;
 			}
-			int32_t returnValue = SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes);
-			int32_t errorValue = SSL_get_error(this->ssl, returnValue);
+			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
 				this->writeBuffer.clear();
@@ -225,8 +224,8 @@ namespace DiscordCoreInternal {
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
-			int32_t returnValue = SSL_read_ex(this->ssl, serverToClientBuffer.data(), static_cast<int32_t>(this->maxBufferSize), &readBytes);
-			int32_t errorValue = SSL_get_error(this->ssl, returnValue);
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), static_cast<int32_t>(this->maxBufferSize), &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
 				if (readBytes > 0) {
@@ -267,7 +266,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
-		int32_t returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress);
+		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "getaddrinfo() Error: " << returnValue + ", ";
 #ifdef _WIN32
@@ -298,7 +297,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 #ifdef _WIN32
-		char optionValue = true;
+		char optionValue{ true };
 		returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "setsockopt() Error: ";
@@ -359,9 +358,8 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &readSet);
 			nfds = std::max(static_cast<int>(this->theSocket), nfds);
 		}
-		timeval checkTime{};
-		checkTime.tv_sec = 1;
-		auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime);
+		timeval checkTime{ .tv_sec = 1 };
+		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			std::cout << "select() Error: " << resultValue + ", ";
 #ifdef _WIN32
@@ -381,8 +379,8 @@ namespace DiscordCoreInternal {
 				std::cout << "ssl is nullptr. " << std::endl;
 				return false;
 			}
-			int32_t returnValue = SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes);
-			int32_t errorValue = SSL_get_error(this->ssl, returnValue);
+			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
 				this->writeBuffer.clear();
@@ -416,8 +414,8 @@ namespace DiscordCoreInternal {
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
-			int32_t returnValue = SSL_read_ex(this->ssl, serverToClientBuffer.data(), static_cast<int32_t>(this->maxBufferSize), &readBytes);
-			int32_t errorValue = SSL_get_error(this->ssl, returnValue);
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), static_cast<int32_t>(this->maxBufferSize), &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
 				if (readBytes > 0) {
@@ -464,7 +462,7 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		int32_t returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress);
+		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "getaddrinfo() Error: ";
 #ifdef _WIN32
@@ -512,9 +510,7 @@ namespace DiscordCoreInternal {
 			std::cout << std::endl;
 			return;
 		}
-		timeval timeout{};
-		timeout.tv_sec = 1;
-		timeout.tv_usec = 0;
+		timeval timeout{ .tv_sec = 1 };
 		BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_RECV_TIMEOUT, 0, &timeout);
 		BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_SEND_TIMEOUT, 0, &timeout);
 		return;
@@ -528,7 +524,7 @@ namespace DiscordCoreInternal {
 			std::cout << "DatagramSocketSSLClient() Error: Missing connectionBio!";
 			return false;
 		}
-		int32_t returnValue = BIO_write_ex(this->connectionBio, data.data(), static_cast<uint32_t>(data.size()), &writtenBytes);
+		auto returnValue{ BIO_write_ex(this->connectionBio, data.data(), static_cast<uint32_t>(data.size()), &writtenBytes) };
 		if (returnValue != 1) {
 			std::cout << "BIO_write_ex() Error: ";
 			ERR_print_errors_fp(stdout);
@@ -550,7 +546,7 @@ namespace DiscordCoreInternal {
 		std::vector<uint8_t>  serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		size_t readBytes{ 0 };
-		int32_t returnValue = BIO_read_ex(this->connectionBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes);
+		auto returnValue{ BIO_read_ex(this->connectionBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
 		if (returnValue == 1) {
 			if (readBytes > 0) {
 				this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);

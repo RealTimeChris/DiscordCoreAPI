@@ -51,10 +51,10 @@ namespace DiscordCoreInternal {
 				}
 			}
 			std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
-			std::vector<uint8_t> theVector = this->erlPacker.parseJsonToEtf(dataToSend);
+			std::vector<uint8_t> theVector{ this->erlPacker.parseJsonToEtf(dataToSend) };
 			std::string out{};
 			out.resize(this->maxHeaderSize);
-			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
+			auto size{ this->createHeader(out.data(), theVector.size(), this->dataOpcode) };
 			std::string header(out.data(), size);
 			std::vector<uint8_t> theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
@@ -122,20 +122,20 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::recursive_mutex> getVoiceConnectionDataLock{ this->accessorMutex01 };
 			this->voiceConnectInitData = doWeCollect;
-			DiscordCoreAPI::UpdateVoiceStateData dataPackage01;
+			DiscordCoreAPI::UpdateVoiceStateData dataPackage01{};
 			dataPackage01.channelId = "";
 			dataPackage01.guildId = this->voiceConnectInitData.guildId;
 			dataPackage01.selfDeaf = false;
 			dataPackage01.selfMute = false;
-			nlohmann::json newString01 = JSONIFY(dataPackage01);
+			nlohmann::json newString01{ JSONIFY(dataPackage01) };
 			this->sendMessage(newString01);
 			std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-			DiscordCoreAPI::UpdateVoiceStateData dataPackage;
+			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 			dataPackage.channelId = doWeCollect.channelId;
 			dataPackage.guildId = doWeCollect.guildId;
 			dataPackage.selfDeaf = false;
 			dataPackage.selfMute = false;
-			nlohmann::json newString = JSONIFY(dataPackage);
+			nlohmann::json newString{ JSONIFY(dataPackage) };
 			this->areWeCollectingData = true;
 			this->sendMessage(newString);
 		}
@@ -171,7 +171,7 @@ namespace DiscordCoreInternal {
 
 	bool BaseSocketAgent::onMessageReceived() {
 		try {
-			std::vector<uint8_t> messageNew = this->webSocket->getData();
+			std::vector<uint8_t> messageNew{ this->webSocket->getData() };
 			nlohmann::json payload{};
 			try {
 				payload = this->erlPacker.parseEtfToJson(&messageNew);
@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 			}
 			if (this->areWeCollectingData && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
 				if (this->serverUpdateCollected != true && this->stateUpdateCollected != true) {
-					this->voiceConnectionData = VoiceConnectionData();
+					this->voiceConnectionData = VoiceConnectionData{};
 					this->voiceConnectionData.endPoint = payload.at("d").at("endpoint").get<std::string>();
 					this->voiceConnectionData.token = payload.at("d").at("token").get<std::string>();
 					this->serverUpdateCollected = true;
@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 			}
 			if (this->areWeCollectingData && payload.at("t") == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload.at("d").at("member").at("user").at("id") == this->voiceConnectInitData.userId) {
 				if (this->stateUpdateCollected != true && this->serverUpdateCollected != true) {
-					this->voiceConnectionData = VoiceConnectionData();
+					this->voiceConnectionData = VoiceConnectionData{};
 					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<std::string>();
 					this->stateUpdateCollected = true;
 				}
@@ -241,10 +241,10 @@ namespace DiscordCoreInternal {
 				srand(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				this->areWeConnected.store(false, std::memory_order_release);
 				this->currentReconnectTries += 1;
-				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));
+				int32_t numOfMsToWait{ static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f))) };
 				std::this_thread::sleep_for(std::chrono::milliseconds(numOfMsToWait));
 				if (payload.at("d") == true) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
+					nlohmann::json identityJson{ JSONIFY(this->botToken, this->intentsValue) };
 					this->sendMessage(identityJson);
 				}
 				else {
@@ -262,12 +262,12 @@ namespace DiscordCoreInternal {
 				};
 				this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval);
 				if (!this->areWeAuthenticated) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
+					nlohmann::json identityJson{ JSONIFY(this->botToken, this->intentsValue) };
 					this->sendMessage(identityJson);
 				}
 				if (this->areWeResuming) {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
-					nlohmann::json resumePayload = JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived);
+					nlohmann::json resumePayload{ JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived) };
 					this->sendMessage(resumePayload);
 				}
 			}
@@ -500,7 +500,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::recursive_mutex> accesLock{ this->accessorMutex01 };
 			if (this->haveWeReceivedHeartbeatAck) {
-				nlohmann::json heartbeat = JSONIFY(this->lastNumberReceived);
+				nlohmann::json heartbeat{ JSONIFY(this->lastNumberReceived) };
 				this->sendMessage(heartbeat);
 				this->haveWeReceivedHeartbeatAck = false;
 			}
@@ -525,7 +525,7 @@ namespace DiscordCoreInternal {
 					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
 					std::vector<std::string> headerOut = tokenize(headers);
 					if (headerOut.size()) {
-						std::string statusLine = headerOut[0];
+						std::string statusLine{ headerOut[0] };
 						headerOut.erase(headerOut.begin());
 						std::vector<std::string> status = tokenize(statusLine, " ");
 						if (status.size() >= 3 && status[1] == "101") {
@@ -553,7 +553,7 @@ namespace DiscordCoreInternal {
 
 	bool BaseSocketAgent::parseHeader() {
 		try {
-			std::vector<uint8_t> newVector = this->inputBuffer;
+			std::vector<uint8_t> newVector{ this->inputBuffer };
 			if (this->inputBuffer.size() < 4) {
 				return false;
 			}
@@ -566,18 +566,18 @@ namespace DiscordCoreInternal {
 				case WebSocketOpCode::Op_Ping:
 				case WebSocketOpCode::Op_Pong:
 				{
-					uint8_t length01 = this->inputBuffer[1];
-					int32_t payloadStartOffset = 2;
+					uint8_t length01{ this->inputBuffer[1] };
+					int32_t payloadStartOffset{ 2 };
 					if (length01 & this->webSocketMaskBit) {
 						return false;
 					}
-					uint64_t length02 = length01;
+					uint64_t length02{ length01 };
 					if (length01 == this->webSocketPayloadLengthMagicLarge) {
 						if (this->inputBuffer.size() < 8) {
 							return false;
 						}
-						uint8_t length03 = this->inputBuffer[2];
-						uint8_t length04 = this->inputBuffer[3];
+						uint8_t length03{ this->inputBuffer[2] };
+						uint8_t length04{ this->inputBuffer[3] };
 						length02 = static_cast<uint64_t>((length03 << 8) | length04);
 						payloadStartOffset += 2;
 					}
@@ -587,7 +587,7 @@ namespace DiscordCoreInternal {
 						}
 						length02 = 0;
 						for (int32_t value = 2, shift = 56; value < 10; ++value, shift -= 8) {
-							uint8_t length05 = static_cast<uint8_t>(this->inputBuffer[value]);
+							uint8_t length05{ static_cast<uint8_t>(this->inputBuffer[value]) };
 							length02 |= static_cast<uint64_t>(length05) << static_cast<uint64_t>(shift);
 						}
 						payloadStartOffset += 8;
@@ -608,7 +608,7 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case WebSocketOpCode::Op_Close: {
-					uint16_t close = this->inputBuffer[2];
+					uint16_t close{ this->inputBuffer[2] };
 					close <<= 8;
 					close |= (this->inputBuffer[3]);
 					this->closeCode = close;
@@ -661,9 +661,9 @@ namespace DiscordCoreInternal {
 			if (this->heartbeatTimer.running()) {
 				this->heartbeatTimer.cancel();
 			}
-			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
+			std::string sendVector{ "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n" };
 			this->sendMessage(sendVector);
 		}
 		catch (...) {
@@ -712,8 +712,8 @@ namespace DiscordCoreInternal {
 			std::cout << "Sending Voice WebSocket Message: " << newString << std::endl << std::endl;
 			std::vector<char> out{};
 			out.resize(this->maxHeaderSize);
-			size_t size = this->createHeader(out.data(), dataToSend.size(), this->dataOpcode);
-			std::string header(out.data(), size);
+			size_t size{ this->createHeader(out.data(), dataToSend.size(), this->dataOpcode) };
+			std::string header{ out.data(), size };
 			std::vector<uint8_t> theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), dataToSend.begin(), dataToSend.end());
@@ -738,7 +738,7 @@ namespace DiscordCoreInternal {
 
 	uint64_t VoiceSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) {
 		try {
-			size_t position = 0;
+			size_t position{ 0 };
 			outBuffer[position++] = this->webSocketFinishBit | static_cast<unsigned char>(opCode);
 			if (sendlength <= this->webSocketMaxPayloadLengthSmall)
 			{
@@ -753,7 +753,7 @@ namespace DiscordCoreInternal {
 			else
 			{
 				outBuffer[position++] = this->webSocketPayloadLengthMagicHuge;
-				const uint64_t length02 = sendlength;
+				const uint64_t length02{ sendlength };
 				for (int32_t x = sizeof(uint64_t) - 1; x >= 0; x--) {
 					outBuffer[position++] = static_cast<unsigned char>(length02 >> x * 8);
 				}
@@ -792,7 +792,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::CoRoutine<void> VoiceSocketAgent::run() {
 		try {
-			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
+			auto cancelHandle{ co_await DiscordCoreAPI::NewThreadAwaitable<void>() };
 			this->connect();
 			while (!this->doWeQuit && !cancelHandle.promise().isItStopped()) {
 				if (this->doWeReconnect.wait(0) == 1) {
@@ -821,9 +821,9 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::onMessageReceived() {
 		try {
 			std::string message{};
-			std::vector<uint8_t> theVector = this->webSocket->getData();
+			std::vector<uint8_t> theVector{ this->webSocket->getData() };
 			message.insert(message.begin(), theVector.begin(), theVector.end());
-			nlohmann::json payload = payload.parse(message);
+			nlohmann::json payload{ payload.parse(message) };
 			std::cout << "Message received from Voice WebSocket: " << message << std::endl << std::endl;
 			if (payload.contains("op")) {
 				if (payload.at("op") == 6) {
@@ -841,13 +841,13 @@ namespace DiscordCoreInternal {
 					this->voiceConnect();
 					this->collectExternalIP();
 					int32_t counterValue{ 0 };
-					std::vector<uint8_t> protocolPayloadSelectString = JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
+					std::vector<uint8_t> protocolPayloadSelectString{ JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0) };
 					if (this->webSocket != nullptr) {
 						this->sendMessage(protocolPayloadSelectString);
 					}
 				}
 				if (payload.at("op") == 4) {
-					for (uint32_t x = 0; x < payload.at("d").at("secret_key").size(); x += 1) {
+					for (uint32_t x{ 0 }; x < payload.at("d").at("secret_key").size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload.at("d").at("secret_key").at(x).get<uint8_t>());
 					}
 					this->connectionReadyEvent.set();
@@ -863,7 +863,7 @@ namespace DiscordCoreInternal {
 					} };
 					this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer{ DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval) };
 					this->haveWeReceivedHeartbeatAck = true;
-					std::vector<uint8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
+					std::vector<uint8_t> identifyPayload{ JSONIFY(this->voiceConnectionData, this->voiceConnectInitData) };
 					if (this->webSocket != nullptr) {
 						this->sendMessage(identifyPayload);
 					}
@@ -911,7 +911,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendHeartBeat() {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
-				std::vector<uint8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				std::vector<uint8_t> heartbeatPayload{ JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
 				if (this->webSocket != nullptr) {
 					this->sendMessage(heartbeatPayload);
 				}
@@ -944,13 +944,13 @@ namespace DiscordCoreInternal {
 			case WebSocketState::Initializing:
 				newVector.insert(newVector.begin(), this->inputBuffer00.begin(), this->inputBuffer00.end());
 				if (newVector.find("\r\n\r\n") != std::string::npos) {
-					std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
+					std::string headers{ newVector.substr(0, newVector.find("\r\n\r\n")) };
 					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
-					std::vector<std::string> headerOut = tokenize(headers);
+					std::vector<std::string> headerOut{ tokenize(headers) };
 					if (headerOut.size()) {
 						std::string statusLine = headerOut[0];
 						headerOut.erase(headerOut.begin());
-						std::vector<std::string> status = tokenize(statusLine, " ");
+						std::vector<std::string> status{ tokenize(statusLine, " ") };
 						if (status.size() >= 3 && status[1] == "101") {
 							this->state = WebSocketState::Connected;
 							this->inputBuffer00.clear();
@@ -976,7 +976,7 @@ namespace DiscordCoreInternal {
 
 	bool VoiceSocketAgent::parseHeader() {
 		try {
-			std::vector<uint8_t> newVector = this->inputBuffer00;
+			std::vector<uint8_t> newVector{ this->inputBuffer00 };
 			if (this->inputBuffer00.size() < 4) {
 				return false;
 			}
@@ -989,18 +989,18 @@ namespace DiscordCoreInternal {
 				case WebSocketOpCode::Op_Ping:
 				case WebSocketOpCode::Op_Pong:
 				{
-					uint8_t length01 = this->inputBuffer00[1];
-					int32_t payloadStartOffset = 2;
+					uint8_t length01{ this->inputBuffer00[1] };
+					int32_t payloadStartOffset{ 2 };
 					if (length01 & this->webSocketMaskBit) {
 						return false;
 					}
-					uint64_t length02 = length01;
+					uint64_t length02{ length01 };
 					if (length01 == this->webSocketPayloadLengthMagicLarge) {
 						if (this->inputBuffer00.size() < 8) {
 							return false;
 						}
-						uint8_t length03 = this->inputBuffer00[2];
-						uint8_t length04 = this->inputBuffer00[3];
+						uint8_t length03{ this->inputBuffer00[2] };
+						uint8_t length04{ this->inputBuffer00[3] };
 						length02 = static_cast<uint64_t>((length03 << 8) | length04);
 						payloadStartOffset += 2;
 					}
@@ -1009,8 +1009,8 @@ namespace DiscordCoreInternal {
 							return false;
 						}
 						length02 = 0;
-						for (int32_t value = 2, shift = 56; value < 10; ++value, shift -= 8) {
-							uint8_t length05 = static_cast<uint8_t>(this->inputBuffer00[value]);
+						for (int32_t value{ 2 }, shift = 56; value < 10; ++value, shift -= 8) {
+							uint8_t length05{ static_cast<uint8_t>(this->inputBuffer00[value]) };
 							length02 |= static_cast<uint64_t>(length05) << static_cast<uint64_t>(shift);
 						}
 						payloadStartOffset += 8;
@@ -1031,7 +1031,7 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case WebSocketOpCode::Op_Close: {
-					uint16_t close = this->inputBuffer00[2];
+					uint16_t close{ this->inputBuffer00[2] };
 					close <<= 8;
 					close |= this->inputBuffer00[3];
 					this->closeCode = close;
@@ -1076,9 +1076,9 @@ namespace DiscordCoreInternal {
 			this->heartbeatTimer.cancel();
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", &this->inputBuffer00);
 			this->state = WebSocketState::Initializing;
-			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
+			std::string sendVector{ "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n" };
 			this->sendMessage(sendVector);
 		}
 		catch (...) {
