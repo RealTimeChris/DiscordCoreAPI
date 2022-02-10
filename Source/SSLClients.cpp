@@ -286,16 +286,24 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
+		
+#ifdef _WIN32
 		char optionValue{ true };
 		returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "setsockopt() Error: ";
-#ifdef _WIN32
 			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
 		}
+#else
+		int optionValue{ 1 };
+		returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue));
+		if (returnValue == SOCKET_ERROR) {
+			std::cout << "setsockopt() Error: ";
+			std::cout << WSAGetLastError() << std::endl;
+			std::cout << strerror(errno) << std::endl;
+		}
+#endif
+		
 		this->context = SSL_CTX_new(TLS_client_method());
 		if (this->context == nullptr) {
 			std::cout << "SSL_CTX_new() Error: ";
