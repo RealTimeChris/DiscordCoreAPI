@@ -45,8 +45,10 @@ namespace DiscordCoreAPI {
     }
 
     ThreadPoolTimer& ThreadPoolTimer::operator=(ThreadPoolTimer&& other) noexcept {
-        this->threadId = std::move(other.threadId);
-        other.threadId = "";
+        if (this != &other) {
+            this->threadId = std::move(other.threadId);
+            other.threadId = "";
+        }
         return *this;
     }
 

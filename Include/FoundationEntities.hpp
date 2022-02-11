@@ -448,8 +448,10 @@ namespace DiscordCoreAPI {
     public:
 
         UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) {
-            this->theArray = std::move(other.theArray);
-            other.theArray = std::queue<ObjectType>{};
+            if (this != &other) {
+                this->theArray = std::move(other.theArray);
+                other.theArray = std::queue<ObjectType>{};
+            }
             return *this;
         }
 
@@ -499,8 +501,10 @@ namespace DiscordCoreAPI {
     public:
 
         TSUnboundedMessageBlock<ObjectType>& operator=(TSUnboundedMessageBlock<ObjectType>&& other) noexcept {
-            this->theArray = std::move(other.theArray);
-            other.theArray = std::queue<ObjectType>{};
+            if (this != &other) {
+                this->theArray = std::move(other.theArray);
+                other.theArray = std::queue<ObjectType>{};
+            }
             return *this;
         }
 
