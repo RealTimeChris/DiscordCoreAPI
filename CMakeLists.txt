@@ -2,9 +2,9 @@
 set(VCPKG_BASE_DIR "C:/vcpkg" )
 
 if(UNIX)
-	cmake_minimum_required(VERSION 3.16.1)
 	ProcessorCount(N)
 	set(CMAKE_BUILD_PARALLEL_LEVEL N)
+	cmake_minimum_required(VERSION 3.16.1)	
 	set(CMAKE_CXX_COMPILER "/usr/bin/g++-11")
 	project(DiscordCoreAPI-Linux VERSION 1.00 LANGUAGES CXX)
 	add_subdirectory(Executable)
