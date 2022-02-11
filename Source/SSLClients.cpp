@@ -7,6 +7,15 @@
 
 namespace DiscordCoreInternal {
 
+	void reportError(std::string errorPosition, int32_t errorValue) {
+		std::cout << errorPosition << errorValue;
+#ifdef _WIN32
+		std::cout << WSAGetLastError() << std::endl;
+#else
+		std::cout << strerror(errno) << std::endl;
+#endif
+	}
+
 	HttpSSLClient::HttpSSLClient(nullptr_t other) {};
 
 	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) :
@@ -185,12 +194,7 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_sec = 1 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
-			std::cout << "select() Error: " << resultValue + ", ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("select() Error: ", resultValue);
 			return false;
 		}
 		else if (resultValue == 0) {
@@ -272,34 +276,19 @@ namespace DiscordCoreInternal {
 
 		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "getaddrinfo() Error: " << returnValue + ", ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("getaddrinfo() Error: ", returnValue);
 			return;
 		}
 
 		this->theSocket = static_cast<DiscordCoreInternal::SOCKET>(socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol));
 		if (static_cast<SOCKET>(this->theSocket) == INVALID_SOCKET) {
-			std::cout << "socket() Error: ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("socket() Error: ", returnValue);
 			return;
 		}
 
 		returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "connect() Error: ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("connect() Error: ", returnValue);
 			return;
 		}
 
@@ -307,16 +296,14 @@ namespace DiscordCoreInternal {
 		char optionValue{ true };
 		returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool));
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "setsockopt() Error: ";
-			std::cout << WSAGetLastError() << std::endl;
+			reportError("setsockopt() Error: ", returnValue);
 			return;
 		}
 #else
 		int32_t optionValue{ 1 };
 		returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue));
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "setsockopt() Error: ";
-			std::cout << strerror(errno) << std::endl;
+			reportError("setsockopt() Error: ", returnValue);
 			return;
 		}
 #endif		
@@ -379,12 +366,7 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_sec = 1 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
-			std::cout << "select() Error: " << resultValue + ", ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("select() Error: ", resultValue);
 			return false;
 		}
 		else if (resultValue == 0) {
@@ -459,7 +441,7 @@ namespace DiscordCoreInternal {
 	int64_t WebSocketSSLClient::getBytesRead() {
 		return this->bytesRead;
 	}
-
+	
 	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<uint8_t>* theInputBuffer) :
 		inputBufferPtr(theInputBuffer)
 	{
@@ -471,34 +453,19 @@ namespace DiscordCoreInternal {
 
 		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "getaddrinfo() Error: ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("getaddrinfo() Error: ", returnValue);
 			return;
 		}
 
 		this->theSocket = static_cast<DiscordCoreInternal::SOCKET>(socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol));
 		if (static_cast<SOCKET>(this->theSocket) == INVALID_SOCKET) {
-			std::cout << "socket() Error: ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("socket() Error: ", returnValue);
 			return;
 		}
 
 		returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "connect() Error: ";
-#ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
-#else
-			std::cout << strerror(errno) << std::endl;
-#endif
+			reportError("connect() Error: ", returnValue);
 			return;
 		}
 
@@ -506,8 +473,7 @@ namespace DiscordCoreInternal {
 		u_long value{ 1 };
 		returnValue = ioctlsocket(this->theSocket, FIONBIO, &value);
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "ioctlsocket() Error: ";
-			std::cout << WSAGetLastError() << std::endl;
+			reportError("ioctlsocket() Error: ", returnValue);
 			return;
 		}
 #else
@@ -515,8 +481,7 @@ namespace DiscordCoreInternal {
 		ofcmode |= O_NDELAY;
 		returnValue = fcntl(this->theSocket, F_SETFL, ofcmode;
 		if (returnValue == SOCKET_ERROR) {
-			std::cout << "fcntl() Error: ";
-			std::cout << strerror(errno) << std::end;
+			reportError("fcntl() Error: ", returnValue);
 			return;
 		}
 #endif
