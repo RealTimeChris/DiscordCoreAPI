@@ -32,6 +32,7 @@ namespace DiscordCoreInternal {
 			else if (baseUrl.find(".org") != std::string::npos) {
 				baseUrlNew = baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 			}
+
 			std::string certPath{};
 			if (baseUrlNew.find("soundcloud") != std::string::npos || baseUrlNew.find("sndcdn") != std::string::npos) {
 				certPath = this->soundcloudCertPath;
@@ -42,6 +43,7 @@ namespace DiscordCoreInternal {
 			else {
 				certPath = this->defaultCertPath;
 			}
+
 			this->context = SSL_CTX_new(TLS_client_method());
 			if (this->context == nullptr) {
 				std::cout << "SSL_CTX_new() Error: ";
@@ -49,6 +51,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			auto options{ SSL_CTX_get_options(this->context) };
 			auto returnValue{ SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) };
 			if (returnValue != (options | SSL_OP_NO_COMPRESSION)) {
@@ -57,6 +60,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER, nullptr);
 			SSL_CTX_set_verify_depth(this->context, 4);
 			returnValue = SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL);
@@ -66,6 +70,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			returnValue = SSL_CTX_set_cipher_list(this->context, "ALL");
 			if (returnValue != 1) {
 				std::cout << "SSL_CTX_set_cipher_list() Error: ";
@@ -73,6 +78,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			returnValue = SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256");
 			if (returnValue != 1) {
 				std::cout << "SSL_CTX_set_ciphersuites() Error: ";
@@ -80,6 +86,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			this->connectionBio = BIO_new_ssl_connect(this->context);
 			if (this->connectionBio == nullptr) {
 				std::cout << "BIO_new_ssl_connect() Error: ";
@@ -95,13 +102,15 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			BIO_get_ssl(this->connectionBio, &this->ssl);
 			if (this->ssl == nullptr) {
 				std::cout << "BIO_get_ssl() Error: ";
 				ERR_print_errors_fp(stdout);
 				std::cout << std::endl;
 				return false;
-			};
+			}
+
 			returnValue = SSL_set_tlsext_host_name(this->ssl, std::string(baseUrlNew + ":" + portNew).c_str());
 			if (returnValue != 1) {
 				std::cout << "SSL_set_tlsext_host_name() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
@@ -109,6 +118,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			returnValue = SSL_connect(this->ssl);
 			if (returnValue != 1) {
 				std::cout << "SSL_connect() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
@@ -116,6 +126,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			X509* cert{ SSL_get_peer_certificate(this->ssl) };
 			if (cert == nullptr) {
 				std::cout << "SSL_get_peer_certificate() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
@@ -123,10 +134,12 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			if (cert) {
 				X509_free(cert);
 				cert = nullptr;
 			}
+
 			returnValue = SSL_get_verify_result(this->ssl);
 			if (returnValue != X509_V_OK) {
 				std::cout << "SSL_get_verify_result() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
@@ -134,6 +147,7 @@ namespace DiscordCoreInternal {
 				std::cout << std::endl;
 				return false;
 			}
+
 			this->theSocket = SSL_get_fd(this->ssl);
 			if (this->theSocket == INVALID_SOCKET) {
 				std::cout << "SSL_get_fd() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
@@ -255,6 +269,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
+
 		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "getaddrinfo() Error: " << returnValue + ", ";
@@ -265,6 +280,7 @@ namespace DiscordCoreInternal {
 #endif
 			return;
 		}
+
 		this->theSocket = static_cast<DiscordCoreInternal::SOCKET>(socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol));
 		if (static_cast<SOCKET>(this->theSocket) == INVALID_SOCKET) {
 			std::cout << "socket() Error: ";
@@ -275,6 +291,7 @@ namespace DiscordCoreInternal {
 #endif
 			return;
 		}
+
 		returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "connect() Error: ";
@@ -286,7 +303,6 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		
 #ifdef _WIN32
 		char optionValue{ true };
 		returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool));
@@ -303,8 +319,7 @@ namespace DiscordCoreInternal {
 			std::cout << strerror(errno) << std::endl;
 			return;
 		}
-#endif
-		
+#endif		
 		this->context = SSL_CTX_new(TLS_client_method());
 		if (this->context == nullptr) {
 			std::cout << "SSL_CTX_new() Error: ";
@@ -312,6 +327,7 @@ namespace DiscordCoreInternal {
 			std::cout << std::endl;
 			return;
 		}
+
 		this->ssl = SSL_new(this->context);
 		if (this->ssl == nullptr) {
 			std::cout << "SSL_new() Error: ";
@@ -319,6 +335,7 @@ namespace DiscordCoreInternal {
 			std::cout << std::endl;
 			return;
 		}
+
 		returnValue = SSL_set_fd(this->ssl, this->theSocket);
 		if (returnValue != 1) {
 			std::cout << "SSL_set_fd() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
@@ -326,6 +343,7 @@ namespace DiscordCoreInternal {
 			std::cout << std::endl;
 			return;
 		}
+
 		returnValue = SSL_connect(this->ssl);
 		if (returnValue != 1) {
 			std::cout << "SSL_connect() Error: " << SSL_get_error(this->ssl, returnValue) << std::endl;
@@ -499,6 +517,7 @@ namespace DiscordCoreInternal {
 			std::cout << std::endl;
 			return;
 		}
+
 		timeval timeout{ .tv_sec = 1 };
 		BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_RECV_TIMEOUT, 0, &timeout);
 		BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_SEND_TIMEOUT, 0, &timeout);
