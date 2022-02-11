@@ -36,11 +36,10 @@ namespace DiscordCoreAPI {
         }
         WaitForSingleObjectEx(timer, INFINITE, false);
         CloseHandle(timer);
-        return true;
 #else
         std::this_thread::sleep_for(std::chrono::nanoseconds{ ns });
-        return true;
 #endif
+        return true;
     }
 
     void spinLock(int64_t timeInNsToSpinLockFor) {
