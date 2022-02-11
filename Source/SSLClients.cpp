@@ -478,8 +478,8 @@ namespace DiscordCoreInternal {
 		}
 #else
 		int ofcmode{ fcntl(this->theSocket, F_GETFL, 0) };
-		ofcmode |= O_NDELAY;
-		returnValue = fcntl(this->theSocket, F_SETFL, ofcmode;
+		ofcmode |= O_NONBLOCK;
+		returnValue = fcntl(this->theSocket, F_SETFL, ofcmode);
 		if (returnValue == SOCKET_ERROR) {
 			reportError("fcntl() Error: ", returnValue);
 			return;
