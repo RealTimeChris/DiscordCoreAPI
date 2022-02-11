@@ -30,8 +30,10 @@ namespace DiscordCoreAPI {
         class DiscordCoreAPI_Dll promise_type {
         public:
 
-            friend auto NewThreadAwaitable<ReturnType>();
-            friend class CoRoutine<ReturnType>;
+            template<typename ReturnType02>
+            friend auto NewThreadAwaitable();
+            template<typename ReturnType02>
+            friend class CoRoutine;
 
             promise_type() {};
 
@@ -189,9 +191,10 @@ namespace DiscordCoreAPI {
         class DiscordCoreAPI_Dll promise_type {
         public:
 
-            template<typename ReturnType>
+            template<typename void02>
             friend auto NewThreadAwaitable();
-            friend class CoRoutine<void>;
+            template<typename void02>
+            friend class CoRoutine;
 
             promise_type() {};
 

@@ -53,7 +53,8 @@ namespace DiscordCoreAPI {
     class EventDelegate {
     public:
 
-        friend class Event<ReturnType, ArgTypes...>;
+        template<typename ReturnType02, typename... ArgTypes02>
+        friend class Event;
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
