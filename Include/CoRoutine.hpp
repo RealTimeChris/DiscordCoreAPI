@@ -30,11 +30,10 @@ namespace DiscordCoreAPI {
         class DiscordCoreAPI_Dll promise_type {
         public:
 
-            UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-            std::condition_variable condVar{};
-            std::mutex lockMutex{};
-            ReturnType result;
+            template<typename ReturnType02>
+            friend auto NewThreadAwaitable();
+            template<typename ReturnType02>
+            friend class CoRoutine;
 
             promise_type() {};
 
@@ -53,10 +52,6 @@ namespace DiscordCoreAPI {
 
             void return_value(ReturnType at) {
                 this->result = at;
-            }
-
-            std::jthread* getThread() {
-                return &this->newThread;
             }
 
             auto get_return_object() {
@@ -81,7 +76,12 @@ namespace DiscordCoreAPI {
 
         protected:
 
+            UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+            std::condition_variable condVar{};
             std::jthread newThread{};
+            std::mutex lockMutex{};
+            ReturnType result;
         };
 
         CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
             if (this != nullptr && this->coroutineHandle) {
-                this->coroutineHandle.promise().getThread()->detach();
+                this->coroutineHandle.promise().newThread.detach();
             }
         }
 
@@ -140,8 +140,8 @@ namespace DiscordCoreAPI {
         /// \returns ReturnType The return value of the CoRoutine.
         ReturnType get() {
             if (this != nullptr) {
-                if (this->coroutineHandle.promise().getThread()->joinable()) {
-                    this->coroutineHandle.promise().getThread()->join();
+                if (this->coroutineHandle.promise().newThread.joinable()) {
+                    this->coroutineHandle.promise().newThread.join();
                 }
                 std::exception_ptr exceptionPtr{};
                 while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
         /// \returns ReturnType The object to be returned.
         ReturnType cancel() {
             if (this != nullptr && this->coroutineHandle) {
-                if (this->coroutineHandle.promise().getThread()->joinable()) {
+                if (this->coroutineHandle.promise().newThread.joinable()) {
                     this->coroutineHandle.promise().requestStop();
                     {
                         std::lock_guard<std::mutex> accessLock{ this->coroutineHandle.promise().lockMutex };
@@ -191,10 +191,10 @@ namespace DiscordCoreAPI {
         class DiscordCoreAPI_Dll promise_type {
         public:
 
-            UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
-            std::condition_variable condVar{};
-            std::mutex lockMutex{};
+            template<typename void02>
+            friend auto NewThreadAwaitable();
+            template<typename void02>
+            friend class CoRoutine;
 
             promise_type() {};
 
@@ -213,10 +213,6 @@ namespace DiscordCoreAPI {
 
             void return_void() {
                 return;
-            }
-
-            std::jthread* getThread() {
-                return &this->newThread;
             }
 
             auto get_return_object() {
@@ -240,8 +236,12 @@ namespace DiscordCoreAPI {
             ~promise_type() {};
 
         protected:
-
-            std::jthread newThread{};            
+            
+            UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
+            CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
+            std::condition_variable condVar{};
+            std::jthread newThread{};
+            std::mutex lockMutex{};
         };
 
         CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
@@ -282,7 +282,7 @@ namespace DiscordCoreAPI {
         /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
             if (this != nullptr && this->coroutineHandle) {
-                this->coroutineHandle.promise().getThread()->detach();
+                this->coroutineHandle.promise().newThread.detach();
             }
         }
 
@@ -299,8 +299,8 @@ namespace DiscordCoreAPI {
         /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         void get() {
             if (this != nullptr) {
-                if (this->coroutineHandle.promise().getThread()->joinable()) {
-                    this->coroutineHandle.promise().getThread()->join();
+                if (this->coroutineHandle.promise().newThread.joinable()) {
+                    this->coroutineHandle.promise().newThread.join();
                 }
                 std::exception_ptr exceptionPtr{};
                 while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
         /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         void cancel() {
             if (this != nullptr && this->coroutineHandle) {
-                if (this->coroutineHandle.promise().getThread()->joinable()) {
+                if (this->coroutineHandle.promise().newThread.joinable()) {
                     this->coroutineHandle.promise().requestStop();
                     {
                         std::lock_guard<std::mutex> accessLock{ this->coroutineHandle.promise().lockMutex };
@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 
             void await_suspend(std::coroutine_handle<class CoRoutine<ReturnType>::promise_type> handle) {
                 this->coroHandle = handle;
-                *this->coroHandle.promise().getThread() = std::jthread([=, this] { this->coroHandle.resume(); });
+                this->coroHandle.promise().newThread = std::jthread([=, this] { this->coroHandle.resume(); });
             }
 
             auto await_resume() {
