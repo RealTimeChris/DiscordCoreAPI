@@ -336,7 +336,7 @@ namespace DiscordCoreAPI {
 
         protected:
             ObjectType* thePtr{ nullptr };
-            mutable int refCount{ 0 };
+            mutable int32_t refCount{ 0 };
         };
 
         ReferenceCountingPtr& operator=(ObjectType* ptr) {

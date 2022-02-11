@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 
 #include "Index.hpp"
 
-int main()
+int32_t main()
 {
     init_apartment();
     string botToken = "YOUR_BOT_TOKEN_HERE";

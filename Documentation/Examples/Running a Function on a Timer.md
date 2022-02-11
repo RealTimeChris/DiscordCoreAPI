@@ -19,14 +19,14 @@ static void onBoot(shared_ptr<DiscordCoreAPI::DiscordCoreClient> dataPackage) {
     for (auto value : guilds) {
         DiscordCoreAPI::DiscordGuild discordGuild(value.data);
         discordGuild.getDataFromDB();
-        for (unsigned int x = 0; x < discordGuild.data.deletionChannels.size(); x += 1) {
+        for (unsigned int32_t x = 0; x < discordGuild.data.deletionChannels.size(); x += 1) {
             discordGuild.data.deletionChannels[x].currentlyBeingDeleted = false;
         }
         discordGuild.writeDataToDB();
     }
 }
 
-int main()
+int32_t main()
 {
     init_apartment();
     string botToken = "YOUR_TOKEN_HERE";

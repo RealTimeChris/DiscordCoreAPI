@@ -11,7 +11,7 @@
 
 #include "Index.hpp"
 
-int main()
+int32_t main()
 {
     std::string botToken{ "YOUR_BOT_TOKEN_HERE" };
     auto thePtr = make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken, "!");

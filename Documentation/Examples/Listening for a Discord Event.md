@@ -15,7 +15,7 @@ static void onGuildCreation(DiscordCoreAPI::OnGuildCreationData dataPackage) {
     cout << "Guild Name: " << dataPackage.guild.data.name << endl;
 }
 
-int main()
+int32_t main()
 {
     init_apartment();
     std::string botToken{ "YOUR_BOT_TOKEN_HERE" };

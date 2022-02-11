@@ -176,11 +176,11 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
-			nfds = std::max(static_cast<int>(this->theSocket), nfds);
+			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
 		}
 		else {
 			FD_SET(this->theSocket, &readSet);
-			nfds = std::max(static_cast<int>(this->theSocket), nfds);
+			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
 		}
 		timeval checkTime{ .tv_sec = 1 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
@@ -312,7 +312,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 #else
-		int optionValue{ 1 };
+		int32_t optionValue{ 1 };
 		returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue));
 		if (returnValue == SOCKET_ERROR) {
 			std::cout << "setsockopt() Error: ";
@@ -370,11 +370,11 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
-			nfds = std::max(static_cast<int>(this->theSocket), nfds);
+			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
 		}
 		else {
 			FD_SET(this->theSocket, &readSet);
-			nfds = std::max(static_cast<int>(this->theSocket), nfds);
+			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
 		}
 		timeval checkTime{ .tv_sec = 1 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
