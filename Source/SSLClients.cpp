@@ -527,6 +527,7 @@ namespace DiscordCoreInternal {
 			std::cout << std::endl;
 			return;
 		}
+
 		returnValue = BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, &resultAddress);
 		if (returnValue == 0) {
 			std::cout << "BIO_ctrl() Error: ";
