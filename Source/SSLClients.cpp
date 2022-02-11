@@ -7,7 +7,7 @@
 
 namespace DiscordCoreInternal {
 
-	HttpSSLClient::HttpSSLClient(nullptr_t) {};
+	HttpSSLClient::HttpSSLClient(nullptr_t other) {};
 
 	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) :
 		inputBufferPtr(theInputBuffer) {
@@ -353,7 +353,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	WebSocketSSLClient::WebSocketSSLClient(nullptr_t) {};
+	WebSocketSSLClient::WebSocketSSLClient(nullptr_t other) {};
 
 	std::string WebSocketSSLClient::getData() {
 		std::string newVector{};

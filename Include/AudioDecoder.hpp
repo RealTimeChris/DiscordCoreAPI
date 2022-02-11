@@ -41,7 +41,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        AVFrameWrapper(nullptr_t) {};
+        AVFrameWrapper(nullptr_t other) {
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr , AVFrameDeleter{} };
@@ -70,7 +72,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        AVCodecContextWrapper(nullptr_t) {};
+        AVCodecContextWrapper(nullptr_t other) {
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr , AVCodecContextDeleter{} };
@@ -116,7 +120,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get()->theContext;
         }
 
-        AVFormatContextWrapper(nullptr_t) {};
+        AVFormatContextWrapper(nullptr_t other) { 
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
@@ -141,7 +147,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        SwrContextWrapper(nullptr_t) {};
+        SwrContextWrapper(nullptr_t other) {
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr , SwrContextDeleter{} };
@@ -170,7 +178,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        AVIOContextWrapper(nullptr_t) {};
+        AVIOContextWrapper(nullptr_t other) {
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr , AVIOContextDeleter{} };
@@ -199,7 +209,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        AVPacketWrapper(nullptr_t) {};
+        AVPacketWrapper(nullptr_t other) {
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr , AVPacketDeleter{} };
@@ -220,7 +232,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        AVCodecWrapper(nullptr_t) {};
+        AVCodecWrapper(nullptr_t other) {
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr , AVCodecDeleter{} };
@@ -245,7 +259,9 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        AVStreamWrapper(nullptr_t) {};
+        AVStreamWrapper(nullptr_t other) {
+            *this = other;
+        };
 
     protected:
         std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr , AVStreamDeleter{} };

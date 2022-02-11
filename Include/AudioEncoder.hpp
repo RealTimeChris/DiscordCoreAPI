@@ -27,7 +27,10 @@ namespace DiscordCoreAPI {
             return this->thePtr.get();
         }
 
-        OpusEncoderWrapper(nullptr_t) {};
+        OpusEncoderWrapper(nullptr_t other) {
+            *this = other;
+        }
+
     protected:
         std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr , OpusEncoderDeleter{} };
     };

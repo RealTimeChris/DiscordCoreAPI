@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		std::unique_ptr<EventManager> eventManager{ nullptr };
-		CommandController commandController{ "" , nullptr };		
+		CommandController commandController{ "" , nullptr };
 		std::string commandPrefix{};
 
 		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{});
