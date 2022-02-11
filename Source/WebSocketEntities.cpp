@@ -1066,12 +1066,15 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosedInternal() {
+		this->connectionReadyEvent.reset();
 		this->closeCode = 1000;
 		this->voiceSocket.reset(nullptr);
 		this->webSocket.reset(nullptr);
 		this->heartbeatTimer.cancel();
 		this->inputBuffer00.clear();
 		this->inputBuffer01.clear();
+		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
+		this->connect();
 	}
 
 	void VoiceSocketAgent::connect() {
