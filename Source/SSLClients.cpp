@@ -185,11 +185,11 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
-			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
+			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 		else {
 			FD_SET(this->theSocket, &readSet);
-			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
+			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 		timeval checkTime{ .tv_sec = 1 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
@@ -357,11 +357,11 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
-			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
+			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 		else {
 			FD_SET(this->theSocket, &readSet);
-			nfds = std::max(static_cast<int32_t>(this->theSocket), nfds);
+			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 		timeval checkTime{ .tv_sec = 1 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
