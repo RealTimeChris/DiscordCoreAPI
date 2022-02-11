@@ -502,25 +502,6 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-#ifdef _WIN32
-		u_long value{ 1 };
-		returnValue = ioctlsocket(this->theSocket, FIONBIO, &value);
-		if (returnValue == SOCKET_ERROR) {
-			std::cout << "ioctlsocket() Error: ";
-			std::cout << WSAGetLastError() << std::endl;
-			return;
-		}
-#else
-		int ofcmode{ fcntl(this->theSocket, F_GETFL, 0) };
-		ofcmode |= O_NDELAY;
-		returnValue = fcntl(this->theSocket, F_SETFL, ofcmode;
-		if (returnValue == SOCKET_ERROR) {
-			std::cout << "fcntl() Error: ";
-			std::cout << strerror(errno) << std::end;
-			return;
-		}
-#endif
-
 		this->connectionBio = BIO_new_dgram(this->theSocket, BIO_CLOSE);
 		if (this->connectionBio == nullptr) {
 			std::cout << "BIO_new_dgram() Error: ";
@@ -537,6 +518,9 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
+		timeval timeout{ .tv_sec = 1 };
+		BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_RECV_TIMEOUT, 0, &timeout);
+		BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_SEND_TIMEOUT, 0, &timeout);
 		return;
 	}
 

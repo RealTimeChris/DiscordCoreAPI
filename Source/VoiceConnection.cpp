@@ -159,6 +159,9 @@ namespace DiscordCoreAPI {
 			}
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
+			if (this->voiceSocketAgent->connectionReadyEvent.wait(10000) != 0) {
+				return;
+			}
 			this->voiceConnectionData = this->voiceSocketAgent->voiceConnectionData;
 			this->areWeConnectedBool = true;
 			if (this->theTask == nullptr) {
@@ -288,9 +291,7 @@ namespace DiscordCoreAPI {
 						this->areWeConnectedBool = false;
 						this->sendSilence();
 						this->sendSpeakingMessage(false);
-						if (this->voiceSocketAgent->connectionReadyEvent.wait(10000) == 1) {
-							co_return;
-						}
+						this->reconnect();
 						this->sendSpeakingMessage(true);
 						this->areWePlaying = true;
 						this->doWeReconnect->set();
