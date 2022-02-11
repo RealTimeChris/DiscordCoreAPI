@@ -312,6 +312,9 @@ namespace DiscordCoreAPI {
         class DiscordCoreAPI_Dll ObjectTypeWrapper {
         public:
 
+            template<typename ObjectType02>
+            friend class ReferenceCountingPtr;
+
             ObjectTypeWrapper& operator=(ObjectType* other) {
                 this->thePtr = other;
                 return *this;
@@ -333,10 +336,6 @@ namespace DiscordCoreAPI {
                 if (this->refCount == 0) {
                     delete this;
                 };
-            }
-
-            ObjectType* get() {
-                return this->thePtr;
             }
 
             virtual ~ObjectTypeWrapper() {};
@@ -367,20 +366,20 @@ namespace DiscordCoreAPI {
         }
 
         ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
-            *this = ptr.thePtr->get();
+            *this = ptr.thePtr->thePtr;
             return *this;
         }
 
         ObjectType* operator->() const {
-            return this->thePtr->get();
+            return this->thePtr->thePtr;
         }
 
         ObjectType& operator*() const {
-            return *this->thePtr->get();
+            return *this->thePtr->thePtr;
         }
 
         ObjectType* get() const {
-            return this->thePtr->get();
+            return this->thePtr->thePtr;
         }
 
         ~ReferenceCountingPtr() {
