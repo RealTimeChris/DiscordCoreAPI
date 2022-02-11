@@ -90,10 +90,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMembers {
 	public:
 
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend Guild;
-
 		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
@@ -136,14 +132,14 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
+		static void insertGuildMember(GuildMember dataPackage);
+
+		static void removeGuildMember(GuildMember dataPackage);
+
 	protected:
 
 		static std::unordered_map<std::string, GuildMember> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-
-		static void insertGuildMember(GuildMember dataPackage);
-
-		static void removeGuildMember(GuildMember dataPackage);
 	};
 	/**@}*/
 };

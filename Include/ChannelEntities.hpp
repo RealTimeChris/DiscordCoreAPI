@@ -151,10 +151,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channels {
 	public:
 
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend Guild;
-
 		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
@@ -231,14 +227,14 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a std::vector<VoiceRegionData>.
 		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
+		static void insertChannel(Channel dataPackage);
+
+		static void removeChannel(std::string channelId);
+
 	protected:
 
 		static std::unordered_map<std::string, Channel> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-
-		static void insertChannel(Channel dataPackage);
-
-		static void removeChannel(std::string channelId);
 		
 	};
 	/**@}*/

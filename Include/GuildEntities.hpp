@@ -311,8 +311,6 @@ namespace DiscordCoreAPI {
 	/// An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	public:
-		friend DiscordCoreClient;
-		friend EventHandler;
 
 		static void initialize(DiscordCoreInternal::HttpClient*, DiscordCoreClient*);
 
@@ -495,15 +493,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
+		static void insertGuild(Guild Guild);
+
+		static void removeGuild(std::string GuildId);
+
 	protected:
 
 		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
 		static std::unordered_map<std::string, Guild> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-
-		static void insertGuild(Guild Guild);
-
-		static void removeGuild(std::string GuildId);
 	};
 	/**@}*/
 }
