@@ -176,7 +176,7 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &readSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
-		timeval checkTime{ .tv_sec = 1 };
+		timeval checkTime{ .tv_usec = 50000 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
@@ -336,7 +336,7 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &readSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
-		timeval checkTime{ .tv_sec = 1 };
+		timeval checkTime{ .tv_usec = 50000 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
