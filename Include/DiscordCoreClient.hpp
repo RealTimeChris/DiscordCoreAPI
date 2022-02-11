@@ -64,8 +64,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 
-		friend Guild;
-
 		std::unique_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		std::unique_ptr<EventManager> eventManager{ nullptr };
 		CommandController commandController{ "" , nullptr };
