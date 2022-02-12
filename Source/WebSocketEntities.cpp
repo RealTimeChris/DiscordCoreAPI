@@ -274,7 +274,7 @@ namespace DiscordCoreInternal {
 					this->sendMessage(identityJson);
 				}
 				if (this->areWeResuming) {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
+					std::this_thread::sleep_for(std::chrono::milliseconds{ 1500 });
 					nlohmann::json resumePayload = JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived);
 					this->sendMessage(resumePayload);
 				}
@@ -493,8 +493,6 @@ namespace DiscordCoreInternal {
 					webSocketWorkload.eventType = WebSocketEventType::Webhooks_Update;
 					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
 				}
-				std::cout << "Message received from WebSocket: " << payload.dump() << std::endl << std::endl;
-				return true;
 			}
 			std::cout << "Message received from WebSocket: " << payload.dump() << std::endl << std::endl;
 			return true;
@@ -653,7 +651,9 @@ namespace DiscordCoreInternal {
 			this->currentReconnectTries += 1;
 			this->webSocket.reset(nullptr);
 			this->areWeAuthenticated = false;
-			this->heartbeatTimer.cancel();
+			if (this->heartbeatTimer.running()) {
+				this->heartbeatTimer.cancel();
+			}
 			this->inputBuffer.clear();
 			this->haveWeReceivedHeartbeatAck = true;
 			this->connect();
@@ -668,9 +668,6 @@ namespace DiscordCoreInternal {
 			this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, this->port, &this->inputBuffer);
 			this->state = WebSocketState::Initializing;
-			if (this->heartbeatTimer.running()) {
-				this->heartbeatTimer.cancel();
-			}
 			this->doWeReconnect.set();
 			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
