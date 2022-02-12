@@ -64,29 +64,25 @@ namespace DiscordCoreInternal {
 				certPath = this->defaultCertPath;
 			}
 
-			this->context = SSL_CTX_new(TLS_client_method());
-			if (this->context == nullptr) {
+			if ((this->context = SSL_CTX_new(TLS_client_method())) = nullptr) {
 				reportSSLError("SSL_CTX_new() Error: ", 0);
 				return false;
 			}
 
 			auto options{ SSL_CTX_get_options(this->context) };
-			auto returnValue{ SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) };
-			if (returnValue != (options | SSL_OP_NO_COMPRESSION)) {
+			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) != (options | SSL_OP_NO_COMPRESSION)) {
 				reportSSLError("SSL_CTX_set_options() Error: ", 0);
 				return false;
 			}
 
 			SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER, nullptr);
 			SSL_CTX_set_verify_depth(this->context, 4);
-			returnValue = SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL);
-			if (returnValue != 1) {
+			if (SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL)) {
 				reportSSLError("SSL_CTX_load_verify_locations() Error: ", 0);
 				return false;
 			}
 
-			returnValue = SSL_CTX_set_cipher_list(this->context, "ALL");
-			if (returnValue != 1) {
+			if (SSL_CTX_set_cipher_list(this->context, "ALL")) {
 				reportSSLError("SSL_CTX_set_cipher_list() Error: ", 0);
 				return false;
 			}
@@ -99,8 +95,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			returnValue = SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256");
-			if (returnValue != 1) {
+			if (SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
 				reportSSLError("SSL_CTX_set_ciphersuites() Error: ", 0);
 				return false;
 			}
@@ -111,8 +106,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			returnValue = BIO_set_conn_hostname(this->connectionBio, std::string(baseUrlNew + ":" + portNew).c_str());
-			if (returnValue != 1) {
+			if (BIO_set_conn_hostname(this->connectionBio, std::string(baseUrlNew + ":" + portNew).c_str())) {
 				reportSSLError("BIO_set_connt_hostname() Error: ", 0);
 				return false;
 			}
@@ -123,7 +117,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
+			auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
 			if (returnValue != 1) {
 				reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
 				return false;
