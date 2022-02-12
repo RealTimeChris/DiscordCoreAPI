@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 			/* Do not allow SSL 3.0, TLS 1.0 or 1.1
 			 * https://www.packetlabs.net/posts/tls-1-1-no-longer-secure/
 			 */
-			if (SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+			if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
 				reportSSLError("SSL_CTX_set_min_proto_version() Error: ", 0);
 				return false;
 			}
