@@ -64,7 +64,8 @@ namespace DiscordCoreInternal {
 				certPath = this->defaultCertPath;
 			}
 
-			if ((this->context = SSL_CTX_new(TLS_client_method())) = nullptr) {
+			this->context = SSL_CTX_new(TLS_client_method());
+			if (this->context = nullptr) {
 				reportSSLError("SSL_CTX_new() Error: ", 0);
 				return false;
 			}
