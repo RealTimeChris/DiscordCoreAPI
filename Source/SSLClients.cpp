@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			returnValue = SSL_set_tlsext_host_name(this->ssl, std::string(baseUrlNew + ":" + portNew).c_str());
+			returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
 			if (returnValue != 1) {
 				reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
 				return false;
@@ -303,7 +303,11 @@ namespace DiscordCoreInternal {
 		}
 		
 		/* SNI */
-		SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
+		returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
+		if (returnValue != 1) {
+			reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
+			return;
+		}
 
 		returnValue = SSL_connect(this->ssl);
 		if (returnValue != 1) {
