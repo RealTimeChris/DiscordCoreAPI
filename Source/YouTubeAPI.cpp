@@ -517,7 +517,7 @@ namespace DiscordCoreAPI {
 							goto breakOut;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-						streamSocket.processIO(600000);
+						if (!streamSocket.processIO(600000)) { goto end; }
 						auto newData = streamSocket.getData();
 						int64_t headerLength = newData.size();
 						if (!coroutineHandle.promise().isItStopped()) {
@@ -533,7 +533,7 @@ namespace DiscordCoreAPI {
 						goto breakOut;
 					}
 					if (counter == 0) {
-						streamSocket.processIO(600000);
+						if (!streamSocket.processIO(600000)) { goto end; };
 						auto streamBuffer = streamSocket.getData();
 						audioDecoder->submitDataForDecoding(streamBuffer);
 						audioDecoder->startMe();
@@ -545,7 +545,7 @@ namespace DiscordCoreAPI {
 							}
 							bytesReadTotal01 = streamSocket.getBytesRead();
 							remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-							streamSocket.processIO(600000);
+							if (!streamSocket.processIO(600000)) { goto end; };
 							auto streamBuffer = streamSocket.getData();
 							std::string newVector{};
 							for (uint32_t x = 0; x < streamBuffer.size(); x += 1) {
@@ -588,6 +588,7 @@ namespace DiscordCoreAPI {
 				}
 				counter += 1;
 			}
+			end:
 			RawFrameData frameData01{};
 			while (audioDecoder->getFrame(frameData01)) {};
 			audioDecoder.reset(nullptr);

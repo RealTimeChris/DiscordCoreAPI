@@ -20,7 +20,7 @@ namespace DiscordCoreInternal {
 	public:
 		friend HttpClient;
 
-		void constructHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
+		void constructHeaderValues(std::multimap<std::string, std::string>& headers, RateLimitData* theConnection);
 
 		HttpData handleHeaders(HttpWorkloadData& workload, HttpConnection& theConnection);
 
@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::unordered_map<std::string, std::string> headers{};
+		std::multimap<std::string, std::string> headers{};
 		bool doWeHaveContentSize{ false };
 		std::string contentFinal{ "" };
 		bool doWeHaveHeaders{ false };
@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpData {
-		std::unordered_map<std::string, std::string> responseHeaders{};
+		std::multimap<std::string, std::string> responseHeaders{};
 		std::string responseMessage{ "" };
 		nlohmann::json responseData{};
 		int64_t responseCode{ 0 };

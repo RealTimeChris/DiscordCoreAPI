@@ -9,16 +9,16 @@
 
 namespace DiscordCoreInternal {
 
-	void HttpRnRBuilder::constructHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection) {
+	void HttpRnRBuilder::constructHeaderValues(std::multimap<std::string, std::string>& headers, RateLimitData* theConnection) {
 		if (headers.contains("x-ratelimit-remaining")) {
-			theConnection->getsRemaining = stol(headers.at("x-ratelimit-remaining"));
+			theConnection->getsRemaining = stol(headers.find("x-ratelimit-remaining")->second);
 		}
 		if (headers.contains("x-ratelimit-reset-after")) {
 			theConnection->sampledTimeInMs = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
-			theConnection->msRemain = static_cast<int64_t>(stod(headers.at("x-ratelimit-reset-after")) * 1000.0f);
+			theConnection->msRemain = static_cast<int64_t>(stod(headers.find("x-ratelimit-reset-after")->second) * 1000.0f);
 		}
 		if (headers.contains("x-ratelimit-bucket")) {
-			theConnection->bucket = headers.at("x-ratelimit-bucket");
+			theConnection->bucket = headers.find("x-ratelimit-bucket")->second;
 		}
 	};
 
@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpRnRBuilder::resetValues() {
-		this->headers = std::unordered_map<std::string, std::string>{};
+		this->headers = std::multimap<std::string, std::string>{};
 		this->doWeHaveContentSize = false;
 		this->doWeHaveHeaders = false;
 		this->isItChunked = false;
@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 					tempString.insert(tempString.begin(), newString.begin() + currentOffset, newString.end());
 					newString = tempString;
 				}
-				if (this->headers.contains("Transfer-Encoding") && this->headers.at("Transfer-Encoding") == "chunked") {
+				if (this->headers.contains("Transfer-Encoding") && this->headers.find("Transfer-Encoding")->second == "chunked") {
 					this->isItChunked = true;
 				}
 				this->doWeHaveHeaders = true;
@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 	void HttpRnRBuilder::parseSize() {
 		try {
 			if (this->headers.contains("Content-Length")) {
-				this->contentSize = stoll(this->headers.at("Content-Length"));
+				this->contentSize = stoll(this->headers.find("Content-Length")->second);
 				this->doWeHaveContentSize = true;
 				return;
 			}

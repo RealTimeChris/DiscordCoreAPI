@@ -124,8 +124,8 @@ namespace DiscordCoreAPI {
 				std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector{};
 				workloadVector.push_back(dataPackage02);
 				auto headersNew = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector);
-				auto valueBitRate = stoll(headersNew[0].responseHeaders.at("x-amz-meta-bitrate"));
-				auto valueLength = stoll(headersNew[0].responseHeaders.at("x-amz-meta-duration"));
+				auto valueBitRate = stoll(headersNew[0].responseHeaders.find("x-amz-meta-bitrate")->second);
+				auto valueLength = stoll(headersNew[0].responseHeaders.find("x-amz-meta-duration")->second);
 				DownloadUrl downloadUrl{};
 				downloadUrl.contentSize = static_cast<int32_t>(((valueBitRate * valueLength) / 8) - 193);
 				downloadUrl.urlPath = newSong.secondDownloadUrl;
