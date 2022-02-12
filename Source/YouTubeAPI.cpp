@@ -457,10 +457,8 @@ namespace DiscordCoreAPI {
 			int64_t bytesReadTotal01{ 0 };
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			std::vector<uint8_t> requestNew{};
-			requestNew.insert(requestNew.begin(), newSong.finalDownloadUrls[1].urlPath.begin(), newSong.finalDownloadUrls[1].urlPath.end());
 			streamSocket.processIO();
-			streamSocket.writeData(requestNew);
+			streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
 			streamSocket.processIO();
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength) - static_cast<int64_t>(581);
 			dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
@@ -521,6 +519,7 @@ namespace DiscordCoreAPI {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
 						streamSocket.processIO();
 						auto newData = streamSocket.getData();
+						std::cout << newData << std::endl;
 						int64_t headerLength = newData.size();
 						if (!coroutineHandle.promise().isItStopped()) {
 							bytesReadTotal01 = streamSocket.getBytesRead();

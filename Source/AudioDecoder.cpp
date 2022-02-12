@@ -296,6 +296,7 @@ namespace DiscordCoreAPI {
         catch (...) {
             this->haveWeFailedBool.store(true, std::memory_order_release);
             reportException("AudioDecoder::run");
+            co_return;
         }
     }
 
