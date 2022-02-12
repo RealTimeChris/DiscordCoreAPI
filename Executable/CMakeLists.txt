@@ -20,10 +20,12 @@ set(OEPNSSL_CRYPTO_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libcrypto.a")
 set(OEPNSSL_SSL_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libssl.a")
 set(ZLIB_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libz.a")
 set(ZLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
+set(LIBCURL_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libcurl.a")
 set(LIBCURL_DIR "${VCPKG_INSTALLED_DIR}/share/curl")
-find_package(LIBCURL REQUIRED)
 set(FFMPEG_DIR "${VCPKG_INSTALLED_DIR}/share/ffmpeg")
-find_package(FFMPEG REQUIRED)
+list(APPEND CMAKE_PREFIX_PATH "${VCPKG_INSTALLED_DIR}")
+find_package(OpenSSL REQUIRED)
+find_package(CURL REQUIRED)
 
 add_executable(DiscordCoreAPI-Bot "main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp" "../Include/Index.hpp" "../Source/ApplicationCommandEntities.cpp" "../Source/AudioDecoder.cpp"
 	"../Source/AudioEncoder.cpp" "../Source/ChannelEntities.cpp"
