@@ -90,6 +90,14 @@ namespace DiscordCoreInternal {
 				reportSSLError("SSL_CTX_set_cipher_list() Error: ", 0);
 				return false;
 			}
+			
+			/* Do not allow SSL 3.0, TLS 1.0 or 1.1
+			 * https://www.packetlabs.net/posts/tls-1-1-no-longer-secure/
+			 */
+			if (SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+				reportSSLError("SSL_CTX_set_min_proto_version() Error: ", 0);
+				return false;
+			}
 
 			returnValue = SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256");
 			if (returnValue != 1) {
