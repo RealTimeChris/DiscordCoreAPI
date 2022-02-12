@@ -221,7 +221,6 @@ namespace DiscordCoreInternal {
 				this->wantRead = true;
 				[[fallthrough]];
 			case SSL_ERROR_WANT_WRITE: {
-				this->writeBuffer.clear();
 				return true;
 			}
 			default: {
@@ -250,6 +249,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			case SSL_ERROR_WANT_WRITE:
+				[[fallthrough]];
 			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
 				return true;
@@ -387,16 +387,12 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 				return false;
 			}
 			case SSL_ERROR_WANT_READ:
 				this->wantRead = true;
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 				[[fallthrough]];
 			case SSL_ERROR_WANT_WRITE: {
-				this->writeBuffer.clear();
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 				return true;
 			}
 			default: {
@@ -423,14 +419,11 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			case SSL_ERROR_ZERO_RETURN: {
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 				return false;
 			}
 			case SSL_ERROR_WANT_WRITE:
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 				[[fallthrough]];
 			case SSL_ERROR_WANT_READ: {
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 				this->wantRead = true;
 				return true;
 			}
@@ -442,7 +435,6 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
-		reportSSLError("SSL_read_ex() Error (TRUE): ", 0, this->ssl);
 		return true;
 	}
 
