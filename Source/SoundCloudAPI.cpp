@@ -90,9 +90,9 @@ namespace DiscordCoreAPI {
 				dataPackage.workloadClass= DiscordCoreInternal::HttpWorkloadClass::Get;
 				std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
 				workloadVector01.push_back(dataPackage);
-				auto results = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
+				std::unique_ptr<std::vector<DiscordCoreInternal::HttpData>> results = std::make_unique<std::vector<DiscordCoreInternal::HttpData>>(DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01));
 				std::string newString{};
-				newString.insert(newString.begin(), results[0].responseMessage.begin(), results[0].responseMessage.end());
+				newString.insert(newString.begin(), (*results)[0].responseMessage.begin(), (*results)[0].responseMessage.end());
 				while (newString.find("#EXTINF:") != std::string::npos) {
 					std::string newString01 = "#EXTINF:";
 					std::string newString02 = newString.substr(newString.find("#EXTINF:") + newString01.size());
