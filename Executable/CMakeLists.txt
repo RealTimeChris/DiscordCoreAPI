@@ -45,8 +45,8 @@ add_executable(DiscordCoreAPI-Bot "main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp
 	"../Source/WebHookEntities.cpp" "../Source/WebSocketEntities.cpp"
 	"../Source/YouTubeAPI.cpp"
 )
-target_link_libraries(DiscordCoreAPI-Bot PUBLIC OpenSSL::SSL)
-target_link_libraries(DiscordCoreAPI-Bot PUBLIC OpenSSL::Crypto)
+target_link_libraries(DiscordCoreAPI-Bot PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libssl.a")
+target_link_libraries(DiscordCoreAPI-Bot PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libcrypto.a")
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC -lpthread)
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC ${FFMPEG_LIBRARIES})
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libcurl.a")
