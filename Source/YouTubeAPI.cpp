@@ -519,7 +519,6 @@ namespace DiscordCoreAPI {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
 						streamSocket.processIO(600000);
 						auto newData = streamSocket.getData();
-						std::cout << newData << std::endl;
 						int64_t headerLength = newData.size();
 						if (!coroutineHandle.promise().isItStopped()) {
 							bytesReadTotal01 = streamSocket.getBytesRead();
