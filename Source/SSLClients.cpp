@@ -188,10 +188,6 @@ namespace DiscordCoreInternal {
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			size_t writtenBytes{ 0 };
-			if (this->ssl == nullptr) {
-				std::cout << "ssl is nullptr. " << std::endl;
-				return false;
-			}
 			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
@@ -238,7 +234,7 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			default: {
-				reportSSLError("SSL_read_ex() Error: ", returnValue, this->ssl);
+				reportSSLError(" HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 				return false;
 			}
 			}
@@ -261,8 +257,8 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		this->theSocket = static_cast<DiscordCoreInternal::SOCKET>(socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol));
-		if (static_cast<SOCKET>(this->theSocket) == INVALID_SOCKET) {
+		this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol);
+		if (this->theSocket == INVALID_SOCKET) {
 			reportError("socket() Error: ", returnValue);
 			return;
 		}
@@ -290,7 +286,7 @@ namespace DiscordCoreInternal {
 #endif		
 		this->context = SSL_CTX_new(TLS_client_method());
 		if (this->context == nullptr) {
-			reportSSLError("SSL_read_ex() Error: ", 0);
+			reportSSLError("SSL_CTX_new() Error: ", 0);
 			return;
 		}
 
@@ -348,10 +344,6 @@ namespace DiscordCoreInternal {
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			size_t writtenBytes{ 0 };
-			if (this->ssl == nullptr) {
-				std::cout << "ssl is nullptr. " << std::endl;
-				return false;
-			}
 			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
@@ -399,7 +391,7 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			default: {
-				reportSSLError("SSL_read_ex() Error: ", returnValue, this->ssl);
+				reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 				return false;
 			}
 			}
@@ -426,8 +418,8 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		this->theSocket = static_cast<DiscordCoreInternal::SOCKET>(socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol));
-		if (static_cast<SOCKET>(this->theSocket) == INVALID_SOCKET) {
+		this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol);
+		if (this->theSocket == INVALID_SOCKET) {
 			reportError("socket() Error: ", returnValue);
 			return;
 		}
@@ -473,10 +465,6 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
 		size_t writtenBytes{ 0 };
-		if (this->connectionBio == nullptr) {
-			std::cout << "DatagramSocketSSLClient() Error: Missing connectionBio!";
-			return false;
-		}
 		auto returnValue{ BIO_write_ex(this->connectionBio, data.data(), static_cast<uint32_t>(data.size()), &writtenBytes) };
 		if (returnValue != 1) {
 			reportSSLError("BIO_write_ex() Error: ", 0);
