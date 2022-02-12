@@ -301,6 +301,9 @@ namespace DiscordCoreInternal {
 			reportSSLError("SSL_set_fd() Error: ", returnValue, this->ssl);
 			return;
 		}
+		
+		/* SNI */
+		SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
 
 		returnValue = SSL_connect(this->ssl);
 		if (returnValue != 1) {
