@@ -233,7 +233,6 @@ namespace DiscordCoreAPI {
                                 throw std::runtime_error(newString.c_str());
                             }
 
-                            this->audioFrameCount++;
                             if (!swr_is_initialized(this->swrContext)) {
                                 swr_init(this->swrContext);
                             }

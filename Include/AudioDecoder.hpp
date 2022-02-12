@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        int32_t audioStreamIndex{ 0 }, audioFrameCount{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, sentFrameCount{ 0 };
+        int32_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 };
         TSUnboundedMessageBlock<std::string> inputDataBuffer{};
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
