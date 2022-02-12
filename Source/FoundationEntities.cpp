@@ -22,50 +22,6 @@ namespace DiscordCoreAPI {
         }
     }
 
-    bool nanoSleep(int64_t ns) {
-#ifdef _WIN32
-        HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
-        LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
-        if (!timer) {
-            return false;
-        }
-
-        if (!SetWaitableTimerEx(timer, &largeInt, 0, NULL, NULL, NULL, 0)) {
-            CloseHandle(timer);
-            return false;
-        }
-        WaitForSingleObjectEx(timer, INFINITE, false);
-        CloseHandle(timer);
-#else
-        std::this_thread::sleep_for(std::chrono::nanoseconds{ ns });
-#endif
-        return true;
-    }
-
-    void spinLock(int64_t timeInNsToSpinLockFor) {
-        int64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        int64_t timePassed{ 0 };
-        while (timePassed < timeInNsToSpinLockFor) {
-            timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
-        }
-    }
-
-    std::string urlDecode(std::string inputString) {
-        CURLUWrapper urlHandle = curl_url();
-        int32_t outLength{ 0 };
-        CURLCharWrapper charString = curl_easy_unescape(urlHandle, inputString.c_str(), static_cast<int32_t>(inputString.length()), &outLength);
-        std::string returnString = charString;
-        return returnString;
-    }
-
-    std::string urlEncode(std::string inputString) {
-        CURLWrapper curl = curl_easy_init();
-        CURLCharWrapper output{ nullptr };
-        output = curl_easy_escape(curl, inputString.c_str(), 0);
-        std::string returnString = output;
-        return returnString;
-    };
-
     std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second) {
         std::string theTimeStamp{};
         theTimeStamp += year + "-";
@@ -97,46 +53,6 @@ namespace DiscordCoreAPI {
         }
     }
 
-    std::string generateX64BaseEncodedKey() {
-        std::string returnString{};
-        srand(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
-        returnString.resize(16);
-        for (uint32_t x = 0; x < 16; x += 1) {
-            returnString[x] = static_cast<uint8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
-        }
-        std::unique_ptr<unsigned char[]> theBuffer = std::make_unique<unsigned char[]>(returnString.size());
-        for (uint32_t x = 0; x < returnString.size(); x += 1) {
-            theBuffer[x] = returnString[x];
-        }
-        returnString = base64_encode(theBuffer.get(), returnString.size(), false);
-        return returnString;
-    }
-
-    std::string convertToLowerCase(std::string stringToConvert) {
-        std::string newString;
-        for (auto& value : stringToConvert) {
-            if (isupper(static_cast<unsigned char>(value))) {
-                newString += static_cast<char>(tolower(static_cast<unsigned char>(value)));
-            }
-            else {
-                newString += value;
-            }
-        }
-        return newString;
-    }
-
-    std::string getTimeAndDate() {
-        const time_t now = std::time(nullptr);
-        tm time = *std::localtime(&now);
-        char charArray[40];
-        std::string timeStamp{};
-        size_t size = strftime(charArray, 40, "%F %R", &time);
-        for (int32_t x = 0; x < size; x += 1) {
-            timeStamp.push_back(charArray[x]);
-        }
-        return timeStamp;
-    }
-
     bool hasTimeElapsed(std::string timeStamp, int64_t days, int64_t hours, int64_t minutes) {
         int64_t startTimeRaw = convertTimestampToInteger(timeStamp);
         std::chrono::milliseconds startTime(startTimeRaw);
@@ -152,86 +68,6 @@ namespace DiscordCoreAPI {
         else {
             return false;
         }
-    }
-
-    std::string convertMsToDurationString(int32_t durationInMs) {
-        std::string newString{ "" };
-        int32_t msPerSecond{ 1000 };
-        int32_t secondsPerMinute{ 60 };
-        int32_t minutesPerHour{ 60 };
-        int32_t msPerMinute{ msPerSecond * secondsPerMinute };
-        int32_t msPerHour{ msPerMinute * minutesPerHour };
-        int32_t hoursLeft = static_cast<int32_t>(trunc(durationInMs / msPerHour));
-        int32_t minutesLeft = static_cast<int32_t>(trunc((durationInMs % msPerHour) / msPerMinute));
-        int32_t secondsLeft = static_cast<int32_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
-        if (hoursLeft >= 1) {
-            newString += std::to_string(hoursLeft) + " Hours, ";
-            newString += std::to_string(minutesLeft) + " Minutes, ";
-            newString += std::to_string(secondsLeft) + " Seconds.";
-        }
-        else {
-            newString += std::to_string(minutesLeft) + " Minutes, ";
-            newString += std::to_string(secondsLeft) + " Seconds.";
-        }
-        return newString;
-    }
-
-    std::vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(std::vector<ApplicationCommandInteractionDataOption> originalOptions) {
-        std::vector<ApplicationCommandInteractionDataOption> newVector;
-        for (auto& value : originalOptions) {
-            ApplicationCommandInteractionDataOption newItem = value;
-            newItem.options = convertAppCommandInteractionDataOptions(value.options);
-            newVector.push_back(newItem);
-        }
-        return newVector;
-    }
-
-    Song::operator YouTubeSong() {
-        YouTubeSong newData{};
-        newData.trackAuthorization = this->trackAuthorization;
-        newData.finalDownloadUrls = this->finalDownloadUrls;
-        newData.secondDownloadUrl = this->secondDownloadUrl;
-        newData.firstDownloadUrl = this->firstDownloadUrl;
-        newData.addedByUserName = this->addedByUserName;
-        newData.html5PlayerFile = this->html5PlayerFile;
-        newData.playerResponse = this->playerResponse;
-        newData.contentLength = this->contentLength;
-        newData.addedByUserId = this->addedByUserId;
-        newData.doWeGetSaved = this->doWeGetSaved;
-        newData.thumbnailUrl = this->thumbnailUrl;
-        newData.description = this->description;
-        newData.html5Player = this->html5Player;
-        newData.songTitle = this->songTitle;
-        newData.duration = this->duration;
-        newData.viewUrl = this->viewUrl;
-        newData.format = this->format;
-        newData.songId = this->songId;
-        newData.type = this->type;
-        return newData;
-    }
-
-    Song::operator SoundCloudSong() {
-        SoundCloudSong newData{};
-        newData.trackAuthorization = this->trackAuthorization;
-        newData.finalDownloadUrls = this->finalDownloadUrls;
-        newData.secondDownloadUrl = this->secondDownloadUrl;
-        newData.firstDownloadUrl = this->firstDownloadUrl;
-        newData.addedByUserName = this->addedByUserName;
-        newData.html5PlayerFile = this->html5PlayerFile;
-        newData.playerResponse = this->playerResponse;
-        newData.contentLength = this->contentLength;
-        newData.addedByUserId = this->addedByUserId;
-        newData.doWeGetSaved = this->doWeGetSaved;
-        newData.thumbnailUrl = this->thumbnailUrl;
-        newData.description = this->description;
-        newData.html5Player = this->html5Player;
-        newData.songTitle = this->songTitle;
-        newData.duration = this->duration;
-        newData.viewUrl = this->viewUrl;
-        newData.format = this->format;
-        newData.songId = this->songId;
-        newData.type = this->type;
-        return newData;
     }
 
     std::string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat) {
@@ -294,6 +130,41 @@ namespace DiscordCoreAPI {
         return timeStamp;
     }
 
+    std::string convertMsToDurationString(int32_t durationInMs) {
+        std::string newString{ "" };
+        int32_t msPerSecond{ 1000 };
+        int32_t secondsPerMinute{ 60 };
+        int32_t minutesPerHour{ 60 };
+        int32_t msPerMinute{ msPerSecond * secondsPerMinute };
+        int32_t msPerHour{ msPerMinute * minutesPerHour };
+        int32_t hoursLeft = static_cast<int32_t>(trunc(durationInMs / msPerHour));
+        int32_t minutesLeft = static_cast<int32_t>(trunc((durationInMs % msPerHour) / msPerMinute));
+        int32_t secondsLeft = static_cast<int32_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
+        if (hoursLeft >= 1) {
+            newString += std::to_string(hoursLeft) + " Hours, ";
+            newString += std::to_string(minutesLeft) + " Minutes, ";
+            newString += std::to_string(secondsLeft) + " Seconds.";
+        }
+        else {
+            newString += std::to_string(minutesLeft) + " Minutes, ";
+            newString += std::to_string(secondsLeft) + " Seconds.";
+        }
+        return newString;
+    }
+
+    std::string convertToLowerCase(std::string stringToConvert) {
+        std::string newString;
+        for (auto& value : stringToConvert) {
+            if (isupper(static_cast<unsigned char>(value))) {
+                newString += static_cast<char>(tolower(static_cast<unsigned char>(value)));
+            }
+            else {
+                newString += value;
+            }
+        }
+        return newString;
+    }
+
     int64_t convertTimestampToInteger(std::string timeStamp) {
         int32_t hours = stoi(timeStamp.substr(11, 12));
         if (hours < 0) {
@@ -304,11 +175,140 @@ namespace DiscordCoreAPI {
         return timeValue.getTime() * 1000;
     }
 
+    std::string urlDecode(std::string inputString) {
+        CURLUWrapper urlHandle = curl_url();
+        int32_t outLength{ 0 };
+        CURLCharWrapper charString = curl_easy_unescape(urlHandle, inputString.c_str(), static_cast<int32_t>(inputString.length()), &outLength);
+        std::string returnString = charString;
+        return returnString;
+    }
+
+    std::string urlEncode(std::string inputString) {
+        CURLWrapper curl = curl_easy_init();
+        CURLCharWrapper output{ nullptr };
+        output = curl_easy_escape(curl, inputString.c_str(), 0);
+        std::string returnString = output;
+        return returnString;
+    }
+
+    void spinLock(int64_t timeInNsToSpinLockFor) {
+        int64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        int64_t timePassed{ 0 };
+        while (timePassed < timeInNsToSpinLockFor) {
+            timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
+        }
+    }
+
+    std::string getTimeAndDate() {
+        const time_t now = std::time(nullptr);
+        tm time = *std::localtime(&now);
+        char charArray[40];
+        std::string timeStamp{};
+        size_t size = strftime(charArray, 40, "%F %R", &time);
+        for (int32_t x = 0; x < size; x += 1) {
+            timeStamp.push_back(charArray[x]);
+        }
+        return timeStamp;
+    }
+
+    bool nanoSleep(int64_t ns) {
+#ifdef _WIN32
+        HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+        LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
+        if (!timer) {
+            return false;
+        }
+
+        if (!SetWaitableTimerEx(timer, &largeInt, 0, NULL, NULL, NULL, 0)) {
+            CloseHandle(timer);
+            return false;
+        }
+        WaitForSingleObjectEx(timer, INFINITE, false);
+        CloseHandle(timer);
+#else
+        std::this_thread::sleep_for(std::chrono::nanoseconds{ ns });
+#endif
+        return true;
+    }
+
+    std::string generateX64BaseEncodedKey() {
+        std::string returnString{};
+        srand(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
+        returnString.resize(16);
+        for (uint32_t x = 0; x < 16; x += 1) {
+            returnString[x] = static_cast<uint8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
+        }
+        std::unique_ptr<unsigned char[]> theBuffer = std::make_unique<unsigned char[]>(returnString.size());
+        for (uint32_t x = 0; x < returnString.size(); x += 1) {
+            theBuffer[x] = returnString[x];
+        }
+        returnString = base64_encode(theBuffer.get(), returnString.size(), false);
+        return returnString;
+    }
+
     std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
         std::string returnString;
         int64_t timeInMs = (stoll(this->id) >> 22) + 1420070400000;
         returnString = convertTimeInMsToDateTimeString(timeInMs, timeFormat);
         return returnString;
+    }
+
+    std::vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(std::vector<ApplicationCommandInteractionDataOption> originalOptions) {
+        std::vector<ApplicationCommandInteractionDataOption> newVector;
+        for (auto& value : originalOptions) {
+            ApplicationCommandInteractionDataOption newItem = value;
+            newItem.options = convertAppCommandInteractionDataOptions(value.options);
+            newVector.push_back(newItem);
+        }
+        return newVector;
+    }
+
+    Song::operator YouTubeSong() {
+        YouTubeSong newData{};
+        newData.trackAuthorization = this->trackAuthorization;
+        newData.finalDownloadUrls = this->finalDownloadUrls;
+        newData.secondDownloadUrl = this->secondDownloadUrl;
+        newData.firstDownloadUrl = this->firstDownloadUrl;
+        newData.addedByUserName = this->addedByUserName;
+        newData.html5PlayerFile = this->html5PlayerFile;
+        newData.playerResponse = this->playerResponse;
+        newData.contentLength = this->contentLength;
+        newData.addedByUserId = this->addedByUserId;
+        newData.doWeGetSaved = this->doWeGetSaved;
+        newData.thumbnailUrl = this->thumbnailUrl;
+        newData.description = this->description;
+        newData.html5Player = this->html5Player;
+        newData.songTitle = this->songTitle;
+        newData.duration = this->duration;
+        newData.viewUrl = this->viewUrl;
+        newData.format = this->format;
+        newData.songId = this->songId;
+        newData.type = this->type;
+        return newData;
+    }
+
+    Song::operator SoundCloudSong() {
+        SoundCloudSong newData{};
+        newData.trackAuthorization = this->trackAuthorization;
+        newData.finalDownloadUrls = this->finalDownloadUrls;
+        newData.secondDownloadUrl = this->secondDownloadUrl;
+        newData.firstDownloadUrl = this->firstDownloadUrl;
+        newData.addedByUserName = this->addedByUserName;
+        newData.html5PlayerFile = this->html5PlayerFile;
+        newData.playerResponse = this->playerResponse;
+        newData.contentLength = this->contentLength;
+        newData.addedByUserId = this->addedByUserId;
+        newData.doWeGetSaved = this->doWeGetSaved;
+        newData.thumbnailUrl = this->thumbnailUrl;
+        newData.description = this->description;
+        newData.html5Player = this->html5Player;
+        newData.songTitle = this->songTitle;
+        newData.duration = this->duration;
+        newData.viewUrl = this->viewUrl;
+        newData.format = this->format;
+        newData.songId = this->songId;
+        newData.type = this->type;
+        return newData;
     }
 
     void Permissions::addPermissions(std::vector<Permission> permissionsToAdd) {
