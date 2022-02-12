@@ -78,12 +78,12 @@ namespace DiscordCoreInternal {
 
 			SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER, nullptr);
 			SSL_CTX_set_verify_depth(this->context, 4);
-			if (SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL)) {
+			if (!SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL)) {
 				reportSSLError("SSL_CTX_load_verify_locations() Error: ", 0);
 				return false;
 			}
 
-			if (SSL_CTX_set_cipher_list(this->context, "ALL")) {
+			if (!SSL_CTX_set_cipher_list(this->context, "ALL")) {
 				reportSSLError("SSL_CTX_set_cipher_list() Error: ", 0);
 				return false;
 			}
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			if (SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
+			if (!SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
 				reportSSLError("SSL_CTX_set_ciphersuites() Error: ", 0);
 				return false;
 			}
@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			if (BIO_set_conn_hostname(this->connectionBio, std::string(baseUrlNew + ":" + portNew).c_str())) {
+			if (!BIO_set_conn_hostname(this->connectionBio, std::string(baseUrlNew + ":" + portNew).c_str())) {
 				reportSSLError("BIO_set_connt_hostname() Error: ", 0);
 				return false;
 			}
