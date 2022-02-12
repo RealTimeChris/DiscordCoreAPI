@@ -14,19 +14,15 @@ include_directories("../Source")
 include_directories("${VCPKG_INSTALLED_DIR}/lib/glib-2.0/include")
 include_directories("${VCPKG_INSTALLED_DIR}/include/glib-2.0/")
 include_directories("${VCPKG_INSTALLED_DIR}/include")
-
 set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLED_DIR}/lib")
 set(OEPNSSL_CRYPTO_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libcrypto.a")
 set(OEPNSSL_SSL_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libssl.a")
 set(ZLIB_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libz.a")
 set(ZLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
-set(LIBCURL_LIBRARY "${VCPKG_INSTALLED_DIR}/lib/libcurl.a")
 set(LIBCURL_DIR "${VCPKG_INSTALLED_DIR}/share/curl")
+find_package(LIBCURL REQUIRED)
 set(FFMPEG_DIR "${VCPKG_INSTALLED_DIR}/share/ffmpeg")
-list(APPEND CMAKE_PREFIX_PATH "${VCPKG_INSTALLED_DIR}")
-find_package(OpenSSL REQUIRED)
-find_package(CURL REQUIRED)
-
+find_package(FFMPEG REQUIRED)
 add_executable(DiscordCoreAPI-Bot "main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp" "../Include/Index.hpp" "../Source/ApplicationCommandEntities.cpp" "../Source/AudioDecoder.cpp"
 	"../Source/AudioEncoder.cpp" "../Source/ChannelEntities.cpp"
 	"../Source/CommandController.cpp" "../Source/DataParsingFunctions.cpp"
@@ -45,7 +41,6 @@ add_executable(DiscordCoreAPI-Bot "main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp
 	"../Source/WebHookEntities.cpp" "../Source/WebSocketEntities.cpp"
 	"../Source/YouTubeAPI.cpp"
 )
-
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC OpenSSL::SSL)
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC OpenSSL::Crypto)
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC -lpthread)
@@ -54,7 +49,6 @@ target_link_libraries(DiscordCoreAPI-Bot PUBLIC CURL::libcurl)
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libsodium.a")
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libglib-2.0.a")
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libopus.a")
-
 message(STATUS "Copying a file...")
 configure_file("${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" "/home/$ENV{USER}/SSL/Certs/SoundCloudCert.pem" COPYONLY)
 message(STATUS "Copying a file...")
@@ -82,11 +76,8 @@ include_directories("${VCPKG_INSTALLED_DIR}/lib/glib-2.0/include")
 include_directories("${VCPKG_INSTALLED_DIR}/include/glib-2.0/")
 include_directories("${VCPKG_INSTALLED_DIR}/include")
 add_subdirectory(Windows-DLL)
-
 add_executable(DiscordCoreAPI-Bot "main.cpp")
-
 target_link_libraries(DiscordCoreAPI-Bot PUBLIC DiscordCoreAPI-DLL)
-
 foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 	if (${OUTPUTCONFIG} STREQUAL "Release" OR ${OUTPUTCONFIG} STREQUAL "Debug")
 		message(STATUS "Copying a file...")
