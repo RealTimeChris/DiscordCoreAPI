@@ -499,7 +499,7 @@ namespace DiscordCoreAPI {
 
 		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
 		static std::unordered_map<std::string, Guild> cache;
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpClientManager* httpClient;
 
 		static void insertGuild(Guild Guild);
 

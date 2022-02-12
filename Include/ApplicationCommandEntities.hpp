@@ -6,6 +6,7 @@
 #pragma once
 
 #include "FoundationEntities.hpp"
+#include "Http.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -152,7 +153,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ApplicationCommands {
     public:
 
-        static void initialize(DiscordCoreInternal::HttpClient*);
+        static void initialize(DiscordCoreInternal::HttpClientManager*);
 
         /// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.
         /// \returns A CoRoutine containing a std::vector<ApplicationCommand>.
@@ -235,7 +236,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static DiscordCoreInternal::HttpClient* httpClient;
+        static DiscordCoreInternal::HttpClientManager* httpClientManager;
     };
     /**@}*/
 

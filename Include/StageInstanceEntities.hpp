@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll StageInstances {
 	public:
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClientManager*);
 
 		/// Creates a StageInstance. \brief Creates a StageInstance.
 		/// \param dataPackage A CreateStageInstanceData structure.

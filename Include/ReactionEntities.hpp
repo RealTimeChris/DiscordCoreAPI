@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reactions {
 	public:
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClientManager*);
 
 		/// Creates a Reaction on a Message. \brief Creates a Reaction on a Message.
 		/// \param dataPackage A CreateReactionData structure.
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpClientManager* httpClient;
 	};
 	/**@}*/
 }

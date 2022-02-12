@@ -302,11 +302,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(std::string botTokenNew) :botToken(botTokenNew) {
+	HttpClientManager::HttpClientManager(std::string botTokenNew) :botToken(botTokenNew) {
 		this->connectionManager.initialize();
 	};
 
-	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, bool printResult, HttpConnection& theConnection) {
+	HttpData HttpClientManager::executeByRateLimitData(HttpWorkloadData& workload, bool printResult, HttpConnection& theConnection) {
 		HttpData returnData{};
 		try {
 			std::lock_guard<std::mutex> workloadLock{ theConnection.accessMutex };
@@ -337,7 +337,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				returnData = HttpClient::executeHttpRequest(workload, theConnection);
+				returnData = HttpClientManager::executeHttpRequest(workload, theConnection);
 				if (workload.workloadType == HttpWorkloadType::Delete_Message_Old) {
 					theConnection.rateLimitDataPtr->getsRemaining -= 2;
 				}
@@ -351,7 +351,7 @@ namespace DiscordCoreInternal {
 			else {
 				std::unique_ptr<RateLimitData> tempRateLimitData{ std::make_unique<RateLimitData>() };
 				theConnection.rateLimitDataPtr = tempRateLimitData.get();
-				returnData = HttpClient::executeHttpRequest(workload, theConnection);
+				returnData = HttpClientManager::executeHttpRequest(workload, theConnection);
 				this->connectionManager.rateLimitValues.insert_or_assign(theConnection.bucket, std::move(tempRateLimitData));
 			}
 
@@ -372,7 +372,7 @@ namespace DiscordCoreInternal {
 		
 	}
 
-	HttpData HttpClient::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection) {
+	HttpData HttpClientManager::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection) {
 		try {
 			theConnection.resetValues();
 			if (theConnection.doWeConnect) {
@@ -398,7 +398,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpData HttpClient::getResponse(HttpWorkloadData& workload, HttpConnection& theConnection) {
+	HttpData HttpClientManager::getResponse(HttpWorkloadData& workload, HttpConnection& theConnection) {
 		DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{3500} };
 		theConnection.inputBuffer.resize(0);
 		while (true) {
@@ -415,7 +415,7 @@ namespace DiscordCoreInternal {
 		return theConnection.handleHeaders(workload, theConnection);
 	}
 
-	std::vector<HttpData> HttpClient::executeHttpRequest(std::vector<HttpWorkloadData>& workload) {
+	std::vector<HttpData> HttpClientManager::executeHttpRequest(std::vector<HttpWorkloadData>& workload) {
 		try {
 			std::vector<HttpData> returnVector{};
 			std::string currentBaseUrl{ "" };
@@ -449,7 +449,7 @@ namespace DiscordCoreInternal {
 		return std::vector<HttpData>{};
 	}
 
-	std::vector<HttpData> HttpClient::httpRequest(std::vector<HttpWorkloadData>& workload) {
+	std::vector<HttpData> HttpClientManager::httpRequest(std::vector<HttpWorkloadData>& workload) {
 		try {
 			std::vector<HttpData> resultData = this->executeHttpRequest(workload);
 			
@@ -461,7 +461,7 @@ namespace DiscordCoreInternal {
 		return std::vector<HttpData>{};
 	}
 
-	HttpData HttpClient::httpRequest(HttpWorkloadData& workload, bool printResult) {
+	HttpData HttpClientManager::httpRequest(HttpWorkloadData& workload, bool printResult) {
 		try {
 			if (workload.baseUrl == "") {
 				workload.baseUrl = "https://discord.com/api/v9";
@@ -481,45 +481,6 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::reportException("HttpClient::httpRequest()");
 		}
 		return HttpData{};
-	}
-
-	template<>
-	void submitWorkloadAndGetResult<void>(HttpClient* httpClient, HttpWorkloadData& workload) {
-		try {
-			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient->botToken));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://gi;thub.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
-			httpClient->httpRequest(workload, true);
-			return;
-		}
-		catch (...) {
-			DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
-		}
-		return;
-	}
-
-	std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload) {
-		try {
-			auto returnData = httpClient.httpRequest(workload);
-			return returnData;
-		}
-		catch (...) {
-			DiscordCoreAPI::reportException(workload[0].callStack + "::HttpClient::submitWorkloadAndGetResult()");
-		}
-		return std::vector<HttpData>();
-	}
-
-	HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload)	{
-		try {
-			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.botToken));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
-			return httpClient.httpRequest(workload, false);
-		}
-		catch (...) {
-			DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");
-		}
-		return HttpData();
 	}
 
 };

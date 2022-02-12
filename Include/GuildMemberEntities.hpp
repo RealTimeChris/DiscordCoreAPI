@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClientManager*);
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		static std::unordered_map<std::string, GuildMember> cache;
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpClientManager* httpClient;
 
 		static void insertGuildMember(GuildMember dataPackage);
 
