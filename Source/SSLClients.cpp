@@ -191,7 +191,7 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &readSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
-		timeval checkTime{ .tv_usec = 60000 };
+		timeval checkTime{ .tv_usec = 600000 };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
@@ -349,7 +349,7 @@ namespace DiscordCoreInternal {
 		return newVector;
 	}
 
-	bool WebSocketSSLClient::processIO() {
+	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
 		fd_set writeSet{};
 		fd_set readSet{};
 		int32_t nfds{ 0 };
@@ -363,7 +363,7 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &readSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
-		timeval checkTime{ .tv_usec = 60000 };
+		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
 		if (resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);

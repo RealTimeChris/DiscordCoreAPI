@@ -257,7 +257,7 @@ namespace DiscordCoreInternal {
 
 		std::string getData();
 
-		bool processIO();
+		bool processIO(int32_t waitTimeInMicroSeconds = 60000);
 
 	protected:
 
