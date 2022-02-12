@@ -159,10 +159,7 @@ namespace DiscordCoreAPI {
 			}
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
-			if (this->voiceSocketAgent->connectionReadyEvent.wait(10000) != 0) {
-				return;
-			}
-			this->voiceConnectionData = this->voiceSocketAgent->voiceConnectionData;
+			this->voiceConnectionData = &this->voiceSocketAgent->voiceConnectionData;
 			this->areWeConnectedBool = true;
 			if (this->theTask == nullptr) {
 				this->theTask = std::make_unique<CoRoutine<void>>(this->run());
@@ -230,15 +227,15 @@ namespace DiscordCoreAPI {
 			frameData.push_back(newFrame);
 		}
 		for (auto& value : frameData) {
-			auto newerFrame = this->audioEncrypter.encryptSingleAudioFrame(value, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
+			auto newerFrame = this->audioEncrypter.encryptSingleAudioFrame(value, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 			this->sendSingleAudioFrame(newerFrame);
 		}
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
 		if (!this->doWeQuit && this->voiceSocketAgent != nullptr) {
-			this->voiceConnectionData.audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
-			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData.audioSSRC, 0);
+			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
+			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
 			if (this->voiceSocketAgent->webSocket != nullptr) {
 				this->voiceSocketAgent->sendMessage(newString);
 			}
@@ -322,10 +319,10 @@ namespace DiscordCoreAPI {
 						std::vector<uint8_t> newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto newFrames = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
-							newFrame = this->audioEncrypter.encryptSingleAudioFrame(newFrames, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
+							newFrame = this->audioEncrypter.encryptSingleAudioFrame(newFrames, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						else {
-							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
+							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						nanoSleep(18000000);
 						if (this->doWeQuit || cancelHandle.promise().isItStopped()) {

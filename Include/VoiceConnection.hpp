@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		DiscordCoreInternal::VoiceConnectionData* voiceConnectionData{};
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<AudioEncoder> encoder{ nullptr };

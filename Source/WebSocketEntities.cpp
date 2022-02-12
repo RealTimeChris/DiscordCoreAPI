@@ -655,8 +655,8 @@ namespace DiscordCoreInternal {
 			this->areWeAuthenticated = false;
 			this->heartbeatTimer.cancel();
 			this->inputBuffer.clear();
+			this->haveWeReceivedHeartbeatAck = true;
 			this->connect();
-			this->doWeReconnect.set();
 		}
 		else if (this->maxReconnectTries <= this->currentReconnectTries) {
 			this->doWeQuit = true;
@@ -671,6 +671,7 @@ namespace DiscordCoreInternal {
 			if (this->heartbeatTimer.running()) {
 				this->heartbeatTimer.cancel();
 			}
+			this->doWeReconnect.set();
 			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -694,7 +695,6 @@ namespace DiscordCoreInternal {
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
-		this->connectionReadyEvent.reset();
 		this->doWeReconnect.set();
 		this->theTask = this->run();
 	}
@@ -858,7 +858,6 @@ namespace DiscordCoreInternal {
 					for (uint32_t x = 0; x < payload.at("d").at("secret_key").size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload.at("d").at("secret_key").at(x).get<uint8_t>());
 					}
-					this->connectionReadyEvent.set();
 				}
 				if (payload.at("op") == 9) {};
 				if (payload.at("op") == 8) {
