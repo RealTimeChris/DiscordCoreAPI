@@ -114,9 +114,7 @@ namespace DiscordCoreAPI {
         CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
-            if (this->coroutineHandle) {
-                this->cancel();
-                while (!this->coroutineHandle.done()) {};
+            if (this->coroutineHandle && this->coroutineHandle.done()) {
                 this->coroutineHandle.destroy();
             }
         }
@@ -276,9 +274,7 @@ namespace DiscordCoreAPI {
         CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
         ~CoRoutine() {
-            if (this->coroutineHandle) {
-                this->cancel();
-                while (!this->coroutineHandle.done()) {};
+            if (this->coroutineHandle && this->coroutineHandle.done()) {
                 this->coroutineHandle.destroy();
             }
         }
