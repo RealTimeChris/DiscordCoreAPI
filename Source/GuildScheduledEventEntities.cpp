@@ -29,8 +29,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	}
 
-	void GuildScheduledEvents::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
-		GuildScheduledEvents::httpClientManager = theClient;
+	void GuildScheduledEvents::initialize(DiscordCoreInternal::HttpClient*theClient) {
+		GuildScheduledEvents::httpClient = theClient;
 	}
 
 	CoRoutine<std::vector<GuildScheduledEvent>> GuildScheduledEvents::getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage) {
@@ -41,8 +41,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events";
 			workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync";
-			DiscordCoreInternal::HttpClient<std::vector<GuildScheduledEvent>> httpClient{};
-			co_return httpClient.submitWorkloadAndGetResult<std::vector<GuildScheduledEvent>>(workload, *GuildScheduledEvents::httpClientManager);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildScheduledEvent>>(GuildScheduledEvents::httpClient, workload);
 		}
 		catch (...) {
 			reportException("GuildScheduledEvents::getGuildScheduledEventAsync()");
@@ -58,8 +57,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events";
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync";
-			DiscordCoreInternal::HttpClient<GuildScheduledEvent> httpClient{};
-			co_return httpClient.submitWorkloadAndGetResult<GuildScheduledEvent>(workload, *GuildScheduledEvents::httpClientManager);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildScheduledEvent>(GuildScheduledEvents::httpClient, workload);
 		}
 		catch (...) {
 			reportException("GuildScheduledEvents::createGuildScheduledEventAsync()");
@@ -78,8 +76,7 @@ namespace DiscordCoreAPI {
 			stream << std::boolalpha << dataPackage.withUserCount;
 			workload.relativePath += stream.str();
 			workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync";
-			DiscordCoreInternal::HttpClient<GuildScheduledEvent> httpClient{};
-			co_return httpClient.submitWorkloadAndGetResult<GuildScheduledEvent>(workload, *GuildScheduledEvents::httpClientManager);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildScheduledEvent>(GuildScheduledEvents::httpClient, workload);
 		}
 		catch (...) {
 			reportException("GuildScheduledEvents::getGuildScheduledEventAsync()");
@@ -95,8 +92,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId;
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync";
-			DiscordCoreInternal::HttpClient<GuildScheduledEvent> httpClient{};
-			co_return httpClient.submitWorkloadAndGetResult<GuildScheduledEvent>(workload, *GuildScheduledEvents::httpClientManager);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildScheduledEvent>(GuildScheduledEvents::httpClient, workload);
 		}
 		catch (...) {
 			reportException("GuildScheduledEvents::modifyGuildScheduledEventAsync()");
@@ -111,8 +107,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId;
 			workload.callStack = "GuildScheduledEvents::deleteGuildScheduledEventAsync";
-			DiscordCoreInternal::HttpClient<void> httpClient{};
-			co_return httpClient.submitWorkloadAndGetResult<void>(workload, *GuildScheduledEvents::httpClientManager);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(GuildScheduledEvents::httpClient, workload);
 		}
 		catch (...) {
 			reportException("GuildScheduledEvents::deleteGuildScheduledEventAsync()");
@@ -157,12 +152,11 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "?with_member=true";
 			}
 			workload.callStack = "GuildScheduledEvents::getGuildScheduledEventUsersAsync";
-			DiscordCoreInternal::HttpClient<std::vector<GuildScheduledEventUserData>> httpClient{};
-			co_return httpClient.submitWorkloadAndGetResult<std::vector<GuildScheduledEventUserData>>(workload, *GuildScheduledEvents::httpClientManager);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildScheduledEventUserData>>(GuildScheduledEvents::httpClient, workload);
 		}
 		catch (...) {
 			reportException("GuildScheduledEvents::getGuildScheduledEventUsersAsync()");
 		}
 	}
-	DiscordCoreInternal::HttpClientManager* GuildScheduledEvents::httpClientManager{ nullptr };
+	DiscordCoreInternal::HttpClient* GuildScheduledEvents::httpClient{ nullptr };
 }

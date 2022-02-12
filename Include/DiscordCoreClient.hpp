@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 	protected:
 
 		std::unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
-		std::unique_ptr<DiscordCoreInternal::HttpClientManager> httpClient{ nullptr };
+		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 		std::vector<ThreadPoolTimer> threadPoolTimers{};
 		std::unique_ptr<BotUser> currentUser{ nullptr };

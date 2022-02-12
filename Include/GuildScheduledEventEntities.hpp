@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildScheduledEvents {
 	public:
 
-		static void initialize(DiscordCoreInternal::HttpClientManager*);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Gets a list of a given Guild's scheduled events. \brief Gets a list of a given Guild's scheduled events.
 		/// \param dataPackage A GetGuildScheduledEventsDatastructure.
@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static DiscordCoreInternal::HttpClientManager* httpClient;
+		static DiscordCoreInternal::HttpClient* httpClient;
 	};
 	/**@}*/
 }
