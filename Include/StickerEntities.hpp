@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Stickers {
 	public:
 
-		static void initialize(DiscordCoreInternal::HttpClientManager*);
+		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		/// Gets a single Sticker item. \brief Gets a single Sticker item.
 		/// \param dataPackage A GetStickerData structure.
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static DiscordCoreInternal::HttpClientManager* httpClientManager;
+		static DiscordCoreInternal::HttpClient* httpClient;
 	};
 	/**@}*/
 };

@@ -83,8 +83,8 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	void Messages::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
-		Messages::httpClientManager = theClient;
+	void Messages::initialize(DiscordCoreInternal::HttpClient*theClient) {
+		Messages::httpClient = theClient;
 	}
 
 	CoRoutine<std::vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
@@ -306,5 +306,5 @@ namespace DiscordCoreAPI {
 	}
 	
 	std::unordered_map<std::string, UnboundedMessageBlock<Message>*> MessageCollector::messagesBufferMap{};
-	DiscordCoreInternal::HttpClient* Messages::httpClientManager{ nullptr };
+	DiscordCoreInternal::HttpClient* Messages::httpClient{ nullptr };
 }

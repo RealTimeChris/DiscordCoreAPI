@@ -39,8 +39,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	}
 
-	void Channels::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
-		Channels::httpClientManager = theClient;
+	void Channels::initialize(DiscordCoreInternal::HttpClient*theClient) {
+		Channels::httpClient = theClient;
 	}
 
 	CoRoutine<Channel> Channels::getChannelAsync(GetChannelData dataPackage) {
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	DiscordCoreInternal::HttpClient* Channels::httpClientManager{ nullptr };
+	DiscordCoreInternal::HttpClient* Channels::httpClient{ nullptr };
 	std::unordered_map<std::string, Channel> Channels::cache{};
 
 }

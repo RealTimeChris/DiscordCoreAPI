@@ -25,8 +25,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	}
 
-	void Roles::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
-		Roles::httpClientManager = theClient;
+	void Roles::initialize(DiscordCoreInternal::HttpClient*theClient) {
+		Roles::httpClient = theClient;
 	}
 
 	CoRoutine<void> Roles::addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage) {
@@ -272,6 +272,6 @@ namespace DiscordCoreAPI {
 			reportException("Roles::removeRole()");
 		}
 	};
-	DiscordCoreInternal::HttpClient* Roles::httpClientManager{ nullptr };
+	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
 	std::unordered_map<std::string, Role> Roles::cache{};
 }

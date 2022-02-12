@@ -38,8 +38,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	}
 
-	void Threads::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
-		Threads::httpClientManager = theClient;
+	void Threads::initialize(DiscordCoreInternal::HttpClient*theClient) {
+		Threads::httpClient = theClient;
 	}
 
 	CoRoutine<Thread> Threads::startThreadWithMessageAsync(StartThreadWithMessageData dataPackage) {
@@ -271,5 +271,5 @@ namespace DiscordCoreAPI {
 			reportException("Threads::listActiveThreadsAsync()");
 		}
 	}
-	DiscordCoreInternal::HttpClient* Threads::httpClientManager{ nullptr };
+	DiscordCoreInternal::HttpClient* Threads::httpClient{ nullptr };
 }

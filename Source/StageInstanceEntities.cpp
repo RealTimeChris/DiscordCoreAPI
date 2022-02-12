@@ -20,8 +20,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	}
 
-	void StageInstances::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
-		StageInstances::httpClientManager = theClient;
+	void StageInstances::initialize(DiscordCoreInternal::HttpClient*theClient) {
+		StageInstances::httpClient = theClient;
 	}
 
 	CoRoutine<StageInstance> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
@@ -96,5 +96,5 @@ namespace DiscordCoreAPI {
 			reportException("StageInstances::deleteStageInstanceAsync()");
 		}
 	}
-	DiscordCoreInternal::HttpClient* StageInstances::httpClientManager{ nullptr };
+	DiscordCoreInternal::HttpClient* StageInstances::httpClient{ nullptr };
 }

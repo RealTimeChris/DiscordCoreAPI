@@ -26,7 +26,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		DiscordCoreInternal::HttpClient* httpClientManager{ nullptr };
+		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 
 		YouTubeSong constructDownloadInfo(GuildMemberData guildMember, YouTubeSong newSong);

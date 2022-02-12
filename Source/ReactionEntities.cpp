@@ -23,8 +23,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	}
 
-	void Reactions::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
-		Reactions::httpClientManager = theClient;
+	void Reactions::initialize(DiscordCoreInternal::HttpClient*theClient) {
+		Reactions::httpClient = theClient;
 	}
 
 	CoRoutine<Reaction> Reactions::createReactionAsync(CreateReactionData dataPackage) {
@@ -259,5 +259,5 @@ namespace DiscordCoreAPI {
 			reportException("Reactions::deleteGuildEmojiAsync()");
 		}
 	}
-	DiscordCoreInternal::HttpClient* Reactions::httpClientManager{ nullptr };
+	DiscordCoreInternal::HttpClient* Reactions::httpClient{ nullptr };
 }
