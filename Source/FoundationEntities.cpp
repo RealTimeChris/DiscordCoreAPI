@@ -55,13 +55,12 @@ namespace DiscordCoreAPI {
 
     bool hasTimeElapsed(std::string timeStamp, int64_t days, int64_t hours, int64_t minutes) {
         int64_t startTimeRaw = convertTimestampToInteger(timeStamp);
-        std::chrono::milliseconds startTime(startTimeRaw);
         auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         int64_t secondsPerMinute = 60;
         int64_t secondsPerHour = secondsPerMinute * 60;
         int64_t secondsPerDay = secondsPerHour * 24;
-        auto targetElapsedTime = std::chrono::milliseconds(((days * secondsPerDay) + ((hours - 4) * secondsPerHour) + (minutes * secondsPerMinute)) * 1000).count();
-        auto actualElapsedTime = currentTime - startTime.count();
+        auto targetElapsedTime = ((days * secondsPerDay) + ((hours - 4) * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
+        auto actualElapsedTime = currentTime - startTimeRaw;
         if (actualElapsedTime >= targetElapsedTime) {
             return true;
         }
@@ -74,53 +73,37 @@ namespace DiscordCoreAPI {
         int64_t timeValue = timeInMs / 1000;
         time_t rawTime(timeValue);
         tm timeInfo = *localtime(&rawTime);
-        char charArray[48];
         std::string timeStamp{};
-        size_t sizeResponse{ 0 };
+        timeStamp.resize(48);
         switch (timeFormat) {
         case TimeFormat::LongDate: {
-            sizeResponse = strftime(charArray, 48, "%d %B %G", &timeInfo);
-            for (int32_t x = 0; x < sizeResponse; x += 1) {
-                timeStamp.push_back(charArray[x]);
-            }
+            size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
+            timeStamp.resize(sizeResponse);
             break;
         }
         case TimeFormat::LongDateTime: {
-            sizeResponse = strftime(charArray, 48, "%a %b %d %Y %X", &timeInfo);
-            for (int32_t x = 0; x < sizeResponse; x += 1) {
-                timeStamp.push_back(charArray[x]);
-            }
+            size_t sizeResponse = strftime(timeStamp.data(), 48, "%a %b %d %Y %X", &timeInfo);
+            timeStamp.resize(sizeResponse);
             break;
         }
         case TimeFormat::LongTime: {
-            sizeResponse = strftime(charArray, 48, "%ObjectType", &timeInfo);
-            for (int32_t x = 0; x < sizeResponse; x += 1) {
-                timeStamp.push_back(charArray[x]);
-            }
-            timeStamp = timeStamp.substr(0, timeStamp.find_last_of(":") + 3);
+            size_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
+            timeStamp.resize(sizeResponse);
             break;
         }
         case TimeFormat::ShortDate: {
-            sizeResponse = strftime(charArray, 48, "%d/%m/%g", &timeInfo);
-            for (int32_t x = 0; x < sizeResponse; x += 1) {
-                timeStamp.push_back(charArray[x]);
-            }
-            timeStamp = timeStamp.substr(0, timeStamp.find_last_of("/") + 3);
+            size_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
+            timeStamp.resize(sizeResponse);
             break;
         }
         case TimeFormat::ShortDateTime: {
-            sizeResponse = strftime(charArray, 48, "%d %B %G %R", &timeInfo);
-            for (int32_t x = 0; x < sizeResponse; x += 1) {
-                timeStamp.push_back(charArray[x]);
-            }
+            size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
+            timeStamp.resize(sizeResponse);
             break;
         }
         case TimeFormat::ShortTime: {
-            sizeResponse = strftime(charArray, 48, "%R", &timeInfo);
-            for (int32_t x = 0; x < sizeResponse; x += 1) {
-                timeStamp.push_back(charArray[x]);
-            }
-            timeStamp = timeStamp.substr(0, timeStamp.find(":") + 3);
+            size_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
+            timeStamp.resize(sizeResponse);
             break;
         }
         default: {
@@ -202,12 +185,16 @@ namespace DiscordCoreAPI {
     std::string getTimeAndDate() {
         const time_t now = std::time(nullptr);
         tm time = *std::localtime(&now);
-        char charArray[40];
         std::string timeStamp{};
-        size_t size = strftime(charArray, 40, "%F %R", &time);
-        for (int32_t x = 0; x < size; x += 1) {
-            timeStamp.push_back(charArray[x]);
+        timeStamp.resize(48);
+        if (time.tm_isdst) {
+            time.tm_hour += 4;
         }
+        else {
+            time.tm_hour += 5;
+        }
+        size_t size = strftime(timeStamp.data(), 48, "%F %R", &time);
+        timeStamp.resize(size);
         return timeStamp;
     }
 
