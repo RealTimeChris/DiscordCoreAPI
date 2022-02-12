@@ -13,7 +13,7 @@
 namespace DiscordCoreAPI {
 
 	YouTubeRequestBuilder::YouTubeRequestBuilder(DiscordCoreInternal::HttpClient* theClient) {
-		YouTubeRequestBuilder::httpClient = theClient;
+		this->httpClient = theClient;
 	}
 
 	std::vector<YouTubeSong> YouTubeRequestBuilder::collectSearchResults(std::string searchQuery) {
@@ -517,7 +517,7 @@ namespace DiscordCoreAPI {
 							goto breakOut;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-						if (!streamSocket.processIO(600000)) { goto end; }
+						if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
 						auto newData = streamSocket.getData();
 						int64_t headerLength = newData.size();
 						if (!coroutineHandle.promise().isItStopped()) {
@@ -533,7 +533,7 @@ namespace DiscordCoreAPI {
 						goto breakOut;
 					}
 					if (counter == 0) {
-						if (!streamSocket.processIO(600000)) { goto end; };
+						if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
 						auto streamBuffer = streamSocket.getData();
 						audioDecoder->submitDataForDecoding(streamBuffer);
 						audioDecoder->startMe();
@@ -545,7 +545,7 @@ namespace DiscordCoreAPI {
 							}
 							bytesReadTotal01 = streamSocket.getBytesRead();
 							remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-							if (!streamSocket.processIO(600000)) { goto end; };
+							if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
 							auto streamBuffer = streamSocket.getData();
 							std::string newVector{};
 							for (uint32_t x = 0; x < streamBuffer.size(); x += 1) {

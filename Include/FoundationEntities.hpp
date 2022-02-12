@@ -38,28 +38,22 @@
 #endif
 
 #include <cpp-base64/base64.h>
-#include <condition_variable>
 #include <nlohmann/json.hpp>
-#include <glib-2.0/glib.h>
+#include <unordered_map>
 #include <curl/curl.h>
-#include <type_traits>
-#include <stop_token>
-#include <coroutine>
-#include <semaphore>
-#include <exception>
-#include <iostream>
-#include <concepts>
+#include <functional>
 #include <memory>
-#include <thread>
-#include <regex>
-#include <mutex>
+#include <string>
+#include <vector>
 #include <queue>
-#include <ios>
+#include <mutex>
 
 #ifdef _WIN32
 #ifdef _DEBUG
-#define DBG_NEW   new( _NORMAL_BLOCK, __FILE__, __LINE__)
+#ifndef DBG_NEW
+#define DBG_NEW new( _NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW
+#endif
 #endif
 #endif
 

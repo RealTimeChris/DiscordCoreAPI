@@ -19,6 +19,7 @@
 #include "WebHookEntities.hpp"
 #include "ThreadEntities.hpp"
 #include "ReactionEntities.hpp"
+#include <glib-2.0/glib.h>
 
 namespace DiscordCoreInternal {
 

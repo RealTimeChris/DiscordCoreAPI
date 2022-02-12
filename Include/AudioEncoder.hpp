@@ -7,6 +7,7 @@
 
 #include "FoundationEntities.hpp"
 #include <opus/opus.h>
+#include <iostream>
 
 namespace DiscordCoreAPI {
 

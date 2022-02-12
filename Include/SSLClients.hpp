@@ -34,6 +34,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <algorithm>
+#include <iostream>
 
 namespace DiscordCoreInternal {
 

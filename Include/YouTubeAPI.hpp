@@ -9,6 +9,7 @@
 #include "FoundationEntities.hpp"
 #include "AudioEncoder.hpp"
 #include "AudioDecoder.hpp"
+#include <regex>
 
 namespace DiscordCoreAPI {
 
