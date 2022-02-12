@@ -28,8 +28,8 @@ namespace DiscordCoreAPI {
         this->id = dataPackage.id;
     }
 
-    void Interactions::initialize(DiscordCoreInternal::HttpClient*theClient) {
-        Interactions::httpClient = theClient;
+    void Interactions::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
+        Interactions::httpClientManager = theClient;
     }
 
      CoRoutine<Message> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
@@ -446,5 +446,5 @@ namespace DiscordCoreAPI {
     std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
     std::unordered_map<std::string, std::unique_ptr<UnboundedMessageBlock<MessageData>>> Interactions::collectMessageDataBuffers{};
     std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
-    DiscordCoreInternal::HttpClient* Interactions::httpClient{ nullptr };
+    DiscordCoreInternal::HttpClient* Interactions::httpClientManager{ nullptr };
 };

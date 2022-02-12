@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClientManager*);
 
 		/// Adds a chosen recipient to a group Dm. \brief Adds a chosen recipient to a group Dm.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.
@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpClientManager* httpClientManager;
 		static std::unordered_map<std::string, User> cache;
 
 		static void insertUser(User user);

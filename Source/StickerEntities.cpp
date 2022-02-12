@@ -26,8 +26,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	};
 
-	void Stickers::initialize(DiscordCoreInternal::HttpClient*theClient) {
-		Stickers::httpClient = theClient;
+	void Stickers::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
+		Stickers::httpClientManager = theClient;
 	}
 
 	CoRoutine<Sticker> Stickers::getStickerAsync(GetStickerData dataPackage) {
@@ -132,5 +132,5 @@ namespace DiscordCoreAPI {
 			reportException("Stickers::deleteGuildStickerAsync()");
 		}
 	}
-	DiscordCoreInternal::HttpClient* Stickers::httpClient{ nullptr };
+	DiscordCoreInternal::HttpClient* Stickers::httpClientManager{ nullptr };
 };

@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 
 	void Guilds::initialize(DiscordCoreInternal::HttpClient* theClient, DiscordCoreClient* discordCoreClientNew) {
 		Guilds::discordCoreClient = discordCoreClientNew;
-		Guilds::httpClient = theClient;
+		Guilds::httpClientManager = theClient;
 	}
 
 	CoRoutine<AuditLogData> Guilds::getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage) {
@@ -912,7 +912,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
+	DiscordCoreInternal::HttpClient* Guilds::httpClientManager{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	std::unordered_map<std::string, Guild> Guilds::cache{};
 

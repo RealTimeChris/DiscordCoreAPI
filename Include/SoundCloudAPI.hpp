@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 	protected:
 		
 		std::string baseUrl02{ "https://api-v2.soundcloud.com" };
-		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
+		DiscordCoreInternal::HttpClient* httpClientManager{ nullptr };
 		std::string baseUrl{ "https://soundcloud.com" };
 		std::string appVersion{ "1631696495" };
 		std::string clientId{ "" };
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
+		DiscordCoreInternal::HttpClient* httpClientManager{ nullptr };
 		SoundCloudRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };

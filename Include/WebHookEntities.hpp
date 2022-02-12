@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll WebHooks {
 	public:
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClientManager*);
 
 		/// Creates a new WebHook. \brief Creates a new WebHook.
 		/// \param dataPackage A GetMessageData structure.
@@ -411,7 +411,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpClientManager* httpClientManager;
 
 	};
 	/**@}*/

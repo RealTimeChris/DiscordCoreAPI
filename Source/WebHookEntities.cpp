@@ -27,8 +27,8 @@ namespace DiscordCoreAPI {
 		this->id = dataNew.id;
 	}
 
-	void WebHooks::initialize(DiscordCoreInternal::HttpClient*theClient) {
-		WebHooks::httpClient = theClient;
+	void WebHooks::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
+		WebHooks::httpClientManager = theClient;
 	}
 
     CoRoutine<WebHook> WebHooks::createWebHookAsync(CreateWebHookData dataPackage) {
@@ -272,5 +272,5 @@ namespace DiscordCoreAPI {
 			reportException("WebHooks::deleteWebHookMessageAsync()");
 		}
 	}
-	DiscordCoreInternal::HttpClient* WebHooks::httpClient{ nullptr };
+	DiscordCoreInternal::HttpClient* WebHooks::httpClientManager{ nullptr };
 }

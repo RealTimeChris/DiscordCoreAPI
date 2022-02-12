@@ -13,7 +13,7 @@
 namespace DiscordCoreAPI {
 
 	YouTubeRequestBuilder::YouTubeRequestBuilder(DiscordCoreInternal::HttpClient* theClient) {
-		this->httpClient = theClient;
+		this->httpClientManager = theClient;
 	}
 
 	std::vector<YouTubeSong> YouTubeRequestBuilder::collectSearchResults(std::string searchQuery) {

@@ -48,8 +48,8 @@ namespace DiscordCoreAPI {
 		this->baseSocketAgent = baseSocketAgentNew;
 	}
 
-	void Users::initialize(DiscordCoreInternal::HttpClient*theClient) {
-		Users::httpClient = theClient;
+	void Users::initialize(DiscordCoreInternal::HttpClientManager*theClient) {
+		Users::httpClientManager = theClient;
 	}
 
 	CoRoutine<void> Users::addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage) {
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
+	DiscordCoreInternal::HttpClient* Users::httpClientManager{ nullptr };
 	std::unordered_map<std::string, User> Users::cache{};
 	
 }
