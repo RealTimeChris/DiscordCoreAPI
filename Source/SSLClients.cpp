@@ -32,9 +32,9 @@ namespace DiscordCoreInternal {
 	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) :
 		inputBufferPtr(theInputBuffer) {
 #ifdef _WIN32
-		this->soundcloudCertPath = "C:/SSL/certs/SoundCloudCert.pem";
-		this->defaultCertPath = "C:/SSL/certs/DiscordCert.pem";
-		this->googleCertPath = "C:/SSL/certs/GoogleCert.pem";
+		this->soundcloudCertPath = "C:/SSL/Certs/SoundCloudCert.pem";
+		this->defaultCertPath = "C:/SSL/Certs/DiscordCert.pem";
+		this->googleCertPath = "C:/SSL/Certs/GoogleCert.pem";
 #else 
 		std::string userName{ getenv("USER") };
 		this->soundcloudCertPath = "/home/" + userName + "/SSL/Certs/SoundCloudCert.pem";
@@ -126,7 +126,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (std::unique_ptr<X509, X509Deleter> cert = std::unique_ptr<X509, X509Deleter>(SSL_get_peer_certificate(this->ssl)); cert == nullptr) {
-				reportSSLError("SSL_get_peer_certificate() Error: ", cert, this->ssl);
+				reportSSLError("SSL_get_peer_certificate() Error: ", 0, this->ssl);
 				return false;
 			}
 
