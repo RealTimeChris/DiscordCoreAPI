@@ -201,6 +201,9 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::isThereAnySongs(std::string guildId) {
+		if (!getSongAPIMap()->contains(guildId)) {
+			getSongAPIMap()->insert_or_assign(guildId, std::make_unique<SongAPI>(guildId));
+		}
 		if (getSongAPIMap()->at(guildId)->playlist.isLoopAllEnabled || getSongAPIMap()->at(guildId)->playlist.isLoopSongEnabled) {
 			if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() == 0 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
 				return false;
@@ -261,6 +264,9 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::sendNextSong(GuildMember guildMember) {
+		if (!getSongAPIMap()->contains(guildMember.guildId)) {
+			getSongAPIMap()->insert_or_assign(guildMember.guildId, std::make_unique<SongAPI>(guildMember.guildId));
+		}
 		getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId);
 		if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.songId == "") {
 			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId)) {
@@ -292,7 +298,7 @@ namespace DiscordCoreAPI {
 			};
 			getSongAPIMap()->at(guildMember.guildId)->onSongCompletionEvent(eventData);
 		}
-		return false;
+		return false;		
 	}
 
 	std::mutex SongAPI::accessMutex{};
