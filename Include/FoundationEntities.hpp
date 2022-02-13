@@ -38,15 +38,24 @@
 #endif
 
 #include <cpp-base64/base64.h>
+#include <condition_variable>
 #include <nlohmann/json.hpp>
-#include <unordered_map>
+#include <glib-2.0/glib.h>
 #include <curl/curl.h>
-#include <functional>
+#include <type_traits>
+#include <stop_token>
+#include <coroutine>
+#include <semaphore>
+#include <exception>
+#include <iostream>
+#include <concepts>
 #include <memory>
-#include <string>
-#include <vector>
-#include <queue>
+#include <thread>
+#include <regex>
 #include <mutex>
+#include <queue>
+#include <ios>
+
 
 #ifdef _WIN32
 #ifdef _DEBUG

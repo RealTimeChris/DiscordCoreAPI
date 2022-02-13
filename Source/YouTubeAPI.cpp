@@ -452,20 +452,21 @@ namespace DiscordCoreAPI {
 			std::vector<uint8_t> theVector{};
 			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath,"443", &theVector, this->maxBufferSize };
 			bool areWeDoneHeaders{ false };
+			bool haveWeFailed{ false };
 			int64_t remainingDownloadContentLength{ newSong.contentLength };
 			int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
 			int64_t bytesReadTotal01{ 0 };
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			streamSocket.processIO(600000);
-			streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
-			streamSocket.processIO(600000);
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength) - static_cast<int64_t>(581);
 			dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder = AudioEncoder();
+			if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
+			streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
+			if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
 		breakOutPlayMore:
-			if (counter > 45 && !getVoiceConnectionMap()->at(youtubeAPI->guildId)->areWeCurrentlyPlaying()) {
+			if (haveWeFailed) {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(youtubeAPI->guildId)->tryReceive(frameData)) {};
@@ -503,6 +504,7 @@ namespace DiscordCoreAPI {
 					goto breakOut;
 				}
 				if (audioDecoder->haveWeFailed()) {
+					haveWeFailed = true;
 					goto breakOutPlayMore;
 				}
 				if (coroutineHandle.promise().isItStopped()) {
@@ -517,7 +519,10 @@ namespace DiscordCoreAPI {
 							goto breakOut;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-						if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
+						if (!streamSocket.processIO(600000)) { 
+							haveWeFailed = true;
+							goto breakOutPlayMore; 
+						};
 						auto newData = streamSocket.getData();
 						int64_t headerLength = newData.size();
 						if (!coroutineHandle.promise().isItStopped()) {
@@ -533,7 +538,10 @@ namespace DiscordCoreAPI {
 						goto breakOut;
 					}
 					if (counter == 0) {
-						if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
+						if (!streamSocket.processIO(600000)) {
+							haveWeFailed = true;
+							goto breakOutPlayMore;
+						};
 						auto streamBuffer = streamSocket.getData();
 						audioDecoder->submitDataForDecoding(streamBuffer);
 						audioDecoder->startMe();
@@ -545,7 +553,10 @@ namespace DiscordCoreAPI {
 							}
 							bytesReadTotal01 = streamSocket.getBytesRead();
 							remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-							if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
+							if (!streamSocket.processIO(600000)) {
+								haveWeFailed = true;
+								goto breakOutPlayMore;
+							};
 							auto streamBuffer = streamSocket.getData();
 							std::string newVector{};
 							for (uint32_t x = 0; x < streamBuffer.size(); x += 1) {

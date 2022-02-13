@@ -183,18 +183,29 @@ namespace DiscordCoreAPI {
     }
 
     std::string getTimeAndDate() {
+        std::cout << "WERE HERE 010101" << std::endl;
         const time_t now = std::time(nullptr);
+        std::cout << "WERE HERE 020202" << std::endl;
         tm time = *std::localtime(&now);
+        char theArray[48];
+        std::cout << "WERE HERE 030303" << std::endl;
         std::string timeStamp{};
-        timeStamp.resize(48);
+        std::cout << "WERE HERE 040404" << std::endl;
+        std::cout << "WERE HERE 050505" << std::endl;
         if (time.tm_isdst) {
             time.tm_hour += 4;
         }
         else {
             time.tm_hour += 5;
         }
-        size_t size = strftime(timeStamp.data(), 48, "%F %R", &time);
+        std::cout << "WERE HERE 060606" << std::endl;
+        size_t size = strftime(theArray, 48, "%F%R", &time);
+        std::cout << "WERE HERE 070707" << std::endl;
         timeStamp.resize(size);
+        for (uint32_t x = 0; x < size; x += 1) {
+            timeStamp[x] = theArray[x];
+        }
+        std::cout << "WERE HERE 080808" << std::endl;
         return timeStamp;
     }
 
