@@ -38,6 +38,7 @@
 #endif
 
 #include <cpp-base64/base64.h>
+#include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <unordered_map>
 #include <curl/curl.h>
