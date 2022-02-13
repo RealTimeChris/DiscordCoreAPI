@@ -121,14 +121,17 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::play(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		return getVoiceConnectionMap()->at(guildId)->play();
 	}
 
 	void SongAPI::pauseToggle(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		getVoiceConnectionMap()->at(guildId)->pauseToggle();
 	}
 
 	bool SongAPI::areWeCurrentlyPlaying(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		return getVoiceConnectionMap()->at(guildId)->areWeCurrentlyPlaying();
 	}
 
@@ -176,6 +179,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::vector<Song> SongAPI::searchForSong(std::string searchQuery, std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		auto vector01 = getSoundCloudAPIMap()->at(guildId)->searchForSong(searchQuery, guildId);
 		auto vector02 = getYouTubeAPIMap()->at(guildId)->searchForSong(searchQuery, guildId);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
@@ -198,22 +202,27 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::setLoopAllStatus(bool enabled, std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		getSongAPIMap()->at(guildId)->playlist.isLoopAllEnabled = enabled;
 	}
 
 	bool SongAPI::isLoopAllEnabled(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		return getSongAPIMap()->at(guildId)->playlist.isLoopAllEnabled;
 	}
 
 	void SongAPI::setLoopSongStatus(bool enabled, std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		getSongAPIMap()->at(guildId)->playlist.isLoopSongEnabled = enabled;
 	}
 
 	bool SongAPI::isLoopSongEnabled(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		return getSongAPIMap()->at(guildId)->playlist.isLoopSongEnabled;
 	}
 
 	bool SongAPI::isThereAnySongs(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		if (getSongAPIMap()->at(guildId)->playlist.isLoopAllEnabled || getSongAPIMap()->at(guildId)->playlist.isLoopSongEnabled) {
 			if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() == 0 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
 				return false;
@@ -233,6 +242,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Song SongAPI::addSongToQueue(GuildMember guildMember, Song song) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		song.addedByUserId = guildMember.user.id;
 		song.addedByUserName = guildMember.user.userName;
 		getSongAPIMap()->at(guildMember.guildId)->playlist.songQueue.push_back(song);
@@ -240,6 +250,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::setPlaylist(Playlist playlistNew, std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		getSongAPIMap()->at(guildId)->playlist.currentSong = playlistNew.currentSong;
 		getSongAPIMap()->at(guildId)->playlist.isLoopAllEnabled = playlistNew.isLoopAllEnabled;
 		getSongAPIMap()->at(guildId)->playlist.isLoopSongEnabled = playlistNew.isLoopSongEnabled;
@@ -248,16 +259,19 @@ namespace DiscordCoreAPI {
 	}
 
 	Playlist SongAPI::getPlaylist(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		return getSongAPIMap()->at(guildId)->playlist;
 	}
 
 	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		Song tempSong = getSongAPIMap()->at(guildId)->playlist.songQueue.at(firstSongPosition);
 		getSongAPIMap()->at(guildId)->playlist.songQueue.at(firstSongPosition) = getSongAPIMap()->at(guildId)->playlist.songQueue.at(secondSongPosition);
 		getSongAPIMap()->at(guildId)->playlist.songQueue.at(secondSongPosition) = tempSong;
 	}
 
 	Song SongAPI::getCurrentSong(std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		if (getSongAPIMap()->at(guildId)->playlist.currentSong.songId != "") {
 			return getSongAPIMap()->at(guildId)->playlist.currentSong;
 		}
@@ -270,10 +284,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::setCurrentSong(Song song, std::string guildId) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		getSongAPIMap()->at(guildId)->playlist.currentSong = song;
 	}
 
 	bool SongAPI::sendNextSong(GuildMember guildMember) {
+		std::lock_guard<std::mutex> theLock{ SongAPI::accessMutex };
 		getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId);
 		if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.songId == "") {
 			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId)) {
@@ -286,15 +302,13 @@ namespace DiscordCoreAPI {
 				auto newerSong = getSoundCloudAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
 				getSoundCloudAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
 				return true;
-				break;
 			}
 			case SongType::YouTube: {
 				auto newerSong = getYouTubeAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
 				getYouTubeAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
 				return true;
-				break;
 			}
-			} 
+			}
 		}
 		catch (...) {
 			reportException("SongAPI::sendNextSong()");
@@ -307,4 +321,6 @@ namespace DiscordCoreAPI {
 		}
 		return false;
 	}
+
+	std::mutex SongAPI::accessMutex{};
 };
