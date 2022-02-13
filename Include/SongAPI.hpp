@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 
 		std::string guildId{ "" };
 
-		bool sendNextSong();
+		bool sendNextSong(std::string);
 	};
 	/**@}*/
 };

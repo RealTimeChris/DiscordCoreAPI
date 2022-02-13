@@ -34,8 +34,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool SongAPI::sendNextSong() {
-		this->playlist = getSongAPIMap()->at(this->guildId)->playlist;
+	bool SongAPI::sendNextSong(std::string guildId) {
 		if (this->playlist.isLoopSongEnabled) {
 			if (this->playlist.songQueue.size() > 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue.at(0);
@@ -275,9 +274,9 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::sendNextSong(GuildMember guildMember) {
-		getSongAPIMap()->at(guildMember.guildId)->sendNextSong();
+		getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId);
 		if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.songId == "") {
-			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong()) {
+			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId)) {
 				return false;
 			};
 		}
@@ -301,7 +300,7 @@ namespace DiscordCoreAPI {
 			reportException("SongAPI::sendNextSong()");
 			SongCompletionEventData eventData{ .voiceConnection = getVoiceConnectionMap()->at(guildMember.guildId).get(), .wasItAFail = true, .previousSong = getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong };
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
-			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong()) {
+			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId)) {
 				return false;
 			};
 			getSongAPIMap()->at(guildMember.guildId)->onSongCompletionEvent(eventData);
