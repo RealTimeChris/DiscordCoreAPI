@@ -1,4 +1,4 @@
-// ErlPacker.cpp - Source file for the erlpacking class DiscordCoreAPI_Dll.
+// ErlPacker.cpp - Source file for the erlpacking class.
 // Nov 8, 2021
 // Chris M.
 // https://github.com/RealTimeChris
