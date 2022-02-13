@@ -16,7 +16,7 @@ namespace DiscordCoreInternal {
 #endif
 	}
 
-	void reportSSLError(std::string errorPosition, int32_t errorValue, SSL* ssl = nullptr) {
+	void reportSSLError(std::string errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) {
 		if (ssl != nullptr) {
 			std::cout << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
 		}
@@ -65,25 +65,25 @@ namespace DiscordCoreInternal {
 			}
 
 			if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
-				reportSSLError("SSL_CTX_new() Error: ", 0);
+				reportSSLError("SSL_CTX_new() Error: ");
 				return false;
 			}
 
 			auto options{ SSL_CTX_get_options(this->context) };
 			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) != (options | SSL_OP_NO_COMPRESSION)) {
-				reportSSLError("SSL_CTX_set_options() Error: ", 0);
+				reportSSLError("SSL_CTX_set_options() Error: ");
 				return false;
 			}
 
 			SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER, nullptr);
 			SSL_CTX_set_verify_depth(this->context, 4);
 			if (!SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL)) {
-				reportSSLError("SSL_CTX_load_verify_locations() Error: ", 0);
+				reportSSLError("SSL_CTX_load_verify_locations() Error: ");
 				return false;
 			}
 
 			if (!SSL_CTX_set_cipher_list(this->context, "ALL")) {
-				reportSSLError("SSL_CTX_set_cipher_list() Error: ", 0);
+				reportSSLError("SSL_CTX_set_cipher_list() Error: ");
 				return false;
 			}
 			
@@ -91,27 +91,27 @@ namespace DiscordCoreInternal {
 			 * https://www.packetlabs.net/posts/tls-1-1-no-longer-secure/
 			 */
 			if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
-				reportSSLError("SSL_CTX_set_min_proto_version() Error: ", 0);
+				reportSSLError("SSL_CTX_set_min_proto_version() Error: ");
 				return false;
 			}
 
 			if (!SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
-				reportSSLError("SSL_CTX_set_ciphersuites() Error: ", 0);
+				reportSSLError("SSL_CTX_set_ciphersuites() Error: ");
 				return false;
 			}
 
 			if (this->connectionBio = BIO_new_ssl_connect(this->context); this->connectionBio == nullptr) {
-				reportSSLError("BIO_new_ssl_connect() Error: ", 0);
+				reportSSLError("BIO_new_ssl_connect() Error: ");
 				return false;
 			}
 
 			if (!BIO_set_conn_hostname(this->connectionBio, std::string(baseUrlNew + ":" + portNew).c_str())) {
-				reportSSLError("BIO_set_connt_hostname() Error: ", 0);
+				reportSSLError("BIO_set_connt_hostname() Error: ");
 				return false;
 			}
 
 			if (BIO_get_ssl(this->connectionBio, &this->ssl); this->ssl == nullptr) {
-				reportSSLError("BIO_get_ssl() Error: ", 0);
+				reportSSLError("BIO_get_ssl() Error: ");
 				return false;
 			}
 
@@ -126,7 +126,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (std::unique_ptr<X509, X509Deleter> cert = std::unique_ptr<X509, X509Deleter>(SSL_get_peer_certificate(this->ssl)); cert == nullptr) {
-				reportSSLError("SSL_get_peer_certificate() Error: ", 0, this->ssl);
+				reportSSLError("SSL_get_peer_certificate() Error: ", cert, this->ssl;
 				return false;
 			}
 
@@ -136,7 +136,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (this->theSocket = SSL_get_fd(this->ssl); this->theSocket == INVALID_SOCKET) {
-				reportSSLError("SSL_get_fd() Error: ", 0, this->ssl);
+				reportSSLError("SSL_get_fd() Error: ", this->theSocket, this->ssl);
 				return false;
 			}
 			return true;
@@ -246,7 +246,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == INVALID_SOCKET) {
-			reportError("socket() Error: ", 0);
+			reportError("socket() Error: ", this->theSocket);
 			return;
 		}
 
@@ -270,12 +270,12 @@ namespace DiscordCoreInternal {
 #endif		
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
-			reportSSLError("SSL_CTX_new() Error: ", 0);
+			reportSSLError("SSL_CTX_new() Error: ");
 			return;
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
-			reportSSLError("SSL_new() Error: ", 0);
+			reportSSLError("SSL_new() Error: ");
 			return;
 		}
 
@@ -428,12 +428,12 @@ namespace DiscordCoreInternal {
 		}
 #endif
 		if (this->connectionBio = BIO_new_dgram(this->theSocket, BIO_CLOSE); this->connectionBio == nullptr) {
-			reportSSLError("BIO_new_dgram() Error: ", 0);
+			reportSSLError("BIO_new_dgram() Error: ");
 			return;
 		}
 
 		if (auto returnValue = BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, &resultAddress); returnValue == 0) {
-			reportSSLError("BIO_ctrl() Error: ", 0);
+			reportSSLError("BIO_ctrl() Error: ");
 			return;
 		}
 
@@ -446,7 +446,7 @@ namespace DiscordCoreInternal {
 		size_t writtenBytes{ 0 };
 
 		if (auto returnValue = BIO_write_ex(this->connectionBio, data.data(), data.size(), &writtenBytes); returnValue != 1) {
-			reportSSLError("BIO_write_ex() Error: ", 0);
+			reportSSLError("BIO_write_ex() Error: ");
 			return false;
 		};
 		data.clear();
