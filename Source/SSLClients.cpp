@@ -142,7 +142,7 @@ namespace DiscordCoreInternal {
 			return true;
 		}
 		catch (...) {
-			DiscordCoreAPI::reportException("HttpConnection::connect()");
+			DiscordCoreAPI::reportException("HttpSSLClient::connect()");
 		}
 		return false;
 	}
