@@ -143,9 +143,11 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew) {
 		try {
+			this->clearAudioData();
 			this->areWeConnectedBool = true;
 			this->areWeStopping = false;
 			this->doWeQuit = false;
+			this->stopSetEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
 			if (!this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
 				this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, this->voiceConnectionBuffer.get()));
@@ -161,7 +163,7 @@ namespace DiscordCoreAPI {
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			this->voiceConnectionData = &this->voiceSocketAgent->voiceConnectionData;
-			if (this->theTask == nullptr) {
+			if (this->theTask == nullptr || this->theTask->getStatus() != CoRoutineStatus::Running) {
 				this->theTask = std::make_unique<CoRoutine<void>>(this->run());
 			}
 		}
@@ -273,7 +275,7 @@ namespace DiscordCoreAPI {
 				}
 				else if (this->audioData.type == AudioFrameType::Cancel) {
 					this->areWePlaying = false;
-					continue;
+					break;
 				}
 				this->areWePlaying = true;
 				this->sendSpeakingMessage(true);
@@ -315,15 +317,13 @@ namespace DiscordCoreAPI {
 					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
 						break;
 					}
-					if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset) {
+					if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset && !this->areWeStopping) {
 						std::vector<uint8_t> newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto newFrames = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
-							std::cout << "FRAME COUNT: " << newFrames.data.size() << std::endl;
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(newFrames, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						else {
-							std::cout << "ENCODED FRAME COUNT: " << this->audioData.encodedFrameData.data.size() << std::endl;
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						nanoSleep(18000000);
@@ -341,7 +341,7 @@ namespace DiscordCoreAPI {
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
 					}
-					else if ((this->audioData.type == AudioFrameType::Cancel || (this->audioData.encodedFrameData.data.size() == 0 && this->audioData.rawFrameData.data.size() == 0)) && !this->areWeStopping) {
+					else if ((this->audioData.type == AudioFrameType::Skip || (this->audioData.encodedFrameData.data.size() == 0 && this->audioData.rawFrameData.data.size() == 0)) && !this->areWeStopping) {
 						SongCompletionEventData completionEventData{};
 						completionEventData.voiceConnection = this;
 						completionEventData.wasItAFail = false;
@@ -350,6 +350,15 @@ namespace DiscordCoreAPI {
 						frameCounter = 0;
 						break;
 					}
+					else if (this->audioData.type == AudioFrameType::Cancel) {
+						this->areWePlaying = false;
+						break;
+					}
+				}
+
+				if (this->audioData.type == AudioFrameType::Cancel) {
+					this->areWePlaying = false;
+					break;
 				}
 
 				this->areWePlaying = false;

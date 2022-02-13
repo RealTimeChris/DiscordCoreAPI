@@ -3088,7 +3088,8 @@ namespace DiscordCoreAPI {
         Unset = 0,///< Unset.
         Encoded = 1,///< Encoded.
         RawPCM = 2,///< Raw PCM.
-        Cancel = 3///< Cancel.
+        Cancel = 3,///< Cancel.
+        Skip = 4///< Skip.
     };
 
     /// Represents a single frame of audio data. \brief Represents a single frame of audio data.

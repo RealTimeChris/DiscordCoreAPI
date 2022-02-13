@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 		}
 		AudioFrameData frameData{};
 		while (getAudioBufferMap()->at(guildMember.guildId)->tryReceive(frameData)) {};
-		frameData.type = AudioFrameType::Cancel;
+		frameData.type = AudioFrameType::Skip;
 		getAudioBufferMap()->at(guildMember.guildId)->send(frameData);
 	}
 

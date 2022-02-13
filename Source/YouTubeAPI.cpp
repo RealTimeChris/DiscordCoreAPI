@@ -470,7 +470,7 @@ namespace DiscordCoreAPI {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(youtubeAPI->guildId)->tryReceive(frameData)) {};
-				frameData.type = AudioFrameType::Cancel;
+				frameData.type = AudioFrameType::Skip;
 				frameData.rawFrameData.sampleCount = 0;
 				frameData.rawFrameData.data.clear();
 				frameData.encodedFrameData.sampleCount = 0;
@@ -604,7 +604,7 @@ namespace DiscordCoreAPI {
 			while (audioDecoder->getFrame(frameData01)) {};
 			audioDecoder.reset(nullptr);
 			AudioFrameData frameData{};
-			frameData.type = AudioFrameType::Cancel;
+			frameData.type = AudioFrameType::Skip;
 			frameData.rawFrameData.sampleCount = 0;
 			frameData.encodedFrameData.sampleCount = 0;
 			getAudioBufferMap()->at(youtubeAPI->guildId)->send(std::move(frameData));
