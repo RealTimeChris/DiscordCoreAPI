@@ -17,7 +17,8 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection* Guild::connectToVoice(std::string channelId) {
 		try {
-			if (this->areWeConnected()) {
+			if (this->voiceConnectionPtr->areWeConnected()) {
+				this->areWeConnectedBool = true;
 				return this->voiceConnectionPtr;
 			}
 			else if (channelId != "") {
@@ -25,8 +26,8 @@ namespace DiscordCoreAPI {
 				voiceConnectInitData.channelId = channelId;
 				voiceConnectInitData.guildId = this->id;
 				voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
-				this->voiceConnectionPtr->connect(voiceConnectInitData);
 				this->areWeConnectedBool = true;
+				this->voiceConnectionPtr->connect(voiceConnectInitData);
 				return this->voiceConnectionPtr;
 			}
 			return this->voiceConnectionPtr;
