@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> MessageCollector::run() {
 		co_await NewThreadAwaitable<void>();
-		this->startingTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+		this->startingTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		while (this->elapsedTime < this->msToCollectFor) {
 			Message message{};
 			waitForTimeToPass<Message>(*this->messagesBuffer.get(), message, this->msToCollectFor - this->elapsedTime);
@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 
-			this->elapsedTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - this->startingTime);
+			this->elapsedTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - this->startingTime);
 		}
 		co_return;
 	}
