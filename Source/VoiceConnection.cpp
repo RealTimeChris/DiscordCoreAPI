@@ -18,6 +18,7 @@ namespace DiscordCoreAPI {
 	};
 
 	std::vector<uint8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
+		std::cout << "KEYS SIZE: " << keys.size() << std::endl;
 		const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 		const int32_t headerSize{ 12 };
 		const uint8_t byteSize{ 8 };
@@ -53,8 +54,7 @@ namespace DiscordCoreAPI {
 		for (uint32_t x = 0; x < keys.size(); x += 1) {
 			encryptionKeys[x] = keys[x];
 		}
-		if (crypto_secretbox_easy(audioDataPacket.data() + headerSize,
-			bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium.data(), encryptionKeys.data()) != 0) {
+		if (crypto_secretbox_easy(audioDataPacket.data() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium.data(), encryptionKeys.data()) != 0) {
 			throw std::runtime_error("ENCRYPTION FAILED!");
 		};
 		bufferToSend.data.clear();
@@ -172,6 +172,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnect() {
 		this->sendSpeakingMessage(false);
+		this->areWeConnectedBool = false;
 		this->areWePlaying = false;
 		this->areWeStopping = true;
 		this->doWeQuit = true;
@@ -183,7 +184,6 @@ namespace DiscordCoreAPI {
 		this->theTask->cancel();
 		this->theTask->get();
 		this->theTask.reset(nullptr);
-		this->areWeConnectedBool = false;
 		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
 		if (thePtr != nullptr) {
 			thePtr->onSongCompletion(getSongAPIMap()->at(this->voiceConnectInitData.guildId)->eventDelegateToken, this->voiceConnectInitData.guildId);
@@ -341,7 +341,7 @@ namespace DiscordCoreAPI {
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
 					}
-					else if (this->audioData.type == AudioFrameType::Cancel || (this->audioData.encodedFrameData.data.size() == 0 && this->audioData.rawFrameData.data.size() == 0)) {
+					else if ((this->audioData.type == AudioFrameType::Cancel || (this->audioData.encodedFrameData.data.size() == 0 && this->audioData.rawFrameData.data.size() == 0)) && !this->areWeStopping) {
 						SongCompletionEventData completionEventData{};
 						completionEventData.voiceConnection = this;
 						completionEventData.wasItAFail = false;
