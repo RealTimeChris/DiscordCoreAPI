@@ -467,12 +467,6 @@ namespace DiscordCoreAPI {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(youtubeAPI->guildId)->tryReceive(frameData)) {};
-				frameData.type = AudioFrameType::Skip;
-				frameData.rawFrameData.sampleCount = 0;
-				frameData.rawFrameData.data.clear();
-				frameData.encodedFrameData.sampleCount = 0;
-				frameData.encodedFrameData.data.clear();
-				getAudioBufferMap()->at(youtubeAPI->guildId)->send(std::move(frameData));
 				SongCompletionEventData eventData{};
 				auto resultValue = getSongAPIMap()->at(youtubeAPI->guildId).get();
 				if (resultValue != nullptr) {
@@ -480,6 +474,8 @@ namespace DiscordCoreAPI {
 				}
 				eventData.voiceConnection = getVoiceConnectionMap()->at(youtubeAPI->guildId).get();
 				eventData.wasItAFail = true;
+				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
+				eventData.guild = Guilds::getGuildAsync({ .guildId = youtubeAPI->guildId }).get();
 				getSongAPIMap()->at(youtubeAPI->guildId)->onSongCompletionEvent(eventData);
 				co_return;
 			}

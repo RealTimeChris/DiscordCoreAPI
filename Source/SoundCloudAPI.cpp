@@ -238,12 +238,6 @@ namespace DiscordCoreAPI {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(soundCloudAPI->guildId)->tryReceive(frameData)) {};
-				frameData.type = AudioFrameType::Skip;
-				frameData.rawFrameData.sampleCount = 0;
-				frameData.rawFrameData.data.clear();
-				frameData.encodedFrameData.sampleCount = 0;
-				frameData.encodedFrameData.data.clear();
-				getAudioBufferMap()->at(soundCloudAPI->guildId)->send(std::move(frameData));
 				SongCompletionEventData eventData{};
 				auto resultValue = getSongAPIMap()->at(soundCloudAPI->guildId).get();
 				if (resultValue != nullptr) {
@@ -251,6 +245,8 @@ namespace DiscordCoreAPI {
 				}
 				eventData.voiceConnection = getVoiceConnectionMap()->at(soundCloudAPI->guildId).get();
 				eventData.wasItAFail = true;
+				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
+				eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
 				getSongAPIMap()->at(soundCloudAPI->guildId)->onSongCompletionEvent(eventData);
 				co_return;
 			}
