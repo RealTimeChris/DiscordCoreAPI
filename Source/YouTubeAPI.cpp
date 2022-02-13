@@ -484,7 +484,7 @@ namespace DiscordCoreAPI {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(youtubeAPI->guildId)->tryReceive(frameData)) {};
-				frameData.type = AudioFrameType::Cancel;
+				frameData.type = AudioFrameType::Unset;
 				frameData.rawFrameData.sampleCount = 0;
 				frameData.rawFrameData.data.clear();
 				frameData.encodedFrameData.sampleCount = 0;
