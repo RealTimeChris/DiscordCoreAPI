@@ -44,6 +44,11 @@ namespace DiscordCoreAPI {
 			std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
 			std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>> youtubeAPIMap{};
 			std::unordered_map<std::string, std::unique_ptr<SongAPI>> songAPIMap{};
+			std::atomic<std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>*> audioBufferMapAtomic{};
+			std::atomic<std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>*> voiceConnectionMapAtomic{};
+			std::atomic<std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>*> soundCloudAPIMapAtomic{};
+			std::atomic<std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>*> youtubeAPIMapAtomic{};
+			std::atomic<std::unordered_map<std::string, std::unique_ptr<SongAPI>>*> songAPIMapAtomic{};
 		}
 	}
 

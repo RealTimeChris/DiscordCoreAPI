@@ -42,6 +42,7 @@
 #include <unordered_map>
 #include <curl/curl.h>
 #include <functional>
+#include <thread>
 #include <memory>
 #include <string>
 #include <vector>

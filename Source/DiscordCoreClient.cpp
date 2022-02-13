@@ -21,23 +21,23 @@
 namespace DiscordCoreAPI {
 
 	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap() {
-		return &Statics::audioBufferMap;
+		return Statics::audioBufferMapAtomic.load(std::memory_order_consume);
 	}
 	
 	std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>* getVoiceConnectionMap() {
-		return &Statics::voiceConnectionMap;
+		return Statics::voiceConnectionMapAtomic.load(std::memory_order_consume);
 	}
 
 	std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap() {
-		return &Statics::soundCloudAPIMap;
+		return Statics::soundCloudAPIMapAtomic.load(std::memory_order_consume);
 	}
 
 	std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>* getYouTubeAPIMap() {
-		return &Statics::youtubeAPIMap;
+		return Statics::youtubeAPIMapAtomic.load(std::memory_order_consume);
 	}
 
 	std::unordered_map<std::string, std::unique_ptr<SongAPI>>* getSongAPIMap() {
-		return &Statics::songAPIMap;
+		return Statics::songAPIMapAtomic.load(std::memory_order_consume);
 	}
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew,  CacheOptions cacheOptionsNew) {
@@ -109,6 +109,11 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::initialize() {
 		try {
+			Statics::voiceConnectionMapAtomic.store(&Statics::voiceConnectionMap);
+			Statics::soundCloudAPIMapAtomic.store(&Statics::soundCloudAPIMap);
+			Statics::audioBufferMapAtomic.store(&Statics::audioBufferMap);
+			Statics::youtubeAPIMapAtomic.store(&Statics::youtubeAPIMap);
+			Statics::songAPIMapAtomic.store(&Statics::songAPIMap);
 			ThreadPoolTimer::initialize();
 			this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(this->botToken);
 			ApplicationCommands::initialize(this->httpClient.get());
