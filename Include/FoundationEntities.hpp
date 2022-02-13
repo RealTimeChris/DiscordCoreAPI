@@ -11,14 +11,11 @@
 #else
 #define DiscordCoreAPI_Dll __declspec(dllimport)
 #endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #ifndef WINRT_LEAN_AND_MEAN
 #define WINRT_LEAN_AND_MEAN
-#endif
-#ifndef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
-#define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
-#endif
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
 #endif
 #pragma comment(lib, "libcurl.lib")
 #pragma comment(lib, "glib-2.0.lib")
