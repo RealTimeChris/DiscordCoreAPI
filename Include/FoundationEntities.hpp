@@ -19,11 +19,6 @@
 #endif
 #pragma comment(lib, "libcurl.lib")
 #pragma comment(lib, "glib-2.0.lib")
-#pragma warning(push)
-#pragma warning(disable : 4251 4275)
-#ifndef CURL_STATICLIB
-#define CURL_STATICLIB
-#endif
 #else
 #ifndef DiscordCoreAPI_Dll
 #define DiscordCoreAPI_Dll
@@ -46,15 +41,6 @@
 #include <vector>
 #include <queue>
 #include <mutex>
-
-#ifdef _WIN32
-#ifdef _DEBUG
-#ifndef DBG_NEW
-#define DBG_NEW new( _NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DBG_NEW
-#endif
-#endif
-#endif
 
 #ifdef max
 #undef max
