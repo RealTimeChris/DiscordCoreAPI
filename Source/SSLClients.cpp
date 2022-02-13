@@ -64,8 +64,7 @@ namespace DiscordCoreInternal {
 				certPath = this->defaultCertPath;
 			}
 
-			this->context = SSL_CTX_new(TLS_client_method());
-			if (this->context == nullptr) {
+			if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 				reportSSLError("SSL_CTX_new() Error: ", 0);
 				return false;
 			}
@@ -101,8 +100,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			this->connectionBio = BIO_new_ssl_connect(this->context);
-			if (this->connectionBio == nullptr) {
+			if (this->connectionBio = BIO_new_ssl_connect(this->context); this->connectionBio == nullptr) {
 				reportSSLError("BIO_new_ssl_connect() Error: ", 0);
 				return false;
 			}
@@ -112,44 +110,33 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			BIO_get_ssl(this->connectionBio, &this->ssl);
-			if (this->ssl == nullptr) {
+			if (BIO_get_ssl(this->connectionBio, &this->ssl); this->ssl == nullptr) {
 				reportSSLError("BIO_get_ssl() Error: ", 0);
 				return false;
 			}
 
-			auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
-			if (returnValue != 1) {
+			if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); returnValue != 1) {
 				reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
 				return false;
 			}
 
-			returnValue = SSL_connect(this->ssl);
-			if (returnValue != 1) {
+			if (auto returnValue = SSL_connect(this->ssl); returnValue != 1) {
 				reportSSLError("SSL_connect() Error: ", returnValue, this->ssl);
 				return false;
 			}
 
-			X509* cert{ SSL_get_peer_certificate(this->ssl) };
-			if (cert == nullptr) {
-				reportSSLError("SSL_get_peer_certificate() Error: ", returnValue, this->ssl);
+			if (std::unique_ptr<X509, X509Deleter> cert = std::unique_ptr<X509, X509Deleter>(SSL_get_peer_certificate(this->ssl)); cert == nullptr) {
+				reportSSLError("SSL_get_peer_certificate() Error: ", 0, this->ssl);
 				return false;
 			}
 
-			if (cert) {
-				X509_free(cert);
-				cert = nullptr;
-			}
-
-			returnValue = SSL_get_verify_result(this->ssl);
-			if (returnValue != X509_V_OK) {
+			if (auto returnValue = SSL_get_verify_result(this->ssl); returnValue != X509_V_OK) {
 				reportSSLError("SSL_get_verify_result() Error: ", returnValue, this->ssl);
 				return false;
 			}
 
-			this->theSocket = SSL_get_fd(this->ssl);
-			if (this->theSocket == INVALID_SOCKET) {
-				reportSSLError("SSL_get_fd() Error: ", returnValue, this->ssl);
+			if (this->theSocket = SSL_get_fd(this->ssl); this->theSocket == INVALID_SOCKET) {
+				reportSSLError("SSL_get_fd() Error: ", 0, this->ssl);
 				return false;
 			}
 			return true;
@@ -180,8 +167,7 @@ namespace DiscordCoreInternal {
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 		timeval checkTime{ .tv_usec = 600000 };
-		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
-		if (resultValue == SOCKET_ERROR) {
+		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
 			return false;
 		}
@@ -191,7 +177,7 @@ namespace DiscordCoreInternal {
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
@@ -218,7 +204,7 @@ namespace DiscordCoreInternal {
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), static_cast<int32_t>(this->maxBufferSize), &readBytes) };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
@@ -254,66 +240,57 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress); returnValue == SOCKET_ERROR) {
 			reportError("getaddrinfo() Error: ", returnValue);
 			return;
 		}
 
-		this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol);
-		if (this->theSocket == INVALID_SOCKET) {
-			reportError("socket() Error: ", returnValue);
+		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == INVALID_SOCKET) {
+			reportError("socket() Error: ", 0);
 			return;
 		}
 
-		returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			reportError("connect() Error: ", returnValue);
 			return;
 		}
 
 #ifdef _WIN32
 		char optionValue{ true };
-		returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool));
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool)); returnValue == SOCKET_ERROR) {
 			reportError("setsockopt() Error: ", returnValue);
 			return;
 		}
 #else
 		int32_t optionValue{ 1 };
-		returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue));
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
 			reportError("setsockopt() Error: ", returnValue);
 			return;
 		}
 #endif		
-		this->context = SSL_CTX_new(TLS_client_method());
-		if (this->context == nullptr) {
+
+		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 			reportSSLError("SSL_CTX_new() Error: ", 0);
 			return;
 		}
 
-		this->ssl = SSL_new(this->context);
-		if (this->ssl == nullptr) {
+		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			reportSSLError("SSL_new() Error: ", 0);
 			return;
 		}
 
-		returnValue = SSL_set_fd(this->ssl, this->theSocket);
-		if (returnValue != 1) {
+		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); returnValue != 1) {
 			reportSSLError("SSL_set_fd() Error: ", returnValue, this->ssl);
 			return;
 		}
-		
+
 		/* SNI */
-		returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str());
-		if (returnValue != 1) {
+		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); returnValue != 1) {
 			reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
 			return;
 		}
 
-		returnValue = SSL_connect(this->ssl);
-		if (returnValue != 1) {
+		if (auto returnValue = SSL_connect(this->ssl); returnValue != 1) {
 			reportSSLError("SSL_connect() Error: ", returnValue, this->ssl);
 			return;
 		}
@@ -343,8 +320,7 @@ namespace DiscordCoreInternal {
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
-		auto resultValue{ select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime) };
-		if (resultValue == SOCKET_ERROR) {
+		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
 			return false;
 		}
@@ -354,7 +330,7 @@ namespace DiscordCoreInternal {
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), static_cast<uint32_t>(this->writeBuffer.size()), &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
@@ -381,7 +357,7 @@ namespace DiscordCoreInternal {
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), static_cast<int32_t>(this->maxBufferSize), &readBytes) };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
@@ -422,48 +398,41 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		auto returnValue{ getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress) };
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress); returnValue == SOCKET_ERROR) {
 			reportError("getaddrinfo() Error: ", returnValue);
 			return;
 		}
 
-		this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol);
-		if (this->theSocket == INVALID_SOCKET) {
-			reportError("socket() Error: ", returnValue);
+		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == INVALID_SOCKET) {
+			reportError("socket() Error: ", 0);
 			return;
 		}
 
-		returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			reportError("connect() Error: ", returnValue);
 			return;
 		}
 
 #ifdef _WIN32
 		u_long value{ 1 };
-		returnValue = ioctlsocket(this->theSocket, FIONBIO, &value);
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value); returnValue == SOCKET_ERROR) {
 			reportError("ioctlsocket() Error: ", returnValue);
 			return;
 		}
 #else
-		int ofcmode{ fcntl(this->theSocket, F_GETFL, 0) };
+		int32_t ofcmode{ fcntl(this->theSocket, F_GETFL, 0) };
 		ofcmode |= O_NONBLOCK;
-		returnValue = fcntl(this->theSocket, F_SETFL, ofcmode);
-		if (returnValue == SOCKET_ERROR) {
+		if (auto returnValue = fcntl(this->theSocket, F_SETFL, ofcmode); returnValue == SOCKET_ERROR) {
 			reportError("fcntl() Error: ", returnValue);
 			return;
 		}
 #endif
-		this->connectionBio = BIO_new_dgram(this->theSocket, BIO_CLOSE);
-		if (this->connectionBio == nullptr) {
+		if (this->connectionBio = BIO_new_dgram(this->theSocket, BIO_CLOSE); this->connectionBio == nullptr) {
 			reportSSLError("BIO_new_dgram() Error: ", 0);
 			return;
 		}
 
-		returnValue = BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, &resultAddress);
-		if (returnValue == 0) {
+		if (auto returnValue = BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, &resultAddress); returnValue == 0) {
 			reportSSLError("BIO_ctrl() Error: ", 0);
 			return;
 		}
@@ -475,8 +444,8 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
 		size_t writtenBytes{ 0 };
-		auto returnValue{ BIO_write_ex(this->connectionBio, data.data(), static_cast<uint32_t>(data.size()), &writtenBytes) };
-		if (returnValue != 1) {
+
+		if (auto returnValue = BIO_write_ex(this->connectionBio, data.data(), data.size(), &writtenBytes); returnValue != 1) {
 			reportSSLError("BIO_write_ex() Error: ", 0);
 			return false;
 		};
@@ -495,8 +464,7 @@ namespace DiscordCoreInternal {
 		std::vector<uint8_t>  serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		size_t readBytes{ 0 };
-		auto returnValue{ BIO_read_ex(this->connectionBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-		if (returnValue == 1) {
+		if (auto returnValue = BIO_read_ex(this->connectionBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes); returnValue == 1) {
 			if (readBytes > 0) {
 				this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				if (doWeClear) {

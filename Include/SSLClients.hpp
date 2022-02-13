@@ -203,6 +203,12 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{}, SOCKETDeleter{} };
 	};
 
+	struct X509Deleter {
+		void operator()(X509* other) {
+			X509_free(other);
+		}
+	};
+
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	public:
 
@@ -262,7 +268,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		const int64_t maxBufferSize{ 1024 * 16 };
+		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<uint8_t>* inputBufferPtr{};
 		SOCKETWrapper theSocket{ nullptr };
 		std::vector<uint8_t> writeBuffer{};
