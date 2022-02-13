@@ -152,6 +152,7 @@ namespace DiscordCoreAPI {
 		AudioFrameData frameData{};
 		while (getAudioBufferMap()->at(guildMember.guildId)->tryReceive(frameData)) {};
 		frameData.type = AudioFrameType::Skip;
+		frameData.guildMemberId = guildMember.user.id;
 		getAudioBufferMap()->at(guildMember.guildId)->send(frameData);
 	}
 
@@ -300,11 +301,13 @@ namespace DiscordCoreAPI {
 			switch (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.type) {
 			case SongType::SoundCloud: {
 				auto newerSong = getSoundCloudAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
+				newerSong.addedByUserId = guildMember.user.id;
 				getSoundCloudAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
 				return true;
 			}
 			case SongType::YouTube: {
 				auto newerSong = getYouTubeAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
+				newerSong.addedByUserId = guildMember.user.id;
 				getYouTubeAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
 				return true;
 			}

@@ -214,10 +214,7 @@ namespace DiscordCoreAPI {
 	void SoundCloudAPI::cancelCurrentSong() {
 		if (getSongAPIMap()->at(this->guildId) != nullptr) {
 			if (getSongAPIMap()->at(this->guildId)->theTask != nullptr) {
-				if (getSongAPIMap()->at(this->guildId)->theTask->getStatus() == CoRoutineStatus::Running) {
-					getSongAPIMap()->at(this->guildId)->theTask->cancel();
-					getSongAPIMap()->at(this->guildId)->theTask->get();
-				}
+				getSongAPIMap()->at(this->guildId)->theTask->cancel();
 				getSongAPIMap()->at(this->guildId)->theTask.reset(nullptr);
 			}
 		}
@@ -259,7 +256,6 @@ namespace DiscordCoreAPI {
 			}
 		breakOut:
 			if (coroutineHandle.promise().isItStopped()) {
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(soundCloudAPI->guildId)->tryReceive(frameData)) {};
@@ -330,6 +326,7 @@ namespace DiscordCoreAPI {
 				else {
 					auto encodedFrames = audioEncoder.encodeFrames(frames);
 					for (auto& value : encodedFrames) {
+						value.guildMemberId = newSong.addedByUserId;
 						getAudioBufferMap()->at(soundCloudAPI->guildId)->send(std::move(value));
 					}
 				}

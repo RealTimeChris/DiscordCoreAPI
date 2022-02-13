@@ -3096,9 +3096,12 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll AudioFrameData {
         AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
         EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
+        std::string guildMemberId{ "" };///< The Id of the GuildMember from which it was sent.
         RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
         AudioFrameData& operator=(AudioFrameData&& other) noexcept {
             if (this != &other) {
+                this->guildMemberId = std::move(other.guildMemberId);
+                other.guildMemberId = "";
                 this->encodedFrameData = std::move(other.encodedFrameData);
                 other.encodedFrameData = EncodedFrameData{};
                 this->rawFrameData = std::move(other.rawFrameData);
@@ -3113,6 +3116,7 @@ namespace DiscordCoreAPI {
         }
         AudioFrameData& operator=(const AudioFrameData& other) {
             this->encodedFrameData = other.encodedFrameData;
+            this->guildMemberId = other.guildMemberId;
             this->rawFrameData = other.rawFrameData;
             this->type = other.type;
             return *this;
@@ -3175,7 +3179,9 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll SongCompletionEventData {
         VoiceConnection* voiceConnection{};///< A pointer to the current VoiceConnection.
         bool wasItAFail{ false };///< Is this a replay? (Did a track recently fail to play?)
+        GuildMemberData guildMember{};///< The sending GuildMember.
         Song previousSong{};///< The previously played Song.
+        GuildData guild{};///< The sending Guild.
     };
 
     /// Playlist of songs and other variables. \brief Playlist of songs and other variables.
@@ -3434,6 +3440,8 @@ namespace  DiscordCoreInternal {
         std::string channelId{ "" };
         std::string guildId{ "" };
         std::string userId{ "" };
+        bool selfDeaf{ false };
+        bool selfMute{ false };
     };
 
     struct DiscordCoreAPI_Dll VoiceConnectionData {

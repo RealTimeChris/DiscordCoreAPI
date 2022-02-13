@@ -283,7 +283,7 @@ namespace DiscordCoreAPI {
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
 		/// \returns A pointer containing the voice connection.
-		VoiceConnection* connectToVoice(std::string channelId);
+		VoiceConnection* connectToVoice(std::string channelId, bool selfDeaf, bool selfMute);
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		void disconnect();

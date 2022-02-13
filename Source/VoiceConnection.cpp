@@ -18,50 +18,52 @@ namespace DiscordCoreAPI {
 	};
 
 	std::vector<uint8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
-		std::cout << "KEYS SIZE: " << keys.size() << std::endl;
-		const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
-		const int32_t headerSize{ 12 };
-		const uint8_t byteSize{ 8 };
-		uint8_t headerFinal[headerSize]{};
-		headerFinal[0] = 0x80;
-		headerFinal[1] = 0x78;
-		headerFinal[2] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 1));
-		headerFinal[3] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 0));
-		headerFinal[4] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 3));
-		headerFinal[5] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 2));
-		headerFinal[6] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 1));
-		headerFinal[7] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 0));
-		headerFinal[8] = static_cast<uint8_t>(audioSSRC >> (byteSize * 3));
-		headerFinal[9] = static_cast<uint8_t>(audioSSRC >> (byteSize * 2));
-		headerFinal[10] = static_cast<uint8_t>(audioSSRC >> (byteSize * 1));
-		headerFinal[11] = static_cast<uint8_t>(audioSSRC >> (byteSize * 0));
-		std::vector<uint8_t> nonceForLibSodium{};
-		nonceForLibSodium.resize(nonceSize);
-		for (uint32_t x = 0; x < headerSize; x += 1) {
-			nonceForLibSodium[x] = headerFinal[x];
+		if (keys.size() > 0) {
+			const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
+			const int32_t headerSize{ 12 };
+			const uint8_t byteSize{ 8 };
+			uint8_t headerFinal[headerSize]{};
+			headerFinal[0] = 0x80;
+			headerFinal[1] = 0x78;
+			headerFinal[2] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 1));
+			headerFinal[3] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 0));
+			headerFinal[4] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 3));
+			headerFinal[5] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 2));
+			headerFinal[6] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 1));
+			headerFinal[7] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 0));
+			headerFinal[8] = static_cast<uint8_t>(audioSSRC >> (byteSize * 3));
+			headerFinal[9] = static_cast<uint8_t>(audioSSRC >> (byteSize * 2));
+			headerFinal[10] = static_cast<uint8_t>(audioSSRC >> (byteSize * 1));
+			headerFinal[11] = static_cast<uint8_t>(audioSSRC >> (byteSize * 0));
+			std::vector<uint8_t> nonceForLibSodium{};
+			nonceForLibSodium.resize(nonceSize);
+			for (uint32_t x = 0; x < headerSize; x += 1) {
+				nonceForLibSodium[x] = headerFinal[x];
+			}
+			for (int32_t x = headerSize; x < nonceSize; x += 1) {
+				nonceForLibSodium[x] = 0;
+			}
+			uint64_t numOfBytes{ headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES };
+			std::vector<uint8_t> audioDataPacket{};
+			audioDataPacket.resize(numOfBytes);
+			for (uint32_t x = 0; x < headerSize; x += 1) {
+				audioDataPacket[x] = headerFinal[x];
+			}
+			std::vector<unsigned char> encryptionKeys{};
+			encryptionKeys.resize(keys.size());
+			for (uint32_t x = 0; x < keys.size(); x += 1) {
+				encryptionKeys[x] = keys[x];
+			}
+			if (crypto_secretbox_easy(audioDataPacket.data() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium.data(), encryptionKeys.data()) != 0) {
+				throw std::runtime_error("ENCRYPTION FAILED!");
+			};
+			bufferToSend.data.clear();
+			this->sequenceIndex += 1;
+			this->timeStamp += static_cast<int32_t>(bufferToSend.sampleCount);
+			audioDataPacket.shrink_to_fit();
+			return audioDataPacket;
 		}
-		for (int32_t x = headerSize; x < nonceSize; x += 1) {
-			nonceForLibSodium[x] = 0;
-		}
-		uint64_t numOfBytes{ headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES };
-		std::vector<uint8_t> audioDataPacket{};
-		audioDataPacket.resize(numOfBytes);
-		for (uint32_t x = 0; x < headerSize; x += 1) {
-			audioDataPacket[x] = headerFinal[x];
-		}
-		std::vector<unsigned char> encryptionKeys{};
-		encryptionKeys.resize(keys.size());
-		for (uint32_t x = 0; x < keys.size(); x += 1) {
-			encryptionKeys[x] = keys[x];
-		}
-		if (crypto_secretbox_easy(audioDataPacket.data() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium.data(), encryptionKeys.data()) != 0) {
-			throw std::runtime_error("ENCRYPTION FAILED!");
-		};
-		bufferToSend.data.clear();
-		this->sequenceIndex += 1;
-		this->timeStamp += static_cast<int32_t>(bufferToSend.sampleCount);
-		audioDataPacket.shrink_to_fit();
-		return audioDataPacket;
+		return std::vector<uint8_t>{};
 	}
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew) {
@@ -154,9 +156,9 @@ namespace DiscordCoreAPI {
 			}
 			if (this->voiceSocketAgent != nullptr) {
 				this->voiceSocketAgent->doWeQuit = true;
-				this->voiceSocketAgent->theTask.get();
-			}
-			this->voiceSocketAgent.reset(nullptr);
+				this->voiceSocketAgent->theTask.reset(nullptr);
+				this->voiceSocketAgent.reset(nullptr);
+			}			
 			if (this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
 				return;
 			}
@@ -173,15 +175,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() {
-		this->sendSpeakingMessage(false);
+		this->doWeQuit = true;
+		this->stopSetEvent.set();
+		this->playSetEvent.set();
 		this->areWeConnectedBool = false;
 		this->areWePlaying = false;
 		this->areWeStopping = true;
-		this->doWeQuit = true;
 		if (this->voiceSocketAgent != nullptr) {
 			this->voiceSocketAgent->doWeQuit = true;
 			this->voiceSocketAgent.reset(nullptr);
 		}
+		this->sendSpeakingMessage(false);
 		this->theTask->cancel();
 		this->theTask.reset(nullptr);
 		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
@@ -282,7 +286,7 @@ namespace DiscordCoreAPI {
 				int32_t frameCounter{ 0 };
 				int64_t timeCounter{ 0 };
 				int64_t totalTime{ 0 };
-				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping) {
+				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !this->doWeQuit) {
 					this->areWePlaying = true;
 					if (this->doWeReconnect->wait(0)) {
 						this->areWeConnectedBool = false;
@@ -311,6 +315,9 @@ namespace DiscordCoreAPI {
 					}
 					frameCounter += 1;
 					this->audioBuffer.tryReceive(this->audioData);
+					if (this->audioData.guildMemberId != "") {
+						this->currentGuildMemberId = this->audioData.guildMemberId;
+					}
 					nanoSleep(100000);
 					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
 						break;
@@ -340,9 +347,10 @@ namespace DiscordCoreAPI {
 						this->audioData.rawFrameData.data.clear();
 					}
 					else if ((this->audioData.type == AudioFrameType::Skip || (this->audioData.encodedFrameData.data.size() == 0 && this->audioData.rawFrameData.data.size() == 0)) && !this->areWeStopping) {
-						std::cout << "WERE HERE THIS IS IT020202!" << std::endl;
 						SongCompletionEventData completionEventData{};
 						completionEventData.voiceConnection = this;
+						completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
+						completionEventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId,.guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.wasItAFail = false;
 						getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
 						this->areWePlaying = false;
@@ -354,22 +362,17 @@ namespace DiscordCoreAPI {
 						break;
 					}
 				}
+				this->areWePlaying = false;
 
-				if (this->audioData.type == AudioFrameType::Cancel) {
+				if (this->doWeQuit || cancelHandle.promise().isItStopped() || this->audioData.type == AudioFrameType::Cancel) {
+					this->clearAudioData();
 					this->areWePlaying = false;
+					frameCounter = 0;
 					break;
 				}
 
-				this->areWePlaying = false;
-
 				if (this->areWeStopping) {
 					this->stopSetEvent.wait(5000);
-					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
-						this->clearAudioData();
-						this->areWePlaying = false;
-						frameCounter = 0;
-						break;
-					}
 					this->clearAudioData();
 					this->stopSetEvent.reset();
 					this->areWeStopping = false;
@@ -391,7 +394,6 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::~VoiceConnection() {
 		this->theTask->cancel();
-		this->theTask->get();
 		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
 		if (thePtr != nullptr) {
 			thePtr->onSongCompletion(thePtr->eventDelegateToken, this->voiceConnectInitData.guildId);

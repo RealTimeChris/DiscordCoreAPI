@@ -120,22 +120,22 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::recursive_mutex> getVoiceConnectionDataLock{ this->accessorMutex01 };
 			this->voiceConnectInitData = doWeCollect;
-			DiscordCoreAPI::UpdateVoiceStateData dataPackage01;
-			dataPackage01.channelId = "";
-			dataPackage01.guildId = this->voiceConnectInitData.guildId;
-			dataPackage01.selfDeaf = false;
-			dataPackage01.selfMute = false;
-			nlohmann::json newString01 = JSONIFY(dataPackage01);
-			this->sendMessage(newString01);
-			std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-			DiscordCoreAPI::UpdateVoiceStateData dataPackage;
-			dataPackage.channelId = doWeCollect.channelId;
-			dataPackage.guildId = doWeCollect.guildId;
-			dataPackage.selfDeaf = false;
-			dataPackage.selfMute = false;
+			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
+			dataPackage.channelId = "";
+			dataPackage.guildId = this->voiceConnectInitData.guildId;
+			dataPackage.selfDeaf = this->voiceConnectInitData.selfDeaf;
+			dataPackage.selfMute = this->voiceConnectInitData.selfMute;
 			nlohmann::json newString = JSONIFY(dataPackage);
-			this->areWeCollectingData = true;
 			this->sendMessage(newString);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			DiscordCoreAPI::UpdateVoiceStateData dataPackage01{};
+			dataPackage01.channelId = doWeCollect.channelId;
+			dataPackage01.guildId = doWeCollect.guildId;
+			dataPackage01.selfDeaf = this->voiceConnectInitData.selfDeaf;
+			dataPackage01.selfMute = this->voiceConnectInitData.selfMute;
+			nlohmann::json newString01 = JSONIFY(dataPackage01);
+			this->areWeCollectingData = true;
+			this->sendMessage(newString01);
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
@@ -683,7 +683,6 @@ namespace DiscordCoreInternal {
 	BaseSocketAgent::~BaseSocketAgent() {
 		this->doWeQuit = true;
 		this->theTask.cancel();
-		this->theTask.get();
 		this->heartbeatTimer.cancel();
 	}
 
@@ -693,7 +692,7 @@ namespace DiscordCoreInternal {
 		this->voiceConnectInitData = initDataNew;
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
 		this->doWeReconnect.set();
-		this->theTask = this->run();
+		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
 
 	void VoiceSocketAgent::sendVoiceData(std::vector<uint8_t>& responseData) {
@@ -1092,8 +1091,8 @@ namespace DiscordCoreInternal {
 
 	VoiceSocketAgent::~VoiceSocketAgent() {
 		this->doWeQuit = true;
-		this->theTask.cancel();
-		this->theTask.get();
+		this->theTask->cancel();
+		this->theTask.reset(nullptr);
 		this->heartbeatTimer.cancel();
 	};
 }

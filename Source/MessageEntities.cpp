@@ -50,23 +50,19 @@ namespace DiscordCoreAPI {
 
 	MessageCollector::MessageCollector() {};
 
-	MessageCollectorReturnData  MessageCollector::collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, std::string userIdNew, std::function<bool(Message)> filteringFunctionNew) {
+	CoRoutine<MessageCollectorReturnData> MessageCollector::collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, std::string userIdNew, std::function<bool(Message)> filteringFunctionNew) {
+		co_await NewThreadAwaitable<MessageCollectorReturnData>();
 		this->quantityOfMessageToCollect = quantityToCollect;
 		this->filteringFunction = filteringFunctionNew;
 		this->msToCollectFor = msToCollectForNew;
 		this->userId = userIdNew;
 		this->messagesBuffer = std::make_unique<UnboundedMessageBlock<Message>>();
 		MessageCollector::messagesBufferMap.insert_or_assign(this->userId, this->messagesBuffer.get());
-		this->run().get();
-		return this->messageReturnData;
+		this->run();
+		co_return this->messageReturnData;
 	}
 
-	MessageCollector::~MessageCollector() {
-		MessageCollector::messagesBufferMap.erase(this->userId);
-	}
-
-	CoRoutine<void> MessageCollector::run() {
-		co_await NewThreadAwaitable<void>();
+	void MessageCollector::run() {
 		this->startingTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		while (this->elapsedTime < this->msToCollectFor) {
 			Message message{};
@@ -80,7 +76,10 @@ namespace DiscordCoreAPI {
 
 			this->elapsedTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - this->startingTime);
 		}
-		co_return;
+	}
+
+	MessageCollector::~MessageCollector() {
+		MessageCollector::messagesBufferMap.erase(this->userId);
 	}
 
 	void Messages::initialize(DiscordCoreInternal::HttpClient*theClient) {

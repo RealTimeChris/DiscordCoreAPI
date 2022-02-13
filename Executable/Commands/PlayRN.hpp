@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 
 				PlayRN::timeOfLastPlay = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId);
+				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId, false, false);
 
 				if (voiceConnection == nullptr) {
 					EmbedData newEmbed;
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 					std::vector<Song> songVector{};
 					playlist.songQueue.erase(playlist.songQueue.end() - 1);
 					songVector.push_back(song);
-					for (auto value : playlist.songQueue) {
+					for (auto& value : playlist.songQueue) {
 						songVector.push_back(value);
 					}
 					playlist.songQueue = songVector;

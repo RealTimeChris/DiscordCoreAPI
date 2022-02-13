@@ -411,7 +411,7 @@ namespace DiscordCoreAPI {
 		/// \param userIdNew User id to set for possible comparison.
 		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
 		/// \returns A MessageCollectorReturnData structure.
-		MessageCollectorReturnData  collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, std::string userIdNew, std::function<bool(Message)> filteringFunctionNew);
+		CoRoutine<MessageCollectorReturnData> collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, std::string userIdNew, std::function<bool(Message)> filteringFunctionNew);
 
 		~MessageCollector();
 
@@ -427,7 +427,7 @@ namespace DiscordCoreAPI {
 		int32_t elapsedTime{ 0 };
 		std::string userId{ "" };
 
-		CoRoutine<void> run();
+		void run();
 
 	};
 	/**@}*/

@@ -15,7 +15,7 @@
 
 namespace DiscordCoreAPI {
 
-	VoiceConnection* Guild::connectToVoice(std::string channelId) {
+	VoiceConnection* Guild::connectToVoice(std::string channelId, bool selfDeaf, bool selfMute) {
 		try {
 			if (this->voiceConnectionPtr->areWeConnected()) {
 				this->areWeConnectedBool = true;
@@ -26,6 +26,8 @@ namespace DiscordCoreAPI {
 				voiceConnectInitData.channelId = channelId;
 				voiceConnectInitData.guildId = this->id;
 				voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
+				voiceConnectInitData.selfDeaf = selfDeaf;
+				voiceConnectInitData.selfMute = selfMute;
 				this->areWeConnectedBool = true;
 				this->voiceConnectionPtr->connect(voiceConnectInitData);
 				return this->voiceConnectionPtr;
@@ -41,11 +43,12 @@ namespace DiscordCoreAPI {
 	void Guild::disconnect() {
 		try {
 			if (getVoiceConnectionMap()->contains(this->id) && getVoiceConnectionMap()->at(this->id) != nullptr) {
+				getVoiceConnectionMap()->at(this->id)->disconnect();
 				if (getSongAPIMap()->contains(this->id)) {
 					SongAPI::stop(this->id);
 				}
 				getSoundCloudAPIMap()->at(this->id)->stop();
-				getYouTubeAPIMap()->at(this->id)->stop();				
+				getYouTubeAPIMap()->at(this->id)->stop();
 				UpdateVoiceStateData updateVoiceData{};
 				updateVoiceData.channelId = "";
 				updateVoiceData.selfDeaf = false;
@@ -54,7 +57,6 @@ namespace DiscordCoreAPI {
 				this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
 				this->areWeConnectedBool = false;
 				this->voiceConnectionPtr = nullptr;
-				getVoiceConnectionMap()->at(this->id)->disconnect();
 			}
 		}
 		catch (...) {
