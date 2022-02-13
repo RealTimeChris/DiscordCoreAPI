@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Users::addRecipientToGroupDMAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::addRecipientToGroupDMAsync()");
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
 			workload.callStack = "Users::removeRecipientToGroupDMAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::removeRecipientFromGroupDMAsync()");
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/@me";
 			workload.callStack = "Users::modifyCurrentUserVoiceStateAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::modifyCurrentUserVoiceStateAsync()");
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/" + dataPackage.userId;
 			workload.callStack = "Users::modifyUserVoiceStateAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::modifyUserVoiceStateAsync()");
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/@me";
 			workload.callStack = "Users::getCurrentUserAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::getCurrentUserAsync()");
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/" + dataPackage.userId;
 			workload.callStack = "Users::getUserAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::getUserAsync()");
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 				nlohmann::json responseData = { {"username", dataPackage.username } };
 				workload.content = responseData.dump();
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::modifyCurrentUserAsync()");
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/@me/connections";
 			workload.callStack = "Users::getUserConnections";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ConnectionData>>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ConnectionData>>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::getUserConnections()");
@@ -206,7 +206,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/oauth2/applications/@me";
 			workload.callStack = "Users::getApplicationDataAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationData>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationData>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::getApplicationDataAsync()");
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/oauth2/@me";
 			workload.callStack = "Users::getCurrentUserAuthorizationInfoAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuthorizationInfoData>(Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuthorizationInfoData>(*Users::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Users::getCurrentUserAuthorizationInfoAsync()");

@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return  DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(StageInstances::httpClient, workload);
+			co_return  DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
 		}
 		catch (...) {
 			reportException("StageInstances::createStageInstanceAsync()");
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/stage-instances/" + dataPackage.channelId;
 			workload.callStack = "StageInstances::getStageInstanceAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(StageInstances::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
 		}
 		catch (...) {
 			reportException("StageInstances::getStageInstanceAsync()");
@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(StageInstances::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
 		}
 		catch (...) {
 			reportException("StageInstances::modifyStageInstanceAsync()");
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(StageInstances::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*StageInstances::httpClient, workload);
 		}
 		catch (...) {
 			reportException("StageInstances::deleteStageInstanceAsync()");

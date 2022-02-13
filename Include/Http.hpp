@@ -122,7 +122,7 @@ namespace DiscordCoreInternal {
 	public:
 
 		template<typename ReturnType>
-		friend ReturnType submitWorkloadAndGetResult(HttpClient* httpClient, HttpWorkloadData& workload);
+		friend ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 		friend void submitWorkloadAndGetResult(HttpWorkloadData& workload, HttpClient& httpClient);
 		friend std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
 		friend HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
@@ -148,12 +148,12 @@ namespace DiscordCoreInternal {
 	};
 
 	template<typename ReturnType>
-	ReturnType submitWorkloadAndGetResult(HttpClient* httpClient, HttpWorkloadData& workload) {
+	ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload) {
 		try {
-			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient->botToken));
+			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.botToken));
 			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
 			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
-			HttpData returnData = httpClient->httpRequest(workload, true);
+			HttpData returnData = httpClient.httpRequest(workload, true);
 			ReturnType returnObject{};
 			DataParser::parseObject(returnData.responseData, returnObject);
 			return returnObject;
@@ -166,7 +166,7 @@ namespace DiscordCoreInternal {
 	}
 
 	template<>
-	void submitWorkloadAndGetResult<void>(HttpClient* httpClient, HttpWorkloadData& workload);
+	void submitWorkloadAndGetResult<void>(HttpClient& httpClient, HttpWorkloadData& workload);
 
 	HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 

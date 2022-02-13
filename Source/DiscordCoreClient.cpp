@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/gateway/bot";
 			workload.callStack = "DiscordCoreClient::getGateWayBot";
-			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<GatewayBotData>(this->httpClient.get(), workload);
+			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<GatewayBotData>(*this->httpClient.get(), workload);
 			std::string newString = result.url.substr(result.url.find("wss://") + std::string("wss://").size());
 			return newString;
 		}

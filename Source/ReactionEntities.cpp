@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/@me";
 			workload.callStack = "Reactions::createReactionAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Reaction>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Reaction>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::createReactionAsync()");
@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/@me";
 			workload.callStack = "Reactions::deleteOwnReactionAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::deleteOwnReactionAsync()");
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/" + dataPackage.userId;
 			workload.callStack = "Reactions::deleteUserReactionAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::deleteUserReactionAsync()");
@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 			}
 			workload.callStack = "Reactions::getReactionsAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<User>>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<User>>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::getReactionsAsync()");
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions";
 			workload.callStack = "Reactions::deleteAllReactionsAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::deleteAllReactionsAsync()");
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji);
 			workload.callStack = "Reactions::deleteReactionsByEmojiAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::deleteReactionsByEmojiAsync()");
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
 			workload.callStack = "Reactions::getEmojiListAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<EmojiData>>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<EmojiData>>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::getEmojiListAsync()");
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis/" + dataPackage.emojiId;
 			workload.callStack = "Reactions::getGuildEmojiAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<EmojiData>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<EmojiData>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::getGuildEmojiAsync()");
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<EmojiData>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<EmojiData>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::createGuildEmojiAsync()");
@@ -235,7 +235,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<EmojiData>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<EmojiData>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::modifyGuildEmojiAsync()");
@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Reactions::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Reactions::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Reactions::deleteGuildEmojiAsync()");

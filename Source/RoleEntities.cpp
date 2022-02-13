@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Roles::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Roles::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Roles::addGuildMemberRoleAsync()");
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Roles::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Roles::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Roles::removeGuildMemberRoleAsync()");
@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
 			workload.callStack = "Roles::getGuildRolesAsync";
-			co_return  DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Role>>(Roles::httpClient, workload);
+			co_return  DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Role>>(*Roles::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Roles::getGuildRolesAsync()");
@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			auto roleNew = DiscordCoreInternal::submitWorkloadAndGetResult<Role>(Roles::httpClient, workload);
+			auto roleNew = DiscordCoreInternal::submitWorkloadAndGetResult<Role>(*Roles::httpClient, workload);
 			Role result{ roleNew };
 			ModifyGuildRolePositionsData newDataPackage{};
 			newDataPackage.guildId = dataPackage.guildId;
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Role>>(Roles::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Role>>(*Roles::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Roles::modifyGuildRolePositionsAsync()");
@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Role>(Roles::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Role>(*Roles::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Roles::modifyGuildRoleAsync()");
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Roles::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Roles::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Roles::removeGuildRoleAsync()");

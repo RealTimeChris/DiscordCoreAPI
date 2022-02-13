@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 				responseData.update({ {"avatar", dataPackage.avatar} });
 			}
 			workload.content = responseData.dump();
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::createWebHookAsync()");
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/webhooks";
 			workload.callStack = "WebHooks::getChannelWebHooksAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<WebHook>>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<WebHook>>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::getChannelWebHooksAsync()");
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/webhooks";
 			workload.callStack = "WebHooks::getGuildWebHooksAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<WebHook>>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<WebHook>>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::getGuildWebHooksAsync()");
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/webhooks/" + dataPackage.webhookId;
 			workload.callStack = "WebHooks::getWebHookAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::getWebHookAsync()");
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/webhooks/" + dataPackage.webhookId + "/" + dataPackage.webhookToken;
 			workload.callStack = "WebHooks::getWebHookWithTokenAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::getWebHookWithTokenAsync()");
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 			}
 			workload.content = responseData.dump();
 			workload.callStack = "WebHooks::modifyWebHookAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::modifyWebHookAsync()");
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 			}
 			workload.content = responseData.dump();
 			workload.callStack = "WebHooks::modifyWebHookWithTokenAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<WebHook>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::modifyWebHookWithTokenAsync()");
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/webhooks/" + dataPackage.webhookId;
 			workload.callStack = "WebHooks::deleteWebHookAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::deleteWebHookAsync()");
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/webhooks/" + dataPackage.webhookId + "/" + dataPackage.webhookToken;
 			workload.callStack = "WebHooks::deleteWebHookWithTokenAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::deleteWebHookWithTokenAsync()");
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "?thread_id=" + dataPackage.threadId;
 			}
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::executeWebHookAsync()");
@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "?thread_id=" + dataPackage.threadId;
 			}
 			workload.callStack = "WebHooks::getWebHookMessageAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::getWebHookMessageAsync()");
@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 			}
 			workload.callStack = "WebHooks::editWebHookMessageAsync";
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::editWebHookMessageAsync()");
@@ -266,7 +266,7 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "?thread_id=" + dataPackage.threadId;
 			}
 			workload.callStack = "WebHooks::deleteWebHookMessageAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(WebHooks::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*WebHooks::httpClient, workload);
 		}
 		catch (...) {
 			reportException("WebHooks::deleteWebHookMessageAsync()");

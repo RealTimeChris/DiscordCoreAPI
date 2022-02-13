@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			workload.callStack = "Messages::getMessagesAsync";
-			co_return  DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Message>>(Messages::httpClient, workload);
+			co_return  DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Message>>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::getMessagesAsync()");
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.id;
 			workload.callStack = "Messages::getMessageAsync";
-			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(Messages::httpClient, workload);
+			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 			result.requesterId = dataPackage.requesterId;
 			co_return result;
 		}
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Messages::createMessageAsync";
-			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(Messages::httpClient, workload);
+			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 			result.requesterId = dataPackage.requesterId;
 			co_return result;
 		}
@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/crosspost";
 			workload.callStack = "Messages::crosspostMessageAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(Messages::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::crosspostMessageAsync()");
@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Messages::editMessageAsync";
-			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(Messages::httpClient, workload);
+			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 			result.requesterId = dataPackage.requesterId;
 			co_return result;
 		}
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Messages::httpClient, workload);
+			return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::deleteMessageToBeWrapped()");
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Messages::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::deleteMessagesBulkAsync()");
@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
 			workload.callStack = "Messages::getPinnedMessagesAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Message>>(Messages::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Message>>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::getPinnedMessagesAsync()");
@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Messages::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::pinMessageAsync()");
@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(Messages::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::unpinMessageAsync()");
