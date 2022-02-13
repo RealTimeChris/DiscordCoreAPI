@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::vector<uint8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
+	std::vector<uint8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, std::string keys) {
 		const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 		const int32_t headerSize{ 12 };
 		const uint8_t byteSize{ 8 };
@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 				this->voiceSocketAgent->theTask.get();
 			}
 			this->voiceSocketAgent.reset(nullptr);
-			if (this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
+			if (this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000) != 0) {
 				return;
 			}
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent);
@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 					this->clearAudioData();
 					this->didWeJustConnect = false;
 				}
-				if (this->playSetEvent.wait(10000)) {
+				if (this->playSetEvent.wait(10000) == 1) {
 					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
 						break;
 					}
@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 				int64_t totalTime{ 0 };
 				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping) {
 					this->areWePlaying = true;
-					if (this->doWeReconnect->wait(0)) {
+					if (this->doWeReconnect->wait(0) == 1) {
 						this->areWeConnectedBool = false;
 						this->sendSilence();
 						this->sendSpeakingMessage(false);
@@ -319,11 +319,9 @@ namespace DiscordCoreAPI {
 						std::vector<uint8_t> newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto newFrames = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
-							std::cout << "FRAME COUNT: " << newFrames.data.size() << std::endl;
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(newFrames, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						else {
-							std::cout << "ENCODED FRAME COUNT: " << this->audioData.encodedFrameData.data.size() << std::endl;
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						nanoSleep(18000000);

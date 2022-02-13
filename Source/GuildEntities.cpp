@@ -17,7 +17,7 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection* Guild::connectToVoice(std::string channelId) {
 		try {
-			if (this->areWeConnected()) {
+			if (this->voiceConnectionPtr->areWeConnected()) {
 				return this->voiceConnectionPtr;
 			}
 			else if (channelId != "") {
@@ -63,7 +63,12 @@ namespace DiscordCoreAPI {
 
 	bool Guild::areWeConnected() {
 		try {
-			return this->areWeConnectedBool;
+			if (getVoiceConnectionMap()->contains(this->id) && getVoiceConnectionMap()->at(this->id) != nullptr) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		catch (...) {
 			reportException("Guild::areWeConnected()");

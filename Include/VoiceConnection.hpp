@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 
 		AudioEncrypter();
 
-		std::vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
+		std::vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, std::string keys);
 
 	protected:
 
