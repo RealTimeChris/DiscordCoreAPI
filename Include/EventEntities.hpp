@@ -89,48 +89,6 @@ namespace DiscordCoreAPI {
     };
 
     template<typename ReturnType, typename  ...ArgTypes>
-    class UniEvent {
-    public:
-
-        UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
-            if (this != &other) {
-                this->theFunction = std::move(other.theFunction);
-                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
-            }
-            return *this;
-        }
-
-        UniEvent(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
-            *this = std::move(other);
-        }
-
-        UniEvent<ReturnType, ArgTypes...>& operator=(const UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-        UniEvent(const UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-        UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-        UniEvent(UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-        UniEvent() {};
-
-        UniEvent(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
-            this->theFunction = theFunctionNew;
-        }
-
-        UniEvent(ReturnType(*theFunctionNew)(ArgTypes...)) {
-            this->theFunction = theFunctionNew;
-        }       
-
-        void operator()(ArgTypes... args) {
-            this->theFunction(args...);
-        }
-
-    protected:
-        std::function<ReturnType(ArgTypes...)>theFunction{};
-    };
-
-    template<typename ReturnType, typename  ...ArgTypes>
     class Event {
     public:
 
@@ -187,99 +145,46 @@ namespace DiscordCoreAPI {
         std::mutex accessMutex{};
     };
 
-    template<typename ...ArgTypes>
-    class EventDelegate<void, ArgTypes...> {
+    template<typename ReturnType, typename  ...ArgTypes>
+    class UniEvent {
     public:
 
-        friend Event<void, ArgTypes...>;
-
-        EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>&& other) noexcept {
+        UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
                 this->theFunction = std::move(other.theFunction);
-                other.theFunction = std::function<void(ArgTypes...)>{};
+                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
             }
             return *this;
         }
 
-        EventDelegate(EventDelegate<void, ArgTypes...>&& other) noexcept {
+        UniEvent(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
             *this = std::move(other);
         }
 
-        EventDelegate<void, ArgTypes...>& operator=(const EventDelegate<void, ArgTypes...>& other) = delete;
+        UniEvent<ReturnType, ArgTypes...>& operator=(const UniEvent<ReturnType, ArgTypes...>&) = delete;
 
-        EventDelegate(const EventDelegate<void, ArgTypes...>& other) = delete;
+        UniEvent(const UniEvent<ReturnType, ArgTypes...>&) = delete;
 
-        EventDelegate<void, ArgTypes...>& operator=(EventDelegate<void, ArgTypes...>& other) = delete;
+        UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&) = delete;
 
-        EventDelegate(EventDelegate<void, ArgTypes...>& other) = delete;
+        UniEvent(UniEvent<ReturnType, ArgTypes...>&) = delete;
 
-        EventDelegate(std::function<void(ArgTypes...)> theFunctionNew) {
+        UniEvent() {};
+
+        UniEvent(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
         }
 
-        EventDelegate(void(*theFunctionNew)(ArgTypes...)) {
+        UniEvent(ReturnType(*theFunctionNew)(ArgTypes...)) {
             this->theFunction = theFunctionNew;
-        }
-
-    protected:
-        std::function<void(ArgTypes...)>theFunction{};
-    };
-
-    template<typename ...ArgTypes>
-    class Event<void, ArgTypes...> {
-    public:
-
-        Event<void, ArgTypes...>& operator=(Event<void, ArgTypes...>&& other) noexcept {
-            if (this != &other) {
-                this->theFunctions = std::move(other.theFunctions);
-                other.theFunctions = std::map<EventDelegateToken, EventDelegate<void, ArgTypes...>>{};
-                this->eventId = std::move(other.eventId);
-                other.eventId = std::string{};
-            }
-            return *this;
-        }
-
-        Event(Event<void, ArgTypes...>&& other) noexcept {
-            *this = std::move(other);
-        }
-
-        Event<void, ArgTypes...>& operator=(const Event<void, ArgTypes...>&) = delete;
-
-        Event(const Event<void, ArgTypes...>&) = delete;
-
-        Event<void, ArgTypes...>& operator=(Event<void, ArgTypes...>&) = delete;
-
-        Event(Event<void, ArgTypes...>&) = delete;
-
-        Event() {
-            this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-        }
-
-        EventDelegateToken add(EventDelegate<void, ArgTypes...> eventDelegate) {
-            EventDelegateToken eventToken{};
-            eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-            eventToken.eventId = this->eventId;
-            this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
-            return eventToken;
-        }
-
-        void remove(EventDelegateToken  eventToken) {
-            if (this->theFunctions.contains(eventToken)) {
-                this->theFunctions.erase(eventToken);
-            }
         }
 
         void operator()(ArgTypes... args) {
-            for (auto& [key, value] : this->theFunctions) {
-                value.theFunction(args...);
-            }
+            this->theFunction(args...);
         }
 
     protected:
-
-        std::map<EventDelegateToken, EventDelegate<void, ArgTypes...>> theFunctions{};
-        std::string eventId{ "" };
-
+        std::function<ReturnType(ArgTypes...)>theFunction{};
     };
 
    struct DiscordCoreAPI_Dll EventCore {

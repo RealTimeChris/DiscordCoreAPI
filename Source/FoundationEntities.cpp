@@ -14,7 +14,7 @@
 namespace DiscordCoreAPI {
 
     bool operator==(CURLCharWrapper& lhs, const  std::string& rhs) {
-        if (lhs.operator std::string() == rhs) {
+        if (static_cast<std::string>(lhs) == rhs) {
             return true;
         }
         else {
