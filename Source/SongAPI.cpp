@@ -15,105 +15,91 @@ namespace DiscordCoreAPI {
 		this->guildId = guildId;
 	}
 
-	EventDelegateToken SongAPI::onSongCompletion(EventDelegate<CoRoutine<void>, SongCompletionEventData> handler, std::string guildId) {
+	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, std::string guildId) {
 		auto returnValue = getSongAPIMap()->at(guildId).get();
-		if (returnValue != nullptr && !returnValue->areWeInstantiated) {
-			auto theToken = returnValue->onSongCompletionEvent.add(std::move(handler));
-			returnValue->areWeInstantiated = true;
-			returnValue->eventDelegateToken = theToken;
-			return theToken;
-		}
-		return EventDelegateToken{};
-	}
-
-	void SongAPI::onSongCompletion(EventDelegateToken token, std::string guildId) {
-		auto returnValue = getSongAPIMap()->at(guildId).get();
-		if (returnValue != nullptr) {
-			returnValue->onSongCompletionEvent.remove(token);
-			returnValue->areWeInstantiated = false;
-		}
+		returnValue->onSongCompletionEvent = handler;
 	}
 
 	bool SongAPI::sendNextSong(std::string guildId) {
-		if (this->playlist.isLoopSongEnabled) {
-			if (this->playlist.songQueue.size() > 1 && this->playlist.currentSong.songId == "") {
-				this->playlist.currentSong = this->playlist.songQueue.at(0);
-				for (int32_t x = 0; x < this->playlist.songQueue.size(); x += 1) {
-					if (x == this->playlist.songQueue.size() - 1) {
+		if (getSongAPIMap()->at(guildId)->playlist.isLoopSongEnabled) {
+			if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() > 1 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.songQueue.at(0);
+				for (int32_t x = 0; x < getSongAPIMap()->at(guildId)->playlist.songQueue.size(); x += 1) {
+					if (x == getSongAPIMap()->at(guildId)->playlist.songQueue.size() - 1) {
 						break;
 					}
-					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					getSongAPIMap()->at(guildId)->playlist.songQueue[x] = getSongAPIMap()->at(guildId)->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
-				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
+				getSongAPIMap()->at(guildId)->playlist.songQueue.erase(getSongAPIMap()->at(guildId)->playlist.songQueue.end() - 1, getSongAPIMap()->at(guildId)->playlist.songQueue.end());
 				return true;
 			}
-			else if (this->playlist.songQueue.size() > 0 && this->playlist.currentSong.songId == "") {
-				this->playlist.currentSong = this->playlist.currentSong;
+			else if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() > 0 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.currentSong;
 				return true;
 			}
-			else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
-				this->playlist.currentSong = this->playlist.currentSong;
+			else if (getSongAPIMap()->at(guildId)->playlist.currentSong.songId != "" && getSongAPIMap()->at(guildId)->playlist.songQueue.size() == 0) {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.currentSong;
 				return true;
 			}
-			else if (this->playlist.songQueue.size() == 1 && this->playlist.currentSong.songId == "") {
-				this->playlist.currentSong = this->playlist.songQueue.at(0);
-				this->playlist.songQueue.erase(this->playlist.songQueue.begin(), this->playlist.songQueue.begin() + 1);
+			else if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() == 1 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.songQueue.at(0);
+				getSongAPIMap()->at(guildId)->playlist.songQueue.erase(getSongAPIMap()->at(guildId)->playlist.songQueue.begin(), getSongAPIMap()->at(guildId)->playlist.songQueue.begin() + 1);
 				return true;
 			}
-			else if (this->playlist.currentSong.songId == "") {
+			else if (getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
 				return false;
 			}
 		}
-		else if (this->playlist.isLoopAllEnabled) {
-			if (this->playlist.songQueue.size() > 1 && this->playlist.currentSong.songId == "") {
-				this->playlist.currentSong = this->playlist.songQueue.at(0);
-				for (int32_t x = 0; x < this->playlist.songQueue.size(); x += 1) {
-					if (x == this->playlist.songQueue.size() - 1) {
+		else if (getSongAPIMap()->at(guildId)->playlist.isLoopAllEnabled) {
+			if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() > 1 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.songQueue.at(0);
+				for (int32_t x = 0; x < getSongAPIMap()->at(guildId)->playlist.songQueue.size(); x += 1) {
+					if (x == getSongAPIMap()->at(guildId)->playlist.songQueue.size() - 1) {
 						break;
 					}
-					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					getSongAPIMap()->at(guildId)->playlist.songQueue[x] = getSongAPIMap()->at(guildId)->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
-				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
+				getSongAPIMap()->at(guildId)->playlist.songQueue.erase(getSongAPIMap()->at(guildId)->playlist.songQueue.end() - 1, getSongAPIMap()->at(guildId)->playlist.songQueue.end());
 				return true;
 			}
-			else if (this->playlist.songQueue.size() > 0 && this->playlist.currentSong.songId != "") {
-				Song tempSong02 = this->playlist.currentSong;
-				this->playlist.currentSong = this->playlist.songQueue.at(0);
-				for (int32_t x = 0; x < this->playlist.songQueue.size(); x += 1) {
-					if (x == this->playlist.songQueue.size() - 1) {
+			else if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() > 0 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId != "") {
+				Song tempSong02 = getSongAPIMap()->at(guildId)->playlist.currentSong;
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.songQueue.at(0);
+				for (int32_t x = 0; x < getSongAPIMap()->at(guildId)->playlist.songQueue.size(); x += 1) {
+					if (x == getSongAPIMap()->at(guildId)->playlist.songQueue.size() - 1) {
 						break;
 					}
-					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					getSongAPIMap()->at(guildId)->playlist.songQueue[x] = getSongAPIMap()->at(guildId)->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
-				this->playlist.songQueue.at(this->playlist.songQueue.size() - 1) = tempSong02;
+				getSongAPIMap()->at(guildId)->playlist.songQueue.at(getSongAPIMap()->at(guildId)->playlist.songQueue.size() - 1) = tempSong02;
 				return true;
 			}
-			else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
+			else if (getSongAPIMap()->at(guildId)->playlist.currentSong.songId != "" && getSongAPIMap()->at(guildId)->playlist.songQueue.size() == 0) {
 				return true;
 			}
-			else if (this->playlist.songQueue.size() == 1 && this->playlist.currentSong.songId == "") {
-				this->playlist.currentSong = this->playlist.songQueue.at(0);
-				this->playlist.songQueue.erase(this->playlist.songQueue.begin(), this->playlist.songQueue.begin() + 1);
+			else if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() == 1 && getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.songQueue.at(0);
+				getSongAPIMap()->at(guildId)->playlist.songQueue.erase(getSongAPIMap()->at(guildId)->playlist.songQueue.begin(), getSongAPIMap()->at(guildId)->playlist.songQueue.begin() + 1);
 				return true;
 			}
-			else if (this->playlist.currentSong.songId == "") {
+			else if (getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
 				return false;
 			}
 		}
 		else {
-			if (this->playlist.songQueue.size() > 0 && (this->playlist.currentSong.songId != "" || this->playlist.currentSong.songId == "")) {
-				this->playlist.currentSong = this->playlist.songQueue.at(0);
-				for (int32_t x = 0; x < this->playlist.songQueue.size() - 1; x += 1) {
-					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+			if (getSongAPIMap()->at(guildId)->playlist.songQueue.size() > 0 && (getSongAPIMap()->at(guildId)->playlist.currentSong.songId != "" || getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "")) {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = getSongAPIMap()->at(guildId)->playlist.songQueue.at(0);
+				for (int32_t x = 0; x < getSongAPIMap()->at(guildId)->playlist.songQueue.size() - 1; x += 1) {
+					getSongAPIMap()->at(guildId)->playlist.songQueue[x] = getSongAPIMap()->at(guildId)->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
-				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
+				getSongAPIMap()->at(guildId)->playlist.songQueue.erase(getSongAPIMap()->at(guildId)->playlist.songQueue.end() - 1, getSongAPIMap()->at(guildId)->playlist.songQueue.end());
 				return true;
 			}
-			else if (this->playlist.currentSong.description != "" && this->playlist.songQueue.size() == 0) {
-				this->playlist.currentSong = Song();
+			else if (getSongAPIMap()->at(guildId)->playlist.currentSong.description != "" && getSongAPIMap()->at(guildId)->playlist.songQueue.size() == 0) {
+				getSongAPIMap()->at(guildId)->playlist.currentSong = Song();
 				return true;
 			}
-			else if (this->playlist.currentSong.songId == "") {
+			else if (getSongAPIMap()->at(guildId)->playlist.currentSong.songId == "") {
 				return false;
 			}
 		}
@@ -172,7 +158,7 @@ namespace DiscordCoreAPI {
 		getSongAPIMap()->at(guildId)->playlist.songQueue = newVector02;
 		auto resultValue = getSongAPIMap()->at(guildId).get();
 		if (resultValue != nullptr) {
-			resultValue->onSongCompletion(getSongAPIMap()->at(guildId)->eventDelegateToken, guildId);
+			getSongAPIMap()->at(guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
 		}
 	}
 

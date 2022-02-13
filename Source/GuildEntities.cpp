@@ -17,11 +17,13 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection* Guild::connectToVoice(std::string channelId, bool selfDeaf, bool selfMute) {
 		try {
-			if (this->voiceConnectionPtr->areWeConnected()) {
+			if (getVoiceConnectionMap()->at(this->id)->areWeConnected()) {
+				this->voiceConnectionPtr = getVoiceConnectionMap()->at(this->id).get();
 				this->areWeConnectedBool = true;
 				return this->voiceConnectionPtr;
 			}
 			else if (channelId != "") {
+				this->voiceConnectionPtr = getVoiceConnectionMap()->at(this->id).get();
 				DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 				voiceConnectInitData.channelId = channelId;
 				voiceConnectInitData.guildId = this->id;

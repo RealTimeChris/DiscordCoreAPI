@@ -22,8 +22,7 @@ namespace DiscordCoreAPI {
 		friend class SoundCloudAPI;
 		friend class YouTubeAPI;
 		
-		Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
-		EventDelegateToken eventDelegateToken{};
+		UniEvent<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
 		Playlist playlist{};
 
 		SongAPI(std::string guildId);
@@ -32,12 +31,7 @@ namespace DiscordCoreAPI {
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
 		/// \param guildId The id of the guild for which you would like to instantiate this event.
 		/// \returns An event_token for later de-registering the event. 
-		static EventDelegateToken onSongCompletion(EventDelegate<CoRoutine<void>, SongCompletionEventData> handler, std::string guildId);
-
-		/// For de-registering the event-handler std::function that was previously registered. \brief For de-registering the event-handler std::function that was previously registered.
-		/// \param token The event_token that was returned from the registration std::function.
-		/// \param guildId The id of the guild for which you would like to remove this event.
-		static void onSongCompletion(EventDelegateToken token, std::string guildId);
+		static void onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, std::string guildId);
 
 		/// Search for a Song to play. \brief Search for a Song to play.
 		/// \param searchQuery The Song to search for.

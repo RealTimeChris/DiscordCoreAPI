@@ -89,6 +89,48 @@ namespace DiscordCoreAPI {
     };
 
     template<typename ReturnType, typename  ...ArgTypes>
+    class UniEvent {
+    public:
+
+        UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
+            if (this != &other) {
+                this->theFunction = std::move(other.theFunction);
+                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
+            }
+            return *this;
+        }
+
+        UniEvent(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
+            *this = std::move(other);
+        }
+
+        UniEvent<ReturnType, ArgTypes...>& operator=(const UniEvent<ReturnType, ArgTypes...>&) = delete;
+
+        UniEvent(const UniEvent<ReturnType, ArgTypes...>&) = delete;
+
+        UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&) = delete;
+
+        UniEvent(UniEvent<ReturnType, ArgTypes...>&) = delete;
+
+        UniEvent() {};
+
+        UniEvent(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
+            this->theFunction = theFunctionNew;
+        }
+
+        UniEvent(ReturnType(*theFunctionNew)(ArgTypes...)) {
+            this->theFunction = theFunctionNew;
+        }       
+
+        void operator()(ArgTypes... args) {
+            this->theFunction(args...);
+        }
+
+    protected:
+        std::function<ReturnType(ArgTypes...)>theFunction{};
+    };
+
+    template<typename ReturnType, typename  ...ArgTypes>
     class Event {
     public:
 
@@ -133,6 +175,7 @@ namespace DiscordCoreAPI {
         }
 
         void operator()(ArgTypes... args) {
+            std::unique_lock<std::mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : this->theFunctions) {
                 value.theFunction(args...);
             }
@@ -141,6 +184,7 @@ namespace DiscordCoreAPI {
     protected:
         std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
         std::string eventId{ "" };
+        std::mutex accessMutex{};
     };
 
     template<typename ...ArgTypes>
