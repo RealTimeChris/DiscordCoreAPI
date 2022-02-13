@@ -180,11 +180,9 @@ namespace DiscordCoreAPI {
 		this->doWeQuit = true;
 		if (this->voiceSocketAgent != nullptr) {
 			this->voiceSocketAgent->doWeQuit = true;
-			this->voiceSocketAgent->theTask.get();
 			this->voiceSocketAgent.reset(nullptr);
 		}
 		this->theTask->cancel();
-		this->theTask->get();
 		this->theTask.reset(nullptr);
 		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
 		if (thePtr != nullptr) {
@@ -317,7 +315,7 @@ namespace DiscordCoreAPI {
 					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
 						break;
 					}
-					if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset && !this->areWeStopping) {
+					if (this->audioData.type != AudioFrameType::Cancel && this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping) {
 						std::vector<uint8_t> newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto newFrames = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
@@ -342,6 +340,7 @@ namespace DiscordCoreAPI {
 						this->audioData.rawFrameData.data.clear();
 					}
 					else if ((this->audioData.type == AudioFrameType::Skip || (this->audioData.encodedFrameData.data.size() == 0 && this->audioData.rawFrameData.data.size() == 0)) && !this->areWeStopping) {
+						std::cout << "WERE HERE THIS IS IT020202!" << std::endl;
 						SongCompletionEventData completionEventData{};
 						completionEventData.voiceConnection = this;
 						completionEventData.wasItAFail = false;

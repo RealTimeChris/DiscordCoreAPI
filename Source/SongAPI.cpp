@@ -156,6 +156,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::stop(std::string guildId) {
+		getVoiceConnectionMap()->at(guildId)->stop();
 		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()->at(guildId)->stop();
 		}
@@ -171,7 +172,6 @@ namespace DiscordCoreAPI {
 			newVector02.push_back(value);
 		}
 		getSongAPIMap()->at(guildId)->playlist.songQueue = newVector02;
-		getVoiceConnectionMap()->at(guildId)->stop();
 		auto resultValue = getSongAPIMap()->at(guildId).get();
 		if (resultValue != nullptr) {
 			resultValue->onSongCompletion(getSongAPIMap()->at(guildId)->eventDelegateToken, guildId);

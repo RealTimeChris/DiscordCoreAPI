@@ -259,6 +259,7 @@ namespace DiscordCoreAPI {
 			}
 		breakOut:
 			if (coroutineHandle.promise().isItStopped()) {
+				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
 				while (getAudioBufferMap()->at(soundCloudAPI->guildId)->tryReceive(frameData)) {};
