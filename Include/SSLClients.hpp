@@ -10,9 +10,6 @@
 #endif
 
 #ifdef _WIN32
-#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#endif
 #pragma comment(lib, "libcrypto.lib")
 #pragma comment(lib, "libssl.lib")
 #pragma comment(lib, "ws2_32")
