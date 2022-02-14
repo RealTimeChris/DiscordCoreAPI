@@ -47,6 +47,28 @@ namespace DiscordCoreInternal {
 #define SOCKET_ERROR            (-1)
 #endif
 
+#ifndef _WIN32
+	struct DiscordCoreAPI_Dll epollWrapper {
+
+		struct DiscordCoreAPI_Dll epollDeleter{
+			void operator()(int* other) {
+				close(*other);
+			}
+		};
+
+		operator int () {
+			return *this->thePtr;
+		}
+
+		BIOWrapper(nullptr_t) {
+			*this->thePtr = epoll_create1(0);
+		};
+
+	protected:
+		std::unique_ptr<int, epollDeleter> thePtr{ new int, epollDeleter{} };
+};
+
+#endif
 	struct DiscordCoreAPI_Dll BIOWrapper {
 
 		struct DiscordCoreAPI_Dll BIODeleter {

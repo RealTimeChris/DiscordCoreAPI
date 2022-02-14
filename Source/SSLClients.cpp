@@ -239,7 +239,7 @@ namespace DiscordCoreInternal {
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[5]{};
-		int32_t epollFD = epoll_create1(0);
+		epollWrapper epollFD{ nullptr };
 		bool writing{ false }, reading{ false };
 		if (epollFD == SOCKET_ERROR) {
 			reportError("epoll_create1() Error: ", epollFD);
@@ -505,7 +505,7 @@ namespace DiscordCoreInternal {
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[5]{};
-		int32_t epollFD = epoll_create1(0);
+		epollWrapper epollFD{ nullptr };
 		bool writing{ false }, reading{ false };
 		if (epollFD == SOCKET_ERROR)	{
 			reportError("epoll_create1() Error: ", epollFD);
