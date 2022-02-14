@@ -50,15 +50,25 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll epollWrapper {
 
 		struct DiscordCoreAPI_Dll epollDeleter {
-			void operator()(int* other) {
+			void operator()(int32_t* other) {
 				if (auto resultValue = close(*other); resultValue == SOCKET_ERROR) {
 					reportError("close() Error: ", resultValue);
 				}
 			}
 		};
 
-		operator int() {
+		operator int32_t() {
 			return *this->thePtr;
+		}
+
+		void renew() {
+			if (this->thePtr != INVALID_SOCKET) {
+				close(*this->thePtr);
+			}
+			*this->thePtr = epoll_create1(0);
+			if (*this->thePtr == SOCKET_ERROR) {
+				reportError("epoll_create1() Error: ", *this->thePtr);
+			}
 		}
 
 		epollWrapper(nullptr_t) {
@@ -69,7 +79,7 @@ namespace DiscordCoreInternal {
 		};
 
 	protected:
-		std::unique_ptr<int, epollDeleter> thePtr{ new int, epollDeleter{} };
+		std::unique_ptr<int32_t, epollDeleter> thePtr{ new int32_t{INVALID_SOCKET}, epollDeleter{} };
 	};
 
 #endif
@@ -261,6 +271,9 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper context{ nullptr };
 		std::string soundcloudCertPath{};
 		std::string defaultCertPath{};
+#ifndef _WIN32
+		epollWrapper epoll{ nullptr };
+#endif
 		std::string googleCertPath{};
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };
@@ -300,6 +313,9 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 		std::vector<uint8_t> writeBuffer{};
 		SSL_CTXWrapper context{ nullptr };
+#ifndef _WIN32
+		epollWrapper epoll{ nullptr };
+#endif
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };

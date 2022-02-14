@@ -239,8 +239,8 @@ namespace DiscordCoreInternal {
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
-		epollWrapper epollFd{ nullptr };
 		bool writing{ false };
+		this->epoll.renew();
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
@@ -496,8 +496,8 @@ namespace DiscordCoreInternal {
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
-		epollWrapper epollFd{ nullptr };
 		bool writing{ false };
+		this->epoll.renew();
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
