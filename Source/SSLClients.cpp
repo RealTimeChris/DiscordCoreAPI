@@ -159,7 +159,6 @@ namespace DiscordCoreInternal {
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
-		bool writing{ false };
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
@@ -363,7 +362,6 @@ namespace DiscordCoreInternal {
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
-		bool writing{ false };
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
