@@ -137,53 +137,6 @@ namespace DiscordCoreAPI {
     class EventDelegate;
     template<typename ReturnType>
     class CoRoutine;
-    template<>
-    class CoRoutine<void>;
-
-    /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
-    enum class Permission : int64_t {
-        Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
-        Kick_Members = 0x0000000000000002,///< Kick Members.
-        Ban_Members = 0x0000000000000004,///< Ban Members.
-        Administrator = 0x0000000000000008,///< Administrator.
-        Manage_Channels = 0x0000000000000010,///< Manage Channels.
-        Manage_Guild = 0x0000000000000020,///< Manage Guild.
-        Add_Reactions = 0x0000000000000040,///< Add Reactions.
-        View_Audit_Log = 0x0000000000000080,///< View Audit Log.
-        Priority_Speaker = 0x0000000000000100,///< Priority Speaker.
-        Stream = 0x0000000000000200,///< Stream.
-        View_Channel = 0x0000000000000400,///< View Channel.
-        Send_Messages = 0x0000000000000800,///< Send Messages.
-        Send_Tts_Messages = 0x0000000000001000,///< Send TTS Messages.
-        Manage_Messages = 0x0000000000002000,///< Manage Messages.
-        Embed_Links = 0x0000000000004000,///< Embed Links.
-        Attach_Files = 0x0000000000008000,///< Attach Files.
-        Read_Message_History = 0x0000000000010000,///< Read Message History.
-        Mention_Everyone = 0x0000000000020000,///< Mention Everyone.
-        Use_External_Emojis = 0x0000000000040000,///< Use External Emoji.
-        View_Guild_Insights = 0x0000000000080000,///< View Guild Insights.
-        Connect = 0x0000000000100000,///< Connect.
-        Speak = 0x0000000000200000,///< Speak.
-        Mute_Members = 0x0000000000400000,///< Mute Members.
-        Deafen_Members = 0x0000000000800000,///< Deafen Members.
-        Move_Members = 0x0000000001000000,///< Move Members.
-        Use_Vad = 0x0000000002000000,///< Use VAD.
-        Change_Nickname = 0x0000000004000000,///< Change Nickname.
-        Manage_Nicknames = 0x0000000008000000,///< Manage Nicknames.
-        Manage_Roles = 0x0000000010000000,///< Manage Roles.
-        Manage_Webhooks = 0x0000000020000000,///< Manage Webhooks.
-        Manage_Emojis_And_Stickers = 0x0000000040000000,///< Manage Emojis And Stickers.
-        Use_Application_Commands = 0x0000000080000000,///< Use Application Commands.
-        Request_To_Speak = 0x0000000100000000,///< Request To Speak.
-        Manage_Events = 0x0000000200000000,///< Manage Events.
-        Manage_Threads = 0x0000000400000000,///< Manage Threads.
-        Create_Public_Threads = 0x0000000800000000,///< Create Public Threads.
-        Create_Private_Threads = 0x0000001000000000,///< Create Private Threads.
-        Use_External_Stickers = 0x0000002000000000,///< Use External Stickers.
-        Send_Messages_In_Threads = 0x0000004000000000,///< Send Messages In Threads.
-        Start_Embedded_Activities = 0x0000008000000000,///< Start Embedded Activities.
-        Moderate_Members = 0x0000010000000000///< Moderate Members. 0x0000010000000000///< Moderate Members.
-    };
 
     struct DiscordCoreAPI_Dll CURLWrapper {
 
@@ -539,7 +492,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll Time {
     public:
 
-        Time(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second) {
+        Time(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second) {
             this->second = second;
             this->minute = minute;
             this->month = month;
@@ -550,7 +503,7 @@ namespace DiscordCoreAPI {
 
         int64_t getTime() {
             int64_t theValue{};
-            for (int64_t x = 1970; x < this->year; x += 1) {
+            for (int32_t x = 1970; x < this->year; x += 1) {
                 theValue += this->secondsInJan;
                 theValue += this->secondsInFeb;
                 theValue += this->secondsInMar;
@@ -610,27 +563,27 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        int64_t year{ 0 };
-        int64_t month{ 0 };
-        int64_t day{ 0 };
-        int64_t hour{ 0 };
-        int64_t minute{ 0 };
-        int64_t second{ 0 };
-        const int64_t secondsInJan{ 31 * 24 * 60 * 60 };
-        const int64_t secondsInFeb{ 28 * 24 * 60 * 60 };
-        const int64_t secondsInMar{ 31 * 24 * 60 * 60 };
-        const int64_t secondsInApr{ 30 * 24 * 60 * 60 };
-        const int64_t secondsInMay{ 31 * 24 * 60 * 60 };
-        const int64_t secondsInJun{ 30 * 24 * 60 * 60 };
-        const int64_t secondsInJul{ 31 * 24 * 60 * 60 };
-        const int64_t secondsInAug{ 31 * 24 * 60 * 60 };
-        const int64_t secondsInSep{ 30 * 24 * 60 * 60 };
-        const int64_t secondsInOct{ 31 * 24 * 60 * 60 };
-        const int64_t secondsInNov{ 30 * 24 * 60 * 60 };
-        const int64_t secondsInDec{ 31 * 24 * 60 * 60 };
-        const int64_t secondsPerMinute{ 60 };
-        const int64_t secondsPerHour{ 60 * 60 };
-        const int64_t secondsPerDay{ 60 * 60 * 24 };
+        int32_t year{ 0 };
+        int32_t month{ 0 };
+        int32_t day{ 0 };
+        int32_t hour{ 0 };
+        int32_t minute{ 0 };
+        int32_t second{ 0 };
+        const int32_t secondsInJan{ 31 * 24 * 60 * 60 };
+        const int32_t secondsInFeb{ 28 * 24 * 60 * 60 };
+        const int32_t secondsInMar{ 31 * 24 * 60 * 60 };
+        const int32_t secondsInApr{ 30 * 24 * 60 * 60 };
+        const int32_t secondsInMay{ 31 * 24 * 60 * 60 };
+        const int32_t secondsInJun{ 30 * 24 * 60 * 60 };
+        const int32_t secondsInJul{ 31 * 24 * 60 * 60 };
+        const int32_t secondsInAug{ 31 * 24 * 60 * 60 };
+        const int32_t secondsInSep{ 30 * 24 * 60 * 60 };
+        const int32_t secondsInOct{ 31 * 24 * 60 * 60 };
+        const int32_t secondsInNov{ 30 * 24 * 60 * 60 };
+        const int32_t secondsInDec{ 31 * 24 * 60 * 60 };
+        const int32_t secondsPerMinute{ 60 };
+        const int32_t secondsPerHour{ 60 * 60 };
+        const int32_t secondsPerDay{ 60 * 60 * 24 };
     };
 
     template<typename TimeType>
@@ -730,11 +683,11 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
+    DiscordCoreAPI_Dll std::string generateX64BaseEncodedKey();
+
     DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
-
-    std::string generateX64BaseEncodedKey();
+    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);    
 
     class DiscordCoreAPI_Dll TimeStamp {
     public:
@@ -756,15 +709,58 @@ namespace DiscordCoreAPI {
     protected:
 
         std::string originalTimeStamp{ "" };
-
         int64_t timeStampInMs{ 0 };
-
     };
 
     /**
     * \addtogroup utilities
     * @{
     */
+
+    /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
+    enum class Permission : int64_t {
+        Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
+        Kick_Members = 0x0000000000000002,///< Kick Members.
+        Ban_Members = 0x0000000000000004,///< Ban Members.
+        Administrator = 0x0000000000000008,///< Administrator.
+        Manage_Channels = 0x0000000000000010,///< Manage Channels.
+        Manage_Guild = 0x0000000000000020,///< Manage Guild.
+        Add_Reactions = 0x0000000000000040,///< Add Reactions.
+        View_Audit_Log = 0x0000000000000080,///< View Audit Log.
+        Priority_Speaker = 0x0000000000000100,///< Priority Speaker.
+        Stream = 0x0000000000000200,///< Stream.
+        View_Channel = 0x0000000000000400,///< View Channel.
+        Send_Messages = 0x0000000000000800,///< Send Messages.
+        Send_Tts_Messages = 0x0000000000001000,///< Send TTS Messages.
+        Manage_Messages = 0x0000000000002000,///< Manage Messages.
+        Embed_Links = 0x0000000000004000,///< Embed Links.
+        Attach_Files = 0x0000000000008000,///< Attach Files.
+        Read_Message_History = 0x0000000000010000,///< Read Message History.
+        Mention_Everyone = 0x0000000000020000,///< Mention Everyone.
+        Use_External_Emojis = 0x0000000000040000,///< Use External Emoji.
+        View_Guild_Insights = 0x0000000000080000,///< View Guild Insights.
+        Connect = 0x0000000000100000,///< Connect.
+        Speak = 0x0000000000200000,///< Speak.
+        Mute_Members = 0x0000000000400000,///< Mute Members.
+        Deafen_Members = 0x0000000000800000,///< Deafen Members.
+        Move_Members = 0x0000000001000000,///< Move Members.
+        Use_Vad = 0x0000000002000000,///< Use VAD.
+        Change_Nickname = 0x0000000004000000,///< Change Nickname.
+        Manage_Nicknames = 0x0000000008000000,///< Manage Nicknames.
+        Manage_Roles = 0x0000000010000000,///< Manage Roles.
+        Manage_Webhooks = 0x0000000020000000,///< Manage Webhooks.
+        Manage_Emojis_And_Stickers = 0x0000000040000000,///< Manage Emojis And Stickers.
+        Use_Application_Commands = 0x0000000080000000,///< Use Application Commands.
+        Request_To_Speak = 0x0000000100000000,///< Request To Speak.
+        Manage_Events = 0x0000000200000000,///< Manage Events.
+        Manage_Threads = 0x0000000400000000,///< Manage Threads.
+        Create_Public_Threads = 0x0000000800000000,///< Create Public Threads.
+        Create_Private_Threads = 0x0000001000000000,///< Create Private Threads.
+        Use_External_Stickers = 0x0000002000000000,///< Use External Stickers.
+        Send_Messages_In_Threads = 0x0000004000000000,///< Send Messages In Threads.
+        Start_Embedded_Activities = 0x0000008000000000,///< Start Embedded Activities.
+        Moderate_Members = 0x0000010000000000///< Moderate Members. 0x0000010000000000///< Moderate Members.
+    };
 
     /// Permissions class DiscordCoreAPI_Dll, for representing and manipulating Permission values. \brief Permissions class DiscordCoreAPI_Dll, for representing and manipulating Permission values.
     class DiscordCoreAPI_Dll Permissions : public std::string {

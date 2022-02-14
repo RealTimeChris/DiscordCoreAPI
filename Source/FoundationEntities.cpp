@@ -182,6 +182,21 @@ namespace DiscordCoreAPI {
         }
     }
 
+    std::string generateX64BaseEncodedKey() {
+        std::string returnString{};
+        srand(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
+        returnString.resize(16);
+        for (uint32_t x = 0; x < 16; x += 1) {
+            returnString[x] = static_cast<uint8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
+        }
+        std::unique_ptr<unsigned char[]> theBuffer = std::make_unique<unsigned char[]>(returnString.size());
+        for (uint32_t x = 0; x < returnString.size(); x += 1) {
+            theBuffer[x] = returnString[x];
+        }
+        returnString = base64_encode(theBuffer.get(), returnString.size(), false);
+        return returnString;
+    }
+
     std::string getTimeAndDate() {
         const time_t now = std::time(nullptr);
         tm time = *std::localtime(&now);
@@ -227,21 +242,6 @@ namespace DiscordCoreAPI {
         std::this_thread::sleep_for(std::chrono::nanoseconds{ ns });
 #endif
         return true;
-    }
-
-    std::string generateX64BaseEncodedKey() {
-        std::string returnString{};
-        srand(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
-        returnString.resize(16);
-        for (uint32_t x = 0; x < 16; x += 1) {
-            returnString[x] = static_cast<uint8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
-        }
-        std::unique_ptr<unsigned char[]> theBuffer = std::make_unique<unsigned char[]>(returnString.size());
-        for (uint32_t x = 0; x < returnString.size(); x += 1) {
-            theBuffer[x] = returnString[x];
-        }
-        returnString = base64_encode(theBuffer.get(), returnString.size(), false);
-        return returnString;
     }
 
     std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
