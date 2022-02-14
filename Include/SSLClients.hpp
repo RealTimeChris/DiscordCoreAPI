@@ -62,7 +62,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void renew() {
-			if (this->thePtr != INVALID_SOCKET) {
+			if (this->thePtr != -1) {
 				close(*this->thePtr);
 			}
 			*this->thePtr = epoll_create1(0);
@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 		};
 
 	protected:
-		std::unique_ptr<int32_t, epollDeleter> thePtr{ new int32_t{INVALID_SOCKET}, epollDeleter{} };
+		std::unique_ptr<int32_t, epollDeleter> thePtr{ new int32_t{-1}, epollDeleter{} };
 	};
 
 #endif
