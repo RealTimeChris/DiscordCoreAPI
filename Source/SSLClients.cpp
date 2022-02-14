@@ -7,15 +7,6 @@
 
 namespace DiscordCoreInternal {
 
-	void reportError(std::string errorPosition, int32_t errorValue) {
-		std::cout << errorPosition << errorValue << ", ";
-#ifdef _WIN32
-		std::cout << WSAGetLastError() << std::endl;
-#else
-		std::cout << strerror(errno) << std::endl;
-#endif
-	}
-
 	void reportSSLError(std::string errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) {
 		if (ssl != nullptr) {
 			std::cout << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
