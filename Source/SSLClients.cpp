@@ -184,12 +184,16 @@ namespace DiscordCoreInternal {
 				this->writeBuffer.clear();
 				return true;
 			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
 			case SSL_ERROR_ZERO_RETURN: {
 				return false;
 			}
-			case SSL_ERROR_WANT_READ: 
+			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
 				[[fallthrough]];
+			}
 			case SSL_ERROR_WANT_WRITE: {
 				return true;
 			}
@@ -213,11 +217,15 @@ namespace DiscordCoreInternal {
 				}
 				return true;
 			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
 			case SSL_ERROR_ZERO_RETURN: {
 				return false;
 			}
-			case SSL_ERROR_WANT_WRITE:
+			case SSL_ERROR_WANT_WRITE: {
 				[[fallthrough]];
+			}
 			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
 				return true;
@@ -337,12 +345,16 @@ namespace DiscordCoreInternal {
 				this->writeBuffer.clear();
 				return true;
 			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
 			case SSL_ERROR_ZERO_RETURN: {
 				return false;
 			}
-			case SSL_ERROR_WANT_READ:
+			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
 				[[fallthrough]];
+			}
 			case SSL_ERROR_WANT_WRITE: {
 				return true;
 			}
@@ -367,11 +379,15 @@ namespace DiscordCoreInternal {
 				}
 				return true;
 			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
 			case SSL_ERROR_ZERO_RETURN: {
 				return false;
 			}
-			case SSL_ERROR_WANT_WRITE:
+			case SSL_ERROR_WANT_WRITE: {
 				[[fallthrough]];
+			}
 			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
 				return true;
