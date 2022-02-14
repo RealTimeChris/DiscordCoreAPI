@@ -682,7 +682,6 @@ namespace DiscordCoreInternal {
 
 	BaseSocketAgent::~BaseSocketAgent() {
 		this->doWeQuit.store(true, std::memory_order_release);
-		this->theTask.cancel();
 		this->heartbeatTimer.cancel();
 	}
 
@@ -1091,7 +1090,6 @@ namespace DiscordCoreInternal {
 
 	VoiceSocketAgent::~VoiceSocketAgent() {
 		this->doWeQuit.store(true, std::memory_order_release);
-		this->theTask->cancel();
 		this->theTask.reset(nullptr);
 		this->heartbeatTimer.cancel();
 	};
