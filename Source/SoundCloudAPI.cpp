@@ -347,7 +347,6 @@ namespace DiscordCoreAPI {
 
 	void SoundCloudAPI::sendNextSong(Song newSong) {
 		try {
-			this->cancelCurrentSong();
 			AudioFrameData frameData{};
 			while (getVoiceConnectionMap()->at(this->guildId)->getAudioBuffer().tryReceive(frameData)) {};
 			getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(this->downloadAndStreamAudio(newSong, this));
