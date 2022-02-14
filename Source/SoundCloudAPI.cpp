@@ -279,8 +279,8 @@ namespace DiscordCoreAPI {
 				std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector{};
 				workloadVector.push_back(dataPackage03);
 				auto result = this->requestBuilder.submitWorkloadAndGetResult(workloadVector);
-				std::vector<int8_t> newVector{};
-				for (int64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
+				std::vector<uint8_t> newVector{};
+				for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
 					newVector.push_back(result[0].responseMessage[x]);
 				}
 				int64_t totalAmountToSubmit{ static_cast<int64_t>(result[0].responseMessage.size()) };

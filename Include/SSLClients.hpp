@@ -39,7 +39,7 @@
 
 namespace DiscordCoreInternal {
 
-	using SOCKET = intptr_t;
+	using SOCKET = uintptr_t;
 #ifndef INVALID_SOCKET
 #define INVALID_SOCKET  (SOCKET)(~0)
 #endif
@@ -253,7 +253,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		int32_t maxBufferSize{ 16 * 1024 };
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<int8_t> writeBuffer{};
+		std::vector<uint8_t> writeBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		std::string soundcloudCertPath{};
 		std::string defaultCertPath{};
@@ -268,13 +268,13 @@ namespace DiscordCoreInternal {
 		{v.data() }->std::convertible_to<char*>;
 	} || requires(ObjectType v)
 	{
-		{v.data()}->std::convertible_to<int8_t*>;
+		{v.data()}->std::convertible_to<uint8_t*>;
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		WebSocketSSLClient(std::string baseUrl, std::string port, std::vector<int8_t>* inputBuffer, int64_t maxBufferSize = 16 * 1024);
+		WebSocketSSLClient(std::string baseUrl, std::string port, std::vector<uint8_t>* inputBuffer, int64_t maxBufferSize = 16 * 1024);
 
 		WebSocketSSLClient(nullptr_t);
 
@@ -292,9 +292,9 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::vector<int8_t>* inputBufferPtr{};
+		std::vector<uint8_t>* inputBufferPtr{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<int8_t> writeBuffer{};
+		std::vector<uint8_t> writeBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };
@@ -304,20 +304,20 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<int8_t>*);
+		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<uint8_t>*);
 
 		DatagramSocketSSLClient(nullptr_t);
 
-		bool writeData(std::vector<int8_t>& dataToWrite);
+		bool writeData(std::vector<uint8_t>& dataToWrite);
 
-		std::vector<int8_t> getData();
+		std::vector<uint8_t> getData();
 
 		void readData(bool doWeClear);
 
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::vector<int8_t>* inputBufferPtr{};
+		std::vector<uint8_t>* inputBufferPtr{};
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 	};

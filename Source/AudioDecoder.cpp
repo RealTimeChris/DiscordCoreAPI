@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
         this->theTask = std::make_unique<CoRoutine<void>>(this->run());
     };
 
-    int32_t AudioDecoder::FileStreamRead(void* opaque, int8_t* buf, int32_t) {
+    int32_t AudioDecoder::FileStreamRead(void* opaque, uint8_t* buf, int32_t) {
         AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
         stream->bytesRead = 0;
         stream->currentBuffer = std::string();
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
                             this->newFrame->pts = frame->pts;
                             swr_convert_frame(this->swrContext, this->newFrame, this->frame);
                             int32_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)this->newFrame->format) * 2;
-                            std::vector<int8_t> newVector{};
+                            std::vector<uint8_t> newVector{};
                             newVector.resize(unpadded_linesize);
                             for (int32_t x = 0; x < unpadded_linesize; x += 1) {
                                 newVector[x] = this->newFrame->extended_data[0][x];
@@ -257,7 +257,7 @@ namespace DiscordCoreAPI {
                                     swr_init(this->swrContext);
                                 }
                                 swr_convert_frame(this->swrContext, this->newFrame, nullptr);
-                                std::vector<int8_t> newVector02{};
+                                std::vector<uint8_t> newVector02{};
                                 newVector02.resize(*this->newFrame->linesize);
                                 for (int32_t x = 0; x < *this->newFrame->linesize; x += 1) {
                                     newVector02[x] = this->newFrame->extended_data[0][x];

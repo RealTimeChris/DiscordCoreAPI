@@ -184,13 +184,13 @@ namespace DiscordCoreAPI {
 
     std::string generateX64BaseEncodedKey() {
         std::string returnString{};
-        srand(static_cast<int32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
+        srand(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
         returnString.resize(16);
-        for (int32_t x = 0; x < 16; x += 1) {
-            returnString[x] = static_cast<int8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
+        for (uint32_t x = 0; x < 16; x += 1) {
+            returnString[x] = static_cast<uint8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
         }
         std::unique_ptr<unsigned char[]> theBuffer = std::make_unique<unsigned char[]>(returnString.size());
-        for (int32_t x = 0; x < returnString.size(); x += 1) {
+        for (uint32_t x = 0; x < returnString.size(); x += 1) {
             theBuffer[x] = returnString[x];
         }
         returnString = base64_encode(theBuffer.get(), returnString.size(), false);
@@ -576,10 +576,10 @@ namespace DiscordCoreAPI {
         return permissions;
     }
 
-    RecurseThroughMessagePagesData recurseThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, int32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, int32_t waitForMaxMs, bool returnResult) {
+    RecurseThroughMessagePagesData recurseThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
         std::unique_ptr<RecurseThroughMessagePagesData> returnData{ std::make_unique<RecurseThroughMessagePagesData>() };
         try {
-            int32_t newCurrentPageIndex = currentPageIndex;
+            uint32_t newCurrentPageIndex = currentPageIndex;
             std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(*originalEvent) };
             dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
             if (returnResult) {
@@ -641,7 +641,7 @@ namespace DiscordCoreAPI {
                         newCurrentPageIndex -= 1;
                     }
                     else if (buttonIntData->at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
-                        newCurrentPageIndex = static_cast<int8_t>(messageEmbeds.size()) - 1;
+                        newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
                     }
                     dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
                     if (originalEvent->eventType == InputEventType::Regular_Message) {

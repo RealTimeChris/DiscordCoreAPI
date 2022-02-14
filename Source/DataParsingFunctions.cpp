@@ -2042,19 +2042,19 @@ namespace DiscordCoreInternal {
     template<>
     void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::SessionStartData& pDataStructure) {
         if (jsonObjectData.contains("max_concurrency") && !jsonObjectData["max_concurrency"].is_null()) {
-            pDataStructure.maxConcurrency = jsonObjectData["max_concurrency"].get<int32_t>();
+            pDataStructure.maxConcurrency = jsonObjectData["max_concurrency"].get<uint32_t>();
         }
 
         if (jsonObjectData.contains("remaining") && !jsonObjectData["remaining"].is_null()) {
-            pDataStructure.remaining = jsonObjectData["remaining"].get<int32_t>();
+            pDataStructure.remaining = jsonObjectData["remaining"].get<uint32_t>();
         }
 
         if (jsonObjectData.contains("reset_after") && !jsonObjectData["reset_after"].is_null()) {
-            pDataStructure.resetAfter = jsonObjectData["reset_after"].get<int32_t>();
+            pDataStructure.resetAfter = jsonObjectData["reset_after"].get<uint32_t>();
         }
 
         if (jsonObjectData.contains("total") && !jsonObjectData["total"].is_null()) {
-            pDataStructure.total = jsonObjectData["total"].get<int32_t>();
+            pDataStructure.total = jsonObjectData["total"].get<uint32_t>();
         }
     }
 
@@ -2065,7 +2065,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("shards") && !jsonObjectData["shards"].is_null()) {
-            pDataStructure.shards = jsonObjectData["shards"].get<int32_t>();
+            pDataStructure.shards = jsonObjectData["shards"].get<uint32_t>();
         }
 
         if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
@@ -2588,7 +2588,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("user_count") && !jsonObjectData["user_count"].is_null()) {
-            pDataStructure.userCount = jsonObjectData.at("user_count").get<int32_t>();
+            pDataStructure.userCount = jsonObjectData.at("user_count").get<uint32_t>();
         }
 
         if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
@@ -2651,7 +2651,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("user_count") && !jsonObjectData["user_count"].is_null()) {
-            pDataStructure.userCount = jsonObjectData.at("user_count").get<int32_t>();
+            pDataStructure.userCount = jsonObjectData.at("user_count").get<uint32_t>();
         }
 
         if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
@@ -2729,7 +2729,7 @@ namespace DiscordCoreInternal {
         }
 
         if (jsonObjectData.contains("usage_count") && !jsonObjectData["usage_count"].is_null()) {
-            pDataStructure.usageCount = jsonObjectData["usage_count"].get<int32_t>();
+            pDataStructure.usageCount = jsonObjectData["usage_count"].get<uint32_t>();
         }
 
         if (jsonObjectData.contains("creator_id") && !jsonObjectData["creator_id"].is_null()) {

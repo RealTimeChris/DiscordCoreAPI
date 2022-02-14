@@ -18,7 +18,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new WebHook. \brief For creating a new WebHook.
 	struct DiscordCoreAPI_Dll CreateWebHookData{
-		std::vector<int8_t>avatar{};///< Image for the default webhook avatar.
+		std::vector<uint8_t>avatar{};///< Image for the default webhook avatar.
 		std::string channelId{ "" };///< The Channel within which to create the WebHook.
 		std::string name{ "" };///< Name of the webhook(1 - 80 characters).
 	};
@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
-		std::vector<int8_t> avatar{};///< Image responseData for the default webhook avatar.
+		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
 		std::string channelId{ "" };///< The new channel id this webhook should be moved to.
 		std::string webhookId{ "" };///< The WebHook to be modified.
 		std::string name{ "" };///< The default name of the webhook.
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
 		std::string webhookToken{ "" };///< Token of the desired WebHook.
-		std::vector<int8_t> avatar{};///< Image responseData for the default webhook avatar.
+		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
 		std::string channelId{ "" };///< The new channel id this webhook should be moved to.
 		std::string webhookId{ "" };///< The WebHook to be modified.
 		std::string name{ "" };///< The default name of the webhook.

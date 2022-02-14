@@ -334,7 +334,7 @@ namespace DiscordCoreAPI {
 
     protected:
         InteractionPackageData interactionPackage{};
-        int32_t timeDelay{ 0 };
+        uint32_t timeDelay{ 0 };
     };
 
     /// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
@@ -462,7 +462,7 @@ namespace DiscordCoreAPI {
     protected:
         InteractionPackageData interactionPackage{};
         MessagePackageData messagePackage{};
-        int32_t timeDelay{ 0 };
+        uint32_t timeDelay{ 0 };
     };
 
     /// A single Interaction.
@@ -565,7 +565,7 @@ namespace DiscordCoreAPI {
     public:
         friend DiscordCoreClient;
 
-        static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>selectMeninteractionBufferMap;
+        static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>selectMenuInteractionBufferMap;
 
         /// Constructor. \brief Constructor.
         /// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -593,7 +593,7 @@ namespace DiscordCoreAPI {
         std::string selectMenuId{ "" };
         std::string channelId{ "" };
         std::string messageId{ "" };
-        int32_t maxTimeInMs{ 0 };
+        uint32_t maxTimeInMs{ 0 };
         std::string userId{ "" };
         bool doWeQuit{ false };
 
@@ -648,7 +648,7 @@ namespace DiscordCoreAPI {
         std::string channelId{ "" };
         std::string messageId{ "" };
         std::string buttonId{ "" };
-        int32_t maxTimeInMs{ 0 };
+        uint32_t maxTimeInMs{ 0 };
         std::string userId{ "" };
         bool doWeQuit{ false };
 

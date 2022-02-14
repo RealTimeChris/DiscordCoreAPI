@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		int32_t verificationLevel{ 0 };///< Verification level.
 		std::string afkChannelId{ "" };///< Id for afk channel.
 		std::vector<RoleData> roles{};///< Array of role objects.
-		std::vector<int8_t> icon{};///< base64 128x128 image for the Guild icon.
+		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
 		std::string name{ "" };///< The name of the new Guild.
 	};
 
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		std::string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
-		std::vector<int8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
+		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		std::string preferredLocale{ "" };///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
@@ -79,10 +79,10 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
 		int32_t systemChannelFlags{ 0 };///< System channel flags.
 		std::string afkChannelId{ "" };///< Id for afk channels.
-		std::vector<int8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash(when the server has the INVITE_SPLASH feature).
+		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash(when the server has the INVITE_SPLASH feature).
 		std::string description{ "" };///< The description for the Guild, if the Guild is discoverable.
-		std::vector<int8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner(when the server has the BANNER feature).
-		std::vector<int8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
+		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner(when the server has the BANNER feature).
+		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon(can be animated gif when the server has the ANIMATED_ICON feature).
 		std::string ownerId{ "" };///< User id to transfer Guild ownership to(must be owner).
 		std::string guildId{ "" };///< Id of the chosen Guild to modify.
 		std::string reason{ "" };///< Reason for modifying the Guild.
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 	/// For creating a Guild from a Guild template. \brief For creating a Guild from a Guild template.
 	struct DiscordCoreAPI_Dll CreateGuildFromGuildTemplateData {
 		std::string templateCode{ "" };///< Code for the desired Template to use.
-		std::vector<int8_t> imageData{};///< base64 128x128 image for the Guild icon.
+		std::vector<uint8_t> imageData{};///< base64 128x128 image for the Guild icon.
 		std::string name{ "" };///< Desired name of the Guild.
 	};
 
@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetCurrentUserGuildsData {
 		std::string before{ "" };///< Get guilds before this Guild ID.
 		std::string after{ "" };///< Get guilds after this Guild ID.
-		int32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
+		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
 	};
 
 	/// For leaving a particular Guild. \brief For leaving a particular Guild.

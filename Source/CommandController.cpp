@@ -141,18 +141,18 @@ namespace DiscordCoreAPI {
 	std::vector<std::string> CommandController::parseArguments(std::string messageContents) {
 		std::vector<std::string> args;
 		try {
-			int64_t startingPosition = messageContents.find("=");
+			uint64_t startingPosition = messageContents.find("=");
 			if (startingPosition == std::string::npos) {
 				return args;
 			}
 			std::string newString = messageContents.substr(startingPosition + 1);
 			if (newString.find(",") == std::string::npos) {
-				int64_t startingPositionNew = newString.find_first_not_of(" ");
+				uint64_t startingPositionNew = newString.find_first_not_of(" ");
 				if (startingPositionNew == std::string::npos) {
 					return args;
 				}
 				newString = newString.substr(startingPositionNew);
-				int64_t endingPosition = newString.find(",");
+				uint64_t endingPosition = newString.find(",");
 				std::string argument;
 				if (endingPosition == std::string::npos) {
 					argument = newString.substr(0);
@@ -165,12 +165,12 @@ namespace DiscordCoreAPI {
 				return args;
 			}
 			while (newString.find(",") != std::string::npos) {
-				int64_t startingPositionNew = newString.find_first_not_of(" ");
+				uint64_t startingPositionNew = newString.find_first_not_of(" ");
 				if (startingPositionNew == std::string::npos) {
 					return args;
 				}
 				newString = newString.substr(startingPositionNew);
-				int64_t endingPosition = newString.find(",");
+				uint64_t endingPosition = newString.find(",");
 				std::string argument;
 				if (endingPosition == std::string::npos) {
 					argument = newString.substr(0);

@@ -17,41 +17,41 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::vector<int8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
+	std::vector<uint8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
 		if (keys.size() > 0) {
 			const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 			const int32_t headerSize{ 12 };
-			const int8_t byteSize{ 8 };
-			int8_t headerFinal[headerSize]{};
+			const uint8_t byteSize{ 8 };
+			uint8_t headerFinal[headerSize]{};
 			headerFinal[0] = 0x80;
 			headerFinal[1] = 0x78;
-			headerFinal[2] = static_cast<int8_t>(this->sequenceIndex >> (byteSize * 1));
-			headerFinal[3] = static_cast<int8_t>(this->sequenceIndex >> (byteSize * 0));
-			headerFinal[4] = static_cast<int8_t>(this->timeStamp >> (byteSize * 3));
-			headerFinal[5] = static_cast<int8_t>(this->timeStamp >> (byteSize * 2));
-			headerFinal[6] = static_cast<int8_t>(this->timeStamp >> (byteSize * 1));
-			headerFinal[7] = static_cast<int8_t>(this->timeStamp >> (byteSize * 0));
-			headerFinal[8] = static_cast<int8_t>(audioSSRC >> (byteSize * 3));
-			headerFinal[9] = static_cast<int8_t>(audioSSRC >> (byteSize * 2));
-			headerFinal[10] = static_cast<int8_t>(audioSSRC >> (byteSize * 1));
-			headerFinal[11] = static_cast<int8_t>(audioSSRC >> (byteSize * 0));
-			std::vector<int8_t> nonceForLibSodium{};
+			headerFinal[2] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 1));
+			headerFinal[3] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 0));
+			headerFinal[4] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 3));
+			headerFinal[5] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 2));
+			headerFinal[6] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 1));
+			headerFinal[7] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 0));
+			headerFinal[8] = static_cast<uint8_t>(audioSSRC >> (byteSize * 3));
+			headerFinal[9] = static_cast<uint8_t>(audioSSRC >> (byteSize * 2));
+			headerFinal[10] = static_cast<uint8_t>(audioSSRC >> (byteSize * 1));
+			headerFinal[11] = static_cast<uint8_t>(audioSSRC >> (byteSize * 0));
+			std::vector<uint8_t> nonceForLibSodium{};
 			nonceForLibSodium.resize(nonceSize);
-			for (int32_t x = 0; x < headerSize; x += 1) {
+			for (uint32_t x = 0; x < headerSize; x += 1) {
 				nonceForLibSodium[x] = headerFinal[x];
 			}
 			for (int32_t x = headerSize; x < nonceSize; x += 1) {
 				nonceForLibSodium[x] = 0;
 			}
-			int64_t numOfBytes{ headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES };
-			std::vector<int8_t> audioDataPacket{};
+			uint64_t numOfBytes{ headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES };
+			std::vector<uint8_t> audioDataPacket{};
 			audioDataPacket.resize(numOfBytes);
-			for (int32_t x = 0; x < headerSize; x += 1) {
+			for (uint32_t x = 0; x < headerSize; x += 1) {
 				audioDataPacket[x] = headerFinal[x];
 			}
 			std::vector<unsigned char> encryptionKeys{};
 			encryptionKeys.resize(keys.size());
-			for (int32_t x = 0; x < keys.size(); x += 1) {
+			for (uint32_t x = 0; x < keys.size(); x += 1) {
 				encryptionKeys[x] = keys[x];
 			}
 			if (crypto_secretbox_easy(audioDataPacket.data() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium.data(), encryptionKeys.data()) != 0) {
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 			audioDataPacket.shrink_to_fit();
 			return audioDataPacket;
 		}
-		return std::vector<int8_t>{};
+		return std::vector<uint8_t>{};
 	}
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew) {
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 		while (this->audioBuffer.tryReceive(frameData)) {};
 	}
 
-	void VoiceConnection::sendSingleAudioFrame(std::vector<int8_t>& audioDataPacketNew) {
+	void VoiceConnection::sendSingleAudioFrame(std::vector<uint8_t>& audioDataPacketNew) {
 		if (this->voiceSocketAgent != nullptr) {
 			if (this->voiceSocketAgent->voiceSocket != nullptr) {
 				this->voiceSocketAgent->sendVoiceData(audioDataPacketNew);
@@ -215,9 +215,9 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSilence() {
 		std::vector<EncodedFrameData> frameData{};
-		for (int32_t x = 0; x < 5; x += 1) {
+		for (uint32_t x = 0; x < 5; x += 1) {
 			EncodedFrameData newFrame{};
-			for (int8_t x = 0; x < 3; x += 1) {
+			for (uint8_t x = 0; x < 3; x += 1) {
 				if (x == 0) {
 					newFrame.data.push_back(0xF8);
 				}
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
 		if (!this->doWeQuit && this->voiceSocketAgent != nullptr) {
 			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
-			std::vector<int8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
+			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
 			if (this->voiceSocketAgent->webSocket != nullptr) {
 				this->voiceSocketAgent->sendMessage(newString);
 			}
@@ -320,7 +320,7 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping) {
-						std::vector<int8_t> newFrame{};
+						std::vector<uint8_t> newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto encodedFrameData = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);

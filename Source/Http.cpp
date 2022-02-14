@@ -212,9 +212,9 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			std::string theValueString{};
-			int64_t hexIndex{ 0 };
+			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
-			for (int64_t x = 0; x < this->inputBuffer.size(); x += 1) {
+			for (uint64_t x = 0; x < this->inputBuffer.size(); x += 1) {
 				if (isxdigit(this->inputBuffer[x]) != 0 && static_cast<int32_t>(this->inputBuffer[x]) != EOF) {
 					isThereHexValues = true;
 					theValueString.push_back(this->inputBuffer[x]);
@@ -242,8 +242,8 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpRnRBuilder::clearCRLF() {
-		int64_t theCount{ 0 };
-		for (int64_t x = 0; x < this->inputBuffer.size(); x += 1) {
+		uint64_t theCount{ 0 };
+		for (uint64_t x = 0; x < this->inputBuffer.size(); x += 1) {
 			if (isspace(static_cast<unsigned char>(this->inputBuffer[x])) != 0) {
 				theCount += 1;
 			}
@@ -257,10 +257,10 @@ namespace DiscordCoreInternal {
 	void HttpRnRBuilder::parseCode() {
 		try {
 			if (this->inputBuffer.find("HTTP/1.") != std::string::npos) {
-				int64_t firstNumberIndex{ 0 };
-				int64_t lastNumberIndex{ 0 };
+				uint64_t firstNumberIndex{ 0 };
+				uint64_t lastNumberIndex{ 0 };
 				bool haveWeStarted{ false };
-				for (int64_t x = this->inputBuffer.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < this->inputBuffer.size(); x += 1) {
+				for (uint64_t x = this->inputBuffer.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < this->inputBuffer.size(); x += 1) {
 					if (!haveWeStarted && (isalnum(static_cast<unsigned char>(this->inputBuffer[x])) != 0)) {
 						firstNumberIndex = x;
 						haveWeStarted = true;

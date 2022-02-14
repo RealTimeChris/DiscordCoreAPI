@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
         this->messageId = dataPackage.getMessageId();
         this->userId = dataPackage.getRequesterId();
         this->selectMenuIncomingInteractionBuffer = std::make_unique<UnboundedMessageBlock<InteractionData>>();
-        SelectMenuCollector::selectMeninteractionBufferMap.insert(std::make_pair(this->channelId + this->messageId, this->selectMenuIncomingInteractionBuffer.get()));
+        SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->channelId + this->messageId, this->selectMenuIncomingInteractionBuffer.get()));
     }
 
     CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,  int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, std::string targetUser) {
@@ -245,8 +245,8 @@ namespace DiscordCoreAPI {
     }
 
     SelectMenuCollector::~SelectMenuCollector() {
-        if (SelectMenuCollector::selectMeninteractionBufferMap.contains(this->channelId + this->messageId)) {
-            SelectMenuCollector::selectMeninteractionBufferMap.erase(this->channelId + this->messageId);
+        if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(this->channelId + this->messageId)) {
+            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
         }
     }
     
@@ -328,10 +328,10 @@ namespace DiscordCoreAPI {
             }
             catch (...) {
                 reportException("SelectMenuCollector::run()");
-                SelectMenuCollector::selectMeninteractionBufferMap.erase(this->channelId + this->messageId);
+                SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
             }
         }        
-            SelectMenuCollector::selectMeninteractionBufferMap.erase(this->channelId + this->messageId);
+            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
     }
 
     ButtonCollector::ButtonCollector(InputEventData dataPackage) {
@@ -443,7 +443,7 @@ namespace DiscordCoreAPI {
         ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
     }
     
-    std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMeninteractionBufferMap{};
+    std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
     std::unordered_map<std::string, std::unique_ptr<UnboundedMessageBlock<MessageData>>> Interactions::collectMessageDataBuffers{};
     std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
     DiscordCoreInternal::HttpClient* Interactions::httpClient{ nullptr };

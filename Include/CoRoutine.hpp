@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
                 return this->newThread.get_stop_token().stop_requested();
             }
 
-            void waitForTime(int64_t timeToWaitForInMs) {
+            void waitForTime(uint64_t timeToWaitForInMs) {
                 std::unique_lock<std::mutex> timedLock{ this->lockMutex };
                 this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
             }
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
                 return this->newThread.get_stop_token().stop_requested();
             }
 
-            void waitForTime(int64_t timeToWaitForInMs) {
+            void waitForTime(uint64_t timeToWaitForInMs) {
                 std::unique_lock<std::mutex> timedLock{ this->lockMutex };
                 this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
             }

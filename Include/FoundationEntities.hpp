@@ -1884,7 +1884,7 @@ namespace DiscordCoreAPI {
         std::string creatorId{ "" };///< The id of the User that created the scheduled event *.
         std::string entityId{ "" };///< The id of an entity associated with a Guild scheduled event.
         std::string guildId{ "" };///< The Guild id which the scheduled event belongs to.
-        int32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
+        uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
         std::string name{ "" };///< The name of the scheduled event(1 - 100 characters).
         UserData creator{};///< The User that created the scheduled event.
 
@@ -1928,7 +1928,7 @@ namespace DiscordCoreAPI {
         std::string creatorId{ "" };///< The ID of the User who created the template.
         std::string createdAt{ "" };///< When this template was created.
         std::string updatedAt{ "" };///< When this template was last synced to the source Guild.
-        int32_t usageCount{ 0 };///< Number of times this template has been used.
+        uint32_t usageCount{ 0 };///< Number of times this template has been used.
         std::string code{ "" };///< The template code(unique ID).
         std::string name{ "" };///< Template name.
         bool isDirty{ false };///< Whether the template has unsynced changes.
@@ -2441,17 +2441,17 @@ namespace DiscordCoreAPI {
 
     /// Data from the SessionStart info. \brief Data from the SessionStart info.
     struct DiscordCoreAPI_Dll SessionStartData {
-        int32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
-        int32_t resetAfter{ 0 };///< The number of std::chrono::milliseconds after which the limit resets.
-        int32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
-        int32_t total{ 0 };///< The total number of session starts the current User is allowed.
+        uint32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
+        uint32_t resetAfter{ 0 };///< The number of std::chrono::milliseconds after which the limit resets.
+        uint32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
+        uint32_t total{ 0 };///< The total number of session starts the current User is allowed.
     };
 
     /// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
     struct DiscordCoreAPI_Dll GatewayBotData {
         SessionStartData sessionStartLimit{};///< Information on the current session start limit.
         std::string url{ "" };///< The WSS Url that can be used for connecting to the gateway.
-        int32_t shards{ 0 };///< The recommended number of shards to use when connecting.
+        uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
     };
 
     /// Input event response types. \brief Input event response types.
@@ -3012,14 +3012,14 @@ namespace DiscordCoreAPI {
 
     /// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
     struct DiscordCoreAPI_Dll RawFrameData {
-        std::vector<int8_t> data{};///< The audio data.
+        std::vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
         RawFrameData& operator=(RawFrameData&& other) noexcept {
             if (this != &other) {
                 this->sampleCount = other.sampleCount;
                 other.sampleCount = -1;
                 this->data = std::move(other.data);
-                other.data = std::vector<int8_t>{};
+                other.data = std::vector<uint8_t>{};
             }
             return *this;
         }
@@ -3039,14 +3039,14 @@ namespace DiscordCoreAPI {
 
     /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
     struct DiscordCoreAPI_Dll EncodedFrameData {
-        std::vector<int8_t> data{};///< The audio data.
+        std::vector<uint8_t> data{};///< The audio data.
         int32_t sampleCount{ -1 };///< The number of samples per this frame.
         EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
             if (this != &other) {
                 this->sampleCount = other.sampleCount;
                 other.sampleCount = -1;
                 this->data = std::move(other.data);
-                other.data = std::vector<int8_t>{};
+                other.data = std::vector<uint8_t>{};
             }
             return *this;
         }
@@ -3221,11 +3221,11 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData {
         InputEventData inputEventData{};
-        int32_t currentPageIndex{};
+        uint32_t currentPageIndex{};
         std::string buttonId{};
     };
 
-    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, int32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, int32_t waitForMaxMs, bool returnResult = false);
+    DiscordCoreAPI_Dll RecurseThroughMessagePagesData recurseThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
     /**@}*/
 
 };
@@ -3433,7 +3433,7 @@ namespace  DiscordCoreInternal {
         std::string endPoint{ "" };
         std::string voiceIp{ "" };
         std::string token{ "" };
-        int32_t audioSSRC{ 0 };
+        uint32_t audioSSRC{ 0 };
     };
 
 };
