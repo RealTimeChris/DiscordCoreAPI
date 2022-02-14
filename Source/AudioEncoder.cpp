@@ -31,14 +31,14 @@ namespace DiscordCoreAPI {
 	EncodedFrameData AudioEncoder::encodeSingleAudioFrame(RawFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
 		newVector.reserve(inputFrame.data.size() / 2);
-		for (uint32_t x = 0; x < inputFrame.data.size() / 2; x += 1) {
+		for (int32_t x = 0; x < inputFrame.data.size() / 2; x += 1) {
 			opus_int16 newValue{};
-			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2] << 0;
-			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2 + 1] << 8;
+			newValue |= inputFrame.data[static_cast<int64_t>(x) * 2] << 0;
+			newValue |= inputFrame.data[static_cast<int64_t>(x) * 2 + 1] << 8;
 			newVector.push_back(newValue);
 		}
 		newVector.shrink_to_fit();
-		std::vector<uint8_t> newBuffer{};
+		std::vector<int8_t> newBuffer{};
 		newBuffer.reserve(this->maxBufferSize);
 		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
 		if (count <= 0) {

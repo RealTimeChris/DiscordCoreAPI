@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
         bool haveWeBooted{ false };
         int64_t totalFileSize{ 0 };
 
-        static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
+        static int32_t FileStreamRead(void* opaque, int8_t* buf, int32_t);
 
         CoRoutine<void> run();
 

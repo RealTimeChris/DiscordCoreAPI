@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 			}
 			responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector);
 		}
-		for (uint32_t x = 0; x < responseData.size(); x += 1) {
+		for (int32_t x = 0; x < responseData.size(); x += 1) {
 			std::string resultStringHTMLBody{};
 			if (responseData[x].responseCode != 204 && responseData[x].responseCode != 201 && responseData[x].responseCode != 200) {
 				std::cout << "YouTubeSong::collectDownloadInfo() 01 Error: " << responseData[x].responseCode << ", " << responseData[x].responseMessage << std::endl << std::endl;
@@ -324,7 +324,7 @@ namespace DiscordCoreAPI {
 		keys.push_back(sliceKey);
 		keys.push_back(spliceKey);
 		keys.push_back(swapKey);
-		for (uint32_t x = 0; x < keys.size(); x += 1) {
+		for (int32_t x = 0; x < keys.size(); x += 1) {
 			if (x == 0 && keys[x] != "") {
 				keysNew += keys[x];
 			}
@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::vector<char> YouTubeRequestBuilder::reverseString(std::vector<char> stringToReverse) {
-		uint64_t n = stringToReverse.size();
+		int64_t n = stringToReverse.size();
 		for (int32_t x = 0; x < n / 2; x++) {
 			std::swap(stringToReverse[x], stringToReverse[n - x - 1]);
 		}
@@ -437,6 +437,7 @@ namespace DiscordCoreAPI {
 	void YouTubeAPI::cancelCurrentSong() {
 		if (getSongAPIMap()->at(this->guildId) != nullptr) {
 			if (getSongAPIMap()->at(this->guildId)->theTask != nullptr) {
+				getSongAPIMap()->at(this->guildId)->theTask->cancel();
 				getSongAPIMap()->at(this->guildId)->theTask.reset(nullptr);
 			}
 		}
@@ -445,7 +446,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> YouTubeAPI::downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI) {
 		try {
 			auto coroutineHandle = co_await NewThreadAwaitable<void>();
-			std::vector<uint8_t> theVector{};
+			std::vector<int8_t> theVector{};
 			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath,"443", &theVector, this->maxBufferSize };
 			bool areWeDoneHeaders{ false };
 			bool haveWeFailed{ false };
@@ -454,7 +455,7 @@ namespace DiscordCoreAPI {
 			int64_t bytesReadTotal01{ 0 };
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength) - static_cast<int64_t>(581);
+			dataPackage.totalFileSize = static_cast<int64_t>(newSong.contentLength) - static_cast<int64_t>(581);
 			dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder = AudioEncoder();
@@ -551,7 +552,7 @@ namespace DiscordCoreAPI {
 							};
 							auto streamBuffer = streamSocket.getData();
 							std::string newVector{};
-							for (uint32_t x = 0; x < streamBuffer.size(); x += 1) {
+							for (int32_t x = 0; x < streamBuffer.size(); x += 1) {
 								newVector.push_back(streamBuffer.data()[x]);
 							}
 							if (newVector.size() == 0) {

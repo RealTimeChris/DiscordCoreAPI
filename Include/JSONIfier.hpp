@@ -72,13 +72,13 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json JSONIFY(std::string botToken, std::string sessionID, int32_t lastReceivedNumber);
 
-	std::vector<uint8_t> JSONIFY(int64_t nonce);
+	std::vector<int8_t> JSONIFY(int64_t nonce);
 
-	std::vector<uint8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t testValue);
+	std::vector<int8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t testValue);
 
-	std::vector<uint8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02);
+	std::vector<int8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02);
 
-	std::vector<uint8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay = 0);
+	std::vector<int8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay = 0);
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage);
 

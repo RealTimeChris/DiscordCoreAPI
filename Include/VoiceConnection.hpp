@@ -20,7 +20,7 @@ namespace DiscordCoreAPI {
 
 		AudioEncrypter();
 
-		std::vector<uint8_t> encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
+		std::vector<int8_t> encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
 
 	protected:
 
@@ -69,19 +69,19 @@ namespace DiscordCoreAPI {
 		bool areWeInstantiated{ false };
 		bool didWeJustConnect{ true };
 		bool areWeStopping{ false };
-		uint16_t sequenceIndex{ 0 };
+		int16_t sequenceIndex{ 0 };
 		EventWaiter playSetEvent{};
 		EventWaiter stopSetEvent{};
 		bool areWePlaying{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
 		EventWaiter pauseEvent{};
-		uint32_t timestamp{ 0 };
+		int32_t timestamp{ 0 };
 		bool doWeQuit{ false };
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 
-		void sendSingleAudioFrame(std::vector<uint8_t>& audioDataPacketNew);
+		void sendSingleAudioFrame(std::vector<int8_t>& audioDataPacketNew);
 
 		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 

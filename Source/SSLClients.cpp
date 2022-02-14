@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 		}
 		else if (FD_ISSET(this->theSocket, &readSet)) {
 			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
+			std::vector<int8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
@@ -303,7 +303,7 @@ namespace DiscordCoreInternal {
 		}
 		else if (reading) {
 			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
+			std::vector<int8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
@@ -343,7 +343,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<uint8_t>* theInputBuffer, int64_t maxBufferSizeNew) :
+	WebSocketSSLClient::WebSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<int8_t>* theInputBuffer, int64_t maxBufferSizeNew) :
 		inputBufferPtr(theInputBuffer),
 		maxBufferSize(maxBufferSizeNew)
 	{
@@ -471,7 +471,7 @@ namespace DiscordCoreInternal {
 		}
 		else if (FD_ISSET(this->theSocket, &readSet)) {
 			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
+			std::vector<int8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
@@ -569,7 +569,7 @@ namespace DiscordCoreInternal {
 		}
 		else if (reading) {
 			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
+			std::vector<int8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
@@ -614,7 +614,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 	
-	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<uint8_t>* theInputBuffer) :
+	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<int8_t>* theInputBuffer) :
 		inputBufferPtr(theInputBuffer)
 	{
 		addrinfoWrapper  resultAddress{ nullptr }, hints{ nullptr };
@@ -667,7 +667,7 @@ namespace DiscordCoreInternal {
 
 	DatagramSocketSSLClient::DatagramSocketSSLClient(nullptr_t) {};
 
-	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
+	bool DatagramSocketSSLClient::writeData(std::vector<int8_t>& data) {
 		size_t writtenBytes{ 0 };
 
 		if (auto returnValue = BIO_write_ex(this->connectionBio, data.data(), data.size(), &writtenBytes); returnValue != 1) {
@@ -678,15 +678,15 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::vector<uint8_t> DatagramSocketSSLClient::getData() {
-		std::vector<uint8_t> newVector{};
+	std::vector<int8_t> DatagramSocketSSLClient::getData() {
+		std::vector<int8_t> newVector{};
 		newVector.insert(newVector.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
 		this->inputBufferPtr->clear();
 		return newVector;
 	}
 
 	void DatagramSocketSSLClient::readData(bool doWeClear) {
-		std::vector<uint8_t>  serverToClientBuffer{};
+		std::vector<int8_t>  serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		size_t readBytes{ 0 };
 		if (auto returnValue = BIO_read_ex(this->connectionBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes); returnValue == 1) {

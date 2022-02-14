@@ -528,8 +528,8 @@ namespace DiscordCoreAPI {
 								dataPackage->interactionData = *interactionData;
 								std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
 								eventCreationData->inputEventData = *eventData;
-								if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
-									SelectMenuCollector::selectMenuInteractionBufferMap.at(eventData->getChannelId() + eventData->getMessageId())->send(eventData->getInteractionData());
+								if (SelectMenuCollector::selectMeninteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
+									SelectMenuCollector::selectMeninteractionBufferMap.at(eventData->getChannelId() + eventData->getMessageId())->send(eventData->getInteractionData());
 								}
 								this->eventManager->onInputEventCreationEvent(*eventCreationData);
 								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));

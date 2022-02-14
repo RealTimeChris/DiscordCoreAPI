@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::vector<uint8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
+	std::vector<int8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
 		nlohmann::json data;
 		if (isSpeaking) {
 			data = {
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 		{"ssrc" , ssrc}} }
 			};
 		}
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
@@ -111,12 +111,12 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::vector<uint8_t> JSONIFY(int64_t nonce) {
+	std::vector<int8_t> JSONIFY(int64_t nonce) {
 		nlohmann::json data = {
 			{"d", nonce},
 			{"op", int32_t(3)}
 		};
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
@@ -168,7 +168,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	std::vector<uint8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
+	std::vector<int8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
 		nlohmann::json data = {
 			{"d" , {
 			{"user_id" , dataPackage02.userId},
@@ -177,7 +177,7 @@ namespace DiscordCoreInternal {
 			{"token" , dataPackage.token}
 			}},{"op", 0}
 		};
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
@@ -195,7 +195,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	std::vector<uint8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t testValue) {
+	std::vector<int8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t testValue) {
 		nlohmann::json data = {
 			{"op", 1},
 			{"d" , {
@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 			{"mode" , encryptionMode}
 
 		}} } } };
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
