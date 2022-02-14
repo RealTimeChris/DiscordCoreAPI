@@ -691,6 +691,7 @@ namespace DiscordCoreInternal {
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
+		this->doWeQuit.store(false, std::memory_order_release);
 		this->doWeReconnect.set();
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}

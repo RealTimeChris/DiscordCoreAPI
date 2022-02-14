@@ -2082,9 +2082,10 @@ namespace DiscordCoreAPI {
 
     /// Component types. \brief Component types.
     enum class ComponentType {
-        ActionRow = 1,///< Action row.
-        Button = 2,///< Button.
-        SelectMenu = 3///< Select-menu.
+        ActionRow = 1,///< A container for other components.
+        Button = 2,///< A button object.
+        SelectMenu = 3,///< A select menu for picking from choices.
+        TextInput = 4///<A text input object
     };
 
     /// Component Interaction data. \brief Component Interaction data.
@@ -2130,17 +2131,21 @@ namespace DiscordCoreAPI {
 
     /// Represents a single Message-component. \brief Represents a single Message-component.
     struct DiscordCoreAPI_Dll ComponentData {
-        std::vector<SelectOptionData> options{};///< A std::vector of select-options, in the case of this being a select-menu.
+        std::vector<SelectOptionData>options{};///< Aray of select options the choices in the select, max 25.
         std::string placeholder{ "" };///< Custom placeholder text if nothing is selected, max 100 characters.
-        std::string customId{ "" };///< A custom id for identifying the component.
-        std::string label{ "" };///< What is the visible label?
-        int32_t maxValues{ 0 };///< Maximum number of selectable options?
-        int32_t minValues{ 0 };///< Minimum number of required selectable options?
-        bool disabled{ false };///< Whether this component is active.
-        std::string url{ "" };///< An optional Url to place.
-        ComponentType type{};///< Which type of component?
-        ButtonStyle style{};///< Which style of button?
-        EmojiData emoji{};///< An emoji to put on the component.
+        std::string customId{ "" };///< A developer-defined identifier for the component, max 100 characters.
+        std::string label{ "" };///< The label for this component.
+        std::string value{ "" };///< A pre-filled value for this component.
+        int32_t minValues{ 0 };///< The minimum number of items that must be chosen; default 1, min 0, max 25.
+        int32_t maxValues{ 0 };///< The maximum number of items that can be chosen; default 1, max 25.
+        bool disabled{ false };///< Whether the component is disabled, default false.
+        int32_t minLength{ 0 };///< The minimum input length for a text input.
+        int32_t maxLength{ 0 };///< The maximum input length for a text input.
+        bool required{ false };///< Whether this component is required to be filled.
+        std::string url{ "" };///< Url, for url types.
+        ComponentType type{};///< Integer component type.
+        ButtonStyle style{};///< One of button styles.
+        EmojiData emoji{};///< Emoji name, id, and animated.
     };
 
     /// Action row data of Message components. \brief Action row data of Message components.
@@ -2150,11 +2155,13 @@ namespace DiscordCoreAPI {
 
     /// Interaction callback types. \brief Interaction callback types.
     enum class InteractionCallbackType {
-        Pong = 1,///< Pong.
-        ChannelMessageWithSource = 4,///< Channel Message with source.
-        DeferredChannelMessageWithSource = 5,///< Deferred Channel Message with source.
-        DeferredUpdateMessage = 6,///< Deferred update Message.
-        UpdateMessage = 7///< Update Message.
+        Pong = 1,///<	ACK a Ping
+        ChannelMessageWithSource = 4,///< Respond to an interaction with a message.
+        DeferredChannelMessageWithSource = 5,///< ACK an interaction and edit a response later, the user sees a loading state.
+        DeferredUpdateMessage = 6,///< For components, ACK an interactionand edit the original message later; the user does not see a loading state.
+        UpdateMessage = 7,///< For components, edit the message the component was attached to.
+        ApplicationCommandAutocompleteResult = 8,///< Respond to an autocomplete interaction with suggested choices.
+        Modal = 9///<	Respond to an interaction with a popup modal.
     };
 
     /// Interaction ApplicationCommand callback data. \brief Interaction ApplicationCommand callback data.
@@ -2477,7 +2484,8 @@ namespace DiscordCoreAPI {
         Regular_Message = 3,///< Regular Message.
         Select_Menu_Interaction = 4,///< Select-menu Interaction.
         Message_Command_Interaction = 5,///< Message-command Interaction.
-        User_Command_Interaction = 6///< User-command Interaction.
+        User_Command_Interaction = 6,///< User-command Interaction.
+        Modal_Interaction = 7///< Modal Interaction.
     };
 
     /// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
