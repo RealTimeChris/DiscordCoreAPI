@@ -246,7 +246,7 @@ namespace DiscordCoreInternal {
 			writing = true;
 			writeEvent.events = EPOLLOUT;
 			writeEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(epollFd, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
@@ -254,13 +254,13 @@ namespace DiscordCoreInternal {
 		else {
 			readEvent.events = EPOLLIN;
 			readEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(epollFd, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
 		}
 
-		if (auto resultValue = epoll_wait(epollFd, events, 1, 600); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(this->epoll, events, 1, 600); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
@@ -503,7 +503,7 @@ namespace DiscordCoreInternal {
 			writing = true;
 			writeEvent.events = EPOLLOUT;
 			writeEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(epollFd, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
@@ -511,13 +511,13 @@ namespace DiscordCoreInternal {
 		else {
 			readEvent.events = EPOLLIN;
 			readEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(epollFd, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
 		}
 
-		if (auto resultValue = epoll_wait(epollFd, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(this->epoll, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
