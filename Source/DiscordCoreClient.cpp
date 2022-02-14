@@ -109,11 +109,11 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::initialize() {
 		try {
-			Statics::voiceConnectionMapAtomic.store(&Statics::voiceConnectionMap);
-			Statics::soundCloudAPIMapAtomic.store(&Statics::soundCloudAPIMap);
-			Statics::audioBufferMapAtomic.store(&Statics::audioBufferMap);
-			Statics::youtubeAPIMapAtomic.store(&Statics::youtubeAPIMap);
-			Statics::songAPIMapAtomic.store(&Statics::songAPIMap);
+			Statics::voiceConnectionMapAtomic.store(&Statics::voiceConnectionMap, std::memory_order_release);
+			Statics::soundCloudAPIMapAtomic.store(&Statics::soundCloudAPIMap, std::memory_order_release);
+			Statics::audioBufferMapAtomic.store(&Statics::audioBufferMap, std::memory_order_release);
+			Statics::youtubeAPIMapAtomic.store(&Statics::youtubeAPIMap, std::memory_order_release);
+			Statics::songAPIMapAtomic.store(&Statics::songAPIMap, std::memory_order_release);
 			ThreadPoolTimer::initialize();
 			this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(this->botToken);
 			ApplicationCommands::initialize(this->httpClient.get());
