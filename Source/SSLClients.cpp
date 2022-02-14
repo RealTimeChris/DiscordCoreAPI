@@ -8,7 +8,7 @@
 namespace DiscordCoreInternal {
 
 	void reportError(std::string errorPosition, int32_t errorValue) {
-		std::cout << errorPosition << errorValue;
+		std::cout << errorPosition << errorValue << ", ";
 #ifdef _WIN32
 		std::cout << WSAGetLastError() << std::endl;
 #else
@@ -531,7 +531,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue =  epoll_wait(epollFD, events, 5, 600); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epollFD, events, 5, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
