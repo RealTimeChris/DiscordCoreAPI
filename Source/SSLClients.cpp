@@ -240,7 +240,7 @@ namespace DiscordCoreInternal {
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
 		epollWrapper epollFd{ nullptr };
-		bool writing{ false }, reading{ false };
+		bool writing{ false };
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
@@ -252,7 +252,6 @@ namespace DiscordCoreInternal {
 			}
 		}
 		else {
-			reading = true;
 			readEvent.events = EPOLLIN;
 			readEvent.data.fd = this->theSocket;
 			if (auto resultValue = epoll_ctl(epollFd, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
@@ -297,7 +296,7 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
-		else if (reading) {
+		else {
 			this->wantRead = false;
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
@@ -498,7 +497,7 @@ namespace DiscordCoreInternal {
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
 		epollWrapper epollFd{ nullptr };
-		bool writing{ false }, reading{ false };
+		bool writing{ false };
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
@@ -510,7 +509,6 @@ namespace DiscordCoreInternal {
 			}
 		}
 		else {
-			reading = true;
 			readEvent.events = EPOLLIN;
 			readEvent.data.fd = this->theSocket;
 			if (auto resultValue = epoll_ctl(epollFd, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
@@ -555,7 +553,7 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
-		else if (reading) {
+		else {
 			this->wantRead = false;
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
