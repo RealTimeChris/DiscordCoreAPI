@@ -508,7 +508,7 @@ namespace DiscordCoreInternal {
 		int32_t epollFD = epoll_create1(0);
 		bool writing{ false }, reading{ false };
 		if (epollFD == SOCKET_ERROR)	{
-			reportError("epoll_create1() Error: ", resultValue);
+			reportError("epoll_create1() Error: ", epollFD);
 			return false;
 		}
 
