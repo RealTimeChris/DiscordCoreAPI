@@ -601,7 +601,7 @@ namespace DiscordCoreAPI {
     };
 
     /// Button response data. \brief Button response data.
-  struct DiscordCoreAPI_Dll ButtonResponseData {
+    struct DiscordCoreAPI_Dll ButtonResponseData {
         operator InteractionData() {
 
             return this->interactionData;
