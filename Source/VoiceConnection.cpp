@@ -148,14 +148,14 @@ namespace DiscordCoreAPI {
 			this->clearAudioData();
 			this->areWeConnectedBool = true;
 			this->areWeStopping = false;
-			this->doWeQuit = false;
+			this->doWeQuit.store(false, std::memory_order_release);
 			this->stopSetEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
 			if (!this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
 				this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, this->voiceConnectionBuffer.get()));
 			}
 			if (this->voiceSocketAgent != nullptr) {
-				this->voiceSocketAgent->doWeQuit = true;
+				this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_release);
 				this->voiceSocketAgent->theTask->cancel();
 				this->voiceSocketAgent->theTask.reset(nullptr);
 				this->voiceSocketAgent.reset(nullptr);
@@ -174,14 +174,14 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() {
-		this->doWeQuit = true;
+		this->doWeQuit.store(true, std::memory_order_release);
 		this->stopSetEvent.set();
 		this->playSetEvent.set();
 		this->areWeConnectedBool = false;
 		this->areWePlaying = false;
 		this->areWeStopping = true;
 		if (this->voiceSocketAgent != nullptr) {
-			this->voiceSocketAgent->doWeQuit = true;
+			this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_release);
 			this->voiceSocketAgent->theTask->cancel();
 			this->voiceSocketAgent->theTask.reset(nullptr);
 			this->voiceSocketAgent.reset(nullptr);
@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
-		if (!this->doWeQuit && this->voiceSocketAgent != nullptr) {
+		if (!this->doWeQuit.load(std::memory_order_consume) && this->voiceSocketAgent != nullptr) {
 			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
 			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
 			if (this->voiceSocketAgent->webSocket != nullptr) {
@@ -250,23 +250,24 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> VoiceConnection::run() {
 		auto cancelHandle = co_await NewThreadAwaitable<void>();
 		try {
-			while (!this->doWeQuit && !cancelHandle.promise().isItStopped()) {
+			while (!this->doWeQuit.load(std::memory_order_consume)) {
 				if (!this->didWeJustConnect) {
 					this->audioBuffer.clearContents();
 					this->clearAudioData();
 					this->didWeJustConnect = false;
 				}
 				if (this->playSetEvent.wait(10000)) {
-					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
-						break;
+					if (this->doWeQuit.load(std::memory_order_consume)) {
+						this->areWePlaying = false;
+						co_return;
 					}
 					continue;
 				};
 				this->playSetEvent.reset();
 			start:
-				if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
+				if (this->doWeQuit.load(std::memory_order_consume)) {
 					this->areWePlaying = false;
-					break;
+					co_return;
 				}
 				this->audioData.type = AudioFrameType::Unset;
 				this->audioData.encodedFrameData.data.clear();
@@ -277,13 +278,12 @@ namespace DiscordCoreAPI {
 					goto start;
 				}
 				this->areWePlaying = true;
-				this->sendSpeakingMessage(true);
 				int64_t startingValue{ static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
 				int64_t intervalCount{ 20000000 };
 				int32_t frameCounter{ 0 };
-				int64_t timeCounter{ 0 };
 				int64_t totalTime{ 0 };
-				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !this->doWeQuit) {
+				this->sendSpeakingMessage(true);
+				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !this->doWeQuit.load(std::memory_order_consume)) {
 					this->areWePlaying = true;
 					if (this->doWeReconnect->wait(0)) {
 						this->areWeConnectedBool = false;
@@ -296,7 +296,6 @@ namespace DiscordCoreAPI {
 					}
 					if (this->areWeStopping) {
 						this->areWePlaying = false;
-						frameCounter = 0;
 						break;
 					}
 					if (this->areWePaused) {
@@ -304,11 +303,9 @@ namespace DiscordCoreAPI {
 						this->pauseEvent.reset();
 						this->areWePaused = false;
 					}
-					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
-						this->clearAudioData();
+					if (this->doWeQuit.load(std::memory_order_consume)) {
 						this->areWePlaying = false;
-						frameCounter = 0;
-						break;
+						co_return;
 					}
 					frameCounter += 1;
 					this->audioBuffer.tryReceive(this->audioData);
@@ -316,8 +313,9 @@ namespace DiscordCoreAPI {
 						this->currentGuildMemberId = this->audioData.guildMemberId;
 					}
 					nanoSleep(100000);
-					if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
-						break;
+					if (this->doWeQuit.load(std::memory_order_consume)) {
+						this->areWePlaying = false;
+						co_return;
 					}
 					if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping) {
 						std::vector<uint8_t> newFrame{};
@@ -329,11 +327,12 @@ namespace DiscordCoreAPI {
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						nanoSleep(18000000);
-						if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
-							break;
+						if (this->doWeQuit.load(std::memory_order_consume)) {
+							this->areWePlaying = false;
+							co_return;
 						}
-						timeCounter = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
-						int64_t  waitTime = intervalCount - timeCounter;
+						auto timeCounter = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
+						auto waitTime = intervalCount - timeCounter;
 						spinLock(waitTime);
 						startingValue = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 						this->sendSingleAudioFrame(newFrame);
@@ -350,31 +349,21 @@ namespace DiscordCoreAPI {
 						completionEventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId,.guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.wasItAFail = false;
 						getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
-						this->areWePlaying = false;
-						frameCounter = 0;
 						break;
 					}
 				}
 				this->areWePlaying = false;
-				if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
-					this->clearAudioData();
-					this->areWePlaying = false;
-					frameCounter = 0;
-					break;
-				}
+				this->sendSpeakingMessage(false);
+				this->clearAudioData();
 
 				if (this->areWeStopping) {
 					this->stopSetEvent.wait(5000);
-					this->clearAudioData();
 					this->stopSetEvent.reset();
 					this->areWeStopping = false;
 				}
-				this->sendSpeakingMessage(false);
-				if (this->doWeQuit || cancelHandle.promise().isItStopped()) {
-					this->clearAudioData();
-					this->areWePlaying = false;
-					frameCounter = 0;
-					break;
+				
+				if (this->doWeQuit.load(std::memory_order_consume) || cancelHandle.promise().isItStopped()) {
+					co_return;
 				}
 			}
 		}

@@ -64,6 +64,7 @@ namespace DiscordCoreAPI {
 		std::string currentGuildMemberId{ "" };
 		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
+		std::atomic<bool> doWeQuit{ false };
 		bool areWeConnectedBool{ false };
 		AudioEncrypter audioEncrypter{};
 		bool areWeInstantiated{ false };
@@ -77,7 +78,6 @@ namespace DiscordCoreAPI {
 		bool areWePaused{ false };
 		EventWaiter pauseEvent{};
 		uint32_t timestamp{ 0 };
-		bool doWeQuit{ false };
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 

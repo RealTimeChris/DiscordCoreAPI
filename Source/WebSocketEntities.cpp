@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 		try {
 			co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
-			while (!this->doWeQuit) {
+			while (!this->doWeQuit.load(std::memory_order_consume)) {
 				if (this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 				}
@@ -659,7 +659,7 @@ namespace DiscordCoreInternal {
 			this->connect();
 		}
 		else if (this->maxReconnectTries <= this->currentReconnectTries) {
-			this->doWeQuit = true;
+			this->doWeQuit.store(true, std::memory_order_release);
 		}
 	}
 
@@ -681,7 +681,7 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {
-		this->doWeQuit = true;
+		this->doWeQuit.store(true, std::memory_order_release);
 		this->theTask.cancel();
 		this->heartbeatTimer.cancel();
 	}
@@ -800,7 +800,7 @@ namespace DiscordCoreInternal {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
-			while (!this->doWeQuit && !cancelHandle.promise().isItStopped()) {
+			while (!this->doWeQuit.load(std::memory_order_consume)) {
 				if (this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 					co_return;
@@ -1090,7 +1090,7 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() {
-		this->doWeQuit = true;
+		this->doWeQuit.store(true, std::memory_order_release);
 		this->theTask->cancel();
 		this->theTask.reset(nullptr);
 		this->heartbeatTimer.cancel();
