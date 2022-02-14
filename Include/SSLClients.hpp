@@ -62,7 +62,7 @@ namespace DiscordCoreInternal {
 		}
 
 		void renew() {
-			if (this->thePtr != -1) {
+			if (*this->thePtr != -1) {
 				close(*this->thePtr);
 			}
 			*this->thePtr = epoll_create1(0);
