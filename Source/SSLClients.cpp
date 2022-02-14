@@ -18,6 +18,15 @@ namespace DiscordCoreInternal {
 		std::cout << std::endl;
 	}
 
+	void reportError(std::string errorPosition, int32_t errorValue) {
+		std::cout << errorPosition << errorValue << ", ";
+#ifdef _WIN32
+		std::cout << WSAGetLastError() << std::endl;
+#else
+		std::cout << strerror(errno) << std::endl;
+#endif
+	}
+
 	HttpSSLClient::HttpSSLClient(nullptr_t other) {};
 
 	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) :

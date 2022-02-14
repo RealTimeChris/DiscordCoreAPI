@@ -47,14 +47,7 @@ namespace DiscordCoreInternal {
 #define SOCKET_ERROR            (-1)
 #endif
 
-	void reportError(std::string errorPosition, int32_t errorValue) {
-		std::cout << errorPosition << errorValue << ", ";
-#ifdef _WIN32
-		std::cout << WSAGetLastError() << std::endl;
-#else
-		std::cout << strerror(errno) << std::endl;
-#endif
-	}
+	void reportError(std::string errorPosition, int32_t errorValue);
 
 #ifndef _WIN32
 	struct DiscordCoreAPI_Dll epollWrapper {
