@@ -402,7 +402,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = epoll_wait(epoll, events, 1, 600); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epoll, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
