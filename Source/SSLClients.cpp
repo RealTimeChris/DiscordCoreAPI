@@ -239,14 +239,14 @@ namespace DiscordCoreInternal {
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
+		epollWrapper epoll{ nullptr };
 		bool writing{ false };
-		this->epoll.renew();
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
 			writeEvent.events = EPOLLOUT;
 			writeEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
@@ -254,13 +254,13 @@ namespace DiscordCoreInternal {
 		else {
 			readEvent.events = EPOLLIN;
 			readEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
 		}
 
-		if (auto resultValue = epoll_wait(this->epoll, events, 1, 600); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epoll, events, 1, 600); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
@@ -496,14 +496,14 @@ namespace DiscordCoreInternal {
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
+		epollWrapper epoll{ nullptr };
 		bool writing{ false };
-		this->epoll.renew();
 
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
 			writeEvent.events = EPOLLOUT;
 			writeEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
@@ -511,13 +511,13 @@ namespace DiscordCoreInternal {
 		else {
 			readEvent.events = EPOLLIN;
 			readEvent.data.fd = this->theSocket;
-			if (auto resultValue = epoll_ctl(this->epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
+			if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
 				reportError("epoll_ctl() Error: ", resultValue);
 				return false;
 			}
 		}
 
-		if (auto resultValue = epoll_wait(this->epoll, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epoll, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
