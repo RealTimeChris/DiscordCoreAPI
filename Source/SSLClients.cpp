@@ -159,6 +159,8 @@ namespace DiscordCoreInternal {
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
+		bool writing{ false };
+
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
@@ -174,68 +176,6 @@ namespace DiscordCoreInternal {
 		}
 		else if (resultValue == 0) {
 			return true;
-		}
-
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-			case SSL_ERROR_NONE: {
-				this->writeBuffer.clear();
-				return true;
-			}
-			case SSL_ERROR_SYSCALL: {
-				[[fallthrough]];
-			}
-			case SSL_ERROR_ZERO_RETURN: {
-				return false;
-			}
-			case SSL_ERROR_WANT_READ: {
-				this->wantRead = true;
-				[[fallthrough]];
-			}
-			case SSL_ERROR_WANT_WRITE: {
-				return true;
-			}
-			default: {
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
-				return false;
-			}
-			}
-		}
-		else if (FD_ISSET(this->theSocket, &readSet)) {
-			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
-			serverToClientBuffer.resize(this->maxBufferSize);
-			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-			case SSL_ERROR_NONE: {
-				if (readBytes > 0) {
-					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-				}
-				return true;
-			}
-			case SSL_ERROR_SYSCALL: {
-				[[fallthrough]];
-			}
-			case SSL_ERROR_ZERO_RETURN: {
-				return false;
-			}
-			case SSL_ERROR_WANT_WRITE: {
-				[[fallthrough]];
-			}
-			case SSL_ERROR_WANT_READ: {
-				this->wantRead = true;
-				return true;
-			}
-			default: {
-				reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
-				return false;
-			}
-			}
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
@@ -268,7 +208,13 @@ namespace DiscordCoreInternal {
 			return true;
 		}
 
+#endif
+
+#ifdef _WIN32
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+#else
 		if (writing) {
+#endif
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
@@ -296,7 +242,11 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
+#ifdef _WIN32
+		else if (FD_ISSET(this->theSocket, &readSet)) {
+#else
 		else {
+#endif
 			this->wantRead = false;
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
@@ -329,8 +279,6 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
-
-#endif
 		return true;
 	}
 
@@ -415,6 +363,8 @@ namespace DiscordCoreInternal {
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
+		bool writing{ false };
+
 		if (this->writeBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
@@ -423,76 +373,13 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &readSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
-		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
+		timeval checkTime{ .tv_usec = 600000 };
 		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
 			return false;
 		}
 		else if (resultValue == 0) {
 			return true;
-		}
-
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-			case SSL_ERROR_NONE: {
-				this->writeBuffer.clear();
-				return true;
-			}
-			case SSL_ERROR_SYSCALL: {
-				[[fallthrough]];
-			}
-			case SSL_ERROR_ZERO_RETURN: {
-				return false;
-			}
-			case SSL_ERROR_WANT_READ: {
-				this->wantRead = true;
-				[[fallthrough]];
-			}
-			case SSL_ERROR_WANT_WRITE: {
-				return true;
-			}
-			default: {
-				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
-				return false;
-			}
-			}
-		}
-		else if (FD_ISSET(this->theSocket, &readSet)) {
-			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
-			serverToClientBuffer.resize(this->maxBufferSize);
-			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-			case SSL_ERROR_NONE: {
-				if (readBytes > 0) {
-					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-					this->bytesRead += readBytes;
-				}
-				return true;
-			}
-			case SSL_ERROR_SYSCALL: {
-				[[fallthrough]];
-			}
-			case SSL_ERROR_ZERO_RETURN: {
-				return false;
-			}
-			case SSL_ERROR_WANT_WRITE: {
-				[[fallthrough]];
-			}
-			case SSL_ERROR_WANT_READ: {
-				this->wantRead = true;
-				return true;
-			}
-			default: {
-				reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
-				return false;
-			}
-			}
 		}
 #else
 		epoll_event writeEvent{}, readEvent{}, events[1]{};
@@ -517,7 +404,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = epoll_wait(epoll, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epoll, events, 1, 600); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
@@ -525,7 +412,13 @@ namespace DiscordCoreInternal {
 			return true;
 		}
 
+#endif
+
+#ifdef _WIN32
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+#else
 		if (writing) {
+#endif
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
@@ -553,7 +446,11 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
+#ifdef _WIN32
+		else if (FD_ISSET(this->theSocket, &readSet)) {
+#else
 		else {
+#endif
 			this->wantRead = false;
 			std::vector<uint8_t>  serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
@@ -587,8 +484,6 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
-
-#endif
 		return true;
 	}
 
