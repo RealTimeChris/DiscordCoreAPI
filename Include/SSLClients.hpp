@@ -52,7 +52,9 @@ namespace DiscordCoreInternal {
 
 		struct DiscordCoreAPI_Dll epollDeleter {
 			void operator()(int* other) {
-				close(*other);
+				if (auto resultValue = close(*other); resultValue == SOCKET_ERROR) {
+					reportError("close() Error: ", resultValue);
+				}
 			}
 		};
 
@@ -62,6 +64,9 @@ namespace DiscordCoreInternal {
 
 		epollWrapper(nullptr_t) {
 			*this->thePtr = epoll_create1(0);
+			if (*this->thePtr == SOCKET_ERROR) {
+				reportError("epoll_create1() Error: ", *this->thePtr);
+			}
 		};
 
 	protected:
