@@ -238,7 +238,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 #else
-		epoll_event writeEvent{}, readEvent{}, events[5]{};
+		epoll_event writeEvent{}, readEvent{}, events[1]{};
 		epollWrapper epollFD{ nullptr };
 		bool writing{ false }, reading{ false };
 		if (epollFD == SOCKET_ERROR) {
@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = epoll_wait(epollFD, events, 5, 600); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epollFD, events, 1, 600); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
@@ -504,7 +504,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 #else
-		epoll_event writeEvent{}, readEvent{}, events[5]{};
+		epoll_event writeEvent{}, readEvent{}, events[1]{};
 		epollWrapper epollFD{ nullptr };
 		bool writing{ false }, reading{ false };
 		if (epollFD == SOCKET_ERROR)	{
@@ -531,7 +531,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = epoll_wait(epollFD, events, 5, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epollFD, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
