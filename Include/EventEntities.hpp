@@ -133,7 +133,6 @@ namespace DiscordCoreAPI {
         }
 
         void operator()(ArgTypes... args) {
-            std::unique_lock<std::mutex> accessLock{ this->accessMutex };
             for (auto& [key, value] : this->theFunctions) {
                 value.theFunction(args...);
             }
@@ -142,7 +141,6 @@ namespace DiscordCoreAPI {
     protected:
         std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
         std::string eventId{ "" };
-        std::mutex accessMutex{};
     };
 
     template<typename ReturnType, typename  ...ArgTypes>

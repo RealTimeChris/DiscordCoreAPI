@@ -301,5 +301,4 @@ namespace DiscordCoreAPI {
 		return false;		
 	}
 
-	std::mutex SongAPI::accessMutex{};
 };

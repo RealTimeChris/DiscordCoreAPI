@@ -75,7 +75,6 @@ namespace DiscordCoreAPI {
 		bool areWePlaying{ false };
 		AudioFrameData audioData{};
 		bool areWePaused{ false };
-		std::mutex accessMutex{};
 		EventWaiter pauseEvent{};
 		uint32_t timestamp{ 0 };
 		bool doWeQuit{ false };
