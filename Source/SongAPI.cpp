@@ -15,7 +15,7 @@ namespace DiscordCoreAPI {
 		this->guildId = guildId;
 	}
 
-	void SongAPI::onSongCompletion(std::function<void(SongCompletionEventData)> handler, std::string guildId) {
+	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, std::string guildId) {
 		auto returnValue = getSongAPIMap()->at(guildId).get();
 		returnValue->onSongCompletionEvent = handler;
 	}
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 		getSongAPIMap()->at(guildId)->playlist.songQueue = newVector02;
 		auto resultValue = getSongAPIMap()->at(guildId).get();
 		if (resultValue != nullptr) {
-			getSongAPIMap()->at(guildId)->onSongCompletionEvent = std::function<void(SongCompletionEventData)>{};
+			getSongAPIMap()->at(guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
 		}
 	}
 

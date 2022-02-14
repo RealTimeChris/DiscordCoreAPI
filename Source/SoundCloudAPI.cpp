@@ -214,7 +214,6 @@ namespace DiscordCoreAPI {
 	void SoundCloudAPI::cancelCurrentSong() {
 		if (getSongAPIMap()->at(this->guildId) != nullptr) {
 			if (getSongAPIMap()->at(this->guildId)->theTask != nullptr) {
-				getSongAPIMap()->at(this->guildId)->theTask->cancel();
 				getSongAPIMap()->at(this->guildId)->theTask.reset(nullptr);
 			}
 		}
