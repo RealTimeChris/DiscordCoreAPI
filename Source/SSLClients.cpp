@@ -238,11 +238,11 @@ namespace DiscordCoreInternal {
 			}
 		}
 #else
-		epoll_event writeEvent{}, readEvent{}, events[MAX_EVENTS]{};
+		epoll_event writeEvent{}, readEvent{}, events[5]{};
 		int32_t epollFD = epoll_create1(0);
 		bool writing{ false }, reading{ false };
 		if (epollFD == SOCKET_ERROR) {
-			reportError("epoll_create1() Error: ", resultValue);
+			reportError("epoll_create1() Error: ", epollFd);
 			return false;
 		}
 
@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, 600); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = event_count = epoll_wait(epollFD, events, 5, 600); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
@@ -335,7 +335,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = close(epoll_fd); resultValue == 1) {
+		if (auto resultValue = close(epollFD); resultValue == 1) {
 			reportError("close() Error: ", resultValue);
 			return false;
 		}
@@ -504,7 +504,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 #else
-		epoll_event writeEvent{}, readEvent{}, events[MAX_EVENTS]{};
+		epoll_event writeEvent{}, readEvent{}, events[5]{};
 		int32_t epollFD = epoll_create1(0);
 		bool writing{ false }, reading{ false };
 		if (epollFD == SOCKET_ERROR)	{
@@ -531,7 +531,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, 600); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = event_count = epoll_wait(epollFD, events, 5, 600); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}
@@ -602,7 +602,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = close(epoll_fd); resultValue == 1) {
+		if (auto resultValue = close(epollFD); resultValue == 1) {
 			reportError("close() Error: ", resultValue);
 			return false;
 		}
