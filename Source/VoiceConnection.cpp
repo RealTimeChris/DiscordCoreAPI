@@ -322,17 +322,9 @@ namespace DiscordCoreAPI {
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto encodedFrameData = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
-							if (newFrame.size() == 0) {
-								this->doWeReconnect->reset();
-								continue;
-							}
 						}
 						else {
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
-							if (newFrame.size() == 0) {
-								this->doWeReconnect->reset();
-								continue;
-							}
 						}
 						nanoSleep(18000000);
 						if (this->doWeQuit.load(std::memory_order_consume)) {
@@ -382,6 +374,7 @@ namespace DiscordCoreAPI {
 	};
 
 	VoiceConnection::~VoiceConnection() {
+		this->theTask->cancel();
 		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
 		if (thePtr != nullptr) {
 			getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};

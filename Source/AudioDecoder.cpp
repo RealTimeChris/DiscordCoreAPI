@@ -36,6 +36,7 @@ namespace DiscordCoreAPI {
         this->inputDataBuffer.send(std::string());
         this->inputDataBuffer.send(std::string());
         this->areWeQuitting = true;
+        this->theTask->cancel();
     }
 
     bool AudioDecoder::haveWeFailed() {
