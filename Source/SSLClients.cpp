@@ -153,6 +153,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool HttpSSLClient::processIO() {
+#ifdef _WIN32
 		fd_set writeSet{};
 		fd_set readSet{};
 		int32_t nfds{ 0 };
@@ -231,11 +232,114 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			default: {
-				reportSSLError(" HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+				reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 				return false;
 			}
 			}
 		}
+#else
+		epoll_event writeEvent{}, readEvent{}, events[MAX_EVENTS]{};
+		int32_t epollFD = epoll_create1(0);
+		bool writing{ false }, reading{ false };
+		if (epoll_fd == SOCKET_ERROR) {
+			reportError("epoll_create1() Error: ", resultValue);
+			return false;
+		}
+
+		if (this->writeBuffer.size() > 0 && !this->wantRead) {
+			writing = true;
+			writeEvent.events = EPOLLOUT;
+			writeEvent.data.fd = this->theSocket;
+			if (epoll_ctl(epollFD, EPOLL_CTL_ADD, this->theSocket, &writeEvent)) {
+				reportError("epoll_ctl() Error: ", resultValue);
+				return false;
+			}
+		}
+		else {
+			reading = true;
+			readEvent.events = EPOLLIN;
+			readEvent.data.fd = this->theSocket;
+			if (epoll_ctl(epollFD, EPOLL_CTL_ADD, this->theSocket, &readEvent)) {
+				reportError("epoll_ctl() Error: ", resultValue);
+				return false;
+			}
+		}
+
+		if (auto resultValue = event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, 30000); resultValue == SOCKET_ERROR) {
+			reportError("epoll_wait() Error: ", resultValue);
+			return false;
+		}
+		else if (resultValue == 0) {
+			return true;
+		}
+
+		if (writing) {
+			size_t writtenBytes{ 0 };
+			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+			case SSL_ERROR_NONE: {
+				this->writeBuffer.clear();
+				return true;
+			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
+			case SSL_ERROR_ZERO_RETURN: {
+				return false;
+			}
+			case SSL_ERROR_WANT_READ: {
+				this->wantRead = true;
+				[[fallthrough]];
+			}
+			case SSL_ERROR_WANT_WRITE: {
+				return true;
+			}
+			default: {
+				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+				return false;
+			}
+			}
+		}
+		else if (reading) {
+			this->wantRead = false;
+			std::vector<uint8_t>  serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+			case SSL_ERROR_NONE: {
+				if (readBytes > 0) {
+					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+				}
+				return true;
+			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
+			case SSL_ERROR_ZERO_RETURN: {
+				return false;
+			}
+			case SSL_ERROR_WANT_WRITE: {
+				[[fallthrough]];
+			}
+			case SSL_ERROR_WANT_READ: {
+				this->wantRead = true;
+				return true;
+			}
+			default: {
+				reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+				return false;
+			}
+			}
+		}
+
+		if (auto resultValue = close(epoll_fd); resultValue == 1) {
+			reportError("close() Error: ", resultValue);
+			return false;
+		}
+#endif
 		return true;
 	}
 
@@ -314,6 +418,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
+#ifdef _WIN32
 		fd_set writeSet{};
 		fd_set readSet{};
 		int32_t nfds{ 0 };
@@ -398,6 +503,110 @@ namespace DiscordCoreInternal {
 			}
 			}
 		}
+#else
+		epoll_event writeEvent{}, readEvent{}, events[MAX_EVENTS]{};
+		int32_t epollFD = epoll_create1(0);
+		bool writing{ false }, reading{ false };
+		if (epoll_fd == SOCKET_ERROR)	{
+			reportError("epoll_create1() Error: ", resultValue);
+			return false;
+		}
+
+		if (this->writeBuffer.size() > 0 && !this->wantRead) {
+			writing = true;
+			writeEvent.events = EPOLLOUT;
+			writeEvent.data.fd = this->theSocket;
+			if (epoll_ctl(epollFD, EPOLL_CTL_ADD, this->theSocket, &writeEvent)) {
+				reportError("epoll_ctl() Error: ", resultValue);
+				return false;
+			}
+		}
+		else {
+			reading = true;
+			readEvent.events = EPOLLIN;
+			readEvent.data.fd = this->theSocket;
+			if (epoll_ctl(epollFD, EPOLL_CTL_ADD, this->theSocket, &readEvent)) {
+				reportError("epoll_ctl() Error: ", resultValue);
+				return false;
+			}
+		}
+
+		if (auto resultValue = event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, 30000); resultValue == SOCKET_ERROR) {
+			reportError("epoll_wait() Error: ", resultValue);
+			return false;
+		}
+		else if (resultValue == 0) {
+			return true;
+		}
+
+		if (writing) {
+			size_t writtenBytes{ 0 };
+			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+			case SSL_ERROR_NONE: {
+				this->writeBuffer.clear();
+				return true;
+			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
+			case SSL_ERROR_ZERO_RETURN: {
+				return false;
+			}
+			case SSL_ERROR_WANT_READ: {
+				this->wantRead = true;
+				[[fallthrough]];
+			}
+			case SSL_ERROR_WANT_WRITE: {
+				return true;
+			}
+			default: {
+				reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+				return false;
+			}
+			}
+		}
+		else if (reading) {
+			this->wantRead = false;
+			std::vector<uint8_t>  serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+			case SSL_ERROR_NONE: {
+				if (readBytes > 0) {
+					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					this->bytesRead += readBytes;
+				}
+				return true;
+			}
+			case SSL_ERROR_SYSCALL: {
+				[[fallthrough]];
+			}
+			case SSL_ERROR_ZERO_RETURN: {
+				return false;
+			}
+			case SSL_ERROR_WANT_WRITE: {
+				[[fallthrough]];
+			}
+			case SSL_ERROR_WANT_READ: {
+				this->wantRead = true;
+				return true;
+			}
+			default: {
+				reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+				return false;
+			}
+			}
+		}
+
+		if (auto resultValue = close(epoll_fd); resultValue == 1) {
+			reportError("close() Error: ", resultValue);
+			return false;
+		}
+#endif
 		return true;
 	}
 

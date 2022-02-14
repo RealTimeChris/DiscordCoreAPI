@@ -23,6 +23,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/epoll.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <fcntl.h>
