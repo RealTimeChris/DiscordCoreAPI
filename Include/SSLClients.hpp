@@ -50,23 +50,23 @@ namespace DiscordCoreInternal {
 #ifndef _WIN32
 	struct DiscordCoreAPI_Dll epollWrapper {
 
-		struct DiscordCoreAPI_Dll epollDeleter{
+		struct DiscordCoreAPI_Dll epollDeleter {
 			void operator()(int* other) {
 				close(*other);
 			}
 		};
 
-		operator int () {
+		operator int() {
 			return *this->thePtr;
 		}
 
-		BIOWrapper(nullptr_t) {
+		epollWrapper(nullptr_t) {
 			*this->thePtr = epoll_create1(0);
 		};
 
 	protected:
 		std::unique_ptr<int, epollDeleter> thePtr{ new int, epollDeleter{} };
-};
+	};
 
 #endif
 	struct DiscordCoreAPI_Dll BIOWrapper {
