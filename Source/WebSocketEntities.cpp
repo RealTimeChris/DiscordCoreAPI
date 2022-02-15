@@ -148,7 +148,7 @@ namespace DiscordCoreInternal {
 			co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
 			while (!this->doWeQuit.load(std::memory_order_consume)) {
-				if (this->doWeReconnect.wait(0)) {
+				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 				}
 				if (this->webSocket != nullptr) {
@@ -802,7 +802,7 @@ namespace DiscordCoreInternal {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
 			while (!this->doWeQuit.load(std::memory_order_consume)) {
-				if (this->doWeReconnect.wait(0)) {
+				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 					co_return;
 				}

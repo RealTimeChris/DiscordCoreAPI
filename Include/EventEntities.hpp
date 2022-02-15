@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
             int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
             while (true) {
                 if (*this->theEventState.load(std::memory_order_consume)) {
-                    return false;
+                    return true;
                 }
                 else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
 
@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
                 int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
                 millisecondsWaited = currentTime - startTime;
                 if (millisecondsWaited >= millisecondsMaxToWait) {
-                    return true;
+                    return false;
                 }
             }
         }

@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 				this->voiceSocketAgent->theTask.reset(nullptr);
 				this->voiceSocketAgent.reset(nullptr);
 			}			
-			if (this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
+			if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
 				return;
 			}
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent);
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
 					this->clearAudioData();
 					this->didWeJustConnect = false;
 				}
-				if (this->playSetEvent.wait(10000)) {
+				if (!this->playSetEvent.wait(10000)) {
 					if (this->doWeQuit.load(std::memory_order_consume)) {
 						this->areWePlaying = false;
 						co_return;
@@ -287,7 +287,7 @@ namespace DiscordCoreAPI {
 				this->sendSpeakingMessage(true);
 				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !this->doWeQuit.load(std::memory_order_consume)) {
 					this->areWePlaying = true;
-					if (this->doWeReconnect->wait(0)) {
+					if (!this->doWeReconnect->wait(0)) {
 						this->areWeConnectedBool = false;
 						this->sendSilence();
 						this->sendSpeakingMessage(false);
