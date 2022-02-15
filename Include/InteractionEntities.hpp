@@ -8,6 +8,7 @@
 #include "FoundationEntities.hpp"
 #include "JSONIfier.hpp"
 #include "MessageEntities.hpp"
+#include <iostream>
 
 namespace DiscordCoreAPI {
     /**
@@ -403,6 +404,7 @@ namespace DiscordCoreAPI {
             this->data.data.components = dataPackage.components;
             this->data.data.content = dataPackage.content;
             this->data.data.embeds = dataPackage.embeds;
+            std::cout << "EMBEDS SIZE 01: " << this->data.data.embeds.size() << std::endl;
             this->requesterId = dataPackage.requesterId;
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;

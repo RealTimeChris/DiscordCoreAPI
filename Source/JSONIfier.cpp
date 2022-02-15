@@ -1090,6 +1090,8 @@ namespace DiscordCoreInternal {
 			componentsActionRow.push_back(componentActionRow);
 		}
 
+		std::cout << "SIZE OF THE ARRAY: " << embedsArray.size() << std::endl;
+
 		nlohmann::json data = { {"type", dataPackage.data.type},
 				{"tts", dataPackage.data.data.tts},
 				{"data",{{"embeds", embedsArray},
@@ -1499,7 +1501,7 @@ namespace DiscordCoreInternal {
 				{"components", componentsActionRow},
 				}}
 		};
-
+		std::cout << "EMBEDS SIZE 01: " << dataPackage.data.data.embeds.size() << std::endl;
 		if (dataPackage.data.data.content != "") {
 			nlohmann::json dataNew = { { "content", dataPackage.data.data.content } };
 			data.update(dataNew);
