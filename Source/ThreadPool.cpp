@@ -7,29 +7,21 @@
 
 namespace DiscordCoreAPI {
 
-    ThreadPool::ThreadPool() {
-        this->threads.store(this->threadsPtr.get(), std::memory_order_release);
-    }
-
     void ThreadPool::storeThread(std::string theKey, CoRoutine<void> thread) {
-        auto thePtr = this->threads.load(std::memory_order_consume);
-        thePtr->insert(std::make_pair(theKey, std::move(thread)));
-        this->threads.store(thePtr, std::memory_order_release);
+        this->threads.insert(std::make_pair(theKey, std::move(thread)));
     }
 
     void ThreadPool::stopThread(std::string theKey) {
-        auto thePtr = this->threads.load(std::memory_order_consume);
-        if (thePtr->contains(theKey)) {
-            thePtr->at(theKey).cancel();
-            thePtr->at(theKey).get();
-            thePtr->erase(theKey);
+        if (this->threads.contains(theKey)) {
+            this->threads.at(theKey).cancel();
+            this->threads.at(theKey).get();
+            this->threads.erase(theKey);
         }
-        this->threads.store(thePtr, std::memory_order_release);
     }
 
     CoRoutineStatus ThreadPool::getThreadStatus(std::string theKey) {
-        if (this->threads.load(std::memory_order_consume)->contains(theKey)) {
-            return this->threads.load(std::memory_order_consume)->at(theKey).getStatus();
+        if (this->threads.contains(theKey)) {
+            return this->threads.at(theKey).getStatus();
         }
         else {
             return CoRoutineStatus{};
@@ -56,18 +48,18 @@ namespace DiscordCoreAPI {
 
     ThreadPoolTimer ThreadPoolTimer::createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval) {
         ThreadPoolTimer threadPoolTimer{};
-        ThreadPoolTimer::threads->storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
+        ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
         return threadPoolTimer;
     }
 
     ThreadPoolTimer ThreadPoolTimer::createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval) {
         ThreadPoolTimer threadPoolTimer{};
-        ThreadPoolTimer::threads->storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
+        ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
         return threadPoolTimer;
     }
 
     bool ThreadPoolTimer::running() {
-        if (ThreadPoolTimer::threads->getThreadStatus(this->threadId) == CoRoutineStatus::Running) {
+        if (ThreadPoolTimer::threads.getThreadStatus(this->threadId) == CoRoutineStatus::Running) {
             return true;
         }
         else {
@@ -76,7 +68,7 @@ namespace DiscordCoreAPI {
     }
 
     void ThreadPoolTimer::cancel() {
-        ThreadPoolTimer::threads->stopThread(this->threadId);
+        ThreadPoolTimer::threads.stopThread(this->threadId);
     }
 
     ThreadPoolTimer::ThreadPoolTimer() {
@@ -127,6 +119,6 @@ namespace DiscordCoreAPI {
         this->cancel();
     };
     
-    std::unique_ptr<ThreadPool> ThreadPoolTimer::threads{ std::make_unique<ThreadPool>() };
+    ThreadPool ThreadPoolTimer::threads{};
     
 }

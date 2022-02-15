@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 
         ThreadPool(ThreadPool&) = delete;
 
-        ThreadPool();
+        ThreadPool() = default;
 
         void storeThread(std::string theKey, CoRoutine<void> thread);
 
@@ -32,8 +32,8 @@ namespace DiscordCoreAPI {
         ~ThreadPool();
 
     protected:
-        std::unique_ptr< std::unordered_map<std::string, CoRoutine<void>>>threadsPtr{ std::make_unique<std::unordered_map<std::string, CoRoutine<void>>>() };
-        std::atomic<std::unordered_map<std::string, CoRoutine<void>>*> threads{};
+
+        std::unordered_map<std::string, CoRoutine<void>> threads{};
         bool doWeQuit{ false };
 
     };
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static std::unique_ptr<ThreadPool> threads;
+        static ThreadPool threads;
 
         std::string threadId{ "" };
 
