@@ -326,6 +326,7 @@ namespace DiscordCoreAPI {
 							auto encodedFrameData = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 							if (newFrame.size() == 0) {
+								this->clearAudioData();
 								this->doWeReconnect->reset();
 								continue;
 							}
@@ -333,6 +334,7 @@ namespace DiscordCoreAPI {
 						else {
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 							if (newFrame.size() == 0) {
+								this->clearAudioData();
 								this->doWeReconnect->reset();
 								continue;
 							}
