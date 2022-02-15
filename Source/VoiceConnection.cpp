@@ -166,11 +166,9 @@ namespace DiscordCoreAPI {
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			this->voiceConnectionData = &this->voiceSocketAgent->voiceConnectionData;
-			if (this->theTask != nullptr && this->theTask->getStatus() == CoRoutineStatus::Running){
-				this->theTask->cancel();
-				this->theTask.reset(nullptr);
+			if (this->theTask == nullptr) {
+				this->theTask = std::make_unique<CoRoutine<void>>(this->run());
 			}
-			this->theTask = std::make_unique<CoRoutine<void>>(this->run());
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("VoiceConnection::connect()");
