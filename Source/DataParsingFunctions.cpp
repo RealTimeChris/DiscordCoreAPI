@@ -2936,7 +2936,7 @@ namespace DiscordCoreInternal {
                 }
 
                 if (value.contains("style") && !value["style"].is_null()) {
-                    newData.style = value["style"].get<DiscordCoreAPI::ButtonStyle>();
+                    newData.style = value["style"].get<int32_t>();
                 }
 
                 if (value.contains("label") && !value["label"].is_null()) {

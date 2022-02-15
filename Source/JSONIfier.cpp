@@ -27,9 +27,9 @@ namespace DiscordCoreInternal {
 		}
 
 		nlohmann::json data = {
-			{"permission_overwrites", permOws},
-			{"video_quality_mode",channelData.channelData.videoQualityMode},
-			{"rate_limit_per_user",channelData.channelData.rateLimitPerUser},
+				{"permission_overwrites", permOws},
+				{"video_quality_mode",channelData.channelData.videoQualityMode},
+				{"rate_limit_per_user",channelData.channelData.rateLimitPerUser},
 			{"user_limit",channelData.channelData.userLimit},
 			{"position", channelData.channelData.position},
 			{"parent_id", channelData.channelData.parentId},
@@ -50,9 +50,9 @@ namespace DiscordCoreInternal {
 		nlohmann::json data;
 		data = {
 				{"op", 2},
-				{"d", {
-				{"token", botToken},
-				{"properties", {
+					{"d", {
+					{"token", botToken},
+					{"properties", {
 					{"$os", "Windows"},
 					{"$browser", "DiscordCoreAPI"},
 					{"$device", "DiscordCoreAPI"}
@@ -83,17 +83,17 @@ namespace DiscordCoreInternal {
 		nlohmann::json data;
 		if (isSpeaking) {
 			data = {
-				{"op", 5,},
-				{"d" ,{ {"speaking",1},
-			{"delay" , delay},
-			{"ssrc" , ssrc}}} };
+			{"op", 5,},
+			{"d" ,{ {"speaking",1},
+		{"delay" , delay},
+		{"ssrc" , ssrc}}} };
 		}
 		else {
 			data = {
-				{"op", 5,},
+			{"op", 5,},
 				{"d" , { {"speaking",0},
-			{"delay" , delay},
-			{"ssrc" , ssrc}} }
+		{"delay" , delay},
+		{"ssrc" , ssrc}} }
 			};
 		}
 		std::vector<uint8_t> newVector{};
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 			activitiesArray.push_back(dataNew);
 		}
 		nlohmann::json data = { {"op", 3},{"d" , {{
-			"since", dataPackage.since},
+	"since", dataPackage.since},
 			{"activities" ,activitiesArray} ,
 			{"status" ,dataPackage.status},
 			{"afk" ,dataPackage.afk}}}
@@ -293,23 +293,6 @@ namespace DiscordCoreInternal {
 					}
 					components.push_back(component);
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
 				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					nlohmann::json optionsArray = nlohmann::json::array();
 					for (auto& value01 : valueNew.options) {
@@ -454,23 +437,6 @@ namespace DiscordCoreInternal {
 						{"style", valueNew.style},
 						{"type", valueNew.type},
 						{"url", valueNew.url}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
 					};
 					if (valueNew.emoji.id != "") {
 						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
@@ -870,23 +836,6 @@ namespace DiscordCoreInternal {
 					}
 					components.push_back(component);
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
 				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					nlohmann::json optionsArray = nlohmann::json::array();
 					for (auto& value01 : valueNew.options) {
@@ -1040,23 +989,6 @@ namespace DiscordCoreInternal {
 					}
 					components.push_back(component);
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
 				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					nlohmann::json optionsArray = nlohmann::json::array();
 					for (auto& value01 : valueNew.options) {
@@ -1093,27 +1025,19 @@ namespace DiscordCoreInternal {
 		std::cout << "SIZE OF THE ARRAY: " << embedsArray.size() << std::endl;
 
 		nlohmann::json data = { {"type", dataPackage.data.type},
+				{"flags", dataPackage.data.data.flags},
 				{"tts", dataPackage.data.data.tts},
-				{"data",{{"embeds", embedsArray},
-				{"flags", dataPackage.data.data.flags },
-			{"title", dataPackage.data.data.title},
-			{"custom_id", dataPackage.data.data.customId},
-			{"allowed_mentions",
+				{"type", dataPackage.data.type},
+				{"content", dataPackage.data.data.content},
+				{"embeds", embedsArray},
+				{"allowed_mentions",
 				{{"parse", parseArray},
 		{"roles", rolesArray},
 		{"users", usersArray},
-		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
-				{"components", componentsActionRow},
-				}}
-		};
-
-		if (dataPackage.data.data.content != "") {
-			nlohmann::json dataNew = { { "content", dataPackage.data.data.content } };
-			data.update(dataNew);
-		}
-
+		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}},
+			},{"components", componentsActionRow} };
 		return data.dump();
-	}
+	};
 
 	std::string JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
 
@@ -1225,23 +1149,6 @@ namespace DiscordCoreInternal {
 					}
 					components.push_back(component);
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
 				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					nlohmann::json optionsArray = nlohmann::json::array();
 					for (auto& value01 : valueNew.options) {
@@ -1279,8 +1186,6 @@ namespace DiscordCoreInternal {
 				{"tts", dataPackage.data.data.tts},
 				{"data",{{"embeds", embedsArray},
 				{"flags", dataPackage.data.data.flags },
-			{"title", dataPackage.data.data.title},
-			{"custom_id", dataPackage.data.data.customId},
 			{"allowed_mentions",
 				{{"parse", parseArray},
 		{"roles", rolesArray},
@@ -1428,23 +1333,6 @@ namespace DiscordCoreInternal {
 					}
 					components.push_back(component);
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
 				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					nlohmann::json optionsArray = nlohmann::json::array();
 					for (auto& value01 : valueNew.options) {
@@ -1487,23 +1375,21 @@ namespace DiscordCoreInternal {
 			componentsActionRow.push_back(componentActionRow);
 		}
 
-		nlohmann::json data = { {"type", dataPackage.data.type},
+
+		nlohmann::json data = { 
+				{"flags", dataPackage.data.data.flags},
 				{"tts", dataPackage.data.data.tts},
-				{"data",{{"embeds", embedsArray},
-				{"flags", dataPackage.data.data.flags },
-			{"title", dataPackage.data.data.title},
-			{"custom_id", dataPackage.data.data.customId},
-			{"allowed_mentions",
-				{{"parse", parseArray},
+			{"embeds", embedsArray},
+			{"allowed_mentions", {
+			{"parse", parseArray},
 		{"roles", rolesArray},
 		{"users", usersArray},
-		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
-				{"components", componentsActionRow},
-				}}
-		};
-		std::cout << "EMBEDS SIZE 01: " << dataPackage.data.data.embeds.size() << std::endl;
+		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}
+
+	} }, {"components", componentsActionRow} };
+
 		if (dataPackage.data.data.content != "") {
-			nlohmann::json dataNew = { { "content", dataPackage.data.data.content } };
+			nlohmann::json dataNew = { {"content", dataPackage.data.data.content} };
 			data.update(dataNew);
 		}
 
@@ -1838,23 +1724,6 @@ namespace DiscordCoreInternal {
 					}
 					components.push_back(component);
 				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
 				else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
 					nlohmann::json optionsArray = nlohmann::json::array();
 					for (auto& value01 : valueNew.options) {
@@ -1995,23 +1864,6 @@ namespace DiscordCoreInternal {
 						{"style", valueNew.style},
 						{"type", valueNew.type},
 						{"url", valueNew.url}
-					};
-					if (valueNew.emoji.id != "") {
-						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };
-						component.at("emoji").update(componentNew);
-					}
-					components.push_back(component);
-				}
-				else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
-					nlohmann::json component = { {"min_length", valueNew.minLength},
-						{"max_length", valueNew.maxLength},
-						{"value", valueNew.value},
-						{"label", valueNew.label},
-						{"placeholder", valueNew.placeholder},
-						{"type", valueNew.type},
-						{"custom_id", valueNew.customId},
-						{"style", valueNew.style},
-						{"required", valueNew.required}
 					};
 					if (valueNew.emoji.id != "") {
 						nlohmann::json componentNew = { {"id", valueNew.emoji.id} };

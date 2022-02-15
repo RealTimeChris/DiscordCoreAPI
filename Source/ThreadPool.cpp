@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 
     ThreadPoolTimer ThreadPoolTimer::createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval) {
         ThreadPoolTimer threadPoolTimer{};
-        ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
+        ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));;
         return threadPoolTimer;
     }
 
@@ -119,6 +119,7 @@ namespace DiscordCoreAPI {
         this->cancel();
     };
     
+
     ThreadPool ThreadPoolTimer::threads{};
     
 }
