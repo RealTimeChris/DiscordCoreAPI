@@ -282,6 +282,8 @@ namespace DiscordCoreAPI {
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
+		/// \param selfDeaf Self-deafen the bot?
+		/// \param selfMute Self-mute the bot?
 		/// \returns A pointer containing the voice connection.
 		VoiceConnection* connectToVoice(std::string channelId, bool selfDeaf, bool selfMute);
 

@@ -63,8 +63,6 @@ namespace DiscordCoreAPI {
 
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval);
 
-        static void initialize();
-
         bool running();
 
         void cancel();
@@ -85,7 +83,6 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static std::atomic<ThreadPool*> threadsAtomic;
         static std::unique_ptr<ThreadPool> threads;
 
         std::string threadId{ "" };

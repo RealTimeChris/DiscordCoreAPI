@@ -40,10 +40,6 @@ namespace DiscordCoreAPI {
         this->doWeQuit = true;
     }
 
-    void ThreadPoolTimer::initialize() {
-        ThreadPoolTimer::threadsAtomic.store(ThreadPoolTimer::threads.get(), std::memory_order_release);
-    }
-
     ThreadPoolTimer& ThreadPoolTimer::operator=(ThreadPoolTimer&& other) noexcept {
         if (this != &other) {
             this->threadId = std::move(other.threadId);
@@ -60,22 +56,18 @@ namespace DiscordCoreAPI {
 
     ThreadPoolTimer ThreadPoolTimer::createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval) {
         ThreadPoolTimer threadPoolTimer{};
-        auto threadPoolPtr = ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume);
-        threadPoolPtr->storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
-        ThreadPoolTimer::threadsAtomic.store(threadPoolPtr, std::memory_order_release);
+        ThreadPoolTimer::threads->storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
         return threadPoolTimer;
     }
 
     ThreadPoolTimer ThreadPoolTimer::createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval) {
         ThreadPoolTimer threadPoolTimer{};
-        auto threadPoolPtr = ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume);
-        threadPoolPtr->storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
-        ThreadPoolTimer::threadsAtomic.store(threadPoolPtr, std::memory_order_release);
+        ThreadPoolTimer::threads->storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));
         return threadPoolTimer;
     }
 
     bool ThreadPoolTimer::running() {
-        if (ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->getThreadStatus(this->threadId) == CoRoutineStatus::Running) {
+        if (ThreadPoolTimer::threads->getThreadStatus(this->threadId) == CoRoutineStatus::Running) {
             return true;
         }
         else {
@@ -84,7 +76,7 @@ namespace DiscordCoreAPI {
     }
 
     void ThreadPoolTimer::cancel() {
-        ThreadPoolTimer::threadsAtomic.load(std::memory_order_consume)->stopThread(this->threadId);
+        ThreadPoolTimer::threads->stopThread(this->threadId);
     }
 
     ThreadPoolTimer::ThreadPoolTimer() {
@@ -136,7 +128,5 @@ namespace DiscordCoreAPI {
     };
     
     std::unique_ptr<ThreadPool> ThreadPoolTimer::threads{ std::make_unique<ThreadPool>() };
-    std::atomic<ThreadPool*> ThreadPoolTimer::threadsAtomic{ nullptr };
-
     
 }

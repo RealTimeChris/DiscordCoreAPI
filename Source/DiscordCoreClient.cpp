@@ -109,7 +109,6 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::initialize() {
 		try {
-			ThreadPoolTimer::initialize();
 			this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(this->botToken);
 			ApplicationCommands::initialize(this->httpClient.get());
 			Channels::initialize(this->httpClient.get());

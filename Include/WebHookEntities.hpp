@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 					component.type = ComponentType::Button;
 					component.emoji.name = emojiName;
 					component.label = buttonLabel;
-					component.style = buttonStyle;
+					component.style = static_cast<int32_t>(buttonStyle);
 					component.customId = customId;
 					component.disabled = disabled;
 					component.emoji.id = emojiId;
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 					component.type = ComponentType::Button;
 					component.emoji.name = emojiName;
 					component.label = buttonLabel;
-					component.style = buttonStyle;
+					component.style = static_cast<int32_t>(buttonStyle);
 					component.customId = customId;
 					component.disabled = disabled;
 					component.emoji.id = emojiId;

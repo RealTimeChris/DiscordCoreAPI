@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
                     component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
                     component.label = buttonLabel;
-                    component.style = buttonStyle;
+                    component.style = static_cast<int32_t>(buttonStyle);
                     component.customId = customId;
                     component.disabled = disabled;
                     component.emoji.id = emojiId;
@@ -220,12 +220,17 @@ namespace DiscordCoreAPI {
             else {
                 this->data.type = InteractionCallbackType::ChannelMessageWithSource;
             }
+            if (dataPackage.title != "") {
+                this->data.type = InteractionCallbackType::Modal;
+            }
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
             this->data.data.components = dataPackage.components;
             this->data.data.content = dataPackage.content;
             this->data.data.embeds = dataPackage.embeds;
+            this->data.data.title = dataPackage.title;
+            this->data.data.customId = dataPackage.customId;
             this->requesterId = dataPackage.requesterId;
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;

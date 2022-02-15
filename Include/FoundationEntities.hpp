@@ -521,9 +521,9 @@ namespace DiscordCoreAPI {
                 }
             }
             if (this->month > 0) {
-                theValue += (this->day - 1) * this->secondsPerDay;
-                theValue += this->hour * this->secondsPerHour;
-                theValue += this->minute * this->secondsPerMinute;
+                theValue += static_cast<int64_t>((this->day - 1) * this->secondsPerDay);
+                theValue += static_cast<int64_t>(this->hour * this->secondsPerHour);
+                theValue += static_cast<int64_t>(this->minute * this->secondsPerMinute);
                 theValue += this->second;
             }
             if (this->month > 1) {
@@ -2144,7 +2144,7 @@ namespace DiscordCoreAPI {
         bool required{ false };///< Whether this component is required to be filled.
         std::string url{ "" };///< Url, for url types.
         ComponentType type{};///< Integer component type.
-        ButtonStyle style{};///< One of button styles.
+        int32_t style{};///< One of button styles.
         EmojiData emoji{};///< Emoji name, id, and animated.
     };
 
@@ -2168,10 +2168,13 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll InteractionApplicationCommandCallbackData {
         std::vector<ActionRowData> components{};///< Message components.
         AllowedMentionsData allowedMentions{};///< Allowed mentions data.
+        std::vector<std::string> choices{};///< Autocomplete choices(max of 25 choices.
         std::vector<EmbedData> embeds{};///< Message embeds.
+        std::string customId{ "" };///< A developer-defined identifier for the component, max 100 characters.
         std::string content{ "" };///< Message content.
-        bool tts{ false };///< Is it TTS?
+        std::string title{ "" };///< The title of the popup modal.
         int32_t flags{ 0 };///< Flags.
+        bool tts{ false };///< Is it TTS?
     };
 
     /// Interaction response data. \brief Interaction response data.
@@ -2459,6 +2462,12 @@ namespace DiscordCoreAPI {
         SessionStartData sessionStartLimit{};///< Information on the current session start limit.
         std::string url{ "" };///< The WSS Url that can be used for connecting to the gateway.
         uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
+    };
+
+    /// Text input style for modals. \brief Text input style for modals.
+    enum class TextInputStyle {
+        Short = 1,///< A single-line input.
+        Paragraph = 2///< A multi-line input.
     };
 
     /// Input event response types. \brief Input event response types.
@@ -2837,7 +2846,7 @@ namespace DiscordCoreAPI {
         /// \param emojiName An emoji name, if desired.        
         /// \param emojiId An emoji id, if desired.
         /// \param url A url, if applicable.
-        RespondToInputEventData& addButton(bool disabled, std::string customId, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+        RespondToInputEventData& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
             if (this->components.size() == 0) {
                 ActionRowData actionRowData;
                 this->components.push_back(actionRowData);
@@ -2848,7 +2857,7 @@ namespace DiscordCoreAPI {
                     component.type = ComponentType::Button;
                     component.emoji.name = emojiName;
                     component.label = buttonLabel;
-                    component.style = buttonStyle;
+                    component.style = static_cast<int32_t>(buttonStyle);
                     component.customId = customId;
                     component.disabled = disabled;
                     component.emoji.id = emojiId;
@@ -2870,7 +2879,7 @@ namespace DiscordCoreAPI {
         /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
-        RespondToInputEventData& addSelectMenu(bool disabled, std::string customId, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+        RespondToInputEventData& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
             if (this->components.size() == 0) {
                 ActionRowData actionRowData;
                 this->components.push_back(actionRowData);
@@ -2892,6 +2901,43 @@ namespace DiscordCoreAPI {
                     this->components.push_back(actionRowData);
                 }
 
+            }
+            return *this;
+        }
+
+        /// Adds a modal to the response Message. \brief Adds a modal to the response Message.
+        /// \param titleNew A title for the modal.
+        /// \param customIdNew A custom id to give for identifying the button.
+        /// \param required Is it a required response?
+        /// \param minLength Minimum length.
+        /// \param maxLength Maximum length.        
+        /// \param inputStyle The input style.        
+        /// \param label A label for the modal.
+        /// \param placeholder A placeholder for the modal.
+        RespondToInputEventData& addModal(std::string titleNew, std::string customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "") {
+            this->title = titleNew;
+            this->customId = customIdNew;
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component{};
+                    component.type = ComponentType::TextInput;
+                    component.customId = customIdNew;
+                    component.style = static_cast<int32_t>(inputStyle);
+                    component.maxLength = maxLength;
+                    component.minLength = minLength;
+                    component.label = label;
+                    component.required = required;
+                    component.placeholder = placeholder;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
             }
             return *this;
         }
@@ -2951,7 +2997,9 @@ namespace DiscordCoreAPI {
         InteractionType eventType{};
         std::string channelId{ "" };
         std::string messageId{ "" };
+        std::string customId{ "" };
         std::string content{ "" };
+        std::string title{ "" };
         int32_t flags{ 0 };
         bool tts{ false };
     };

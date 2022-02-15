@@ -2936,7 +2936,7 @@ namespace DiscordCoreInternal {
                 }
 
                 if (value.contains("style") && !value["style"].is_null()) {
-                    newData.style = value["style"].get<DiscordCoreAPI::ButtonStyle>();
+                    newData.style = value["style"].get<int32_t>();
                 }
 
                 if (value.contains("label") && !value["label"].is_null()) {
@@ -2961,8 +2961,24 @@ namespace DiscordCoreInternal {
                     newData.options.shrink_to_fit();
                 }
 
+                if (value.contains("min_length") && !value["min_length"].is_null()) {
+                    newData.minLength = value["min_length"].get<int32_t>();
+                }
+
+                if (value.contains("max_length") && !value["max_length"].is_null()) {
+                    newData.maxLength = value["max_length"].get<int32_t>();
+                }
+
+                if (value.contains("value") && !value["value"].is_null()) {
+                    newData.value = value["value"].get<std::string>();
+                }
+
                 if (value.contains("max_values") && !value["max_values"].is_null()) {
                     newData.maxValues = value["max_values"].get<int32_t>();
+                }
+
+                if (value.contains("required") && !value["required"].is_null()) {
+                    newData.required = value["required"].get<bool>();
                 }
 
                 if (value.contains("min_values") && !value["min_values"].is_null()) {
