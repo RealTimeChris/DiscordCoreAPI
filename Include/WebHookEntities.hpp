@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.        
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		void addButton(bool disabled, std::string customId, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+		void addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 					component.emoji.name = emojiName;
 					component.label = buttonLabel;
 					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customId;
+					component.customId = customIdNew;
 					component.disabled = disabled;
 					component.emoji.id = emojiId;
 					component.url = url;
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(bool disabled, std::string customId, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+		void addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 					componentData.maxValues = maxValues;
 					componentData.minValues = minValues;
 					componentData.disabled = disabled;
-					componentData.customId = customId;
+					componentData.customId = customIdNew;
 					componentData.options = options;
 					this->components.at(this->components.size() - 1).components.push_back(componentData);
 				}
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.        
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		void addButton(bool disabled, std::string customId, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+		void addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 					component.emoji.name = emojiName;
 					component.label = buttonLabel;
 					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customId;
+					component.customId = customIdNew;
 					component.disabled = disabled;
 					component.emoji.id = emojiId;
 					component.url = url;
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(bool disabled, std::string customId, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+		void addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -271,7 +271,7 @@ namespace DiscordCoreAPI {
 					componentData.maxValues = maxValues;
 					componentData.minValues = minValues;
 					componentData.disabled = disabled;
-					componentData.customId = customId;
+					componentData.customId = customIdNew;
 					componentData.options = options;
 					this->components.at(this->components.size() - 1).components.push_back(componentData);
 				}

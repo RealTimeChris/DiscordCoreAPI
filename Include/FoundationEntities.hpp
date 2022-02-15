@@ -2859,7 +2859,7 @@ namespace DiscordCoreAPI {
                     component.emoji.name = emojiName;
                     component.label = buttonLabel;
                     component.style = static_cast<int32_t>(buttonStyle);
-                    component.customId = customId;
+                    component.customId = customIdNew;
                     component.disabled = disabled;
                     component.emoji.id = emojiId;
                     component.url = url;
@@ -2893,7 +2893,7 @@ namespace DiscordCoreAPI {
                     componentData.maxValues = maxValues;
                     componentData.minValues = minValues;
                     componentData.disabled = disabled;
-                    componentData.customId = customId;
+                    componentData.customId = customIdNew;
                     componentData.options = options;
                     this->components.at(this->components.size() - 1).components.push_back(componentData);
                 }
