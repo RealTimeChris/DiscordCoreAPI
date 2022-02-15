@@ -480,7 +480,7 @@ namespace DiscordCoreInternal {
 			nullTerminated[x] = floatStr.data()[x];
 		}
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
-		if (count != 1) {
+		if (!count) {
 			return jsonData;
 		}
 		jsonData = number;

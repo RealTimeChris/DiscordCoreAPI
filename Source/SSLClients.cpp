@@ -115,12 +115,12 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); returnValue != 1) {
+			if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); !returnValue) {
 				reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
 				return false;
 			}
 
-			if (auto returnValue = SSL_connect(this->ssl); returnValue != 1) {
+			if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 				reportSSLError("SSL_connect() Error: ", returnValue, this->ssl);
 				return false;
 			}
@@ -330,18 +330,18 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); returnValue != 1) {
+		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
 			reportSSLError("SSL_set_fd() Error: ", returnValue, this->ssl);
 			return;
 		}
 
 		/* SNI */
-		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); returnValue != 1) {
+		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); !returnValue) {
 			reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
 			return;
 		}
 
-		if (auto returnValue = SSL_connect(this->ssl); returnValue != 1) {
+		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			reportSSLError("SSL_connect() Error: ", returnValue, this->ssl);
 			return;
 		}
@@ -547,7 +547,7 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
 		size_t writtenBytes{ 0 };
 
-		if (auto returnValue = BIO_write_ex(this->connectionBio, data.data(), data.size(), &writtenBytes); returnValue != 1) {
+		if (!BIO_write_ex(this->connectionBio, data.data(), data.size(), &writtenBytes)) {
 			reportSSLError("BIO_write_ex() Error: ");
 			return false;
 		};

@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
             *this = other;
         }
 
-        operator CURL* () {
+        operator CURL*() {
             return this->thePtr.get();
         }
 
@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
             *this = other;
         }
 
-        operator CURLU* () {
+        operator CURLU*() {
             return this->thePtr.get();
         }
 
@@ -789,7 +789,7 @@ namespace DiscordCoreAPI {
             }
         }
 
-        operator const char* () {
+        operator const char*() {
             return this->data();
         }
 
