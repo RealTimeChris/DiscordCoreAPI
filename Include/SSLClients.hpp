@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		operator BIO* () {
+		operator BIO*() {
 			return this->bioPtr.get();
 		}
 
@@ -119,11 +119,11 @@ namespace DiscordCoreInternal {
 			return this->addrinfoPtrTwo;
 		}
 
-		operator addrinfo** () {
+		operator addrinfo**() {
 			return &this->addrinfoPtrTwo;
 		}
 
-		operator addrinfo* () {
+		operator addrinfo*() {
 			return this->addrinfoPtrTwo;
 		}
 
@@ -157,7 +157,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		operator SSL_CTX* () {
+		operator SSL_CTX*() {
 			return this->sslCTXPtr.get();
 		}
 
@@ -189,7 +189,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		operator SSL* () {
+		operator SSL*() {
 			return this->sslPtr.get();
 		}
 
