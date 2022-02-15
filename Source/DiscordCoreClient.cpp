@@ -528,21 +528,6 @@ namespace DiscordCoreAPI {
 								this->eventManager->onInputEventCreationEvent(*eventCreationData);
 								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							}
-							else if (interactionData->data.componentData.componentType == ComponentType::TextInput) {
-								eventData->eventType = InputEventType::Modal_Interaction;
-								eventData->responseType = InputEventResponseType::Unset;
-								eventData->requesterId = interactionData->requesterId;
-								eventData->interactionData = *interactionData;
-								std::unique_ptr<OnInteractionCreationData> dataPackage{ std::make_unique<OnInteractionCreationData>() };
-								dataPackage->interactionData = *interactionData;
-								std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
-								eventCreationData->inputEventData = *eventData;
-								if (ModalCollector::modalInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
-									ModalCollector::modalInteractionBufferMap.at(eventData->getChannelId() + eventData->getMessageId())->send(eventData->getInteractionData());
-								}
-								this->eventManager->onInputEventCreationEvent(*eventCreationData);
-								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
-							}
 						}
 						if (Interactions::collectMessageDataBuffers.contains(interactionData->id)) {
 							std::unique_ptr<MessageData> messageData{ std::make_unique<MessageData>(interactionData->message) };

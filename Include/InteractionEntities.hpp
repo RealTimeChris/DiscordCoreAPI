@@ -192,9 +192,8 @@ namespace DiscordCoreAPI {
         friend std::string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
         friend SelectMenuCollector;
         friend ButtonCollector;
-        friend ModalCollector;
         friend Interactions;
-        friend InputEvents;
+        friend InputEvents;        
 
         CreateInteractionResponseData(DeferComponentResponseData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -662,59 +661,5 @@ namespace DiscordCoreAPI {
 
         void run();
     };
-
-    /// Button response data. \brief Button response data.
-    struct DiscordCoreAPI_Dll ModalResponseData {
-        operator InteractionData() {
-
-            return this->interactionData;
-        }
-
-        InteractionData interactionData{};///< Interaction data.
-        std::string channelId{ "" };///< The Channel id where it took place.
-        std::string messageId{ "" };///< The Message id where it took place.
-        std::string buttonId{ "" };///< The id of the button, for identification.
-        std::string userId{ "" };///< The User id who selected the menu options.
-    };
-
-    /// ModalCollector, for collecting modal text input from one or more Users. \brief ModalCollector, for collecting modal text input from one or more Users.
-    class DiscordCoreAPI_Dll ModalCollector {
-    public:
-        friend DiscordCoreClient;
-
-        static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
-
-        /// Constructor. \brief Constructor.
-        /// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
-        ModalCollector(InputEventData dataPackage);
-
-        /// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
-        /// \param getButtonDataForAllNew Whether or not to collect input from a single target User or all potential users.
-        /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
-        /// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
-        /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
-        /// \returns A std::vector of ButtonResponseData.
-        CoRoutine < std::vector<ModalResponseData>> collectModalData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, std::string targetUserId = "");
-
-        ~ModalCollector();
-
-    protected:
-
-        std::unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
-        std::vector<ModalResponseData> responseVector{};
-        int32_t currentCollectedButtonCount{ 0 };
-        int32_t maxCollectedButtonCount{ 0 };
-        InteractionData interactionData{};
-        bool getButtonDataForAll{ false };
-        std::string channelId{ "" };
-        std::string messageId{ "" };
-        std::string modalId{ "" };
-        uint32_t maxTimeInMs{ 0 };
-        std::string userId{ "" };
-        bool doWeQuit{ false };
-
-        void run();
-    };
-
     /**@}*/
 };
