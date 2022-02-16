@@ -36,8 +36,6 @@ namespace DiscordCoreAPI {
             template<typename ReturnType02>
             friend class CoRoutine;
 
-            promise_type() {};
-
             void requestStop() {
                 this->newThread.get_stop_source().request_stop();
             }
@@ -73,8 +71,6 @@ namespace DiscordCoreAPI {
                 this->exceptionBuffer.send(std::current_exception());
             }
 
-            ~promise_type() {};
-
         protected:
 
             UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
@@ -107,10 +103,7 @@ namespace DiscordCoreAPI {
 
         CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
-        CoRoutine() {
-            this->currentStatus = CoRoutineStatus::Idle;
-            this->coroutineHandle = nullptr;
-        }
+        CoRoutine() = default;
 
         CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
@@ -201,8 +194,6 @@ namespace DiscordCoreAPI {
             template<typename void02>
             friend class CoRoutine;
 
-            promise_type() {};
-
             void requestStop() {
                 this->newThread.get_stop_source().request_stop();
             }
@@ -238,8 +229,6 @@ namespace DiscordCoreAPI {
                 this->exceptionBuffer.send(std::current_exception());
             }
 
-            ~promise_type() {};
-
         protected:
             
             UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
@@ -271,10 +260,7 @@ namespace DiscordCoreAPI {
 
         CoRoutine(CoRoutine<void>& other) = delete;
 
-        CoRoutine() {
-            this->currentStatus = CoRoutineStatus::Idle;
-            this->coroutineHandle = nullptr;
-        }
+        CoRoutine() = default;
 
         CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {};
 
