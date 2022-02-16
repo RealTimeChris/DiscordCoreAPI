@@ -17,13 +17,13 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection* Guild::connectToVoice(std::string channelId, bool selfDeaf, bool selfMute) {
 		try {
-			if (getVoiceConnectionMap()->at(this->id)->areWeConnected()) {
-				this->voiceConnectionPtr = getVoiceConnectionMap()->at(this->id).get();
+			if (getVoiceConnectionMap().at(this->id)->areWeConnected()) {
+				this->voiceConnectionPtr = getVoiceConnectionMap().at(this->id).get();
 				this->areWeConnectedBool = true;
 				return this->voiceConnectionPtr;
 			}
 			else if (channelId != "") {
-				this->voiceConnectionPtr = getVoiceConnectionMap()->at(this->id).get();
+				this->voiceConnectionPtr = getVoiceConnectionMap().at(this->id).get();
 				DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 				voiceConnectInitData.channelId = channelId;
 				voiceConnectInitData.guildId = this->id;
@@ -44,13 +44,13 @@ namespace DiscordCoreAPI {
 
 	void Guild::disconnect() {
 		try {
-			if (getVoiceConnectionMap()->contains(this->id) && getVoiceConnectionMap()->at(this->id) != nullptr) {
-				getVoiceConnectionMap()->at(this->id)->disconnect();
-				if (getSongAPIMap()->contains(this->id)) {
+			if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap().at(this->id) != nullptr) {
+				getVoiceConnectionMap().at(this->id)->disconnect();
+				if (getSongAPIMap().contains(this->id)) {
 					SongAPI::stop(this->id);
 				}
-				getSoundCloudAPIMap()->at(this->id)->stop();
-				getYouTubeAPIMap()->at(this->id)->stop();
+				getSoundCloudAPIMap().at(this->id)->stop();
+				getYouTubeAPIMap().at(this->id)->stop();
 				UpdateVoiceStateData updateVoiceData{};
 				updateVoiceData.channelId = "";
 				updateVoiceData.selfDeaf = false;
@@ -130,21 +130,21 @@ namespace DiscordCoreAPI {
 		this->name = dataNew.name;
 		this->id = dataNew.id;
 		this->discordCoreClient = discordCoreClientNew;
-		if (!getVoiceConnectionMap()->contains(this->id)) {
-			getVoiceConnectionMap()->insert_or_assign(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgent.get()));
+		if (!getVoiceConnectionMap().contains(this->id)) {
+			getVoiceConnectionMap().insert_or_assign(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgent.get()));
 		}
-		this->voiceConnectionPtr = getVoiceConnectionMap()->at(this->id).get();
-		if (!getYouTubeAPIMap()->contains(this->id)) {
-			getYouTubeAPIMap()->insert_or_assign(this->id, std::make_unique<YouTubeAPI>(this->id, this->discordCoreClient->httpClient.get()));
+		this->voiceConnectionPtr = getVoiceConnectionMap().at(this->id).get();
+		if (!getYouTubeAPIMap().contains(this->id)) {
+			getYouTubeAPIMap().insert_or_assign(this->id, std::make_unique<YouTubeAPI>(this->id, this->discordCoreClient->httpClient.get()));
 		}
-		if (!getSoundCloudAPIMap()->contains(this->id)) {
-			getSoundCloudAPIMap()->insert_or_assign(this->id, std::make_unique<SoundCloudAPI>(this->id, this->discordCoreClient->httpClient.get()));
+		if (!getSoundCloudAPIMap().contains(this->id)) {
+			getSoundCloudAPIMap().insert_or_assign(this->id, std::make_unique<SoundCloudAPI>(this->id, this->discordCoreClient->httpClient.get()));
 		}
-		if (!getSongAPIMap()->contains(this->id)) {
-			getSongAPIMap()->insert_or_assign(this->id, std::make_unique<SongAPI>(this->id));
+		if (!getSongAPIMap().contains(this->id)) {
+			getSongAPIMap().insert_or_assign(this->id, std::make_unique<SongAPI>(this->id));
 		}
-		if (!getAudioBufferMap()->contains(this->id)) {
-			getAudioBufferMap()->insert_or_assign(this->id, &getVoiceConnectionMap()->at(this->id)->audioBuffer);
+		if (!getAudioBufferMap().contains(this->id)) {
+			getAudioBufferMap().insert_or_assign(this->id, &getVoiceConnectionMap().at(this->id)->audioBuffer);
 		}
 	}
 

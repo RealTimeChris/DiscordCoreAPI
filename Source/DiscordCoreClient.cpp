@@ -20,24 +20,24 @@
 
 namespace DiscordCoreAPI {
 
-	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap() {
-		return &Statics::audioBufferMap;
+	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>& getAudioBufferMap() {
+		return Statics::audioBufferMap;
 	}
 	
-	std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>* getVoiceConnectionMap() {
-		return &Statics::voiceConnectionMap;
+	std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>& getVoiceConnectionMap() {
+		return Statics::voiceConnectionMap;
 	}
 
-	std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap() {
-		return &Statics::soundCloudAPIMap;
+	std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>& getSoundCloudAPIMap() {
+		return Statics::soundCloudAPIMap;
 	}
 
-	std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>* getYouTubeAPIMap() {
-		return &Statics::youtubeAPIMap;
+	std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>& getYouTubeAPIMap() {
+		return Statics::youtubeAPIMap;
 	}
 
-	std::unordered_map<std::string, std::unique_ptr<SongAPI>>* getSongAPIMap() {
-		return &Statics::songAPIMap;
+	std::unordered_map<std::string, std::unique_ptr<SongAPI>>& getSongAPIMap() {
+		return Statics::songAPIMap;
 	}
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew,  CacheOptions cacheOptionsNew) {

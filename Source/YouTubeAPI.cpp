@@ -427,7 +427,7 @@ namespace DiscordCoreAPI {
 		try {
 			this->cancelCurrentSong();
 			AudioFrameData dataFrame{};
-			while (getAudioBufferMap()->at(this->guildId)->tryReceive(dataFrame)) {};
+			while (getAudioBufferMap().at(this->guildId)->tryReceive(dataFrame)) {};
 		}
 		catch (...) {
 			reportException("YouTubeAPI::stop()");
@@ -435,10 +435,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void YouTubeAPI::cancelCurrentSong() {
-		if (getSongAPIMap()->at(this->guildId) != nullptr) {
-			if (getSongAPIMap()->at(this->guildId)->theTask != nullptr) {
-				getSongAPIMap()->at(this->guildId)->theTask->cancel();
-				getSongAPIMap()->at(this->guildId)->theTask.reset(nullptr);
+		if (getSongAPIMap().at(this->guildId) != nullptr) {
+			if (getSongAPIMap().at(this->guildId)->theTask != nullptr) {
+				getSongAPIMap().at(this->guildId)->theTask->cancel();
+				getSongAPIMap().at(this->guildId)->theTask.reset(nullptr);
 			}
 		}
 	}
@@ -466,30 +466,30 @@ namespace DiscordCoreAPI {
 			if (haveWeFailed) {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
-				while (getAudioBufferMap()->at(youtubeAPI->guildId)->tryReceive(frameData)) {};
+				while (getAudioBufferMap().at(youtubeAPI->guildId)->tryReceive(frameData)) {};
 				SongCompletionEventData eventData{};
-				auto resultValue = getSongAPIMap()->at(youtubeAPI->guildId).get();
+				auto resultValue = getSongAPIMap().at(youtubeAPI->guildId).get();
 				if (resultValue != nullptr) {
 					eventData.previousSong = resultValue->getCurrentSong(youtubeAPI->guildId);
 				}
-				eventData.voiceConnection = getVoiceConnectionMap()->at(youtubeAPI->guildId).get();
+				eventData.voiceConnection = getVoiceConnectionMap().at(youtubeAPI->guildId).get();
 				eventData.wasItAFail = true;
 				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
 				eventData.guild = Guilds::getGuildAsync({ .guildId = youtubeAPI->guildId }).get();
-				getSongAPIMap()->at(youtubeAPI->guildId)->onSongCompletionEvent(eventData);
+				getSongAPIMap().at(youtubeAPI->guildId)->onSongCompletionEvent(eventData);
 				co_return;
 			}
 		breakOut:
 			if (coroutineHandle.promise().isItStopped()) {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
-				while (getAudioBufferMap()->at(youtubeAPI->guildId)->tryReceive(frameData)) {};
+				while (getAudioBufferMap().at(youtubeAPI->guildId)->tryReceive(frameData)) {};
 				frameData.type = AudioFrameType::Unset;
 				frameData.rawFrameData.sampleCount = 0;
 				frameData.rawFrameData.data.clear();
 				frameData.encodedFrameData.sampleCount = 0;
 				frameData.encodedFrameData.data.clear();
-				getAudioBufferMap()->at(youtubeAPI->guildId)->send(std::move(frameData));
+				getAudioBufferMap().at(youtubeAPI->guildId)->send(std::move(frameData));
 				co_return;
 			}
 			while (newSong.contentLength > bytesReadTotal01) {
@@ -581,7 +581,7 @@ namespace DiscordCoreAPI {
 						auto encodedFrames = audioEncoder.encodeFrames(frames);
 						for (auto& value : encodedFrames) {
 							value.guildMemberId = newSong.addedByUserId;
-							getAudioBufferMap()->at(youtubeAPI->guildId)->send(std::move(value));
+							getAudioBufferMap().at(youtubeAPI->guildId)->send(std::move(value));
 						}
 					}
 					if (remainingDownloadContentLength >= youtubeAPI->maxBufferSize) {
@@ -601,7 +601,7 @@ namespace DiscordCoreAPI {
 			frameData.type = AudioFrameType::Skip;
 			frameData.rawFrameData.sampleCount = 0;
 			frameData.encodedFrameData.sampleCount = 0;
-			getAudioBufferMap()->at(youtubeAPI->guildId)->send(std::move(frameData));
+			getAudioBufferMap().at(youtubeAPI->guildId)->send(std::move(frameData));
 			co_return;
 		}
 		catch (...) {
@@ -612,8 +612,8 @@ namespace DiscordCoreAPI {
 	void YouTubeAPI::sendNextSong(Song newSong) {
 		try {
 			AudioFrameData frameData{};
-			while (getVoiceConnectionMap()->at(this->guildId)->getAudioBuffer().tryReceive(frameData)) {};
-			getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(this->downloadAndStreamAudio(newSong, this));
+			while (getVoiceConnectionMap().at(this->guildId)->getAudioBuffer().tryReceive(frameData)) {};
+			getSongAPIMap().at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(this->downloadAndStreamAudio(newSong, this));
 		}
 		catch (...) {
 			reportException("YouTubeAPI::sendNextSong()");

@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 		try {
 			this->cancelCurrentSong();
 			AudioFrameData dataFrame{};
-			while (getAudioBufferMap()->at(this->guildId)->tryReceive(dataFrame)) {};
+			while (getAudioBufferMap().at(this->guildId)->tryReceive(dataFrame)) {};
 		}
 		catch (...) {
 			reportException("SoundCloudAPI::stop()");
@@ -212,10 +212,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void SoundCloudAPI::cancelCurrentSong() {
-		if (getSongAPIMap()->at(this->guildId) != nullptr) {
-			if (getSongAPIMap()->at(this->guildId)->theTask != nullptr) {
-				getSongAPIMap()->at(this->guildId)->theTask->cancel();
-				getSongAPIMap()->at(this->guildId)->theTask.reset(nullptr);
+		if (getSongAPIMap().at(this->guildId) != nullptr) {
+			if (getSongAPIMap().at(this->guildId)->theTask != nullptr) {
+				getSongAPIMap().at(this->guildId)->theTask->cancel();
+				getSongAPIMap().at(this->guildId)->theTask.reset(nullptr);
 			}
 		}
 	}
@@ -234,33 +234,33 @@ namespace DiscordCoreAPI {
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder = AudioEncoder();
 		breakOutPlayMore:
-			if (counter > 45 && !getVoiceConnectionMap()->at(soundCloudAPI->guildId)->areWeCurrentlyPlaying()) {
+			if (counter > 45 && !getVoiceConnectionMap().at(soundCloudAPI->guildId)->areWeCurrentlyPlaying()) {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
-				while (getAudioBufferMap()->at(soundCloudAPI->guildId)->tryReceive(frameData)) {};
+				while (getAudioBufferMap().at(soundCloudAPI->guildId)->tryReceive(frameData)) {};
 				SongCompletionEventData eventData{};
-				auto resultValue = getSongAPIMap()->at(soundCloudAPI->guildId).get();
+				auto resultValue = getSongAPIMap().at(soundCloudAPI->guildId).get();
 				if (resultValue != nullptr) {
 					eventData.previousSong = resultValue->getCurrentSong(soundCloudAPI->guildId);
 				}
-				eventData.voiceConnection = getVoiceConnectionMap()->at(soundCloudAPI->guildId).get();
+				eventData.voiceConnection = getVoiceConnectionMap().at(soundCloudAPI->guildId).get();
 				eventData.wasItAFail = true;
 				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
 				eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
-				getSongAPIMap()->at(soundCloudAPI->guildId)->onSongCompletionEvent(eventData);
+				getSongAPIMap().at(soundCloudAPI->guildId)->onSongCompletionEvent(eventData);
 				co_return;
 			}
 		breakOut:
 			if (coroutineHandle.promise().isItStopped()) {
 				audioDecoder.reset(nullptr);
 				AudioFrameData frameData{};
-				while (getAudioBufferMap()->at(soundCloudAPI->guildId)->tryReceive(frameData)) {};
+				while (getAudioBufferMap().at(soundCloudAPI->guildId)->tryReceive(frameData)) {};
 				frameData.type = AudioFrameType::Unset;
 				frameData.rawFrameData.sampleCount = 0;
 				frameData.rawFrameData.data.clear();
 				frameData.encodedFrameData.sampleCount = 0;
 				frameData.encodedFrameData.data.clear();
-				getAudioBufferMap()->at(soundCloudAPI->guildId)->send(std::move(frameData));
+				getAudioBufferMap().at(soundCloudAPI->guildId)->send(std::move(frameData));
 				co_return;
 			}
 			while (counter < newSong.finalDownloadUrls.size()) {
@@ -323,7 +323,7 @@ namespace DiscordCoreAPI {
 					auto encodedFrames = audioEncoder.encodeFrames(frames);
 					for (auto& value : encodedFrames) {
 						value.guildMemberId = newSong.addedByUserId;
-						getAudioBufferMap()->at(soundCloudAPI->guildId)->send(std::move(value));
+						getAudioBufferMap().at(soundCloudAPI->guildId)->send(std::move(value));
 					}
 				}
 				if (coroutineHandle.promise().isItStopped()) {
@@ -338,7 +338,7 @@ namespace DiscordCoreAPI {
 			frameData.type = AudioFrameType::Skip;
 			frameData.rawFrameData.sampleCount = 0;
 			frameData.encodedFrameData.sampleCount = 0;
-			getAudioBufferMap()->at(soundCloudAPI->guildId)->send(frameData);
+			getAudioBufferMap().at(soundCloudAPI->guildId)->send(frameData);
 			co_return;
 		}
 		catch (...) {
@@ -349,8 +349,8 @@ namespace DiscordCoreAPI {
 	void SoundCloudAPI::sendNextSong(Song newSong) {
 		try {
 			AudioFrameData frameData{};
-			while (getVoiceConnectionMap()->at(this->guildId)->getAudioBuffer().tryReceive(frameData)) {};
-			getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(this->downloadAndStreamAudio(newSong, this));
+			while (getVoiceConnectionMap().at(this->guildId)->getAudioBuffer().tryReceive(frameData)) {};
+			getSongAPIMap().at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(this->downloadAndStreamAudio(newSong, this));
 		}
 		catch (...) {
 			reportException("SoundCloudAPI::sendNextSong()");
