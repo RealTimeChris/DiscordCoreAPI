@@ -125,10 +125,11 @@ namespace DiscordCoreAPI {
 
 	protected:
 
+		static std::mutex accessMutex;
+
 		std::unique_ptr<CoRoutine<void>>theTask{ nullptr };
 		bool areWeInstantiated{ false };
 		std::string guildId{ "" };
-		std::mutex accessMutex{};
 
 		bool sendNextSong(std::string);
 	};
