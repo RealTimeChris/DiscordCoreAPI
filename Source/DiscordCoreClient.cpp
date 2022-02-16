@@ -462,12 +462,10 @@ namespace DiscordCoreAPI {
 								std::unique_ptr<OnInteractionCreationData> dataPackage{ std::make_unique<OnInteractionCreationData>() };
 								dataPackage->interactionData = *interactionData;
 								std::unique_ptr<CommandData> commandData{ std::make_unique<CommandData>(*eventData) };
-								std::cout << "THE CHANNEL ID: " << dataPackage->interactionData.channelId << std::endl;
 								this->commandController.checkForAndRunCommand(std::move(commandData));
 								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 								std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
 								eventCreationData->inputEventData = *eventData;
-								std::cout << "THE CHANNEL ID: " << eventCreationData->inputEventData.getChannelId() << std::endl;
 								this->eventManager->onInputEventCreationEvent(*eventCreationData);
 							}
 							else if (interactionData->data.applicationCommanddata.type == ApplicationCommandType::Message) {
@@ -532,7 +530,6 @@ namespace DiscordCoreAPI {
 							}
 						}
 						else if (interactionData->type == InteractionType::Modal_Submit) {
-							std::cout << "WERE HERE THIS IS IT!" << std::endl;
 							eventData->eventType = InputEventType::Modal_Interaction;
 							eventData->responseType = InputEventResponseType::Unset;
 							eventData->requesterId = interactionData->requesterId;
@@ -541,9 +538,7 @@ namespace DiscordCoreAPI {
 							dataPackage->interactionData = *interactionData;
 							std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
 							eventCreationData->inputEventData = *eventData;
-							std::cout << "CHANNEL ID: 0202 " << eventData->getChannelId() << std::endl;
 							if (ModalCollector::modalInteractionBufferMap.contains(eventData->getChannelId())) {
-								std::cout << "WERE HERE THIS IS IT!0202" << std::endl;
 								ModalCollector::modalInteractionBufferMap.at(eventData->getChannelId())->send(eventData->getInteractionData());
 							}
 							this->eventManager->onInputEventCreationEvent(*eventCreationData);

@@ -444,7 +444,6 @@ namespace DiscordCoreAPI {
 
     ModalCollector::ModalCollector(InputEventData dataPackage) {
         this->channelId = dataPackage.getChannelId();
-        std::cout << "CHANNEL ID: " << this->channelId << std::endl;
         this->modalIncomingInteractionBuffer = std::make_unique<UnboundedMessageBlock<InteractionData>>();
         ModalCollector::modalInteractionBufferMap.insert_or_assign(this->channelId, this->modalIncomingInteractionBuffer.get());
     }
@@ -467,7 +466,6 @@ namespace DiscordCoreAPI {
             try {
                 auto buttonInteractionData = std::make_unique<InteractionData>();
                 if (waitForTimeToPass(*this->modalIncomingInteractionBuffer.get(), *buttonInteractionData.get(), this->maxTimeInMs)) {
-                    std::cout << "WERE NOT HERE THIS IS NOT IT!" << std::endl;
                     this->responseData.interactionData = *buttonInteractionData;
                     this->responseData.channelId = buttonInteractionData->channelId;
                     this->responseData.customId = buttonInteractionData->data.modalData.customId;
@@ -477,7 +475,6 @@ namespace DiscordCoreAPI {
                     break;
                 }
                 else {
-                    std::cout << "WERE NOT HERE THIS IS NOT IT0202!" << std::endl;
                     this->responseData.interactionData = *buttonInteractionData;
                     this->responseData.channelId = buttonInteractionData->channelId;
                     this->responseData.customId = buttonInteractionData->data.modalData.customId;

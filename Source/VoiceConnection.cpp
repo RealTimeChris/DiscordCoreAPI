@@ -119,6 +119,9 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::play() {
 		if (this != nullptr) {
 			this->playSetEvent.set();
+			if (this->theTask->getStatus() != CoRoutineStatus::Running) {
+				this->theTask->get();
+			}
 			return true;
 		}
 		return false;
