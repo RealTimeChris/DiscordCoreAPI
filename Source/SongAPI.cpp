@@ -272,8 +272,8 @@ namespace DiscordCoreAPI {
 				getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(getSoundCloudAPIMap()->at(this->guildId)->downloadAndStreamAudio(newerSong, getSoundCloudAPIMap()->at(this->guildId).get()));
 			}
 			else if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.type == SongType::YouTube) {
-				getSoundCloudAPIMap()->at(guildMember.guildId)->stop();
-				auto newerSong = getSoundCloudAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
+				getYouTubeAPIMap()->at(guildMember.guildId)->stop();
+				auto newerSong = getYouTubeAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
 				newerSong.addedByUserId = guildMember.user.id;
 				getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(getYouTubeAPIMap()->at(this->guildId)->downloadAndStreamAudio(newerSong, getYouTubeAPIMap()->at(this->guildId).get()));
 			}
