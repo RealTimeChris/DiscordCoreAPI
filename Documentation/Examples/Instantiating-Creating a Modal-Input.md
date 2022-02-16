@@ -9,10 +9,7 @@
 
 #pragma once
 
-#ifndef _TEST_
-#define _TEST_
-
-#include <../DiscordCoreClient02.hpp>
+#include "Index.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -21,7 +18,7 @@ namespace DiscordCoreAPI {
 		Test() {
 			this->commandName = "test";
 			this->helpDescription = "Testing purposes!";
-			EmbedData msgEmbed;
+			EmbedData msgEmbed{};
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -29,24 +26,25 @@ namespace DiscordCoreAPI {
 			this->helpEmbed = msgEmbed;
 		}
 
-		Test* create() {
-			return new Test;
+		std::unique_ptr<BaseFunction> create() {
+			return  std::make_unique<Test>();
 		}
 
-		virtual task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual void execute( std::unique_ptr<BaseFunctionArguments> args) {
+			try {
 
-			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
-
-			RespondToInputEventData dataPackage{ args->eventData };
-			dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
-			dataPackage.addButton(false, "test_button", "Test Button", "✅", ButtonStyle::Danger);
-			dataPackage.addContent("Test Response");
-			dataPackage.addMessageEmbed(EmbedData{ .description = "TESTING!",.title = "Test Title" });
-			auto inputEventData = InputEvents::respondToEvent(dataPackage);
-
-			co_return;
+				RespondToInputEventData dataPackage{ args->eventData };
+				dataPackage.addModal("Test Modal", "test_modal", "Test Modal Small", "test_modal", true, 1, 46, TextInputStyle::Paragraph, "TEST MODAL", "TestModal");
+				dataPackage.type = InputEventResponseType::Interaction_Response;
+				auto newEvent = InputEvents::respondToEvent(dataPackage);
+				
+				return;
+			}
+			catch (...) {
+				reportException("Test::executeAsync Error: ");
+			}
 		}
+		virtual ~Test() {};
 	};
 }
-#endif
 ```
