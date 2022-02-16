@@ -807,9 +807,7 @@ namespace DiscordCoreInternal {
 					co_return;
 				}
 				if (this->webSocket != nullptr) {
-					if (!this->webSocket->processIO()) {
-						this->onClosedExternal();
-					}
+					this->webSocket->processIO();
 				}
 				if (this->voiceSocket != nullptr) {
 					this->voiceSocket->readData(true);
