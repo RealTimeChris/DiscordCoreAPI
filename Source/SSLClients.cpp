@@ -45,19 +45,11 @@ namespace DiscordCoreInternal {
 
 	bool HttpSSLClient::connect(std::string baseUrl, std::string portNew) {
 		try {
-			std::string baseUrlNew{};
-			if (baseUrl.find(".com") != std::string::npos) {
-				baseUrlNew = baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".com") + std::string(".com").size() - std::string("https://").size());
-			}
-			else if (baseUrl.find(".org") != std::string::npos) {
-				baseUrlNew = baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
-			}
-
 			std::string certPath{};
-			if (baseUrlNew.find("soundcloud") != std::string::npos || baseUrlNew.find("sndcdn") != std::string::npos) {
+			if (baseUrl.find("soundcloud") != std::string::npos || baseUrl.find("sndcdn") != std::string::npos) {
 				certPath = this->soundcloudCertPath;
 			}
-			else if (baseUrlNew.find("youtube") != std::string::npos || baseUrlNew.find("google") != std::string::npos) {
+			else if (baseUrl.find("youtube") != std::string::npos || baseUrl.find("google") != std::string::npos) {
 				certPath = this->googleCertPath;
 			}
 			else {
@@ -105,7 +97,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			if (!BIO_set_conn_hostname(this->connectionBio, std::string(baseUrlNew + ":" + portNew).c_str())) {
+			if (!BIO_set_conn_hostname(this->connectionBio, std::string(baseUrl + ":" + portNew).c_str())) {
 				reportSSLError("BIO_set_connt_hostname() Error: ");
 				return false;
 			}
@@ -115,7 +107,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); !returnValue) {
+			if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrl.c_str()); !returnValue) {
 				reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl);
 				return false;
 			}

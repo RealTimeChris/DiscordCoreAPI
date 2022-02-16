@@ -376,7 +376,14 @@ namespace DiscordCoreInternal {
 		try {
 			theConnection.resetValues();
 			if (theConnection.doWeConnect) {
-				if (!theConnection.connect(workload.baseUrl)) {
+				std::string stringNew{};
+				if (workload.baseUrl.find(".com") != std::string::npos) {
+					stringNew = workload.baseUrl.substr(workload.baseUrl.find("https://") + std::string("https://").size(), workload.baseUrl.find(".com") + std::string(".com").size() - std::string("https://").size());
+				}
+				else if (workload.baseUrl.find(".org") != std::string::npos) {
+					stringNew = workload.baseUrl.substr(workload.baseUrl.find("https://") + std::string("https://").size(), workload.baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
+				}
+				if (!theConnection.connect(stringNew)) {
 					return HttpData{};
 				};
 				theConnection.doWeConnect = false;
@@ -425,7 +432,14 @@ namespace DiscordCoreInternal {
 			theConnection.rateLimitDataPtr = rateLimitDataPtr.get();
 			for (auto& value : workload) {
 				if (currentBaseUrl != value.baseUrl) {
-					if (!theConnection.connect(value.baseUrl)){
+					std::string stringNew{};
+					if (value.baseUrl.find(".com") != std::string::npos) {
+						stringNew = value.baseUrl.substr(value.baseUrl.find("https://") + std::string("https://").size(), value.baseUrl.find(".com") + std::string(".com").size() - std::string("https://").size());
+					}
+					else if (value.baseUrl.find(".org") != std::string::npos) {
+						stringNew = value.baseUrl.substr(value.baseUrl.find("https://") + std::string("https://").size(), value.baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
+					}
+					if (!theConnection.connect(stringNew)) {
 						continue;
 					};
 				}
