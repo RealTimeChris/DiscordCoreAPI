@@ -514,9 +514,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 #else
-		int32_t ofcmode{ fcntl(this->theSocket, F_GETFL, 0) };
-		ofcmode |= O_NONBLOCK;
-		if (auto returnValue = fcntl(this->theSocket, F_SETFL, ofcmode); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
 			reportError("fcntl() Error: ", returnValue);
 			return;
 		}
