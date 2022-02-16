@@ -150,6 +150,7 @@ namespace DiscordCoreAPI {
         UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
                 this->theFunction.swap(other.theFunction);
+                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
             }
             return *this;
         }
@@ -177,6 +178,9 @@ namespace DiscordCoreAPI {
         }
 
         void operator()(ArgTypes... args) {
+            if (this->theTask.getStatus() == CoRoutineStatus::Running) {
+                this->theTask.cancel();
+            }
             this->theTask = this->theFunction(args...);
         }
 
