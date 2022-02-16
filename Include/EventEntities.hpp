@@ -123,18 +123,18 @@ namespace DiscordCoreAPI {
             EventDelegateToken eventToken{};
             eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
             eventToken.eventId = this->eventId;
-            this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
+            this->theFunctions->insert_or_assign(eventToken, std::move(eventDelegate));
             return eventToken;
         }
 
         void remove(EventDelegateToken  eventToken) {
-            if (this->theFunctions.contains(eventToken)) {
-                this->theFunctions.erase(eventToken);
+            if (this->theFunctions->contains(eventToken)) {
+                this->theFunctions->erase(eventToken);
             }
         }
 
         void operator()(ArgTypes... args) {
-            for (auto& [key, value] : this->theFunctions) {
+            for (auto& [key, value] : *this->theFunctions) {
                 value.theFunction(args...);
             }
         }
