@@ -132,6 +132,10 @@ namespace DiscordCoreAPI {
 		else {
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		}
+		if (getSongAPIMap()->at(guildMember.guildId)->theTask02 != nullptr) {
+			getSongAPIMap()->at(guildMember.guildId)->theTask02->cancel();
+			getSongAPIMap()->at(guildMember.guildId)->theTask02.reset(nullptr);
+		}
 		AudioFrameData frameData{};
 		while (getAudioBufferMap()->at(guildMember.guildId)->tryReceive(frameData)) {};
 		frameData.type = AudioFrameType::Skip;
@@ -140,6 +144,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::stop(std::string guildId) {
+		if (getSongAPIMap()->at(guildId)->theTask02 != nullptr) {
+			getSongAPIMap()->at(guildId)->theTask02->cancel();
+			getSongAPIMap()->at(guildId)->theTask02.reset(nullptr);
+		}
 		getVoiceConnectionMap()->at(guildId)->stop();
 		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()->at(guildId)->stop();
@@ -265,9 +273,6 @@ namespace DiscordCoreAPI {
 
 	bool SongAPI::sendNextSong(GuildMember guildMember) {
 		std::lock_guard<std::mutex> accessLock{ SongAPI::accessMutex };
-		if (!getSongAPIMap()->contains(guildMember.guildId)) {
-			getSongAPIMap()->insert_or_assign(guildMember.guildId, std::make_unique<SongAPI>(guildMember.guildId));
-		}
 		getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId);
 		if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.songId == "") {
 			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId)) {

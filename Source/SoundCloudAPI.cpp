@@ -247,7 +247,13 @@ namespace DiscordCoreAPI {
 				eventData.wasItAFail = true;
 				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
 				eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
-				getSongAPIMap()->at(soundCloudAPI->guildId)->onSongCompletionEvent(eventData);
+				if (getSongAPIMap()->at(soundCloudAPI->guildId)->theTask02 != nullptr) {
+					getSongAPIMap()->at(soundCloudAPI->guildId)->theTask02->cancel();
+					getSongAPIMap()->at(soundCloudAPI->guildId)->theTask02 = std::make_unique<CoRoutine<void>>(getSongAPIMap()->at(soundCloudAPI->guildId)->onSongCompletionEvent(eventData));
+				}
+				else {
+					getSongAPIMap()->at(soundCloudAPI->guildId)->theTask02 = std::make_unique<CoRoutine<void>>(getSongAPIMap()->at(soundCloudAPI->guildId)->onSongCompletionEvent(eventData));
+				}
 				co_return;
 			}
 		breakOut:

@@ -149,8 +149,7 @@ namespace DiscordCoreAPI {
 
         UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunction = std::move(other.theFunction);
-                other.theFunction = std::function<ReturnType(ArgTypes...)>{};
+                this->theFunction.swap(other.theFunction);
             }
             return *this;
         }
@@ -177,12 +176,12 @@ namespace DiscordCoreAPI {
             this->theFunction = theFunctionNew;
         }
 
-        CoRoutine<ReturnType> operator()(ArgTypes... args) {
-            return this->theFunction.target(args...);
+        ReturnType operator()(ArgTypes... args) {
+            return this->theFunction(args...);
         }
 
     protected:
-        std::function<ReturnType(ArgTypes...)>theFunction{};
+        std::function<ReturnType(ArgTypes...)> theFunction{ nullptr };
     };
 
    struct DiscordCoreAPI_Dll EventCore {
@@ -241,7 +240,7 @@ namespace DiscordCoreAPI {
             int64_t millisecondsWaited{ 0 };
             int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
             while (true) {
-                if (*this->theEventState.load(std::memory_order_consume)) {
+                if (*this->theEventState.load()) {
                     return true;
                 }
                 else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
