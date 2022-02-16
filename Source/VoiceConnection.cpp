@@ -118,11 +118,6 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::play() {
 		if (this != nullptr) {
-			if (!this->areWeInstantiated) {
-				this->areWeInstantiated = true;
-				this->theTask->get();
-				this->areWeInstantiated = false;
-			}
 			this->playSetEvent.set();
 			return true;
 		}
@@ -357,7 +352,7 @@ namespace DiscordCoreAPI {
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.rawFrameData.data.clear();
 					}
-					else if ((this->audioData.type == AudioFrameType::Skip || (this->audioData.encodedFrameData.data.size() == 0 && this->audioData.rawFrameData.data.size() == 0)) && !this->areWeStopping) {
+					else if (this->audioData.type == AudioFrameType::Skip && !this->areWeStopping) {
 						SongCompletionEventData completionEventData{};
 						completionEventData.voiceConnection = this;
 						completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();

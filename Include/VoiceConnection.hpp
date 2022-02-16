@@ -67,7 +67,6 @@ namespace DiscordCoreAPI {
 		std::atomic<bool> doWeQuit{ false };
 		bool areWeConnectedBool{ false };
 		AudioEncrypter audioEncrypter{};
-		bool areWeInstantiated{ false };
 		bool didWeJustConnect{ true };
 		bool areWeStopping{ false };
 		uint16_t sequenceIndex{ 0 };

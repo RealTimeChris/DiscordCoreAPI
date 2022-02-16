@@ -2940,7 +2940,7 @@ namespace DiscordCoreInternal {
                 }
 
                 if (value.contains("label") && !value["label"].is_null()) {
-                    newData.options.shrink_to_fit();
+                    newData.label = value["label"].get<std::string>();
                 }
 
                 if (value.contains("min_length") && !value["min_length"].is_null()) {

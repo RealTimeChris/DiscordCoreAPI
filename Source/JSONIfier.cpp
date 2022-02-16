@@ -1249,8 +1249,6 @@ namespace DiscordCoreInternal {
 			componentsActionRow.push_back(componentActionRow);
 		}
 
-		
-
 		if (dataPackage.data.data.content != "") {
 			nlohmann::json data = { {"type", dataPackage.data.type},
 					{"tts", dataPackage.data.data.tts},
