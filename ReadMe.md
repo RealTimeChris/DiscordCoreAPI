@@ -50,7 +50,7 @@
 ---
 <p align="left">
  	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(55).png?raw=true"  width="700">
-	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(86).png?raw=true"  width="700">
+	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Screenshot%20(56).png?raw=true"  width="700">
 </p>
 
 ### A Unified "Input-Event" System
