@@ -476,13 +476,7 @@ namespace DiscordCoreAPI {
 				eventData.wasItAFail = true;
 				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
 				eventData.guild = Guilds::getGuildAsync({ .guildId = youtubeAPI->guildId }).get();
-				if (getSongAPIMap()->at(youtubeAPI->guildId)->theTask02 != nullptr) {
-					getSongAPIMap()->at(youtubeAPI->guildId)->theTask02->cancel();
-					getSongAPIMap()->at(youtubeAPI->guildId)->theTask02 = std::make_unique<CoRoutine<void>>(getSongAPIMap()->at(youtubeAPI->guildId)->onSongCompletionEvent(eventData));
-				}
-				else {
-					getSongAPIMap()->at(youtubeAPI->guildId)->theTask02 = std::make_unique<CoRoutine<void>>(getSongAPIMap()->at(youtubeAPI->guildId)->onSongCompletionEvent(eventData));
-				}
+				getSongAPIMap()->at(youtubeAPI->guildId)->onSongCompletionEvent(eventData);
 				co_return;
 			}
 		breakOut:

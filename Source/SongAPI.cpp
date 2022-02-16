@@ -132,10 +132,6 @@ namespace DiscordCoreAPI {
 		else {
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		}
-		if (getSongAPIMap()->at(guildMember.guildId)->theTask02 != nullptr) {
-			getSongAPIMap()->at(guildMember.guildId)->theTask02->cancel();
-			getSongAPIMap()->at(guildMember.guildId)->theTask02.reset(nullptr);
-		}
 		AudioFrameData frameData{};
 		while (getAudioBufferMap()->at(guildMember.guildId)->tryReceive(frameData)) {};
 		frameData.type = AudioFrameType::Skip;
@@ -144,10 +140,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::stop(std::string guildId) {
-		if (getSongAPIMap()->at(guildId)->theTask02 != nullptr) {
-			getSongAPIMap()->at(guildId)->theTask02->cancel();
-			getSongAPIMap()->at(guildId)->theTask02.reset(nullptr);
-		}
 		getVoiceConnectionMap()->at(guildId)->stop();
 		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()->at(guildId)->stop();

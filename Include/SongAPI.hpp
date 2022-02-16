@@ -128,7 +128,6 @@ namespace DiscordCoreAPI {
 
 		static std::mutex accessMutex;
 
-		std::unique_ptr<CoRoutine<void>>theTask02{ nullptr };
 		std::unique_ptr<CoRoutine<void>>theTask{ nullptr };
 		bool areWeInstantiated{ false };
 		std::string guildId{ "" };
