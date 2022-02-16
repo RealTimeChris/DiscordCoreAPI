@@ -8,6 +8,7 @@
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/Output Files/Release",
       "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "/usr/bin/g++-11",
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Release",
         "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
@@ -23,6 +24,7 @@
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/Output Files/Debug",
       "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "/usr/bin/g++-11",
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Debug",
         "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
