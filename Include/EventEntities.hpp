@@ -7,6 +7,7 @@
 
 #include <FoundationEntities.hpp>
 #include <CoRoutine.hpp>
+#include <iostream>
 
 namespace DiscordCoreAPI {
 
@@ -58,7 +59,7 @@ namespace DiscordCoreAPI {
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunction = std::move(other.theFunction);
+                this->theFunction.swap(other.theFunction);
                 other.theFunction = std::function<ReturnType(ArgTypes...)>{};
             }
             return *this;
@@ -94,8 +95,8 @@ namespace DiscordCoreAPI {
 
         Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
             if (this != &other) {
-                this->theFunctions = std::move(other.theFunctions);
-                other.theFunctions = std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
+                this->theFunctions.swap(other.theFunctions);
+                other.theFunctions = std::make_unique<std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>>();
                 this->eventId = std::move(other.eventId);
                 other.eventId = std::string{};
             }
@@ -139,7 +140,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-        std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
+        std::unique_ptr<std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>> theFunctions{ std::make_unique<std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>>() };
         std::string eventId{ "" };
     };
 
@@ -179,6 +180,7 @@ namespace DiscordCoreAPI {
 
         void operator()(ArgTypes... args) {
             if (this->theTask.getStatus() == CoRoutineStatus::Running) {
+                std::cout << "WERE LEAVING LEAVING LEAVING!" << std::endl;
                 this->theTask.cancel();
             }
             this->theTask = this->theFunction(args...);
