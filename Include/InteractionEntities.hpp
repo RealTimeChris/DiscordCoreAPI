@@ -214,6 +214,7 @@ namespace DiscordCoreAPI {
             }
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
+            this->messagePackage.channelId = dataPackage.channelId;
             this->data.data.allowedMentions = dataPackage.allowedMentions;
             this->data.data.components = dataPackage.components;
             this->data.data.content = dataPackage.content;
@@ -627,8 +628,6 @@ namespace DiscordCoreAPI {
         InteractionData interactionData{};///< Interaction data.
         std::string customIdSmall{ "" };///< The customId of the particular input.
         std::string channelId{ "" };///< The Channel id where it took place.
-        std::string messageId{ "" };///< The Message id where it took place.
-        std::string buttonId{ "" };///< The id of the button, for identification.
         std::string customId{ "" };///< The customId of the modal component.
         std::string userId{ "" };///< The User id who selected the menu options.
         std::string value{ "" };/// The input value of the modal component.
@@ -648,19 +647,16 @@ namespace DiscordCoreAPI {
         /// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
         /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
         /// \returns A std::vector of ButtonResponseData.
-        CoRoutine < std::vector<ModalResponseData>> collectModalData(int32_t maxWaitTimeInMsNew);
+        CoRoutine<ModalResponseData> collectModalData(int32_t maxWaitTimeInMsNew);
 
         ~ModalCollector();
 
     protected:
 
-        std::unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
-        std::vector<ModalResponseData> responseVector{};
+        std::unique_ptr<UnboundedMessageBlock<InteractionData>> modalIncomingInteractionBuffer{ nullptr };
         int32_t currentCollectedButtonCount{ 0 };
-        InteractionData interactionData{};
+        ModalResponseData responseData{};
         std::string channelId{ "" };
-        std::string messageId{ "" };
-        std::string modalId{ "" };
         uint32_t maxTimeInMs{ 0 };
         bool doWeQuit{ false };
 

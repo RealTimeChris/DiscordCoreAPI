@@ -4126,6 +4126,21 @@ namespace DiscordCoreInternal {
     }
 
     template<>
+    void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::ModalInteractionData& pDataStructure) {
+        if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
+            pDataStructure.value = jsonObjectData.at("components").at(0).at("components").at(0).at("value").get<std::string>();
+        }
+
+        if (jsonObjectData.contains("custom_id") && !jsonObjectData["custom_id"].is_null()) {
+            pDataStructure.customId = jsonObjectData.at("custom_id").get<std::string>();
+        }
+
+        if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
+            pDataStructure.customIdSmall = jsonObjectData.at("components").at(0).at("components").at(0).at("custom_id").get<std::string>();
+        }
+    }
+
+    template<>
     void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::InteractionDataData& pDataStructure) {
         if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
             DataParser::parseObject(jsonObjectData, pDataStructure.applicationCommanddata);
@@ -4138,6 +4153,10 @@ namespace DiscordCoreInternal {
 
         if (jsonObjectData.contains("component_type") && !jsonObjectData["component_type"].is_null()) {
             DataParser::parseObject(jsonObjectData, pDataStructure.componentData);
+        }
+
+        if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
+            DataParser::parseObject(jsonObjectData, pDataStructure.modalData);
         }
     }
 

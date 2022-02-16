@@ -444,22 +444,21 @@ namespace DiscordCoreAPI {
 
     ModalCollector::ModalCollector(InputEventData dataPackage) {
         this->channelId = dataPackage.getChannelId();
-        this->messageId = dataPackage.getMessageId();
-        this->interactionData = dataPackage.getInteractionData();
-        this->buttonIncomingInteractionBuffer = std::make_unique<UnboundedMessageBlock<InteractionData>>();
-        ModalCollector::modalInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer.get());
+        std::cout << "CHANNEL ID: " << this->channelId << std::endl;
+        this->modalIncomingInteractionBuffer = std::make_unique<UnboundedMessageBlock<InteractionData>>();
+        ModalCollector::modalInteractionBufferMap.insert_or_assign(this->channelId, this->modalIncomingInteractionBuffer.get());
     }
 
-    CoRoutine<std::vector<ModalResponseData>> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {
-        co_await NewThreadAwaitable<std::vector<ModalResponseData>>();
+    CoRoutine<ModalResponseData> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {
+        co_await NewThreadAwaitable<ModalResponseData>();
         this->maxTimeInMs = maxWaitTimeInMsNew;
         this->run();
-        co_return this->responseVector;
+        co_return this->responseData;
     }
 
     ModalCollector::~ModalCollector() {
-        if (ModalCollector::modalInteractionBufferMap.contains(this->channelId + this->messageId)) {
-            ModalCollector::modalInteractionBufferMap.erase(this->channelId + this->messageId);
+        if (ModalCollector::modalInteractionBufferMap.contains(this->channelId)) {
+            ModalCollector::modalInteractionBufferMap.erase(this->channelId);
         }
     }
 
@@ -467,26 +466,34 @@ namespace DiscordCoreAPI {
         while (!this->doWeQuit) {
             try {
                 auto buttonInteractionData = std::make_unique<InteractionData>();
-                if (waitForTimeToPass(*this->buttonIncomingInteractionBuffer.get(), *buttonInteractionData.get(), this->maxTimeInMs)) {
-                    auto response = std::make_unique<ModalResponseData>();
-                    this->interactionData = *buttonInteractionData;
-                    response->channelId = this->channelId;
-                    response->messageId = this->messageId;
-                    response->userId = buttonInteractionData->user.id;
-                    response->interactionData = this->interactionData;
-                    response->customId = this->interactionData.data.componentData.customId;
-                    response->value = this->interactionData.data.componentData.values.at(0);
-                    this->responseVector.push_back(*response);
+                if (waitForTimeToPass(*this->modalIncomingInteractionBuffer.get(), *buttonInteractionData.get(), this->maxTimeInMs)) {
+                    std::cout << "WERE NOT HERE THIS IS NOT IT!" << std::endl;
+                    this->responseData.interactionData = *buttonInteractionData;
+                    this->responseData.channelId = buttonInteractionData->channelId;
+                    this->responseData.customId = buttonInteractionData->data.modalData.customId;
+                    this->responseData.customIdSmall = buttonInteractionData->data.modalData.customIdSmall;
+                    this->responseData.userId = buttonInteractionData->user.id;
+                    this->responseData.value = buttonInteractionData->data.modalData.value;
+                    break;
+                }
+                else {
+                    std::cout << "WERE NOT HERE THIS IS NOT IT0202!" << std::endl;
+                    this->responseData.interactionData = *buttonInteractionData;
+                    this->responseData.channelId = buttonInteractionData->channelId;
+                    this->responseData.customId = buttonInteractionData->data.modalData.customId;
+                    this->responseData.customIdSmall = buttonInteractionData->data.modalData.customIdSmall;
+                    this->responseData.userId = buttonInteractionData->user.id;
+                    this->responseData.value = buttonInteractionData->data.modalData.value;
                     break;
                 }
             }
             catch (...) {
                 reportException("ModalCollector::run()");
-                ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+                ButtonCollector::buttonInteractionBufferMap.erase(this->channelId);
             }
         }
 
-        ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+        ButtonCollector::buttonInteractionBufferMap.erase(this->channelId);
     }
 
     std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};

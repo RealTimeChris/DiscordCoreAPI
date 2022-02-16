@@ -106,6 +106,7 @@ namespace DiscordCoreAPI {
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
 		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
 		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer->interactionData.channelId = dataPackage.messagePackage.channelId;
 		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer->responseType = InputEventResponseType::Interaction_Response;
 		dataPackageNewer->interactionData.message.components = dataPackage.data.data.components;

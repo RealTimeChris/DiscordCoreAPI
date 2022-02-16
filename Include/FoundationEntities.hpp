@@ -2093,9 +2093,14 @@ namespace DiscordCoreAPI {
     /// Component Interaction data. \brief Component Interaction data.
     struct DiscordCoreAPI_Dll ComponentInteractionData {
         std::vector<std::string> values{};///< The values of the components.
-        std::string customIdSmall{ "" };///< The custom id of a particular modal input.
         ComponentType componentType{};///< The type of component.
         std::string customId{ "" };///< The custom id of the Interaction entity.
+    };
+
+    struct DiscordCoreAPI_Dll ModalInteractionData {
+        std::string customIdSmall{ "" };///< The custom id of a particular modal input.
+        std::string customId{ "" };///< The custom id of the Interaction entity.
+        std::string value{ "" };///< The input value of the modal.
     };
 
     /// Allowable mentions for a Message. \brief Allowable mentions for a Message.
@@ -2108,10 +2113,11 @@ namespace DiscordCoreAPI {
 
     /// Interaction types. \brief Interaction types.
     enum class InteractionType {
-        Ping = 1,///< Ping.
-        Application_Command = 2,///< Application command.
+        Ping=1,///< Ping.
+        Application_Command=2,///< Application command.
         Message_Component = 3,///< Message component.
-        Application_Command_Autocomplete = 4///< Application command autocomplete.
+        Application_Command_Autocomplete = 4,///< Application command autocomplete.
+        Modal_Submit=5///<Modal submission.
     };
 
     /// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
@@ -2427,6 +2433,7 @@ namespace DiscordCoreAPI {
         MessageCommandInteractionData messageInteractionData{};///< Message command Interaction data.
         UserCommandInteractionData userInteractionData{};///< User command Interaction data.
         ComponentInteractionData componentData{};///< Component Interaction data.
+        ModalInteractionData modalData{};///< Modal Interaction data.
     };
 
     /// Interaction data. \brief Interaction data.

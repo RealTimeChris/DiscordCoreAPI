@@ -1249,37 +1249,63 @@ namespace DiscordCoreInternal {
 			componentsActionRow.push_back(componentActionRow);
 		}
 
-		nlohmann::json data = { {"type", dataPackage.data.type},
-				{"tts", dataPackage.data.data.tts},
-				{"data",{{"embeds", embedsArray},
-				{"flags", dataPackage.data.data.flags },
-			{"allowed_mentions",
-				{{"parse", parseArray},
-		{"roles", rolesArray},
-		{"users", usersArray},
-		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
-				{"components", componentsActionRow},
-				}}
-		};
+		
 
 		if (dataPackage.data.data.content != "") {
-			nlohmann::json dataNew = { { "content", dataPackage.data.data.content } };
-			data.update(dataNew);
-		}
+			nlohmann::json data = { {"type", dataPackage.data.type},
+					{"tts", dataPackage.data.data.tts},
+					{"data",{{"embeds", embedsArray},
+					{"flags", dataPackage.data.data.flags },
+				{"content", dataPackage.data.data.content},
+				{"allowed_mentions",
+					{{"parse", parseArray},
+			{"roles", rolesArray},
+			{"users", usersArray},
+			{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
+					{"components", componentsActionRow},
+					}}
+			};
+			if (dataPackage.data.data.customId != "") {
+				nlohmann::json dataNew = { {"data",{ {"custom_id", dataPackage.data.data.customId},{"title", dataPackage.data.data.title},
+					{"flags", dataPackage.data.data.flags },{"content", dataPackage.data.data.content},
+				{"allowed_mentions",
+					{{"parse", parseArray},
+			{"roles", rolesArray},
+			{"users", usersArray},
+			{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
+					{"components", componentsActionRow}} } };
+				data.update(dataNew);
+			}
 
-		if (dataPackage.data.data.customId != "") {
-			nlohmann::json dataNew = { {"data",{ {"custom_id", dataPackage.data.data.customId},{"title", dataPackage.data.data.title},
-				{"flags", dataPackage.data.data.flags },
-			{"allowed_mentions",
-				{{"parse", parseArray},
-		{"roles", rolesArray},
-		{"users", usersArray},
-		{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
-				{"components", componentsActionRow}} } };
-			data.update(dataNew);
+			return data.dump();
 		}
+		else {
+			nlohmann::json data = { {"type", dataPackage.data.type},
+					{"tts", dataPackage.data.data.tts},
+					{"data",{{"embeds", embedsArray},
+					{"flags", dataPackage.data.data.flags },
+				{"allowed_mentions",
+					{{"parse", parseArray},
+			{"roles", rolesArray},
+			{"users", usersArray},
+			{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
+					{"components", componentsActionRow},
+					}}
+			};
+			if (dataPackage.data.data.customId != "") {
+				nlohmann::json dataNew = { {"data",{ {"custom_id", dataPackage.data.data.customId},{"title", dataPackage.data.data.title},
+					{"flags", dataPackage.data.data.flags },
+				{"allowed_mentions",
+					{{"parse", parseArray},
+			{"roles", rolesArray},
+			{"users", usersArray},
+			{"repliedUser", dataPackage.data.data.allowedMentions.repliedUser}}},
+					{"components", componentsActionRow}} } };
+				data.update(dataNew);
+			}
 
-		return data.dump();
+			return data.dump();
+		}
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage) {

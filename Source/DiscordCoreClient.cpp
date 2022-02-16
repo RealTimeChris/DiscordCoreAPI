@@ -462,10 +462,12 @@ namespace DiscordCoreAPI {
 								std::unique_ptr<OnInteractionCreationData> dataPackage{ std::make_unique<OnInteractionCreationData>() };
 								dataPackage->interactionData = *interactionData;
 								std::unique_ptr<CommandData> commandData{ std::make_unique<CommandData>(*eventData) };
+								std::cout << "THE CHANNEL ID: " << dataPackage->interactionData.channelId << std::endl;
 								this->commandController.checkForAndRunCommand(std::move(commandData));
 								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 								std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
 								eventCreationData->inputEventData = *eventData;
+								std::cout << "THE CHANNEL ID: " << eventCreationData->inputEventData.getChannelId() << std::endl;
 								this->eventManager->onInputEventCreationEvent(*eventCreationData);
 							}
 							else if (interactionData->data.applicationCommanddata.type == ApplicationCommandType::Message) {
@@ -528,21 +530,24 @@ namespace DiscordCoreAPI {
 								this->eventManager->onInputEventCreationEvent(*eventCreationData);
 								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							}
-							else if (interactionData->data.componentData.componentType == ComponentType::TextInput) {
-								eventData->eventType = InputEventType::Modal_Interaction;
-								eventData->responseType = InputEventResponseType::Unset;
-								eventData->requesterId = interactionData->requesterId;
-								eventData->interactionData = *interactionData;
-								std::unique_ptr<OnInteractionCreationData> dataPackage{ std::make_unique<OnInteractionCreationData>() };
-								dataPackage->interactionData = *interactionData;
-								std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
-								eventCreationData->inputEventData = *eventData;
-								if (ModalCollector::modalInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
-									ModalCollector::modalInteractionBufferMap.at(eventData->getChannelId() + eventData->getMessageId())->send(eventData->getInteractionData());
-								}
-								this->eventManager->onInputEventCreationEvent(*eventCreationData);
-								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
+						}
+						else if (interactionData->type == InteractionType::Modal_Submit) {
+							std::cout << "WERE HERE THIS IS IT!" << std::endl;
+							eventData->eventType = InputEventType::Modal_Interaction;
+							eventData->responseType = InputEventResponseType::Unset;
+							eventData->requesterId = interactionData->requesterId;
+							eventData->interactionData = *interactionData;
+							std::unique_ptr<OnInteractionCreationData> dataPackage{ std::make_unique<OnInteractionCreationData>() };
+							dataPackage->interactionData = *interactionData;
+							std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
+							eventCreationData->inputEventData = *eventData;
+							std::cout << "CHANNEL ID: 0202 " << eventData->getChannelId() << std::endl;
+							if (ModalCollector::modalInteractionBufferMap.contains(eventData->getChannelId())) {
+								std::cout << "WERE HERE THIS IS IT!0202" << std::endl;
+								ModalCollector::modalInteractionBufferMap.at(eventData->getChannelId())->send(eventData->getInteractionData());
 							}
+							this->eventManager->onInputEventCreationEvent(*eventCreationData);
+							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 						}
 						if (Interactions::collectMessageDataBuffers.contains(interactionData->id)) {
 							std::unique_ptr<MessageData> messageData{ std::make_unique<MessageData>(interactionData->message) };
