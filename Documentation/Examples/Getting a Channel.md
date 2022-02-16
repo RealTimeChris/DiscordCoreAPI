@@ -15,7 +15,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include "../DiscordCoreClient02.hpp"
+#include <../DiscordCoreClient02.hpp>
 
 namespace DiscordCoreAPI {
 

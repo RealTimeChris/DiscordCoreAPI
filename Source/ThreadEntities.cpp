@@ -3,9 +3,9 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
-#include "ThreadEntities.hpp"
-#include "Http.hpp"
-#include "JSONIfier.hpp"
+#include <ThreadEntities.hpp>
+#include <Http.hpp>
+#include <JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

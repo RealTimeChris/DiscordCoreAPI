@@ -3,10 +3,10 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "InputEvents.hpp"
-#include "InteractionEntities.hpp"
-#include "ChannelEntities.hpp"
-#include "CoRoutine.hpp"
+#include <InputEvents.hpp>
+#include <InteractionEntities.hpp>
+#include <ChannelEntities.hpp>
+#include <CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 

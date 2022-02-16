@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "DataParsingFunctions.hpp"
-#include "SSLClients.hpp"
+#include <FoundationEntities.hpp>
+#include <DataParsingFunctions.hpp>
+#include <SSLClients.hpp>
 #include <semaphore>
 
 namespace DiscordCoreInternal {

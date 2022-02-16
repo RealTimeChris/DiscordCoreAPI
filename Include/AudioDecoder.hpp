@@ -11,8 +11,8 @@ extern "C"
 #include <libavformat/avformat.h>
 }
 
-#include "FoundationEntities.hpp"
-#include "EventEntities.hpp"
+#include <FoundationEntities.hpp>
+#include <EventEntities.hpp>
 #include <iostream>
 
 namespace DiscordCoreAPI {

@@ -3,13 +3,13 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "ApplicationCommandEntities.hpp"
-#include "DiscordCoreClient.hpp"
-#include "UserEntities.hpp"
-#include "FoundationEntities.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
-#include "JSONIfier.hpp"
+#include <ApplicationCommandEntities.hpp>
+#include <DiscordCoreClient.hpp>
+#include <UserEntities.hpp>
+#include <FoundationEntities.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
+#include <JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

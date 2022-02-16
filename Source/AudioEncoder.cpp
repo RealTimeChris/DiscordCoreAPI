@@ -3,7 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "AudioEncoder.hpp"
+#include <AudioEncoder.hpp>
 
 namespace DiscordCoreAPI {
 

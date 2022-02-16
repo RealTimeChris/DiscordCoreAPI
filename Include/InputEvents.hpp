@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "MessageEntities.hpp"
+#include <FoundationEntities.hpp>
+#include <MessageEntities.hpp>
 
 namespace DiscordCoreAPI {
 

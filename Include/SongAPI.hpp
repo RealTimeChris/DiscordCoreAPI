@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "EventEntities.hpp"
+#include <FoundationEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <EventEntities.hpp>
 
 namespace DiscordCoreAPI {
 

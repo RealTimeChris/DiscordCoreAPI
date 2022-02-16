@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "WebSocketEntities.hpp"
+#include <FoundationEntities.hpp>
+#include <WebSocketEntities.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -3,8 +3,8 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "CommandController.hpp"
-#include "DataParsingFunctions.hpp"
+#include <CommandController.hpp>
+#include <DataParsingFunctions.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include "AudioDecoder.hpp"
-#include "FoundationEntities.hpp"
-#include "ErlPacker.hpp"
-#include "SSLClients.hpp"
-#include "EventEntities.hpp"
-#include "ThreadPool.hpp"
+#include <AudioDecoder.hpp>
+#include <FoundationEntities.hpp>
+#include <ErlPacker.hpp>
+#include <SSLClients.hpp>
+#include <EventEntities.hpp>
+#include <ThreadPool.hpp>
 
 namespace DiscordCoreInternal {
 

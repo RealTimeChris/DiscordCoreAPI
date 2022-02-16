@@ -3,9 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "RoleEntities.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
+#include <RoleEntities.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
 
 namespace DiscordCoreAPI {
 

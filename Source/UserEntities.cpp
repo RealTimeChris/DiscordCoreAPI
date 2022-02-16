@@ -3,12 +3,12 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "UserEntities.hpp"
-#include "JSONIfier.hpp"
-#include "WebSocketEntities.hpp"
-#include "DataParsingFunctions.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
+#include <UserEntities.hpp>
+#include <JSONIfier.hpp>
+#include <WebSocketEntities.hpp>
+#include <DataParsingFunctions.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
 
 namespace DiscordCoreAPI {
 

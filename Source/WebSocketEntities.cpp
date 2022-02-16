@@ -3,11 +3,11 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "WebSocketEntities.hpp"
-#include "JSONIfier.hpp"
-#include "EventManager.hpp"
-#include "CommandController.hpp"
-#include "DiscordCoreClient.hpp"
+#include <WebSocketEntities.hpp>
+#include <JSONIfier.hpp>
+#include <EventManager.hpp>
+#include <CommandController.hpp>
+#include <DiscordCoreClient.hpp>
 
 namespace DiscordCoreInternal {
 

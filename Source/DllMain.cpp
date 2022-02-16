@@ -1,5 +1,5 @@
 // DllMain.cpp : Defines the entry point for the DLL application.
-#include "Index.hpp"
+#include <Index.hpp>
 
 #ifdef _WIN32
 BOOL WINAPI DllMain(

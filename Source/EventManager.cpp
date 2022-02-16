@@ -3,10 +3,10 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "EventManager.hpp"
-#include "CoRoutine.hpp"
-#include "CommandController.hpp"
-#include "DiscordCoreClient.hpp"
+#include <EventManager.hpp>
+#include <CoRoutine.hpp>
+#include <CommandController.hpp>
+#include <DiscordCoreClient.hpp>
 
 namespace DiscordCoreAPI {
 

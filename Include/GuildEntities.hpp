@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "VoiceConnection.hpp"
+#include <FoundationEntities.hpp>
+#include <VoiceConnection.hpp>
 
 namespace DiscordCoreAPI {
 

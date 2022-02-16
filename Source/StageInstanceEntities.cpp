@@ -3,9 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "StageInstanceEntities.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
+#include <StageInstanceEntities.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
 
 namespace DiscordCoreAPI {
 

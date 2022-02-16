@@ -3,9 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "Http.hpp"
-#include "CoRoutine.hpp"
-#include "SSLClients.hpp"
+#include <Http.hpp>
+#include <CoRoutine.hpp>
+#include <SSLClients.hpp>
 
 namespace DiscordCoreInternal {
 

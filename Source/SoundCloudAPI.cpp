@@ -3,10 +3,10 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "SoundCloudAPI.hpp"
-#include "Http.hpp"
-#include "DiscordCoreClient.hpp"
-#include "VoiceConnection.hpp"
+#include <SoundCloudAPI.hpp>
+#include <Http.hpp>
+#include <DiscordCoreClient.hpp>
+#include <VoiceConnection.hpp>
 
 namespace DiscordCoreAPI {
 

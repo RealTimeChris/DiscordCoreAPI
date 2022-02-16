@@ -3,10 +3,10 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "ChannelEntities.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
-#include "JSONIfier.hpp"
+#include <ChannelEntities.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
+#include <JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

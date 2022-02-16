@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "Index.hpp"
+#include <Index.hpp>
 
 namespace DiscordCoreAPI {
 

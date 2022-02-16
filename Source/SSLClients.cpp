@@ -3,7 +3,7 @@
 /// Chris M.
 /// https://github.com/RealTimeChris
 
-#include "SSLClients.hpp"
+#include <SSLClients.hpp>
 
 namespace DiscordCoreInternal {
 

@@ -3,7 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "ThreadPool.hpp"
+#include <ThreadPool.hpp>
 
 namespace DiscordCoreAPI {
 

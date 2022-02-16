@@ -11,8 +11,8 @@
 // main.cpp - Main entry point.
 // https://github.com/RealTimeChris
 
-#include "pch.h"
-#include "./DiscordCoreAPI/DiscordCoreClient02.hpp"
+#include <pch.h"
+#include <./DiscordCoreAPI/DiscordCoreClient02.hpp>
 
 static void onBoot(shared_ptr<DiscordCoreAPI::DiscordCoreClient> dataPackage) {
     vector<DiscordCoreAPI::Guild> guilds = DiscordCoreAPI::Guilds::getAllGuildsAsync().get();

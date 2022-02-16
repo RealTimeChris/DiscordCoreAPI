@@ -4,21 +4,21 @@
 // https://github.com/RealTimeChris
 
 
-#include "DataParsingFunctions.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "Http.hpp"
-#include "StickerEntities.hpp"
-#include "GuildEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "ChannelEntities.hpp"
-#include "MessageEntities.hpp"
-#include "GuildScheduledEventEntities.hpp"
-#include "StageInstanceEntities.hpp"
-#include "RoleEntities.hpp"
-#include "UserEntities.hpp"
-#include "WebHookEntities.hpp"
-#include "ThreadEntities.hpp"
-#include "ReactionEntities.hpp"
+#include <DataParsingFunctions.hpp>
+#include <ApplicationCommandEntities.hpp>
+#include <Http.hpp>
+#include <StickerEntities.hpp>
+#include <GuildEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <ChannelEntities.hpp>
+#include <MessageEntities.hpp>
+#include <GuildScheduledEventEntities.hpp>
+#include <StageInstanceEntities.hpp>
+#include <RoleEntities.hpp>
+#include <UserEntities.hpp>
+#include <WebHookEntities.hpp>
+#include <ThreadEntities.hpp>
+#include <ReactionEntities.hpp>
 #include <glib-2.0/glib.h>
 
 namespace DiscordCoreInternal {

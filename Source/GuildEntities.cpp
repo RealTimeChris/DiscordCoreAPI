@@ -3,15 +3,15 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "GuildEntities.hpp"
-#include "DiscordCoreClient.hpp"
-#include "UserEntities.hpp"
-#include "VoiceConnection.hpp"
-#include "SongAPI.hpp"
-#include "YouTubeAPI.hpp"
-#include "SoundCloudAPI.hpp"
-#include "RoleEntities.hpp"
-#include "Http.hpp"
+#include <GuildEntities.hpp>
+#include <DiscordCoreClient.hpp>
+#include <UserEntities.hpp>
+#include <VoiceConnection.hpp>
+#include <SongAPI.hpp>
+#include <YouTubeAPI.hpp>
+#include <SoundCloudAPI.hpp>
+#include <RoleEntities.hpp>
+#include <Http.hpp>
 
 namespace DiscordCoreAPI {
 

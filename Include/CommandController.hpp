@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "CoRoutine.hpp"
-#include "SongAPI.hpp"
-#include "InputEvents.hpp"
-#include "VoiceConnection.hpp"
+#include <FoundationEntities.hpp>
+#include <CoRoutine.hpp>
+#include <SongAPI.hpp>
+#include <InputEvents.hpp>
+#include <VoiceConnection.hpp>
 
 namespace DiscordCoreAPI {
 

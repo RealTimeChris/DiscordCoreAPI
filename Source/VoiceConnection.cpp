@@ -3,11 +3,11 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "VoiceConnection.hpp"
-#include "WebSocketEntities.hpp"
-#include "DiscordCoreClient.hpp"
-#include "CoRoutine.hpp"
-#include "JSONIfier.hpp"
+#include <VoiceConnection.hpp>
+#include <WebSocketEntities.hpp>
+#include <DiscordCoreClient.hpp>
+#include <CoRoutine.hpp>
+#include <JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

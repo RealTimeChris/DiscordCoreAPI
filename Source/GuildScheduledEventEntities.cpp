@@ -3,9 +3,9 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "GuildScheduledEventEntities.hpp"
-#include "Http.hpp"
-#include "JSONIfier.hpp"
+#include <GuildScheduledEventEntities.hpp>
+#include <Http.hpp>
+#include <JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

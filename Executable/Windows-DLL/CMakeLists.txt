@@ -29,8 +29,8 @@ if (WIN32)
 		"../../Source/YouTubeAPI.cpp"
 	)
 
-	FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2019/Community/VC/Redist/MSVC/*/x64/Microsoft.VC${MSVC_TOOLSET_VERSION}.CRT")
-	FIND_FILE(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Redist/MSVC/*/x64/Microsoft.VC${MSVC_TOOLSET_VERSION}.CRT")
+	find_file(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2019/Community/VC/Redist/MSVC/*/x64/Microsoft.VC${MSVC_TOOLSET_VERSION}.CRT")
+	find_file(MSVCP_ATOMIC_WAIT NAMES "msvcp140_atomic_wait.dll" PATHS "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Redist/MSVC/*/x64/Microsoft.VC${MSVC_TOOLSET_VERSION}.CRT")
 	foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 		if (${OUTPUTCONFIG} STREQUAL "Release" OR ${OUTPUTCONFIG} STREQUAL "Debug")
 			message(STATUS "Copying a file...")

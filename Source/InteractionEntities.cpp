@@ -3,12 +3,12 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "InteractionEntities.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
-#include "JSONIfier.hpp"
-#include "EventEntities.hpp"
-#include "DiscordCoreClient.hpp"
+#include <InteractionEntities.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
+#include <JSONIfier.hpp>
+#include <EventEntities.hpp>
+#include <DiscordCoreClient.hpp>
 
 namespace DiscordCoreAPI {
 

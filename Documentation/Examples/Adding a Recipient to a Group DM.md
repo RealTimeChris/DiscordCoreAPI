@@ -14,7 +14,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include "IndexInitial.hpp"
+#include <IndexInitial.hpp>
 
 namespace DiscordCoreAPI {
 

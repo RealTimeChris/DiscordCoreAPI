@@ -8,8 +8,8 @@
 // main.cpp - Main entry point.
 // https://github.com/RealTimeChris
 
-#include "pch.h"
-#include "./DiscordCoreAPI-main/DiscordCoreClient02.hpp"
+#include <pch.h"
+#include <./DiscordCoreAPI-main/DiscordCoreClient02.hpp>
 
 static void onGuildCreation(DiscordCoreAPI::OnGuildCreationData dataPackage) {
     cout << "Guild Name: " << dataPackage.guild.data.name << endl;

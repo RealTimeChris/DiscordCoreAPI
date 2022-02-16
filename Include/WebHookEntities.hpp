@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "JSONIfier.hpp"
-#include "MessageEntities.hpp"
+#include <FoundationEntities.hpp>
+#include <JSONIfier.hpp>
+#include <MessageEntities.hpp>
 
 namespace DiscordCoreAPI {
 

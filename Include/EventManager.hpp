@@ -5,18 +5,18 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "EventEntities.hpp"
-#include "ChannelEntities.hpp"
-#include "GuildEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "UserEntities.hpp"
-#include "RoleEntities.hpp"
-#include "ReactionEntities.hpp"
-#include "MessageEntities.hpp"
-#include "UserEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "ThreadEntities.hpp"
+#include <FoundationEntities.hpp>
+#include <EventEntities.hpp>
+#include <ChannelEntities.hpp>
+#include <GuildEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <UserEntities.hpp>
+#include <RoleEntities.hpp>
+#include <ReactionEntities.hpp>
+#include <MessageEntities.hpp>
+#include <UserEntities.hpp>
+#include <ApplicationCommandEntities.hpp>
+#include <ThreadEntities.hpp>
 
 namespace DiscordCoreAPI {
 

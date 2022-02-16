@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "CoRoutine.hpp"
-#include "AudioEncoder.hpp"
-#include "Http.hpp"
-#include "AudioDecoder.hpp"
+#include <CoRoutine.hpp>
+#include <AudioEncoder.hpp>
+#include <Http.hpp>
+#include <AudioDecoder.hpp>
 
 namespace DiscordCoreAPI {
 

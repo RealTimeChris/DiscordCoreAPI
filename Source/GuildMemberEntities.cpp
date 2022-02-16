@@ -3,12 +3,12 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "FoundationEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "GuildEntities.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
-#include "JSONIfier.hpp"
+#include <FoundationEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <GuildEntities.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
+#include <JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

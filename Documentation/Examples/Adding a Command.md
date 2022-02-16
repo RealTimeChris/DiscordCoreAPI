@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Test.hpp"
+#include <Test.hpp>
 
 ```
 - Create a new class, within the `DiscordCoreAPI` namespace, derived from the `BaseFunction` class.
@@ -26,7 +26,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include "Index.hpp"
+#include <Index.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 // Main.cpp - Main source file, for "the framework".
 // https://github.com/RealTimeChris
 
-#include "Index.hpp"
+#include <Index.hpp>
 
 int32_t main()
 {

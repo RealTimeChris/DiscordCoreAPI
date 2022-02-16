@@ -3,7 +3,7 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "ErlPacker.hpp"
+#include <ErlPacker.hpp>
 
 namespace DiscordCoreInternal {
 

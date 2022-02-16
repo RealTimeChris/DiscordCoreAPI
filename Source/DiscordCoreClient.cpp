@@ -3,20 +3,20 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "DiscordCoreClient.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
-#include "UserEntities.hpp"
-#include "DataParsingFunctions.hpp"
-#include "RoleEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "ReactionEntities.hpp"
-#include "MessageEntities.hpp"
-#include "InputEvents.hpp"
-#include "StickerEntities.hpp"
-#include "ReactionEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "CommandController.hpp"
+#include <DiscordCoreClient.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
+#include <UserEntities.hpp>
+#include <DataParsingFunctions.hpp>
+#include <RoleEntities.hpp>
+#include <InteractionEntities.hpp>
+#include <ReactionEntities.hpp>
+#include <MessageEntities.hpp>
+#include <InputEvents.hpp>
+#include <StickerEntities.hpp>
+#include <ReactionEntities.hpp>
+#include <ApplicationCommandEntities.hpp>
+#include <CommandController.hpp>
 
 namespace DiscordCoreAPI {
 

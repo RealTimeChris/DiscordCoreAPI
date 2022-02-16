@@ -3,13 +3,13 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "FoundationEntities.hpp"
-#include "GuildEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "RoleEntities.hpp"
-#include "CoRoutine.hpp"
-#include "InputEvents.hpp"
+#include <FoundationEntities.hpp>
+#include <GuildEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <InteractionEntities.hpp>
+#include <RoleEntities.hpp>
+#include <CoRoutine.hpp>
+#include <InputEvents.hpp>
 
 namespace DiscordCoreAPI {
 

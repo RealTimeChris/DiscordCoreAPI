@@ -3,10 +3,10 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "WebHookEntities.hpp"
-#include "Http.hpp"
-#include "DataParsingFunctions.hpp"
-#include "CoRoutine.hpp"
+#include <WebHookEntities.hpp>
+#include <Http.hpp>
+#include <DataParsingFunctions.hpp>
+#include <CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 

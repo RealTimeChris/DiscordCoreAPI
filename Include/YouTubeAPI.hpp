@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "CoRoutine.hpp"
-#include "FoundationEntities.hpp"
-#include "AudioEncoder.hpp"
-#include "AudioDecoder.hpp"
+#include <CoRoutine.hpp>
+#include <FoundationEntities.hpp>
+#include <AudioEncoder.hpp>
+#include <AudioDecoder.hpp>
 #include <regex>
 
 namespace DiscordCoreAPI {

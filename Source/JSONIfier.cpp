@@ -3,19 +3,19 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "JSONIfier.hpp"
-#include "GuildEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "ChannelEntities.hpp"
-#include "MessageEntities.hpp"
-#include "RoleEntities.hpp"
-#include "WebHookEntities.hpp"
-#include "ReactionEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "UserEntities.hpp"
-#include "ThreadEntities.hpp"
-#include "GuildScheduledEventEntities.hpp"
+#include <JSONIfier.hpp>
+#include <GuildEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <ChannelEntities.hpp>
+#include <MessageEntities.hpp>
+#include <RoleEntities.hpp>
+#include <WebHookEntities.hpp>
+#include <ReactionEntities.hpp>
+#include <InteractionEntities.hpp>
+#include <ApplicationCommandEntities.hpp>
+#include <UserEntities.hpp>
+#include <ThreadEntities.hpp>
+#include <GuildScheduledEventEntities.hpp>
 
 namespace DiscordCoreInternal {
 

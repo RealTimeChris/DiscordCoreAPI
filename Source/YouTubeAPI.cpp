@@ -3,12 +3,12 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#include "YouTubeAPI.hpp"
-#include "Http.hpp"
-#include "DiscordCoreClient.hpp"
-#include "SSLClients.hpp"
-#include "VoiceConnection.hpp"
-#include "DataParsingFunctions.hpp"
+#include <YouTubeAPI.hpp>
+#include <Http.hpp>
+#include <DiscordCoreClient.hpp>
+#include <SSLClients.hpp>
+#include <VoiceConnection.hpp>
+#include <DataParsingFunctions.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -3,11 +3,11 @@
  // Chris M.
  // https://github.com/RealTimeChris
 
-#include "MessageEntities.hpp"
-#include "DiscordCoreClient.hpp"
-#include "CoRoutine.hpp"
-#include "Http.hpp"
-#include "EventEntities.hpp"
+#include <MessageEntities.hpp>
+#include <DiscordCoreClient.hpp>
+#include <CoRoutine.hpp>
+#include <Http.hpp>
+#include <EventEntities.hpp>
 
 namespace DiscordCoreAPI {
 

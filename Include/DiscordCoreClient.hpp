@@ -5,33 +5,33 @@
 
 #pragma once
 
-#include "FoundationEntities.hpp"
-#include "EventEntities.hpp"
-#include "ApplicationCommandEntities.hpp"
-#include "Http.hpp"
-#include "CommandController.hpp"
-#include "ChannelEntities.hpp"
-#include "GuildEntities.hpp"
-#include "GuildMemberEntities.hpp"
-#include "MessageEntities.hpp"
-#include "ReactionEntities.hpp"
-#include "RoleEntities.hpp"
-#include "ThreadEntities.hpp"
-#include "InteractionEntities.hpp"
-#include "EventManager.hpp"
-#include "WebSocketEntities.hpp"
-#include "GuildScheduledEventEntities.hpp"
-#include "CoRoutine.hpp"
-#include "VoiceConnection.hpp"
-#include "SoundCloudAPI.hpp"
-#include "StageInstanceEntities.hpp"
-#include "YouTubeAPI.hpp"
-#include "StickerEntities.hpp"
-#include "UserEntities.hpp"
-#include "ThreadPool.hpp"
-#include "SSLClients.hpp"
-#include "WebHookEntities.hpp"
-#include "SongAPI.hpp"
+#include <FoundationEntities.hpp>
+#include <EventEntities.hpp>
+#include <ApplicationCommandEntities.hpp>
+#include <Http.hpp>
+#include <CommandController.hpp>
+#include <ChannelEntities.hpp>
+#include <GuildEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <MessageEntities.hpp>
+#include <ReactionEntities.hpp>
+#include <RoleEntities.hpp>
+#include <ThreadEntities.hpp>
+#include <InteractionEntities.hpp>
+#include <EventManager.hpp>
+#include <WebSocketEntities.hpp>
+#include <GuildScheduledEventEntities.hpp>
+#include <CoRoutine.hpp>
+#include <VoiceConnection.hpp>
+#include <SoundCloudAPI.hpp>
+#include <StageInstanceEntities.hpp>
+#include <YouTubeAPI.hpp>
+#include <StickerEntities.hpp>
+#include <UserEntities.hpp>
+#include <ThreadPool.hpp>
+#include <SSLClients.hpp>
+#include <WebHookEntities.hpp>
+#include <SongAPI.hpp>
 
 namespace DiscordCoreAPI {
 
