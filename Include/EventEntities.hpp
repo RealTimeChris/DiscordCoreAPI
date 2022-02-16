@@ -180,7 +180,6 @@ namespace DiscordCoreAPI {
 
         void operator()(ArgTypes... args) {
             if (this->theTask.getStatus() == CoRoutineStatus::Running) {
-                std::cout << "WERE LEAVING LEAVING LEAVING!" << std::endl;
                 this->theTask.cancel();
             }
             this->theTask = this->theFunction(args...);
