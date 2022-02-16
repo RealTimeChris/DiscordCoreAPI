@@ -118,10 +118,12 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::play() {
 		if (this != nullptr) {
-			this->playSetEvent.set();
-			if (this->theTask->getStatus() != CoRoutineStatus::Running) {
+			if (!this->areWeInstantiated) {
+				this->areWeInstantiated = true;
 				this->theTask->get();
+				this->areWeInstantiated = false;
 			}
+			this->playSetEvent.set();
 			return true;
 		}
 		return false;
@@ -155,7 +157,7 @@ namespace DiscordCoreAPI {
 			this->stopSetEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
 			if (!this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
-				this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, this->voiceConnectionBuffer.get()));
+				this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, &this->voiceConnectionBuffer));
 			}
 			if (this->voiceSocketAgent != nullptr) {
 				this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_seq_cst);

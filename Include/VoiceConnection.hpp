@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		std::unique_ptr<DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>> voiceConnectionBuffer{ std::make_unique<DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>>() };
+		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionBuffer{};
 		std::unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};

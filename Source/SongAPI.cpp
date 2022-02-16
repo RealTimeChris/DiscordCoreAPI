@@ -107,9 +107,6 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::play(std::string guildId) {
-		if (getSongAPIMap()->at(guildId)->theTask->getStatus() != CoRoutineStatus::Running) {
-			getSongAPIMap()->at(guildId)->theTask->get();
-		}
 		return getVoiceConnectionMap()->at(guildId)->play();
 	}
 
