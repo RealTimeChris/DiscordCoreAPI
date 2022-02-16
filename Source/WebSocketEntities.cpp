@@ -167,7 +167,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool BaseSocketAgent::onMessageReceived() {
+	void BaseSocketAgent::onMessageReceived() {
 		try {
 			std::string messageNew = this->webSocket->getData();
 			nlohmann::json payload{};
@@ -176,7 +176,7 @@ namespace DiscordCoreInternal {
 				payload = this->erlPacker.parseEtfToJson(&messageNew);
 			}
 			catch (...) {
-				return false;
+				return;
 			}
 
 			if (this->areWeCollectingData && payload.at("t") == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
@@ -342,7 +342,7 @@ namespace DiscordCoreInternal {
 				else if (payload.at("t") == "GUILD_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Create;
 					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
-					return true;
+					return;
 				}
 				else if (payload.at("t") == "GUILD_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Update;
@@ -459,7 +459,7 @@ namespace DiscordCoreInternal {
 				else if (payload.at("t") == "PRESENCE_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Presence_Update;
 					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
-					return true;
+					return;
 				}
 				else if (payload.at("t") == "STAGE_INSTANCE_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Stage_Instance_Create;
@@ -495,12 +495,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 			std::cout << "Message received from WebSocket: " << payload.dump() << std::endl << std::endl;
-			return true;
+			return;
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 			this->onClosedExternal();
-			return false;
+			return;
 		}
 	}
 
