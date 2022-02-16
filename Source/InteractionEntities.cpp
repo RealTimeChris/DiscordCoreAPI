@@ -150,8 +150,10 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpWorkloadData workload{};
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
+            std::cout << "WERE HERE THIS IS IT: " << dataPackage.data.data.embeds.size() << std::endl;
             workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
             workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+            std::cout << "THIS IS IT: " << workload.content << std::endl;
             workload.callStack = "Interactions::createFollowUpMessageAsync";
             co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
         }
@@ -442,9 +444,53 @@ namespace DiscordCoreAPI {
         
         ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
     }
-    
+    ModalCollector::ModalCollector(InputEventData dataPackage) {
+        this->channelId = dataPackage.getChannelId();
+        this->messageId = dataPackage.getMessageId();
+        this->interactionData = dataPackage.getInteractionData();
+        this->buttonIncomingInteractionBuffer = std::make_unique<UnboundedMessageBlock<InteractionData>>();
+        ModalCollector::modalInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, this->buttonIncomingInteractionBuffer.get());
+    }
+
+    CoRoutine<std::vector<ModalResponseData>> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {
+        co_await NewThreadAwaitable<std::vector<ModalResponseData>>();
+        this->maxTimeInMs = maxWaitTimeInMsNew;
+        this->run();
+        co_return this->responseVector;
+    }
+
+    ModalCollector::~ModalCollector() {
+        if (ModalCollector::modalInteractionBufferMap.contains(this->channelId + this->messageId)) {
+            ModalCollector::modalInteractionBufferMap.erase(this->channelId + this->messageId);
+        }
+    }
+
+    void ModalCollector::run() {
+        while (!this->doWeQuit) {
+            try {
+                auto buttonInteractionData = std::make_unique<InteractionData>();
+                if (waitForTimeToPass(*this->buttonIncomingInteractionBuffer.get(), *buttonInteractionData.get(), this->maxTimeInMs)) {
+                    auto response = std::make_unique<ModalResponseData>();
+                    response->channelId = this->channelId;
+                    response->messageId = this->messageId;
+                    response->userId = buttonInteractionData->user.id;
+                    response->interactionData = this->interactionData;
+                    this->responseVector.push_back(*response);
+                    break;
+                }
+            }
+            catch (...) {
+                reportException("ButtonCollector::run()");
+                ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+            }
+        }
+
+        ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+    }
+
     std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
     std::unordered_map<std::string, std::unique_ptr<UnboundedMessageBlock<MessageData>>> Interactions::collectMessageDataBuffers{};
     std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
+    std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBufferMap{};
     DiscordCoreInternal::HttpClient* Interactions::httpClient{ nullptr };
 };

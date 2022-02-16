@@ -112,6 +112,7 @@ namespace DiscordCoreAPI {
     class VoiceConnection;
     class EditMessageData;
     class ButtonCollector;
+    class ModalCollector;
     class SoundCloudAPI;
     class Interactions;
     class EventManager;
