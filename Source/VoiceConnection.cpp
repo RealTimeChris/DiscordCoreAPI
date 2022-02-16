@@ -148,14 +148,14 @@ namespace DiscordCoreAPI {
 			this->clearAudioData();
 			this->areWeConnectedBool = true;
 			this->areWeStopping = false;
-			this->doWeQuit.store(false, std::memory_order_release);
+			this->doWeQuit.store(false, std::memory_order_seq_cst);
 			this->stopSetEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
 			if (!this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
 				this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, this->voiceConnectionBuffer.get()));
 			}
 			if (this->voiceSocketAgent != nullptr) {
-				this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_release);
+				this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_seq_cst);
 				this->voiceSocketAgent->theTask->cancel();
 				this->voiceSocketAgent->theTask.reset(nullptr);
 				this->voiceSocketAgent.reset(nullptr);
@@ -177,14 +177,14 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() {
-		this->doWeQuit.store(true, std::memory_order_release);
+		this->doWeQuit.store(true, std::memory_order_seq_cst);
 		this->stopSetEvent.set();
 		this->playSetEvent.set();
 		this->areWeConnectedBool = false;
 		this->areWePlaying = false;
 		this->areWeStopping = true;
 		if (this->voiceSocketAgent != nullptr) {
-			this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_release);
+			this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_seq_cst);
 			this->voiceSocketAgent->theTask->cancel();
 			this->voiceSocketAgent->theTask.reset(nullptr);
 			this->voiceSocketAgent.reset(nullptr);
@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
-		if (!this->doWeQuit.load(std::memory_order_consume) && this->voiceSocketAgent != nullptr) {
+		if (!this->doWeQuit.load(std::memory_order_seq_cst) && this->voiceSocketAgent != nullptr) {
 			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
 			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
 			if (this->voiceSocketAgent->webSocket != nullptr) {
@@ -253,14 +253,14 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> VoiceConnection::run() {
 		auto cancelHandle = co_await NewThreadAwaitable<void>();
 		try {
-			while (!this->doWeQuit.load(std::memory_order_consume)) {
+			while (!this->doWeQuit.load(std::memory_order_seq_cst)) {
 				if (!this->didWeJustConnect) {
 					this->audioBuffer.clearContents();
 					this->clearAudioData();
 					this->didWeJustConnect = false;
 				}
 				if (!this->playSetEvent.wait(10000)) {
-					if (this->doWeQuit.load(std::memory_order_consume)) {
+					if (this->doWeQuit.load(std::memory_order_seq_cst)) {
 						this->areWePlaying = false;
 						co_return;
 					}
@@ -268,7 +268,7 @@ namespace DiscordCoreAPI {
 				};
 				this->playSetEvent.reset();
 			start:
-				if (this->doWeQuit.load(std::memory_order_consume)) {
+				if (this->doWeQuit.load(std::memory_order_seq_cst)) {
 					this->areWePlaying = false;
 					co_return;
 				}
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 				int32_t frameCounter{ 0 };
 				int64_t totalTime{ 0 };
 				this->sendSpeakingMessage(true);
-				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !this->doWeQuit.load(std::memory_order_consume)) {
+				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !this->doWeQuit.load(std::memory_order_seq_cst)) {
 					this->areWePlaying = true;
 					if (!this->doWeReconnect->wait(0)) {
 						this->areWeConnectedBool = false;
@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 						this->pauseEvent.reset();
 						this->areWePaused = false;
 					}
-					if (this->doWeQuit.load(std::memory_order_consume)) {
+					if (this->doWeQuit.load(std::memory_order_seq_cst)) {
 						this->areWePlaying = false;
 						co_return;
 					}
@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
 						this->currentGuildMemberId = this->audioData.guildMemberId;
 					}
 					nanoSleep(100000);
-					if (this->doWeQuit.load(std::memory_order_consume)) {
+					if (this->doWeQuit.load(std::memory_order_seq_cst)) {
 						this->areWePlaying = false;
 						co_return;
 					}
@@ -340,7 +340,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						nanoSleep(18000000);
-						if (this->doWeQuit.load(std::memory_order_consume)) {
+						if (this->doWeQuit.load(std::memory_order_seq_cst)) {
 							this->areWePlaying = false;
 							co_return;
 						}
@@ -381,7 +381,7 @@ namespace DiscordCoreAPI {
 					this->areWeStopping = false;
 				}
 				
-				if (this->doWeQuit.load(std::memory_order_consume) || cancelHandle.promise().isItStopped()) {
+				if (this->doWeQuit.load(std::memory_order_seq_cst) || cancelHandle.promise().isItStopped()) {
 					co_return;
 				}
 			}

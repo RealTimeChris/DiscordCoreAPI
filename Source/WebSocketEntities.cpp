@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::recursive_mutex> accessLock{ this->accessorMutex01 };
 			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{3500} };
-			while (!this->areWeConnected.load(std::memory_order_consume) && !(dataToSend.contains("op") && (dataToSend.at("op") == 2 || dataToSend.at("op") == 6))) {
+			while (!this->areWeConnected.load(std::memory_order_seq_cst) && !(dataToSend.contains("op") && (dataToSend.at("op") == 2 || dataToSend.at("op") == 6))) {
 				if (stopWatch.hasTimePassed()) {
 					return;
 				}
@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 		try {
 			co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
-			while (!this->doWeQuit.load(std::memory_order_consume)) {
+			while (!this->doWeQuit.load(std::memory_order_seq_cst)) {
 				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 				}
@@ -216,13 +216,13 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.at("t") == "RESUMED") {
-				this->areWeConnected.store(true, std::memory_order_release);
+				this->areWeConnected.store(true, std::memory_order_seq_cst);
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
 			}
 
 			if (payload.at("t") == "READY") {
-				this->areWeConnected.store(true, std::memory_order_release);
+				this->areWeConnected.store(true, std::memory_order_seq_cst);
 				this->sessionId = payload.at("d").at("session_id");
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
@@ -237,7 +237,7 @@ namespace DiscordCoreInternal {
 				std::cout << "Reconnecting (Type 7)!" << std::endl << std::endl;
 				this->areWeResuming = true;
 				this->currentReconnectTries += 1;
-				this->areWeConnected.store(false, std::memory_order_release);
+				this->areWeConnected.store(false, std::memory_order_seq_cst);
 				this->heartbeatTimer.cancel();
 				this->webSocket.reset(nullptr);
 				this->connect();
@@ -246,7 +246,7 @@ namespace DiscordCoreInternal {
 			if (payload.at("op") == 9) {
 				std::cout << "Reconnecting (Type 9)!" << std::endl << std::endl;
 				srand(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
-				this->areWeConnected.store(false, std::memory_order_release);
+				this->areWeConnected.store(false, std::memory_order_seq_cst);
 				this->currentReconnectTries += 1;
 				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));
 				std::this_thread::sleep_for(std::chrono::milliseconds(numOfMsToWait));
@@ -646,7 +646,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onClosedInternal() {
 		this->areWeReadyToConnectEvent.reset();
 		if (this->maxReconnectTries > this->currentReconnectTries) {
-			this->areWeConnected.store(false, std::memory_order_release);
+			this->areWeConnected.store(false, std::memory_order_seq_cst);
 			this->closeCode = 1000;
 			this->currentReconnectTries += 1;
 			this->webSocket.reset(nullptr);
@@ -659,7 +659,7 @@ namespace DiscordCoreInternal {
 			this->connect();
 		}
 		else if (this->maxReconnectTries <= this->currentReconnectTries) {
-			this->doWeQuit.store(true, std::memory_order_release);
+			this->doWeQuit.store(true, std::memory_order_seq_cst);
 		}
 	}
 
@@ -681,7 +681,7 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {
-		this->doWeQuit.store(true, std::memory_order_release);
+		this->doWeQuit.store(true, std::memory_order_seq_cst);
 		this->theTask.cancel();
 		this->heartbeatTimer.cancel();
 	}
@@ -691,7 +691,7 @@ namespace DiscordCoreInternal {
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
-		this->doWeQuit.store(false, std::memory_order_release);
+		this->doWeQuit.store(false, std::memory_order_seq_cst);
 		this->doWeReconnect.set();
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
@@ -801,13 +801,15 @@ namespace DiscordCoreInternal {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
-			while (!this->doWeQuit.load(std::memory_order_consume)) {
+			while (!this->doWeQuit.load(std::memory_order_seq_cst)) {
 				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 					co_return;
 				}
 				if (this->webSocket != nullptr) {
-					this->webSocket->processIO();
+					if (!this->webSocket->processIO()) {
+						this->onClosedExternal();
+					}
 				}
 				if (this->voiceSocket != nullptr) {
 					this->voiceSocket->readData(true);
@@ -1089,7 +1091,7 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() {
-		this->doWeQuit.store(true, std::memory_order_release);
+		this->doWeQuit.store(true, std::memory_order_seq_cst);
 		this->theTask->cancel();
 		this->theTask.reset(nullptr);
 		this->heartbeatTimer.cancel();

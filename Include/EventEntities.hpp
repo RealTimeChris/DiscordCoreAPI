@@ -184,36 +184,13 @@ namespace DiscordCoreAPI {
         std::function<ReturnType(ArgTypes...)> theFunction{ nullptr };
     };
 
-   struct DiscordCoreAPI_Dll EventCore {
-
-        EventCore& operator=(const EventCore&) = delete;
-
-        EventCore(const EventCore&) = delete;
-
-        EventCore& operator=(EventCore&) = delete;
-
-        EventCore(EventCore&) = delete;
-
-        bool* getEventState() {
-            return this->theEventState.get();
-        }
-
-        EventCore() = default;
-
-    protected:
-        
-        std::unique_ptr<bool> theEventState{ std::make_unique<bool>() };
-    };
-
     class DiscordCoreAPI_Dll EventWaiter {
     public:
 
-        std::atomic<bool*> theEventState{ nullptr };
-        ReferenceCountingPtr<EventCore> theEventCore{ nullptr };
+        ReferenceCountingPtr<std::atomic<bool>> theEventState{ nullptr };
 
         EventWaiter& operator=(const EventWaiter& other) {
-            this->theEventState.store(other.theEventState.load(std::memory_order_consume), std::memory_order_release);
-            this->theEventCore = other.theEventCore;
+            this->theEventState = other.theEventState;
             return *this;
         }
 
@@ -222,8 +199,7 @@ namespace DiscordCoreAPI {
         }
 
         EventWaiter& operator=(EventWaiter& other) {
-            this->theEventState.store(other.theEventState.load(std::memory_order_consume), std::memory_order_release);
-            this->theEventCore = other.theEventCore;
+            this->theEventState = other.theEventState;
             return *this;
         }
 
@@ -232,15 +208,14 @@ namespace DiscordCoreAPI {
         }
 
         EventWaiter() {
-            this->theEventCore = new EventCore{};
-            this->theEventState.store(this->theEventCore->getEventState(), std::memory_order_release);
+            this->theEventState = new std::atomic<bool>{ true };
         }
 
         bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {
             int64_t millisecondsWaited{ 0 };
             int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
             while (true) {
-                if (*this->theEventState.load()) {
+                if (this->theEventState->load(std::memory_order_seq_cst)) {
                     return true;
                 }
                 else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
@@ -258,15 +233,11 @@ namespace DiscordCoreAPI {
         }
 
         void set() {
-            auto thePtr = this->theEventState.load(std::memory_order_consume);
-            *thePtr = true;
-            this->theEventState.store(thePtr, std::memory_order_release);
+            this->theEventState->store(true, std::memory_order_seq_cst);
         }
 
         void reset() {
-            auto thePtr = this->theEventState.load(std::memory_order_consume);
-            *thePtr = false;
-            this->theEventState.store(thePtr, std::memory_order_release);
+            this->theEventState->store(false, std::memory_order_seq_cst);
         }
     };
 
