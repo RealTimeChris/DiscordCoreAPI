@@ -361,7 +361,13 @@ namespace DiscordCoreAPI {
 						completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId,.guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.wasItAFail = false;
-						getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
+						if (getSongAPIMap()->at(this->voiceConnectInitData.guildId)->theTask02 != nullptr) {
+							getSongAPIMap()->at(this->voiceConnectInitData.guildId)->theTask02->cancel();
+							getSongAPIMap()->at(this->voiceConnectInitData.guildId)->theTask02 = std::make_unique<CoRoutine<void>>(getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData));
+						}
+						else {
+							getSongAPIMap()->at(this->voiceConnectInitData.guildId)->theTask02 = std::make_unique<CoRoutine<void>>(getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData));
+						}
 						break;
 					}
 				}

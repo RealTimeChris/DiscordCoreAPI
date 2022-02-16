@@ -177,8 +177,8 @@ namespace DiscordCoreAPI {
             this->theFunction = theFunctionNew;
         }
 
-        void operator()(ArgTypes... args) {
-            this->theFunction(args...);
+        CoRoutine<ReturnType> operator()(ArgTypes... args) {
+            return this->theFunction.target(args...);
         }
 
     protected:
