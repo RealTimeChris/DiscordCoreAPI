@@ -192,9 +192,9 @@ namespace DiscordCoreAPI {
 		this->sendSpeakingMessage(false);
 		this->theTask->cancel();
 		this->theTask.reset(nullptr);
-		auto thePtr = getSongAPIMap().at(this->voiceConnectInitData.guildId).get();
+		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
 		if (thePtr != nullptr) {
-			getSongAPIMap().at(this->voiceConnectInitData.guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
+			getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
 		}
 	}
 
@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 						completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId,.guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.wasItAFail = false;
-						getSongAPIMap().at(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
+						getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
 						break;
 					}
 				}
@@ -387,9 +387,9 @@ namespace DiscordCoreAPI {
 	};
 
 	VoiceConnection::~VoiceConnection() {
-		auto thePtr = getSongAPIMap().at(this->voiceConnectInitData.guildId).get();
+		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
 		if (thePtr != nullptr) {
-			getSongAPIMap().at(this->voiceConnectInitData.guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
+			getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
 		}
 		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
 	}
