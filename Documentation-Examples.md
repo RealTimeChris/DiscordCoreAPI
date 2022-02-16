@@ -18,6 +18,10 @@
 - ### [Instantiating/Creating a Select-Menu](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Select-Menu.md)
 - ### [Collecting Select-Menu Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Select-Menu%20Input.md)
 
+## Modal Stuff:
+- ### [Instantiating/Creating a Modal-Text-Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Instantiating-Creating%20a%20Modal-Input.md)
+- ### [Collecting Modal-Text-Input](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Collecting%20Modal%20Input.md)
+
 ## Voice Connection Stuff:
 - ### [Connecting To/Disconnecting From a Voice Channel](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Examples/Conneting%20To-Disconnnecting%20From%20a%20Voice%20Channel.md)
 
