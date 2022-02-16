@@ -1,7 +1,7 @@
 ### **Instantiating/Creating a Modal-Input:**
 ---
-- Create a data structure of type `DiscordCoreAPI::RespondToInputEventData`, and add either some content or a message embed.
-- Add one or more buttons by using the `addModal` function of the `DiscordCoreAPI::RespondToInputEventData` structure.
+- Create a data structure of type `DiscordCoreAPI::RespondToInputEventData`.
+- Add a modal-text-input using the `addModal` function of the `DiscordCoreAPI::RespondToInputEventData` structure.
 - Call the `InputEvents::respondToEvent` function, passing it the `DiscordCoreAPI::RespondToInputEventData` structure.
 ```cpp
 // Test.hpp - Header for the "test" command.
