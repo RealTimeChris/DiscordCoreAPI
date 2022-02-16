@@ -274,12 +274,14 @@ namespace DiscordCoreAPI {
 		try {
 			switch (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.type) {
 			case SongType::SoundCloud: {
+				getSoundCloudAPIMap()->at(guildMember.guildId)->stop();
 				auto newerSong = getSoundCloudAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
 				newerSong.addedByUserId = guildMember.user.id;
 				getSoundCloudAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
 				return true;
 			}
 			case SongType::YouTube: {
+				getYouTubeAPIMap()->at(guildMember.guildId)->stop();
 				auto newerSong = getYouTubeAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
 				newerSong.addedByUserId = guildMember.user.id;
 				getYouTubeAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
