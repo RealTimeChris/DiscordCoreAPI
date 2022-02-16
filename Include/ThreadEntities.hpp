@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
-	/// An interface class DiscordCoreAPI_Dll for the Thread related endpoints. \brief An interface class DiscordCoreAPI_Dll for the Thread related endpoints.
+	/// An interface class for the Thread related endpoints. \brief An interface class for the Thread related endpoints.
 	class DiscordCoreAPI_Dll Threads {
 	public:
 

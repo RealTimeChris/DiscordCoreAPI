@@ -446,7 +446,7 @@ namespace DiscordCoreAPI {
     * @{
     */
 
-    /// An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints.
+    /// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
     class DiscordCoreAPI_Dll Interactions {
     public:
 
