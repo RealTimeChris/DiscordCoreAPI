@@ -4,7 +4,7 @@
 // https://github.com/RealTimeChris
 
 #include <../Include/Index.hpp>
-#include <Commands/CommandsList.hpp>
+#include "Commands/CommandsList.hpp"
 
 void onBoot02(DiscordCoreAPI::DiscordCoreClient* thePtr) {
     std::vector<DiscordCoreAPI::ActivityData> activities{};
