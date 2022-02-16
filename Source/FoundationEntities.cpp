@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
         theTimeStamp += year + "-";
         theTimeStamp += month + "-";
         theTimeStamp += day;
-        theTimeStamp += "ObjectType" + hour;
+        theTimeStamp += "T" + hour;
         theTimeStamp += ":" + minute;
         theTimeStamp += ":" + second;
         return theTimeStamp;
