@@ -263,6 +263,27 @@ namespace DiscordCoreAPI {
 		getSongAPIMap()->at(guildId)->playlist.currentSong = song;
 	}
 
+	void SongAPI::sendNextSongFinal(GuildMember guildMember) {
+		try {
+			if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.type == SongType::SoundCloud) {
+				getSoundCloudAPIMap()->at(guildMember.guildId)->stop();
+				auto newerSong = getSoundCloudAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
+				newerSong.addedByUserId = guildMember.user.id;
+				getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(getSoundCloudAPIMap()->at(this->guildId)->downloadAndStreamAudio(newerSong, getSoundCloudAPIMap()->at(this->guildId).get()));
+			}
+			else if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.type == SongType::YouTube) {
+				getSoundCloudAPIMap()->at(guildMember.guildId)->stop();
+				auto newerSong = getSoundCloudAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
+				newerSong.addedByUserId = guildMember.user.id;
+				getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(getYouTubeAPIMap()->at(this->guildId)->downloadAndStreamAudio(newerSong, getYouTubeAPIMap()->at(this->guildId).get()));
+			}
+			
+		}
+		catch (...) {
+			reportException("SoundCloudAPI::sendNextSong()");
+		}
+	}
+
 	bool SongAPI::sendNextSong(GuildMember guildMember) {
 		std::lock_guard<std::mutex> accessLock{ SongAPI::accessMutex };
 		getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId);
@@ -272,22 +293,8 @@ namespace DiscordCoreAPI {
 			};
 		}
 		try {
-			switch (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.type) {
-			case SongType::SoundCloud: {
-				getSoundCloudAPIMap()->at(guildMember.guildId)->stop();
-				auto newerSong = getSoundCloudAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
-				newerSong.addedByUserId = guildMember.user.id;
-				getSoundCloudAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
-				return true;
-			}
-			case SongType::YouTube: {
-				getYouTubeAPIMap()->at(guildMember.guildId)->stop();
-				auto newerSong = getYouTubeAPIMap()->at(guildMember.guildId)->collectFinalSong(guildMember, getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong);
-				newerSong.addedByUserId = guildMember.user.id;
-				getYouTubeAPIMap()->at(guildMember.guildId)->sendNextSong(newerSong);
-				return true;
-			}
-			}
+			getSongAPIMap()->at(guildMember.guildId)->sendNextSongFinal(guildMember);
+			return true;
 		}
 		catch (...) {
 			reportException("SongAPI::sendNextSong()");

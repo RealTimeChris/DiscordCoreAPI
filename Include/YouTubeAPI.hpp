@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 
 		std::vector<YouTubeSong> searchForSong(std::string searchQuery, std::string guildId);
 
-		void sendNextSong(Song newSong);
+		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
 		void stop();
 
@@ -78,8 +78,6 @@ namespace DiscordCoreAPI {
 		const int32_t maxBufferSize{ 8192 };
 		std::string guildId{ "" };
 		YouTubeSong theSong{};
-
-		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
 
 		void cancelCurrentSong();		
 		

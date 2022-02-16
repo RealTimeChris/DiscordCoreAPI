@@ -609,17 +609,6 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	void YouTubeAPI::sendNextSong(Song newSong) {
-		try {
-			AudioFrameData frameData{};
-			while (getVoiceConnectionMap()->at(this->guildId)->getAudioBuffer().tryReceive(frameData)) {};
-			getSongAPIMap()->at(this->guildId)->theTask = std::make_unique<CoRoutine<void>>(this->downloadAndStreamAudio(newSong, this));
-		}
-		catch (...) {
-			reportException("YouTubeAPI::sendNextSong()");
-		}
-	}
-
 	std::vector<YouTubeSong> YouTubeAPI::searchForSong(std::string searchQuery, std::string guildId) {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}

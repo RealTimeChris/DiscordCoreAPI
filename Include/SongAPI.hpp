@@ -132,7 +132,10 @@ namespace DiscordCoreAPI {
 		bool areWeInstantiated{ false };
 		std::string guildId{ "" };
 
+		void sendNextSongFinal(GuildMember guildMember);
+
 		bool sendNextSong(std::string);
+		
 	};
 	/**@}*/
 };

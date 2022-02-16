@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 
 		std::vector<SoundCloudSong> searchForSong(std::string searchQuery, std::string guildId);
 
-		void sendNextSong(Song newSong);
+		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
 		void stop();
 
@@ -63,8 +63,6 @@ namespace DiscordCoreAPI {
 		const int32_t maxBufferSize{ 8192 };
 		SoundCloudSong theSong{ };
 		std::string guildId{ "" };
-
-		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
 
 		void cancelCurrentSong();
 		
