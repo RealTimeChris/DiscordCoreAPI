@@ -33,8 +33,6 @@
 #include "WebHookEntities.hpp"
 #include "SongAPI.hpp"
 
-void myPurecallHandler(void);
-
 namespace DiscordCoreAPI {
 
 	namespace Statics {
