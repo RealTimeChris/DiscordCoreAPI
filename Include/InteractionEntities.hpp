@@ -19,9 +19,10 @@ namespace DiscordCoreAPI {
 
     class DiscordCoreAPI_Dll InteractionResponse {
     public:
+
         /// Adds a button to the response Message. \brief Adds a button to the response Message.
         /// \param disabled Whether the button is active or not.
-        /// \param customId A custom id to give for identifying the button.
+        /// \param customIdNew A custom id to give for identifying the button.
         /// \param buttonLabel A visible label for the button.
         /// \param buttonStyle The style of the button.
         /// \param emojiName An emoji name, if desired.        
@@ -54,7 +55,7 @@ namespace DiscordCoreAPI {
 
         /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
         /// \param disabled Whether the select-menu is active or not.
-        /// \param customId A custom id to give for identifying the select-menu.
+        /// \param customIdNew A custom id to give for identifying the select-menu.
         /// \param options A std::vector of select-menu-options to offer.
         /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
         /// \param maxValues Maximum number of selections that are possible.
@@ -368,7 +369,6 @@ namespace DiscordCoreAPI {
             this->data.data.components = dataPackage.components;
             this->data.data.content = dataPackage.content;
             this->data.data.embeds = dataPackage.embeds;
-            std::cout << "EMBEDS SIZE 01: " << this->data.data.embeds.size() << std::endl;
             this->requesterId = dataPackage.requesterId;
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
@@ -625,10 +625,13 @@ namespace DiscordCoreAPI {
         }
 
         InteractionData interactionData{};///< Interaction data.
+        std::string customIdSmall{ "" };///< The customId of the particular input.
         std::string channelId{ "" };///< The Channel id where it took place.
         std::string messageId{ "" };///< The Message id where it took place.
         std::string buttonId{ "" };///< The id of the button, for identification.
+        std::string customId{ "" };///< The customId of the modal component.
         std::string userId{ "" };///< The User id who selected the menu options.
+        std::string value{ "" };/// The input value of the modal component.
     };
 
     /// ModalCollector, for collecting modal text input from one or more Users. \brief ModalCollector, for collecting modal text input from one or more Users.
@@ -643,10 +646,7 @@ namespace DiscordCoreAPI {
         ModalCollector(InputEventData dataPackage);
 
         /// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
-        /// \param getButtonDataForAllNew Whether or not to collect input from a single target User or all potential users.
         /// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
-        /// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
-        /// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
         /// \returns A std::vector of ButtonResponseData.
         CoRoutine < std::vector<ModalResponseData>> collectModalData(int32_t maxWaitTimeInMsNew);
 

@@ -2093,6 +2093,7 @@ namespace DiscordCoreAPI {
     /// Component Interaction data. \brief Component Interaction data.
     struct DiscordCoreAPI_Dll ComponentInteractionData {
         std::vector<std::string> values{};///< The values of the components.
+        std::string customIdSmall{ "" };///< The custom id of a particular modal input.
         ComponentType componentType{};///< The type of component.
         std::string customId{ "" };///< The custom id of the Interaction entity.
     };
@@ -2138,6 +2139,7 @@ namespace DiscordCoreAPI {
         std::string customId{ "" };///< A developer-defined identifier for the component, max 100 characters.
         std::string label{ "" };///< The label for this component.
         std::string value{ "" };///< A pre-filled value for this component.
+        std::string title{ "" };///< Url, for url types.
         int32_t minValues{ 0 };///< The minimum number of items that must be chosen; default 1, min 0, max 25.
         int32_t maxValues{ 0 };///< The maximum number of items that can be chosen; default 1, max 25.
         bool disabled{ false };///< Whether the component is disabled, default false.
@@ -2146,8 +2148,8 @@ namespace DiscordCoreAPI {
         bool required{ false };///< Whether this component is required to be filled.
         std::string url{ "" };///< Url, for url types.
         ComponentType type{};///< Integer component type.
-        int32_t style{};///< One of button styles.
         EmojiData emoji{};///< Emoji name, id, and animated.
+        int32_t style{};///< One of button styles.
     };
 
     /// Action row data of Message components. \brief Action row data of Message components.
@@ -2842,7 +2844,7 @@ namespace DiscordCoreAPI {
 
         /// Adds a button to the response Message. \brief Adds a button to the response Message.
         /// \param disabled Whether the button is active or not.
-        /// \param customId A custom id to give for identifying the button.
+        /// \param customIdNew A custom id to give for identifying the button.
         /// \param buttonLabel A visible label for the button.
         /// \param buttonStyle The style of the button.
         /// \param emojiName An emoji name, if desired.        
@@ -2876,7 +2878,7 @@ namespace DiscordCoreAPI {
 
         /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
         /// \param disabled Whether the select-menu is active or not.
-        /// \param customId A custom id to give for identifying the select-menu.
+        /// \param customIdNew A custom id to give for identifying the select-menu.
         /// \param options A std::vector of select-menu-options to offer.
         /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
         /// \param maxValues Maximum number of selections that are possible.
@@ -2908,17 +2910,19 @@ namespace DiscordCoreAPI {
         }
 
         /// Adds a modal to the response Message. \brief Adds a modal to the response Message.
-        /// \param titleNew A title for the modal.
-        /// \param customIdNew A custom id to give for identifying the button.
+        /// \param topTitleNew A title for the modal.
+        /// \param topCustomIdNew A custom id to give for the modal.
+        /// \param titleNew A title for the modal's individual input.
+        /// \param customIdNew A custom id to give for the modal's individual input.
         /// \param required Is it a required response?
         /// \param minLength Minimum length.
-        /// \param maxLength Maximum length.        
-        /// \param inputStyle The input style.        
+        /// \param maxLength Maximum length.
+        /// \param inputStyle The input style.
         /// \param label A label for the modal.
         /// \param placeholder A placeholder for the modal.
-        RespondToInputEventData& addModal(std::string titleNew, std::string customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "") {
-            this->title = titleNew;
-            this->customId = customIdNew;
+        RespondToInputEventData& addModal(std::string topTitleNew, std::string topCustomIdNew, std::string titleNew, std::string customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "") {
+            this->title = topTitleNew;
+            this->customId = topCustomIdNew;
             if (this->components.size() == 0) {
                 ActionRowData actionRowData;
                 this->components.push_back(actionRowData);
@@ -2929,6 +2933,7 @@ namespace DiscordCoreAPI {
                     component.type = ComponentType::TextInput;
                     component.customId = customIdNew;
                     component.style = static_cast<int32_t>(inputStyle);
+                    component.title = titleNew;
                     component.maxLength = maxLength;
                     component.minLength = minLength;
                     component.label = label;

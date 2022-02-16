@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
-		/// \param customId A custom id to give for identifying the button.
+		/// \param customIdNew A custom id to give for identifying the button.
 		/// \param buttonLabel A visible label for the button.
 		/// \param buttonStyle The style of the button.
 		/// \param emojiName An emoji name, if desired.        
@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
-		/// \param customId A custom id to give for identifying the select-menu.
+		/// \param customIdNew A custom id to give for identifying the select-menu.
 		/// \param options A std::vector of select-menu-options to offer.
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
@@ -232,7 +232,7 @@ namespace DiscordCoreAPI {
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
-		/// \param customId A custom id to give for identifying the button.
+		/// \param customIdNew A custom id to give for identifying the button.
 		/// \param buttonLabel A visible label for the button.
 		/// \param buttonStyle The style of the button.
 		/// \param emojiName An emoji name, if desired.        
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
-		/// \param customId A custom id to give for identifying the select-menu.
+		/// \param customIdNew A custom id to give for identifying the select-menu.
 		/// \param options A std::vector of select-menu-options to offer.
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.

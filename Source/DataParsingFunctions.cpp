@@ -2940,7 +2940,23 @@ namespace DiscordCoreInternal {
                 }
 
                 if (value.contains("label") && !value["label"].is_null()) {
-                    newData.label = value["label"].get<std::string>();
+                    newData.options.shrink_to_fit();
+                }
+
+                if (value.contains("min_length") && !value["min_length"].is_null()) {
+                    newData.minLength = value["min_length"].get<int32_t>();
+                }
+
+                if (value.contains("max_length") && !value["max_length"].is_null()) {
+                    newData.maxLength = value["max_length"].get<int32_t>();
+                }
+
+                if (value.contains("value") && !value["value"].is_null()) {
+                    newData.value = value["value"].get<std::string>();
+                }
+
+                if (value.contains("required") && !value["required"].is_null()) {
+                    newData.required = value["required"].get<bool>();
                 }
 
                 if (value.contains("emoji") && !value["emoji"].is_null()) {

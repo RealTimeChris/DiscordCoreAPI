@@ -150,10 +150,8 @@ namespace DiscordCoreAPI {
             DiscordCoreInternal::HttpWorkloadData workload{};
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-            std::cout << "WERE HERE THIS IS IT: " << dataPackage.data.data.embeds.size() << std::endl;
             workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
             workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
-            std::cout << "THIS IS IT: " << workload.content << std::endl;
             workload.callStack = "Interactions::createFollowUpMessageAsync";
             co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
         }
@@ -434,16 +432,16 @@ namespace DiscordCoreAPI {
                         this->doWeQuit = true;
                     }
                 }
-                
+
             }
-        catch (...) {
-            reportException("ButtonCollector::run()");
-            ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+            catch (...) {
+                reportException("ButtonCollector::run()");
+                ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
+            }
         }
-    }
-        
         ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
     }
+
     ModalCollector::ModalCollector(InputEventData dataPackage) {
         this->channelId = dataPackage.getChannelId();
         this->messageId = dataPackage.getMessageId();
@@ -471,16 +469,19 @@ namespace DiscordCoreAPI {
                 auto buttonInteractionData = std::make_unique<InteractionData>();
                 if (waitForTimeToPass(*this->buttonIncomingInteractionBuffer.get(), *buttonInteractionData.get(), this->maxTimeInMs)) {
                     auto response = std::make_unique<ModalResponseData>();
+                    this->interactionData = *buttonInteractionData;
                     response->channelId = this->channelId;
                     response->messageId = this->messageId;
                     response->userId = buttonInteractionData->user.id;
                     response->interactionData = this->interactionData;
+                    response->customId = this->interactionData.data.componentData.customId;
+                    response->value = this->interactionData.data.componentData.values.at(0);
                     this->responseVector.push_back(*response);
                     break;
                 }
             }
             catch (...) {
-                reportException("ButtonCollector::run()");
+                reportException("ModalCollector::run()");
                 ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
             }
         }
