@@ -35,6 +35,7 @@
 #include <unordered_map>
 #include <curl/curl.h>
 #include <functional>
+#include <concepts>
 #include <thread>
 #include <memory>
 #include <string>
