@@ -176,12 +176,17 @@ namespace DiscordCoreAPI {
             this->theFunction = theFunctionNew;
         }
 
-        ReturnType operator()(ArgTypes... args) {
-            return this->theFunction(args...);
+        void operator()(ArgTypes... args) {
+            this->theTask = this->theFunction(args...);
+        }
+
+        ~UniEvent() {
+            this->theTask.cancel();
         }
 
     protected:
         std::function<ReturnType(ArgTypes...)> theFunction{ nullptr };
+        CoRoutine<void> theTask{ nullptr };
     };
 
     class DiscordCoreAPI_Dll EventWaiter {
